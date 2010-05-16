@@ -10219,12 +10219,12 @@ from timeit import Timer
 ##maxi = max(test)
 ##print "Min:%.15f, Avg:%.15f, Max:%.15f" % (mini, avgi, maxi)
 
-print "10TestMinimalLoad"
-test = [Timer('TestMinimalLoad()', 'from __main__ import TestMinimalLoad').timeit(1) for x in range(0, 10)]
-mini = min(test)
-avgi = sum(test) / len(test)
-maxi = max(test)
-print "Min:%.15f, Avg:%.15f, Max:%.15f" % (mini, avgi, maxi)
+##print "10TestMinimalLoad"
+##test = [Timer('TestMinimalLoad()', 'from __main__ import TestMinimalLoad').timeit(1) for x in range(0, 10)]
+##mini = min(test)
+##avgi = sum(test) / len(test)
+##maxi = max(test)
+##print "Min:%.15f, Avg:%.15f, Max:%.15f" % (mini, avgi, maxi)
     
 ##print "1TestFullLoad"
 ##test = [Timer('TestFullLoad()', 'from __main__ import TestFullLoad').timeit(1) for x in range(0, 1)]
@@ -10250,13 +10250,13 @@ print "Min:%.15f, Avg:%.15f, Max:%.15f" % (mini, avgi, maxi)
 ##print "Min:%.15f, Avg:%.15f, Max:%.15f" % (mini, avgi, maxi)
 
 ##phonenumber = raw_input(">")
-##Current = Collection()
-##Current.addMod("Oblivion.esm")
-####Current.fullLoad(LoadMasters=True)
+Current = Collection()
+Current.addMod("Oblivion.esm")
+Current.fullLoad(LoadMasters=True)
 ##Current.minimalLoad(LoadMasters=True)
-##phonenumber = raw_input(">")
-##del Current
-##phonenumber = raw_input("!")
+phonenumber = raw_input(">")
+del Current
+phonenumber = raw_input("!")
 
 
 ##TestReadWriteAll()

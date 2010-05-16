@@ -1,23 +1,24 @@
-# GPL License and Copyright Notice ============================================
-#  This file is part of CBash.
-#
-#  CBash is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU General Public License
-#  as published by the Free Software Foundation; either version 2
-#  of the License, or (at your option) any later version.
-#
-#  CBash is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with CBash; if not, write to the Free Software Foundation,
-#  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-#
-#  CBash copyright (C) 2010 Waruddar
-#
-# =============================================================================
+/*
+GPL License and Copyright Notice ============================================
+ This file is part of CBash.
+
+ CBash is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation; either version 2
+ of the License, or (at your option) any later version.
+
+ CBash is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with CBash; if not, write to the Free Software Foundation,
+ Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+ CBash copyright (C) 2010 Waruddar
+=============================================================================
+*/
 // Collection.cpp
 #include "Collection.h"
 #include <direct.h>
@@ -48,6 +49,10 @@ bool Collection::IsModAdded(const char *ModName)
 
 int Collection::AddMod(const char *ModName, bool CreateIfNotExist)
     {
+    //Mods may not be added after collection is loaded.
+    //It would potentially mess up python accessors if it added anywhere other than the very end
+    if(isLoaded)
+        return -1;
     //Prevent loading mods more than once
     if(IsModAdded(ModName))
         return 0;
