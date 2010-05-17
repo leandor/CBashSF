@@ -29,6 +29,7 @@ GPL License and Copyright Notice ============================================
 class Collection
     {
     private:
+        char *ModsDir;
         std::vector<ModFile *> ModFiles;
         std::vector<char *> LoadOrder;
         //std::list<char *> LoadOrder;
@@ -38,9 +39,14 @@ class Collection
         std::multimap<char *, std::pair<ModFile *, Record *>, sameStr> GMST_ModFile_Record;
         std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID> FID_ModFile_Record;
 
-        Collection():isLoaded(false) {}
+        Collection(const char *ModsPath):ModsDir(NULL), isLoaded(false)
+            {
+            ModsDir = new char[strlen(ModsPath)+1];
+            strcpy_s(ModsDir, strlen(ModsPath)+1, ModsPath);
+            }
         ~Collection()
             {
+            delete []ModsDir;
             for(unsigned int p = 0; p < ModFiles.size(); p++)
                 delete ModFiles[p];
             }

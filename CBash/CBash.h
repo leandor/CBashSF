@@ -22,7 +22,7 @@ GPL License and Copyright Notice ============================================
 // CBash.h
 //#define _UNICODE
 
-extern "C" __declspec(dllexport) int NewCollection();
+extern "C" __declspec(dllexport) int NewCollection(const char *ModsPath);
 extern "C" __declspec(dllexport) int DeleteCollection(const unsigned int CollectionIndex);
 ////////////////////////////////////////////////////////////////////////
 extern "C" __declspec(dllexport) int NewMod(const unsigned int CollectionIndex, const char *ModName);

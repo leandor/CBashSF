@@ -263,18 +263,18 @@ class CSTYRecord : public Record
     public:
         enum flagsAFlags
             {
-            fAdvanced           = 0x00000001,
-            fUseChanceForAttack = 0x00000002,
-            fIgnoreAllies       = 0x00000004,
-            fWillYield          = 0x00000008,
-            fRejectsYields      = 0x00000010,
-            fFleeingDisabled    = 0x00000020,
-            fPrefersRanged      = 0x00000040,
-            fMeleeAlertOK       = 0x00000080
+            fIsUseAdvanced        = 0x00000001,
+            fIsUseChanceForAttack = 0x00000002,
+            fIsIgnoreAllies       = 0x00000004,
+            fIsWillYield          = 0x00000008,
+            fIsRejectsYields      = 0x00000010,
+            fIsFleeingDisabled    = 0x00000020,
+            fIsPrefersRanged      = 0x00000040,
+            fIsMeleeAlertOK       = 0x00000080
             };
         enum flagsBFlags
             {
-            fDoNotAcquire       = 0x00000001
+            fIsDoNotAcquire       = 0x00000001
             };
         STRING EDID;
         ReqRecordField<CSTYCSTD> CSTD;
@@ -317,101 +317,123 @@ class CSTYRecord : public Record
         int WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer);
         bool IsUseAdvanced()
             {
-            return (CSTD.value.flagsA & fAdvanced) != 0;
+            return (CSTD.value.flagsA & fIsUseAdvanced) != 0;
             }
         void IsUseAdvanced(bool value)
             {
             if(value)
-                CSTD.value.flagsA |= fAdvanced;
+                CSTD.value.flagsA |= fIsUseAdvanced;
             else
-                CSTD.value.flagsA &= ~fAdvanced;
+                CSTD.value.flagsA &= ~fIsUseAdvanced;
             }
         bool IsUseChanceForAttack()
             {
-            return (CSTD.value.flagsA & fUseChanceForAttack) != 0;
+            return (CSTD.value.flagsA & fIsUseChanceForAttack) != 0;
             }
         void IsUseChanceForAttack(bool value)
             {
             if(value)
-                CSTD.value.flagsA |= fUseChanceForAttack;
+                CSTD.value.flagsA |= fIsUseChanceForAttack;
             else
-                CSTD.value.flagsA &= ~fUseChanceForAttack;
+                CSTD.value.flagsA &= ~fIsUseChanceForAttack;
             }
         bool IsIgnoreAllies()
             {
-            return (CSTD.value.flagsA & fIgnoreAllies) != 0;
+            return (CSTD.value.flagsA & fIsIgnoreAllies) != 0;
             }
         void IsIgnoreAllies(bool value)
             {
             if(value)
-                CSTD.value.flagsA |= fIgnoreAllies;
+                CSTD.value.flagsA |= fIsIgnoreAllies;
             else
-                CSTD.value.flagsA &= ~fIgnoreAllies;
+                CSTD.value.flagsA &= ~fIsIgnoreAllies;
             }
         bool IsWillYield()
             {
-            return (CSTD.value.flagsA & fWillYield) != 0;
+            return (CSTD.value.flagsA & fIsWillYield) != 0;
             }
         void IsWillYield(bool value)
             {
             if(value)
-                CSTD.value.flagsA |= fWillYield;
+                CSTD.value.flagsA |= fIsWillYield;
             else
-                CSTD.value.flagsA &= ~fWillYield;
+                CSTD.value.flagsA &= ~fIsWillYield;
             }
         bool IsRejectsYields()
             {
-            return (CSTD.value.flagsA & fRejectsYields) != 0;
+            return (CSTD.value.flagsA & fIsRejectsYields) != 0;
             }
         void IsRejectsYields(bool value)
             {
             if(value)
-                CSTD.value.flagsA |= fRejectsYields;
+                CSTD.value.flagsA |= fIsRejectsYields;
             else
-                CSTD.value.flagsA &= ~fRejectsYields;
+                CSTD.value.flagsA &= ~fIsRejectsYields;
             }
         bool IsFleeingDisabled()
             {
-            return (CSTD.value.flagsA & fFleeingDisabled) != 0;
+            return (CSTD.value.flagsA & fIsFleeingDisabled) != 0;
             }
         void IsFleeingDisabled(bool value)
             {
             if(value)
-                CSTD.value.flagsA |= fFleeingDisabled;
+                CSTD.value.flagsA |= fIsFleeingDisabled;
             else
-                CSTD.value.flagsA &= ~fFleeingDisabled;
+                CSTD.value.flagsA &= ~fIsFleeingDisabled;
             }
         bool IsPrefersRanged()
             {
-            return (CSTD.value.flagsA & fPrefersRanged) != 0;
+            return (CSTD.value.flagsA & fIsPrefersRanged) != 0;
             }
         void IsPrefersRanged(bool value)
             {
             if(value)
-                CSTD.value.flagsA |= fPrefersRanged;
+                CSTD.value.flagsA |= fIsPrefersRanged;
             else
-                CSTD.value.flagsA &= ~fPrefersRanged;
+                CSTD.value.flagsA &= ~fIsPrefersRanged;
             }
         bool IsMeleeAlertOK()
             {
-            return (CSTD.value.flagsA & fMeleeAlertOK) != 0;
+            return (CSTD.value.flagsA & fIsMeleeAlertOK) != 0;
             }
         void IsMeleeAlertOK(bool value)
             {
             if(value)
-                CSTD.value.flagsA |= fMeleeAlertOK;
+                CSTD.value.flagsA |= fIsMeleeAlertOK;
             else
-                CSTD.value.flagsA &= ~fMeleeAlertOK;
+                CSTD.value.flagsA &= ~fIsMeleeAlertOK;
+            }
+        bool IsFlagAMask(unsigned char Mask, bool Exact=false)
+            {
+            if(Exact)
+                return (CSTD.value.flagsA & Mask) == Mask;
+            else
+                return (CSTD.value.flagsA & Mask) != 0;
+            }
+        void SetFlagAMask(unsigned char Mask)
+            {
+            CSTD.value.flagsA = Mask;
             }
         bool IsDoNotAcquire()
             {
-            return (CSTD.value.flagsB & fDoNotAcquire) != 0;
+            return (CSTD.value.flagsB & fIsDoNotAcquire) != 0;
             }
         void IsDoNotAcquire(bool value)
             {
             if(value)
-                CSTD.value.flagsB |= fDoNotAcquire;
+                CSTD.value.flagsB |= fIsDoNotAcquire;
             else
-                CSTD.value.flagsB &= ~fDoNotAcquire;
+                CSTD.value.flagsB &= ~fIsDoNotAcquire;
+            }
+        bool IsFlagBMask(unsigned char Mask, bool Exact=false)
+            {
+            if(Exact)
+                return (CSTD.value.flagsB & Mask) == Mask;
+            else
+                return (CSTD.value.flagsB & Mask) != 0;
+            }
+        void SetFlagBMask(unsigned char Mask)
+            {
+            CSTD.value.flagsB = Mask;
             }
     };

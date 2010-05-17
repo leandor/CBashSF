@@ -201,12 +201,10 @@ class WRLDRecord : public Record
 
         bool IsSmallWorld()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.flags & fSmallWorld) != 0;
             }
         void IsSmallWorld(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 DATA.value.flags |= fSmallWorld;
             else
@@ -214,25 +212,29 @@ class WRLDRecord : public Record
             }
         bool IsNoFastTravel()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.flags & fNoFastTravel) != 0;
             }
         void IsNoFastTravel(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 DATA.value.flags |= fNoFastTravel;
             else
                 DATA.value.flags &= ~fNoFastTravel;
             }
+        bool IsFastTravel()
+            {
+            return !IsNoFastTravel();
+            }
+        void IsFastTravel(bool value)
+            {
+            IsNoFastTravel(!value);
+            }
         bool IsOblivionWorldspace()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.flags & fOblivionWorldspace) != 0;
             }
         void IsOblivionWorldspace(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 DATA.value.flags |= fOblivionWorldspace;
             else
@@ -240,20 +242,25 @@ class WRLDRecord : public Record
             }
         bool IsNoLODWater()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.flags & fNoLODWater) != 0;
             }
         void IsNoLODWater(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 DATA.value.flags |= fNoLODWater;
             else
                 DATA.value.flags &= ~fNoLODWater;
             }
+        bool IsLODWater()
+            {
+            return !IsNoLODWater();
+            }
+        void IsLODWater(bool value)
+            {
+            IsNoLODWater(!value);
+            }
         bool IsFlagMask(unsigned char Mask, bool Exact=false)
             {
-            if(!DATA.IsLoaded()) return false;
             if(Exact)
                 return (DATA.value.flags & Mask) == Mask;
             else
@@ -261,7 +268,6 @@ class WRLDRecord : public Record
             }
         void SetFlagMask(unsigned char Mask)
             {
-            if(!DATA.IsLoaded()) return;
             DATA.value.flags = Mask;
             }
         bool IsDefaultMusic()
@@ -346,4 +352,3 @@ struct WritableWorld
     std::vector<unsigned int> PersistentSizes;
     std::map<unsigned int, WritableBlock, sortBlocks> Block;
     };
-

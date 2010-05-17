@@ -132,8 +132,115 @@ class INFORecord : public Record
                     }
                 }
             #endif
+            enum eEmotionType
+                {
+                eNeutral  = 0,
+                eAnger    = 1,
+                eDisgust  = 2,
+                eFear     = 3,
+                eSad      = 4,
+                eHappy    = 5,
+                eSurprise = 6
+                };
+
+            bool IsNeutral()
+                {
+                return (TRDT.value.emotionType == eNeutral);
+                }
+            void IsNeutral(bool value)
+                {
+                if(value)
+                    TRDT.value.emotionType = eNeutral;
+                else if(IsNeutral())
+                    TRDT.value.emotionType = eAnger;
+                }
+            bool IsAnger()
+                {
+                return (TRDT.value.emotionType == eAnger);
+                }
+            void IsAnger(bool value)
+                {
+                if(value)
+                    TRDT.value.emotionType = eAnger;
+                else if(IsAnger())
+                    TRDT.value.emotionType = eNeutral;
+                }
+            bool IsDisgust()
+                {
+                return (TRDT.value.emotionType == eDisgust);
+                }
+            void IsDisgust(bool value)
+                {
+                if(value)
+                    TRDT.value.emotionType = eDisgust;
+                else if(IsDisgust())
+                    TRDT.value.emotionType = eNeutral;
+                }
+            bool IsFear()
+                {
+                return (TRDT.value.emotionType == eFear);
+                }
+            void IsFear(bool value)
+                {
+                if(value)
+                    TRDT.value.emotionType = eFear;
+                else if(IsFear())
+                    TRDT.value.emotionType = eNeutral;
+                }
+            bool IsSad()
+                {
+                return (TRDT.value.emotionType == eSad);
+                }
+            void IsSad(bool value)
+                {
+                if(value)
+                    TRDT.value.emotionType = eSad;
+                else if(IsSad())
+                    TRDT.value.emotionType = eNeutral;
+                }
+            bool IsHappy()
+                {
+                return (TRDT.value.emotionType == eHappy);
+                }
+            void IsHappy(bool value)
+                {
+                if(value)
+                    TRDT.value.emotionType = eHappy;
+                else if(IsHappy())
+                    TRDT.value.emotionType = eNeutral;
+                }
+            bool IsSurprise()
+                {
+                return (TRDT.value.emotionType == eSurprise);
+                }
+            void IsSurprise(bool value)
+                {
+                if(value)
+                    TRDT.value.emotionType = eSurprise;
+                else if(IsSurprise())
+                    TRDT.value.emotionType = eNeutral;
+                }
             };
     public:
+        enum eDialogType
+            {
+            eTopic        = 0,
+            eConversation = 1,
+            eCombat       = 2,
+            ePersuasion   = 3,
+            eDetection    = 4,
+            eService      = 5,
+            eMisc         = 6
+            };
+        enum flagsFlags
+            {
+            fIsGoodbye      = 0x00000001,
+            fIsRandom       = 0x00000002,
+            fIsSayOnce      = 0x00000004,
+            fIsInfoRefusal  = 0x00000010,
+            fIsRandomEnd    = 0x00000020,
+            fIsRunForRumors = 0x00000040
+            };
         STRING EDID;
         ReqRecordField<INFODATA> DATA;
         ReqRecordField<GENFID> QSTI;
@@ -308,9 +415,171 @@ class INFORecord : public Record
         void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, char *FieldValue);
         void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, float FieldValue);
 
-
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();
         unsigned int GetType() {return eINFO;}
         int WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer);
+        
+        bool IsTopic()
+            {
+            return (DATA.value.dialType == eTopic);
+            }
+        void IsTopic(bool value)
+            {
+            if(value)
+                DATA.value.dialType = eTopic;
+            else if(IsTopic())
+                DATA.value.dialType = eConversation;
+            }
+        bool IsConversation()
+            {
+            return (DATA.value.dialType == eConversation);
+            }
+        void IsConversation(bool value)
+            {
+            if(value)
+                DATA.value.dialType = eConversation;
+            else if(IsConversation())
+                DATA.value.dialType = eTopic;
+            }
+        bool IsCombat()
+            {
+            return (DATA.value.dialType == eCombat);
+            }
+        void IsCombat(bool value)
+            {
+            if(value)
+                DATA.value.dialType = eCombat;
+            else if(IsCombat())
+                DATA.value.dialType = eTopic;
+            }
+        bool IsPersuasion()
+            {
+            return (DATA.value.dialType == ePersuasion);
+            }
+        void IsPersuasion(bool value)
+            {
+            if(value)
+                DATA.value.dialType = ePersuasion;
+            else if(IsPersuasion())
+                DATA.value.dialType = eTopic;
+            }
+        bool IsDetection()
+            {
+            return (DATA.value.dialType == eDetection);
+            }
+        void IsDetection(bool value)
+            {
+            if(value)
+                DATA.value.dialType = eDetection;
+            else if(IsDetection())
+                DATA.value.dialType = eTopic;
+            }
+        bool IsService()
+            {
+            return (DATA.value.dialType == eService);
+            }
+        void IsService(bool value)
+            {
+            if(value)
+                DATA.value.dialType = eService;
+            else if(IsService())
+                DATA.value.dialType = eTopic;
+            }
+        bool IsMisc()
+            {
+            return (DATA.value.dialType == eMisc);
+            }
+        void IsMisc(bool value)
+            {
+            if(value)
+                DATA.value.dialType = eMisc;
+            else if(IsMisc())
+                DATA.value.dialType = eTopic;
+            }
+        bool IsDialogType(unsigned int Type)
+            {
+            return (DATA.value.dialType == Type);
+            }
+        void SetDialogType(unsigned int Type)
+            {
+            DATA.value.dialType = Type;
+            }
+        bool IsGoodbye()
+            {
+            return (DATA.value.flags & fIsGoodbye) != 0;
+            }
+        void IsGoodbye(bool value)
+            {
+            if(value)
+                DATA.value.flags |= fIsGoodbye;
+            else
+                DATA.value.flags &= ~fIsGoodbye;
+            }
+        bool IsRandom()
+            {
+            return (DATA.value.flags & fIsRandom) != 0;
+            }
+        void IsRandom(bool value)
+            {
+            if(value)
+                DATA.value.flags |= fIsRandom;
+            else
+                DATA.value.flags &= ~fIsRandom;
+            }
+        bool IsSayOnce()
+            {
+            return (DATA.value.flags & fIsSayOnce) != 0;
+            }
+        void IsSayOnce(bool value)
+            {
+            if(value)
+                DATA.value.flags |= fIsSayOnce;
+            else
+                DATA.value.flags &= ~fIsSayOnce;
+            }
+        bool IsInfoRefusal()
+            {
+            return (DATA.value.flags & fIsInfoRefusal) != 0;
+            }
+        void IsInfoRefusal(bool value)
+            {
+            if(value)
+                DATA.value.flags |= fIsInfoRefusal;
+            else
+                DATA.value.flags &= ~fIsInfoRefusal;
+            }
+        bool IsRandomEnd()
+            {
+            return (DATA.value.flags & fIsRandomEnd) != 0;
+            }
+        void IsRandomEnd(bool value)
+            {
+            if(value)
+                DATA.value.flags |= fIsRandomEnd;
+            else
+                DATA.value.flags &= ~fIsRandomEnd;
+            }
+        bool IsRunForRumors()
+            {
+            return (DATA.value.flags & fIsRunForRumors) != 0;
+            }
+        void IsRunForRumors(bool value)
+            {
+            if(value)
+                DATA.value.flags |= fIsRunForRumors;
+            else
+                DATA.value.flags &= ~fIsRunForRumors;
+            }
+        bool IsFlagMask(unsigned char Mask, bool Exact=false)
+            {
+            if(Exact)
+                return (DATA.value.flags & Mask) == Mask;
+            else
+                return (DATA.value.flags & Mask) != 0;
+            }
+        void SetFlagMask(unsigned char Mask)
+            {
+            DATA.value.flags = Mask;
+            }
     };

@@ -75,12 +75,10 @@ class EYESRecord : public Record
         int WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer);
         bool IsPlayable()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.flags & fIsPlayable) != 0;
             }
         void IsPlayable(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 DATA.value.flags |= fIsPlayable;
             else
@@ -88,7 +86,6 @@ class EYESRecord : public Record
             }
         bool IsFlagMask(unsigned char Mask, bool Exact=false)
             {
-            if(!DATA.IsLoaded()) return false;
             if(Exact)
                 return (DATA.value.flags & Mask) == Mask;
             else
@@ -96,7 +93,6 @@ class EYESRecord : public Record
             }
         void SetFlagMask(unsigned char Mask)
             {
-            if(!DATA.IsLoaded()) return;
             DATA.value.flags = Mask;
             }
     };

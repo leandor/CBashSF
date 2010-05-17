@@ -400,11 +400,11 @@ class NPC_Record : public Record
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char FieldValue);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char **FieldValue, unsigned int nSize);
 
-
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();
         unsigned int GetType() {return eNPC_;}
         int WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer);
+
         bool IsFemale()
             {
             return (ACBS.value.flags & fIsFemale) != 0;

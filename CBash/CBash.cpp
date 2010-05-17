@@ -28,11 +28,11 @@ GPL License and Copyright Notice ============================================
 static std::vector<Collection *> Collections;
 static std::vector<Iterator *> Iterators;
 
-int NewCollection()
+int NewCollection(const char *ModsPath)
     {
     try
         {
-		Collections.push_back(new Collection);
+		Collections.push_back(new Collection(ModsPath));
 		}
     catch(...)
         {

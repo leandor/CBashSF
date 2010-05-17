@@ -549,12 +549,10 @@ class RACERecord : public Record
 
         bool IsPlayable()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.flags & fIsPlayable) != 0;
             }
         void IsPlayable(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 DATA.value.flags |= fIsPlayable;
             else
@@ -562,7 +560,6 @@ class RACERecord : public Record
             }
         bool IsFlagMask(unsigned int Mask, bool Exact=false)
             {
-            if(!DATA.IsLoaded()) return false;
             if(Exact)
                 return (DATA.value.flags & Mask) == Mask;
             else
@@ -570,7 +567,6 @@ class RACERecord : public Record
             }
         void SetFlagMask(unsigned int Mask)
             {
-            if(!DATA.IsLoaded()) return;
             DATA.value.flags = Mask;
             }
     };

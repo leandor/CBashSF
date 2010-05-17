@@ -212,10 +212,10 @@ class EFSHRecord : public Record
     public:
         enum flagsFlags
             {
-            fNoMemShader  = 0x00000001,
-            fNoPartShader = 0x00000008,
-            fEdgeInverse  = 0x00000010,
-            fMemSkinOnly  = 0x00000020,
+            fIsNoMemShader  = 0x00000001,
+            fIsNoPartShader = 0x00000008,
+            fIsEdgeInverse  = 0x00000010,
+            fIsMemSkinOnly  = 0x00000020
             };
         STRING EDID;
         STRING ICON;
@@ -254,97 +254,107 @@ class EFSHRecord : public Record
         void SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue);
 
-
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();
         unsigned int GetType() {return eEFSH;}
         int WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer);
         bool IsNoMemShader()
             {
-            return (DATA.value.flags & fNoMemShader) != 0;
+            return (DATA.value.flags & fIsNoMemShader) != 0;
             }
         void IsNoMemShader(bool value)
             {
             if(value)
-                DATA.value.flags |= fNoMemShader;
+                DATA.value.flags |= fIsNoMemShader;
             else
-                DATA.value.flags &= ~fNoMemShader;
+                DATA.value.flags &= ~fIsNoMemShader;
             }
         bool IsNoMembraneShader()
             {
-            return (DATA.value.flags & fNoMemShader) != 0;
+            return (DATA.value.flags & fIsNoMemShader) != 0;
             }
         void IsNoMembraneShader(bool value)
             {
             if(value)
-                DATA.value.flags |= fNoMemShader;
+                DATA.value.flags |= fIsNoMemShader;
             else
-                DATA.value.flags &= ~fNoMemShader;
+                DATA.value.flags &= ~fIsNoMemShader;
             }
         bool IsNoPartShader()
             {
-            return (DATA.value.flags & fNoPartShader) != 0;
+            return (DATA.value.flags & fIsNoPartShader) != 0;
             }
         void IsNoPartShader(bool value)
             {
             if(value)
-                DATA.value.flags |= fNoPartShader;
+                DATA.value.flags |= fIsNoPartShader;
             else
-                DATA.value.flags &= ~fNoPartShader;
+                DATA.value.flags &= ~fIsNoPartShader;
             }
         bool IsNoParticleShader()
             {
-            return (DATA.value.flags & fNoPartShader) != 0;
+            return (DATA.value.flags & fIsNoPartShader) != 0;
             }
         void IsNoParticleShader(bool value)
             {
             if(value)
-                DATA.value.flags |= fNoPartShader;
+                DATA.value.flags |= fIsNoPartShader;
             else
-                DATA.value.flags &= ~fNoPartShader;
+                DATA.value.flags &= ~fIsNoPartShader;
             }
         bool IsEdgeInverse()
             {
-            return (DATA.value.flags & fEdgeInverse) != 0;
+            return (DATA.value.flags & fIsEdgeInverse) != 0;
             }
         void IsEdgeInverse(bool value)
             {
             if(value)
-                DATA.value.flags |= fEdgeInverse;
+                DATA.value.flags |= fIsEdgeInverse;
             else
-                DATA.value.flags &= ~fEdgeInverse;
+                DATA.value.flags &= ~fIsEdgeInverse;
             }
         bool IsEdgeEffectInverse()
             {
-            return (DATA.value.flags & fEdgeInverse) != 0;
+            return (DATA.value.flags & fIsEdgeInverse) != 0;
             }
         void IsEdgeEffectInverse(bool value)
             {
             if(value)
-                DATA.value.flags |= fEdgeInverse;
+                DATA.value.flags |= fIsEdgeInverse;
             else
-                DATA.value.flags &= ~fEdgeInverse;
+                DATA.value.flags &= ~fIsEdgeInverse;
             }
         bool IsMemSkinOnly()
             {
-            return (DATA.value.flags & fMemSkinOnly) != 0;
+            return (DATA.value.flags & fIsMemSkinOnly) != 0;
             }
         void IsMemSkinOnly(bool value)
             {
             if(value)
-                DATA.value.flags |= fMemSkinOnly;
+                DATA.value.flags |= fIsMemSkinOnly;
             else
-                DATA.value.flags &= ~fMemSkinOnly;
+                DATA.value.flags &= ~fIsMemSkinOnly;
             }
         bool IsMembraneShaderSkinOnly()
             {
-            return (DATA.value.flags & fMemSkinOnly) != 0;
+            return (DATA.value.flags & fIsMemSkinOnly) != 0;
             }
         void IsMembraneShaderSkinOnly(bool value)
             {
             if(value)
-                DATA.value.flags |= fMemSkinOnly;
+                DATA.value.flags |= fIsMemSkinOnly;
             else
-                DATA.value.flags &= ~fMemSkinOnly;
+                DATA.value.flags &= ~fIsMemSkinOnly;
+            }
+        bool IsFlagMask(unsigned char Mask, bool Exact=false)
+            {
+            if(Exact)
+                return (DATA.value.flags & Mask) == Mask;
+            else
+                return (DATA.value.flags & Mask) != 0;
+            }
+        void SetFlagMask(unsigned char Mask)
+            {
+            DATA.value.flags = Mask;
             }
     };

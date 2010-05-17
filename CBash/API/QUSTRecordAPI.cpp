@@ -227,7 +227,7 @@ int QUSTRecord::GetOtherFieldType(const unsigned int Field)
             return STRING_FIELD;
         case 8: //iconPath
             return STRING_FIELD;
-        case 9: //questFlags
+        case 9: //flags
             return UBYTE_FIELD;
         case 10: //priority
             return UBYTE_FIELD;
@@ -256,7 +256,7 @@ void * QUSTRecord::GetOtherField(const unsigned int Field)
             return FULL.value;
         case 8: //iconPath
             return ICON.value;
-        case 9: //questFlags
+        case 9: //flags
             return &DATA.value.flags;
         case 10: //priority
             return &DATA.value.priority;
@@ -988,7 +988,7 @@ void QUSTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     {
     switch(Field)
         {
-        case 9: //questFlags
+        case 9: //flags
             DATA.value.flags = FieldValue;
             break;
         case 10: //priority

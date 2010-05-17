@@ -8007,7 +8007,7 @@ def TestQUST():
         print "script     : %08X" % record.script
         print "full       :", record.full
         print "iconPath   :", record.iconPath
-        print "questFlags :", record.questFlags
+        print "flags      :", record.flags
         print "priority   :", record.priority
         
         print "conditions"
@@ -8098,7 +8098,7 @@ def TestQUST():
     newRecord.script = 7
     newRecord.full = "Waruddar's Quest Test"
     newRecord.iconPath = r"QUST\Icon\Path\Test.dds"
-    newRecord.questFlags = 1
+    newRecord.flags = 1
     newRecord.priority = 2
 
     newCondition = newRecord.newConditionsElement()
@@ -8897,7 +8897,7 @@ def TestQUST():
     print "script     : %08X" % newRecord.script
     print "full       :", newRecord.full
     print "iconPath   :", newRecord.iconPath
-    print "questFlags :", newRecord.questFlags
+    print "flags      :", newRecord.flags
     print "priority   :", newRecord.priority
     
     print "conditions"

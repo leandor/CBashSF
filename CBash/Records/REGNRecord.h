@@ -371,7 +371,7 @@ class REGNRecord : public Record
                 fIsYVariance      = 0x00000010,
                 fIsZVariance      = 0x00000020,
                 fIsTree           = 0x00000040,
-                fIsHugeRock       = 0x00000080,
+                fIsHugeRock       = 0x00000080
                 };
             bool IsConformToSlope()
                 {
@@ -585,7 +585,7 @@ class REGNRecord : public Record
                 };
             enum eRDATType
                 {
-                eObject = 2,
+                eObject  = 2,
                 eWeather = 3,
                 eMap     = 4,
                 eUnkIcon = 5,
@@ -739,17 +739,12 @@ class REGNRecord : public Record
     public:
 
         enum REGNType {
-        //    eNULL=0,
             eREGNObjects=2,
             eREGNWeathers=3,
             eREGNMap=4,
             eREGNIcon=5,
             eREGNGrasses=6,
-            eREGNSounds=7,
-        //    eString,
-        //    eInt,
-        //    eFloat,
-        //    eFID
+            eREGNSounds=7
             };
         STRING EDID;
         STRING ICON;

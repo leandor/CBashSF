@@ -49,6 +49,7 @@ bool Collection::IsModAdded(const char *ModName)
 
 int Collection::AddMod(const char *ModName, bool CreateIfNotExist)
     {
+    _chdir(ModsDir);
     //Mods may not be added after collection is loaded.
     //It would potentially mess up python accessors if it added anywhere other than the very end
     if(isLoaded)
@@ -69,6 +70,7 @@ int Collection::AddMod(const char *ModName, bool CreateIfNotExist)
 
 int Collection::SafeSaveMod(char *ModName)
     {
+    _chdir(ModsDir);
     unsigned char localBuffer[BUFFERSIZE];
     //Saves to a temp file, then if successful, renames any existing files, and then renames temp file to ModName
     ModFile *curModFile = NULL;
@@ -233,6 +235,7 @@ int Collection::SafeSaveMod(char *ModName)
 
 int Collection::SafeSaveAllChangedMods()
     {
+    _chdir(ModsDir);
     return -1;
     }
 
@@ -425,6 +428,7 @@ int Collection::Load(const bool &LoadMasters, const bool &FullLoad)
         return 0;
     try
         {
+        _chdir(ModsDir);
         boost::threadpool::pool ReadThreads(NUMTHREADS);
         std::sort(ModFiles.begin(), ModFiles.end(), sortLoad);
         LoadOrder.resize(ModFiles.size());

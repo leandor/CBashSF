@@ -4,17 +4,26 @@ import struct
 CBash = CDLL("CBash.dll")
 
 class BaseRecord(object):
-    def __init__(self, CollectionIndex, ModName, recordID, parentID = None):
+    def __init__(self, CollectionIndex, ModName, recordID):
         self._CollectionIndex = CollectionIndex
         self._ModName = ModName
         self._recordID = recordID
-        self._parentID = parentID
     def CopyAsOverride(self, targetMod):
         CBash.CopyFIDRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
         return
     def CopyAsNew(self, targetMod):
         CBash.CopyFIDRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
         return
+    def get_recType(self):
+        CBash.ReadFIDField.restype = POINTER(c_int)
+        return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 0).contents.value
+    def set_recType(self, nValue):
+        CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 0, nValue)
+    recType = property(get_recType, set_recType)
+    @property
+    def size(self):
+        CBash.ReadFIDField.restype = POINTER(c_ulong)
+        return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 1).contents.value
     def get_flags1(self):
         CBash.ReadFIDField.restype = POINTER(c_int)
         return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 2).contents.value
@@ -39,7 +48,114 @@ class BaseRecord(object):
     def set_eid(self, nValue):
         CBash.SetFIDFieldStr(self._CollectionIndex, self._ModName, self._recordID, 5, nValue)
     eid = property(get_eid, set_eid)
-
+    def get_IsDeleted(self):
+        return (self.flags1 & 0x00000020) != 0
+    def set_IsDeleted(self, nValue):
+        if (nValue == True): self.flags1 |= 0x00000020
+        else: self.flags1 &= ~0x00000020
+    IsDeleted = property(get_IsDeleted, set_IsDeleted)
+    def get_IsBorderRegion(self):
+        return (self.flags1 & 0x00000040) != 0
+    def set_IsBorderRegion(self, nValue):
+        if (nValue == True): self.flags1 |= 0x00000040
+        else: self.flags1 &= ~0x00000040
+    IsBorderRegion = property(get_IsBorderRegion, set_IsBorderRegion)
+    def get_IsTurnOffFire(self):
+        return (self.flags1 & 0x00000080) != 0
+    def set_IsTurnOffFire(self, nValue):
+        if (nValue == True): self.flags1 |= 0x00000080
+        else: self.flags1 &= ~0x00000080
+    IsTurnOffFire = property(get_IsTurnOffFire, set_IsTurnOffFire)
+    def get_IsCastsShadows(self):
+        return (self.flags1 & 0x00000200) != 0
+    def set_IsCastsShadows(self, nValue):
+        if (nValue == True): self.flags1 |= 0x00000200
+        else: self.flags1 &= ~0x00000200
+    IsCastsShadows = property(get_IsCastsShadows, set_IsCastsShadows)
+    def get_IsQuestOrPersistent(self):
+        return (self.flags1 & 0x00000400) != 0
+    def set_IsQuestOrPersistent(self, nValue):
+        if (nValue == True): self.flags1 |= 0x00000400
+        else: self.flags1 &= ~0x00000400
+    IsPersistent = IsQuest = IsQuestOrPersistent = property(get_IsQuestOrPersistent, set_IsQuestOrPersistent)
+    def get_IsInitiallyDisabled(self):
+        return (self.flags1 & 0x00000800) != 0
+    def set_IsInitiallyDisabled(self, nValue):
+        if (nValue == True): self.flags1 |= 0x00000800
+        else: self.flags1 &= ~0x00000800
+    IsInitiallyDisabled = property(get_IsInitiallyDisabled, set_IsInitiallyDisabled)
+    def get_IsIgnored(self):
+        return (self.flags1 & 0x00001000) != 0
+    def set_IsIgnored(self, nValue):
+        if (nValue == True): self.flags1 |= 0x00001000
+        else: self.flags1 &= ~0x00001000
+    IsIgnored = property(get_IsIgnored, set_IsIgnored)
+    def get_IsVisibleWhenDistant(self):
+        return (self.flags1 & 0x00008000) != 0
+    def set_IsVisibleWhenDistant(self, nValue):
+        if (nValue == True): self.flags1 |= 0x00008000
+        else: self.flags1 &= ~0x00008000
+    IsVWD = IsVisibleWhenDistant = property(get_IsVisibleWhenDistant, set_IsVisibleWhenDistant)
+    def get_IsDangerousOrOffLimits(self):
+        return (self.flags1 & 0x00020000) != 0
+    def set_IsDangerousOrOffLimits(self, nValue):
+        if (nValue == True): self.flags1 |= 0x00020000
+        else: self.flags1 &= ~0x00020000
+    IsDangerousOrOffLimits = property(get_IsDangerousOrOffLimits, set_IsDangerousOrOffLimits)
+    def get_IsCompressed(self):
+        return (self.flags1 & 0x00040000) != 0
+    def set_IsCompressed(self, nValue):
+        if (nValue == True): self.flags1 |= 0x00040000
+        else: self.flags1 &= ~0x00040000
+    IsCompressed = property(get_IsCompressed, set_IsCompressed)
+    def get_IsCantWait(self):
+        return (self.flags1 & 0x00080000) != 0
+    def set_IsCantWait(self, nValue):
+        if (nValue == True): self.flags1 |= 0x00080000
+        else: self.flags1 &= ~0x00080000
+    IsCantWait = property(get_IsCantWait, set_IsCantWait)
+    
+class SubRecord(object):    
+    def __init__(self, CollectionIndex, ModName, recordID, parentID):
+        self._CollectionIndex = CollectionIndex
+        self._ModName = ModName
+        self._recordID = recordID
+        self._parentID = parentID
+    def CopyAsOverride(self, targetMod):
+        CBash.CopyFIDRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        return
+    def CopyAsNew(self, targetMod):
+        CBash.CopyFIDRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        return
+    def get_recType(self):
+        CBash.ReadFIDField.restype = POINTER(c_int)
+        return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 0).contents.value
+    def set_recType(self, nValue):
+        CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 0, nValue)
+    recType = property(get_recType, set_recType)
+    @property
+    def size(self):
+        CBash.ReadFIDField.restype = POINTER(c_ulong)
+        return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 1).contents.value
+    def get_flags1(self):
+        CBash.ReadFIDField.restype = POINTER(c_int)
+        return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 2).contents.value
+    def set_flags1(self, nValue):
+        CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 2, nValue)
+    flags1 = property(get_flags1, set_flags1)
+    def get_fid(self):
+        CBash.ReadFIDField.restype = POINTER(c_int)
+        return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 3).contents.value
+    def set_fid(self, nValue):
+        CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 3, nValue)
+    fid = property(get_fid, set_fid)
+    def get_flags2(self):
+        CBash.ReadFIDField.restype = POINTER(c_int)
+        return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 4).contents.value
+    def set_flags2(self, nValue):
+        CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 4, nValue)
+    flags2 = property(get_flags2, set_flags2)
+    
 class TES4Record(object):
     def __init__(self, CollectionIndex, ModName):
         self._CollectionIndex = CollectionIndex
@@ -133,7 +249,13 @@ class TES4Record(object):
     @property
     def DATA(self):
         return 0
-
+    def get_IsESM(self):
+        return (self.flags1 & 0x00000001) != 0
+    def set_IsESM(self, nValue):
+        if (nValue == True): self.flags1 |= 0x00000001
+        else: self.flags1 &= ~0x00000001
+    IsESM = property(get_IsESM, set_IsESM)
+    
 class GMSTRecord(object):
     def __init__(self, CollectionIndex, ModName, recordID):
         self._CollectionIndex = CollectionIndex
@@ -352,7 +474,103 @@ class CLASRecord(BaseRecord):
     def set_unused1(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 23, struct.pack('2B', *nValue), 2)
     unused1 = property(get_unused1, set_unused1)
-
+    def get_IsPlayable(self):
+        return (self.flags & 0x00000001) != 0
+    def set_IsPlayable(self, nValue):
+        if (nValue == True): self.flags |= 0x00000001
+        else: self.flags &= ~0x00000001
+    IsPlayable = property(get_IsPlayable, set_IsPlayable)
+    def get_IsGuard(self):
+        return (self.flags & 0x00000002) != 0
+    def set_IsGuard(self, nValue):
+        if (nValue == True): self.flags |= 0x00000002
+        else: self.flags &= ~0x00000002
+    IsGuard = property(get_IsGuard, set_IsGuard)
+    def get_IsServicesWeapons(self):
+        return (self.services & 0x00000001) != 0
+    def set_IsServicesWeapons(self, nValue):
+        if (nValue == True): self.services |= 0x00000001
+        else: self.services &= ~0x00000001
+    IsServicesWeapons = property(get_IsServicesWeapons, set_IsServicesWeapons)
+    def get_IsServicesArmor(self):
+        return (self.services & 0x00000002) != 0
+    def set_IsServicesArmor(self, nValue):
+        if (nValue == True): self.services |= 0x00000002
+        else: self.services &= ~0x00000002
+    IsServicesArmor = property(get_IsServicesArmor, set_IsServicesArmor)
+    def get_IsServicesClothing(self):
+        return (self.services & 0x00000004) != 0
+    def set_IsServicesClothing(self, nValue):
+        if (nValue == True): self.services |= 0x00000004
+        else: self.services &= ~0x00000004
+    IsServicesClothing = property(get_IsServicesClothing, set_IsServicesClothing)
+    def get_IsServicesBooks(self):
+        return (self.services & 0x00000008) != 0
+    def set_IsServicesBooks(self, nValue):
+        if (nValue == True): self.services |= 0x00000008
+        else: self.services &= ~0x00000008
+    IsServicesBooks = property(get_IsServicesBooks, set_IsServicesBooks)
+    def get_IsServicesIngredients(self):
+        return (self.services & 0x00000010) != 0
+    def set_IsServicesIngredients(self, nValue):
+        if (nValue == True): self.services |= 0x00000010
+        else: self.services &= ~0x00000010
+    IsServicesIngredients = property(get_IsServicesIngredients, set_IsServicesIngredients)
+    def get_IsServicesLights(self):
+        return (self.services & 0x00000080) != 0
+    def set_IsServicesLights(self, nValue):
+        if (nValue == True): self.services |= 0x00000080
+        else: self.services &= ~0x00000080
+    IsServicesLights = property(get_IsServicesLights, set_IsServicesLights)
+    def get_IsServicesApparatus(self):
+        return (self.services & 0x00000100) != 0
+    def set_IsServicesApparatus(self, nValue):
+        if (nValue == True): self.services |= 0x00000100
+        else: self.services &= ~0x00000100
+    IsServicesApparatus = property(get_IsServicesApparatus, set_IsServicesApparatus)
+    def get_IsServicesMiscItems(self):
+        return (self.services & 0x00000400) != 0
+    def set_IsServicesMiscItems(self, nValue):
+        if (nValue == True): self.services |= 0x00000400
+        else: self.services &= ~0x00000400
+    IsServicesMiscItems = property(get_IsServicesMiscItems, set_IsServicesMiscItems)
+    def get_IsServicesSpells(self):
+        return (self.services & 0x00000800) != 0
+    def set_IsServicesSpells(self, nValue):
+        if (nValue == True): self.services |= 0x00000800
+        else: self.services &= ~0x00000800
+    IsServicesSpells = property(get_IsServicesSpells, set_IsServicesSpells)
+    def get_IsServicesMagicItems(self):
+        return (self.services & 0x00001000) != 0
+    def set_IsServicesMagicItems(self, nValue):
+        if (nValue == True): self.services |= 0x00001000
+        else: self.services &= ~0x00001000
+    IsServicesMagicItems = property(get_IsServicesMagicItems, set_IsServicesMagicItems)
+    def get_IsServicesPotions(self):
+        return (self.services & 0x00002000) != 0
+    def set_IsServicesPotions(self, nValue):
+        if (nValue == True): self.services |= 0x00002000
+        else: self.services &= ~0x00002000
+    IsServicesPotions = property(get_IsServicesPotions, set_IsServicesPotions)
+    def get_IsServicesTraining(self):
+        return (self.services & 0x00004000) != 0
+    def set_IsServicesTraining(self, nValue):
+        if (nValue == True): self.services |= 0x00004000
+        else: self.services &= ~0x00004000
+    IsServicesTraining = property(get_IsServicesTraining, set_IsServicesTraining)
+    def get_IsServicesRecharge(self):
+        return (self.services & 0x00010000) != 0
+    def set_IsServicesRecharge(self, nValue):
+        if (nValue == True): self.services |= 0x00010000
+        else: self.services &= ~0x00010000
+    IsServicesRecharge = property(get_IsServicesRecharge, set_IsServicesRecharge)
+    def get_IsServicesRepair(self):
+        return (self.services & 0x00020000) != 0
+    def set_IsServicesRepair(self, nValue):
+        if (nValue == True): self.services |= 0x00020000
+        else: self.services &= ~0x00020000
+    IsServicesRepair = property(get_IsServicesRepair, set_IsServicesRepair)
+    
 class FACTRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyFACTRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -477,7 +695,25 @@ class FACTRecord(BaseRecord):
         for oRank, nValue in zip(self.ranks, nValues):
             oRank.rank, oRank.male, oRank.female, oRank.insigniaPath = nValue
     ranks = property(get_ranks, set_ranks)
-
+    def get_IsHiddenFromPC(self):
+        return (self.flags & 0x00000001) != 0
+    def set_IsHiddenFromPC(self, nValue):
+        if (nValue == True): self.flags |= 0x00000001
+        else: self.flags &= ~0x00000001
+    IsHiddenFromPC = property(get_IsHiddenFromPC, set_IsHiddenFromPC)
+    def get_IsEvil(self):
+        return (self.flags & 0x00000002) != 0
+    def set_IsEvil(self, nValue):
+        if (nValue == True): self.flags |= 0x00000002
+        else: self.flags &= ~0x00000002
+    IsEvil = property(get_IsEvil, set_IsEvil)
+    def get_IsSpecialCombat(self):
+        return (self.flags & 0x00000004) != 0
+    def set_IsSpecialCombat(self, nValue):
+        if (nValue == True): self.flags |= 0x00000004
+        else: self.flags &= ~0x00000004
+    IsSpecialCombat = property(get_IsSpecialCombat, set_IsSpecialCombat)
+    
 class HAIRRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyHAIRRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -532,6 +768,40 @@ class HAIRRecord(BaseRecord):
     def set_flags(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 11, c_ubyte(nValue))
     flags = property(get_flags, set_flags)
+    def get_IsPlayable(self):
+        return (self.flags & 0x00000001) != 0
+    def set_IsPlayable(self, nValue):
+        if (nValue == True): self.flags |= 0x00000001
+        else: self.flags &= ~0x00000001
+    IsPlayable = property(get_IsPlayable, set_IsPlayable)
+    def get_IsNotMale(self):
+        return (self.flags & 0x00000002) != 0
+    def set_IsNotMale(self, nValue):
+        if (nValue == True): self.flags |= 0x00000002
+        else: self.flags &= ~0x00000002
+    IsNotMale = property(get_IsNotMale, set_IsNotMale)
+    def get_IsMale(self):
+        return not self.get_IsNotMale()
+    def set_IsMale(self, nValue):
+        set_IsNotMale(not nValue)
+    IsMale = property(get_IsMale, set_IsMale)
+    def get_IsNotFemale(self):
+        return (self.flags & 0x00000004) != 0
+    def set_IsNotFemale(self, nValue):
+        if (nValue == True): self.flags |= 0x00000004
+        else: self.flags &= ~0x00000004
+    IsNotFemale = property(get_IsNotFemale, set_IsNotFemale)
+    def get_IsFemale(self):
+        return not self.get_IsNotFemale()
+    def set_IsFemale(self, nValue):
+        set_IsNotFemale(not nValue)
+    IsFemale = property(get_IsFemale, set_IsFemale)
+    def get_IsFixedColor(self):
+        return (self.flags & 0x00000008) != 0
+    def set_IsFixedColor(self, nValue):
+        if (nValue == True): self.flags |= 0x00000008
+        else: self.flags &= ~0x00000008
+    IsFixedColor = property(get_IsFixedColor, set_IsFixedColor)
     
 class EYESRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
@@ -562,7 +832,13 @@ class EYESRecord(BaseRecord):
     def set_flags(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 8, c_ubyte(nValue))
     flags = property(get_flags, set_flags)
-    
+    def get_IsPlayable(self):
+        return (self.flags & 0x00000001) != 0
+    def set_IsPlayable(self, nValue):
+        if (nValue == True): self.flags |= 0x00000001
+        else: self.flags &= ~0x00000001
+    IsPlayable = property(get_IsPlayable, set_IsPlayable)
+
 class RACERecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyRACERecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -1211,7 +1487,13 @@ class RACERecord(BaseRecord):
         length = len(nValue)
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 110, struct.pack('B' * length, *nValue), length)
     snam = property(get_snam, set_snam)
-    
+    def get_IsPlayable(self):
+        return (self.flags & 0x00000001) != 0
+    def set_IsPlayable(self, nValue):
+        if (nValue == True): self.flags |= 0x00000001
+        else: self.flags &= ~0x00000001
+    IsPlayable = property(get_IsPlayable, set_IsPlayable)
+
 class SOUNRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopySOUNRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -1301,6 +1583,55 @@ class SOUNRecord(BaseRecord):
     def set_startTime(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 15, c_ubyte(nValue))
     startTime = property(get_startTime, set_startTime)
+    def get_IsRandomFrequencyShift(self):
+        return (self.flags & 0x00000001) != 0
+    def set_IsRandomFrequencyShift(self, nValue):
+        if (nValue == True): self.flags |= 0x00000001
+        else: self.flags &= ~0x00000001
+    IsRandomFrequencyShift = property(get_IsRandomFrequencyShift, set_IsRandomFrequencyShift)
+    def get_IsPlayAtRandom(self):
+        return (self.flags & 0x00000002) != 0
+    def set_IsPlayAtRandom(self, nValue):
+        if (nValue == True): self.flags |= 0x00000002
+        else: self.flags &= ~0x00000002
+    IsPlayAtRandom = property(get_IsPlayAtRandom, set_IsPlayAtRandom)
+    def get_IsEnvironmentIgnored(self):
+        return (self.flags & 0x00000004) != 0
+    def set_IsEnvironmentIgnored(self, nValue):
+        if (nValue == True): self.flags |= 0x00000004
+        else: self.flags &= ~0x00000004
+    IsEnvironmentIgnored = property(get_IsEnvironmentIgnored, set_IsEnvironmentIgnored)
+    def get_IsRandomLocation(self):
+        return (self.flags & 0x00000008) != 0
+    def set_IsRandomLocation(self, nValue):
+        if (nValue == True): self.flags |= 0x00000008
+        else: self.flags &= ~0x00000008
+    IsRandomLocation = property(get_IsRandomLocation, set_IsRandomLocation)
+    def get_IsLoop(self):
+        return (self.flags & 0x00000010) != 0
+    def set_IsLoop(self, nValue):
+        if (nValue == True): self.flags |= 0x00000010
+        else: self.flags &= ~0x00000010
+    IsLoop = property(get_IsLoop, set_IsLoop)
+    def get_IsMenuSound(self):
+        return (self.flags & 0x00000020) != 0
+    def set_IsMenuSound(self, nValue):
+        if (nValue == True): self.flags |= 0x00000020
+        else: self.flags &= ~0x00000020
+    IsMenuSound = property(get_IsMenuSound, set_IsMenuSound)
+    def get_Is2D(self):
+        return (self.flags & 0x00000040) != 0
+    def set_Is2D(self, nValue):
+        if (nValue == True): self.flags |= 0x00000040
+        else: self.flags &= ~0x00000040
+    Is2D = property(get_Is2D, set_Is2D)
+    def get_Is360LFE(self):
+        return (self.flags & 0x00000080) != 0
+    def set_Is360LFE(self, nValue):
+        if (nValue == True): self.flags |= 0x00000080
+        else: self.flags &= ~0x00000080
+    Is360LFE = property(get_Is360LFE, set_Is360LFE)
+    
 class SKILRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopySKILRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -1594,6 +1925,166 @@ class MGEFRecord(BaseRecord):
     def set_counterEffects(self, nValue):
         CBash.SetFIDFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 29, struct.pack('I' * len(nValue), *nValue), len(nValue))
     counterEffects = property(get_counterEffects, set_counterEffects)
+    def get_IsHostile(self):
+        return (self.flags & 0x00000001) != 0
+    def set_IsHostile(self, nValue):
+        if (nValue == True): self.flags |= 0x00000001
+        else: self.flags &= ~0x00000001
+    IsHostile = property(get_IsHostile, set_IsHostile)
+    def get_IsRecover(self):
+        return (self.flags & 0x00000002) != 0
+    def set_IsRecover(self, nValue):
+        if (nValue == True): self.flags |= 0x00000002
+        else: self.flags &= ~0x00000002
+    IsRecover = property(get_IsRecover, set_IsRecover)
+    def get_IsDetrimental(self):
+        return (self.flags & 0x00000004) != 0
+    def set_IsDetrimental(self, nValue):
+        if (nValue == True): self.flags |= 0x00000004
+        else: self.flags &= ~0x00000004
+    IsDetrimental = property(get_IsDetrimental, set_IsDetrimental)
+    def get_IsMagnitude(self):
+        return (self.flags & 0x00000008) != 0
+    def set_IsMagnitude(self, nValue):
+        if (nValue == True): self.flags |= 0x00000008
+        else: self.flags &= ~0x00000008
+    IsMagnitude = property(get_IsMagnitude, set_IsMagnitude)
+    def get_IsSelf(self):
+        return (self.flags & 0x00000010) != 0
+    def set_IsSelf(self, nValue):
+        if (nValue == True): self.flags |= 0x00000010
+        else: self.flags &= ~0x00000010
+    IsSelf = property(get_IsSelf, set_IsSelf)
+    def get_IsTouch(self):
+        return (self.flags & 0x00000020) != 0
+    def set_IsTouch(self, nValue):
+        if (nValue == True): self.flags |= 0x00000020
+        else: self.flags &= ~0x00000020
+    IsTouch = property(get_IsTouch, set_IsTouch)
+    def get_IsTarget(self):
+        return (self.flags & 0x00000040) != 0
+    def set_IsTarget(self, nValue):
+        if (nValue == True): self.flags |= 0x00000040
+        else: self.flags &= ~0x00000040
+    IsTarget = property(get_IsTarget, set_IsTarget)
+    def get_IsNoDuration(self):
+        return (self.flags & 0x00000080) != 0
+    def set_IsNoDuration(self, nValue):
+        if (nValue == True): self.flags |= 0x00000080
+        else: self.flags &= ~0x00000080
+    IsNoDuration = property(get_IsNoDuration, set_IsNoDuration)
+    def get_IsNoMagnitude(self):
+        return (self.flags & 0x00000100) != 0
+    def set_IsNoMagnitude(self, nValue):
+        if (nValue == True): self.flags |= 0x00000100
+        else: self.flags &= ~0x00000100
+    IsNoMagnitude = property(get_IsNoMagnitude, set_IsNoMagnitude)
+    def get_IsNoArea(self):
+        return (self.flags & 0x00000200) != 0
+    def set_IsNoArea(self, nValue):
+        if (nValue == True): self.flags |= 0x00000200
+        else: self.flags &= ~0x00000200
+    IsNoArea = property(get_IsNoArea, set_IsNoArea)
+    def get_IsFXPersist(self):
+        return (self.flags & 0x00000400) != 0
+    def set_IsFXPersist(self, nValue):
+        if (nValue == True): self.flags |= 0x00000400
+        else: self.flags &= ~0x00000400
+    IsFXPersist = property(get_IsFXPersist, set_IsFXPersist)
+    def get_IsSpellmaking(self):
+        return (self.flags & 0x00000800) != 0
+    def set_IsSpellmaking(self, nValue):
+        if (nValue == True): self.flags |= 0x00000800
+        else: self.flags &= ~0x00000800
+    IsSpellmaking = property(get_IsSpellmaking, set_IsSpellmaking)
+    def get_IsEnchanting(self):
+        return (self.flags & 0x00001000) != 0
+    def set_IsEnchanting(self, nValue):
+        if (nValue == True): self.flags |= 0x00001000
+        else: self.flags &= ~0x00001000
+    IsEnchanting = property(get_IsEnchanting, set_IsEnchanting)
+    def get_IsNoIngredient(self):
+        return (self.flags & 0x00002000) != 0
+    def set_IsNoIngredient(self, nValue):
+        if (nValue == True): self.flags |= 0x00002000
+        else: self.flags &= ~0x00002000
+    IsNoIngredient = property(get_IsNoIngredient, set_IsNoIngredient)
+    def get_IsUseWeapon(self):
+        return (self.flags & 0x00010000) != 0
+    def set_IsUseWeapon(self, nValue):
+        if (nValue == True): self.flags |= 0x00010000
+        else: self.flags &= ~0x00010000
+    IsUseWeapon = property(get_IsUseWeapon, set_IsUseWeapon)
+    def get_IsUseArmor(self):
+        return (self.flags & 0x00020000) != 0
+    def set_IsUseArmor(self, nValue):
+        if (nValue == True): self.flags |= 0x00020000
+        else: self.flags &= ~0x00020000
+    IsUseArmor = property(get_IsUseArmor, set_IsUseArmor)
+    def get_IsUseCreature(self):
+        return (self.flags & 0x00040000) != 0
+    def set_IsUseCreature(self, nValue):
+        if (nValue == True): self.flags |= 0x00040000
+        else: self.flags &= ~0x00040000
+    IsUseCreature = property(get_IsUseCreature, set_IsUseCreature)
+    def get_IsUseSkill(self):
+        return (self.flags & 0x00080000) != 0
+    def set_IsUseSkill(self, nValue):
+        if (nValue == True): self.flags |= 0x00080000
+        else: self.flags &= ~0x00080000
+    IsUseSkill = property(get_IsUseSkill, set_IsUseSkill)
+    def get_IsUseAttr(self):
+        return (self.flags & 0x00100000) != 0
+    def set_IsUseAttr(self, nValue):
+        if (nValue == True): self.flags |= 0x00100000
+        else: self.flags &= ~0x00100000
+    IsUseAttr = IsUseAttribute = property(get_IsUseAttr, set_IsUseAttr)
+    def get_IsUseAV(self):
+        return (self.flags & 0x01000000) != 0
+    def set_IsUseAV(self, nValue):
+        if (nValue == True): self.flags |= 0x01000000
+        else: self.flags &= ~0x01000000
+    IsUseAV = IsUseActorValue = property(get_IsUseAV, set_IsUseAV)
+    def get_IsSprayType(self):
+        return (self.flags & 0x02000000) != 0 and (self.flags & 0x04000000) == 0
+    def set_IsSprayType(self, nValue):
+        if (nValue == True):
+            self.flags &= ~0x06000000
+            self.flags |= 0x02000000
+        elif self.get_IsSprayType():
+            self.IsBallType = True
+    IsSprayType = property(get_IsSprayType, set_IsSprayType)
+    def get_IsBoltType(self):
+        return (self.flags & 0x04000000) != 0 and (self.flags & 0x02000000) == 0
+    def set_IsBoltType(self, nValue):
+        if (nValue == True):
+            self.flags &= ~0x06000000
+            self.flags |= 0x04000000
+        elif self.get_IsBoltType():
+            self.IsBallType = True
+    IsBoltType = property(get_IsBoltType, set_IsBoltType)
+    def get_IsFogType(self):
+        return (self.flags & 0x06000000) == 0x06000000
+    def set_IsFogType(self, nValue):
+        if (nValue == True):
+            self.flags |= 0x06000000
+        elif self.get_IsFogType():
+            self.IsBallType = True
+    IsFogType = property(get_IsFogType, set_IsFogType)
+    def get_IsBallType(self):
+        return (self.flags & 0x06000000) == 0
+    def set_IsBallType(self, nValue):
+        if (nValue == True):
+            self.flags &= ~0x06000000
+        elif self.get_IsBallType():
+            self.IsBoltType = True
+    IsBallType = property(get_IsBallType, set_IsBallType)
+    def get_IsNoHitEffect(self):
+        return (self.flags & 0x08000000) != 0
+    def set_IsNoHitEffect(self, nValue):
+        if (nValue == True): self.flags |= 0x08000000
+        else: self.flags &= ~0x08000000
+    IsNoHitEffect = property(get_IsNoHitEffect, set_IsNoHitEffect)
 
 class SCPTRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
@@ -1648,6 +2139,12 @@ class SCPTRecord(BaseRecord):
         def set_name(self, nValue):
             CBash.SetFIDListFieldStr(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, nValue)
         name = property(get_name, set_name)
+        def get_IsLongOrShort(self):
+            return (self.flags & 0x00000001) != 0
+        def set_IsLongOrShort(self, nValue):
+            if (nValue == True): self.flags |= 0x00000001
+            else: self.flags &= ~0x00000001
+        IsLongOrShort = property(get_IsLongOrShort, set_IsLongOrShort)
     class Reference(object):
         def __init__(self, CollectionIndex, ModName, recordID, listIndex):
             self._CollectionIndex = CollectionIndex
@@ -1660,15 +2157,15 @@ class SCPTRecord(BaseRecord):
         def set_reference(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 14, self._listIndex, 1, nValue)
         reference = property(get_reference, set_reference)
-        def get_isSCRO(self):
+        def get_IsSCRO(self):
             CBash.ReadFIDListField.restype = POINTER(c_bool)
             return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 14, self._listIndex, 2).contents.value
-        def set_isSCRO(self, nValue):
+        def set_IsSCRO(self, nValue):
             if isinstance(nValue, bool):
                 if(nValue): CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 14, self._listIndex, 2, 1)
                 else: CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 14, self._listIndex, 2, 0)
             else: CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 14, self._listIndex, 2, nValue)
-        isSCRO = property(get_isSCRO, set_isSCRO)
+        IsSCRO = property(get_IsSCRO, set_IsSCRO)
     def newVarsElement(self):
         listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 13)
         if(listIndex == -1): return None
@@ -1757,7 +2254,7 @@ class SCPTRecord(BaseRecord):
         else: return []
     def set_references(self, nReferences):
         diffLength = len(nReferences) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 14)
-        nValues = [(nReference.reference,nReference.isSCRO) for nReference in nReferences]
+        nValues = [(nReference.reference,nReference.IsSCRO) for nReference in nReferences]
         while(diffLength < 0):
             CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 14)
             diffLength += 1
@@ -1765,8 +2262,9 @@ class SCPTRecord(BaseRecord):
             CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 14)
             diffLength -= 1
         for oReference, nValue in zip(self.references, nValues):
-            oReference.reference, oReference.isSCRO = nValue  
+            oReference.reference, oReference.IsSCRO = nValue  
     references = property(get_references, set_references)
+    
 class LTEXRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyLTEXRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -1826,6 +2324,96 @@ class LTEXRecord(BaseRecord):
         cRecords = (c_uint * length)(*nValue)
         CBash.SetFIDFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 11, cRecords, length)
     grass = property(get_grass, set_grass)
+    def get_IsStone(self):
+        return (self.flags & 0x00000001) != 0
+    def set_IsStone(self, nValue):
+        if (nValue == True): self.flags |= 0x00000001
+        else: self.flags &= ~0x00000001
+    IsStone = property(get_IsStone, set_IsStone)
+    def get_IsCloth(self):
+        return (self.flags & 0x00000002) != 0
+    def set_IsCloth(self, nValue):
+        if (nValue == True): self.flags |= 0x00000002
+        else: self.flags &= ~0x00000002
+    IsCloth = property(get_IsCloth, set_IsCloth)
+    def get_IsDirt(self):
+        return (self.flags & 0x00000004) != 0
+    def set_IsDirt(self, nValue):
+        if (nValue == True): self.flags |= 0x00000004
+        else: self.flags &= ~0x00000004
+    IsDirt = property(get_IsDirt, set_IsDirt)
+    def get_IsGlass(self):
+        return (self.flags & 0x00000008) != 0
+    def set_IsGlass(self, nValue):
+        if (nValue == True): self.flags |= 0x00000008
+        else: self.flags &= ~0x00000008
+    IsGlass = property(get_IsGlass, set_IsGlass)
+    def get_IsGrass(self):
+        return (self.flags & 0x00000010) != 0
+    def set_IsGrass(self, nValue):
+        if (nValue == True): self.flags |= 0x00000010
+        else: self.flags &= ~0x00000010
+    IsGrass = property(get_IsGrass, set_IsGrass)
+    def get_IsMetal(self):
+        return (self.flags & 0x00000020) != 0
+    def set_IsMetal(self, nValue):
+        if (nValue == True): self.flags |= 0x00000020
+        else: self.flags &= ~0x00000020
+    IsMetal = property(get_IsMetal, set_IsMetal)
+    def get_IsOrganic(self):
+        return (self.flags & 0x00000040) != 0
+    def set_IsOrganic(self, nValue):
+        if (nValue == True): self.flags |= 0x00000040
+        else: self.flags &= ~0x00000040
+    IsOrganic = property(get_IsOrganic, set_IsOrganic)
+    def get_IsSkin(self):
+        return (self.flags & 0x00000080) != 0
+    def set_IsSkin(self, nValue):
+        if (nValue == True): self.flags |= 0x00000080
+        else: self.flags &= ~0x00000080
+    IsSkin = property(get_IsSkin, set_IsSkin)
+    def get_IsWater(self):
+        return (self.flags & 0x00000100) != 0
+    def set_IsWater(self, nValue):
+        if (nValue == True): self.flags |= 0x00000100
+        else: self.flags &= ~0x00000100
+    IsWater = property(get_IsWater, set_IsWater)
+    def get_IsWood(self):
+        return (self.flags & 0x00000200) != 0
+    def set_IsWood(self, nValue):
+        if (nValue == True): self.flags |= 0x00000200
+        else: self.flags &= ~0x00000200
+    IsWood = property(get_IsWood, set_IsWood)
+    def get_IsHeavyStone(self):
+        return (self.flags & 0x00000400) != 0
+    def set_IsHeavyStone(self, nValue):
+        if (nValue == True): self.flags |= 0x00000400
+        else: self.flags &= ~0x00000400
+    IsHeavyStone = property(get_IsHeavyStone, set_IsHeavyStone)
+    def get_IsHeavyMetal(self):
+        return (self.flags & 0x00000800) != 0
+    def set_IsHeavyMetal(self, nValue):
+        if (nValue == True): self.flags |= 0x00000800
+        else: self.flags &= ~0x00000800
+    IsHeavyMetal = property(get_IsHeavyMetal, set_IsHeavyMetal)
+    def get_IsHeavyWood(self):
+        return (self.flags & 0x00001000) != 0
+    def set_IsHeavyWood(self, nValue):
+        if (nValue == True): self.flags |= 0x00001000
+        else: self.flags &= ~0x00001000
+    IsHeavyWood = property(get_IsHeavyWood, set_IsHeavyWood)
+    def get_IsChain(self):
+        return (self.flags & 0x00002000) != 0
+    def set_IsChain(self, nValue):
+        if (nValue == True): self.flags |= 0x00002000
+        else: self.flags &= ~0x00002000
+    IsChain = property(get_IsChain, set_IsChain)
+    def get_IsSnow(self):
+        return (self.flags & 0x00004000) != 0
+    def set_IsSnow(self, nValue):
+        if (nValue == True): self.flags |= 0x00004000
+        else: self.flags &= ~0x00004000
+    IsSnow = property(get_IsSnow, set_IsSnow)
 
 class ENCHRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
@@ -1926,6 +2514,13 @@ class ENCHRecord(BaseRecord):
         def set_full(self, nValue):
             CBash.SetFIDListFieldStr(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 13, nValue)
         full = property(get_full, set_full)
+        def get_IsHostile(self):
+            return (self.flags & 0x00000001) != 0
+        def set_IsHostile(self, nValue):
+            if (nValue == True): self.flags |= 0x00000001
+            else: self.flags &= ~0x00000001
+        IsHostile = property(get_IsHostile, set_IsHostile)
+
     def newEffectsElement(self):
         listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 12)
         if(listIndex == -1): return None
@@ -1995,6 +2590,37 @@ class ENCHRecord(BaseRecord):
         for oEffect, nValue in zip(self.effects, nValues):
             oEffect.index, oEffect.unused1, oEffect.flags, oEffect.unused2, oEffect.name = nValue
     effects = property(get_effects, set_effects)
+    def get_IsNoAutoCalc(self):
+        return (self.flags & 0x00000001) != 0
+    def set_IsNoAutoCalc(self, nValue):
+        if (nValue == True): self.flags |= 0x00000001
+        else: self.flags &= ~0x00000001
+    IsNoAutoCalc = property(get_IsNoAutoCalc, set_IsNoAutoCalc)
+    def get_IsScroll(self):
+        return (self.itemType == 0)
+    def set_IsScroll(self, nValue):
+        if (nValue == True): self.itemType = 0
+        else: self.IsStaff = True
+    IsScroll = property(get_IsScroll, set_IsScroll)
+    def get_IsStaff(self):
+        return (self.itemType == 1)
+    def set_IsStaff(self, nValue):
+        if (nValue == True): self.itemType = 1
+        else: self.IsScroll = True
+    IsStaff = property(get_IsStaff, set_IsStaff)
+    def get_IsWeapon(self):
+        return (self.itemType == 2)
+    def set_IsWeapon(self, nValue):
+        if (nValue == True): self.itemType = 2
+        else: self.IsScroll = True
+    IsWeapon = property(get_IsWeapon, set_IsWeapon)
+    def get_IsApparel(self):
+        return (self.itemType == 3)
+    def set_IsApparel(self, nValue):
+        if (nValue == True): self.itemType = 3
+        else: self.IsScroll = True
+    IsApparel = property(get_IsApparel, set_IsApparel)
+    
 class SPELRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopySPELRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -2094,6 +2720,12 @@ class SPELRecord(BaseRecord):
         def set_full(self, nValue):
             CBash.SetFIDListFieldStr(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 13, nValue)
         full = property(get_full, set_full)
+        def get_IsHostile(self):
+            return (self.flags & 0x00000001) != 0
+        def set_IsHostile(self, nValue):
+            if (nValue == True): self.flags |= 0x00000001
+            else: self.flags &= ~0x00000001
+        IsHostile = property(get_IsHostile, set_IsHostile)
     def newEffectsElement(self):
         listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 12)
         if(listIndex == -1): return None
@@ -2163,6 +2795,114 @@ class SPELRecord(BaseRecord):
         for oEffect, nValue in zip(self.effects, nValues):
             oEffect.index, oEffect.unused1, oEffect.flags, oEffect.unused2, oEffect.name = nValue
     effects = property(get_effects, set_effects)
+    def get_IsManualCost(self):
+        return (self.flags & 0x00000001) != 0
+    def set_IsManualCost(self, nValue):
+        if (nValue == True): self.flags |= 0x00000001
+        else: self.flags &= ~0x00000001
+    IsManualCost = property(get_IsManualCost, set_IsManualCost)
+    def get_IsStartSpell(self):
+        return (self.flags & 0x00000004) != 0
+    def set_IsStartSpell(self, nValue):
+        if (nValue == True): self.flags |= 0x00000004
+        else: self.flags &= ~0x00000004
+    IsStartSpell = property(get_IsStartSpell, set_IsStartSpell)
+    def get_IsSilenceImmune(self):
+        return (self.flags & 0x0000000A) != 0
+    def set_IsSilenceImmune(self, nValue):
+        if (nValue == True): self.flags |= 0x0000000A
+        else: self.flags &= ~0x0000000A
+    IsSilenceImmune = property(get_IsSilenceImmune, set_IsSilenceImmune)
+    def get_IsAreaEffectIgnoresLOS(self):
+        return (self.flags & 0x00000010) != 0
+    def set_IsAreaEffectIgnoresLOS(self, nValue):
+        if (nValue == True): self.flags |= 0x00000010
+        else: self.flags &= ~0x00000010
+    IsAEIgnoresLOS = IsAreaEffectIgnoresLOS = property(get_IsAreaEffectIgnoresLOS, set_IsAreaEffectIgnoresLOS)
+    def get_IsScriptAlwaysApplies(self):
+        return (self.flags & 0x00000020) != 0
+    def set_IsScriptAlwaysApplies(self, nValue):
+        if (nValue == True): self.flags |= 0x00000020
+        else: self.flags &= ~0x00000020
+    IsScriptAlwaysApplies = property(get_IsScriptAlwaysApplies, set_IsScriptAlwaysApplies)
+    def get_IsDisallowAbsorbReflect(self):
+        return (self.flags & 0x00000040) != 0
+    def set_IsDisallowAbsorbReflect(self, nValue):
+        if (nValue == True): self.flags |= 0x00000040
+        else: self.flags &= ~0x00000040
+    IsDisallowAbsorb = IsDisallowReflect = IsDisallowAbsorbReflect = property(get_IsDisallowAbsorbReflect, set_IsDisallowAbsorbReflect)
+    def get_IsTouchExplodesWOTarget(self):
+        return (self.flags & 0x00000080) != 0
+    def set_IsTouchExplodesWOTarget(self, nValue):
+        if (nValue == True): self.flags |= 0x00000080
+        else: self.flags &= ~0x00000080
+    IsTouchExplodes = IsTouchExplodesWOTarget = property(get_IsTouchExplodesWOTarget, set_IsTouchExplodesWOTarget)
+    def get_IsSpell(self):
+        return (self.spellType == 0)
+    def set_IsSpell(self, nValue):
+        if (nValue == True): self.spellType = 0
+        else: self.IsDisease = True
+    IsSpell = property(get_IsSpell, set_IsSpell)
+    def get_IsDisease(self):
+        return (self.spellType == 1)
+    def set_IsDisease(self, nValue):
+        if (nValue == True): self.spellType = 1
+        else: self.IsSpell = True
+    IsDisease = property(get_IsDisease, set_IsDisease)
+    def get_IsPower(self):
+        return (self.spellType == 2)
+    def set_IsPower(self, nValue):
+        if (nValue == True): self.spellType = 2
+        else: self.IsSpell = True
+    IsPower = property(get_IsPower, set_IsPower)
+    def get_IsLesserPower(self):
+        return (self.spellType == 3)
+    def set_IsLesserPower(self, nValue):
+        if (nValue == True): self.spellType = 3
+        else: self.IsSpell = True
+    IsLesserPower = property(get_IsLesserPower, set_IsLesserPower)
+    def get_IsAbility(self):
+        return (self.spellType == 4)
+    def set_IsAbility(self, nValue):
+        if (nValue == True): self.spellType = 4
+        else: self.IsSpell = True
+    IsAbility = property(get_IsAbility, set_IsAbility)
+    def get_IsPoison(self):
+        return (self.spellType == 5)
+    def set_IsPoison(self, nValue):
+        if (nValue == True): self.spellType = 5
+        else: self.IsSpell = True
+    IsPoison = property(get_IsPoison, set_IsPoison)
+    def get_IsNovice(self):
+        return (self.level == 0)
+    def set_IsNovice(self, nValue):
+        if (nValue == True): self.level = 0
+        else: self.IsApprentice = True
+    IsNovice = property(get_IsNovice, set_IsNovice)
+    def get_IsApprentice(self):
+        return (self.level == 1)
+    def set_IsApprentice(self, nValue):
+        if (nValue == True): self.level = 1
+        else: self.IsNovice = True
+    IsApprentice = property(get_IsApprentice, set_IsApprentice)
+    def get_IsJourneyman(self):
+        return (self.level == 2)
+    def set_IsJourneyman(self, nValue):
+        if (nValue == True): self.level = 2
+        else: self.IsNovice = True
+    IsJourneyman = property(get_IsJourneyman, set_IsJourneyman)
+    def get_IsExpert(self):
+        return (self.level == 3)
+    def set_IsExpert(self, nValue):
+        if (nValue == True): self.level = 3
+        else: self.IsNovice = True
+    IsExpert = property(get_IsExpert, set_IsExpert)
+    def get_IsMaster(self):
+        return (self.level == 4)
+    def set_IsMaster(self, nValue):
+        if (nValue == True): self.level = 4
+        else: self.IsNovice = True
+    IsMaster = property(get_IsMaster, set_IsMaster)
     
 class BSGNRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
@@ -2347,6 +3087,30 @@ class APPARecord(BaseRecord):
     def set_quality(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 15, c_float(nValue))
     quality = property(get_quality, set_quality)
+    def get_IsMortarPestle(self):
+        return (self.apparatus == 0)
+    def set_IsMortarPestle(self, nValue):
+        if (nValue == True): self.apparatus = 0
+        else: self.IsAlembic = True
+    IsMortarPestle = property(get_IsMortarPestle, set_IsMortarPestle)
+    def get_IsAlembic(self):
+        return (self.apparatus == 1)
+    def set_IsAlembic(self, nValue):
+        if (nValue == True): self.apparatus = 1
+        else: self.IsMortarPestle = True
+    IsAlembic = property(get_IsAlembic, set_IsAlembic)
+    def get_IsCalcinator(self):
+        return (self.apparatus == 2)
+    def set_IsCalcinator(self, nValue):
+        if (nValue == True): self.apparatus = 2
+        else: self.IsMortarPestle = True
+    IsCalcinator = property(get_IsCalcinator, set_IsCalcinator)
+    def get_IsRetort(self):
+        return (self.apparatus == 3)
+    def set_IsRetort(self, nValue):
+        if (nValue == True): self.apparatus = 3
+        else: self.IsMortarPestle = True
+    IsRetort = property(get_IsRetort, set_IsRetort)
 
 class ARMORecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
@@ -2482,6 +3246,126 @@ class ARMORecord(BaseRecord):
     def set_weight(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 28, c_float(nValue))
     weight = property(get_weight, set_weight)
+    def get_IsHead(self):
+        return (self.flags & 0x00000001) != 0
+    def set_IsHead(self, nValue):
+        if (nValue == True): self.flags |= 0x00000001
+        else: self.flags &= ~0x00000001
+    IsHead = property(get_IsHead, set_IsHead)
+    def get_IsHair(self):
+        return (self.flags & 0x00000002) != 0
+    def set_IsHair(self, nValue):
+        if (nValue == True): self.flags |= 0x00000002
+        else: self.flags &= ~0x00000002
+    IsHair = property(get_IsHair, set_IsHair)
+    def get_IsUpperBody(self):
+        return (self.flags & 0x00000004) != 0
+    def set_IsUpperBody(self, nValue):
+        if (nValue == True): self.flags |= 0x00000004
+        else: self.flags &= ~0x00000004
+    IsUpperBody = property(get_IsUpperBody, set_IsUpperBody)
+    def get_IsLowerBody(self):
+        return (self.flags & 0x00000008) != 0
+    def set_IsLowerBody(self, nValue):
+        if (nValue == True): self.flags |= 0x00000008
+        else: self.flags &= ~0x00000008
+    IsLowerBody = property(get_IsLowerBody, set_IsLowerBody)
+    def get_IsHand(self):
+        return (self.flags & 0x00000010) != 0
+    def set_IsHand(self, nValue):
+        if (nValue == True): self.flags |= 0x00000010
+        else: self.flags &= ~0x00000010
+    IsHand = property(get_IsHand, set_IsHand)
+    def get_IsFoot(self):
+        return (self.flags & 0x00000020) != 0
+    def set_IsFoot(self, nValue):
+        if (nValue == True): self.flags |= 0x00000020
+        else: self.flags &= ~0x00000020
+    IsFoot = property(get_IsFoot, set_IsFoot)
+    def get_IsRightRing(self):
+        return (self.flags & 0x00000040) != 0
+    def set_IsRightRing(self, nValue):
+        if (nValue == True): self.flags |= 0x00000040
+        else: self.flags &= ~0x00000040
+    IsRightRing = property(get_IsRightRing, set_IsRightRing)
+    def get_IsLeftRing(self):
+        return (self.flags & 0x00000080) != 0
+    def set_IsLeftRing(self, nValue):
+        if (nValue == True): self.flags |= 0x00000080
+        else: self.flags &= ~0x00000080
+    IsLeftRing = property(get_IsLeftRing, set_IsLeftRing)
+    def get_IsAmulet(self):
+        return (self.flags & 0x00000100) != 0
+    def set_IsAmulet(self, nValue):
+        if (nValue == True): self.flags |= 0x00000100
+        else: self.flags &= ~0x00000100
+    IsAmulet = property(get_IsAmulet, set_IsAmulet)
+    def get_IsWeapon(self):
+        return (self.flags & 0x00000200) != 0
+    def set_IsWeapon(self, nValue):
+        if (nValue == True): self.flags |= 0x00000200
+        else: self.flags &= ~0x00000200
+    IsWeapon = property(get_IsWeapon, set_IsWeapon)
+    def get_IsBackWeapon(self):
+        return (self.flags & 0x00000400) != 0
+    def set_IsBackWeapon(self, nValue):
+        if (nValue == True): self.flags |= 0x00000400
+        else: self.flags &= ~0x00000400
+    IsBackWeapon = property(get_IsBackWeapon, set_IsBackWeapon)
+    def get_IsSideWeapon(self):
+        return (self.flags & 0x00000800) != 0
+    def set_IsSideWeapon(self, nValue):
+        if (nValue == True): self.flags |= 0x00000800
+        else: self.flags &= ~0x00000800
+    IsSideWeapon = property(get_IsSideWeapon, set_IsSideWeapon)
+    def get_IsQuiver(self):
+        return (self.flags & 0x00001000) != 0
+    def set_IsQuiver(self, nValue):
+        if (nValue == True): self.flags |= 0x00001000
+        else: self.flags &= ~0x00001000
+    IsQuiver = property(get_IsQuiver, set_IsQuiver)
+    def get_IsShield(self):
+        return (self.flags & 0x00002000) != 0
+    def set_IsShield(self, nValue):
+        if (nValue == True): self.flags |= 0x00002000
+        else: self.flags &= ~0x00002000
+    IsShield = property(get_IsShield, set_IsShield)
+    def get_IsTorch(self):
+        return (self.flags & 0x00004000) != 0
+    def set_IsTorch(self, nValue):
+        if (nValue == True): self.flags |= 0x00004000
+        else: self.flags &= ~0x00004000
+    IsTorch = property(get_IsTorch, set_IsTorch)
+    def get_IsTail(self):
+        return (self.flags & 0x00008000) != 0
+    def set_IsTail(self, nValue):
+        if (nValue == True): self.flags |= 0x00008000
+        else: self.flags &= ~0x00008000
+    IsTail = property(get_IsTail, set_IsTail)
+    def get_IsHideRings(self):
+        return (self.flags & 0x00010000) != 0
+    def set_IsHideRings(self, nValue):
+        if (nValue == True): self.flags |= 0x00010000
+        else: self.flags &= ~0x00010000
+    IsHideRings = property(get_IsHideRings, set_IsHideRings)
+    def get_IsHideAmulets(self):
+        return (self.flags & 0x00020000) != 0
+    def set_IsHideAmulets(self, nValue):
+        if (nValue == True): self.flags |= 0x00020000
+        else: self.flags &= ~0x00020000
+    IsHideAmulets = property(get_IsHideAmulets, set_IsHideAmulets)
+    def get_IsNonPlayable(self):
+        return (self.flags & 0x00040000) != 0
+    def set_IsNonPlayable(self, nValue):
+        if (nValue == True): self.flags |= 0x00040000
+        else: self.flags &= ~0x00040000
+    IsNonPlayable = property(get_IsNonPlayable, set_IsNonPlayable)
+    def get_IsHeavyArmor(self):
+        return (self.flags & 0x00080000) != 0
+    def set_IsHeavyArmor(self, nValue):
+        if (nValue == True): self.flags |= 0x00080000
+        else: self.flags &= ~0x00080000
+    IsHeavyArmor = property(get_IsHeavyArmor, set_IsHeavyArmor)
 
 class BOOKRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
@@ -2591,6 +3475,19 @@ class BOOKRecord(BaseRecord):
     def set_weight(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 18, c_float(nValue))
     weight = property(get_weight, set_weight)
+    def get_IsScroll(self):
+        return (self.flags & 0x00000001) != 0
+    def set_IsScroll(self, nValue):
+        if (nValue == True): self.flags |= 0x00000001
+        else: self.flags &= ~0x00000001
+    IsScroll = property(get_IsScroll, set_IsScroll)
+    def get_IsFixed(self):
+        return (self.flags & 0x00000002) != 0
+    def set_IsFixed(self, nValue):
+        if (nValue == True): self.flags |= 0x00000002
+        else: self.flags &= ~0x00000002
+    IsFixed = property(get_IsFixed, set_IsFixed)
+
 class CLOTRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyCLOTRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -2709,6 +3606,121 @@ class CLOTRecord(BaseRecord):
     def set_weight(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 26, c_float(nValue))
     weight = property(get_weight, set_weight)
+    def get_IsHead(self):
+        return (self.flags & 0x00000001) != 0
+    def set_IsHead(self, nValue):
+        if (nValue == True): self.flags |= 0x00000001
+        else: self.flags &= ~0x00000001
+    IsHead = property(get_IsHead, set_IsHead)
+    def get_IsHair(self):
+        return (self.flags & 0x00000002) != 0
+    def set_IsHair(self, nValue):
+        if (nValue == True): self.flags |= 0x00000002
+        else: self.flags &= ~0x00000002
+    IsHair = property(get_IsHair, set_IsHair)
+    def get_IsUpperBody(self):
+        return (self.flags & 0x00000004) != 0
+    def set_IsUpperBody(self, nValue):
+        if (nValue == True): self.flags |= 0x00000004
+        else: self.flags &= ~0x00000004
+    IsUpperBody = property(get_IsUpperBody, set_IsUpperBody)
+    def get_IsLowerBody(self):
+        return (self.flags & 0x00000008) != 0
+    def set_IsLowerBody(self, nValue):
+        if (nValue == True): self.flags |= 0x00000008
+        else: self.flags &= ~0x00000008
+    IsLowerBody = property(get_IsLowerBody, set_IsLowerBody)
+    def get_IsHand(self):
+        return (self.flags & 0x00000010) != 0
+    def set_IsHand(self, nValue):
+        if (nValue == True): self.flags |= 0x00000010
+        else: self.flags &= ~0x00000010
+    IsHand = property(get_IsHand, set_IsHand)
+    def get_IsFoot(self):
+        return (self.flags & 0x00000020) != 0
+    def set_IsFoot(self, nValue):
+        if (nValue == True): self.flags |= 0x00000020
+        else: self.flags &= ~0x00000020
+    IsFoot = property(get_IsFoot, set_IsFoot)
+    def get_IsRightRing(self):
+        return (self.flags & 0x00000040) != 0
+    def set_IsRightRing(self, nValue):
+        if (nValue == True): self.flags |= 0x00000040
+        else: self.flags &= ~0x00000040
+    IsRightRing = property(get_IsRightRing, set_IsRightRing)
+    def get_IsLeftRing(self):
+        return (self.flags & 0x00000080) != 0
+    def set_IsLeftRing(self, nValue):
+        if (nValue == True): self.flags |= 0x00000080
+        else: self.flags &= ~0x00000080
+    IsLeftRing = property(get_IsLeftRing, set_IsLeftRing)
+    def get_IsAmulet(self):
+        return (self.flags & 0x00000100) != 0
+    def set_IsAmulet(self, nValue):
+        if (nValue == True): self.flags |= 0x00000100
+        else: self.flags &= ~0x00000100
+    IsAmulet = property(get_IsAmulet, set_IsAmulet)
+    def get_IsWeapon(self):
+        return (self.flags & 0x00000200) != 0
+    def set_IsWeapon(self, nValue):
+        if (nValue == True): self.flags |= 0x00000200
+        else: self.flags &= ~0x00000200
+    IsWeapon = property(get_IsWeapon, set_IsWeapon)
+    def get_IsBackWeapon(self):
+        return (self.flags & 0x00000400) != 0
+    def set_IsBackWeapon(self, nValue):
+        if (nValue == True): self.flags |= 0x00000400
+        else: self.flags &= ~0x00000400
+    IsBackWeapon = property(get_IsBackWeapon, set_IsBackWeapon)
+    def get_IsSideWeapon(self):
+        return (self.flags & 0x00000800) != 0
+    def set_IsSideWeapon(self, nValue):
+        if (nValue == True): self.flags |= 0x00000800
+        else: self.flags &= ~0x00000800
+    IsSideWeapon = property(get_IsSideWeapon, set_IsSideWeapon)
+    def get_IsQuiver(self):
+        return (self.flags & 0x00001000) != 0
+    def set_IsQuiver(self, nValue):
+        if (nValue == True): self.flags |= 0x00001000
+        else: self.flags &= ~0x00001000
+    IsQuiver = property(get_IsQuiver, set_IsQuiver)
+    def get_IsShield(self):
+        return (self.flags & 0x00002000) != 0
+    def set_IsShield(self, nValue):
+        if (nValue == True): self.flags |= 0x00002000
+        else: self.flags &= ~0x00002000
+    IsShield = property(get_IsShield, set_IsShield)
+    def get_IsTorch(self):
+        return (self.flags & 0x00004000) != 0
+    def set_IsTorch(self, nValue):
+        if (nValue == True): self.flags |= 0x00004000
+        else: self.flags &= ~0x00004000
+    IsTorch = property(get_IsTorch, set_IsTorch)
+    def get_IsTail(self):
+        return (self.flags & 0x00008000) != 0
+    def set_IsTail(self, nValue):
+        if (nValue == True): self.flags |= 0x00008000
+        else: self.flags &= ~0x00008000
+    IsTail = property(get_IsTail, set_IsTail)
+    def get_IsHideRings(self):
+        return (self.flags & 0x00010000) != 0
+    def set_IsHideRings(self, nValue):
+        if (nValue == True): self.flags |= 0x00010000
+        else: self.flags &= ~0x00010000
+    IsHideRings = property(get_IsHideRings, set_IsHideRings)
+    def get_IsHideAmulets(self):
+        return (self.flags & 0x00020000) != 0
+    def set_IsHideAmulets(self, nValue):
+        if (nValue == True): self.flags |= 0x00020000
+        else: self.flags &= ~0x00020000
+    IsHideAmulets = property(get_IsHideAmulets, set_IsHideAmulets)
+    def get_IsNonPlayable(self):
+        return (self.flags & 0x00040000) != 0
+    def set_IsNonPlayable(self, nValue):
+        if (nValue == True): self.flags |= 0x00040000
+        else: self.flags &= ~0x00040000
+    IsNonPlayable = property(get_IsNonPlayable, set_IsNonPlayable)
+
 class CONTRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyCONTRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -2828,6 +3840,12 @@ class CONTRecord(BaseRecord):
     def set_soundClose(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 15, c_uint(nValue))
     soundClose = property(get_soundClose, set_soundClose)
+    def get_IsRespawn(self):
+        return (self.flags & 0x00000001) != 0
+    def set_IsRespawn(self, nValue):
+        if (nValue == True): self.flags |= 0x00000001
+        else: self.flags &= ~0x00000001
+    IsRespawn = property(get_IsRespawn, set_IsRespawn)
     
 class DOORRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
@@ -2921,6 +3939,31 @@ class DOORRecord(BaseRecord):
         cRecords = (c_uint * length)(*nValue)
         CBash.SetFIDFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 15, cRecords, length)
     destinations = property(get_destinations, set_destinations)
+    def get_IsOblivionGate(self):
+        return (self.flags & 0x00000001) != 0
+    def set_IsOblivionGate(self, nValue):
+        if (nValue == True): self.flags |= 0x00000001
+        else: self.flags &= ~0x00000001
+    IsOblivionGate = property(get_IsOblivionGate, set_IsOblivionGate)
+    def get_IsAutomatic(self):
+        return (self.flags & 0x00000002) != 0
+    def set_IsAutomatic(self, nValue):
+        if (nValue == True): self.flags |= 0x00000002
+        else: self.flags &= ~0x00000002
+    IsAutomatic = property(get_IsAutomatic, set_IsAutomatic)
+    def get_IsHidden(self):
+        return (self.flags & 0x00000004) != 0
+    def set_IsHidden(self, nValue):
+        if (nValue == True): self.flags |= 0x00000004
+        else: self.flags &= ~0x00000004
+    IsHidden = property(get_IsHidden, set_IsHidden)
+    def get_IsMinimalUse(self):
+        return (self.flags & 0x00000008) != 0
+    def set_IsMinimalUse(self, nValue):
+        if (nValue == True): self.flags |= 0x00000008
+        else: self.flags &= ~0x00000008
+    IsMinimalUse = property(get_IsMinimalUse, set_IsMinimalUse)
+    
 class INGRRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyINGRRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -3020,6 +4063,12 @@ class INGRRecord(BaseRecord):
         def set_full(self, nValue):
             CBash.SetFIDListFieldStr(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 13, nValue)
         full = property(get_full, set_full)
+        def get_IsHostile(self):
+            return (self.flags & 0x00000001) != 0
+        def set_IsHostile(self, nValue):
+            if (nValue == True): self.flags |= 0x00000001
+            else: self.flags &= ~0x00000001
+        IsHostile = property(get_IsHostile, set_IsHostile)
     def newEffectsElement(self):
         listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 16)
         if(listIndex == -1): return None
@@ -3119,6 +4168,18 @@ class INGRRecord(BaseRecord):
         for oEffect, nValue in zip(self.effects, nValues):
             oEffect.name0, oEffect.name, oEffect.magnitude, oEffect.area, oEffect.duration, oEffect.recipient, oEffect.actorValue, oEffect.script, oEffect.school, oEffect.visual, oEffect.flags, oEffect.unused1, oEffect.full = nValue
     effects = property(get_effects, set_effects)
+    def get_IsNoAutoCalc(self):
+        return (self.flags & 0x00000001) != 0
+    def set_IsNoAutoCalc(self, nValue):
+        if (nValue == True): self.flags |= 0x00000001
+        else: self.flags &= ~0x00000001
+    IsNoAutoCalc = property(get_IsNoAutoCalc, set_IsNoAutoCalc)
+    def get_IsFood(self):
+        return (self.flags & 0x00000002) != 0
+    def set_IsFood(self, nValue):
+        if (nValue == True): self.flags |= 0x00000002
+        else: self.flags &= ~0x00000002
+    IsFood = property(get_IsFood, set_IsFood)
 
 class LIGHRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
@@ -3280,6 +4341,66 @@ class LIGHRecord(BaseRecord):
     def set_sound(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 24, c_uint(nValue))
     sound = property(get_sound, set_sound)
+    def get_IsDynamic(self):
+        return (self.flags & 0x00000001) != 0
+    def set_IsDynamic(self, nValue):
+        if (nValue == True): self.flags |= 0x00000001
+        else: self.flags &= ~0x00000001
+    IsDynamic = property(get_IsDynamic, set_IsDynamic)
+    def get_IsCanTake(self):
+        return (self.flags & 0x00000002) != 0
+    def set_IsCanTake(self, nValue):
+        if (nValue == True): self.flags |= 0x00000002
+        else: self.flags &= ~0x00000002
+    IsCanTake = property(get_IsCanTake, set_IsCanTake)
+    def get_IsNegative(self):
+        return (self.flags & 0x00000004) != 0
+    def set_IsNegative(self, nValue):
+        if (nValue == True): self.flags |= 0x00000004
+        else: self.flags &= ~0x00000004
+    IsNegative = property(get_IsNegative, set_IsNegative)
+    def get_IsFlickers(self):
+        return (self.flags & 0x00000008) != 0
+    def set_IsFlickers(self, nValue):
+        if (nValue == True): self.flags |= 0x00000008
+        else: self.flags &= ~0x00000008
+    IsFlickers = property(get_IsFlickers, set_IsFlickers)
+    def get_IsOffByDefault(self):
+        return (self.flags & 0x00000020) != 0
+    def set_IsOffByDefault(self, nValue):
+        if (nValue == True): self.flags |= 0x00000020
+        else: self.flags &= ~0x00000020
+    IsOffByDefault = property(get_IsOffByDefault, set_IsOffByDefault)
+    def get_IsFlickerSlow(self):
+        return (self.flags & 0x00000040) != 0
+    def set_IsFlickerSlow(self, nValue):
+        if (nValue == True): self.flags |= 0x00000040
+        else: self.flags &= ~0x00000040
+    IsFlickerSlow = property(get_IsFlickerSlow, set_IsFlickerSlow)
+    def get_IsPulse(self):
+        return (self.flags & 0x00000080) != 0
+    def set_IsPulse(self, nValue):
+        if (nValue == True): self.flags |= 0x00000080
+        else: self.flags &= ~0x00000080
+    IsPulse = property(get_IsPulse, set_IsPulse)
+    def get_IsPulseSlow(self):
+        return (self.flags & 0x00000100) != 0
+    def set_IsPulseSlow(self, nValue):
+        if (nValue == True): self.flags |= 0x00000100
+        else: self.flags &= ~0x00000100
+    IsPulseSlow = property(get_IsPulseSlow, set_IsPulseSlow)
+    def get_IsSpotLight(self):
+        return (self.flags & 0x00000200) != 0
+    def set_IsSpotLight(self, nValue):
+        if (nValue == True): self.flags |= 0x00000200
+        else: self.flags &= ~0x00000200
+    IsSpotLight = property(get_IsSpotLight, set_IsSpotLight)
+    def get_IsSpotShadow(self):
+        return (self.flags & 0x00000400) != 0
+    def set_IsSpotShadow(self, nValue):
+        if (nValue == True): self.flags |= 0x00000400
+        else: self.flags &= ~0x00000400
+    IsSpotShadow = property(get_IsSpotShadow, set_IsSpotShadow)
 
 class MISCRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
@@ -3530,6 +4651,25 @@ class GRASRecord(BaseRecord):
     def set_unused3(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 21, struct.pack('3B', *nValue), 3)
     unused3 = property(get_unused3, set_unused3)
+    def get_IsVLighting(self):
+        return (self.flags & 0x00000001) != 0
+    def set_IsVLighting(self, nValue):
+        if (nValue == True): self.flags |= 0x00000001
+        else: self.flags &= ~0x00000001
+    IsVLighting = property(get_IsVLighting, set_IsVLighting)
+    def get_IsUScaling(self):
+        return (self.flags & 0x00000002) != 0
+    def set_IsUScaling(self, nValue):
+        if (nValue == True): self.flags |= 0x00000002
+        else: self.flags &= ~0x00000002
+    IsUScaling = property(get_IsUScaling, set_IsUScaling)
+    def get_IsFitSlope(self):
+        return (self.flags & 0x00000004) != 0
+    def set_IsFitSlope(self, nValue):
+        if (nValue == True): self.flags |= 0x00000004
+        else: self.flags &= ~0x00000004
+    IsFitSlope = property(get_IsFitSlope, set_IsFitSlope)
+
 class TREERecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyTREERecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -3804,6 +4944,207 @@ class FURNRecord(BaseRecord):
     def set_flags(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 11, nValue)
     flags = property(get_flags, set_flags)
+    def get_IsAnim01(self):
+        return (self.flags & 0x00000001) != 0
+    def set_IsAnim01(self, nValue):
+        if (nValue == True): self.flags |= 0x00000001
+        else: self.flags &= ~0x00000001
+    IsAnim01 = property(get_IsAnim01, set_IsAnim01)
+    def get_IsAnim02(self):
+        return (self.flags & 0x00000002) != 0
+    def set_IsAnim02(self, nValue):
+        if (nValue == True): self.flags |= 0x00000002
+        else: self.flags &= ~0x00000002
+    IsAnim02 = property(get_IsAnim02, set_IsAnim02)
+    def get_IsAnim03(self):
+        return (self.flags & 0x00000004) != 0
+    def set_IsAnim03(self, nValue):
+        if (nValue == True): self.flags |= 0x00000004
+        else: self.flags &= ~0x00000004
+    IsAnim03 = property(get_IsAnim03, set_IsAnim03)
+    def get_IsAnim04(self):
+        return (self.flags & 0x00000008) != 0
+    def set_IsAnim04(self, nValue):
+        if (nValue == True): self.flags |= 0x00000008
+        else: self.flags &= ~0x00000008
+    IsAnim04 = property(get_IsAnim04, set_IsAnim04)
+    def get_IsAnim05(self):
+        return (self.flags & 0x00000010) != 0
+    def set_IsAnim05(self, nValue):
+        if (nValue == True): self.flags |= 0x00000010
+        else: self.flags &= ~0x00000010
+    IsAnim05 = property(get_IsAnim05, set_IsAnim05)
+    def get_IsAnim06(self):
+        return (self.flags & 0x00000020) != 0
+    def set_IsAnim06(self, nValue):
+        if (nValue == True): self.flags |= 0x00000020
+        else: self.flags &= ~0x00000020
+    IsAnim06 = property(get_IsAnim06, set_IsAnim06)
+    def get_IsAnim07(self):
+        return (self.flags & 0x00000040) != 0
+    def set_IsAnim07(self, nValue):
+        if (nValue == True): self.flags |= 0x00000040
+        else: self.flags &= ~0x00000040
+    IsAnim07 = property(get_IsAnim07, set_IsAnim07)
+    def get_IsAnim08(self):
+        return (self.flags & 0x00000080) != 0
+    def set_IsAnim08(self, nValue):
+        if (nValue == True): self.flags |= 0x00000080
+        else: self.flags &= ~0x00000080
+    IsAnim08 = property(get_IsAnim08, set_IsAnim08)
+    def get_IsAnim09(self):
+        return (self.flags & 0x00000100) != 0
+    def set_IsAnim09(self, nValue):
+        if (nValue == True): self.flags |= 0x00000100
+        else: self.flags &= ~0x00000100
+    IsAnim09 = property(get_IsAnim09, set_IsAnim09)
+    def get_IsAnim10(self):
+        return (self.flags & 0x00000200) != 0
+    def set_IsAnim10(self, nValue):
+        if (nValue == True): self.flags |= 0x00000200
+        else: self.flags &= ~0x00000200
+    IsAnim10 = property(get_IsAnim10, set_IsAnim10)
+    def get_IsAnim11(self):
+        return (self.flags & 0x00000400) != 0
+    def set_IsAnim11(self, nValue):
+        if (nValue == True): self.flags |= 0x00000400
+        else: self.flags &= ~0x00000400
+    IsAnim11 = property(get_IsAnim11, set_IsAnim11)
+    def get_IsAnim12(self):
+        return (self.flags & 0x00000800) != 0
+    def set_IsAnim12(self, nValue):
+        if (nValue == True): self.flags |= 0x00000800
+        else: self.flags &= ~0x00000800
+    IsAnim12 = property(get_IsAnim12, set_IsAnim12)
+    def get_IsAnim13(self):
+        return (self.flags & 0x00001000) != 0
+    def set_IsAnim13(self, nValue):
+        if (nValue == True): self.flags |= 0x00001000
+        else: self.flags &= ~0x00001000
+    IsAnim13 = property(get_IsAnim13, set_IsAnim13)
+    def get_IsAnim14(self):
+        return (self.flags & 0x00002000) != 0
+    def set_IsAnim14(self, nValue):
+        if (nValue == True): self.flags |= 0x00002000
+        else: self.flags &= ~0x00002000
+    IsAnim14 = property(get_IsAnim14, set_IsAnim14)
+    def get_IsAnim15(self):
+        return (self.flags & 0x00004000) != 0
+    def set_IsAnim15(self, nValue):
+        if (nValue == True): self.flags |= 0x00004000
+        else: self.flags &= ~0x00004000
+    IsAnim15 = property(get_IsAnim15, set_IsAnim15)
+    def get_IsAnim16(self):
+        return (self.flags & 0x00008000) != 0
+    def set_IsAnim16(self, nValue):
+        if (nValue == True): self.flags |= 0x00008000
+        else: self.flags &= ~0x00008000
+    IsAnim16 = property(get_IsAnim16, set_IsAnim16)
+    def get_IsAnim17(self):
+        return (self.flags & 0x00010000) != 0
+    def set_IsAnim17(self, nValue):
+        if (nValue == True): self.flags |= 0x00010000
+        else: self.flags &= ~0x00010000
+    IsAnim17 = property(get_IsAnim17, set_IsAnim17)
+    def get_IsAnim18(self):
+        return (self.flags & 0x00020000) != 0
+    def set_IsAnim18(self, nValue):
+        if (nValue == True): self.flags |= 0x00020000
+        else: self.flags &= ~0x00020000
+    IsAnim18 = property(get_IsAnim18, set_IsAnim18)
+    def get_IsAnim19(self):
+        return (self.flags & 0x00040000) != 0
+    def set_IsAnim19(self, nValue):
+        if (nValue == True): self.flags |= 0x00040000
+        else: self.flags &= ~0x00040000
+    IsAnim19 = property(get_IsAnim19, set_IsAnim19)
+    def get_IsAnim20(self):
+        return (self.flags & 0x00080000) != 0
+    def set_IsAnim20(self, nValue):
+        if (nValue == True): self.flags |= 0x00080000
+        else: self.flags &= ~0x00080000
+    IsAnim20 = property(get_IsAnim20, set_IsAnim20)
+    def get_IsAnim21(self):
+        return (self.flags & 0x00100000) != 0
+    def set_IsAnim21(self, nValue):
+        if (nValue == True): self.flags |= 0x00100000
+        else: self.flags &= ~0x00100000
+    IsAnim21 = property(get_IsAnim21, set_IsAnim21)
+    def get_IsAnim22(self):
+        return (self.flags & 0x00200000) != 0
+    def set_IsAnim22(self, nValue):
+        if (nValue == True): self.flags |= 0x00200000
+        else: self.flags &= ~0x00200000
+    IsAnim22 = property(get_IsAnim22, set_IsAnim22)
+    def get_IsAnim23(self):
+        return (self.flags & 0x00400000) != 0
+    def set_IsAnim23(self, nValue):
+        if (nValue == True): self.flags |= 0x00400000
+        else: self.flags &= ~0x00400000
+    IsAnim23 = property(get_IsAnim23, set_IsAnim23)
+    def get_IsAnim24(self):
+        return (self.flags & 0x00800000) != 0
+    def set_IsAnim24(self, nValue):
+        if (nValue == True): self.flags |= 0x00800000
+        else: self.flags &= ~0x00800000
+    IsAnim24 = property(get_IsAnim24, set_IsAnim24)
+    def get_IsAnim25(self):
+        return (self.flags & 0x01000000) != 0
+    def set_IsAnim25(self, nValue):
+        if (nValue == True): self.flags |= 0x01000000
+        else: self.flags &= ~0x01000000
+    IsAnim25 = property(get_IsAnim25, set_IsAnim25)
+    def get_IsAnim26(self):
+        return (self.flags & 0x02000000) != 0
+    def set_IsAnim26(self, nValue):
+        if (nValue == True): self.flags |= 0x02000000
+        else: self.flags &= ~0x02000000
+    IsAnim26 = property(get_IsAnim26, set_IsAnim26)
+    def get_IsAnim27(self):
+        return (self.flags & 0x04000000) != 0
+    def set_IsAnim27(self, nValue):
+        if (nValue == True): self.flags |= 0x04000000
+        else: self.flags &= ~0x04000000
+    IsAnim27 = property(get_IsAnim27, set_IsAnim27)
+    def get_IsAnim28(self):
+        return (self.flags & 0x08000000) != 0
+    def set_IsAnim28(self, nValue):
+        if (nValue == True): self.flags |= 0x08000000
+        else: self.flags &= ~0x08000000
+    IsAnim28 = property(get_IsAnim28, set_IsAnim28)
+    def get_IsAnim29(self):
+        return (self.flags & 0x10000000) != 0
+    def set_IsAnim29(self, nValue):
+        if (nValue == True): self.flags |= 0x10000000
+        else: self.flags &= ~0x10000000
+    IsAnim29 = property(get_IsAnim29, set_IsAnim29)
+    def get_IsAnim30(self):
+        return (self.flags & 0x20000000) != 0
+    def set_IsAnim30(self, nValue):
+        if (nValue == True): self.flags |= 0x20000000
+        else: self.flags &= ~0x20000000
+    IsAnim30 = property(get_IsAnim30, set_IsAnim30)
+    def get_IsSitAnim(self):
+        return (self.flags & 0x40000000) != 0
+    def set_IsSitAnim(self, nValue):
+        if (nValue == True):
+            self.flags |= 0x40000000
+            self.flags &= ~0x80000000
+        else:
+            self.flags &= ~0x40000000
+            self.flags |= 0x80000000
+    IsSitAnim = property(get_IsSitAnim, set_IsSitAnim)
+    def get_IsSleepAnim(self):
+        return (self.flags & 0x80000000) != 0
+    def set_IsSleepAnim(self, nValue):
+        if (nValue == True):
+            self.flags &= ~0x40000000
+            self.flags |= 0x80000000
+        else:
+            self.flags |= 0x40000000
+            self.flags &= ~0x80000000
+    IsSleepAnim = property(get_IsSleepAnim, set_IsSleepAnim)
+    
 class WEAPRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyWEAPRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -3938,6 +5279,54 @@ class WEAPRecord(BaseRecord):
     def set_damage(self, nValue):
         CBash.SetFIDFieldUS(self._CollectionIndex, self._ModName, self._recordID, 21, c_ushort(nValue))
     damage = property(get_damage, set_damage)
+    def get_IsNotNormalWeapon(self):
+        return (self.flags & 0x00000001) != 0
+    def set_IsNotNormalWeapon(self, nValue):
+        if (nValue == True): self.flags |= 0x00000001
+        else: self.flags &= ~0x00000001
+    IsNotNormal = IsNotNormalWeapon = property(get_IsNotNormalWeapon, set_IsNotNormalWeapon)
+    def get_IsNormalWeapon(self):
+        return (self.flags & 0x00000001) == 0
+    def set_IsNormalWeapon(self, nValue):
+        if (nValue == True): self.flags &= ~0x00000001
+        else: self.flags |= 0x00000001
+    IsNormal = IsNormalWeapon = property(get_IsNormalWeapon, set_IsNormalWeapon)
+    def get_IsBlade1Hand(self):
+        return (self.weaponType == 0)
+    def set_IsBlade1Hand(self, nValue):
+        if (nValue == True): self.weaponType = 0
+        else: self.IsBlade2Hand = True
+    IsBlade1Hand = property(get_IsBlade1Hand, set_IsBlade1Hand)
+    def get_IsBlade2Hand(self):
+        return (self.weaponType == 1)
+    def set_IsBlade2Hand(self, nValue):
+        if (nValue == True): self.weaponType = 1
+        else: self.IsBlade1Hand = True
+    IsBlade2Hand = property(get_IsBlade2Hand, set_IsBlade2Hand)
+    def get_IsBlunt1Hand(self):
+        return (self.weaponType == 2)
+    def set_IsBlunt1Hand(self, nValue):
+        if (nValue == True): self.weaponType = 2
+        else: self.IsBlade1Hand = True
+    IsBlunt1Hand = property(get_IsBlunt1Hand, set_IsBlunt1Hand)
+    def get_IsBlunt2Hand(self):
+        return (self.weaponType == 3)
+    def set_IsBlunt2Hand(self, nValue):
+        if (nValue == True): self.weaponType = 3
+        else: self.IsBlade1Hand = True
+    IsBlunt2Hand = property(get_IsBlunt2Hand, set_IsBlunt2Hand)
+    def get_IsStaff(self):
+        return (self.weaponType == 4)
+    def set_IsStaff(self, nValue):
+        if (nValue == True): self.weaponType = 4
+        else: self.IsBlade1Hand = True
+    IsStaff = property(get_IsStaff, set_IsStaff)
+    def get_IsBow(self):
+        return (self.weaponType == 5)
+    def set_IsBow(self, nValue):
+        if (nValue == True): self.weaponType = 5
+        else: self.IsBlade1Hand = True
+    IsBow = property(get_IsBow, set_IsBow)
     
 class AMMORecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
@@ -4051,6 +5440,19 @@ class AMMORecord(BaseRecord):
     def set_damage(self, nValue):
         CBash.SetFIDFieldUS(self._CollectionIndex, self._ModName, self._recordID, 18, c_ushort(nValue))
     damage = property(get_damage, set_damage)
+    def get_IsNotNormalWeapon(self):
+        return (self.flags & 0x00000001) != 0
+    def set_IsNotNormalWeapon(self, nValue):
+        if (nValue == True): self.flags |= 0x00000001
+        else: self.flags &= ~0x00000001
+    IsNotNormal = IsNotNormalWeapon = property(get_IsNotNormalWeapon, set_IsNotNormalWeapon)
+    def get_IsNormalWeapon(self):
+        return (self.flags & 0x00000001) == 0
+    def set_IsNormalWeapon(self, nValue):
+        if (nValue == True): self.flags &= ~0x00000001
+        else: self.flags |= 0x00000001
+    IsNormal = IsNormalWeapon = property(get_IsNormalWeapon, set_IsNormalWeapon)
+    
 class NPC_Record(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyNPC_Record(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -4720,6 +6122,175 @@ class NPC_Record(BaseRecord):
     def set_fnam(self, nValue):
         CBash.SetFIDFieldUS(self._CollectionIndex, self._ModName, self._recordID, 76, c_ushort(nValue))
     fnam = property(get_fnam, set_fnam)
+    def get_IsFemale(self):
+        return (self.flags & 0x00000001) != 0
+    def set_IsFemale(self, nValue):
+        if (nValue == True): self.flags |= 0x00000001
+        else: self.flags &= ~0x00000001
+    IsFemale = property(get_IsFemale, set_IsFemale)
+    def get_IsMale(self):
+        return not self.get_IsFemale()
+    def set_IsMale(self, nValue):
+        if (nValue == True): self.flags &= ~0x00000001
+        else: self.flags |= 0x00000001
+    IsMale = property(get_IsMale, set_IsMale)
+    def get_IsEssential(self):
+        return (self.flags & 0x00000002) != 0
+    def set_IsEssential(self, nValue):
+        if (nValue == True): self.flags |= 0x00000002
+        else: self.flags &= ~0x00000002
+    IsEssential = property(get_IsEssential, set_IsEssential)
+    def get_IsRespawn(self):
+        return (self.flags & 0x00000008) != 0
+    def set_IsRespawn(self, nValue):
+        if (nValue == True): self.flags |= 0x00000008
+        else: self.flags &= ~0x00000008
+    IsRespawn = property(get_IsRespawn, set_IsRespawn)
+    def get_IsAutoCalc(self):
+        return (self.flags & 0x00000010) != 0
+    def set_IsAutoCalc(self, nValue):
+        if (nValue == True): self.flags |= 0x00000010
+        else: self.flags &= ~0x00000010
+    IsAutoCalc = property(get_IsAutoCalc, set_IsAutoCalc)
+    def get_IsPCLevelOffset(self):
+        return (self.flags & 0x00000080) != 0
+    def set_IsPCLevelOffset(self, nValue):
+        if (nValue == True): self.flags |= 0x00000080
+        else: self.flags &= ~0x00000080
+    IsPCLevelOffset = property(get_IsPCLevelOffset, set_IsPCLevelOffset)
+    def get_IsNoLowLevel(self):
+        return (self.flags & 0x00000200) != 0
+    def set_IsNoLowLevel(self, nValue):
+        if (nValue == True): self.flags |= 0x00000200
+        else: self.flags &= ~0x00000200
+    IsNoLowLevel = property(get_IsNoLowLevel, set_IsNoLowLevel)
+    def get_IsLowLevel(self):
+        return not self.get_IsNoLowLevel()
+    def set_IsLowLevel(self, nValue):
+        if (nValue == True): self.flags &= ~0x00000200
+        else: self.flags |= 0x00000200
+    IsLowLevel = property(get_IsLowLevel, set_IsLowLevel)
+    def get_IsNoRumors(self):
+        return (self.flags & 0x00002000) != 0
+    def set_IsNoRumors(self, nValue):
+        if (nValue == True): self.flags |= 0x00002000
+        else: self.flags &= ~0x00002000
+    IsNoRumors = property(get_IsNoRumors, set_IsNoRumors)
+    def get_IsRumors(self):
+        return not self.get_IsNoRumors()
+    def set_IsRumors(self, nValue):
+        if (nValue == True): self.flags &= ~0x00002000
+        else: self.flags |= 0x00002000
+    IsRumors = property(get_IsRumors, set_IsRumors)
+    def get_IsSummonable(self):
+        return (self.flags & 0x00004000) != 0
+    def set_IsSummonable(self, nValue):
+        if (nValue == True): self.flags |= 0x00004000
+        else: self.flags &= ~0x00004000
+    IsSummonable = property(get_IsSummonable, set_IsSummonable)
+    def get_IsNoPersuasion(self):
+        return (self.flags & 0x00008000) != 0
+    def set_IsNoPersuasion(self, nValue):
+        if (nValue == True): self.flags |= 0x00008000
+        else: self.flags &= ~0x00008000
+    IsNoPersuasion = property(get_IsNoPersuasion, set_IsNoPersuasion)
+    def get_IsPersuasion(self):
+        return not self.get_IsNoPersuasion()
+    def set_IsPersuasion(self, nValue):
+        if (nValue == True): self.flags &= ~0x00008000
+        else: self.flags |= 0x00008000
+    IsPersuasion = property(get_IsPersuasion, set_IsPersuasion)
+    def get_IsCanCorpseCheck(self):
+        return (self.flags & 0x00100000) != 0
+    def set_IsCanCorpseCheck(self, nValue):
+        if (nValue == True): self.flags |= 0x00100000
+        else: self.flags &= ~0x00100000
+    IsCanCorpseCheck = property(get_IsCanCorpseCheck, set_IsCanCorpseCheck)
+    def get_IsServicesWeapons(self):
+        return (self.services & 0x00000001) != 0
+    def set_IsServicesWeapons(self, nValue):
+        if (nValue == True): self.services |= 0x00000001
+        else: self.services &= ~0x00000001
+    IsServicesWeapons = property(get_IsServicesWeapons, set_IsServicesWeapons)
+    def get_IsServicesArmor(self):
+        return (self.services & 0x00000002) != 0
+    def set_IsServicesArmor(self, nValue):
+        if (nValue == True): self.services |= 0x00000002
+        else: self.services &= ~0x00000002
+    IsServicesArmor = property(get_IsServicesArmor, set_IsServicesArmor)
+    def get_IsServicesClothing(self):
+        return (self.services & 0x00000004) != 0
+    def set_IsServicesClothing(self, nValue):
+        if (nValue == True): self.services |= 0x00000004
+        else: self.services &= ~0x00000004
+    IsServicesClothing = property(get_IsServicesClothing, set_IsServicesClothing)
+    def get_IsServicesBooks(self):
+        return (self.services & 0x00000008) != 0
+    def set_IsServicesBooks(self, nValue):
+        if (nValue == True): self.services |= 0x00000008
+        else: self.services &= ~0x00000008
+    IsServicesBooks = property(get_IsServicesBooks, set_IsServicesBooks)
+    def get_IsServicesIngredients(self):
+        return (self.services & 0x00000010) != 0
+    def set_IsServicesIngredients(self, nValue):
+        if (nValue == True): self.services |= 0x00000010
+        else: self.services &= ~0x00000010
+    IsServicesIngredients = property(get_IsServicesIngredients, set_IsServicesIngredients)
+    def get_IsServicesLights(self):
+        return (self.services & 0x00000080) != 0
+    def set_IsServicesLights(self, nValue):
+        if (nValue == True): self.services |= 0x00000080
+        else: self.services &= ~0x00000080
+    IsServicesLights = property(get_IsServicesLights, set_IsServicesLights)
+    def get_IsServicesApparatus(self):
+        return (self.services & 0x00000100) != 0
+    def set_IsServicesApparatus(self, nValue):
+        if (nValue == True): self.services |= 0x00000100
+        else: self.services &= ~0x00000100
+    IsServicesApparatus = property(get_IsServicesApparatus, set_IsServicesApparatus)
+    def get_IsServicesMiscItems(self):
+        return (self.services & 0x00000400) != 0
+    def set_IsServicesMiscItems(self, nValue):
+        if (nValue == True): self.services |= 0x00000400
+        else: self.services &= ~0x00000400
+    IsServicesMiscItems = property(get_IsServicesMiscItems, set_IsServicesMiscItems)
+    def get_IsServicesSpells(self):
+        return (self.services & 0x00000800) != 0
+    def set_IsServicesSpells(self, nValue):
+        if (nValue == True): self.services |= 0x00000800
+        else: self.services &= ~0x00000800
+    IsServicesSpells = property(get_IsServicesSpells, set_IsServicesSpells)
+    def get_IsServicesMagicItems(self):
+        return (self.services & 0x00001000) != 0
+    def set_IsServicesMagicItems(self, nValue):
+        if (nValue == True): self.services |= 0x00001000
+        else: self.services &= ~0x00001000
+    IsServicesMagicItems = property(get_IsServicesMagicItems, set_IsServicesMagicItems)
+    def get_IsServicesPotions(self):
+        return (self.services & 0x00002000) != 0
+    def set_IsServicesPotions(self, nValue):
+        if (nValue == True): self.services |= 0x00002000
+        else: self.services &= ~0x00002000
+    IsServicesPotions = property(get_IsServicesPotions, set_IsServicesPotions)
+    def get_IsServicesTraining(self):
+        return (self.services & 0x00004000) != 0
+    def set_IsServicesTraining(self, nValue):
+        if (nValue == True): self.services |= 0x00004000
+        else: self.services &= ~0x00004000
+    IsServicesTraining = property(get_IsServicesTraining, set_IsServicesTraining)
+    def get_IsServicesRecharge(self):
+        return (self.services & 0x00010000) != 0
+    def set_IsServicesRecharge(self, nValue):
+        if (nValue == True): self.services |= 0x00010000
+        else: self.services &= ~0x00010000
+    IsServicesRecharge = property(get_IsServicesRecharge, set_IsServicesRecharge)
+    def get_IsServicesRepair(self):
+        return (self.services & 0x00020000) != 0
+    def set_IsServicesRepair(self, nValue):
+        if (nValue == True): self.services |= 0x00020000
+        else: self.services &= ~0x00020000
+    IsServicesRepair = property(get_IsServicesRepair, set_IsServicesRepair)
+    
 class CREARecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyCREARecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -5286,6 +6857,319 @@ class CREARecord(BaseRecord):
         for oSound, nValue in zip(self.sounds, nValues):
             oSound.type, oSound.sound, oSound.chance = nValue
     sounds = property(get_sounds, set_sounds)
+    def get_IsBiped(self):
+        return (self.flags & 0x00000001) != 0
+    def set_IsBiped(self, nValue):
+        if (nValue == True): self.flags |= 0x00000001
+        else: self.flags &= ~0x00000001
+    IsBiped = property(get_IsBiped, set_IsBiped)
+    def get_IsEssential(self):
+        return (self.flags & 0x00000002) != 0
+    def set_IsEssential(self, nValue):
+        if (nValue == True): self.flags |= 0x00000002
+        else: self.flags &= ~0x00000002
+    IsEssential = property(get_IsEssential, set_IsEssential)
+    def get_IsWeaponAndShield(self):
+        return (self.flags & 0x00000004) != 0
+    def set_IsWeaponAndShield(self, nValue):
+        if (nValue == True): self.flags |= 0x00000004
+        else: self.flags &= ~0x00000004
+    IsWeaponAndShield = property(get_IsWeaponAndShield, set_IsWeaponAndShield)
+    def get_IsRespawn(self):
+        return (self.flags & 0x00000008) != 0
+    def set_IsRespawn(self, nValue):
+        if (nValue == True): self.flags |= 0x00000008
+        else: self.flags &= ~0x00000008
+    IsRespawn = property(get_IsRespawn, set_IsRespawn)
+    def get_IsSwims(self):
+        return (self.flags & 0x00000010) != 0
+    def set_IsSwims(self, nValue):
+        if (nValue == True): self.flags |= 0x00000010
+        else: self.flags &= ~0x00000010
+    IsSwims = property(get_IsSwims, set_IsSwims)
+    def get_IsFlies(self):
+        return (self.flags & 0x00000020) != 0
+    def set_IsFlies(self, nValue):
+        if (nValue == True): self.flags |= 0x00000020
+        else: self.flags &= ~0x00000020
+    IsFlies = property(get_IsFlies, set_IsFlies)
+    def get_IsWalks(self):
+        return (self.flags & 0x00000040) != 0
+    def set_IsWalks(self, nValue):
+        if (nValue == True): self.flags |= 0x00000040
+        else: self.flags &= ~0x00000040
+    IsWalks = property(get_IsWalks, set_IsWalks)
+    def get_IsPCLevelOffset(self):
+        return (self.flags & 0x00000080) != 0
+    def set_IsPCLevelOffset(self, nValue):
+        if (nValue == True): self.flags |= 0x00000080
+        else: self.flags &= ~0x00000080
+    IsPCLevelOffset = property(get_IsPCLevelOffset, set_IsPCLevelOffset)
+    def get_IsNoLowLevel(self):
+        return (self.flags & 0x00000200) != 0
+    def set_IsNoLowLevel(self, nValue):
+        if (nValue == True): self.flags |= 0x00000200
+        else: self.flags &= ~0x00000200
+    IsNoLowLevel = property(get_IsNoLowLevel, set_IsNoLowLevel)
+    def get_IsLowLevel(self):
+        return not self.get_IsNoLowLevel()
+    def set_IsLowLevel(self, nValue):
+        if (nValue == True): self.flags &= ~0x00000200
+        else: self.flags |= 0x00000200
+    IsLowLevel = property(get_IsLowLevel, set_IsLowLevel)
+    def get_IsNoBloodSpray(self):
+        return (self.flags & 0x00000800) != 0
+    def set_IsNoBloodSpray(self, nValue):
+        if (nValue == True): self.flags |= 0x00000800
+        else: self.flags &= ~0x00000800
+    IsNoBloodSpray = property(get_IsNoBloodSpray, set_IsNoBloodSpray)
+    def get_IsBloodSpray(self):
+        return not self.get_IsNoBloodSpray()
+    def set_IsBloodSpray(self, nValue):
+        if (nValue == True): self.flags &= ~0x00000800
+        else: self.flags |= 0x00000800
+    IsBloodSpray = property(get_IsBloodSpray, set_IsBloodSpray)
+    def get_IsNoBloodDecal(self):
+        return (self.flags & 0x00001000) != 0
+    def set_IsNoBloodDecal(self, nValue):
+        if (nValue == True): self.flags |= 0x00001000
+        else: self.flags &= ~0x00001000
+    IsNoBloodDecal = property(get_IsNoBloodDecal, set_IsNoBloodDecal)
+    def get_IsBloodDecal(self):
+        return not self.get_IsNoBloodDecal()
+    def set_IsBloodDecal(self, nValue):
+        if (nValue == True): self.flags &= ~0x00001000
+        else: self.flags |= 0x00001000
+    IsBloodDecal = property(get_IsBloodDecal, set_IsBloodDecal)
+    def get_IsNoHead(self):
+        return (self.flags & 0x00008000) != 0
+    def set_IsNoHead(self, nValue):
+        if (nValue == True): self.flags |= 0x00008000
+        else: self.flags &= ~0x00008000
+    IsNoHead = property(get_IsNoHead, set_IsNoHead)
+    def get_IsHead(self):
+        return not self.get_IsNoHead()
+    def set_IsHead(self, nValue):
+        if (nValue == True): self.flags &= ~0x00008000
+        else: self.flags |= 0x00008000
+    IsHead = property(get_IsHead, set_IsHead)
+    def get_IsNoRightArm(self):
+        return (self.flags & 0x00010000) != 0
+    def set_IsNoRightArm(self, nValue):
+        if (nValue == True): self.flags |= 0x00010000
+        else: self.flags &= ~0x00010000
+    IsNoRightArm = property(get_IsNoRightArm, set_IsNoRightArm)
+    def get_IsRightArm(self):
+        return not self.get_IsNoRightArm()
+    def set_IsRightArm(self, nValue):
+        if (nValue == True): self.flags &= ~0x00010000
+        else: self.flags |= 0x00010000
+    IsRightArm = property(get_IsRightArm, set_IsRightArm)
+    def get_IsNoLeftArm(self):
+        return (self.flags & 0x00020000) != 0
+    def set_IsNoLeftArm(self, nValue):
+        if (nValue == True): self.flags |= 0x00020000
+        else: self.flags &= ~0x00020000
+    IsNoLeftArm = property(get_IsNoLeftArm, set_IsNoLeftArm)
+    def get_IsLeftArm(self):
+        return not self.get_IsNoLeftArm()
+    def set_IsLeftArm(self, nValue):
+        if (nValue == True): self.flags &= ~0x00020000
+        else: self.flags |= 0x00020000
+    IsLeftArm = property(get_IsLeftArm, set_IsLeftArm)
+    def get_IsNoCombatInWater(self):
+        return (self.flags & 0x00040000) != 0
+    def set_IsNoCombatInWater(self, nValue):
+        if (nValue == True): self.flags |= 0x00040000
+        else: self.flags &= ~0x00040000
+    IsNoCombatInWater = property(get_IsNoCombatInWater, set_IsNoCombatInWater)
+    def get_IsCombatInWater(self):
+        return not self.get_IsNoCombatInWater()
+    def set_IsCombatInWater(self, nValue):
+        if (nValue == True): self.flags &= ~0x00040000
+        else: self.flags |= 0x00040000
+    IsCombatInWater = property(get_IsCombatInWater, set_IsCombatInWater)
+    def get_IsNoShadow(self):
+        return (self.flags & 0x00080000) != 0
+    def set_IsNoShadow(self, nValue):
+        if (nValue == True): self.flags |= 0x00080000
+        else: self.flags &= ~0x00080000
+    IsNoShadow = property(get_IsNoShadow, set_IsNoShadow)
+    def get_IsShadow(self):
+        return not self.get_IsNoShadow()
+    def set_IsShadow(self, nValue):
+        if (nValue == True): self.flags &= ~0x00080000
+        else: self.flags |= 0x00080000
+    IsShadow = property(get_IsShadow, set_IsShadow)
+    def get_IsNoCorpseCheck(self):
+        return (self.flags & 0x00100000) != 0
+    def set_IsNoCorpseCheck(self, nValue):
+        if (nValue == True): self.flags |= 0x00100000
+        else: self.flags &= ~0x00100000
+    IsNoCorpseCheck = property(get_IsNoCorpseCheck, set_IsNoCorpseCheck)
+    def get_IsCorpseCheck(self):
+        return not self.get_IsNoCorpseCheck()
+    def set_IsCorpseCheck(self, nValue):
+        if (nValue == True): self.flags &= ~0x00100000
+        else: self.flags |= 0x00100000
+    IsCorpseCheck = property(get_IsCorpseCheck, set_IsCorpseCheck)
+    def get_IsServicesWeapons(self):
+        return (self.services & 0x00000001) != 0
+    def set_IsServicesWeapons(self, nValue):
+        if (nValue == True): self.services |= 0x00000001
+        else: self.services &= ~0x00000001
+    IsServicesWeapons = property(get_IsServicesWeapons, set_IsServicesWeapons)
+    def get_IsServicesArmor(self):
+        return (self.services & 0x00000002) != 0
+    def set_IsServicesArmor(self, nValue):
+        if (nValue == True): self.services |= 0x00000002
+        else: self.services &= ~0x00000002
+    IsServicesArmor = property(get_IsServicesArmor, set_IsServicesArmor)
+    def get_IsServicesClothing(self):
+        return (self.services & 0x00000004) != 0
+    def set_IsServicesClothing(self, nValue):
+        if (nValue == True): self.services |= 0x00000004
+        else: self.services &= ~0x00000004
+    IsServicesClothing = property(get_IsServicesClothing, set_IsServicesClothing)
+    def get_IsServicesBooks(self):
+        return (self.services & 0x00000008) != 0
+    def set_IsServicesBooks(self, nValue):
+        if (nValue == True): self.services |= 0x00000008
+        else: self.services &= ~0x00000008
+    IsServicesBooks = property(get_IsServicesBooks, set_IsServicesBooks)
+    def get_IsServicesIngredients(self):
+        return (self.services & 0x00000010) != 0
+    def set_IsServicesIngredients(self, nValue):
+        if (nValue == True): self.services |= 0x00000010
+        else: self.services &= ~0x00000010
+    IsServicesIngredients = property(get_IsServicesIngredients, set_IsServicesIngredients)
+    def get_IsServicesLights(self):
+        return (self.services & 0x00000080) != 0
+    def set_IsServicesLights(self, nValue):
+        if (nValue == True): self.services |= 0x00000080
+        else: self.services &= ~0x00000080
+    IsServicesLights = property(get_IsServicesLights, set_IsServicesLights)
+    def get_IsServicesApparatus(self):
+        return (self.services & 0x00000100) != 0
+    def set_IsServicesApparatus(self, nValue):
+        if (nValue == True): self.services |= 0x00000100
+        else: self.services &= ~0x00000100
+    IsServicesApparatus = property(get_IsServicesApparatus, set_IsServicesApparatus)
+    def get_IsServicesMiscItems(self):
+        return (self.services & 0x00000400) != 0
+    def set_IsServicesMiscItems(self, nValue):
+        if (nValue == True): self.services |= 0x00000400
+        else: self.services &= ~0x00000400
+    IsServicesMiscItems = property(get_IsServicesMiscItems, set_IsServicesMiscItems)
+    def get_IsServicesSpells(self):
+        return (self.services & 0x00000800) != 0
+    def set_IsServicesSpells(self, nValue):
+        if (nValue == True): self.services |= 0x00000800
+        else: self.services &= ~0x00000800
+    IsServicesSpells = property(get_IsServicesSpells, set_IsServicesSpells)
+    def get_IsServicesMagicItems(self):
+        return (self.services & 0x00001000) != 0
+    def set_IsServicesMagicItems(self, nValue):
+        if (nValue == True): self.services |= 0x00001000
+        else: self.services &= ~0x00001000
+    IsServicesMagicItems = property(get_IsServicesMagicItems, set_IsServicesMagicItems)
+    def get_IsServicesPotions(self):
+        return (self.services & 0x00002000) != 0
+    def set_IsServicesPotions(self, nValue):
+        if (nValue == True): self.services |= 0x00002000
+        else: self.services &= ~0x00002000
+    IsServicesPotions = property(get_IsServicesPotions, set_IsServicesPotions)
+    def get_IsServicesTraining(self):
+        return (self.services & 0x00004000) != 0
+    def set_IsServicesTraining(self, nValue):
+        if (nValue == True): self.services |= 0x00004000
+        else: self.services &= ~0x00004000
+    IsServicesTraining = property(get_IsServicesTraining, set_IsServicesTraining)
+    def get_IsServicesRecharge(self):
+        return (self.services & 0x00010000) != 0
+    def set_IsServicesRecharge(self, nValue):
+        if (nValue == True): self.services |= 0x00010000
+        else: self.services &= ~0x00010000
+    IsServicesRecharge = property(get_IsServicesRecharge, set_IsServicesRecharge)
+    def get_IsServicesRepair(self):
+        return (self.services & 0x00020000) != 0
+    def set_IsServicesRepair(self, nValue):
+        if (nValue == True): self.services |= 0x00020000
+        else: self.services &= ~0x00020000
+    IsServicesRepair = property(get_IsServicesRepair, set_IsServicesRepair)
+    def get_IsCreature(self):
+        return (self.creatureType == 0)
+    def set_IsCreature(self, nValue):
+        if (nValue == True): self.creatureType = 0
+        elif(self.get_IsCreature()): self.IsDaedra = True
+    IsCreature = property(get_IsCreature, set_IsCreature)
+    def get_IsDaedra(self):
+        return (self.creatureType == 1)
+    def set_IsDaedra(self, nValue):
+        if (nValue == True): self.creatureType = 1
+        elif(self.get_IsDaedra()): self.IsCreature = True
+    IsDaedra = property(get_IsDaedra, set_IsDaedra)
+    def get_IsUndead(self):
+        return (self.creatureType == 2)
+    def set_IsUndead(self, nValue):
+        if (nValue == True): self.creatureType = 2
+        elif(self.get_IsUndead()): self.IsCreature = True
+    IsUndead = property(get_IsUndead, set_IsUndead)
+    def get_IsHumanoid(self):
+        return (self.creatureType == 3)
+    def set_IsHumanoid(self, nValue):
+        if (nValue == True): self.creatureType = 3
+        elif(self.get_IsHumanoid()): self.IsCreature = True
+    IsHumanoid = property(get_IsHumanoid, set_IsHumanoid)
+    def get_IsHorse(self):
+        return (self.creatureType == 4)
+    def set_IsHorse(self, nValue):
+        if (nValue == True): self.creatureType = 4
+        elif(self.get_IsHorse()): self.IsCreature = True
+    IsHorse = property(get_IsHorse, set_IsHorse)
+    def get_IsGiant(self):
+        return (self.creatureType == 5)
+    def set_IsGiant(self, nValue):
+        if (nValue == True): self.creatureType = 5
+        elif(self.get_IsGiant()): self.IsCreature = True
+    IsGiant = property(get_IsGiant, set_IsGiant)
+    def get_IsNoSoul(self):
+        return (self.soul == 0)
+    def set_IsNoSoul(self, nValue):
+        if (nValue == True): self.soul = 0
+        elif(self.get_IsNoSoul()): self.IsPettySoul = True
+    IsNoSoul = property(get_IsNoSoul, set_IsNoSoul)
+    def get_IsPettySoul(self):
+        return (self.soul == 1)
+    def set_IsPettySoul(self, nValue):
+        if (nValue == True): self.soul = 1
+        elif(self.get_IsPettySoul()): self.IsNoSoul = True
+    IsPettySoul = property(get_IsPettySoul, set_IsPettySoul)
+    def get_IsLesserSoul(self):
+        return (self.soul == 2)
+    def set_IsLesserSoul(self, nValue):
+        if (nValue == True): self.soul = 2
+        elif(self.get_IsLesserSoul()): self.IsNoSoul = True
+    IsLesserSoul = property(get_IsLesserSoul, set_IsLesserSoul)
+    def get_IsCommonSoul(self):
+        return (self.soul == 3)
+    def set_IsCommonSoul(self, nValue):
+        if (nValue == True): self.soul = 3
+        elif(self.get_IsCommonSoul()): self.IsNoSoul = True
+    IsCommonSoul = property(get_IsCommonSoul, set_IsCommonSoul)
+    def get_IsGreaterSoul(self):
+        return (self.soul == 4)
+    def set_IsGreaterSoul(self, nValue):
+        if (nValue == True): self.soul = 4
+        elif(self.get_IsGreaterSoul()): self.IsNoSoul = True
+    IsGreaterSoul = property(get_IsGreaterSoul, set_IsGreaterSoul)
+    def get_IsGrandSoul(self):
+        return (self.soul == 5)
+    def set_IsGrandSoul(self, nValue):
+        if (nValue == True): self.soul = 5
+        elif(self.get_IsGrandSoul()): self.IsNoSoul = True
+    IsGrandSoul = property(get_IsGrandSoul, set_IsGrandSoul)
+
 class LVLRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyLVLRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -5376,6 +7260,29 @@ class LVLRecord(BaseRecord):
         for oEntry, nValue in zip(self.entries, nValues):
             oEntry.level, oEntry.unused1, oEntry.listId, oEntry.count, oEntry.unused2 = nValue
     entries = property(get_entries, set_entries)
+    def get_CalcFromAllLevels(self):
+        return (self.flags & 0x00000001) != 0 or (chanceNone & 0x00000080) != 0
+    def set_CalcFromAllLevels(self, nValue):
+        if (nValue == True):
+            chanceNone &= ~0x00000080
+            flags |= 0x00000001
+        else:
+            chanceNone &= ~0x00000080
+            flags &= ~0x00000001
+    CalcFromAllLevels = property(get_CalcFromAllLevels, set_CalcFromAllLevels)
+    def get_CalcForEachItem(self):
+        return (self.flags & 0x00000002) != 0
+    def set_CalcForEachItem(self, nValue):
+        if (nValue == True): self.flags |= 0x00000002
+        else: self.flags &= ~0x00000002
+    CalcForEachItem = property(get_CalcForEachItem, set_CalcForEachItem)
+    def get_UseAllSpells(self):
+        return (self.flags & 0x00000004) != 0
+    def set_UseAllSpells(self, nValue):
+        if (nValue == True): self.flags |= 0x00000004
+        else: self.flags &= ~0x00000004
+    UseAllSpells = property(get_UseAllSpells, set_UseAllSpells)
+
 class LVLCRecord(LVLRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyLVLCRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -5487,6 +7394,79 @@ class SLGMRecord(BaseRecord):
     def set_capacity(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 15, c_ubyte(nValue))
     capacity = property(get_capacity, set_capacity)
+    def get_IsNoSoul(self):
+        return (self.soul == 0)
+    def set_IsNoSoul(self, nValue):
+        if (nValue == True): self.soul = 0
+        elif(self.get_IsNoSoul()): self.IsPettySoul = True
+    IsNoSoul = property(get_IsNoSoul, set_IsNoSoul)
+    def get_IsPettySoul(self):
+        return (self.soul == 1)
+    def set_IsPettySoul(self, nValue):
+        if (nValue == True): self.soul = 1
+        elif(self.get_IsPettySoul()): self.IsNoSoul = True
+    IsPettySoul = property(get_IsPettySoul, set_IsPettySoul)
+    def get_IsLesserSoul(self):
+        return (self.soul == 2)
+    def set_IsLesserSoul(self, nValue):
+        if (nValue == True): self.soul = 2
+        elif(self.get_IsLesserSoul()): self.IsNoSoul = True
+    IsLesserSoul = property(get_IsLesserSoul, set_IsLesserSoul)
+    def get_IsCommonSoul(self):
+        return (self.soul == 3)
+    def set_IsCommonSoul(self, nValue):
+        if (nValue == True): self.soul = 3
+        elif(self.get_IsCommonSoul()): self.IsNoSoul = True
+    IsCommonSoul = property(get_IsCommonSoul, set_IsCommonSoul)
+    def get_IsGreaterSoul(self):
+        return (self.soul == 4)
+    def set_IsGreaterSoul(self, nValue):
+        if (nValue == True): self.soul = 4
+        elif(self.get_IsGreaterSoul()): self.IsNoSoul = True
+    IsGreaterSoul = property(get_IsGreaterSoul, set_IsGreaterSoul)
+    def get_IsGrandSoul(self):
+        return (self.soul == 5)
+    def set_IsGrandSoul(self, nValue):
+        if (nValue == True): self.soul = 5
+        elif(self.get_IsGrandSoul()): self.IsNoSoul = True
+    IsGrandSoul = property(get_IsGrandSoul, set_IsGrandSoul)
+    def get_IsNoCapacity(self):
+        return (self.capacity == 0)
+    def set_IsNoCapacity(self, nValue):
+        if (nValue == True): self.capacity = 0
+        elif(self.get_IsNoCapacity()): self.IsPettyCapacity = True
+    IsNoCapacity = property(get_IsNoCapacity, set_IsNoCapacity)
+    def get_IsPettyCapacity(self):
+        return (self.capacity == 1)
+    def set_IsPettyCapacity(self, nValue):
+        if (nValue == True): self.capacity = 1
+        elif(self.get_IsPettyCapacity()): self.IsNoCapacity = True
+    IsPettyCapacity = property(get_IsPettyCapacity, set_IsPettyCapacity)
+    def get_IsLesserCapacity(self):
+        return (self.capacity == 2)
+    def set_IsLesserCapacity(self, nValue):
+        if (nValue == True): self.capacity = 2
+        elif(self.get_IsLesserCapacity()): self.IsNoCapacity = True
+    IsLesserCapacity = property(get_IsLesserCapacity, set_IsLesserCapacity)
+    def get_IsCommonCapacity(self):
+        return (self.capacity == 3)
+    def set_IsCommonCapacity(self, nValue):
+        if (nValue == True): self.capacity = 3
+        elif(self.get_IsCommonCapacity()): self.IsNoCapacity = True
+    IsCommonCapacity = property(get_IsCommonCapacity, set_IsCommonCapacity)
+    def get_IsGreaterCapacity(self):
+        return (self.capacity == 4)
+    def set_IsGreaterCapacity(self, nValue):
+        if (nValue == True): self.capacity = 4
+        elif(self.get_IsGreaterCapacity()): self.IsNoCapacity = True
+    IsGreaterCapacity = property(get_IsGreaterCapacity, set_IsGreaterCapacity)
+    def get_IsGrandCapacity(self):
+        return (self.capacity == 5)
+    def set_IsGrandCapacity(self, nValue):
+        if (nValue == True): self.capacity = 5
+        elif(self.get_IsGrandCapacity()): self.IsNoCapacity = True
+    IsGrandCapacity = property(get_IsGrandCapacity, set_IsGrandCapacity)
+    
 class KEYMRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyKEYMRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -5656,6 +7636,12 @@ class ALCHRecord(BaseRecord):
         def set_full(self, nValue):
             CBash.SetFIDListFieldStr(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 13, nValue)
         full = property(get_full, set_full)
+        def get_IsHostile(self):
+            return (self.flags & 0x00000001) != 0
+        def set_IsHostile(self, nValue):
+            if (nValue == True): self.flags |= 0x00000001
+            else: self.flags &= ~0x00000001
+        IsHostile = property(get_IsHostile, set_IsHostile)
     def newEffectsElement(self):
         listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 16)
         if(listIndex == -1): return None
@@ -5755,6 +7741,19 @@ class ALCHRecord(BaseRecord):
         for oEffect, nValue in zip(self.effects, nValues):
             oEffect.name0, oEffect.name, oEffect.magnitude, oEffect.area, oEffect.duration, oEffect.recipient, oEffect.actorValue, oEffect.script, oEffect.school, oEffect.visual, oEffect.flags, oEffect.unused1, oEffect.full = nValue
     effects = property(get_effects, set_effects)
+    def get_IsNoAutoCalc(self):
+        return (self.flags & 0x00000001) != 0
+    def set_IsNoAutoCalc(self, nValue):
+        if (nValue == True): self.flags |= 0x00000001
+        else: self.flags &= ~0x00000001
+    IsNoAutoCalc = property(get_IsNoAutoCalc, set_IsNoAutoCalc)
+    def get_IsFood(self):
+        return (self.flags & 0x00000002) != 0
+    def set_IsFood(self, nValue):
+        if (nValue == True): self.flags |= 0x00000002
+        else: self.flags &= ~0x00000002
+    IsFood = property(get_IsFood, set_IsFood)
+    
 class SBSPRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopySBSPRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -5887,6 +7886,12 @@ class SGSTRecord(BaseRecord):
         def set_full(self, nValue):
             CBash.SetFIDListFieldStr(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 13, nValue)
         full = property(get_full, set_full)
+        def get_IsHostile(self):
+            return (self.flags & 0x00000001) != 0
+        def set_IsHostile(self, nValue):
+            if (nValue == True): self.flags |= 0x00000001
+            else: self.flags &= ~0x00000001
+        IsHostile = property(get_IsHostile, set_IsHostile)
     def newEffectsElement(self):
         listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 12)
         if(listIndex == -1): return None
@@ -6165,6 +8170,30 @@ class WTHRRecord(BaseRecord):
         def set_type(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 204, self._listIndex, 2, nValue)
         type = property(get_type, set_type)
+        def get_IsDefault(self):
+            return (self.type == 0)
+        def set_IsDefault(self, nValue):
+            if (nValue == True): self.type = 0
+            elif(self.get_IsDefault()): self.IsPrecip = True
+        IsDefault = property(get_IsDefault, set_IsDefault)
+        def get_IsPrecipitation(self):
+            return (self.type == 1)
+        def set_IsPrecipitation(self, nValue):
+            if (nValue == True): self.type = 1
+            elif(self.get_IsPrecipitation()): self.IsDefault = True
+        IsPrecip = IsPrecipitation = property(get_IsPrecipitation, set_IsPrecipitation)
+        def get_IsWind(self):
+            return (self.type == 2)
+        def set_IsWind(self, nValue):
+            if (nValue == True): self.type = 2
+            elif(self.get_IsWind()): self.IsDefault = True
+        IsWind = property(get_IsWind, set_IsWind)
+        def get_IsThunder(self):
+            return (self.type == 3)
+        def set_IsThunder(self, nValue):
+            if (nValue == True): self.type = 3
+            elif(self.get_IsThunder()): self.IsDefault = True
+        IsThunder = property(get_IsThunder, set_IsThunder)
     def newSoundsElement(self):
         listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 204)
         if(listIndex == -1): return None
@@ -6516,6 +8545,89 @@ class WTHRRecord(BaseRecord):
         for oSound, nValue in zip(self.sounds, nValues):
             oSound.sound, oSound.type = nValue
     sounds = property(get_sounds, set_sounds)
+    def get_IsNone(self):
+        return self.IsPleasant == False and self.IsCloudy == False and self.IsRainy == False and self.IsSnow == False
+    def set_IsNone(self, nValue):
+        if (nValue == True):
+            self.weatherType &= ~0x00000001
+            self.weatherType &= ~0x00000002
+            self.weatherType &= ~0x00000004
+            self.weatherType &= ~0x00000008
+        elif(self.get_IsNone()):
+            self.weatherType |= 0x00000001
+            self.weatherType &= ~0x00000002
+            self.weatherType &= ~0x00000004
+            self.weatherType &= ~0x00000008
+    IsNone = property(get_IsNone, set_IsNone)
+    def get_IsPleasant(self):
+        return (self.weatherType & 0x00000001) != 0
+    def set_IsPleasant(self, nValue):
+        if (nValue == True):
+            self.weatherType |= 0x00000001
+            self.weatherType &= ~0x00000002
+            self.weatherType &= ~0x00000004
+            self.weatherType &= ~0x00000008
+        elif(self.get_IsPleasant()):
+            self.weatherType &= ~0x00000001
+            self.weatherType &= ~0x00000002
+            self.weatherType &= ~0x00000004
+            self.weatherType &= ~0x00000008
+    IsPleasant = property(get_IsPleasant, set_IsPleasant)
+    def get_IsCloudy(self):
+        return (self.weatherType & 0x00000002) != 0
+    def set_IsCloudy(self, nValue):
+        if (nValue == True):
+            self.weatherType &= ~0x00000001
+            self.weatherType |= 0x00000002
+            self.weatherType &= ~0x00000004
+            self.weatherType &= ~0x00000008
+        elif(self.get_IsCloudy()):
+            self.weatherType &= ~0x00000001
+            self.weatherType &= ~0x00000002
+            self.weatherType &= ~0x00000004
+            self.weatherType &= ~0x00000008
+    IsCloudy = property(get_IsCloudy, set_IsCloudy)
+    def get_IsRainy(self):
+        return (self.weatherType & 0x00000004) != 0
+    def set_IsRainy(self, nValue):
+        if (nValue == True):
+            self.weatherType &= ~0x00000001
+            self.weatherType &= ~0x00000002
+            self.weatherType |= 0x00000004
+            self.weatherType &= ~0x00000008
+        elif(self.get_IsRainy()):
+            self.weatherType &= ~0x00000001
+            self.weatherType &= ~0x00000002
+            self.weatherType &= ~0x00000004
+            self.weatherType &= ~0x00000008
+    IsRainy = property(get_IsRainy, set_IsRainy)
+    def get_IsSnow(self):
+        return (self.weatherType & 0x00000008) != 0
+    def set_IsSnow(self, nValue):
+        if (nValue == True):
+            self.weatherType &= ~0x00000001
+            self.weatherType &= ~0x00000002
+            self.weatherType &= ~0x00000004
+            self.weatherType |= 0x00000008
+        elif(self.get_IsSnow()):
+            self.weatherType &= ~0x00000001
+            self.weatherType &= ~0x00000002
+            self.weatherType &= ~0x00000004
+            self.weatherType &= ~0x00000008
+    IsSnow = property(get_IsSnow, set_IsSnow)
+    def get_IsUnk1(self):
+        return (self.weatherType & 0x01000000) != 0
+    def set_IsUnk1(self, nValue):
+        if (nValue == True): self.weatherType |= 0x01000000
+        else: self.weatherType &= ~0x01000000
+    IsUnk1 = property(get_IsUnk1, set_IsUnk1)
+    def get_IsUnk2(self):
+        return (self.weatherType & 0x10000000) != 0
+    def set_IsUnk2(self, nValue):
+        if (nValue == True): self.weatherType |= 0x10000000
+        else: self.weatherType &= ~0x10000000
+    IsUnk2 = property(get_IsUnk2, set_IsUnk2)
+    
 class CLMTRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyCLMTRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -6649,6 +8761,7 @@ class CLMTRecord(BaseRecord):
     def set_phaseLength(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 17, c_ubyte(nValue))
     phaseLength = property(get_phaseLength, set_phaseLength)
+    
 class REGNRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyREGNRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -6886,6 +8999,55 @@ class REGNRecord(BaseRecord):
             def set_unk2(self, nValue):
                 CBash.SetFIDListX2FieldR(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 20, struct.pack('4B', *nValue), 4)
             unk2 = property(get_unk2, set_unk2)
+            def get_IsConformToSlope(self):
+                return (self.flags & 0x00000001) != 0
+            def set_IsConformToSlope(self, nValue):
+                if (nValue == True): self.flags |= 0x00000001
+                else: self.flags &= ~0x00000001
+            IsConformToSlope = property(get_IsConformToSlope, set_IsConformToSlope)
+            def get_IsPaintVertices(self):
+                return (self.flags & 0x00000002) != 0
+            def set_IsPaintVertices(self, nValue):
+                if (nValue == True): self.flags |= 0x00000002
+                else: self.flags &= ~0x00000002
+            IsPaintVertices = property(get_IsPaintVertices, set_IsPaintVertices)
+            def get_IsSizeVariance(self):
+                return (self.flags & 0x00000004) != 0
+            def set_IsSizeVariance(self, nValue):
+                if (nValue == True): self.flags |= 0x00000004
+                else: self.flags &= ~0x00000004
+            IsSizeVariance = property(get_IsSizeVariance, set_IsSizeVariance)
+            def get_IsXVariance(self):
+                return (self.flags & 0x00000008) != 0
+            def set_IsXVariance(self, nValue):
+                if (nValue == True): self.flags |= 0x00000008
+                else: self.flags &= ~0x00000008
+            IsXVariance = property(get_IsXVariance, set_IsXVariance)
+            def get_IsYVariance(self):
+                return (self.flags & 0x00000010) != 0
+            def set_IsYVariance(self, nValue):
+                if (nValue == True): self.flags |= 0x00000010
+                else: self.flags &= ~0x00000010
+            IsYVariance = property(get_IsYVariance, set_IsYVariance)
+            def get_IsZVariance(self):
+                return (self.flags & 0x00000020) != 0
+            def set_IsZVariance(self, nValue):
+                if (nValue == True): self.flags |= 0x00000020
+                else: self.flags &= ~0x00000020
+            IsZVariance = property(get_IsZVariance, set_IsZVariance)
+            def get_IsTree(self):
+                return (self.flags & 0x00000040) != 0
+            def set_IsTree(self, nValue):
+                if (nValue == True): self.flags |= 0x00000040
+                else: self.flags &= ~0x00000040
+            IsTree = property(get_IsTree, set_IsTree)
+            def get_IsHugeRock(self):
+                return (self.flags & 0x00000080) != 0
+            def set_IsHugeRock(self, nValue):
+                if (nValue == True): self.flags |= 0x00000080
+                else: self.flags &= ~0x00000080
+            IsHugeRock = property(get_IsHugeRock, set_IsHugeRock)
+            
         class Grass(object):
             def __init__(self, CollectionIndex, ModName, recordID, listIndex, listX2Index):
                 self._CollectionIndex = CollectionIndex
@@ -6942,6 +9104,31 @@ class REGNRecord(BaseRecord):
             def set_chance(self, nValue):
                 CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 10, self._listX2Index, 3, nValue)
             chance = property(get_chance, set_chance)
+
+            def get_IsPleasant(self):
+                return (self.flags & 0x00000001) != 0
+            def set_IsPleasant(self, nValue):
+                if (nValue == True): self.flags |= 0x00000001
+                else: self.flags &= ~0x00000001
+            IsPleasant = property(get_IsPleasant, set_IsPleasant)
+            def get_IsCloudy(self):
+                return (self.flags & 0x00000002) != 0
+            def set_IsCloudy(self, nValue):
+                if (nValue == True): self.flags |= 0x00000002
+                else: self.flags &= ~0x00000002
+            IsCloudy = property(get_IsCloudy, set_IsCloudy)
+            def get_IsRainy(self):
+                return (self.flags & 0x00000004) != 0
+            def set_IsRainy(self, nValue):
+                if (nValue == True): self.flags |= 0x00000004
+                else: self.flags &= ~0x00000004
+            IsRainy = property(get_IsRainy, set_IsRainy)
+            def get_IsSnowy(self):
+                return (self.flags & 0x00000008) != 0
+            def set_IsSnowy(self, nValue):
+                if (nValue == True): self.flags |= 0x00000008
+                else: self.flags &= ~0x00000008
+            IsSnowy = property(get_IsSnowy, set_IsSnowy)
         class Weather(object):
             def __init__(self, CollectionIndex, ModName, recordID, listIndex, listX2Index):
                 self._CollectionIndex = CollectionIndex
@@ -7109,6 +9296,66 @@ class REGNRecord(BaseRecord):
             for oWeather, nValue in zip(self.weathers, nValues):
                 oWeather.weather, oWeather.chance = nValue
         weathers = property(get_weathers, set_weathers)
+        def get_IsOverride(self):
+            return (self.flags & 0x00000001) != 0
+        def set_IsOverride(self, nValue):
+            if (nValue == True): self.flags |= 0x00000001
+            else: self.flags &= ~0x00000001
+        IsOverride = property(get_IsOverride, set_IsOverride)
+        def get_IsObject(self):
+            return (self.entryType == 2)
+        def set_IsObject(self, nValue):
+            if (nValue == True): self.entryType = 2
+            elif(self.get_IsObject()): self.IsWeather = True
+        IsObject = property(get_IsObject, set_IsObject)
+        def get_IsWeather(self):
+            return (self.entryType == 3)
+        def set_IsWeather(self, nValue):
+            if (nValue == True): self.entryType = 3
+            elif(self.get_IsWeather()): self.IsObject = True
+        IsWeather = property(get_IsWeather, set_IsWeather)
+        def get_IsMap(self):
+            return (self.entryType == 4)
+        def set_IsMap(self, nValue):
+            if (nValue == True): self.entryType = 4
+            elif(self.get_IsMap()): self.IsObject = True
+        IsMap = property(get_IsMap, set_IsMap)
+        def get_IsIcon(self):
+            return (self.entryType == 5)
+        def set_IsIcon(self, nValue):
+            if (nValue == True): self.entryType = 5
+            elif(self.get_IsUnkIcon()): self.IsObject = True
+        IsIcon = property(get_IsIcon, set_IsIcon)
+        def get_IsGrass(self):
+            return (self.entryType == 6)
+        def set_IsGrass(self, nValue):
+            if (nValue == True): self.entryType = 6
+            elif(self.get_IsGrass()): self.IsObject = True
+        IsGrass = property(get_IsGrass, set_IsGrass)
+        def get_IsSound(self):
+            return (self.entryType == 7)
+        def set_IsSound(self, nValue):
+            if (nValue == True): self.entryType = 7
+            elif(self.get_IsSound()): self.IsObject = True
+        IsSound = property(get_IsSound, set_IsSound)
+        def get_IsDefault(self):
+            return (self.musicType == 0)
+        def set_IsDefault(self, nValue):
+            if (nValue == True): self.musicType = 0
+            elif(self.get_IsDefault()): self.IsPublic = True
+        IsDefault = property(get_IsDefault, set_IsDefault)
+        def get_IsPublic(self):
+            return (self.musicType == 1)
+        def set_IsPublic(self, nValue):
+            if (nValue == True): self.musicType = 1
+            elif(self.get_IsPublic()): self.IsDefault = True
+        IsPublic = property(get_IsPublic, set_IsPublic)
+        def get_IsDungeon(self):
+            return (self.musicType == 2)
+        def set_IsDungeon(self, nValue):
+            if (nValue == True): self.musicType = 2
+            elif(self.get_IsDungeon()): self.IsDefault = True
+        IsDungeon = property(get_IsDungeon, set_IsDungeon)
     def newAreasElement(self):
         listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 12)
         if(listIndex == -1): return None
@@ -7263,22 +9510,15 @@ class REGNRecord(BaseRecord):
             for oWeather, weatherValue in zip(oEntry.weathers, nValue[10]):
                 oWeather.weather, oWeather.chance = weatherValue                  
     entries = property(get_entries, set_entries)
+    
 class CELLRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
-        if(self._parentID == None):
-            FID = CBash.CopyCELLRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0, c_bool(True))
-            if(FID): return CELLRecord(self._CollectionIndex, targetMod._ModName, FID)
-        else:
-            FID = CBash.CopyCELLRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, targetMod._recordID, c_bool(True))
-            if(FID): return CELLRecord(self._CollectionIndex, targetMod._ModName, FID, targetMod._recordID)
+        FID = CBash.CopyCELLRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        if(FID): return CELLRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        if(self._parentID == None):
-            FID = CBash.CopyCELLRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0, c_bool(False))
-            if(FID): return CELLRecord(self._CollectionIndex, targetMod._ModName, FID)
-        else:
-            FID = CBash.CopyCELLRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, targetMod._recordID, c_bool(False))
-            if(FID): return CELLRecord(self._CollectionIndex, targetMod._ModName, FID, targetMod._recordID)
+        FID = CBash.CopyCELLRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        if(FID): return CELLRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def createACHRRecord(self):
         FID = CBash.CreateACHRRecord(self._CollectionIndex, self._ModName, self._recordID)
@@ -7295,10 +9535,6 @@ class CELLRecord(BaseRecord):
     def createPGRDRecord(self):
         FID = CBash.CreatePGRDRecord(self._CollectionIndex, self._ModName, self._recordID)
         if(FID): return PGRDRecord(self._CollectionIndex, self._ModName, FID, self._recordID)
-        return None
-    def createLANDRecord(self):
-        FID = CBash.CreateLANDRecord(self._CollectionIndex, self._ModName, self._recordID)
-        if(FID): return LANDRecord(self._CollectionIndex, self._ModName, FID, self._recordID)
         return None
     def get_full(self):
         CBash.ReadFIDField.restype = c_char_p
@@ -7548,27 +9784,26 @@ class CELLRecord(BaseRecord):
     water = property(get_water, set_water)
     @property
     def ACHR(self):
-        numSubRecords = CBash.GetNumACHRRecords(self._CollectionIndex, self._ModName, self._recordID)
+        numSubRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 36)
         if(numSubRecords > 0):
             cRecords = (POINTER(c_uint) * numSubRecords)()
-            CBash.GetACHRRecords(self._CollectionIndex, self._ModName, self._recordID, cRecords)
+            CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 36, byref(cRecords))
             return [ACHRRecord(self._CollectionIndex, self._ModName, x.contents.value, self._recordID) for x in cRecords]
         else: return []
-
     @property
     def ACRE(self):
-        numSubRecords = CBash.GetNumACRERecords(self._CollectionIndex, self._ModName, self._recordID)
+        numSubRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 37)
         if(numSubRecords > 0):
             cRecords = (POINTER(c_uint) * numSubRecords)()
-            CBash.GetACRERecords(self._CollectionIndex, self._ModName, self._recordID, cRecords)
+            CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 37, byref(cRecords))
             return [ACRERecord(self._CollectionIndex, self._ModName, x.contents.value, self._recordID) for x in cRecords]
         else: return []
     @property
     def REFR(self):
-        numSubRecords = CBash.GetNumREFRRecords(self._CollectionIndex, self._ModName, self._recordID)
+        numSubRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 38)
         if(numSubRecords > 0):
             cRecords = (POINTER(c_uint) * numSubRecords)()
-            CBash.GetREFRRecords(self._CollectionIndex, self._ModName, self._recordID, cRecords)
+            CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 38, byref(cRecords))
             return [REFRRecord(self._CollectionIndex, self._ModName, x.contents.value, self._recordID) for x in cRecords]
         else: return []
     def get_PGRD(self):
@@ -7587,29 +9822,74 @@ class CELLRecord(BaseRecord):
         curPGRD.PGRI = nPGRD.PGRI
         curPGRD.PGRL = nPGRD.PGRL
     PGRD = property(get_PGRD, set_PGRD)
-    def get_LAND(self):
-        CBash.ReadFIDField.restype = POINTER(c_uint)
-        retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 40)
-        if(retValue): return LANDRecord(self._CollectionIndex, self._ModName, retValue.contents.value, self._recordID)
-        else: return None
-    def set_LAND(self, nLAND):
-        curLAND = self.LAND
-        if(curLAND == None):
-            curLAND = self.createLANDRecord()
-##        curLAND.count = nLAND.count
-##        curLAND.PGRP = nLAND.PGRP
-##        curLAND.PGAG = nLAND.PGAG
-##        curLAND.PGRR = nLAND.PGRR
-##        curLAND.PGRI = nLAND.PGRI
-##        curLAND.PGRL = nLAND.PGRL
-    LAND = property(get_LAND, set_LAND)
-class ACHRRecord(BaseRecord):
+    def get_IsInterior(self):
+        return (self.flags & 0x00000001) != 0
+    def set_IsInterior(self, nValue):
+        if (nValue == True): self.flags |= 0x00000001
+        else: self.flags &= ~0x00000001
+    IsInterior = property(get_IsInterior, set_IsInterior)
+    def get_HasWater(self):
+        return (self.flags & 0x00000002) != 0
+    def set_HasWater(self, nValue):
+        if (nValue == True): self.flags |= 0x00000002
+        else: self.flags &= ~0x00000002
+    HasWater = property(get_HasWater, set_HasWater)
+    def get_InvertFastTravel(self):
+        return (self.flags & 0x00000004) != 0
+    def set_InvertFastTravel(self, nValue):
+        if (nValue == True): self.flags |= 0x00000004
+        else: self.flags &= ~0x00000004
+    InvertFastTravel = property(get_InvertFastTravel, set_InvertFastTravel)
+    def get_ForceHideLand(self):
+        return (self.flags & 0x00000008) != 0
+    def set_ForceHideLand(self, nValue):
+        if (nValue == True): self.flags |= 0x00000008
+        else: self.flags &= ~0x00000008
+    ForceHideLand = property(get_ForceHideLand, set_ForceHideLand)
+    def get_PublicPlace(self):
+        return (self.flags & 0x00000020) != 0
+    def set_PublicPlace(self, nValue):
+        if (nValue == True): self.flags |= 0x00000020
+        else: self.flags &= ~0x00000020
+    PublicPlace = property(get_PublicPlace, set_PublicPlace)
+    def get_HandChanged(self):
+        return (self.flags & 0x00000040) != 0
+    def set_HandChanged(self, nValue):
+        if (nValue == True): self.flags |= 0x00000040
+        else: self.flags &= ~0x00000040
+    HandChanged = property(get_HandChanged, set_HandChanged)
+    def get_BehaveLikeExterior(self):
+        return (self.flags & 0x00000080) != 0
+    def set_BehaveLikeExterior(self, nValue):
+        if (nValue == True): self.flags |= 0x00000080
+        else: self.flags &= ~0x00000080
+    BehaveLikeExterior = property(get_BehaveLikeExterior, set_BehaveLikeExterior)
+    def get_IsDefault(self):
+        return (self.music == 0)
+    def set_IsDefault(self, nValue):
+        if (nValue == True): self.music = 0
+        elif(self.get_IsDefault()): self.IsPublic = True
+    IsDefault = property(get_IsDefault, set_IsDefault)
+    def get_IsPublic(self):
+        return (self.music == 1)
+    def set_IsPublic(self, nValue):
+        if (nValue == True): self.music = 1
+        elif(self.get_IsPublic()): self.IsDefault = True
+    IsPublic = property(get_IsPublic, set_IsPublic)
+    def get_IsDungeon(self):
+        return (self.music == 2)
+    def set_IsDungeon(self, nValue):
+        if (nValue == True): self.music = 2
+        elif(self.get_IsDungeon()): self.IsDefault = True
+    IsDungeon = property(get_IsDungeon, set_IsDungeon)
+    
+class ACHRRecord(SubRecord):
     def CopyAsOverride(self, targetCELL):
-        FID = CBash.CopyACHRRecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetCELL._recordID, c_bool(True))
+        FID = CBash.CopyACHRRecord(self._CollectionIndex, self._ModName, self._recordID, self._parentID, targetCELL._ModName, targetCELL._recordID, c_bool(True))
         if(FID): return ACHRRecord(self._CollectionIndex, targetCELL._ModName, FID, targetCELL._recordID)
         return None
     def CopyAsNew(self, targetCELL):
-        FID = CBash.CopyACHRRecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetCELL._recordID, c_bool(False))
+        FID = CBash.CopyACHRRecord(self._CollectionIndex, self._ModName, self._recordID, self._parentID, targetCELL._ModName, targetCELL._recordID, c_bool(False))
         if(FID): return ACHRRecord(self._CollectionIndex, targetCELL._ModName, FID, targetCELL._recordID)
         return None
     def get_eid(self):
@@ -7773,13 +10053,20 @@ class ACHRRecord(BaseRecord):
     def set_rotZ(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 24, c_float(nValue))
     rotZ = property(get_rotZ, set_rotZ)
-class ACRERecord(BaseRecord):
+    def get_IsOppositeParent(self):
+        return (self.parentFlags & 0x00000001) != 0
+    def set_IsOppositeParent(self, nValue):
+        if (nValue == True): self.parentFlags |= 0x00000001
+        else: self.parentFlags &= ~0x00000001
+    IsOppositeParent = property(get_IsOppositeParent, set_IsOppositeParent)
+    
+class ACRERecord(SubRecord):
     def CopyAsOverride(self, targetCELL):
-        FID = CBash.CopyACRERecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetCELL._recordID, c_bool(True))
+        FID = CBash.CopyACRERecord(self._CollectionIndex, self._ModName, self._recordID, self._parentID, targetCELL._ModName, targetCELL._recordID, c_bool(True))
         if(FID): return ACRERecord(self._CollectionIndex, targetCELL._ModName, FID, targetCELL._recordID)
         return None
     def CopyAsNew(self, targetCELL):
-        FID = CBash.CopyACRERecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetCELL._recordID, c_bool(False))
+        FID = CBash.CopyACRERecord(self._CollectionIndex, self._ModName, self._recordID, self._parentID, targetCELL._ModName, targetCELL._recordID, c_bool(False))
         if(FID): return ACRERecord(self._CollectionIndex, targetCELL._ModName, FID, targetCELL._recordID)
         return None
     def get_eid(self):
@@ -7913,13 +10200,20 @@ class ACRERecord(BaseRecord):
     def set_rotZ(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 20, c_float(nValue))
     rotZ = property(get_rotZ, set_rotZ)
-class REFRRecord(BaseRecord):
+    def get_IsOppositeParent(self):
+        return (self.parentFlags & 0x00000001) != 0
+    def set_IsOppositeParent(self, nValue):
+        if (nValue == True): self.parentFlags |= 0x00000001
+        else: self.parentFlags &= ~0x00000001
+    IsOppositeParent = property(get_IsOppositeParent, set_IsOppositeParent)
+    
+class REFRRecord(SubRecord):
     def CopyAsOverride(self, targetCELL):
-        FID = CBash.CopyREFRRecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetCELL._recordID, c_bool(True))
+        FID = CBash.CopyREFRRecord(self._CollectionIndex, self._ModName, self._recordID, self._parentID, targetCELL._ModName, targetCELL._recordID, c_bool(True))
         if(FID): return REFRRecord(self._CollectionIndex, targetCELL._ModName, FID, targetCELL._recordID)
         return None
     def CopyAsNew(self, targetCELL):
-        FID = CBash.CopyREFRRecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetCELL._recordID, c_bool(False))
+        FID = CBash.CopyREFRRecord(self._CollectionIndex, self._ModName, self._recordID, self._parentID, targetCELL._ModName, targetCELL._recordID, c_bool(False))
         if(FID): return REFRRecord(self._CollectionIndex, targetCELL._ModName, FID, targetCELL._recordID)
         return None
     def get_eid(self):
@@ -8302,13 +10596,189 @@ class REFRRecord(BaseRecord):
     def set_rotZ(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 50, c_float(nValue))
     rotZ = property(get_rotZ, set_rotZ)
-class PGRDRecord(BaseRecord):
+    def get_IsOppositeParent(self):
+        return (self.parentFlags & 0x00000001) != 0
+    def set_IsOppositeParent(self, nValue):
+        if (nValue == True): self.parentFlags |= 0x00000001
+        else: self.parentFlags &= ~0x00000001
+    IsOppositeParent = property(get_IsOppositeParent, set_IsOppositeParent)
+    def get_IsVisible(self):
+        return (self.markerFlags & 0x00000001) != 0
+    def set_IsVisible(self, nValue):
+        if (nValue == True): self.markerFlags |= 0x00000001
+        else: self.markerFlags &= ~0x00000001
+    IsVisible = property(get_IsVisible, set_IsVisible)
+    def get_IsCanTravelTo(self):
+        return (self.markerFlags & 0x00000002) != 0
+    def set_IsCanTravelTo(self, nValue):
+        if (nValue == True): self.markerFlags |= 0x00000002
+        else: self.markerFlags &= ~0x00000002
+    IsCanTravelTo = property(get_IsCanTravelTo, set_IsCanTravelTo)
+    def get_IsUseDefault(self):
+        return (self.actionFlags & 0x00000001) != 0
+    def set_IsUseDefault(self, nValue):
+        if (nValue == True): self.actionFlags |= 0x00000001
+        else: self.actionFlags &= ~0x00000001
+    IsUseDefault = property(get_IsUseDefault, set_IsUseDefault)
+    def get_IsActivate(self):
+        return (self.actionFlags & 0x00000002) != 0
+    def set_IsActivate(self, nValue):
+        if (nValue == True): self.actionFlags |= 0x00000002
+        else: self.actionFlags &= ~0x00000002
+    IsActivate = property(get_IsActivate, set_IsActivate)
+    def get_IsOpen(self):
+        return (self.actionFlags & 0x00000004) != 0
+    def set_IsOpen(self, nValue):
+        if (nValue == True): self.actionFlags |= 0x00000004
+        else: self.actionFlags &= ~0x00000004
+    IsOpen = property(get_IsOpen, set_IsOpen)
+    def get_IsOpenByDefault(self):
+        return (self.actionFlags & 0x00000008) != 0
+    def set_IsOpenByDefault(self, nValue):
+        if (nValue == True): self.actionFlags |= 0x00000008
+        else: self.actionFlags &= ~0x00000008
+    IsOpenByDefault = property(get_IsOpenByDefault, set_IsOpenByDefault)
+    def get_IsLeveledLock(self):
+        return (self.lockFlags & 0x00000004) != 0
+    def set_IsLeveledLock(self, nValue):
+        if (nValue == True): self.lockFlags |= 0x00000004
+        else: self.lockFlags &= ~0x00000004
+    IsLeveledLock = property(get_IsLeveledLock, set_IsLeveledLock)
+    def get_IsMarkerNone(self):
+        if(self.markerType == None): return True
+        return (self.markerType == 0x00000000)
+    def set_IsMarkerNone(self, nValue):
+        if (nValue == True): self.markerType = 0x00000000
+        elif(self.get_MarkerNone()): IsCamp = True
+    IsMarkerNone = property(get_IsMarkerNone, set_IsMarkerNone)
+    def get_IsCamp(self):
+        if(self.markerType == None): return False
+        return (self.markerType == 0x00000001)
+    def set_IsCamp(self, nValue):
+        if (nValue == True): self.markerType = 0x00000001
+        elif(self.get_Camp()): self.markerType = 0
+    IsCamp = property(get_IsCamp, set_IsCamp)
+    def get_IsCave(self):
+        if(self.markerType == None): return False
+        return (self.markerType == 0x00000002)
+    def set_IsCave(self, nValue):
+        if (nValue == True): self.markerType = 0x00000002
+        elif(self.get_Cave()): self.markerType = 0
+    IsCave = property(get_IsCave, set_IsCave)
+    def get_IsCity(self):
+        if(self.markerType == None): return False
+        return (self.markerType == 0x00000003)
+    def set_IsCity(self, nValue):
+        if (nValue == True): self.markerType = 0x00000003
+        elif(self.get_City()): self.markerType = 0
+    IsCity = property(get_IsCity, set_IsCity)
+    def get_IsElvenRuin(self):
+        if(self.markerType == None): return False
+        return (self.markerType == 0x00000004)
+    def set_IsElvenRuin(self, nValue):
+        if (nValue == True): self.markerType = 0x00000004
+        elif(self.get_ElvenRuin()): self.markerType = 0
+    IsElvenRuin = property(get_IsElvenRuin, set_IsElvenRuin)
+    def get_IsFortRuin(self):
+        if(self.markerType == None): return False
+        return (self.markerType == 0x00000005)
+    def set_IsFortRuin(self, nValue):
+        if (nValue == True): self.markerType = 0x00000005
+        elif(self.get_FortRuin()): self.markerType = 0
+    IsFortRuin = property(get_IsFortRuin, set_IsFortRuin)
+    def get_IsMine(self):
+        if(self.markerType == None): return False
+        return (self.markerType == 0x00000006)
+    def set_IsMine(self, nValue):
+        if (nValue == True): self.markerType = 0x00000006
+        elif(self.get_Mine()): self.markerType = 0
+    IsMine = property(get_IsMine, set_IsMine)
+    def get_IsLandmark(self):
+        if(self.markerType == None): return False
+        return (self.markerType == 0x00000007)
+    def set_IsLandmark(self, nValue):
+        if (nValue == True): self.markerType = 0x00000007
+        elif(self.get_Landmark()): self.markerType = 0
+    IsLandmark = property(get_IsLandmark, set_IsLandmark)
+    def get_IsTavern(self):
+        if(self.markerType == None): return False
+        return (self.markerType == 0x00000008)
+    def set_IsTavern(self, nValue):
+        if (nValue == True): self.markerType = 0x00000008
+        elif(self.get_Tavern()): self.markerType = 0
+    IsTavern = property(get_IsTavern, set_IsTavern)
+    def get_IsSettlement(self):
+        if(self.markerType == None): return False
+        return (self.markerType == 0x00000009)
+    def set_IsSettlement(self, nValue):
+        if (nValue == True): self.markerType = 0x00000009
+        elif(self.get_Settlement()): self.markerType = 0
+    IsSettlement = property(get_IsSettlement, set_IsSettlement)
+    def get_IsDaedricShrine(self):
+        if(self.markerType == None): return False
+        return (self.markerType == 0x0000000A)
+    def set_IsDaedricShrine(self, nValue):
+        if (nValue == True): self.markerType = 0x0000000A
+        elif(self.get_DaedricShrine()): self.markerType = 0
+    IsDaedricShrine = property(get_IsDaedricShrine, set_IsDaedricShrine)
+    def get_IsOblivionGate(self):
+        if(self.markerType == None): return False
+        return (self.markerType == 0x0000000B)
+    def set_IsOblivionGate(self, nValue):
+        if (nValue == True): self.markerType = 0x0000000B
+        elif(self.get_OblivionGate()): self.markerType = 0
+    IsOblivionGate = property(get_IsOblivionGate, set_IsOblivionGate)
+    def get_IsUnknownDoorIcon(self):
+        if(self.markerType == None): return False
+        return (self.markerType == 0x0000000C)
+    def set_IsUnknownDoorIcon(self, nValue):
+        if (nValue == True): self.markerType = 0x0000000C
+        elif(self.get_UnknownDoorIcon()): self.markerType = 0
+    IsUnknownDoorIcon = property(get_IsUnknownDoorIcon, set_IsUnknownDoorIcon)
+    def get_IsNoSoul(self):
+        return (self.soul == 0)
+    def set_IsNoSoul(self, nValue):
+        if (nValue == True): self.soul = 0
+        elif(self.get_IsNoSoul()): IsPettySoul = True
+    IsNoSoul = property(get_IsNoSoul, set_IsNoSoul)
+    def get_IsPettySoul(self):
+        return (self.soul == 1)
+    def set_IsPettySoul(self, nValue):
+        if (nValue == True): self.soul = 1
+        elif(self.get_IsPettySoul()): IsNoSoul = True
+    IsPettySoul = property(get_IsPettySoul, set_IsPettySoul)
+    def get_IsLesserSoul(self):
+        return (self.soul == 2)
+    def set_IsLesserSoul(self, nValue):
+        if (nValue == True): self.soul = 2
+        elif(self.get_IsLesserSoul()): IsNoSoul = True
+    IsLesserSoul = property(get_IsLesserSoul, set_IsLesserSoul)
+    def get_IsCommonSoul(self):
+        return (self.soul == 3)
+    def set_IsCommonSoul(self, nValue):
+        if (nValue == True): self.soul = 3
+        elif(self.get_IsCommonSoul()): IsNoSoul = True
+    IsCommonSoul = property(get_IsCommonSoul, set_IsCommonSoul)
+    def get_IsGreaterSoul(self):
+        return (self.soul == 4)
+    def set_IsGreaterSoul(self, nValue):
+        if (nValue == True): self.soul = 4
+        elif(self.get_IsGreaterSoul()): IsNoSoul = True
+    IsGreaterSoul = property(get_IsGreaterSoul, set_IsGreaterSoul)
+    def get_IsGrandSoul(self):
+        return (self.soul == 5)
+    def set_IsGrandSoul(self, nValue):
+        if (nValue == True): self.soul = 5
+        elif(self.get_IsGrandSoul()): IsNoSoul = True
+    IsGrandSoul = property(get_IsGrandSoul, set_IsGrandSoul)
+    
+class PGRDRecord(SubRecord):
     def CopyAsOverride(self, targetCELL):
-        FID = CBash.CopyPGRDRecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetCELL._recordID, c_bool(True))
+        FID = CBash.CopyPGRDRecord(self._CollectionIndex, self._ModName, self._recordID, self._parentID, targetCELL._ModName, targetCELL._recordID, c_bool(True))
         if(FID): return PGRDRecord(self._CollectionIndex, targetCELL._ModName, FID, targetCELL._recordID)
         return None
     def CopyAsNew(self, targetCELL):
-        FID = CBash.CopyPGRDRecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetCELL._recordID, c_bool(False))
+        FID = CBash.CopyPGRDRecord(self._CollectionIndex, self._ModName, self._recordID, self._parentID, targetCELL._ModName, targetCELL._recordID, c_bool(False))
         if(FID): return PGRDRecord(self._CollectionIndex, targetCELL._ModName, FID, targetCELL._recordID)
         return None
     class PGRPRecord(object):
@@ -8371,7 +10841,7 @@ class PGRDRecord(BaseRecord):
             if(retValue): return retValue.contents.value
             else: return None
         def set_point(self, nValue):
-            CBash.SetFIDListFieldUS(self._CollectionIndex, self._ModName, self._recordID, 10, self._listIndex, 1, c_ushort(nValue))
+            CBash.SetFIDListFieldUC(self._CollectionIndex, self._ModName, self._recordID, 10, self._listIndex, 1, c_ushort(nValue))
         point = property(get_point, set_point)
         def get_unused1(self):
             numRecords = CBash.GetFIDListArraySize(self._CollectionIndex, self._ModName, self._recordID, 10, self._listIndex, 2)
@@ -8423,13 +10893,15 @@ class PGRDRecord(BaseRecord):
         reference = property(get_reference, set_reference)
         def get_points(self):
             numRecords = CBash.GetFIDListArraySize(self._CollectionIndex, self._ModName, self._recordID, 11, self._listIndex, 2)
-            if(numRecords > 0):                
-                cRecords = POINTER(c_uint * numRecords)()
+            if(numRecords > 0):
+                cRecords = (c_uint * numRecords)()
                 CBash.GetFIDListArray(self._CollectionIndex, self._ModName, self._recordID, 11, self._listIndex, 2, byref(cRecords))
-                return [cRecords.contents[x] for x in range(0, numRecords)]
+                return [cRecords[x] for x in range(0, numRecords)]
             else: return []
-        def set_points(self, nValues):
-            CBash.SetFIDListFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 11, self._listIndex, 2, struct.pack('I' * len(nValues), *nValues), len(nValues))
+        def set_points(self, nValue):
+            length = len(nValue)
+            cRecords = (c_uint * length)(*nValue)
+            CBash.SetFIDListFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 11, self._listIndex, 2, cRecords, length)
         points = property(get_points, set_points)
     def newPGRPElement(self):
         listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 7)
@@ -8512,18 +10984,19 @@ class PGRDRecord(BaseRecord):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 11)
         if(numRecords > 0): return [self.PGRLRecord(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
         else: return []
-    def set_PGRL(self, nPGRLs):
-        diffLength = len(nPGRLs) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 11)
-        nValues = [(nPGRL.reference, nPGRL.points) for nPGRL in nPGRLs]
+    def set_PGRL(self, nPGRL):
+        diffLength = len(nPGRL) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 11)
+        nValues = [(nPGRLRecord.reference, nPGRLRecord.points) for nPGRLRecord in nPGRL]
         while(diffLength < 0):
             CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 11)
             diffLength += 1
         while(diffLength > 0):
             CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 11)
             diffLength -= 1
-        for oPGRL, nValue in zip(self.PGRL, nValues):
-            oPGRL.reference, oPGRL.points = nValue            
-    PGRL = property(get_PGRL, set_PGRL) 
+        for oPGRLRecord, nValue in zip(self.PGRL, nValues):
+            oPGRLRecord.reference, oPGRLRecord.points = nValue
+    PGRL = property(get_PGRL, set_PGRL)
+
 class WRLDRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyWRLDRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -8533,19 +11006,6 @@ class WRLDRecord(BaseRecord):
         FID = CBash.CopyWRLDRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
         if(FID): return WRLDRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
-    def createWorldCELLRecord(self):
-        FID = CBash.CreateWorldCELLRecord(self._CollectionIndex, self._ModName, self._recordID)
-        if(FID): return CELLRecord(self._CollectionIndex, self._ModName, FID, self._recordID)
-        return None
-    def createCELLRecord(self):
-        FID = CBash.CreateCELLRecord(self._CollectionIndex, self._ModName, self._recordID)
-        if(FID): return CELLRecord(self._CollectionIndex, self._ModName, FID, self._recordID)
-        return None
-    def createROADRecord(self):
-        FID = CBash.CreateROADRecord(self._CollectionIndex, self._ModName, self._recordID)
-        if(FID): return ROADRecord(self._CollectionIndex, self._ModName, FID, self._recordID)
-        return None
-
     def get_full(self):
         CBash.ReadFIDField.restype = c_char_p
         return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 6)
@@ -8689,756 +11149,61 @@ class WRLDRecord(BaseRecord):
         length = len(nValue)
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 23, struct.pack('B' * length, *nValue), length)
     ofst_p = property(get_ofst_p, set_ofst_p)
-    def get_ROAD(self):
-        CBash.ReadFIDField.restype = POINTER(c_uint)
-        retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 24)
-        if(retValue): return ROADRecord(self._CollectionIndex, self._ModName, retValue.contents.value, self._recordID)
-        else: return None
-    def set_ROAD(self, nROAD):
-        if(nROAD == None):
-            return
-        curROAD = self.ROAD
-        if(curROAD == None):
-            curROAD = self.createROADRecord()
-        curROAD.PGRP = nROAD.PGRP
-        curROAD.PGRR = nROAD.PGRR
-    ROAD = property(get_ROAD, set_ROAD)
-    def get_CELL(self):
-        CBash.ReadFIDField.restype = POINTER(c_uint)
-        retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 25)
-        if(retValue): return CELLRecord(self._CollectionIndex, self._ModName, retValue.contents.value, self._recordID)
-        else: return None
-    def set_CELL(self, nCELL):
-        curCELL = self.CELL
-        if(curCELL == None):
-            curCELL = self.createWorldCELLRecord()
-        curCELL.count = nCELL.count
-        curCELL.PGRP = nCELL.PGRP
-        curCELL.PGAG = nCELL.PGAG
-        curCELL.PGRR = nCELL.PGRR
-        curCELL.PGRI = nCELL.PGRI
-        curCELL.PGRL = nCELL.PGRL
-    CELL = property(get_CELL, set_CELL)
-    @property
-    def CELLS(self):
-        numSubRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 26)
-        if(numSubRecords > 0):
-            cRecords = (POINTER(c_uint) * numSubRecords)()
-            CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 26, byref(cRecords))
-            return [CELLRecord(self._CollectionIndex, self._ModName, x.contents.value, self._recordID) for x in cRecords]
-        else: return []
-class ROADRecord(BaseRecord):
-    def CopyAsOverride(self, targetWRLD):
-        FID = CBash.CopyROADRecord(self._CollectionIndex, self._ModName, self._recordID, targetWRLD._ModName, targetWRLD._recordID, c_bool(True))
-        if(FID): return ROADRecord(self._CollectionIndex, targetWRLD._ModName, FID, targetWRLD._recordID)
-        return None
-    def CopyAsNew(self, targetWRLD):
-        FID = CBash.CopyROADRecord(self._CollectionIndex, self._ModName, self._recordID, targetWRLD._ModName, targetWRLD._recordID, c_bool(False))
-        if(FID): return ROADRecord(self._CollectionIndex, targetWRLD._ModName, FID, targetWRLD._recordID)
-        return None
-    class PGRPRecord(object):
-        def __init__(self, CollectionIndex, ModName, recordID, listIndex):
-            self._CollectionIndex = CollectionIndex
-            self._ModName = ModName
-            self._recordID = recordID
-            self._listIndex = listIndex
-        def get_x(self):
-            CBash.ReadFIDListField.restype = POINTER(c_float)
-            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 1)
-            if(retValue): return retValue.contents.value
-            else: return None
-        def set_x(self, nValue):
-            CBash.SetFIDListFieldF(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 1, c_float(nValue))
-        x = property(get_x, set_x)
-        def get_y(self):
-            CBash.ReadFIDListField.restype = POINTER(c_float)
-            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 2)
-            if(retValue): return retValue.contents.value
-            else: return None
-        def set_y(self, nValue):
-            CBash.SetFIDListFieldF(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 2, c_float(nValue))
-        y = property(get_y, set_y)
-        def get_z(self):
-            CBash.ReadFIDListField.restype = POINTER(c_float)
-            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 3)
-            if(retValue): return retValue.contents.value
-            else: return None
-        def set_z(self, nValue):
-            CBash.SetFIDListFieldF(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 3, c_float(nValue))
-        z = property(get_z, set_z)
-        def get_connections(self):
-            CBash.ReadFIDListField.restype = POINTER(c_ubyte)
-            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 4)
-            if(retValue): return retValue.contents.value
-            else: return None
-        def set_connections(self, nValue):
-            CBash.SetFIDListFieldUC(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 4, c_ubyte(nValue))
-        connections = property(get_connections, set_connections)
-        def get_unused1(self):
-            numRecords = CBash.GetFIDListArraySize(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 5)
-            if(numRecords > 0):
-                cRecords = POINTER(c_ubyte * numRecords)()
-                CBash.GetFIDListArray(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 5, byref(cRecords))
-                return [cRecords.contents[x] for x in range(0, numRecords)]
-            else: return []
-        def set_unused1(self, nValue):
-            CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 5, struct.pack('3B', *nValue), 3)
-        unused1 = property(get_unused1, set_unused1)
-    class PGRRRecord(object):
-        def __init__(self, CollectionIndex, ModName, recordID, listIndex):
-            self._CollectionIndex = CollectionIndex
-            self._ModName = ModName
-            self._recordID = recordID
-            self._listIndex = listIndex
-        def get_x(self):
-            CBash.ReadFIDListField.restype = POINTER(c_float)
-            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 1)
-            if(retValue): return retValue.contents.value
-            else: return None
-        def set_x(self, nValue):
-            CBash.SetFIDListFieldF(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 1, c_float(nValue))
-        x = property(get_x, set_x)
-        def get_y(self):
-            CBash.ReadFIDListField.restype = POINTER(c_float)
-            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 2)
-            if(retValue): return retValue.contents.value
-            else: return None
-        def set_y(self, nValue):
-            CBash.SetFIDListFieldF(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 2, c_float(nValue))
-        y = property(get_y, set_y)
-        def get_z(self):
-            CBash.ReadFIDListField.restype = POINTER(c_float)
-            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 3)
-            if(retValue): return retValue.contents.value
-            else: return None
-        def set_z(self, nValue):
-            CBash.SetFIDListFieldF(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 3, c_float(nValue))
-        z = property(get_z, set_z)
-
-    def newPGRPElement(self):
-        listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 6)
-        if(listIndex == -1): return None
-        return self.PGRPRecord(self._CollectionIndex, self._ModName, self._recordID, listIndex)
-    def newPGRRElement(self):
-        listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 7)
-        if(listIndex == -1): return None
-        return self.PGRRRecord(self._CollectionIndex, self._ModName, self._recordID, listIndex)
-
-    def get_PGRP(self):
-        numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 6)
-        if(numRecords > 0): return [self.PGRPRecord(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
-        else: return []
-    def set_PGRP(self, nPGRP):
-        diffLength = len(nPGRP) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 6)
-        nValues = [(nPGRPRecord.x, nPGRPRecord.y, nPGRPRecord.z, nPGRPRecord.connections, nPGRPRecord.unused1) for nPGRPRecord in nPGRP]
-        while(diffLength < 0):
-            CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 6)
-            diffLength += 1
-        while(diffLength > 0):
-            CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 6)
-            diffLength -= 1
-        for oPGRPRecord, nValue in zip(self.PGRP, nValues):
-            oPGRPRecord.x, oPGRPRecord.y, oPGRPRecord.z, oPGRPRecord.connections, oPGRPRecord.unused1 = nValue
-    PGRP = property(get_PGRP, set_PGRP)
-    def get_PGRR(self):
-        numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 7)
-        if(numRecords > 0): return [self.PGRRRecord(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
-        else: return []
-    def set_PGRR(self, nPGRR):
-        diffLength = len(nPGRR) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 7)
-        nValues = [(nPGRRRecord.x, nPGRRRecord.y, nPGRRRecord.z) for nPGRRRecord in nPGRR]
-        while(diffLength < 0):
-            CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 7)
-            diffLength += 1
-        while(diffLength > 0):
-            CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 7)
-            diffLength -= 1
-        for oPGRRRecord, nValue in zip(self.PGRR, nValues):
-            oPGRRRecord.x, oPGRRRecord.y, oPGRRRecord.z = nValue
-    PGRR = property(get_PGRR, set_PGRR)
-class LANDRecord(BaseRecord):
-    def CopyAsOverride(self, targetCELL):
-        FID = CBash.CopyLANDRecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetCELL._recordID, c_bool(True))
-        if(FID): return LANDRecord(self._CollectionIndex, targetCELL._ModName, FID, targetCELL._recordID)
-        return None
-    def CopyAsNew(self, targetCELL):
-        FID = CBash.CopyLANDRecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetCELL._recordID, c_bool(False))
-        if(FID): return LANDRecord(self._CollectionIndex, targetCELL._ModName, FID, targetCELL._recordID)
-        return None
-    class Normal(object):
-        def __init__(self, CollectionIndex, ModName, recordID, listIndex, listX2Index):
-            self._CollectionIndex = CollectionIndex
-            self._ModName = ModName
-            self._recordID = recordID
-            self._listIndex = listIndex
-            self._listX2Index = listX2Index
-        def get_x(self):
-            CBash.ReadFIDListX2Field.restype = POINTER(c_ubyte)
-            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 0, self._listX2Index, 1)
-            if(retValue): return retValue.contents.value
-            else: return None
-        def set_x(self, nValue):
-            CBash.SetFIDListX2FieldUC(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 0, self._listX2Index, 1, c_ubyte(nValue))
-        x = property(get_x, set_x)
-        def get_y(self):
-            CBash.ReadFIDListX2Field.restype = POINTER(c_ubyte)
-            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 0, self._listX2Index, 2)
-            if(retValue): return retValue.contents.value
-            else: return None
-        def set_y(self, nValue):
-            CBash.SetFIDListX2FieldUC(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 0, self._listX2Index, 2, c_ubyte(nValue))
-        y = property(get_y, set_y)
-        def get_z(self):
-            CBash.ReadFIDListX2Field.restype = POINTER(c_ubyte)
-            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 0, self._listX2Index, 3)
-            if(retValue): return retValue.contents.value
-            else: return None
-        def set_z(self, nValue):
-            CBash.SetFIDListX2FieldUC(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 0, self._listX2Index, 3, c_ubyte(nValue))
-        z = property(get_z, set_z)
-    class Height(object):
-        def __init__(self, CollectionIndex, ModName, recordID, listIndex, listX2Index):
-            self._CollectionIndex = CollectionIndex
-            self._ModName = ModName
-            self._recordID = recordID
-            self._listIndex = listIndex
-            self._listX2Index = listX2Index
-        def get_height(self):
-            CBash.ReadFIDListX2Field.restype = POINTER(c_byte)
-            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 9, self._listIndex, 0, self._listX2Index, 1)
-            if(retValue): return retValue.contents.value
-            else: return None
-        def set_height(self, nValue):
-            CBash.SetFIDListX2FieldC(self._CollectionIndex, self._ModName, self._recordID, 9, self._listIndex, 0, self._listX2Index, 1, c_ubyte(nValue))
-        height = property(get_height, set_height)
-    class Color(object):
-        def __init__(self, CollectionIndex, ModName, recordID, listIndex, listX2Index):
-            self._CollectionIndex = CollectionIndex
-            self._ModName = ModName
-            self._recordID = recordID
-            self._listIndex = listIndex
-            self._listX2Index = listX2Index
-        def get_red(self):
-            CBash.ReadFIDListX2Field.restype = POINTER(c_ubyte)
-            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 11, self._listIndex, 0, self._listX2Index, 1)
-            if(retValue): return retValue.contents.value
-            else: return None
-        def set_red(self, nValue):
-            CBash.SetFIDListX2FieldUC(self._CollectionIndex, self._ModName, self._recordID, 11, self._listIndex, 0, self._listX2Index, 1, c_ubyte(nValue))
-        red = property(get_red, set_red)
-        def get_green(self):
-            CBash.ReadFIDListX2Field.restype = POINTER(c_ubyte)
-            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 11, self._listIndex, 0, self._listX2Index, 2)
-            if(retValue): return retValue.contents.value
-            else: return None
-        def set_green(self, nValue):
-            CBash.SetFIDListX2FieldUC(self._CollectionIndex, self._ModName, self._recordID, 11, self._listIndex, 0, self._listX2Index, 2, c_ubyte(nValue))
-        green = property(get_green, set_green)
-        def get_blue(self):
-            CBash.ReadFIDListX2Field.restype = POINTER(c_ubyte)
-            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 11, self._listIndex, 0, self._listX2Index, 3)
-            if(retValue): return retValue.contents.value
-            else: return None
-        def set_blue(self, nValue):
-            CBash.SetFIDListX2FieldUC(self._CollectionIndex, self._ModName, self._recordID, 11, self._listIndex, 0, self._listX2Index, 3, c_ubyte(nValue))
-        blue = property(get_blue, set_blue)
-    class BaseTexture(object):
-        def __init__(self, CollectionIndex, ModName, recordID, subField, listIndex):
-            self._CollectionIndex = CollectionIndex
-            self._ModName = ModName
-            self._recordID = recordID
-            self._subField = subField
-            self._listIndex = listIndex
-        def get_texture(self):
-            CBash.ReadFIDListField.restype = POINTER(c_uint)
-            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1)
-            if(retValue): return retValue.contents.value
-            else: return None
-        def set_texture(self, nValue):
-            CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1, nValue)
-        texture = property(get_texture, set_texture)
-        def get_quadrant(self):
-            CBash.ReadFIDListField.restype = POINTER(c_byte)
-            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2)
-            if(retValue): return retValue.contents.value
-            else: return None
-        def set_quadrant(self, nValue):
-            CBash.SetFIDListFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2, c_byte(nValue))
-        quadrant = property(get_quadrant, set_quadrant)
-        def get_unused1(self):
-            numRecords = CBash.GetFIDListArraySize(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3)
-            if(numRecords > 0):
-                cRecords = POINTER(c_ubyte * numRecords)()
-                CBash.GetFIDListArray(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3, byref(cRecords))
-                return [cRecords.contents[x] for x in range(0, numRecords)]
-            else: return []
-        def set_unused1(self, nValue):
-            CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3, struct.pack('B', *nValue), 1)
-        unused1 = property(get_unused1, set_unused1)
-        def get_layer(self):
-            CBash.ReadFIDListField.restype = POINTER(c_short)
-            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 4)
-            if(retValue): return retValue.contents.value
-            else: return None
-        def set_layer(self, nValue):
-            CBash.SetFIDListFieldS(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 4, c_short(nValue))
-        layer = property(get_layer, set_layer)
-    class AlphaLayer(object):
-        class Opacity(object):
-            def __init__(self, CollectionIndex, ModName, recordID, listIndex, listX2Index):
-                self._CollectionIndex = CollectionIndex
-                self._ModName = ModName
-                self._recordID = recordID
-                self._listIndex = listIndex
-                self._listX2Index = listX2Index
-            def get_position(self):
-                CBash.ReadFIDListX2Field.restype = POINTER(c_ushort)
-                retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 1)
-                if(retValue): return retValue.contents.value
-                else: return None
-            def set_position(self, nValue):
-                CBash.SetFIDListX2FieldUS(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 1, c_ushort(nValue))
-            position = property(get_position, set_position)
-            def get_unused1(self):
-                numRecords = CBash.GetFIDListX2ArraySize(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 2)
-                if(numRecords > 0):
-                    cRecords = POINTER(c_ubyte * numRecords)()
-                    CBash.GetFIDListX2Array(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 2, byref(cRecords))
-                    return [cRecords.contents[x] for x in range(0, numRecords)]
-                else: return []
-            def set_unused1(self, nValue):
-                CBash.SetFIDListX2FieldR(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 2, struct.pack('2B', *nValue), 2)
-            unused1 = property(get_unused1, set_unused1)
-            def get_opacity(self):
-                CBash.ReadFIDListX2Field.restype = POINTER(c_float)
-                retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 3)
-                if(retValue): return retValue.contents.value
-                else: return None
-            def set_opacity(self, nValue):
-                CBash.SetFIDListX2FieldF(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 3, c_float(nValue))
-            opacity = property(get_opacity, set_opacity)
-        def __init__(self, CollectionIndex, ModName, recordID, subField, listIndex):
-            self._CollectionIndex = CollectionIndex
-            self._ModName = ModName
-            self._recordID = recordID
-            self._subField = subField
-            self._listIndex = listIndex
-        def newOpacitiesElement(self):
-            listX2Index = CBash.CreateFIDListX2Element(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 5)
-            if(listX2Index == -1): return None
-            return self.Opacity(self._CollectionIndex, self._ModName, self._recordID, self._listIndex, listX2Index)
-        def get_texture(self):
-            CBash.ReadFIDListField.restype = POINTER(c_uint)
-            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1)
-            if(retValue): return retValue.contents.value
-            else: return None
-        def set_texture(self, nValue):
-            CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1, nValue)
-        texture = property(get_texture, set_texture)
-        def get_quadrant(self):
-            CBash.ReadFIDListField.restype = POINTER(c_byte)
-            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2)
-            if(retValue): return retValue.contents.value
-            else: return None
-        def set_quadrant(self, nValue):
-            CBash.SetFIDListFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2, c_byte(nValue))
-        quadrant = property(get_quadrant, set_quadrant)
-        def get_unused1(self):
-            numRecords = CBash.GetFIDListArraySize(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3)
-            if(numRecords > 0):
-                cRecords = POINTER(c_ubyte * numRecords)()
-                CBash.GetFIDListArray(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3, byref(cRecords))
-                return [cRecords.contents[x] for x in range(0, numRecords)]
-            else: return []
-        def set_unused1(self, nValue):
-            CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3, struct.pack('B', *nValue), 1)
-        unused1 = property(get_unused1, set_unused1)
-        def get_layer(self):
-            CBash.ReadFIDListField.restype = POINTER(c_short)
-            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 4)
-            if(retValue): return retValue.contents.value
-            else: return None
-        def set_layer(self, nValue):
-            CBash.SetFIDListFieldS(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 4, c_short(nValue))
-        layer = property(get_layer, set_layer)
-        def get_opacities(self):
-            numRecords = CBash.GetFIDListX2Size(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 5)
-            if(numRecords > 0): return [self.Opacity(self._CollectionIndex, self._ModName, self._recordID, self._listIndex, x) for x in range(0, numRecords)]
-            else: return []
-        def set_opacities(self, nOpacities):
-            diffLength = len(nOpacities) - CBash.GetFIDListX2Size(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 5)
-            nValues = [(nOpacity.position, nOpacity.unused1, nOpacity.opacity) for nOpacity in nOpacities]
-            while(diffLength < 0):
-                CBash.DeleteFIDListX2Element(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 5)
-                diffLength += 1
-            while(diffLength > 0):
-                CBash.CreateFIDListX2Element(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 5)
-                diffLength -= 1
-            for oOpacity, nValue in zip(self.opacities, nValues):
-                oOpacity.position, oOpacity.unused1, oOpacity.opacity = nValue
-        opacities = property(get_opacities, set_opacities)
-    class VertexTexture(object):
-        def __init__(self, CollectionIndex, ModName, recordID, subField, listIndex):
-            self._CollectionIndex = CollectionIndex
-            self._ModName = ModName
-            self._recordID = recordID
-            self._subField = subField
-            self._listIndex = listIndex
-        def get_texture(self):
-            CBash.ReadFIDListField.restype = POINTER(c_uint)
-            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1)
-            if(retValue): return retValue.contents.value
-            else: return None
-        def set_texture(self, nValue):
-            CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1, nValue)
-        texture = property(get_texture, set_texture)
-    class Positions(object):
-        def __init__(self, CollectionIndex, ModName, recordID, listIndex, listX2Index):
-            self._CollectionIndex = CollectionIndex
-            self._ModName = ModName
-            self._recordID = recordID
-            self._listIndex = listIndex
-            self._listX2Index = listX2Index
-        def get_height(self):
-            CBash.ReadFIDListX2Field.restype = POINTER(c_float)
-            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 1)
-            if(retValue): return retValue.contents.value
-            else: return None
-        def set_height(self, nValue):
-            CBash.SetFIDListX2FieldF(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 1, c_float(nValue))
-        height = property(get_height, set_height)
-        def get_normalX(self):
-            CBash.ReadFIDListX2Field.restype = POINTER(c_ubyte)
-            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 2)
-            if(retValue): return retValue.contents.value
-            else: return None
-        def set_normalX(self, nValue):
-            CBash.SetFIDListX2FieldUC(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 2, c_ubyte(nValue))
-        normalX = property(get_normalX, set_normalX)
-        def get_normalY(self):
-            CBash.ReadFIDListX2Field.restype = POINTER(c_ubyte)
-            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 3)
-            if(retValue): return retValue.contents.value
-            else: return None
-        def set_normalY(self, nValue):
-            CBash.SetFIDListX2FieldUC(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 3, c_ubyte(nValue))
-        normalY = property(get_normalY, set_normalY)
-        def get_normalZ(self):
-            CBash.ReadFIDListX2Field.restype = POINTER(c_ubyte)
-            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 4)
-            if(retValue): return retValue.contents.value
-            else: return None
-        def set_normalZ(self, nValue):
-            CBash.SetFIDListX2FieldUC(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 4, c_ubyte(nValue))
-        normalZ = property(get_normalZ, set_normalZ)
-        def get_red(self):
-            CBash.ReadFIDListX2Field.restype = POINTER(c_ubyte)
-            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 5)
-            if(retValue): return retValue.contents.value
-            else: return None
-        def set_red(self, nValue):
-            CBash.SetFIDListX2FieldUC(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 5, c_ubyte(nValue))
-        red = property(get_red, set_red)
-        def get_green(self):
-            CBash.ReadFIDListX2Field.restype = POINTER(c_ubyte)
-            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 6)
-            if(retValue): return retValue.contents.value
-            else: return None
-        def set_green(self, nValue):
-            CBash.SetFIDListX2FieldUC(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 6, c_ubyte(nValue))
-        green = property(get_green, set_green)
-        def get_blue(self):
-            CBash.ReadFIDListX2Field.restype = POINTER(c_ubyte)
-            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 7)
-            if(retValue): return retValue.contents.value
-            else: return None
-        def set_blue(self, nValue):
-            CBash.SetFIDListX2FieldUC(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 7, c_ubyte(nValue))
-        blue = property(get_blue, set_blue)
-        def get_baseTexture(self):
-            CBash.ReadFIDListX2Field.restype = POINTER(c_uint)
-            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 8)
-            if(retValue): return retValue.contents.value
-            else: return None
-        def set_baseTexture(self, nValue):
-            CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 8, nValue)
-        baseTexture = property(get_baseTexture, set_baseTexture)
-        def get_layer1Texture(self):
-            CBash.ReadFIDListX2Field.restype = POINTER(c_uint)
-            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 9)
-            if(retValue): return retValue.contents.value
-            else: return None
-        def set_layer1Texture(self, nValue):
-            CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 9, nValue)
-        layer1Texture = property(get_layer1Texture, set_layer1Texture)
-        def get_layer1Opacity(self):
-            CBash.ReadFIDListX2Field.restype = POINTER(c_float)
-            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 10)
-            if(retValue): return retValue.contents.value
-            else: return None
-        def set_layer1Opacity(self, nValue):
-            CBash.SetFIDListX2FieldF(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 10, c_float(nValue))
-        layer1Opacity = property(get_layer1Opacity, set_layer1Opacity)
-        def get_layer2Texture(self):
-            CBash.ReadFIDListX2Field.restype = POINTER(c_uint)
-            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 11)
-            if(retValue): return retValue.contents.value
-            else: return None
-        def set_layer2Texture(self, nValue):
-            CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 11, nValue)
-        layer2Texture = property(get_layer2Texture, set_layer2Texture)
-        def get_layer2Opacity(self):
-            CBash.ReadFIDListX2Field.restype = POINTER(c_float)
-            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 12)
-            if(retValue): return retValue.contents.value
-            else: return None
-        def set_layer2Opacity(self, nValue):
-            CBash.SetFIDListX2FieldF(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 12, c_float(nValue))
-        layer2Opacity = property(get_layer2Opacity, set_layer2Opacity)
-        def get_layer3Texture(self):
-            CBash.ReadFIDListX2Field.restype = POINTER(c_uint)
-            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 13)
-            if(retValue): return retValue.contents.value
-            else: return None
-        def set_layer3Texture(self, nValue):
-            CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 13, nValue)
-        layer3Texture = property(get_layer3Texture, set_layer3Texture)
-        def get_layer3Opacity(self):
-            CBash.ReadFIDListX2Field.restype = POINTER(c_float)
-            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 14)
-            if(retValue): return retValue.contents.value
-            else: return None
-        def set_layer3Opacity(self, nValue):
-            CBash.SetFIDListX2FieldF(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 14, c_float(nValue))
-        layer3Opacity = property(get_layer3Opacity, set_layer3Opacity)
-        def get_layer4Texture(self):
-            CBash.ReadFIDListX2Field.restype = POINTER(c_uint)
-            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 15)
-            if(retValue): return retValue.contents.value
-            else: return None
-        def set_layer4Texture(self, nValue):
-            CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 15, nValue)
-        layer4Texture = property(get_layer4Texture, set_layer4Texture)
-        def get_layer4Opacity(self):
-            CBash.ReadFIDListX2Field.restype = POINTER(c_float)
-            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 16)
-            if(retValue): return retValue.contents.value
-            else: return None
-        def set_layer4Opacity(self, nValue):
-            CBash.SetFIDListX2FieldF(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 16, c_float(nValue))
-        layer4Opacity = property(get_layer4Opacity, set_layer4Opacity)
-        def get_layer5Texture(self):
-            CBash.ReadFIDListX2Field.restype = POINTER(c_uint)
-            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 17)
-            if(retValue): return retValue.contents.value
-            else: return None
-        def set_layer5Texture(self, nValue):
-            CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 17, nValue)
-        layer5Texture = property(get_layer5Texture, set_layer5Texture)
-        def get_layer5Opacity(self):
-            CBash.ReadFIDListX2Field.restype = POINTER(c_float)
-            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 18)
-            if(retValue): return retValue.contents.value
-            else: return None
-        def set_layer5Opacity(self, nValue):
-            CBash.SetFIDListX2FieldF(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 18, c_float(nValue))
-        layer5Opacity = property(get_layer5Opacity, set_layer5Opacity)
-        def get_layer6Texture(self):
-            CBash.ReadFIDListX2Field.restype = POINTER(c_uint)
-            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 19)
-            if(retValue): return retValue.contents.value
-            else: return None
-        def set_layer6Texture(self, nValue):
-            CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 19, nValue)
-        layer6Texture = property(get_layer6Texture, set_layer6Texture)
-        def get_layer6Opacity(self):
-            CBash.ReadFIDListX2Field.restype = POINTER(c_float)
-            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 20)
-            if(retValue): return retValue.contents.value
-            else: return None
-        def set_layer6Opacity(self, nValue):
-            CBash.SetFIDListX2FieldF(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 20, c_float(nValue))
-        layer6Opacity = property(get_layer6Opacity, set_layer6Opacity)
-        def get_layer7Texture(self):
-            CBash.ReadFIDListX2Field.restype = POINTER(c_uint)
-            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 21)
-            if(retValue): return retValue.contents.value
-            else: return None
-        def set_layer7Texture(self, nValue):
-            CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 21, nValue)
-        layer7Texture = property(get_layer7Texture, set_layer7Texture)
-        def get_layer7Opacity(self):
-            CBash.ReadFIDListX2Field.restype = POINTER(c_float)
-            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 22)
-            if(retValue): return retValue.contents.value
-            else: return None
-        def set_layer7Opacity(self, nValue):
-            CBash.SetFIDListX2FieldF(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 22, c_float(nValue))
-        layer7Opacity = property(get_layer7Opacity, set_layer7Opacity)
-        def get_layer8Texture(self):
-            CBash.ReadFIDListX2Field.restype = POINTER(c_uint)
-            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 23)
-            if(retValue): return retValue.contents.value
-            else: return None
-        def set_layer8Texture(self, nValue):
-            CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 23, nValue)
-        layer8Texture = property(get_layer8Texture, set_layer8Texture)
-        def get_layer8Opacity(self):
-            CBash.ReadFIDListX2Field.restype = POINTER(c_float)
-            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 24)
-            if(retValue): return retValue.contents.value
-            else: return None
-        def set_layer8Opacity(self, nValue):
-            CBash.SetFIDListX2FieldF(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 24, c_float(nValue))
-        layer8Opacity = property(get_layer8Opacity, set_layer8Opacity)
-
-
-        
-    def newBaseTexturesElement(self):
-        listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 12)
-        if(listIndex == -1): return None
-        return self.BaseTexture(self._CollectionIndex, self._ModName, self._recordID, 12, listIndex)
-    def newAlphaLayersElement(self):
-        listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 13)
-        if(listIndex == -1): return None
-        return self.AlphaLayer(self._CollectionIndex, self._ModName, self._recordID, 13, listIndex)
-    def newVertexTexturesElement(self):
-        listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 14)
-        if(listIndex == -1): return None
-        return self.VertexTexture(self._CollectionIndex, self._ModName, self._recordID, 14, listIndex)
-    def get_data(self):
-        numRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 6)
-        if(numRecords > 0):
-            cRecords = POINTER(c_ubyte * numRecords)()
-            CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 6, byref(cRecords))
-            return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
-    def set_data(self, nValue):
-        length = len(nValue)
-        CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 6, struct.pack('B' * length, *nValue), length)
-    data = property(get_data, set_data)
-    def get_normals(self):
-        return [[self.Normal(self._CollectionIndex, self._ModName, self._recordID, x, y) for y in range(0,33)] for x in range(0,33)]
-    def set_normals(self, nNormals):
-        if(len(nNormals) != 33):
-            return
-        nValues = [(nNormal.x, nNormal.y, nNormal.z) for nNormal in nNormals]
-        for oNormal, nValue in zip(self.normals, nValues):
-            oNormal.x, oNormal.y, oNormal.z = nValue
-    normals = property(get_normals, set_normals)
-    def get_heights(self):
-        return [[self.Height(self._CollectionIndex, self._ModName, self._recordID, x, y) for y in range(0,33)] for x in range(0,33)]
-    def set_heights(self, nHeights):
-        if(len(nNormals) != 33):
-            return
-        nValues = [nHeight.height for nHeight in nHeights]
-        for oHeight, nValue in zip(self.heights, nValues):
-            oHeight.height = nValue
-    heights = property(get_heights, set_heights)
-    def get_heightOffset(self):
-        CBash.ReadFIDField.restype = POINTER(c_float)
-        retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
-        if(retValue): return retValue.contents.value
-        else: return None
-    def set_heightOffset(self, nValue):
-        CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 8, c_float(nValue))
-    heightOffset = property(get_heightOffset, set_heightOffset)
-    def get_unused1(self):
-        numRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 10)
-        if(numRecords > 0):
-            cRecords = POINTER(c_ubyte * numRecords)()
-            CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 10, byref(cRecords))
-            return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
-    def set_unused1(self, nValue):
-        CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 10, struct.pack('3B', *nValue), 3)
-    unused1 = property(get_unused1, set_unused1)
-    def get_colors(self):
-        return [[self.Color(self._CollectionIndex, self._ModName, self._recordID, x, y)for y in range(0,33)]for x in range(0,33)]
-    def set_colors(self, nColors):
-        if(len(nColors) != 33):
-            return
-        nValues = [(nColor.red, nColor.green, nColor.blue) for nColor in nColors]
-        for oColor, nValue in zip(self.colors, nValues):
-            oColor.red, oColor.green, oColor.blue = nValue
-    colors = property(get_colors, set_colors)
-    def get_baseTextures(self):
-        numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 12)
-        if(numRecords > 0): return [self.BaseTexture(self._CollectionIndex, self._ModName, self._recordID, 12, x) for x in range(0, numRecords)]
-        else: return []
-    def set_baseTextures(self, nBaseTextures):
-        diffLength = len(nBaseTextures) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 12)
-        nValues = [(nBaseTexture.texture, nBaseTexture.quadrant, nBaseTexture.unused1, nBaseTexture.layer) for nBaseTexture in nBaseTextures]
-        while(diffLength < 0):
-            CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 12)
-            diffLength += 1
-        while(diffLength > 0):
-            CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 12)
-            diffLength -= 1
-        for oBaseTexture, nValue in zip(self.baseTextures, nValues):
-            oBaseTexture.texture, oBaseTexture.quadrant, oBaseTexture.unused1, oBaseTexture.layer = nValue
-    baseTextures = property(get_baseTextures, set_baseTextures)
-    def get_alphaLayers(self):
-        numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 13)
-        if(numRecords > 0): return [self.AlphaLayer(self._CollectionIndex, self._ModName, self._recordID, 13, x) for x in range(0, numRecords)]
-        else: return []
-    def set_alphaLayers(self, nAlphaLayers):
-        diffLength = len(nAlphaLayers) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 13)
-        nValues = [(nAlphaLayer.texture, nAlphaLayer.quadrant, nAlphaLayer.unused1, nAlphaLayer.layer,
-                  [(nOpacity.position, nOpacity.unused1, nOpacity.opacity) for nOpacity in nAlphaLayer.opacities]) for nAlphaLayer in nAlphaLayers]
-        while(diffLength < 0):
-            CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 13)
-            diffLength += 1
-        while(diffLength > 0):
-            CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 13)
-            diffLength -= 1
-        for oAlphaLayer, nValue in zip(self.alphaLayers, nValues):
-            oAlphaLayer.texture = nValue[0]
-            oAlphaLayer.quadrant = nValue[1]
-            oAlphaLayer.unused1 = nValue[2]
-            oAlphaLayer.layer = nValue[3]
-            diffLength = len(nValue[4]) - CBash.GetFIDListX2Size(self._CollectionIndex, self._ModName, self._recordID, 13, oTarget._listIndex, 5)
-            while(diffLength < 0):
-                CBash.DeleteFIDListX2Element(self._CollectionIndex, self._ModName, self._recordID, 13, oTarget._listIndex, 5)
-                diffLength += 1
-            while(diffLength > 0):
-                CBash.CreateFIDListX2Element(self._CollectionIndex, self._ModName, self._recordID, 13, oTarget._listIndex, 5)
-                diffLength -= 1
-            for oOpacity, eValue in zip(oAlphaLayer.opacities, nValue[4]):
-                oOpacity.position, oOpacity.unused1, oOpacity.opacity = eValue
-    alphaLayers = property(get_alphaLayers, set_alphaLayers)
-    def get_vertexTextures(self):
-        numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 14)
-        if(numRecords > 0): return [self.BaseTexture(self._CollectionIndex, self._ModName, self._recordID, 14, x) for x in range(0, numRecords)]
-        else: return []
-    def set_vertexTextures(self, nVertexTextures):
-        diffLength = len(nVertexTextures) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 14)
-        nValues = [nVertexTexture.texture for nVertexTexture in nVertexTextures]
-        while(diffLength < 0):
-            CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 14)
-            diffLength += 1
-        while(diffLength > 0):
-            CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 14)
-            diffLength -= 1
-        for oVertexTexture, nValue in zip(self.vertexTextures, nValues):
-            oVertexTexture.texture = nValue
-    vertexTextures = property(get_vertexTextures, set_vertexTextures)
-    def get_positions(self):
-        return [[self.Positions(self._CollectionIndex, self._ModName, self._recordID, row, column) for column in range(0,33)] for row in range(0,33)]
-    def set_positions(self, nPositions):
-        if(len(nPositions) != 33):
-            return
-        nValues = [(nPosition.height, nPosition.normalX, nPosition.normalY, nPosition.normalZ, nPosition.red, nPosition.green,
-                    nPosition.blue, nPosition.baseTexture, nPosition.layer1Texture, nPosition.layer1Opacity, nPosition.layer2Texture, nPosition.layer2Opacity,
-                    nPosition.layer3Texture, nPosition.layer3Opacity, nPosition.layer4Texture, nPosition.layer4Opacity, nPosition.layer5Texture, nPosition.layer5Opacity,
-                    nPosition.layer6Texture, nPosition.layer6Opacity, nPosition.layer7Texture, nPosition.layer7Opacity, nPosition.layer8Texture, nPosition.layer8Opacity) for nPosition in nPositions]
-        for oPosition, nValue in zip(self.Position, nValues):
-            oPosition.height, oPosition.normalX, oPosition.normalY, oPosition.normalZ, oPosition.red, oPosition.green,
-            oPosition.blue, oPosition.baseTexture, oPosition.layer1Texture, oPosition.layer1Opacity, oPosition.layer2Texture, oPosition.layer2Opacity,
-            oPosition.layer3Texture, oPosition.layer3Opacity, oPosition.layer4Texture, oPosition.layer4Opacity, oPosition.layer5Texture, oPosition.layer5Opacity,
-            oPosition.layer6Texture, oPosition.layer6Opacity, oPosition.layer7Texture, oPosition.layer7Opacity, oPosition.layer8Texture, oPosition.layer8Opacity = nValue
-    Position = property(get_positions, set_positions)
-
+    def get_IsSmallWorld(self):
+        return (self.flags & 0x00000001) != 0
+    def set_IsSmallWorld(self, nValue):
+        if (nValue == True): self.flags |= 0x00000001
+        else: self.flags &= ~0x00000001
+    IsSmallWorld = property(get_IsSmallWorld, set_IsSmallWorld)
+    def get_IsNoFastTravel(self):
+        return (self.flags & 0x00000002) != 0
+    def set_IsNoFastTravel(self, nValue):
+        if (nValue == True): self.flags |= 0x00000002
+        else: self.flags &= ~0x00000002
+    IsNoFastTravel = property(get_IsNoFastTravel, set_IsNoFastTravel)
+    def get_IsFastTravel(self):
+        return not self.get_IsNoFastTravel()
+    def set_IsFastTravel(self, nValue):
+        if (nValue == True): self.flags &= ~0x00000002
+        else: self.flags |= 0x00000002
+    IsFastTravel = property(get_IsFastTravel, set_IsFastTravel)
+    def get_IsOblivionWorldspace(self):
+        return (self.flags & 0x00000004) != 0
+    def set_IsOblivionWorldspace(self, nValue):
+        if (nValue == True): self.flags |= 0x00000004
+        else: self.flags &= ~0x00000004
+    IsOblivionWorldspace = property(get_IsOblivionWorldspace, set_IsOblivionWorldspace)
+    def get_IsNoLODWater(self):
+        return (self.flags & 0x00000010) != 0
+    def set_IsNoLODWater(self, nValue):
+        if (nValue == True): self.flags |= 0x00000010
+        else: self.flags &= ~0x00000010
+    IsNoLODWater = property(get_IsNoLODWater, set_IsNoLODWater)
+    def get_IsLODWater(self):
+        return not self.get_IsNoLODWater()
+    def set_IsLODWater(self, nValue):
+        if (nValue == True): self.flags &= ~0x00000010
+        else: self.flags |= 0x00000010
+    IsLODWater = property(get_IsLODWater, set_IsLODWater)
+    def get_IsDefault(self):
+        return (self.sound == 0)
+    def set_IsDefault(self, nValue):
+        if (nValue == True): self.sound = 0
+        elif(self.get_IsDefault()): self.IsPublic = True
+    IsDefault = property(get_IsDefault, set_IsDefault)
+    def get_IsPublic(self):
+        return (self.sound == 1)
+    def set_IsPublic(self, nValue):
+        if (nValue == True): self.sound = 1
+        elif(self.get_IsPublic()): self.IsDefault = True
+    IsPublic = property(get_IsPublic, set_IsPublic)
+    def get_IsDungeon(self):
+        return (self.sound == 2)
+    def set_IsDungeon(self, nValue):
+        if (nValue == True): self.sound = 2
+        elif(self.get_IsDungeon()): self.IsDefault = True
+    IsDungeon = property(get_IsDungeon, set_IsDungeon)
+    
 class DIALRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyDIALRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -9484,13 +11249,56 @@ class DIALRecord(BaseRecord):
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 9, byref(cRecords))
             return [INFORecord(self._CollectionIndex, self._ModName, x.contents.value, self._recordID) for x in cRecords]
         else: return []
-class INFORecord(BaseRecord):
+    def get_IsTopic(self):
+        return (self.dialType == 0)
+    def set_IsTopic(self, nValue):
+        if (nValue == True): self.dialType = 0
+        elif(self.get_IsTopic()): self.IsConversation = True
+    IsTopic = property(get_IsTopic, set_IsTopic)
+    def get_IsConversation(self):
+        return (self.dialType == 1)
+    def set_IsConversation(self, nValue):
+        if (nValue == True): self.dialType = 1
+        elif(self.get_IsConversation()): self.IsTopic = True
+    IsConversation = property(get_IsConversation, set_IsConversation)
+    def get_IsCombat(self):
+        return (self.dialType == 2)
+    def set_IsCombat(self, nValue):
+        if (nValue == True): self.dialType = 2
+        elif(self.get_IsCombat()): self.IsTopic = True
+    IsCombat = property(get_IsCombat, set_IsCombat)
+    def get_IsPersuasion(self):
+        return (self.dialType == 3)
+    def set_IsPersuasion(self, nValue):
+        if (nValue == True): self.dialType = 3
+        elif(self.get_IsPersuasion()): self.IsTopic = True
+    IsPersuasion = property(get_IsPersuasion, set_IsPersuasion)
+    def get_IsDetection(self):
+        return (self.dialType == 4)
+    def set_IsDetection(self, nValue):
+        if (nValue == True): self.dialType = 4
+        elif(self.get_IsDetection()): self.IsTopic = True
+    IsDetection = property(get_IsDetection, set_IsDetection)
+    def get_IsService(self):
+        return (self.dialType == 5)
+    def set_IsService(self, nValue):
+        if (nValue == True): self.dialType = 5
+        elif(self.get_IsService()): self.IsTopic = True
+    IsService = property(get_IsService, set_IsService)
+    def get_IsMisc(self):
+        return (self.dialType == 6)
+    def set_IsMisc(self, nValue):
+        if (nValue == True): self.dialType = 6
+        elif(self.get_IsMisc()): self.IsTopic = True
+    IsMisc = property(get_IsMisc, set_IsMisc)
+    
+class INFORecord(SubRecord):
     def CopyAsOverride(self, targetDIAL):
-        FID = CBash.CopyINFORecord(self._CollectionIndex, self._ModName, self._recordID, targetDIAL._ModName, targetDIAL._recordID, c_bool(True))
+        FID = CBash.CopyINFORecord(self._CollectionIndex, self._ModName, self._recordID, self._parentID, targetDIAL._ModName, targetDIAL._recordID, c_bool(True))
         if(FID): return INFORecord(self._CollectionIndex, targetDIAL._ModName, FID, targetDIAL._recordID)
         return None
     def CopyAsNew(self, targetDIAL):
-        FID = CBash.CopyINFORecord(self._CollectionIndex, self._ModName, self._recordID, targetDIAL._ModName, targetDIAL._recordID, c_bool(False))
+        FID = CBash.CopyINFORecord(self._CollectionIndex, self._ModName, self._recordID, self._parentID, targetDIAL._ModName, targetDIAL._recordID, c_bool(False))
         if(FID): return INFORecord(self._CollectionIndex, targetDIAL._ModName, FID, targetDIAL._recordID)
         return None
     class Response(object):
@@ -9555,6 +11363,48 @@ class INFORecord(BaseRecord):
         def set_actorNotes(self, nValue):
             CBash.SetFIDListFieldStr(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 7, nValue)
         actorNotes = property(get_actorNotes, set_actorNotes)
+        def get_IsNeutral(self):
+            return (self.emotionType == 0)
+        def set_IsNeutral(self, nValue):
+            if (nValue == True): self.emotionType = 0
+            elif(self.get_IsNeutral()): self.IsAnger = True
+        IsNeutral = property(get_IsNeutral, set_IsNeutral)
+        def get_IsAnger(self):
+            return (self.emotionType == 1)
+        def set_IsAnger(self, nValue):
+            if (nValue == True): self.emotionType = 1
+            elif(self.get_IsAnger()): self.IsNeutral = True
+        IsAnger = property(get_IsAnger, set_IsAnger)
+        def get_IsDisgust(self):
+            return (self.emotionType == 2)
+        def set_IsDisgust(self, nValue):
+            if (nValue == True): self.emotionType = 2
+            elif(self.get_IsDisgust()): self.IsNeutral = True
+        IsDisgust = property(get_IsDisgust, set_IsDisgust)
+        def get_IsFear(self):
+            return (self.emotionType == 3)
+        def set_IsFear(self, nValue):
+            if (nValue == True): self.emotionType = 3
+            elif(self.get_IsFear()): self.IsNeutral = True
+        IsFear = property(get_IsFear, set_IsFear)
+        def get_IsSad(self):
+            return (self.emotionType == 4)
+        def set_IsSad(self, nValue):
+            if (nValue == True): self.emotionType = 4
+            elif(self.get_IsSad()): self.IsNeutral = True
+        IsSad = property(get_IsSad, set_IsSad)
+        def get_IsHappy(self):
+            return (self.emotionType == 5)
+        def set_IsHappy(self, nValue):
+            if (nValue == True): self.emotionType = 5
+            elif(self.get_IsHappy()): self.IsNeutral = True
+        IsHappy = property(get_IsHappy, set_IsHappy)
+        def get_IsSurprise(self):
+            return (self.emotionType == 6)
+        def set_IsSurprise(self, nValue):
+            if (nValue == True): self.emotionType = 6
+            elif(self.get_IsSurprise()): self.IsNeutral = True
+        IsSurprise = property(get_IsSurprise, set_IsSurprise)
     class Condition(object):
         def __init__(self, CollectionIndex, ModName, recordID, subField, listIndex):
             self._CollectionIndex = CollectionIndex
@@ -9622,6 +11472,91 @@ class INFORecord(BaseRecord):
         def set_unused2(self, nValue):
             CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 7, struct.pack('4B', *nValue), 4)
         unused2 = property(get_unused2, set_unused2)
+        def get_IsEqual(self):
+            return ((self.operType & 0xF0) == 0x00000000)
+        def set_IsEqual(self, nValue):
+            if (nValue == True):
+                self.operType &= 0x0F
+                self.operType |= 0x00000000
+            elif(self.get_IsEqual()): self.IsNotEqual = True
+        IsEqual = property(get_IsEqual, set_IsEqual)
+        def get_IsNotEqual(self):
+            return ((self.operType & 0xF0) == 0x00000020)
+        def set_IsNotEqual(self, nValue):
+            if (nValue == True):
+                self.operType &= 0x0F
+                self.operType |= 0x00000020
+            elif(self.get_IsNotEqual()): self.IsEqual = True
+        IsNotEqual = property(get_IsNotEqual, set_IsNotEqual)
+        def get_IsGreater(self):
+            return ((self.operType & 0xF0) == 0x00000040)
+        def set_IsGreater(self, nValue):
+            if (nValue == True):
+                self.operType &= 0x0F
+                self.operType |= 0x00000040
+            elif(self.get_IsGreater()): self.IsEqual = True
+        IsGreater = property(get_IsGreater, set_IsGreater)
+        def get_IsGreaterOrEqual(self):
+            return ((self.operType & 0xF0) == 0x00000060)
+        def set_IsGreaterOrEqual(self, nValue):
+            if (nValue == True):
+                self.operType &= 0x0F
+                self.operType |= 0x00000060
+            elif(self.get_IsGreaterOrEqual()): self.IsEqual = True
+        IsGreaterOrEqual = property(get_IsGreaterOrEqual, set_IsGreaterOrEqual)
+        def get_IsLess(self):
+            return ((self.operType & 0xF0) == 0x00000080)
+        def set_IsLess(self, nValue):
+            if (nValue == True):
+                self.operType &= 0x0F
+                self.operType |= 0x00000080
+            elif(self.get_IsLess()): self.IsEqual = True
+        IsLess = property(get_IsLess, set_IsLess)
+        def get_IsLessOrEqual(self):
+            return ((self.operType & 0xF0) == 0x000000A0)
+        def set_IsLessOrEqual(self, nValue):
+            if (nValue == True):
+                self.operType &= 0x0F
+                self.operType |= 0x000000A0
+            elif(self.get_IsLessOrEqual()): self.IsEqual = True
+        IsLessOrEqual = property(get_IsLessOrEqual, set_IsLessOrEqual)        
+        def IsType(self, nValue):
+            return ((self.operType & 0xF0) == (nValue & 0xF0))
+        def SetType(self, nValue):
+            nValue &= 0xF0
+            self.operType &= 0x0F
+            self.operType |= nValue
+        def get_IsNone(self):
+            return ((self.operType & 0x0F) == 0x00000000)
+        def set_IsNone(self, nValue):
+            if (nValue == True): self.operType &= 0xF0
+        IsNone = property(get_IsNone, set_IsNone)
+        def get_IsOr(self):
+            return ((self.operType & 0x0F) == 0x00000001)
+        def set_IsOr(self, nValue):
+            if (nValue == True): self.operType |= 0x00000001
+            else: self.operType &= ~0x00000001
+        IsOr = property(get_IsOr, set_IsOr)
+        def get_IsRunOnTarget(self):
+            return ((self.operType & 0x0F) == 0x00000002)
+        def set_IsRunOnTarget(self, nValue):
+            if (nValue == True): self.operType |= 0x00000002
+            else: self.operType &= ~0x00000002
+        IsRunOnTarget = property(get_IsRunOnTarget, set_IsRunOnTarget)
+        def get_IsUseGlobal(self):
+            return ((self.operType & 0x0F) == 0x00000004)
+        def set_IsUseGlobal(self, nValue):
+            if (nValue == True): self.operType |= 0x00000004
+            else: self.operType &= ~0x00000004
+        IsUseGlobal = property(get_IsUseGlobal, set_IsUseGlobal)
+        def IsFlagMask(self, nValue, Exact=False):
+            if(Exact): return ((self.operType & 0x0F) & (nValue & 0x0F)) == nValue
+            else: return ((self.operType & 0x0F) & (nValue & 0x0F)) != 0
+        def SetFlagMask(self, nValue):
+            nValue &= 0x0F
+            self.operType &= 0xF0
+            self.operType |= nValue
+        
     class Reference(object):
         def __init__(self, CollectionIndex, ModName, recordID, listIndex):
             self._CollectionIndex = CollectionIndex
@@ -9630,19 +11565,19 @@ class INFORecord(BaseRecord):
             self._listIndex = listIndex
         def get_reference(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 24, self._listIndex, 1).contents.value
+            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 25, self._listIndex, 1).contents.value
         def set_reference(self, nValue):
-            CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 24, self._listIndex, 1, nValue)
+            CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 25, self._listIndex, 1, nValue)
         reference = property(get_reference, set_reference)
-        def get_isSCRO(self):
+        def get_IsSCRO(self):
             CBash.ReadFIDListField.restype = POINTER(c_bool)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 24, self._listIndex, 2).contents.value
-        def set_isSCRO(self, nValue):
+            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 25, self._listIndex, 2).contents.value
+        def set_IsSCRO(self, nValue):
             if isinstance(nValue, bool):
                 if(nValue): CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 25, self._listIndex, 2, 1)
                 else: CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 25, self._listIndex, 2, 0)
-            else: CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 24, self._listIndex, 2, nValue)
-        isSCRO = property(get_isSCRO, set_isSCRO)
+            else: CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 25, self._listIndex, 2, nValue)
+        IsSCRO = property(get_IsSCRO, set_IsSCRO)
     def newResponsesElement(self):
         listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 13)
         print listIndex
@@ -9653,7 +11588,7 @@ class INFORecord(BaseRecord):
         if(listIndex == -1): return None
         return self.Condition(self._CollectionIndex, self._ModName, self._recordID, 14, listIndex)
     def newReferencesElement(self):
-        listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 24)
+        listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 25)
         if(listIndex == -1): return None
         return self.Reference(self._CollectionIndex, self._ModName, self._recordID, listIndex) 
     def get_dialType(self):
@@ -9768,81 +11703,171 @@ class INFORecord(BaseRecord):
     def set_linksFrom(self, nValue):
         CBash.SetFIDFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 16, struct.pack('I' * len(nValue), *nValue), len(nValue))
     linksFrom = property(get_linksFrom, set_linksFrom)
-    def get_unused2(self):
+    def get_schd_p(self):
         numRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 17)
         if(numRecords > 0):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 17, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
         else: return []
+    def set_schd_p(self, nValue):
+        length = len(nValue)
+        CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 17, struct.pack('B' * length, *nValue), length)
+    schd_p = property(get_schd_p, set_schd_p)
+    def get_unused2(self):
+        numRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 18)
+        if(numRecords > 0):
+            cRecords = POINTER(c_ubyte * numRecords)()
+            CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 18, byref(cRecords))
+            return [cRecords.contents[x] for x in range(0, numRecords)]
+        else: return []
     def set_unused2(self, nValue):
-        CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 17, struct.pack('4B', *nValue), 4)
+        CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 18, struct.pack('4B', *nValue), 4)
     unused2 = property(get_unused2, set_unused2)
     def get_numRefs(self):
-        CBash.ReadFIDField.restype = POINTER(c_uint)
-        retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 18)
-        if(retValue): return retValue.contents.value
-        else: return None
-    def set_numRefs(self, nValue):
-        CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 18, nValue)
-    numRefs = property(get_numRefs, set_numRefs)
-    def get_compiledSize(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 19)
         if(retValue): return retValue.contents.value
         else: return None
-    def set_compiledSize(self, nValue):
+    def set_numRefs(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 19, nValue)
-    compiledSize = property(get_compiledSize, set_compiledSize)
-    def get_lastIndex(self):
+    numRefs = property(get_numRefs, set_numRefs)
+    def get_compiledSize(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 20)
         if(retValue): return retValue.contents.value
         else: return None
-    def set_lastIndex(self, nValue):
+    def set_compiledSize(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 20, nValue)
-    lastIndex = property(get_lastIndex, set_lastIndex)
-    def get_scriptType(self):
+    compiledSize = property(get_compiledSize, set_compiledSize)
+    def get_lastIndex(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 21)
         if(retValue): return retValue.contents.value
         else: return None
-    def set_scriptType(self, nValue):
+    def set_lastIndex(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 21, nValue)
+    lastIndex = property(get_lastIndex, set_lastIndex)
+    def get_scriptType(self):
+        CBash.ReadFIDField.restype = POINTER(c_uint)
+        retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 22)
+        if(retValue): return retValue.contents.value
+        else: return None
+    def set_scriptType(self, nValue):
+        CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 22, nValue)
     scriptType = property(get_scriptType, set_scriptType)
     def get_compiled_p(self):
-        numRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 22)
+        numRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 23)
         if(numRecords > 0):
             cRecords = POINTER(c_ubyte * numRecords)()
-            CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 22, byref(cRecords))
+            CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 23, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
         else: return []
     def set_compiled_p(self, nValue):
         length = len(nValue)
-        CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 22, struct.pack('B' * length, *nValue), length)
+        CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 23, struct.pack('B' * length, *nValue), length)
     compiled_p = property(get_compiled_p, set_compiled_p)
     def get_scriptText(self):
         CBash.ReadFIDField.restype = c_char_p
-        return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 23)
+        return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 24)
     def set_scriptText(self, nValue):
-        CBash.SetFIDFieldStr(self._CollectionIndex, self._ModName, self._recordID, 23, nValue)
+        CBash.SetFIDFieldStr(self._CollectionIndex, self._ModName, self._recordID, 24, nValue)
     scriptText = property(get_scriptText, set_scriptText)
     def get_references(self):
-        numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 24)
+        numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 25)
         if(numRecords > 0): return [self.Reference(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
         else: return []
     def set_references(self, nReferences):
-        diffLength = len(nReferences) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 24)
-        nValues = [(nReference.reference,nReference.isSCRO) for nReference in nReferences]
+        diffLength = len(nReferences) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 25)
+        nValues = [(nReference.reference,nReference.IsSCRO) for nReference in nReferences]
         while(diffLength < 0):
-            CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 24)
+            CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 25)
             diffLength += 1
         while(diffLength > 0):
-            CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 24)
+            CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 25)
             diffLength -= 1
         for oReference, nValue in zip(self.references, nValues):
-            oReference.reference, oReference.isSCRO = nValue  
+            oReference.reference, oReference.IsSCRO = nValue  
     references = property(get_references, set_references)
+    def get_IsTopic(self):
+        return (self.dialType == 0)
+    def set_IsTopic(self, nValue):
+        if (nValue == True): self.dialType = 0
+        elif(self.get_IsTopic()): self.IsConversation = True
+    IsTopic = property(get_IsTopic, set_IsTopic)
+    def get_IsConversation(self):
+        return (self.dialType == 1)
+    def set_IsConversation(self, nValue):
+        if (nValue == True): self.dialType = 1
+        elif(self.get_IsConversation()): self.IsTopic = True
+    IsConversation = property(get_IsConversation, set_IsConversation)
+    def get_IsCombat(self):
+        return (self.dialType == 2)
+    def set_IsCombat(self, nValue):
+        if (nValue == True): self.dialType = 2
+        elif(self.get_IsCombat()): self.IsTopic = True
+    IsCombat = property(get_IsCombat, set_IsCombat)
+    def get_IsPersuasion(self):
+        return (self.dialType == 3)
+    def set_IsPersuasion(self, nValue):
+        if (nValue == True): self.dialType = 3
+        elif(self.get_IsPersuasion()): self.IsTopic = True
+    IsPersuasion = property(get_IsPersuasion, set_IsPersuasion)
+    def get_IsDetection(self):
+        return (self.dialType == 4)
+    def set_IsDetection(self, nValue):
+        if (nValue == True): self.dialType = 4
+        elif(self.get_IsDetection()): self.IsTopic = True
+    IsDetection = property(get_IsDetection, set_IsDetection)
+    def get_IsService(self):
+        return (self.dialType == 5)
+    def set_IsService(self, nValue):
+        if (nValue == True): self.dialType = 5
+        elif(self.get_IsService()): self.IsTopic = True
+    IsService = property(get_IsService, set_IsService)
+    def get_IsMisc(self):
+        return (self.dialType == 6)
+    def set_IsMisc(self, nValue):
+        if (nValue == True): self.dialType = 6
+        elif(self.get_IsMisc()): self.IsTopic = True
+    IsMisc = property(get_IsMisc, set_IsMisc)
+    def get_IsGoodbye(self):
+        return (self.flags & 0x00000001) != 0
+    def set_IsGoodbye(self, nValue):
+        if (nValue == True): self.flags |= 0x00000001
+        else: self.flags &= ~0x00000001
+    IsGoodbye = property(get_IsGoodbye, set_IsGoodbye)
+    def get_IsRandom(self):
+        return (self.flags & 0x00000002) != 0
+    def set_IsRandom(self, nValue):
+        if (nValue == True): self.flags |= 0x00000002
+        else: self.flags &= ~0x00000002
+    IsRandom = property(get_IsRandom, set_IsRandom)
+    def get_IsSayOnce(self):
+        return (self.flags & 0x00000004) != 0
+    def set_IsSayOnce(self, nValue):
+        if (nValue == True): self.flags |= 0x00000004
+        else: self.flags &= ~0x00000004
+    IsSayOnce = property(get_IsSayOnce, set_IsSayOnce)
+    def get_IsInfoRefusal(self):
+        return (self.flags & 0x00000010) != 0
+    def set_IsInfoRefusal(self, nValue):
+        if (nValue == True): self.flags |= 0x00000010
+        else: self.flags &= ~0x00000010
+    IsInfoRefusal = property(get_IsInfoRefusal, set_IsInfoRefusal)
+    def get_IsRandomEnd(self):
+        return (self.flags & 0x00000020) != 0
+    def set_IsRandomEnd(self, nValue):
+        if (nValue == True): self.flags |= 0x00000020
+        else: self.flags &= ~0x00000020
+    IsRandomEnd = property(get_IsRandomEnd, set_IsRandomEnd)
+    def get_IsRunForRumors(self):
+        return (self.flags & 0x00000040) != 0
+    def set_IsRunForRumors(self, nValue):
+        if (nValue == True): self.flags |= 0x00000040
+        else: self.flags &= ~0x00000040
+    IsRunForRumors = property(get_IsRunForRumors, set_IsRunForRumors)
+    
 class QUSTRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyQUSTRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -9919,6 +11944,90 @@ class QUSTRecord(BaseRecord):
         def set_unused2(self, nValue):
             CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 7, struct.pack('4B', *nValue), 4)
         unused2 = property(get_unused2, set_unused2)
+        def get_IsEqual(self):
+            return ((self.operType & 0xF0) == 0x00000000)
+        def set_IsEqual(self, nValue):
+            if (nValue == True):
+                self.operType &= 0x0F
+                self.operType |= 0x00000000
+            elif(self.get_IsEqual()): self.IsNotEqual = True
+        IsEqual = property(get_IsEqual, set_IsEqual)
+        def get_IsNotEqual(self):
+            return ((self.operType & 0xF0) == 0x00000020)
+        def set_IsNotEqual(self, nValue):
+            if (nValue == True):
+                self.operType &= 0x0F
+                self.operType |= 0x00000020
+            elif(self.get_IsNotEqual()): self.IsEqual = True
+        IsNotEqual = property(get_IsNotEqual, set_IsNotEqual)
+        def get_IsGreater(self):
+            return ((self.operType & 0xF0) == 0x00000040)
+        def set_IsGreater(self, nValue):
+            if (nValue == True):
+                self.operType &= 0x0F
+                self.operType |= 0x00000040
+            elif(self.get_IsGreater()): self.IsEqual = True
+        IsGreater = property(get_IsGreater, set_IsGreater)
+        def get_IsGreaterOrEqual(self):
+            return ((self.operType & 0xF0) == 0x00000060)
+        def set_IsGreaterOrEqual(self, nValue):
+            if (nValue == True):
+                self.operType &= 0x0F
+                self.operType |= 0x00000060
+            elif(self.get_IsGreaterOrEqual()): self.IsEqual = True
+        IsGreaterOrEqual = property(get_IsGreaterOrEqual, set_IsGreaterOrEqual)
+        def get_IsLess(self):
+            return ((self.operType & 0xF0) == 0x00000080)
+        def set_IsLess(self, nValue):
+            if (nValue == True):
+                self.operType &= 0x0F
+                self.operType |= 0x00000080
+            elif(self.get_IsLess()): self.IsEqual = True
+        IsLess = property(get_IsLess, set_IsLess)
+        def get_IsLessOrEqual(self):
+            return ((self.operType & 0xF0) == 0x000000A0)
+        def set_IsLessOrEqual(self, nValue):
+            if (nValue == True):
+                self.operType &= 0x0F
+                self.operType |= 0x000000A0
+            elif(self.get_IsLessOrEqual()): self.IsEqual = True
+        IsLessOrEqual = property(get_IsLessOrEqual, set_IsLessOrEqual)        
+        def IsType(self, nValue):
+            return ((self.operType & 0xF0) == (nValue & 0xF0))
+        def SetType(self, nValue):
+            nValue &= 0xF0
+            self.operType &= 0x0F
+            self.operType |= nValue
+        def get_IsNone(self):
+            return ((self.operType & 0x0F) == 0x00000000)
+        def set_IsNone(self, nValue):
+            if (nValue == True): self.operType &= 0xF0
+        IsNone = property(get_IsNone, set_IsNone)
+        def get_IsOr(self):
+            return ((self.operType & 0x0F) == 0x00000001)
+        def set_IsOr(self, nValue):
+            if (nValue == True): self.operType |= 0x00000001
+            else: self.operType &= ~0x00000001
+        IsOr = property(get_IsOr, set_IsOr)
+        def get_IsRunOnTarget(self):
+            return ((self.operType & 0x0F) == 0x00000002)
+        def set_IsRunOnTarget(self, nValue):
+            if (nValue == True): self.operType |= 0x00000002
+            else: self.operType &= ~0x00000002
+        IsRunOnTarget = property(get_IsRunOnTarget, set_IsRunOnTarget)
+        def get_IsUseGlobal(self):
+            return ((self.operType & 0x0F) == 0x00000004)
+        def set_IsUseGlobal(self, nValue):
+            if (nValue == True): self.operType |= 0x00000004
+            else: self.operType &= ~0x00000004
+        IsUseGlobal = property(get_IsUseGlobal, set_IsUseGlobal)
+        def IsFlagMask(self, nValue, Exact=False):
+            if(Exact): return ((self.operType & 0x0F) & (nValue & 0x0F)) == nValue
+            else: return ((self.operType & 0x0F) & (nValue & 0x0F)) != 0
+        def SetFlagMask(self, nValue):
+            nValue &= 0x0F
+            self.operType &= 0xF0
+            self.operType |= nValue
     class Stage(object):
         class Entry(object):
             class Condition(object):
@@ -10001,6 +12110,90 @@ class QUSTRecord(BaseRecord):
                 def set_unused2(self, nValue):
                     CBash.SetFIDListX3FieldR(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 2, self._listX3Index, 7, struct.pack('4B', *nValue), 4)
                 unused2 = property(get_unused2, set_unused2)
+                def get_IsEqual(self):
+                    return ((self.operType & 0xF0) == 0x00000000)
+                def set_IsEqual(self, nValue):
+                    if (nValue == True):
+                        self.operType &= 0x0F
+                        self.operType |= 0x00000000
+                    elif(self.get_IsEqual()): self.IsNotEqual = True
+                IsEqual = property(get_IsEqual, set_IsEqual)
+                def get_IsNotEqual(self):
+                    return ((self.operType & 0xF0) == 0x00000020)
+                def set_IsNotEqual(self, nValue):
+                    if (nValue == True):
+                        self.operType &= 0x0F
+                        self.operType |= 0x00000020
+                    elif(self.get_IsNotEqual()): self.IsEqual = True
+                IsNotEqual = property(get_IsNotEqual, set_IsNotEqual)
+                def get_IsGreater(self):
+                    return ((self.operType & 0xF0) == 0x00000040)
+                def set_IsGreater(self, nValue):
+                    if (nValue == True):
+                        self.operType &= 0x0F
+                        self.operType |= 0x00000040
+                    elif(self.get_IsGreater()): self.IsEqual = True
+                IsGreater = property(get_IsGreater, set_IsGreater)
+                def get_IsGreaterOrEqual(self):
+                    return ((self.operType & 0xF0) == 0x00000060)
+                def set_IsGreaterOrEqual(self, nValue):
+                    if (nValue == True):
+                        self.operType &= 0x0F
+                        self.operType |= 0x00000060
+                    elif(self.get_IsGreaterOrEqual()): self.IsEqual = True
+                IsGreaterOrEqual = property(get_IsGreaterOrEqual, set_IsGreaterOrEqual)
+                def get_IsLess(self):
+                    return ((self.operType & 0xF0) == 0x00000080)
+                def set_IsLess(self, nValue):
+                    if (nValue == True):
+                        self.operType &= 0x0F
+                        self.operType |= 0x00000080
+                    elif(self.get_IsLess()): self.IsEqual = True
+                IsLess = property(get_IsLess, set_IsLess)
+                def get_IsLessOrEqual(self):
+                    return ((self.operType & 0xF0) == 0x000000A0)
+                def set_IsLessOrEqual(self, nValue):
+                    if (nValue == True):
+                        self.operType &= 0x0F
+                        self.operType |= 0x000000A0
+                    elif(self.get_IsLessOrEqual()): self.IsEqual = True
+                IsLessOrEqual = property(get_IsLessOrEqual, set_IsLessOrEqual)        
+                def IsType(self, nValue):
+                    return ((self.operType & 0xF0) == (nValue & 0xF0))
+                def SetType(self, nValue):
+                    nValue &= 0xF0
+                    self.operType &= 0x0F
+                    self.operType |= nValue
+                def get_IsNone(self):
+                    return ((self.operType & 0x0F) == 0x00000000)
+                def set_IsNone(self, nValue):
+                    if (nValue == True): self.operType &= 0xF0
+                IsNone = property(get_IsNone, set_IsNone)
+                def get_IsOr(self):
+                    return ((self.operType & 0x0F) == 0x00000001)
+                def set_IsOr(self, nValue):
+                    if (nValue == True): self.operType |= 0x00000001
+                    else: self.operType &= ~0x00000001
+                IsOr = property(get_IsOr, set_IsOr)
+                def get_IsRunOnTarget(self):
+                    return ((self.operType & 0x0F) == 0x00000002)
+                def set_IsRunOnTarget(self, nValue):
+                    if (nValue == True): self.operType |= 0x00000002
+                    else: self.operType &= ~0x00000002
+                IsRunOnTarget = property(get_IsRunOnTarget, set_IsRunOnTarget)
+                def get_IsUseGlobal(self):
+                    return ((self.operType & 0x0F) == 0x00000004)
+                def set_IsUseGlobal(self, nValue):
+                    if (nValue == True): self.operType |= 0x00000004
+                    else: self.operType &= ~0x00000004
+                IsUseGlobal = property(get_IsUseGlobal, set_IsUseGlobal)
+                def IsFlagMask(self, nValue, Exact=False):
+                    if(Exact): return ((self.operType & 0x0F) & (nValue & 0x0F)) == nValue
+                    else: return ((self.operType & 0x0F) & (nValue & 0x0F)) != 0
+                def SetFlagMask(self, nValue):
+                    nValue &= 0x0F
+                    self.operType &= 0xF0
+                    self.operType |= nValue
 
             class Reference(object):
                 def __init__(self, CollectionIndex, ModName, recordID, listIndex, listX2Index, listX3Index):
@@ -10016,10 +12209,10 @@ class QUSTRecord(BaseRecord):
                 def set_reference(self, nValue):
                     CBash.SetFIDListX3FieldUI(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 11, self._listX3Index, 1, nValue)
                 reference = property(get_reference, set_reference)
-                def get_isSCRO(self):
+                def get_IsSCRO(self):
                     CBash.ReadFIDListX3Field.restype = POINTER(c_bool)
                     return CBash.ReadFIDListX3Field(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 11, self._listX3Index, 2).contents.value
-                def set_isSCRO(self, nValue):
+                def set_IsSCRO(self, nValue):
                     if isinstance(nValue, bool):
                         if(nValue):
                             CBash.SetFIDListX3FieldUI(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 11, self._listX3Index, 2, 1)
@@ -10027,7 +12220,7 @@ class QUSTRecord(BaseRecord):
                             CBash.SetFIDListX3FieldUI(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 11, self._listX3Index, 2, 0)
                     else:
                         CBash.SetFIDListX3FieldUI(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 11, self._listX3Index, 2, nValue)
-                isSCRO = property(get_isSCRO, set_isSCRO)
+                IsSCRO = property(get_IsSCRO, set_IsSCRO)
             def __init__(self, CollectionIndex, ModName, recordID, listIndex, listX2Index):
                 self._CollectionIndex = CollectionIndex
                 self._ModName = ModName
@@ -10142,7 +12335,7 @@ class QUSTRecord(BaseRecord):
                 else: return []
             def set_references(self, nReferences):
                 diffLength = len(nReferences) - CBash.GetFIDListX3Size(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 11)
-                nValues = [(nReference.reference,nReference.isSCRO) for nReference in nReferences]
+                nValues = [(nReference.reference,nReference.IsSCRO) for nReference in nReferences]
                 while(diffLength < 0):
                     CBash.DeleteFIDListX3Element(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 11)
                     diffLength += 1
@@ -10150,8 +12343,14 @@ class QUSTRecord(BaseRecord):
                     CBash.CreateFIDListX3Element(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 11)
                     diffLength -= 1
                 for oReference, nValue in zip(self.references, nValues):
-                    oReference.reference, oReference.isSCRO = nValue  
+                    oReference.reference, oReference.IsSCRO = nValue  
             references = property(get_references, set_references)
+            def get_IsCompletes(self):
+                return (self.flags & 0x00000001) != 0
+            def set_IsCompletes(self, nValue):
+                if (nValue == True): self.flags |= 0x00000001
+                else: self.flags &= ~0x00000001
+            IsCompletes = property(get_IsCompletes, set_IsCompletes)
         def __init__(self, CollectionIndex, ModName, recordID, listIndex):
             self._CollectionIndex = CollectionIndex
             self._ModName = ModName
@@ -10179,7 +12378,7 @@ class QUSTRecord(BaseRecord):
                         [(nCondition.operType, nCondition.unused1, nCondition.compValue, nCondition.ifunc, 
                           nCondition.param1, nCondition.param2, nCondition.unused2) for nCondition in nEntry.conditions],
                         nEntry.text, nEntry.unused1, nEntry.numRefs, nEntry.compiledSize, nEntry.lastIndex, nEntry.scriptType, nEntry.compiled_p, nEntry.scriptText,
-                        [(nReference.reference, nReference.isSCRO) for nReference in nEntry.references]) for nEntry in nEntries]
+                        [(nReference.reference, nReference.IsSCRO) for nReference in nEntry.references]) for nEntry in nEntries]
             while(diffLength < 0):
                 CBash.DeleteFIDListX2Element(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2)
                 diffLength += 1
@@ -10213,7 +12412,7 @@ class QUSTRecord(BaseRecord):
                     CBash.CreateFIDListX3Element(self._CollectionIndex, self._ModName, self._recordID, 12, oEntry._listIndex, 2, oEntry.listX2Index, 11)
                     diffLength -= 1
                 for oReference, refValue in zip(oEntry.references, nValue[10]):
-                    oReference.reference, oReference.isSCRO = refValue   
+                    oReference.reference, oReference.IsSCRO = refValue   
         entries = property(get_entries, set_entries)
     class Target(object):
         class Condition(object):
@@ -10283,6 +12482,90 @@ class QUSTRecord(BaseRecord):
             def set_unused2(self, nValue):
                 CBash.SetFIDListX2FieldR(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 4, self._listX2Index, 7, struct.pack('4B', *nValue), 4)
             unused2 = property(get_unused2, set_unused2)
+            def get_IsEqual(self):
+                return ((self.operType & 0xF0) == 0x00000000)
+            def set_IsEqual(self, nValue):
+                if (nValue == True):
+                    self.operType &= 0x0F
+                    self.operType |= 0x00000000
+                elif(self.get_IsEqual()): self.IsNotEqual = True
+            IsEqual = property(get_IsEqual, set_IsEqual)
+            def get_IsNotEqual(self):
+                return ((self.operType & 0xF0) == 0x00000020)
+            def set_IsNotEqual(self, nValue):
+                if (nValue == True):
+                    self.operType &= 0x0F
+                    self.operType |= 0x00000020
+                elif(self.get_IsNotEqual()): self.IsEqual = True
+            IsNotEqual = property(get_IsNotEqual, set_IsNotEqual)
+            def get_IsGreater(self):
+                return ((self.operType & 0xF0) == 0x00000040)
+            def set_IsGreater(self, nValue):
+                if (nValue == True):
+                    self.operType &= 0x0F
+                    self.operType |= 0x00000040
+                elif(self.get_IsGreater()): self.IsEqual = True
+            IsGreater = property(get_IsGreater, set_IsGreater)
+            def get_IsGreaterOrEqual(self):
+                return ((self.operType & 0xF0) == 0x00000060)
+            def set_IsGreaterOrEqual(self, nValue):
+                if (nValue == True):
+                    self.operType &= 0x0F
+                    self.operType |= 0x00000060
+                elif(self.get_IsGreaterOrEqual()): self.IsEqual = True
+            IsGreaterOrEqual = property(get_IsGreaterOrEqual, set_IsGreaterOrEqual)
+            def get_IsLess(self):
+                return ((self.operType & 0xF0) == 0x00000080)
+            def set_IsLess(self, nValue):
+                if (nValue == True):
+                    self.operType &= 0x0F
+                    self.operType |= 0x00000080
+                elif(self.get_IsLess()): self.IsEqual = True
+            IsLess = property(get_IsLess, set_IsLess)
+            def get_IsLessOrEqual(self):
+                return ((self.operType & 0xF0) == 0x000000A0)
+            def set_IsLessOrEqual(self, nValue):
+                if (nValue == True):
+                    self.operType &= 0x0F
+                    self.operType |= 0x000000A0
+                elif(self.get_IsLessOrEqual()): self.IsEqual = True
+            IsLessOrEqual = property(get_IsLessOrEqual, set_IsLessOrEqual)        
+            def IsType(self, nValue):
+                return ((self.operType & 0xF0) == (nValue & 0xF0))
+            def SetType(self, nValue):
+                nValue &= 0xF0
+                self.operType &= 0x0F
+                self.operType |= nValue
+            def get_IsNone(self):
+                return ((self.operType & 0x0F) == 0x00000000)
+            def set_IsNone(self, nValue):
+                if (nValue == True): self.operType &= 0xF0
+            IsNone = property(get_IsNone, set_IsNone)
+            def get_IsOr(self):
+                return ((self.operType & 0x0F) == 0x00000001)
+            def set_IsOr(self, nValue):
+                if (nValue == True): self.operType |= 0x00000001
+                else: self.operType &= ~0x00000001
+            IsOr = property(get_IsOr, set_IsOr)
+            def get_IsRunOnTarget(self):
+                return ((self.operType & 0x0F) == 0x00000002)
+            def set_IsRunOnTarget(self, nValue):
+                if (nValue == True): self.operType |= 0x00000002
+                else: self.operType &= ~0x00000002
+            IsRunOnTarget = property(get_IsRunOnTarget, set_IsRunOnTarget)
+            def get_IsUseGlobal(self):
+                return ((self.operType & 0x0F) == 0x00000004)
+            def set_IsUseGlobal(self, nValue):
+                if (nValue == True): self.operType |= 0x00000004
+                else: self.operType &= ~0x00000004
+            IsUseGlobal = property(get_IsUseGlobal, set_IsUseGlobal)
+            def IsFlagMask(self, nValue, Exact=False):
+                if(Exact): return ((self.operType & 0x0F) & (nValue & 0x0F)) == nValue
+                else: return ((self.operType & 0x0F) & (nValue & 0x0F)) != 0
+            def SetFlagMask(self, nValue):
+                nValue &= 0x0F
+                self.operType &= 0xF0
+                self.operType |= nValue
         def __init__(self, CollectionIndex, ModName, recordID, listIndex):
             self._CollectionIndex = CollectionIndex
             self._ModName = ModName
@@ -10334,6 +12617,12 @@ class QUSTRecord(BaseRecord):
             for oCondition, nValue in zip(self.conditions, nValues):
                 oCondition.operType, oCondition.unused1, oCondition.compValue, oCondition.ifunc, oCondition.param1, oCondition.param2, oCondition.unused2 = nValue
         conditions = property(get_conditions, set_conditions)
+        def get_IsIgnoresLocks(self):
+            return (self.flags & 0x00000001) != 0
+        def set_IsIgnoresLocks(self, nValue):
+            if (nValue == True): self.flags |= 0x00000001
+            else: self.flags &= ~0x00000001
+        IsIgnoresLocks = property(get_IsIgnoresLocks, set_IsIgnoresLocks)
     def newConditionsElement(self):
         listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 11)
         if(listIndex == -1): return None
@@ -10367,14 +12656,14 @@ class QUSTRecord(BaseRecord):
     def set_iconPath(self, nValue):
         CBash.SetFIDFieldStr(self._CollectionIndex, self._ModName, self._recordID, 8, nValue)
     iconPath = property(get_iconPath, set_iconPath)
-    def get_questFlags(self):
+    def get_flags(self):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         if(retValue): return retValue.contents.value
         else: return None
-    def set_questFlags(self, nValue):
+    def set_flags(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 9, c_ubyte(nValue))
-    questFlags = property(get_questFlags, set_questFlags)
+    flags = property(get_flags, set_flags)
     def get_priority(self):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
@@ -10410,7 +12699,7 @@ class QUSTRecord(BaseRecord):
                   [(nCondition.operType, nCondition.unused1, nCondition.compValue, nCondition.ifunc, 
                   nCondition.param1, nCondition.param2, nCondition.unused2) for nCondition in nEntry.conditions],
                   nEntry.text, nEntry.unused1, nEntry.numRefs, nEntry.compiledSize, nEntry.lastIndex, nEntry.scriptType, nEntry.compiled_p, nEntry.scriptText,
-                  [(nReference.reference, nReference.isSCRO) for nReference in nEntry.references]) for nEntry in nStage.entries]) for nStage in nStages]
+                  [(nReference.reference, nReference.IsSCRO) for nReference in nEntry.references]) for nEntry in nStage.entries]) for nStage in nStages]
         while(diffLength < 0):
             CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 12)
             diffLength += 1
@@ -10446,7 +12735,7 @@ class QUSTRecord(BaseRecord):
                     CBash.CreateFIDListX3Element(self._CollectionIndex, self._ModName, self._recordID, 12, oEntry._listIndex, 2, oEntry._listX2Index, 11)
                     diffLength -= 1
                 for oReference, refValue in zip(oEntry.references, eValue[10]):
-                    oReference.reference, oReference.isSCRO = refValue  
+                    oReference.reference, oReference.IsSCRO = refValue  
     stages = property(get_stages, set_stages)
     def get_targets(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 13)
@@ -10476,6 +12765,25 @@ class QUSTRecord(BaseRecord):
             for oCondition, eValue in zip(oTarget.conditions, nValue[3]):
                 oCondition.operType, oCondition.unused1, oCondition.compValue, oCondition.ifunc, oCondition.param1, oCondition.param2, oCondition.unused2 = eValue
     targets = property(get_targets, set_targets)
+    def get_IsStartEnabled(self):
+        return (self.flags & 0x00000001) != 0
+    def set_IsStartEnabled(self, nValue):
+        if (nValue == True): self.flags |= 0x00000001
+        else: self.flags &= ~0x00000001
+    IsStartEnabled = property(get_IsStartEnabled, set_IsStartEnabled)
+    def get_IsRepeatedTopics(self):
+        return (self.flags & 0x00000004) != 0
+    def set_IsRepeatedTopics(self, nValue):
+        if (nValue == True): self.flags |= 0x00000004
+        else: self.flags &= ~0x00000004
+    IsRepeatedTopics = property(get_IsRepeatedTopics, set_IsRepeatedTopics)
+    def get_IsRepeatedStages(self):
+        return (self.flags & 0x00000008) != 0
+    def set_IsRepeatedStages(self, nValue):
+        if (nValue == True): self.flags |= 0x00000008
+        else: self.flags &= ~0x00000008
+    IsRepeatedStages = property(get_IsRepeatedStages, set_IsRepeatedStages)
+    
 class IDLERecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyIDLERecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -10552,6 +12860,90 @@ class IDLERecord(BaseRecord):
         def set_unused2(self, nValue):
             CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 7, struct.pack('4B', *nValue), 4)
         unused2 = property(get_unused2, set_unused2)
+        def get_IsEqual(self):
+            return ((self.operType & 0xF0) == 0x00000000)
+        def set_IsEqual(self, nValue):
+            if (nValue == True):
+                self.operType &= 0x0F
+                self.operType |= 0x00000000
+            elif(self.get_IsEqual()): self.IsNotEqual = True
+        IsEqual = property(get_IsEqual, set_IsEqual)
+        def get_IsNotEqual(self):
+            return ((self.operType & 0xF0) == 0x00000020)
+        def set_IsNotEqual(self, nValue):
+            if (nValue == True):
+                self.operType &= 0x0F
+                self.operType |= 0x00000020
+            elif(self.get_IsNotEqual()): self.IsEqual = True
+        IsNotEqual = property(get_IsNotEqual, set_IsNotEqual)
+        def get_IsGreater(self):
+            return ((self.operType & 0xF0) == 0x00000040)
+        def set_IsGreater(self, nValue):
+            if (nValue == True):
+                self.operType &= 0x0F
+                self.operType |= 0x00000040
+            elif(self.get_IsGreater()): self.IsEqual = True
+        IsGreater = property(get_IsGreater, set_IsGreater)
+        def get_IsGreaterOrEqual(self):
+            return ((self.operType & 0xF0) == 0x00000060)
+        def set_IsGreaterOrEqual(self, nValue):
+            if (nValue == True):
+                self.operType &= 0x0F
+                self.operType |= 0x00000060
+            elif(self.get_IsGreaterOrEqual()): self.IsEqual = True
+        IsGreaterOrEqual = property(get_IsGreaterOrEqual, set_IsGreaterOrEqual)
+        def get_IsLess(self):
+            return ((self.operType & 0xF0) == 0x00000080)
+        def set_IsLess(self, nValue):
+            if (nValue == True):
+                self.operType &= 0x0F
+                self.operType |= 0x00000080
+            elif(self.get_IsLess()): self.IsEqual = True
+        IsLess = property(get_IsLess, set_IsLess)
+        def get_IsLessOrEqual(self):
+            return ((self.operType & 0xF0) == 0x000000A0)
+        def set_IsLessOrEqual(self, nValue):
+            if (nValue == True):
+                self.operType &= 0x0F
+                self.operType |= 0x000000A0
+            elif(self.get_IsLessOrEqual()): self.IsEqual = True
+        IsLessOrEqual = property(get_IsLessOrEqual, set_IsLessOrEqual)        
+        def IsType(self, nValue):
+            return ((self.operType & 0xF0) == (nValue & 0xF0))
+        def SetType(self, nValue):
+            nValue &= 0xF0
+            self.operType &= 0x0F
+            self.operType |= nValue
+        def get_IsNone(self):
+            return ((self.operType & 0x0F) == 0x00000000)
+        def set_IsNone(self, nValue):
+            if (nValue == True): self.operType &= 0xF0
+        IsNone = property(get_IsNone, set_IsNone)
+        def get_IsOr(self):
+            return ((self.operType & 0x0F) == 0x00000001)
+        def set_IsOr(self, nValue):
+            if (nValue == True): self.operType |= 0x00000001
+            else: self.operType &= ~0x00000001
+        IsOr = property(get_IsOr, set_IsOr)
+        def get_IsRunOnTarget(self):
+            return ((self.operType & 0x0F) == 0x00000002)
+        def set_IsRunOnTarget(self, nValue):
+            if (nValue == True): self.operType |= 0x00000002
+            else: self.operType &= ~0x00000002
+        IsRunOnTarget = property(get_IsRunOnTarget, set_IsRunOnTarget)
+        def get_IsUseGlobal(self):
+            return ((self.operType & 0x0F) == 0x00000004)
+        def set_IsUseGlobal(self, nValue):
+            if (nValue == True): self.operType |= 0x00000004
+            else: self.operType &= ~0x00000004
+        IsUseGlobal = property(get_IsUseGlobal, set_IsUseGlobal)
+        def IsFlagMask(self, nValue, Exact=False):
+            if(Exact): return ((self.operType & 0x0F) & (nValue & 0x0F)) == nValue
+            else: return ((self.operType & 0x0F) & (nValue & 0x0F)) != 0
+        def SetFlagMask(self, nValue):
+            nValue &= 0x0F
+            self.operType &= 0xF0
+            self.operType |= nValue
     def newConditionsElement(self):
         listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 9)
         if(listIndex == -1): return None
@@ -10622,6 +13014,88 @@ class IDLERecord(BaseRecord):
     def set_prevId(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 12, nValue)
     prevId = property(get_prevId, set_prevId)
+    def get_IsLowerBody(self):
+        return ((self.group & 0x0F) == 0x00000000)
+    def set_IsLowerBody(self, nValue):
+        if (nValue == True):
+            self.group &= 0xF0
+            self.group |= 0x00000000
+        elif(self.get_IsLowerBody()): self.IsLeftArm = True
+    IsLowerBody = property(get_IsLowerBody, set_IsLowerBody)
+    def get_IsLeftArm(self):
+        return ((self.group & 0x0F) == 0x00000001)
+    def set_IsLeftArm(self, nValue):
+        if (nValue == True):
+            self.group &= 0xF0
+            self.group |= 0x00000001
+        elif(self.get_IsLeftArm()): self.IsLowerBody = True
+    IsLeftArm = property(get_IsLeftArm, set_IsLeftArm)
+    def get_IsLeftHand(self):
+        return ((self.group & 0x0F) == 0x00000002)
+    def set_IsLeftHand(self, nValue):
+        if (nValue == True):
+            self.group &= 0xF0
+            self.group |= 0x00000002
+        elif(self.get_IsLeftHand()): self.IsLowerBody = True
+    IsLeftHand = property(get_IsLeftHand, set_IsLeftHand)
+    def get_IsRightArm(self):
+        return ((self.group & 0x0F) == 0x00000003)
+    def set_IsRightArm(self, nValue):
+        if (nValue == True):
+            self.group &= 0xF0
+            self.group |= 0x00000003
+        elif(self.get_IsRightArm()): self.IsLowerBody = True
+    IsRightArm = property(get_IsRightArm, set_IsRightArm)
+    def get_IsSpecialIdle(self):
+        return ((self.group & 0x0F) == 0x00000004)
+    def set_IsSpecialIdle(self, nValue):
+        if (nValue == True):
+            self.group &= 0xF0
+            self.group |= 0x00000004
+        elif(self.get_IsSpecialIdle()): self.IsLowerBody = True
+    IsSpecialIdle = property(get_IsSpecialIdle, set_IsSpecialIdle)
+    def get_IsWholeBody(self):
+        return ((self.group & 0x0F) == 0x00000005)
+    def set_IsWholeBody(self, nValue):
+        if (nValue == True):
+            self.group &= 0xF0
+            self.group |= 0x00000005
+        elif(self.get_IsWholeBody()): self.IsLowerBody = True
+    IsWholeBody = property(get_IsWholeBody, set_IsWholeBody)
+    def get_IsUpperBody(self):
+        return ((self.group & 0x0F) == 0x00000006)
+    def set_IsUpperBody(self, nValue):
+        if (nValue == True):
+            self.group &= 0xF0
+            self.group |= 0x00000006
+        elif(self.get_IsUpperBody()): self.IsLowerBody = True
+    IsUpperBody = property(get_IsUpperBody, set_IsUpperBody)
+    def IsType(self, nValue):
+        return ((self.group & 0x0F) == (nValue & 0x0F))
+    def SetType(self, nValue):
+        nValue &= 0x0F
+        self.group &= 0xF0
+        self.group |= nValue
+    def get_IsNotReturnFile(self):
+        return (self.group & 0x00000080) != 0
+    def set_IsNotReturnFile(self, nValue):
+        if (nValue == True): self.group |= 0x00000080
+        else: self.group &= ~0x00000080
+    IsNotReturnFile = property(get_IsNotReturnFile, set_IsNotReturnFile)
+    def get_IsReturnFile(self):
+        return not self.get_IsNotReturnFile()
+    def set_IsReturnFile(self, nValue):
+        if (nValue == True): self.group &= ~0x00000080
+        else: self.group |= 0x00000080
+    IsReturnFile = property(get_IsReturnFile, set_IsReturnFile)
+    def IsFlagMask(self, nValue, Exact=False):
+        if(Exact): return ((self.group & 0xF0) & (nValue & 0xF0)) == nValue
+        else: return ((self.group & 0xF0) & (nValue & 0xF0)) != 0
+    def SetFlagMask(self, nValue):
+        nValue &= 0xF0
+        self.group &= 0x0F
+        self.group |= nValue
+        
 class PACKRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyPACKRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -10698,6 +13172,90 @@ class PACKRecord(BaseRecord):
         def set_unused2(self, nValue):
             CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 7, struct.pack('4B', *nValue), 4)
         unused2 = property(get_unused2, set_unused2)
+        def get_IsEqual(self):
+            return ((self.operType & 0xF0) == 0x00000000)
+        def set_IsEqual(self, nValue):
+            if (nValue == True):
+                self.operType &= 0x0F
+                self.operType |= 0x00000000
+            elif(self.get_IsEqual()): self.IsNotEqual = True
+        IsEqual = property(get_IsEqual, set_IsEqual)
+        def get_IsNotEqual(self):
+            return ((self.operType & 0xF0) == 0x00000020)
+        def set_IsNotEqual(self, nValue):
+            if (nValue == True):
+                self.operType &= 0x0F
+                self.operType |= 0x00000020
+            elif(self.get_IsNotEqual()): self.IsEqual = True
+        IsNotEqual = property(get_IsNotEqual, set_IsNotEqual)
+        def get_IsGreater(self):
+            return ((self.operType & 0xF0) == 0x00000040)
+        def set_IsGreater(self, nValue):
+            if (nValue == True):
+                self.operType &= 0x0F
+                self.operType |= 0x00000040
+            elif(self.get_IsGreater()): self.IsEqual = True
+        IsGreater = property(get_IsGreater, set_IsGreater)
+        def get_IsGreaterOrEqual(self):
+            return ((self.operType & 0xF0) == 0x00000060)
+        def set_IsGreaterOrEqual(self, nValue):
+            if (nValue == True):
+                self.operType &= 0x0F
+                self.operType |= 0x00000060
+            elif(self.get_IsGreaterOrEqual()): self.IsEqual = True
+        IsGreaterOrEqual = property(get_IsGreaterOrEqual, set_IsGreaterOrEqual)
+        def get_IsLess(self):
+            return ((self.operType & 0xF0) == 0x00000080)
+        def set_IsLess(self, nValue):
+            if (nValue == True):
+                self.operType &= 0x0F
+                self.operType |= 0x00000080
+            elif(self.get_IsLess()): self.IsEqual = True
+        IsLess = property(get_IsLess, set_IsLess)
+        def get_IsLessOrEqual(self):
+            return ((self.operType & 0xF0) == 0x000000A0)
+        def set_IsLessOrEqual(self, nValue):
+            if (nValue == True):
+                self.operType &= 0x0F
+                self.operType |= 0x000000A0
+            elif(self.get_IsLessOrEqual()): self.IsEqual = True
+        IsLessOrEqual = property(get_IsLessOrEqual, set_IsLessOrEqual)        
+        def IsType(self, nValue):
+            return ((self.operType & 0xF0) == (nValue & 0xF0))
+        def SetType(self, nValue):
+            nValue &= 0xF0
+            self.operType &= 0x0F
+            self.operType |= nValue
+        def get_IsNone(self):
+            return ((self.operType & 0x0F) == 0x00000000)
+        def set_IsNone(self, nValue):
+            if (nValue == True): self.operType &= 0xF0
+        IsNone = property(get_IsNone, set_IsNone)
+        def get_IsOr(self):
+            return ((self.operType & 0x0F) == 0x00000001)
+        def set_IsOr(self, nValue):
+            if (nValue == True): self.operType |= 0x00000001
+            else: self.operType &= ~0x00000001
+        IsOr = property(get_IsOr, set_IsOr)
+        def get_IsRunOnTarget(self):
+            return ((self.operType & 0x0F) == 0x00000002)
+        def set_IsRunOnTarget(self, nValue):
+            if (nValue == True): self.operType |= 0x00000002
+            else: self.operType &= ~0x00000002
+        IsRunOnTarget = property(get_IsRunOnTarget, set_IsRunOnTarget)
+        def get_IsUseGlobal(self):
+            return ((self.operType & 0x0F) == 0x00000004)
+        def set_IsUseGlobal(self, nValue):
+            if (nValue == True): self.operType |= 0x00000004
+            else: self.operType &= ~0x00000004
+        IsUseGlobal = property(get_IsUseGlobal, set_IsUseGlobal)
+        def IsFlagMask(self, nValue, Exact=False):
+            if(Exact): return ((self.operType & 0x0F) & (nValue & 0x0F)) == nValue
+            else: return ((self.operType & 0x0F) & (nValue & 0x0F)) != 0
+        def SetFlagMask(self, nValue):
+            nValue &= 0x0F
+            self.operType &= 0xF0
+            self.operType |= nValue
     def newConditionsElement(self):
         listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 20)
         if(listIndex == -1): return None
@@ -10832,6 +13390,268 @@ class PACKRecord(BaseRecord):
         for oCondition, nValue in zip(self.conditions, nValues):
             oCondition.operType, oCondition.unused1, oCondition.compValue, oCondition.ifunc, oCondition.param1, oCondition.param2, oCondition.unused2 = nValue
     conditions = property(get_conditions, set_conditions)
+    def get_IsOffersServices(self):
+        return (self.flags & 0x00000001) != 0
+    def set_IsOffersServices(self, nValue):
+        if (nValue == True): self.flags |= 0x00000001
+        else: self.flags &= ~0x00000001
+    IsOffersServices = property(get_IsOffersServices, set_IsOffersServices)
+    def get_IsMustReachLocation(self):
+        return (self.flags & 0x00000002) != 0
+    def set_IsMustReachLocation(self, nValue):
+        if (nValue == True): self.flags |= 0x00000002
+        else: self.flags &= ~0x00000002
+    IsMustReachLocation = property(get_IsMustReachLocation, set_IsMustReachLocation)
+    def get_IsMustComplete(self):
+        return (self.flags & 0x00000004) != 0
+    def set_IsMustComplete(self, nValue):
+        if (nValue == True): self.flags |= 0x00000004
+        else: self.flags &= ~0x00000004
+    IsMustComplete = property(get_IsMustComplete, set_IsMustComplete)
+    def get_IsLockAtStart(self):
+        return (self.flags & 0x00000008) != 0
+    def set_IsLockAtStart(self, nValue):
+        if (nValue == True): self.flags |= 0x00000008
+        else: self.flags &= ~0x00000008
+    IsLockAtStart = property(get_IsLockAtStart, set_IsLockAtStart)
+    def get_IsLockAtEnd(self):
+        return (self.flags & 0x00000010) != 0
+    def set_IsLockAtEnd(self, nValue):
+        if (nValue == True): self.flags |= 0x00000010
+        else: self.flags &= ~0x00000010
+    IsLockAtEnd = property(get_IsLockAtEnd, set_IsLockAtEnd)
+    def get_IsLockAtLocation(self):
+        return (self.flags & 0x00000020) != 0
+    def set_IsLockAtLocation(self, nValue):
+        if (nValue == True): self.flags |= 0x00000020
+        else: self.flags &= ~0x00000020
+    IsLockAtLocation = property(get_IsLockAtLocation, set_IsLockAtLocation)
+    def get_IsUnlockAtStart(self):
+        return (self.flags & 0x00000040) != 0
+    def set_IsUnlockAtStart(self, nValue):
+        if (nValue == True): self.flags |= 0x00000040
+        else: self.flags &= ~0x00000040
+    IsUnlockAtStart = property(get_IsUnlockAtStart, set_IsUnlockAtStart)
+    def get_IsUnlockAtEnd(self):
+        return (self.flags & 0x00000080) != 0
+    def set_IsUnlockAtEnd(self, nValue):
+        if (nValue == True): self.flags |= 0x00000080
+        else: self.flags &= ~0x00000080
+    IsUnlockAtEnd = property(get_IsUnlockAtEnd, set_IsUnlockAtEnd)
+    def get_IsUnlockAtLocation(self):
+        return (self.flags & 0x00000100) != 0
+    def set_IsUnlockAtLocation(self, nValue):
+        if (nValue == True): self.flags |= 0x00000100
+        else: self.flags &= ~0x00000100
+    IsUnlockAtLocation = property(get_IsUnlockAtLocation, set_IsUnlockAtLocation)
+    def get_IsContinueIfPcNear(self):
+        return (self.flags & 0x00000200) != 0
+    def set_IsContinueIfPcNear(self, nValue):
+        if (nValue == True): self.flags |= 0x00000200
+        else: self.flags &= ~0x00000200
+    IsContinueIfPcNear = property(get_IsContinueIfPcNear, set_IsContinueIfPcNear)
+    def get_IsOncePerDay(self):
+        return (self.flags & 0x00000400) != 0
+    def set_IsOncePerDay(self, nValue):
+        if (nValue == True): self.flags |= 0x00000400
+        else: self.flags &= ~0x00000400
+    IsOncePerDay = property(get_IsOncePerDay, set_IsOncePerDay)
+    def get_IsSkipFallout(self):
+        return (self.flags & 0x00001000) != 0
+    def set_IsSkipFallout(self, nValue):
+        if (nValue == True): self.flags |= 0x00001000
+        else: self.flags &= ~0x00001000
+    IsSkipFallout = property(get_IsSkipFallout, set_IsSkipFallout)
+    def get_IsAlwaysRun(self):
+        return (self.flags & 0x00002000) != 0
+    def set_IsAlwaysRun(self, nValue):
+        if (nValue == True): self.flags |= 0x00002000
+        else: self.flags &= ~0x00002000
+    IsAlwaysRun = property(get_IsAlwaysRun, set_IsAlwaysRun)
+    def get_IsAlwaysSneak(self):
+        return (self.flags & 0x00020000) != 0
+    def set_IsAlwaysSneak(self, nValue):
+        if (nValue == True): self.flags |= 0x00020000
+        else: self.flags &= ~0x00020000
+    IsAlwaysSneak = property(get_IsAlwaysSneak, set_IsAlwaysSneak)
+    def get_IsAllowSwimming(self):
+        return (self.flags & 0x00040000) != 0
+    def set_IsAllowSwimming(self, nValue):
+        if (nValue == True): self.flags |= 0x00040000
+        else: self.flags &= ~0x00040000
+    IsAllowSwimming = property(get_IsAllowSwimming, set_IsAllowSwimming)
+    def get_IsAllowFalls(self):
+        return (self.flags & 0x00080000) != 0
+    def set_IsAllowFalls(self, nValue):
+        if (nValue == True): self.flags |= 0x00080000
+        else: self.flags &= ~0x00080000
+    IsAllowFalls = property(get_IsAllowFalls, set_IsAllowFalls)
+    def get_IsUnequipArmor(self):
+        return (self.flags & 0x00100000) != 0
+    def set_IsUnequipArmor(self, nValue):
+        if (nValue == True): self.flags |= 0x00100000
+        else: self.flags &= ~0x00100000
+    IsUnequipArmor = property(get_IsUnequipArmor, set_IsUnequipArmor)
+    def get_IsUnequipWeapons(self):
+        return (self.flags & 0x00200000) != 0
+    def set_IsUnequipWeapons(self, nValue):
+        if (nValue == True): self.flags |= 0x00200000
+        else: self.flags &= ~0x00200000
+    IsUnequipWeapons = property(get_IsUnequipWeapons, set_IsUnequipWeapons)
+    def get_IsDefensiveCombat(self):
+        return (self.flags & 0x00400000) != 0
+    def set_IsDefensiveCombat(self, nValue):
+        if (nValue == True): self.flags |= 0x00400000
+        else: self.flags &= ~0x00400000
+    IsDefensiveCombat = property(get_IsDefensiveCombat, set_IsDefensiveCombat)
+    def get_IsUseHorse(self):
+        return (self.flags & 0x00800000) != 0
+    def set_IsUseHorse(self, nValue):
+        if (nValue == True): self.flags |= 0x00800000
+        else: self.flags &= ~0x00800000
+    IsUseHorse = property(get_IsUseHorse, set_IsUseHorse)
+    def get_IsNoIdleAnims(self):
+        return (self.flags & 0x01000000) != 0
+    def set_IsNoIdleAnims(self, nValue):
+        if (nValue == True): self.flags |= 0x01000000
+        else: self.flags &= ~0x01000000
+    IsNoIdleAnims = property(get_IsNoIdleAnims, set_IsNoIdleAnims)
+    def get_IsAIFind(self):
+        return (self.aiType == 0)
+    def set_IsAIFind(self, nValue):
+        if (nValue == True): self.aiType = 0
+        elif(self.get_IsAIFind()): self.IsAIFollow = True
+    IsAIFind = property(get_IsAIFind, set_IsAIFind)
+    def get_IsAIFollow(self):
+        return (self.aiType == 1)
+    def set_IsAIFollow(self, nValue):
+        if (nValue == True): self.aiType = 1
+        elif(self.get_IsAIFollow()): self.IsAIFind = True
+    IsAIFollow = property(get_IsAIFollow, set_IsAIFollow)
+    def get_IsAIEscort(self):
+        return (self.aiType == 2)
+    def set_IsAIEscort(self, nValue):
+        if (nValue == True): self.aiType = 2
+        elif(self.get_IsAIEscort()): self.IsAIFind = True
+    IsAIEscort = property(get_IsAIEscort, set_IsAIEscort)
+    def get_IsAIEat(self):
+        return (self.aiType == 3)
+    def set_IsAIEat(self, nValue):
+        if (nValue == True): self.aiType = 3
+        elif(self.get_IsAIEat()): self.IsAIFind = True
+    IsAIEat = property(get_IsAIEat, set_IsAIEat)
+    def get_IsAISleep(self):
+        return (self.aiType == 4)
+    def set_IsAISleep(self, nValue):
+        if (nValue == True): self.aiType = 4
+        elif(self.get_IsAISleep()): self.IsAIFind = True
+    IsAISleep = property(get_IsAISleep, set_IsAISleep)
+    def get_IsAIWander(self):
+        return (self.aiType == 5)
+    def set_IsAIWander(self, nValue):
+        if (nValue == True): self.aiType = 5
+        elif(self.get_IsAIWander()): self.IsAIFind = True
+    IsAIWander = property(get_IsAIWander, set_IsAIWander)
+    def get_IsAITravel(self):
+        return (self.aiType == 6)
+    def set_IsAITravel(self, nValue):
+        if (nValue == True): self.aiType = 6
+        elif(self.get_IsAITravel()): self.IsAIFind = True
+    IsAITravel = property(get_IsAITravel, set_IsAITravel)
+    def get_IsAIAccompany(self):
+        return (self.aiType == 7)
+    def set_IsAIAccompany(self, nValue):
+        if (nValue == True): self.aiType = 7
+        elif(self.get_IsAIAccompany()): self.IsAIFind = True
+    IsAIAccompany = property(get_IsAIAccompany, set_IsAIAccompany)
+    def get_IsAIUseItemAt(self):
+        return (self.aiType == 8)
+    def set_IsAIUseItemAt(self, nValue):
+        if (nValue == True): self.aiType = 8
+        elif(self.get_IsAIUseItemAt()): self.IsAIFind = True
+    IsAIUseItemAt = property(get_IsAIUseItemAt, set_IsAIUseItemAt)
+    def get_IsAIAmbush(self):
+        return (self.aiType == 9)
+    def set_IsAIAmbush(self, nValue):
+        if (nValue == True): self.aiType = 9
+        elif(self.get_IsAIAmbush()): self.IsAIFind = True
+    IsAIAmbush = property(get_IsAIAmbush, set_IsAIAmbush)
+    def get_IsAIFleeNotCombat(self):
+        return (self.aiType == 10)
+    def set_IsAIFleeNotCombat(self, nValue):
+        if (nValue == True): self.aiType = 10
+        elif(self.get_IsAIFleeNotCombat()): self.IsAIFind = True
+    IsAIFleeNotCombat = property(get_IsAIFleeNotCombat, set_IsAIFleeNotCombat)
+    def get_IsAICastMagic(self):
+        return (self.aiType == 11)
+    def set_IsAICastMagic(self, nValue):
+        if (nValue == True): self.aiType = 11
+        elif(self.get_IsAICastMagic()): self.IsAIFind = True
+    IsAICastMagic = property(get_IsAICastMagic, set_IsAICastMagic)
+    def get_IsLocNearReference(self):
+        if(self.locType == None): return False
+        return (self.locType == 0)
+    def set_IsLocNearReference(self, nValue):
+        if (nValue == True): self.locType = 0
+        elif(self.get_LocNearReference()): self.locType = 1
+    IsLocNearReference = property(get_IsLocNearReference, set_IsLocNearReference)
+    def get_IsLocInCell(self):
+        if(self.locType == None): return False
+        return (self.locType == 1)
+    def set_IsLocInCell(self, nValue):
+        if (nValue == True): self.locType = 1
+        elif(self.get_LocInCell()): self.locType = 0
+    IsLocInCell = property(get_IsLocInCell, set_IsLocInCell)
+    def get_IsLocNearCurrentLocation(self):
+        if(self.locType == None): return False
+        return (self.locType == 2)
+    def set_IsLocNearCurrentLocation(self, nValue):
+        if (nValue == True): self.locType = 2
+        elif(self.get_LocNearCurrentLocation()): self.locType = 0
+    IsLocNearCurrentLocation = property(get_IsLocNearCurrentLocation, set_IsLocNearCurrentLocation)
+    def get_IsLocNearEditorLocation(self):
+        if(self.locType == None): return False
+        return (self.locType == 3)
+    def set_IsLocNearEditorLocation(self, nValue):
+        if (nValue == True): self.locType = 3
+        elif(self.get_LocNearEditorLocation()): self.locType = 0
+    IsLocNearEditorLocation = property(get_IsLocNearEditorLocation, set_IsLocNearEditorLocation)
+    def get_IsLocObjectID(self):
+        if(self.locType == None): return False
+        return (self.locType == 4)
+    def set_IsLocObjectID(self, nValue):
+        if (nValue == True): self.locType = 4
+        elif(self.get_LocObjectID()): self.locType = 0
+    IsLocObjectID = property(get_IsLocObjectID, set_IsLocObjectID)
+    def get_IsLocObjectType(self):
+        if(self.locType == None): return False
+        return (self.locType == 5)
+    def set_IsLocObjectType(self, nValue):
+        if (nValue == True): self.locType = 5
+        elif(self.get_LocObjectType()): self.locType = 0
+    IsLocObjectType = property(get_IsLocObjectType, set_IsLocObjectType)
+    def get_IsTargetReference(self):
+        if(self.targetType == None): return False
+        return (self.targetType == 0)
+    def set_IsTargetReference(self, nValue):
+        if (nValue == True): self.targetType = 0
+        elif(self.get_TargetReference()): self.targetType = 1
+    IsTargetReference = property(get_IsTargetReference, set_IsTargetReference)
+    def get_IsTargetObjectID(self):
+        if(self.targetType == None): return False
+        return (self.targetType == 1)
+    def set_IsTargetObjectID(self, nValue):
+        if (nValue == True): self.targetType = 1
+        elif(self.get_TargetObjectID()): self.targetType = 0
+    IsTargetObjectID = property(get_IsTargetObjectID, set_IsTargetObjectID)
+    def get_IsTargetObjectType(self):
+        if(self.targetType == None): return False
+        return (self.targetType == 2)
+    def set_IsTargetObjectType(self, nValue):
+        if (nValue == True): self.targetType = 2
+        elif(self.get_TargetObjectType()): self.targetType = 0
+    IsTargetObjectType = property(get_IsTargetObjectType, set_IsTargetObjectType)
+    
 class CSTYRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyCSTYRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -11365,6 +14185,61 @@ class CSTYRecord(BaseRecord):
     def set_pAtkFMult(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 69, c_float(nValue))
     pAtkFMult = property(get_pAtkFMult, set_pAtkFMult)
+    def get_IsUseAdvanced(self):
+        return (self.flagsA & 0x00000001) != 0
+    def set_IsUseAdvanced(self, nValue):
+        if (nValue == True): self.flagsA |= 0x00000001
+        else: self.flagsA &= ~0x00000001
+    IsUseAdvanced = property(get_IsUseAdvanced, set_IsUseAdvanced)
+    def get_IsUseChanceForAttack(self):
+        return (self.flagsA & 0x00000002) != 0
+    def set_IsUseChanceForAttack(self, nValue):
+        if (nValue == True): self.flagsA |= 0x00000002
+        else: self.flagsA &= ~0x00000002
+    IsUseChanceForAttack = property(get_IsUseChanceForAttack, set_IsUseChanceForAttack)
+    def get_IsIgnoreAllies(self):
+        return (self.flagsA & 0x00000004) != 0
+    def set_IsIgnoreAllies(self, nValue):
+        if (nValue == True): self.flagsA |= 0x00000004
+        else: self.flagsA &= ~0x00000004
+    IsIgnoreAllies = property(get_IsIgnoreAllies, set_IsIgnoreAllies)
+    def get_IsWillYield(self):
+        return (self.flagsA & 0x00000008) != 0
+    def set_IsWillYield(self, nValue):
+        if (nValue == True): self.flagsA |= 0x00000008
+        else: self.flagsA &= ~0x00000008
+    IsWillYield = property(get_IsWillYield, set_IsWillYield)
+    def get_IsRejectsYields(self):
+        return (self.flagsA & 0x00000010) != 0
+    def set_IsRejectsYields(self, nValue):
+        if (nValue == True): self.flagsA |= 0x00000010
+        else: self.flagsA &= ~0x00000010
+    IsRejectsYields = property(get_IsRejectsYields, set_IsRejectsYields)
+    def get_IsFleeingDisabled(self):
+        return (self.flagsA & 0x00000020) != 0
+    def set_IsFleeingDisabled(self, nValue):
+        if (nValue == True): self.flagsA |= 0x00000020
+        else: self.flagsA &= ~0x00000020
+    IsFleeingDisabled = property(get_IsFleeingDisabled, set_IsFleeingDisabled)
+    def get_IsPrefersRanged(self):
+        return (self.flagsA & 0x00000040) != 0
+    def set_IsPrefersRanged(self, nValue):
+        if (nValue == True): self.flagsA |= 0x00000040
+        else: self.flagsA &= ~0x00000040
+    IsPrefersRanged = property(get_IsPrefersRanged, set_IsPrefersRanged)
+    def get_IsMeleeAlertOK(self):
+        return (self.flagsA & 0x00000080) != 0
+    def set_IsMeleeAlertOK(self, nValue):
+        if (nValue == True): self.flagsA |= 0x00000080
+        else: self.flagsA &= ~0x00000080
+    IsMeleeAlertOK = property(get_IsMeleeAlertOK, set_IsMeleeAlertOK)
+    def get_IsDoNotAcquire(self):
+        return (self.flagsB & 0x00000001) != 0
+    def set_IsDoNotAcquire(self, nValue):
+        if (nValue == True): self.flagsB |= 0x00000001
+        else: self.flagsB &= ~0x00000001
+    IsDoNotAcquire = property(get_IsDoNotAcquire, set_IsDoNotAcquire)
+    
 class LSCRRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyLSCRRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -11852,7 +14727,20 @@ class WATRRecord(BaseRecord):
         else: return None
     def set_underWater(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 49, nValue)
-    underWater = property(get_underWater, set_underWater)    
+    underWater = property(get_underWater, set_underWater)   
+    def get_IsCausesDamage(self):
+        return (self.flags & 0x00000001) != 0
+    def set_IsCausesDamage(self, nValue):
+        if (nValue == True): self.flags |= 0x00000001
+        else: self.flags &= ~0x00000001
+    IsCausesDmg = IsCausesDamage = property(get_IsCausesDamage, set_IsCausesDamage)
+    def get_IsReflective(self):
+        return (self.flags & 0x00000002) != 0
+    def set_IsReflective(self, nValue):
+        if (nValue == True): self.flags |= 0x00000002
+        else: self.flags &= ~0x00000002
+    IsReflective = property(get_IsReflective, set_IsReflective)
+    
 class EFSHRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyEFSHRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -12462,6 +15350,30 @@ class EFSHRecord(BaseRecord):
     def set_key3Time(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 79, c_float(nValue))
     key3Time = property(get_key3Time, set_key3Time)
+    def get_IsNoMembraneShader(self):
+        return (self.flags & 0x00000001) != 0
+    def set_IsNoMembraneShader(self, nValue):
+        if (nValue == True): self.flags |= 0x00000001
+        else: self.flags &= ~0x00000001
+    IsNoMemShader = IsNoMembraneShader = property(get_IsNoMembraneShader, set_IsNoMembraneShader)
+    def get_IsNoParticleShader(self):
+        return (self.flags & 0x00000008) != 0
+    def set_IsNoParticleShader(self, nValue):
+        if (nValue == True): self.flags |= 0x00000008
+        else: self.flags &= ~0x00000008
+    IsNoPartShader = IsNoParticleShader = property(get_IsNoParticleShader, set_IsNoParticleShader)
+    def get_IsEdgeEffectInverse(self):
+        return (self.flags & 0x00000010) != 0
+    def set_IsEdgeEffectInverse(self, nValue):
+        if (nValue == True): self.flags |= 0x00000010
+        else: self.flags &= ~0x00000010
+    IsEdgeInverse = IsEdgeEffectInverse = property(get_IsEdgeEffectInverse, set_IsEdgeEffectInverse)
+    def get_IsMembraneShaderSkinOnly(self):
+        return (self.flags & 0x00000020) != 0
+    def set_IsMembraneShaderSkinOnly(self, nValue):
+        if (nValue == True): self.flags |= 0x00000020
+        else: self.flags &= ~0x00000020
+    IsMemSkinOnly = IsMembraneShaderSkinOnly= property(get_IsMembraneShaderSkinOnly, set_IsMembraneShaderSkinOnly)
 
 class ModFile(object):
     def __init__(self, CollectionIndex, ModName=None):
@@ -12645,7 +15557,7 @@ class ModFile(object):
         if(FID): return REGNRecord(self._CollectionIndex, self._ModName, FID)
         return None
     def createCELLRecord(self):
-        FID = CBash.CreateCELLRecord(self._CollectionIndex, self._ModName, 0)
+        FID = CBash.CreateCELLRecord(self._CollectionIndex, self._ModName)
         if(FID): return CELLRecord(self._CollectionIndex, self._ModName, FID)
         return None
     def createWRLDRecord(self):
@@ -13151,11 +16063,11 @@ class ModFile(object):
 class Collection:
     """Collection of esm/esp's."""
 
-    def __init__(self, recordID=None):
+    def __init__(self, recordID=None, ModsPath="."):
         if recordID:
             self._CollectionIndex = recordID
         else:
-            self._CollectionIndex = CBash.NewCollection()
+            self._CollectionIndex = CBash.NewCollection(ModsPath)
         self._ModIndex = -1
         CBash.GetModName.restype = c_char_p
 

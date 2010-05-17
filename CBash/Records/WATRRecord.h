@@ -176,8 +176,8 @@ class WATRRecord : public Record
     public:
         enum flagsFlags
             {
-            fCausesDmg  = 0x00000001,
-            fReflective = 0x00000002
+            fIsCausesDmg  = 0x00000001,
+            fIsReflective = 0x00000002
             };
         STRING EDID;
         STRING TNAM;
@@ -251,35 +251,46 @@ class WATRRecord : public Record
         int WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer);
         bool IsCausesDmg()
             {
-            return (FNAM.value.flags & fCausesDmg) != 0;
+            return (FNAM.value.flags & fIsCausesDmg) != 0;
             }
         void IsCausesDmg(bool value)
             {
             if(value)
-                FNAM.value.flags |= fCausesDmg;
+                FNAM.value.flags |= fIsCausesDmg;
             else
-                FNAM.value.flags &= ~fCausesDmg;
+                FNAM.value.flags &= ~fIsCausesDmg;
             }
         bool IsCausesDamage()
             {
-            return (FNAM.value.flags & fCausesDmg) != 0;
+            return (FNAM.value.flags & fIsCausesDmg) != 0;
             }
         void IsCausesDamage(bool value)
             {
             if(value)
-                FNAM.value.flags |= fCausesDmg;
+                FNAM.value.flags |= fIsCausesDmg;
             else
-                FNAM.value.flags &= ~fCausesDmg;
+                FNAM.value.flags &= ~fIsCausesDmg;
             }
         bool IsReflective()
             {
-            return (FNAM.value.flags & fReflective) != 0;
+            return (FNAM.value.flags & fIsReflective) != 0;
             }
         void IsReflective(bool value)
             {
             if(value)
-                FNAM.value.flags |= fReflective;
+                FNAM.value.flags |= fIsReflective;
             else
-                FNAM.value.flags &= ~fReflective;
+                FNAM.value.flags &= ~fIsReflective;
+            }
+        bool IsFlagMask(unsigned char Mask, bool Exact=false)
+            {
+            if(Exact)
+                return (FNAM.value.flags & Mask) == Mask;
+            else
+                return (FNAM.value.flags & Mask) != 0;
+            }
+        void SetFlagMask(unsigned char Mask)
+            {
+            FNAM.value.flags = Mask;
             }
     };

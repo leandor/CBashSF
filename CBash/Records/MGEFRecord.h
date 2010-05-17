@@ -217,62 +217,50 @@ class MGEFRecord : public Record
         int WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer);
         bool IsHostile()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.flags & fIsHostile) != 0;
             }
         bool IsRecover()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.flags & fIsRecover) != 0;
             }
         bool IsDetrimental()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.flags & fIsDetrimental) != 0;
             }
         bool IsMagnitude()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.flags & fIsMagnitude) != 0;
             }
         bool IsSelf()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.flags & fIsSelf) != 0;
             }
         bool IsTouch()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.flags & fIsTouch) != 0;
             }
         bool IsTarget()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.flags & fIsTarget) != 0;
             }
         bool IsNoDuration()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.flags & fIsNoDuration) != 0;
             }
         bool IsNoMagnitude()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.flags & fIsNoMagnitude) != 0;
             }
         bool IsNoArea()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.flags & fIsNoArea) != 0;
             }
         bool IsFXPersist()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.flags & fIsFXPersist) != 0;
             }
         void IsFXPersist(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 DATA.value.flags |= fIsFXPersist;
             else
@@ -280,12 +268,10 @@ class MGEFRecord : public Record
             }
         bool IsSpellmaking()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.flags & fIsSpellmaking) != 0;
             }
         void IsSpellmaking(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 DATA.value.flags |= fIsSpellmaking;
             else
@@ -293,12 +279,10 @@ class MGEFRecord : public Record
             }
         bool IsEnchanting()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.flags & fIsEnchanting) != 0;
             }
         void IsEnchanting(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 DATA.value.flags |= fIsEnchanting;
             else
@@ -306,12 +290,10 @@ class MGEFRecord : public Record
             }
         bool IsNoIngredient()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.flags & fIsNoIngredient) != 0;
             }
         void IsNoIngredient(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 DATA.value.flags |= fIsNoIngredient;
             else
@@ -319,42 +301,34 @@ class MGEFRecord : public Record
             }
         bool IsUseWeapon()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.flags & fIsUseWeapon) != 0;
             }
         bool IsUseArmor()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.flags & fIsUseArmor) != 0;
             }
         bool IsUseCreature()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.flags & fIsUseCreature) != 0;
             }
         bool IsUseSkill()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.flags & fIsUseSkill) != 0;
             }
         bool IsUseAttribute()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.flags & fIsUseAttr) != 0;
             }
         bool IsUseAttr()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.flags & fIsUseAttr) != 0;
             }
         bool IsUseActorValue()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.flags & fIsUseAV) != 0;
             }
         void IsUseActorValue(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 DATA.value.flags |= fIsUseAV;
             else
@@ -362,12 +336,10 @@ class MGEFRecord : public Record
             }
         bool IsUseAV()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.flags & fIsUseAV) != 0;
             }
         void IsUseAV(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 DATA.value.flags |= fIsUseAV;
             else
@@ -375,12 +347,10 @@ class MGEFRecord : public Record
             }
         bool IsSprayType()
             {
-            if(!DATA.IsLoaded()) return false;
             return ((DATA.value.flags & fIsSprayType) != 0) && ((DATA.value.flags & fIsBoltType) == 0);
             }
         void IsSprayType(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 {
                 DATA.value.flags &= ~fIsFogType;
@@ -391,12 +361,10 @@ class MGEFRecord : public Record
             }
         bool IsBoltType()
             {
-            if(!DATA.IsLoaded()) return false;
             return ((DATA.value.flags & fIsBoltType) != 0) && ((DATA.value.flags & fIsSprayType) == 0);
             }
         void IsBoltType(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 {
                 DATA.value.flags &= ~fIsFogType;
@@ -405,27 +373,12 @@ class MGEFRecord : public Record
             else if(IsBoltType())
                 IsBallType(true);
             }
-        bool IsNoHitEffect()
-            {
-            if(!DATA.IsLoaded()) return false;
-            return (DATA.value.flags & fIsNoHitEffect) != 0;
-            }
-        void IsNoHitEffect(bool value)
-            {
-            if(!DATA.IsLoaded()) return;
-            if(value)
-                DATA.value.flags |= fIsNoHitEffect;
-            else
-                DATA.value.flags &= ~fIsNoHitEffect;
-            }
         bool IsFogType()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.flags & fIsFogType) == fIsFogType;
             }
         void IsFogType(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 DATA.value.flags |= fIsFogType;
             else if(IsFogType())
@@ -433,20 +386,28 @@ class MGEFRecord : public Record
             }
         bool IsBallType()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.flags & fIsFogType) == 0;
             }
         void IsBallType(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 DATA.value.flags &= ~fIsFogType;
             else if(IsBallType())
                 IsBoltType(true);
             }
+        bool IsNoHitEffect()
+            {
+            return (DATA.value.flags & fIsNoHitEffect) != 0;
+            }
+        void IsNoHitEffect(bool value)
+            {
+            if(value)
+                DATA.value.flags |= fIsNoHitEffect;
+            else
+                DATA.value.flags &= ~fIsNoHitEffect;
+            }
         bool IsFlagMask(unsigned int Mask, bool Exact=false)
             {
-            if(!DATA.IsLoaded()) return false;
             if(Exact)
                 return (DATA.value.flags & Mask) == Mask;
             else
@@ -454,7 +415,6 @@ class MGEFRecord : public Record
             }
         void SetFlagMask(unsigned int Mask)
             {
-            if(!DATA.IsLoaded()) return;
             DATA.value.flags = Mask;
             }
     };

@@ -173,12 +173,10 @@ class CLASRecord : public Record
 
         bool IsPlayable()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.flags & fIsPlayable) != 0;
             }
         void IsPlayable(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 DATA.value.flags |= fIsPlayable;
             else
@@ -186,12 +184,10 @@ class CLASRecord : public Record
             }
         bool IsGuard()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.flags & fIsGuard) != 0;
             }
         void IsGuard(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 DATA.value.flags |= fIsGuard;
             else
@@ -199,12 +195,10 @@ class CLASRecord : public Record
             }
         bool IsServicesWeapons()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.services & fWeapons) != 0;
             }
         void IsServicesWeapons(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 DATA.value.services |= fWeapons;
             else
@@ -212,12 +206,10 @@ class CLASRecord : public Record
             }
         bool IsServicesArmor()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.services & fArmor) != 0;
             }
         void IsServicesArmor(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 DATA.value.services |= fArmor;
             else
@@ -225,12 +217,10 @@ class CLASRecord : public Record
             }
         bool IsServicesClothing()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.services & fClothing) != 0;
             }
         void IsServicesClothing(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 DATA.value.services |= fClothing;
             else
@@ -238,12 +228,10 @@ class CLASRecord : public Record
             }
         bool IsServicesBooks()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.services & fBooks) != 0;
             }
         void IsServicesBooks(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 DATA.value.services |= fBooks;
             else
@@ -251,12 +239,10 @@ class CLASRecord : public Record
             }
         bool IsServicesIngredients()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.services & fIngredients) != 0;
             }
         void IsServicesIngredients(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 DATA.value.services |= fIngredients;
             else
@@ -264,12 +250,10 @@ class CLASRecord : public Record
             }
         bool IsServicesLights()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.services & fLights) != 0;
             }
         void IsServicesLights(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 DATA.value.services |= fLights;
             else
@@ -277,12 +261,10 @@ class CLASRecord : public Record
             }
         bool IsServicesApparatus()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.services & fApparatus) != 0;
             }
         void IsServicesApparatus(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 DATA.value.services |= fApparatus;
             else
@@ -290,12 +272,10 @@ class CLASRecord : public Record
             }
         bool IsServicesMiscItems()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.services & fMiscItems) != 0;
             }
         void IsServicesMiscItems(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 DATA.value.services |= fMiscItems;
             else
@@ -303,12 +283,10 @@ class CLASRecord : public Record
             }
         bool IsServicesSpells()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.services & fSpells) != 0;
             }
         void IsServicesSpells(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 DATA.value.services |= fSpells;
             else
@@ -316,12 +294,10 @@ class CLASRecord : public Record
             }
         bool IsServicesMagicItems()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.services & fMagicItems) != 0;
             }
         void IsServicesMagicItems(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 DATA.value.services |= fMagicItems;
             else
@@ -329,12 +305,10 @@ class CLASRecord : public Record
             }
         bool IsServicesPotions()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.services & fPotions) != 0;
             }
         void IsServicesPotions(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 DATA.value.services |= fPotions;
             else
@@ -342,12 +316,10 @@ class CLASRecord : public Record
             }
         bool IsServicesTraining()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.services & fTraining) != 0;
             }
         void IsServicesTraining(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 DATA.value.services |= fTraining;
             else
@@ -355,12 +327,10 @@ class CLASRecord : public Record
             }
         bool IsServicesRecharge()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.services & fRecharge) != 0;
             }
         void IsServicesRecharge(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 DATA.value.services |= fRecharge;
             else
@@ -368,12 +338,10 @@ class CLASRecord : public Record
             }
         bool IsServicesRepair()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.services & fRepair) != 0;
             }
         void IsServicesRepair(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 DATA.value.services |= fRepair;
             else
@@ -381,7 +349,6 @@ class CLASRecord : public Record
             }
         bool IsFlagMask(unsigned int Mask, bool Exact=false)
             {
-            if(!DATA.IsLoaded()) return false;
             if(Exact)
                 return (DATA.value.flags & Mask) == Mask;
             else
@@ -389,12 +356,10 @@ class CLASRecord : public Record
             }
         void SetFlagMask(unsigned int Mask)
             {
-            if(!DATA.IsLoaded()) return;
             DATA.value.flags = Mask;
             }
         bool IsServicesFlagMask(unsigned int Mask, bool Exact=false)
             {
-            if(!DATA.IsLoaded()) return false;
             if(Exact)
                 return (DATA.value.services & Mask) == Mask;
             else
@@ -402,7 +367,6 @@ class CLASRecord : public Record
             }
         void SetServicesFlagMask(unsigned int Mask)
             {
-            if(!DATA.IsLoaded()) return;
             DATA.value.services = Mask;
             }
     };

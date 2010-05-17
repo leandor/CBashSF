@@ -158,7 +158,6 @@ class FACTRecord : public Record
         void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue);
         void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, char *FieldValue);
 
-
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();
         unsigned int GetType() {return eFACT;}
@@ -166,12 +165,10 @@ class FACTRecord : public Record
 
         bool IsHiddenFromPC()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.flags & fIsHiddenFromPC) != 0;
             }
         void IsHiddenFromPC(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 DATA.value.flags |= fIsHiddenFromPC;
             else
@@ -179,12 +176,10 @@ class FACTRecord : public Record
             }
         bool IsEvil()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.flags & fIsEvil) != 0;
             }
         void IsEvil(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 DATA.value.flags |= fIsEvil;
             else
@@ -192,12 +187,10 @@ class FACTRecord : public Record
             }
         bool IsSpecialCombat()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.flags & fIsSpecialCombat) != 0;
             }
         void IsSpecialCombat(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 DATA.value.flags |= fIsSpecialCombat;
             else
@@ -205,7 +198,6 @@ class FACTRecord : public Record
             }
         bool IsFlagMask(unsigned char Mask, bool Exact=false)
             {
-            if(!DATA.IsLoaded()) return false;
             if(Exact)
                 return (DATA.value.flags & Mask) == Mask;
             else
@@ -213,7 +205,6 @@ class FACTRecord : public Record
             }
         void SetFlagMask(unsigned char Mask)
             {
-            if(!DATA.IsLoaded()) return;
             DATA.value.flags = Mask;
             }
     };

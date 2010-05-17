@@ -91,12 +91,10 @@ class HAIRRecord : public Record
         int WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer);
         bool IsPlayable()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.flags & fIsPlayable) != 0;
             }
         void IsPlayable(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 DATA.value.flags |= fIsPlayable;
             else
@@ -104,12 +102,10 @@ class HAIRRecord : public Record
             }
         bool IsNotMale()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.flags & fIsNotMale) != 0;
             }
         void IsNotMale(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 DATA.value.flags |= fIsNotMale;
             else
@@ -117,12 +113,10 @@ class HAIRRecord : public Record
             }
         bool IsMale()
             {
-            if(!DATA.IsLoaded()) return false;
             return !IsNotMale();
             }
         void IsMale(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 IsNotMale(false);
             else
@@ -130,12 +124,10 @@ class HAIRRecord : public Record
             }
         bool IsNotFemale()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.flags & fIsNotFemale) != 0;
             }
         void IsNotFemale(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 DATA.value.flags |= fIsNotFemale;
             else
@@ -143,12 +135,10 @@ class HAIRRecord : public Record
             }
         bool IsFemale()
             {
-            if(!DATA.IsLoaded()) return false;
             return !IsNotFemale();
             }
         void IsFemale(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 IsNotFemale(false);
             else
@@ -156,12 +146,10 @@ class HAIRRecord : public Record
             }
         bool IsFixedColor()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.flags & fIsFixedColor) != 0;
             }
         void IsFixedColor(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 DATA.value.flags |= fIsFixedColor;
             else
@@ -169,7 +157,6 @@ class HAIRRecord : public Record
             }
         bool IsFlagMask(unsigned char Mask, bool Exact=false)
             {
-            if(!DATA.IsLoaded()) return false;
             if(Exact)
                 return (DATA.value.flags & Mask) == Mask;
             else
@@ -177,7 +164,6 @@ class HAIRRecord : public Record
             }
         void SetFlagMask(unsigned char Mask)
             {
-            if(!DATA.IsLoaded()) return;
             DATA.value.flags = Mask;
             }
     };

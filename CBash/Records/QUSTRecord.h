@@ -126,6 +126,32 @@ class QUSTRecord : public Record
                     }
                 }
             #endif
+            enum entriesFlags
+                {
+                fIsCompletes = 0x00000001
+                };
+            bool IsCompletes()
+                {
+                return (QSDT.value.flags & fIsCompletes) != 0;
+                }
+            void IsCompletes(bool value)
+                {
+                if(value)
+                    QSDT.value.flags |= fIsCompletes;
+                else
+                    QSDT.value.flags &= ~fIsCompletes;
+                }
+            bool IsFlagMask(unsigned char Mask, bool Exact=false)
+                {
+                if(Exact)
+                    return (QSDT.value.flags & Mask) == Mask;
+                else
+                    return (QSDT.value.flags & Mask) != 0;
+                }
+            void SetFlagMask(unsigned char Mask)
+                {
+                QSDT.value.flags = Mask;
+                }
             };
         struct QUSTINDX
             {
@@ -239,8 +265,40 @@ class QUSTRecord : public Record
                     }
                 }
             #endif
+            enum targetsFlags
+                {
+                fIsIgnoresLocks = 0x00000001
+                };
+            bool IsIgnoresLocks()
+                {
+                return (QSTA.value.flags & fIsIgnoresLocks) != 0;
+                }
+            void IsIgnoresLocks(bool value)
+                {
+                if(value)
+                    QSTA.value.flags |= fIsIgnoresLocks;
+                else
+                    QSTA.value.flags &= ~fIsIgnoresLocks;
+                }
+            bool IsFlagMask(unsigned char Mask, bool Exact=false)
+                {
+                if(Exact)
+                    return (QSTA.value.flags & Mask) == Mask;
+                else
+                    return (QSTA.value.flags & Mask) != 0;
+                }
+            void SetFlagMask(unsigned char Mask)
+                {
+                QSTA.value.flags = Mask;
+                }
             };
     public:
+        enum flagsFlags
+            {
+            fIsStartEnabled   = 0x00000001,
+            fIsRepeatedTopics = 0x00000004,
+            fIsRepeatedStages = 0x00000008
+            };
         STRING EDID;
         OptRecordField<GENFID> SCRI;
         STRING FULL;
@@ -481,9 +539,53 @@ class QUSTRecord : public Record
         void SetListX3Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, float FieldValue);
         void SetListX3Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, unsigned int FieldValue);
 
-
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();
         unsigned int GetType() {return eQUST;}
         int WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer);
+        
+        bool IsStartEnabled()
+            {
+            return (DATA.value.flags & fIsStartEnabled) != 0;
+            }
+        void IsStartEnabled(bool value)
+            {
+            if(value)
+                DATA.value.flags |= fIsStartEnabled;
+            else
+                DATA.value.flags &= ~fIsStartEnabled;
+            }
+        bool IsRepeatedTopics()
+            {
+            return (DATA.value.flags & fIsRepeatedTopics) != 0;
+            }
+        void IsRepeatedTopics(bool value)
+            {
+            if(value)
+                DATA.value.flags |= fIsRepeatedTopics;
+            else
+                DATA.value.flags &= ~fIsRepeatedTopics;
+            }
+        bool IsRepeatedStages()
+            {
+            return (DATA.value.flags & fIsRepeatedStages) != 0;
+            }
+        void IsRepeatedStages(bool value)
+            {
+            if(value)
+                DATA.value.flags |= fIsRepeatedStages;
+            else
+                DATA.value.flags &= ~fIsRepeatedStages;
+            }
+        bool IsFlagMask(unsigned char Mask, bool Exact=false)
+            {
+            if(Exact)
+                return (DATA.value.flags & Mask) == Mask;
+            else
+                return (DATA.value.flags & Mask) != 0;
+            }
+        void SetFlagMask(unsigned char Mask)
+            {
+            DATA.value.flags = Mask;
+            }
     };

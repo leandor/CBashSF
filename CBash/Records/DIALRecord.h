@@ -104,12 +104,10 @@ class DIALRecord : public Record
 
         bool IsTopic()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.flags == eTopic);
             }
         void IsTopic(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 DATA.value.flags = eTopic;
             else if(IsTopic())
@@ -117,12 +115,10 @@ class DIALRecord : public Record
             }
         bool IsConversation()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.flags == eConversation);
             }
         void IsConversation(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 DATA.value.flags = eConversation;
             else if(IsConversation())
@@ -130,12 +126,10 @@ class DIALRecord : public Record
             }
         bool IsCombat()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.flags == eCombat);
             }
         void IsCombat(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 DATA.value.flags = eCombat;
             else if(IsCombat())
@@ -143,12 +137,10 @@ class DIALRecord : public Record
             }
         bool IsPersuasion()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.flags == ePersuasion);
             }
         void IsPersuasion(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 DATA.value.flags = ePersuasion;
             else if(IsPersuasion())
@@ -156,12 +148,10 @@ class DIALRecord : public Record
             }
         bool IsDetection()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.flags == eDetection);
             }
         void IsDetection(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 DATA.value.flags = eDetection;
             else if(IsDetection())
@@ -169,12 +159,10 @@ class DIALRecord : public Record
             }
         bool IsService()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.flags == eService);
             }
         void IsService(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 DATA.value.flags = eService;
             else if(IsService())
@@ -182,12 +170,10 @@ class DIALRecord : public Record
             }
         bool IsMisc()
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.flags == eMisc);
             }
         void IsMisc(bool value)
             {
-            if(!DATA.IsLoaded()) return;
             if(value)
                 DATA.value.flags = eMisc;
             else if(IsMisc())
@@ -195,12 +181,10 @@ class DIALRecord : public Record
             }
         bool IsType(unsigned char Type)
             {
-            if(!DATA.IsLoaded()) return false;
             return (DATA.value.flags == Type);
             }
         void SetType(unsigned char Type)
             {
-            if(!DATA.IsLoaded()) return;
             DATA.value.flags = Type;
             }
     };

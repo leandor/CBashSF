@@ -626,7 +626,8 @@ void NPC_Record::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
     switch(Field)
         {
         case 10: //flags
-            ACBS.value.flags = FieldValue;
+            SetFlagMask(FieldValue);
+            //ACBS.value.flags = FieldValue;
             break;
         case 18: //deathItem
             INAM.Load();
@@ -644,7 +645,8 @@ void NPC_Record::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
             FormIDHandler.AddMaster(SCRI->fid);
             break;
         case 27: //services
-            AIDT.value.flags = FieldValue;
+            SetServicesFlagMask(FieldValue);
+            //AIDT.value.flags = FieldValue;
             break;
         case 33: //iclass
             CNAM.value.fid = FieldValue;

@@ -423,58 +423,111 @@ class WTHRRecord : public Record
         unsigned int GetSize();
         unsigned int GetType() {return eWTHR;}
         int WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer);
-        bool IsNone()
-            {
-            return (DATA.value.weatherType == eNone);
-            }
-        void IsNone(bool value)
-            {
-            if(value)
-                DATA.value.weatherType = eNone;
-            }
+        
         bool IsPleasant()
             {
-            return (DATA.value.weatherType == ePleasant);
+            return (DATA.value.weatherType & ePleasant) != 0;
             }
         void IsPleasant(bool value)
             {
             if(value)
-                DATA.value.weatherType = ePleasant;
+                {
+                DATA.value.weatherType |= ePleasant;
+                DATA.value.weatherType &= ~eCloudy;
+                DATA.value.weatherType &= ~eRainy;
+                DATA.value.weatherType &= ~eSnow;
+                }
             else if(IsPleasant())
-                DATA.value.weatherType = eNone;
+                {
+                DATA.value.weatherType &= ~ePleasant;
+                DATA.value.weatherType &= ~eCloudy;
+                DATA.value.weatherType &= ~eRainy;
+                DATA.value.weatherType &= ~eSnow;
+                }
             }
         bool IsCloudy()
             {
-            return (DATA.value.weatherType == eCloudy);
+            return (DATA.value.weatherType & eCloudy) != 0;
             }
         void IsCloudy(bool value)
             {
             if(value)
-                DATA.value.weatherType = eCloudy;
+                {
+                DATA.value.weatherType &= ~ePleasant;
+                DATA.value.weatherType |= eCloudy;
+                DATA.value.weatherType &= ~eRainy;
+                DATA.value.weatherType &= ~eSnow;
+                }
             else if(IsCloudy())
-                DATA.value.weatherType = eNone;
+                {
+                DATA.value.weatherType &= ~ePleasant;
+                DATA.value.weatherType &= ~eCloudy;
+                DATA.value.weatherType &= ~eRainy;
+                DATA.value.weatherType &= ~eSnow;
+                }
             }
         bool IsRainy()
             {
-            return (DATA.value.weatherType == eRainy);
+            return (DATA.value.weatherType & eRainy) != 0;
             }
         void IsRainy(bool value)
             {
             if(value)
-                DATA.value.weatherType = eRainy;
+                {
+                DATA.value.weatherType &= ~ePleasant;
+                DATA.value.weatherType &= ~eCloudy;
+                DATA.value.weatherType |= eRainy;
+                DATA.value.weatherType &= ~eSnow;
+                }
             else if(IsRainy())
-                DATA.value.weatherType = eNone;
+                {
+                DATA.value.weatherType &= ~ePleasant;
+                DATA.value.weatherType &= ~eCloudy;
+                DATA.value.weatherType &= ~eRainy;
+                DATA.value.weatherType &= ~eSnow;
+                }
             }
         bool IsSnow()
             {
-            return (DATA.value.weatherType == eSnow);
+            return (DATA.value.weatherType & eSnow) != 0;
             }
         void IsSnow(bool value)
             {
             if(value)
-                DATA.value.weatherType = eSnow;
+                {
+                DATA.value.weatherType &= ~ePleasant;
+                DATA.value.weatherType &= ~eCloudy;
+                DATA.value.weatherType &= ~eRainy;
+                DATA.value.weatherType |= eSnow;
+                }
             else if(IsSnow())
-                DATA.value.weatherType = eNone;
+                {
+                DATA.value.weatherType &= ~ePleasant;
+                DATA.value.weatherType &= ~eCloudy;
+                DATA.value.weatherType &= ~eRainy;
+                DATA.value.weatherType &= ~eSnow;
+                }
+            }
+        bool IsNone()
+            {
+            return IsPleasant() == false && IsCloudy() == false && IsRainy() == false && IsSnow() == false;
+            }
+        void IsNone(bool value)
+            {
+            if(value)
+                {
+                DATA.value.weatherType &= ~ePleasant;
+                DATA.value.weatherType &= ~eCloudy;
+                DATA.value.weatherType &= ~eRainy;
+                DATA.value.weatherType &= ~eSnow;
+                }
+            else if(IsNone())
+                {
+                DATA.value.weatherType |= ePleasant;
+                DATA.value.weatherType &= ~eCloudy;
+                DATA.value.weatherType &= ~eRainy;
+                DATA.value.weatherType &= ~eSnow;
+                }
             }
         bool IsUnk1()
             {
