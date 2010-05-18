@@ -543,7 +543,7 @@ class QUSTRecord : public Record
         unsigned int GetSize();
         unsigned int GetType() {return eQUST;}
         int WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer);
-        
+
         bool IsStartEnabled()
             {
             return (DATA.value.flags & fIsStartEnabled) != 0;

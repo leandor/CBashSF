@@ -423,7 +423,7 @@ class WTHRRecord : public Record
         unsigned int GetSize();
         unsigned int GetType() {return eWTHR;}
         int WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer);
-        
+
         bool IsPleasant()
             {
             return (DATA.value.weatherType & ePleasant) != 0;

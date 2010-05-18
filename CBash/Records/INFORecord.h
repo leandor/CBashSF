@@ -419,7 +419,7 @@ class INFORecord : public Record
         unsigned int GetSize();
         unsigned int GetType() {return eINFO;}
         int WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer);
-        
+
         bool IsTopic()
             {
             return (DATA.value.dialType == eTopic);
