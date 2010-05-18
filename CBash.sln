@@ -6,7 +6,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CBash", "CBash\CBash.vcproj
 		{DEBD72E4-1FCA-4302-977A-05C8D823D22D} = {DEBD72E4-1FCA-4302-977A-05C8D823D22D}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlib", "..\zlib\projects\visualc6\zlib.vcproj", "{DEBD72E4-1FCA-4302-977A-05C8D823D22D}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlib", "CBash\zlib\projects\visualc6\zlib.vcproj", "{DEBD72E4-1FCA-4302-977A-05C8D823D22D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
