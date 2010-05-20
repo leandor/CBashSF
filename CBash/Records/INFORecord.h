@@ -324,6 +324,43 @@ class INFORecord : public Record
             for(unsigned int x = 0; x < SCR_.size(); x++)
                 delete SCR_[x];
             }
+        void Unload()
+            {
+            IsLoaded(false);
+            DATA.Unload();
+            QSTI.Unload();
+            TPIC.Unload();
+            PNAM.Unload();
+
+            for(unsigned int x = 0; x < NAME.size(); x++)
+                delete NAME[x];
+            NAME.clear();
+
+            for(unsigned int x = 0; x < Responses.size(); x++)
+                delete Responses[x];
+            Responses.clear();
+
+            for(unsigned int x = 0; x < CTDA.size(); x++)
+                delete CTDA[x];
+            CTDA.clear();
+
+            for(unsigned int x = 0; x < TCLT.size(); x++)
+                delete TCLT[x];
+            TCLT.clear();
+
+            for(unsigned int x = 0; x < TCLF.size(); x++)
+                delete TCLF[x];
+            TCLF.clear();
+
+            //SCHD.Unload();
+            SCHR.Unload();
+            SCDA.Unload();
+            SCTX.Unload();
+
+            for(unsigned int x = 0; x < SCR_.size(); x++)
+                delete SCR_[x];
+            SCR_.clear();
+            }
 
         void ExpandFormIDs(_FormIDHandler &FormIDHandler)
             {

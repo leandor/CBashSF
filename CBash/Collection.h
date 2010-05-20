@@ -63,6 +63,9 @@ class Collection
         void CollapseFormIDs(char *ModName = NULL);
         void ExpandFormIDs(char *ModName = NULL);
         void ReindexFormIDs();
+        int LoadRecord(char *ModName, unsigned int recordFID);
+        int UnloadRecord(char *ModName, unsigned int recordFID);
+        int DeleteRecord(char *ModName, unsigned int recordFID);
         int Close();
 
         template <class T>

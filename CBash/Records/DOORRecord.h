@@ -88,6 +88,23 @@ class DOORRecord : public Record
             for(unsigned int x = 0; x < TNAM.size(); x++)
                 delete TNAM[x];
             }
+        void Unload()
+            {
+            IsLoaded(false);
+            EDID.Unload();
+            FULL.Unload();
+            MODL.MODB.Unload();
+            MODL.MODL.Unload();
+            MODL.MODT.Unload();
+            SCRI.Unload();
+            SNAM.Unload();
+            ANAM.Unload();
+            BNAM.Unload();
+            FNAM.Unload();
+            for(unsigned int x = 0; x < TNAM.size(); x++)
+                delete TNAM[x];
+            TNAM.clear();
+            }
 
         void ExpandFormIDs(_FormIDHandler &FormIDHandler)
             {

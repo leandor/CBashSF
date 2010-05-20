@@ -63,6 +63,18 @@ class KEYMRecord : public Record
             return;
             }
         ~KEYMRecord() {}
+        void Unload()
+            {
+            IsLoaded(false);
+            EDID.Unload();
+            FULL.Unload();
+            MODL.MODB.Unload();
+            MODL.MODL.Unload();
+            MODL.MODT.Unload();
+            ICON.Unload();
+            SCRI.Unload();
+            DATA.Unload();
+            }
 
         void ExpandFormIDs(_FormIDHandler &FormIDHandler)
             {

@@ -509,6 +509,61 @@ void Collection::ReindexFormIDs()
     ExpandFormIDs();
     }
 
+int Collection::LoadRecord(char *ModName, unsigned int recordFID)
+    {
+    ModFile *curModFile = NULL;
+    Record *curRecord = NULL;
+
+    LookupRecord(ModName, recordFID, curModFile, curRecord);
+
+    if(curModFile == NULL || curRecord == NULL)
+        return -1;
+
+    curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+    return 0;
+    }
+
+int Collection::UnloadRecord(char *ModName, unsigned int recordFID)
+    {
+    ModFile *curModFile = NULL;
+    Record *curRecord = NULL;
+
+    LookupRecord(ModName, recordFID, curModFile, curRecord);
+    if(curModFile == NULL || curRecord == NULL)
+        return -1;
+
+    curRecord->Unload();
+    return 0;
+    }
+
+int Collection::DeleteRecord(char *ModName, unsigned int recordFID)
+    {
+    Record *curRecord = NULL;
+    std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID>::iterator it;
+    it = FID_ModFile_Record.find(&recordFID);
+    if(ModName == NULL)
+        {
+        if(it != FID_ModFile_Record.end())
+            {
+            curRecord = it->second.second;
+            delete curRecord;
+            FID_ModFile_Record.erase(it);
+            return 0;
+            }
+        return -1;
+        }
+    unsigned int count = (unsigned int)FID_ModFile_Record.count(&recordFID);
+    for(unsigned int x = 0; x < count;it++, x++)
+        if(_stricmp(it->second.first->FileName, ModName) == 0 )
+            {
+            curRecord = it->second.second;
+            delete curRecord;
+            FID_ModFile_Record.erase(it);
+            return 0;
+            }
+    return -1;
+    }
+
 int Collection::Close()
     {
     for(unsigned int p = 0;p < ModFiles.size();p++)

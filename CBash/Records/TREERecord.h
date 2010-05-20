@@ -119,6 +119,18 @@ class TREERecord : public Record
             return;
             }
         ~TREERecord() {}
+        void Unload()
+            {
+            IsLoaded(false);
+            EDID.Unload();
+            MODL.MODB.Unload();
+            MODL.MODL.Unload();
+            MODL.MODT.Unload();
+            ICON.Unload();
+            SNAM.clear();
+            CNAM.Unload();
+            BNAM.Unload();
+            }
 
         void ExpandFormIDs(_FormIDHandler &FormIDHandler) {}
         void CollapseFormIDs(_FormIDHandler &FormIDHandler) {}

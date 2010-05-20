@@ -126,6 +126,15 @@ class GRASRecord : public Record
             return;
             }
         ~GRASRecord() {}
+        void Unload()
+            {
+            IsLoaded(false);
+            EDID.Unload();
+            MODL.MODB.Unload();
+            MODL.MODL.Unload();
+            MODL.MODT.Unload();
+            DATA.Unload();
+            }
 
         void ExpandFormIDs(_FormIDHandler &FormIDHandler) {}
         void CollapseFormIDs(_FormIDHandler &FormIDHandler) {}

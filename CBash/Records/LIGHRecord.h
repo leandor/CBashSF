@@ -144,6 +144,20 @@ class LIGHRecord : public Record
             return;
             }
         ~LIGHRecord() {}
+        void Unload()
+            {
+            IsLoaded(false);
+            EDID.Unload();
+            MODL.MODB.Unload();
+            MODL.MODL.Unload();
+            MODL.MODT.Unload();
+            SCRI.Unload();
+            FULL.Unload();
+            ICON.Unload();
+            DATA.Unload();
+            FNAM.Unload();
+            SNAM.Unload();
+            }
 
         void ExpandFormIDs(_FormIDHandler &FormIDHandler)
             {
@@ -175,7 +189,6 @@ class LIGHRecord : public Record
         void SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, int FieldValue);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue);
-
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();

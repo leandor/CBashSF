@@ -126,6 +126,21 @@ class WEAPRecord : public Record
             return;
             }
         ~WEAPRecord() {}
+        void Unload()
+            {
+            IsLoaded(false);
+            EDID.Unload();
+            FULL.Unload();
+            MODL.MODB.Unload();
+            MODL.MODL.Unload();
+            MODL.MODT.Unload();
+            ICON.Unload();
+            SCRI.Unload();
+            ENAM.Unload();
+            ANAM.Unload();
+            DATA.Unload();
+            }
+
         void ExpandFormIDs(_FormIDHandler &FormIDHandler)
             {
             if(SCRI.IsLoaded())
@@ -154,7 +169,6 @@ class WEAPRecord : public Record
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
         void SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned short FieldValue);
-
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();

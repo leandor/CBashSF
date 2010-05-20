@@ -236,6 +236,14 @@ class EFSHRecord : public Record
             return;
             }
         ~EFSHRecord() {}
+        void Unload()
+            {
+            IsLoaded(false);
+            EDID.Unload();
+            ICON.Unload();
+            ICO2.Unload();
+            DATA.Unload();
+            }
 
         void ExpandFormIDs(_FormIDHandler &FormIDHandler) {}
         void CollapseFormIDs(_FormIDHandler &FormIDHandler) {}

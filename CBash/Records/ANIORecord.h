@@ -54,6 +54,15 @@ class ANIORecord : public Record
             return;
             }
         ~ANIORecord() {}
+        void Unload()
+            {
+            IsLoaded(false);
+            EDID.Unload();
+            MODL.MODB.Unload();
+            MODL.MODL.Unload();
+            MODL.MODT.Unload();
+            DATA.Unload();
+            }
 
         void ExpandFormIDs(_FormIDHandler &FormIDHandler)
             {

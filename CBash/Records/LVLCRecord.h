@@ -138,6 +138,18 @@ class LVLCRecord : public Record
             for(unsigned int x = 0; x < Entries.size(); x++)
                 delete Entries[x];
             }
+        void Unload()
+            {
+            IsLoaded(false);
+            EDID.Unload();
+            LVLD.Unload();
+            LVLF.Unload();
+            SCRI.Unload();
+            TNAM.Unload();
+            for(unsigned int x = 0; x < Entries.size(); x++)
+                delete Entries[x];
+            Entries.clear();
+            }
 
         void ExpandFormIDs(_FormIDHandler &FormIDHandler)
             {

@@ -113,6 +113,20 @@ class SLGMRecord : public Record
             return;
             }
         ~SLGMRecord() {}
+        void Unload()
+            {
+            IsLoaded(false);
+            EDID.Unload();
+            FULL.Unload();
+            MODL.MODB.Unload();
+            MODL.MODL.Unload();
+            MODL.MODT.Unload();
+            ICON.Unload();
+            SCRI.Unload();
+            DATA.Unload();
+            SOUL.Unload();
+            SLCP.Unload();
+            }
 
         void ExpandFormIDs(_FormIDHandler &FormIDHandler)
             {

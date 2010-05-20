@@ -169,6 +169,19 @@ class PGRDRecord : public Record
             for(unsigned int x = 0; x < PGRL.size(); x++)
                 delete PGRL[x];
             }
+        void Unload()
+            {
+            IsLoaded(false);
+            DATA.Unload();
+            PGRP.clear();
+            PGAG.Unload();
+            PGRR.Unload();
+            PGRI.clear();
+            for(unsigned int x = 0; x < PGRL.size(); x++)
+                delete PGRL[x];
+            PGRL.clear();
+            }
+
         void ExpandFormIDs(_FormIDHandler &FormIDHandler)
             {
             for(unsigned int x = 0; x < PGRL.size(); x++)
@@ -203,7 +216,6 @@ class PGRDRecord : public Record
         void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned short FieldValue);
         void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue);
         void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue[], unsigned int nSize);
-
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();

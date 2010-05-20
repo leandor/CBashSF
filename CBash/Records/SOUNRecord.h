@@ -115,6 +115,13 @@ class SOUNRecord : public Record
             return;
             }
         ~SOUNRecord() {}
+        void Unload()
+            {
+            IsLoaded(false);
+            EDID.Unload();
+            FNAM.Unload();
+            SNDX.Unload();
+            }
 
         void ExpandFormIDs(_FormIDHandler &FormIDHandler) {}
         void CollapseFormIDs(_FormIDHandler &FormIDHandler) {}

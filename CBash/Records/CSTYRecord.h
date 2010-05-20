@@ -292,6 +292,13 @@ class CSTYRecord : public Record
             return;
             }
         ~CSTYRecord() {}
+        void Unload()
+            {
+            IsLoaded(false);
+            EDID.Unload();
+            CSTD.Unload();
+            CSAD.Unload();
+            }
 
         void ExpandFormIDs(_FormIDHandler &FormIDHandler) {}
         void CollapseFormIDs(_FormIDHandler &FormIDHandler) {}
@@ -309,7 +316,6 @@ class CSTYRecord : public Record
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue);
         void SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue);
-
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();

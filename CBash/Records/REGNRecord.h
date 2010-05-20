@@ -796,6 +796,20 @@ class REGNRecord : public Record
             for(unsigned int x = 0; x < Entries.size(); x++)
                 delete Entries[x];
             }
+        void Unload()
+            {
+            IsLoaded(false);
+            EDID.Unload();
+            ICON.Unload();
+            RCLR.Unload();
+            WNAM.Unload();
+            for(unsigned int x = 0; x < Areas.size(); x++)
+                delete Areas[x];
+            Areas.clear();
+            for(unsigned int x = 0; x < Entries.size(); x++)
+                delete Entries[x];
+            Entries.clear();
+            }
 
         void ExpandFormIDs(_FormIDHandler &FormIDHandler)
             {

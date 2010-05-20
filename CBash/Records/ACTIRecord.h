@@ -60,6 +60,17 @@ class ACTIRecord : public Record
             return;
             }
         ~ACTIRecord() {}
+        void Unload()
+            {
+            IsLoaded(false);
+            EDID.Unload();
+            FULL.Unload();
+            MODL.MODB.Unload();
+            MODL.MODL.Unload();
+            MODL.MODT.Unload();
+            SCRI.Unload();
+            SNAM.Unload();
+            }
 
         void ExpandFormIDs(_FormIDHandler &FormIDHandler)
             {

@@ -115,6 +115,19 @@ class SKILRecord : public Record
             MNAM = srcRecord->MNAM;
             }
         ~SKILRecord() {}
+        void Unload()
+            {
+            IsLoaded(false);
+            EDID.Unload();
+            INDX.Unload();
+            DESC.Unload();
+            ICON.Unload();
+            DATA.Unload();
+            ANAM.Unload();
+            JNAM.Unload();
+            ENAM.Unload();
+            MNAM.Unload();
+            }
 
         void ExpandFormIDs(_FormIDHandler &FormIDHandler) {}
         void CollapseFormIDs(_FormIDHandler &FormIDHandler) {}

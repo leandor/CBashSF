@@ -388,6 +388,24 @@ class WTHRRecord : public Record
             for(unsigned int x = 0; x < Sounds.size(); x++)
                 delete Sounds[x];
             }
+        void Unload()
+            {
+            IsLoaded(false);
+            EDID.Unload();
+            CNAM.Unload();
+            DNAM.Unload();
+            MODL.MODB.Unload();
+            MODL.MODL.Unload();
+            MODL.MODT.Unload();
+            NAM0.Unload();
+            FNAM.Unload();
+            HNAM.Unload();
+            DATA.Unload();
+            for(unsigned int x = 0; x < Sounds.size(); x++)
+                delete Sounds[x];
+            Sounds.clear();
+            }
+
         void ExpandFormIDs(_FormIDHandler &FormIDHandler)
             {
             for(unsigned int x = 0; x < Sounds.size(); x++)
@@ -417,7 +435,6 @@ class WTHRRecord : public Record
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue);
         void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue);
-
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();

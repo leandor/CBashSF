@@ -418,6 +418,57 @@ class CREARecord : public Record
             for(unsigned int x = 0; x < Sounds.size(); x++)
                 delete Sounds[x];
             }
+        void Unload()
+            {
+            IsLoaded(false);
+            EDID.Unload();
+            FULL.Unload();
+            MODL.MODB.Unload();
+            MODL.MODL.Unload();
+            MODL.MODT.Unload();
+
+            for(unsigned int x = 0; x < SPLO.size(); x++)
+                delete SPLO[x];
+            SPLO.clear();
+
+            NIFZ.clear();
+
+            NIFT.Unload();
+            ACBS.Unload();
+
+            for(unsigned int x = 0; x < SNAM.size(); x++)
+                delete SNAM[x];
+            SNAM.clear();
+
+            INAM.Unload();
+            SCRI.Unload();
+
+            for(unsigned int x = 0; x < CNTO.size(); x++)
+                delete CNTO[x];
+            CNTO.clear();
+
+            AIDT.Unload();
+
+            for(unsigned int x = 0; x < PKID.size(); x++)
+                delete PKID[x];
+            PKID.clear();
+
+            KFFZ.clear();
+
+            DATA.Unload();
+            RNAM.Unload();
+            ZNAM.Unload();
+            TNAM.Unload();
+            BNAM.Unload();
+            WNAM.Unload();
+            CSCR.Unload();
+            NAM0.Unload();
+            NAM1.Unload();
+
+            for(unsigned int x = 0; x < Sounds.size(); x++)
+                delete Sounds[x];
+            Sounds.clear();
+            }
 
         void ExpandFormIDs(_FormIDHandler &FormIDHandler)
             {

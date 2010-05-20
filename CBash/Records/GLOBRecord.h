@@ -82,6 +82,13 @@ class GLOBRecord : public Record
             FLTV = srcRecord->FLTV;
             }
         ~GLOBRecord() {}
+        void Unload()
+            {
+            IsLoaded(false);
+            EDID.Unload();
+            FNAM.Unload();
+            FLTV.Unload();
+            }
 
         void ExpandFormIDs(_FormIDHandler &FormIDHandler) {}
         void CollapseFormIDs(_FormIDHandler &FormIDHandler) {}

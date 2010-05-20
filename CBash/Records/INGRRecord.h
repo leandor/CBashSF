@@ -92,6 +92,22 @@ class INGRRecord : public Record
             for(unsigned int x = 0; x < Effects.size(); x++)
                 delete Effects[x];
             }
+        void Unload()
+            {
+            IsLoaded(false);
+            EDID.Unload();
+            FULL.Unload();
+            MODL.MODB.Unload();
+            MODL.MODL.Unload();
+            MODL.MODT.Unload();
+            ICON.Unload();
+            SCRI.Unload();
+            DATA.Unload();
+            ENIT.Unload();
+            for(unsigned int x = 0; x < Effects.size(); x++)
+                delete Effects[x];
+            Effects.clear();
+            }
 
         void ExpandFormIDs(_FormIDHandler &FormIDHandler)
             {

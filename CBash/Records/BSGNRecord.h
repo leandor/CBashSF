@@ -62,6 +62,18 @@ class BSGNRecord : public Record
             for(unsigned int x = 0; x < SPLO.size(); x++)
                 delete SPLO[x];
             }
+        void Unload()
+            {
+            IsLoaded(false);
+            EDID.Unload();
+            FULL.Unload();
+            ICON.Unload();
+            DESC.Unload();
+
+            for(unsigned int x = 0; x < SPLO.size(); x++)
+                delete SPLO[x];
+            SPLO.clear();
+            }
 
         void ExpandFormIDs(_FormIDHandler &FormIDHandler)
             {
@@ -85,7 +97,6 @@ class BSGNRecord : public Record
         void GetFieldArray(const unsigned int Field, void **FieldValues);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue[], unsigned int nSize);
-
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();

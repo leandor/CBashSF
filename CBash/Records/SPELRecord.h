@@ -132,6 +132,16 @@ class SPELRecord : public Record
             for(unsigned int x = 0; x < Effects.size(); x++)
                 delete Effects[x];
             }
+        void Unload()
+            {
+            IsLoaded(false);
+            EDID.Unload();
+            FULL.Unload();
+            SPIT.Unload();
+            for(unsigned int x = 0; x < Effects.size(); x++)
+                delete Effects[x];
+            Effects.clear();
+            }
 
         void ExpandFormIDs(_FormIDHandler &FormIDHandler)
             {

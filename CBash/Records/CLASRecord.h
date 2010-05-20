@@ -146,6 +146,15 @@ class CLASRecord : public Record
             return;
             }
         ~CLASRecord() {}
+        void Unload()
+            {
+            IsLoaded(false);
+            EDID.Unload();
+            FULL.Unload();
+            DESC.Unload();
+            ICON.Unload();
+            DATA.Unload();
+            }
 
         void ExpandFormIDs(_FormIDHandler &FormIDHandler) {}
         void CollapseFormIDs(_FormIDHandler &FormIDHandler) {}

@@ -68,6 +68,12 @@ class SBSPRecord : public Record
             return;
             }
         ~SBSPRecord() {}
+        void Unload()
+            {
+            IsLoaded(false);
+            EDID.Unload();
+            DNAM.Unload();
+            }
 
         void ExpandFormIDs(_FormIDHandler &FormIDHandler) {}
         void CollapseFormIDs(_FormIDHandler &FormIDHandler) {}

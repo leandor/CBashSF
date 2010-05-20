@@ -113,6 +113,24 @@ class CONTRecord : public Record
             for(unsigned int x = 0; x < CNTO.size(); x++)
                 delete CNTO[x];
             }
+        void Unload()
+            {
+            IsLoaded(false);
+            EDID.Unload();
+            FULL.Unload();
+            MODL.MODB.Unload();
+            MODL.MODL.Unload();
+            MODL.MODT.Unload();
+            SCRI.Unload();
+
+            for(unsigned int x = 0; x < CNTO.size(); x++)
+                delete CNTO[x];
+            CNTO.clear();
+
+            DATA.Unload();
+            SNAM.Unload();
+            QNAM.Unload();
+            }
 
         void ExpandFormIDs(_FormIDHandler &FormIDHandler)
             {

@@ -87,6 +87,12 @@ struct RecordField
         {return sizeof(T);}
     bool IsLoaded() const
         {return isLoaded;}
+    void Unload()
+        {
+        T newValue;
+        value = newValue;
+        isLoaded = false;
+        }
     bool Read(unsigned char *buffer, unsigned int subSize, unsigned int &curPos)
         {
         if(isLoaded)
@@ -128,6 +134,11 @@ struct ReqRecordField
         {return sizeof(T);}
     bool IsLoaded() const
         {return true;}
+    void Unload()
+        {
+        T newValue;
+        value = newValue;
+        }
     bool Read(unsigned char *buffer, unsigned int subSize, unsigned int &curPos)
         {
         if(subSize > sizeof(T))
@@ -168,6 +179,11 @@ struct OptRecordField
         {
         if(value == NULL)
             value = new T();
+        }
+    void Unload()
+        {
+        delete value;
+        value = NULL;
         }
     bool Read(unsigned char *buffer, unsigned int subSize, unsigned int &curPos)
         {
@@ -249,6 +265,11 @@ struct STRING
         {return (unsigned int)strlen(value) + 1;}
     bool IsLoaded() const
         {return value != NULL;}
+    void Unload()
+        {
+        delete []value;
+        value = NULL;
+        }
     bool Read(unsigned char *buffer, const unsigned int &subSize, unsigned int &curPos)
         {
         if(IsLoaded())
@@ -337,6 +358,11 @@ struct NONNULLSTRING
         {return (unsigned int)strlen(value);}
     bool IsLoaded() const
         {return value != NULL;}
+    void Unload()
+        {
+        delete []value;
+        value = NULL;
+        }
     bool Read(unsigned char *buffer, const unsigned int &subSize, unsigned int &curPos)
         {
         if(IsLoaded())
@@ -422,6 +448,12 @@ struct RAWBYTES
         {return size;}
     bool IsLoaded() const
         {return value != NULL;}
+    void Unload()
+        {
+        size = 0;
+        delete []value;
+        value = NULL;
+        }
     bool Read(unsigned char *buffer, unsigned int subSize, unsigned int &curPos)
         {
         if(IsLoaded())

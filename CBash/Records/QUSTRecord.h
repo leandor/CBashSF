@@ -385,6 +385,27 @@ class QUSTRecord : public Record
             for(unsigned int x = 0; x < Targets.size(); x++)
                 delete Targets[x];
             }
+        void Unload()
+            {
+            IsLoaded(false);
+            EDID.Unload();
+            SCRI.Unload();
+            FULL.Unload();
+            ICON.Unload();
+            DATA.Unload();
+
+            for(unsigned int x = 0; x < CTDA.size(); x++)
+                delete CTDA[x];
+            CTDA.clear();
+
+            for(unsigned int x = 0; x < Stages.size(); x++)
+                delete Stages[x];
+            Stages.clear();
+
+            for(unsigned int x = 0; x < Targets.size(); x++)
+                delete Targets[x];
+            Targets.clear();
+            }
 
         void ExpandFormIDs(_FormIDHandler &FormIDHandler)
             {

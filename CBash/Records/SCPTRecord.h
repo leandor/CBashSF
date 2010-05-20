@@ -155,6 +155,20 @@ class SCPTRecord : public Record
             for(unsigned int x = 0; x < SCR_.size(); x++)
                 delete SCR_[x];
             }
+        void Unload()
+            {
+            IsLoaded(false);
+            EDID.Unload();
+            SCHR.Unload();
+            SCDA.Unload();
+            SCTX.Unload();
+            for(unsigned int x = 0; x < VARS.size(); x++)
+                delete VARS[x];
+            VARS.clear();
+            for(unsigned int x = 0; x < SCR_.size(); x++)
+                delete SCR_[x];
+            SCR_.clear();
+            }
 
         void ExpandFormIDs(_FormIDHandler &FormIDHandler)
             {

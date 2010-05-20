@@ -121,6 +121,8 @@ class GMSTRecord : public Record
             flagsUnk = 0;
             }
         ~GMSTRecord() {}
+        void Unload() //GMSTs should always be loaded, so do nothing.
+            {return;}
 
         void ExpandFormIDs(_FormIDHandler &FormIDHandler) {}
         void CollapseFormIDs(_FormIDHandler &FormIDHandler) {}

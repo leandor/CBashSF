@@ -26,9 +26,9 @@ GPL License and Copyright Notice ============================================
 
 int Record::Read(unsigned char *fileBuffer, _FormIDHandler &FormIDHandler)
     {
-    unsigned char localBuffer[BUFFERSIZE];
     if(IsLoaded())
         return -1;
+    unsigned char localBuffer[BUFFERSIZE];
     unsigned char *buffer = NULL;
     unsigned int recSize = *(unsigned int*)&fileBuffer[recStart - 16];
     unsigned int expandedRecSize = *(unsigned int*)&fileBuffer[recStart];

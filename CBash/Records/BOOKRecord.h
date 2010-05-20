@@ -110,6 +110,21 @@ class BOOKRecord : public Record
             return;
             }
         ~BOOKRecord() {}
+        void Unload()
+            {
+            IsLoaded(false);
+            EDID.Unload();
+            FULL.Unload();
+            MODL.MODB.Unload();
+            MODL.MODL.Unload();
+            MODL.MODT.Unload();
+            ICON.Unload();
+            DESC.Unload();
+            SCRI.Unload();
+            ENAM.Unload();
+            ANAM.Unload();
+            DATA.Unload();
+            }
 
         void ExpandFormIDs(_FormIDHandler &FormIDHandler)
             {
@@ -142,7 +157,6 @@ class BOOKRecord : public Record
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned short FieldValue);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char FieldValue);
-
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();

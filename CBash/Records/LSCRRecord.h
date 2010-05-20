@@ -92,6 +92,16 @@ class LSCRRecord : public Record
             for(unsigned int x = 0; x < LNAM.size(); x++)
                 delete LNAM[x];
             }
+        void Unload()
+            {
+            IsLoaded(false);
+            EDID.Unload();
+            ICON.Unload();
+            DESC.Unload();
+            for(unsigned int x = 0; x < LNAM.size(); x++)
+                delete LNAM[x];
+            LNAM.clear();
+            }
 
         void ExpandFormIDs(_FormIDHandler &FormIDHandler)
             {

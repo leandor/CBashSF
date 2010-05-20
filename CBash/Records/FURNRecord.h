@@ -96,6 +96,17 @@ class FURNRecord : public Record
             return;
             }
         ~FURNRecord() {}
+        void Unload()
+            {
+            IsLoaded(false);
+            EDID.Unload();
+            FULL.Unload();
+            MODL.MODB.Unload();
+            MODL.MODL.Unload();
+            MODL.MODT.Unload();
+            SCRI.Unload();
+            MNAM.Unload();
+            }
 
         void ExpandFormIDs(_FormIDHandler &FormIDHandler)
             {
@@ -121,7 +132,6 @@ class FURNRecord : public Record
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
         void SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue);
-
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();

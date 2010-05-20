@@ -129,6 +129,19 @@ class IDLERecord : public Record
             for(unsigned int x = 0; x < CTDA.size(); x++)
                 delete CTDA[x];
             }
+        void Unload()
+            {
+            IsLoaded(false);
+            EDID.Unload();
+            MODL.MODB.Unload();
+            MODL.MODL.Unload();
+            MODL.MODT.Unload();
+            for(unsigned int x = 0; x < CTDA.size(); x++)
+                delete CTDA[x];
+            CTDA.clear();
+            ANAM.Unload();
+            DATA.Unload();
+            }
 
         void ExpandFormIDs(_FormIDHandler &FormIDHandler)
             {

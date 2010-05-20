@@ -1233,6 +1233,7 @@ class Record
         virtual int DeleteListX3Element(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field) {return -1;}
 
         int Read(unsigned char *fileBuffer, _FormIDHandler &FormIDHandler);
+        virtual void Unload() abstract {};
         virtual unsigned int GetSize() abstract {};
         virtual unsigned int GetType() {return eUnknown;}
         virtual void ExpandFormIDs(_FormIDHandler &FormIDHandler) abstract {};

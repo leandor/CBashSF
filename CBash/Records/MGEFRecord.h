@@ -169,6 +169,19 @@ class MGEFRecord : public Record
             ESCE = srcRecord->ESCE;
             }
         ~MGEFRecord() {}
+        void Unload()
+            {
+            IsLoaded(false);
+            EDID.Unload();
+            FULL.Unload();
+            DESC.Unload();
+            ICON.Unload();
+            MODL.MODB.Unload();
+            MODL.MODL.Unload();
+            MODL.MODT.Unload();
+            DATA.Unload();
+            ESCE.clear();
+            }
 
         void ExpandFormIDs(_FormIDHandler &FormIDHandler)
             {
@@ -209,7 +222,6 @@ class MGEFRecord : public Record
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, int FieldValue);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned short FieldValue);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue[], unsigned int nSize);
-
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();

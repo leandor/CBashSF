@@ -153,6 +153,48 @@ int SafeSaveAllChangedMods(const unsigned int CollectionIndex)
 	}
 
 ////////////////////////////////////////////////////////////////////////
+int LoadRecord(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID)
+    {
+    try
+        {
+        Collections[CollectionIndex]->LoadRecord(ModName, recordFID);
+        }
+    catch(...)
+        {
+        printf("Error loading record: %08X from mod:%s in collection: %i\n", recordFID, ModName, CollectionIndex);
+        return -1;
+        }
+    return 0;
+    }
+
+int UnloadRecord(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID)
+    {
+    try
+        {
+        Collections[CollectionIndex]->LoadRecord(ModName, recordFID);
+        }
+    catch(...)
+        {
+        printf("Error unloading record: %08X from mod:%s in collection: %i\n", recordFID, ModName, CollectionIndex);
+        return -1;
+        }
+    return 0;
+    }
+
+int DeleteRecord(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID)
+    {
+    try
+        {
+        Collections[CollectionIndex]->LoadRecord(ModName, recordFID);
+        }
+    catch(...)
+        {
+        printf("Error deleting record: %08X from mod:%s in collection: %i\n", recordFID, ModName, CollectionIndex);
+        return -1;
+        }
+    return 0;
+    }
+
 int Close(const unsigned int CollectionIndex)
     {
     try

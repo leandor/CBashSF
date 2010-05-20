@@ -159,6 +159,23 @@ class WRLDRecord : public Record
             for(unsigned int x = 0; x < CELLS.size(); ++x)
                 delete CELLS[x];
             }
+        void Unload()
+            {
+            IsLoaded(false);
+            EDID.Unload();
+            FULL.Unload();
+            WNAM.Unload();
+            CNAM.Unload();
+            NAM2.Unload();
+            ICON.Unload();
+            MNAM.Unload();
+            DATA.Unload();
+            NAM0.Unload();
+            NAM9.Unload();
+            SNAM.Unload();
+            OFST.Unload();
+            }
+
         void ExpandFormIDs(_FormIDHandler &FormIDHandler)
             {
             if(WNAM.IsLoaded())
@@ -192,7 +209,6 @@ class WRLDRecord : public Record
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
-
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();

@@ -85,6 +85,21 @@ class ACHRRecord : public Record
             return;
             }
         ~ACHRRecord() {}
+        void Unload()
+            {
+            IsLoaded(false);
+            EDID.Unload();
+            NAME.Unload();
+            XPCI.Unload();
+            XLOD.Unload();
+            XESP.Unload();
+            XMRC.Unload();
+            XHRS.Unload();
+            XRGD.Unload();
+            XSCL.Unload();
+            DATA.Unload();
+            }
+
         void ExpandFormIDs(_FormIDHandler &FormIDHandler)
             {
             FormIDHandler.ExpandFormID(NAME.value.fid);
@@ -121,7 +136,6 @@ class ACHRRecord : public Record
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
-
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();

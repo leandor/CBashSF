@@ -115,6 +115,18 @@ class CLMTRecord : public Record
             return;
             }
         ~CLMTRecord() {}
+        void Unload()
+            {
+            IsLoaded(false);
+            EDID.Unload();
+            Weathers.clear();
+            FNAM.Unload();
+            GNAM.Unload();
+            MODL.MODB.Unload();
+            MODL.MODL.Unload();
+            MODL.MODT.Unload();
+            TNAM.Unload();
+            }
 
         void ExpandFormIDs(_FormIDHandler &FormIDHandler)
             {
@@ -147,7 +159,6 @@ class CLMTRecord : public Record
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue);
-
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();

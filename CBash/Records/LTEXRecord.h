@@ -123,6 +123,17 @@ class LTEXRecord : public Record
             for(unsigned int x = 0; x < GNAM.size(); x++)
                 delete GNAM[x];
             }
+        void Unload()
+            {
+            IsLoaded(false);
+            EDID.Unload();
+            ICON.Unload();
+            HNAM.Unload();
+            SNAM.Unload();
+            for(unsigned int x = 0; x < GNAM.size(); x++)
+                delete GNAM[x];
+            GNAM.clear();
+            }
 
         void ExpandFormIDs(_FormIDHandler &FormIDHandler)
             {
@@ -147,7 +158,6 @@ class LTEXRecord : public Record
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue[], unsigned int nSize);
-
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();

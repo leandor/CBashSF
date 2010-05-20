@@ -340,7 +340,6 @@ class LANDRecord : public Record
             VNML = srcRecord->VNML;
             VHGT = srcRecord->VHGT;
             VCLR = srcRecord->VCLR;
-            BTXT = srcRecord->BTXT;
             BTXT.clear();
             BTXT.resize(srcRecord->BTXT.size());
             for(unsigned int x = 0; x < srcRecord->BTXT.size(); ++x)
@@ -366,6 +365,24 @@ class LANDRecord : public Record
             for(unsigned int x = 0; x < Layers.size(); ++x)
                 delete Layers[x];
             }
+        void Unload()
+            {
+            IsLoaded(false);
+            DATA.Unload();
+            VNML.Unload();
+            VHGT.Unload();
+            VCLR.Unload();
+            for(unsigned int x = 0; x < BTXT.size(); ++x)
+                delete BTXT[x];
+            BTXT.clear();
+
+            for(unsigned int x = 0; x < Layers.size(); ++x)
+                delete Layers[x];
+            Layers.clear();
+
+            VTEX.clear();
+            }
+
         void ExpandFormIDs(_FormIDHandler &FormIDHandler)
             {
             for(unsigned int x = 0; x < BTXT.size(); ++x)

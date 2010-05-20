@@ -321,6 +321,53 @@ class NPC_Record : public Record
             for(unsigned int x = 0; x < PKID.size(); x++)
                 delete PKID[x];
             }
+        void Unload()
+            {
+            IsLoaded(false);
+            EDID.Unload();
+            FULL.Unload();
+            MODL.MODB.Unload();
+            MODL.MODL.Unload();
+            MODL.MODT.Unload();
+            ACBS.Unload();
+
+            for(unsigned int x = 0; x < SNAM.size(); x++)
+                delete SNAM[x];
+            SNAM.clear();
+
+            INAM.Unload();
+            RNAM.Unload();
+
+            for(unsigned int x = 0; x < SPLO.size(); x++)
+                delete SPLO[x];
+            SPLO.clear();
+
+            SCRI.Unload();
+
+            for(unsigned int x = 0; x < CNTO.size(); x++)
+                delete CNTO[x];
+            CNTO.clear();
+
+            AIDT.Unload();
+
+            for(unsigned int x = 0; x < PKID.size(); x++)
+                delete PKID[x];
+            PKID.clear();
+
+            KFFZ.clear();
+
+            CNAM.Unload();
+            DATA.Unload();
+            HNAM.Unload();
+            LNAM.Unload();
+            ENAM.Unload();
+            HCLR.Unload();
+            ZNAM.Unload();
+            FGGS.Unload();
+            FGGA.Unload();
+            FGTS.Unload();
+            FNAM.Unload();
+            }
 
         void ExpandFormIDs(_FormIDHandler &FormIDHandler)
             {

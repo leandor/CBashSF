@@ -74,6 +74,19 @@ class DIALRecord : public Record
             for(unsigned int x = 0; x < INFO.size(); x++)
                 delete INFO[x];
             }
+        void Unload()
+            {
+            IsLoaded(false);
+            EDID.Unload();
+
+            for(unsigned int x = 0; x < QSTI.size(); x++)
+                delete QSTI[x];
+            QSTI.clear();
+
+            FULL.Unload();
+            DATA.Unload();
+            }
+
         void ExpandFormIDs(_FormIDHandler &FormIDHandler)
             {
             for(unsigned int x = 0; x < QSTI.size(); x++)
@@ -95,7 +108,6 @@ class DIALRecord : public Record
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue[], unsigned int nSize);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue);
-
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();

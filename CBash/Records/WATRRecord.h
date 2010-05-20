@@ -206,6 +206,19 @@ class WATRRecord : public Record
             return;
             }
         ~WATRRecord() {}
+        void Unload()
+            {
+            IsLoaded(false);
+            EDID.Unload();
+            TNAM.Unload();
+            ANAM.Unload();
+            FNAM.Unload();
+            MNAM.Unload();
+            SNAM.Unload();
+            DATA.Unload();
+            GNAM.Unload();
+            }
+
         void ExpandFormIDs(_FormIDHandler &FormIDHandler)
             {
             if(SNAM.IsLoaded())
@@ -243,7 +256,6 @@ class WATRRecord : public Record
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned short FieldValue);
-
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();

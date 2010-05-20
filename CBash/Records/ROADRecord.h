@@ -67,6 +67,12 @@ class ROADRecord : public Record
             return;
             }
         ~ROADRecord() {}
+        void Unload()
+            {
+            IsLoaded(false);
+            PGRP.clear();
+            PGRR.clear();
+            }
 
         void ExpandFormIDs(_FormIDHandler &FormIDHandler) {}
         void CollapseFormIDs(_FormIDHandler &FormIDHandler) {}

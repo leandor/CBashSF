@@ -191,6 +191,21 @@ class CELLRecord : public Record
             delete PGRD;
             delete LAND;
             }
+        void Unload()
+            {
+            IsLoaded(false);
+            EDID.Unload();
+            FULL.Unload();
+            DATA.Unload();
+            XCLL.Unload();
+            XCMT.Unload();
+            Ownership.Unload();
+            XCCM.Unload();
+            XCLW.Unload();
+            XCLR.clear();
+            XCLC.Unload();
+            XCWT.Unload();
+            }
 
         void ExpandFormIDs(_FormIDHandler &FormIDHandler)
             {
@@ -231,7 +246,6 @@ class CELLRecord : public Record
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, int FieldValue);
         void SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue[], unsigned int nSize);
-
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();

@@ -395,6 +395,31 @@ class REFRRecord : public Record
             return;
             }
         ~REFRRecord() {}
+        void Unload()
+            {
+            IsLoaded(false);
+            EDID.Unload();
+            NAME.Unload();
+            XTEL.Unload();
+            XLOC.Unload();
+            Ownership.Unload();
+            XESP.Unload();
+            XTRG.Unload();
+            XSED.Unload();
+            XLOD.Unload();
+            XCHG.Unload();
+            XHLT.Unload();
+            XPCI.Unload();
+            XLCM.Unload();
+            XRTM.Unload();
+            XACT.Unload();
+            XCNT.Unload();
+            Marker.Unload();
+            XSCL.Unload();
+            XSOL.Unload();
+            DATA.Unload();
+            }
+
         void ExpandFormIDs(_FormIDHandler &FormIDHandler)
             {
             FormIDHandler.ExpandFormID(NAME.value.fid);
@@ -450,7 +475,6 @@ class REFRRecord : public Record
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, int FieldValue);
-
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();

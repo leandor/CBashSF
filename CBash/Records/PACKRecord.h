@@ -244,6 +244,19 @@ class PACKRecord : public Record
             for(unsigned int x = 0; x < CTDA.size(); x++)
                 delete CTDA[x];
             }
+        void Unload()
+            {
+            IsLoaded(false);
+            EDID.Unload();
+            PKDT.Unload();
+            PLDT.Unload();
+            PSDT.Unload();
+            PTDT.Unload();
+
+            for(unsigned int x = 0; x < CTDA.size(); x++)
+                delete CTDA[x];
+            CTDA.clear();
+            }
 
         void ExpandFormIDs(_FormIDHandler &FormIDHandler)
             {

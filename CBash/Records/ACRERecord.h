@@ -83,6 +83,18 @@ class ACRERecord : public Record
             return;
             }
         ~ACRERecord() {}
+        void Unload()
+            {
+            IsLoaded(false);
+            EDID.Unload();
+            NAME.Unload();
+            Ownership.Unload();
+            XESP.Unload();
+            XRGD.Unload();
+            XSCL.Unload();
+            DATA.Unload();
+            }
+
         void ExpandFormIDs(_FormIDHandler &FormIDHandler)
             {
             FormIDHandler.ExpandFormID(NAME.value.fid);
@@ -118,7 +130,6 @@ class ACRERecord : public Record
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue);
-
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();

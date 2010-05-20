@@ -485,6 +485,101 @@ class RACERecord : public Record
             for(unsigned int x = 0; x < XNAM.size(); x++)
                 delete XNAM[x];
             }
+        void Unload()
+            {
+            IsLoaded(false);
+            EDID.Unload();
+            FULL.Unload();
+            DESC.Unload();
+            for(unsigned int x = 0; x < SPLO.size(); x++)
+                delete SPLO[x];
+            SPLO.clear();
+
+            for(unsigned int x = 0; x < XNAM.size(); x++)
+                delete XNAM[x];
+            XNAM.clear();
+
+            DATA.Unload();
+
+            VNAM.Unload();
+            DNAM.Unload();
+
+            CNAM.Unload();
+            PNAM.Unload();
+            UNAM.Unload();
+            ATTR.Unload();
+
+            MOD0.MODB.Unload();
+            MOD0.MODL.Unload();
+            MOD0.MODT.Unload();
+            MOD0.ICON.Unload();
+
+            MOD1.MODB.Unload();
+            MOD1.MODL.Unload();
+            MOD1.MODT.Unload();
+            MOD1.ICON.Unload();
+
+            MOD2.MODB.Unload();
+            MOD2.MODL.Unload();
+            MOD2.MODT.Unload();
+            MOD2.ICON.Unload();
+
+            MOD3.MODB.Unload();
+            MOD3.MODL.Unload();
+            MOD3.MODT.Unload();
+            MOD3.ICON.Unload();
+
+            MOD4.MODB.Unload();
+            MOD4.MODL.Unload();
+            MOD4.MODT.Unload();
+            MOD4.ICON.Unload();
+
+            MOD5.MODB.Unload();
+            MOD5.MODL.Unload();
+            MOD5.MODT.Unload();
+            MOD5.ICON.Unload();
+
+            MOD6.MODB.Unload();
+            MOD6.MODL.Unload();
+            MOD6.MODT.Unload();
+            MOD6.ICON.Unload();
+
+            MOD7.MODB.Unload();
+            MOD7.MODL.Unload();
+            MOD7.MODT.Unload();
+            MOD7.ICON.Unload();
+
+            MOD8.MODB.Unload();
+            MOD8.MODL.Unload();
+            MOD8.MODT.Unload();
+            MOD8.ICON.Unload();
+
+            MMODL.MODB.Unload();
+            MMODL.MODL.Unload();
+            MMODL.MODT.Unload();
+
+            MICON0.Unload();
+            MICON1.Unload();
+            MICON2.Unload();
+            MICON3.Unload();
+            MICON4.Unload();
+
+            FMODL.MODB.Unload();
+            FMODL.MODL.Unload();
+            FMODL.MODT.Unload();
+
+            FICON0.Unload();
+            FICON1.Unload();
+            FICON2.Unload();
+            FICON3.Unload();
+            FICON4.Unload();
+            HNAM.clear();
+            ENAM.clear();
+            FGGS.Unload();
+            FGGA.Unload();
+            FGTS.Unload();
+            SNAM.Unload();
+            }
 
         void ExpandFormIDs(_FormIDHandler &FormIDHandler)
             {

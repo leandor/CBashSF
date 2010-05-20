@@ -122,6 +122,31 @@ class CLOTRecord : public Record
             return;
             }
         ~CLOTRecord() {}
+        void Unload()
+            {
+            IsLoaded(false);
+            EDID.Unload();
+            FULL.Unload();
+            SCRI.Unload();
+            ENAM.Unload();
+            ANAM.Unload();
+            BMDT.Unload();
+            MODL.MODB.Unload();
+            MODL.MODL.Unload();
+            MODL.MODT.Unload();
+            MOD2.MODB.Unload();
+            MOD2.MODL.Unload();
+            MOD2.MODT.Unload();
+            ICON.Unload();
+            MOD3.MODB.Unload();
+            MOD3.MODL.Unload();
+            MOD3.MODT.Unload();
+            MOD4.MODB.Unload();
+            MOD4.MODL.Unload();
+            MOD4.MODT.Unload();
+            ICO2.Unload();
+            DATA.Unload();
+            }
 
         void ExpandFormIDs(_FormIDHandler &FormIDHandler)
             {
@@ -152,7 +177,6 @@ class CLOTRecord : public Record
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned short FieldValue);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
-
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();

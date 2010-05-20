@@ -87,6 +87,8 @@ class TES4Record : public Record
             return;
             }
         ~TES4Record() {}
+        void Unload() //TES4 should never be unloaded, so do nothing
+            {return;}
 
         void ExpandFormIDs(_FormIDHandler &FormIDHandler) {}
         void CollapseFormIDs(_FormIDHandler &FormIDHandler) {}

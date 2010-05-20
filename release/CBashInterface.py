@@ -8,6 +8,15 @@ class BaseRecord(object):
         self._CollectionIndex = CollectionIndex
         self._ModName = ModName
         self._recordID = recordID
+    def LoadRecord(self):
+        CBash.LoadRecord(self._CollectionIndex, self._ModName, self._recordID)
+        return
+    def UnloadRecord(self):
+        CBash.UnloadRecord(self._CollectionIndex, self._ModName, self._recordID)
+        return
+    def DeleteRecord(self):
+        CBash.DeleteRecord(self._CollectionIndex, self._ModName, self._recordID)
+        return
     def CopyAsOverride(self, targetMod):
         CBash.CopyFIDRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
         return
@@ -121,6 +130,15 @@ class SubRecord(object):
         self._ModName = ModName
         self._recordID = recordID
         self._parentID = parentID
+    def LoadRecord(self):
+        CBash.LoadRecord(self._CollectionIndex, self._ModName, self._recordID)
+        return
+    def UnloadRecord(self):
+        CBash.UnloadRecord(self._CollectionIndex, self._ModName, self._recordID)
+        return
+    def DeleteRecord(self):
+        CBash.DeleteRecord(self._CollectionIndex, self._ModName, self._recordID)
+        return
     def CopyAsOverride(self, targetMod):
         CBash.CopyFIDRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
         return
@@ -261,6 +279,9 @@ class GMSTRecord(object):
         self._CollectionIndex = CollectionIndex
         self._ModName = ModName
         self._recordID = recordID
+    def DeleteRecord(self):
+        CBash.DeleteRecord(self._CollectionIndex, self._ModName, self._recordID)
+        return
     def CopyAsOverride(self, targetMod):
         recID = CBash.CopyGMSTRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName)
         if(recID): return GLOBRecord(self._CollectionIndex, targetMod._ModName, self._recordID)

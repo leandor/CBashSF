@@ -127,6 +127,23 @@ class FACTRecord : public Record
             for(unsigned int x = 0; x < RNAM.size(); x++)
                 delete RNAM[x];
             }
+        void Unload()
+            {
+            IsLoaded(false);
+            EDID.Unload();
+            FULL.Unload();
+
+            for(unsigned int x = 0; x < XNAM.size(); x++)
+                delete XNAM[x];
+            XNAM.clear();
+
+            DATA.Unload();
+            CNAM.Unload();
+
+            for(unsigned int x = 0; x < RNAM.size(); x++)
+                delete RNAM[x];
+            RNAM.clear();
+            }
 
         void ExpandFormIDs(_FormIDHandler &FormIDHandler)
             {
