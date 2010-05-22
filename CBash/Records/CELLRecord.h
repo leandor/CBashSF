@@ -250,7 +250,7 @@ class CELLRecord : public Record
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();
         unsigned int GetType() {return eCELL;}
-        int WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
 
         bool IsInterior()
             {
@@ -405,20 +405,4 @@ class CELLRecord : public Record
             if(!XCMT.IsLoaded()) return;
             XCMT.value.flags = Type;
             }
-    };
-
-struct WritableCell
-    {
-    unsigned int CellSize;
-    CELLRecord *curRecord;
-    unsigned int ChildrenSize;
-    unsigned int PersistentSize;
-    std::vector<Record *> Persistent;
-    std::vector<unsigned int> PersistentSizes;
-    unsigned int VWDSize;
-    std::vector<Record *> VWD;
-    std::vector<unsigned int> VWDSizes;
-    unsigned int TemporarySize;
-    std::vector<Record *> Temporary;
-    std::vector<unsigned int> TemporarySizes;
     };

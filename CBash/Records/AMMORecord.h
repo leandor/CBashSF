@@ -154,11 +154,10 @@ class AMMORecord : public Record
         void SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned short FieldValue);
 
-
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();
         unsigned int GetType() {return eAMMO;}
-        int WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
         bool IsNotNormalWeapon()
             {
             return (DATA.value.flags & fIsNotNormalWeapon) != 0;

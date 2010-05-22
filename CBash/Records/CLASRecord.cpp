@@ -111,7 +111,7 @@ unsigned int CLASRecord::GetSize()
     return TotSize;
     }
 
-int CLASRecord::WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer)
+int CLASRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
     {
     if(EDID.IsLoaded())
         _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);

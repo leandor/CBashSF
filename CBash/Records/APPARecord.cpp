@@ -138,7 +138,7 @@ unsigned int APPARecord::GetSize()
     return TotSize;
     }
 
-int APPARecord::WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer)
+int APPARecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
     {
     if(EDID.IsLoaded())
         _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);

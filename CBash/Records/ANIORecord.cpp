@@ -111,7 +111,7 @@ unsigned int ANIORecord::GetSize()
     return TotSize;
     }
 
-int ANIORecord::WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer)
+int ANIORecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
     {
     if(EDID.IsLoaded())
         _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);

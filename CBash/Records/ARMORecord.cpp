@@ -260,7 +260,7 @@ unsigned int ARMORecord::GetSize()
     return TotSize;
     }
 
-int ARMORecord::WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer)
+int ARMORecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
     {
     if(EDID.IsLoaded())
         _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);

@@ -110,7 +110,7 @@ unsigned int BSGNRecord::GetSize()
     return TotSize;
     }
 
-int BSGNRecord::WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer)
+int BSGNRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
     {
     if(EDID.IsLoaded())
         _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);

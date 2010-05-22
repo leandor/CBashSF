@@ -161,7 +161,7 @@ unsigned int CONTRecord::GetSize()
     return TotSize;
     }
 
-int CONTRecord::WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer)
+int CONTRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
     {
     if(EDID.IsLoaded())
         _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);

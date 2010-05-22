@@ -203,7 +203,7 @@ unsigned int CELLRecord::GetSize()
     return TotSize;
     }
 
-int CELLRecord::WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer)
+int CELLRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
     {
     if(EDID.IsLoaded())
         _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);

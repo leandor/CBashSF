@@ -356,7 +356,7 @@ unsigned int CREARecord::GetSize()
     return TotSize;
     }
 
-int CREARecord::WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer)
+int CREARecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
     {
     unsigned int cSize = 0;
     if(EDID.IsLoaded())

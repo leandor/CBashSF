@@ -152,7 +152,7 @@ unsigned int CLMTRecord::GetSize()
     return TotSize;
     }
 
-int CLMTRecord::WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer)
+int CLMTRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
     {
     if(EDID.IsLoaded())
         _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);

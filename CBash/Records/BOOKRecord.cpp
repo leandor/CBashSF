@@ -165,7 +165,7 @@ unsigned int BOOKRecord::GetSize()
     return TotSize;
     }
 
-int BOOKRecord::WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer)
+int BOOKRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
     {
     if(EDID.IsLoaded())
         _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);
