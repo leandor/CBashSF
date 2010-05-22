@@ -129,7 +129,7 @@ unsigned int HAIRRecord::GetSize()
     return TotSize;
     }
 
-int HAIRRecord::WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer)
+int HAIRRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
     {
     if(EDID.IsLoaded())
         _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);

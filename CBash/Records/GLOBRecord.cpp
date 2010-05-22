@@ -93,7 +93,7 @@ unsigned int GLOBRecord::GetSize()
     return TotSize;
     }
 
-int GLOBRecord::WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer)
+int GLOBRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
     {
 
     if(EDID.IsLoaded())

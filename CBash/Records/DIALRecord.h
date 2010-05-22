@@ -112,7 +112,7 @@ class DIALRecord : public Record
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();
         unsigned int GetType() {return eDIAL;}
-        int WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
 
         bool IsTopic()
             {
@@ -199,13 +199,4 @@ class DIALRecord : public Record
             {
             DATA.value.flags = Type;
             }
-    };
-
-
-struct WritableDialogue
-    {
-    unsigned int CellSize;
-    DIALRecord *curRecord;
-    unsigned int ChildrenSize;
-    std::vector<unsigned int> ChildrenSizes;
     };

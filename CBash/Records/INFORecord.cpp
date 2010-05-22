@@ -235,7 +235,7 @@ unsigned int INFORecord::GetSize()
     return TotSize;
     }
 
-int INFORecord::WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer)
+int INFORecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
     {
     if(DATA.IsLoaded())
         _writeSubRecord(buffer, eDATA, DATA.GetSize(), &DATA.value, usedBuffer);

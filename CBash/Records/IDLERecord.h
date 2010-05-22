@@ -211,7 +211,7 @@ class IDLERecord : public Record
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();
         unsigned int GetType() {return eIDLE;}
-        int WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
         bool IsLowerBody()
             {
             return ((ANAM.value.group & 0x0F) == eLowerBody);

@@ -320,7 +320,7 @@ class CSTYRecord : public Record
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();
         unsigned int GetType() {return eCSTY;}
-        int WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
         bool IsUseAdvanced()
             {
             return (CSTD.value.flagsA & fIsUseAdvanced) != 0;

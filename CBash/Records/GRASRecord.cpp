@@ -111,7 +111,7 @@ unsigned int GRASRecord::GetSize()
     return TotSize;
     }
 
-int GRASRecord::WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer)
+int GRASRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
     {
     if(EDID.IsLoaded())
         _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);

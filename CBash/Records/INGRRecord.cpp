@@ -201,7 +201,7 @@ unsigned int INGRRecord::GetSize()
     return TotSize;
     }
 
-int INGRRecord::WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer)
+int INGRRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
     {
     if(EDID.IsLoaded())
         _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);

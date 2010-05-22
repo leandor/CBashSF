@@ -108,7 +108,7 @@ unsigned int LVSPRecord::GetSize()
     return TotSize;
     }
 
-int LVSPRecord::WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer)
+int LVSPRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
     {
     if(EDID.IsLoaded())
         _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);

@@ -72,7 +72,7 @@ unsigned int CSTYRecord::GetSize()
     return TotSize;
     }
 
-int CSTYRecord::WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer)
+int CSTYRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
     {
     if(EDID.IsLoaded())
         _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);

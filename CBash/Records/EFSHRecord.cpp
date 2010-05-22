@@ -102,7 +102,7 @@ unsigned int EFSHRecord::GetSize()
     return TotSize;
     }
 
-int EFSHRecord::WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer)
+int EFSHRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
     {
     if(EDID.IsLoaded())
         _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);

@@ -165,7 +165,7 @@ unsigned int DOORRecord::GetSize()
     return TotSize;
     }
 
-int DOORRecord::WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer)
+int DOORRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
     {
     if(EDID.IsLoaded())
         _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);

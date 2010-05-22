@@ -168,7 +168,7 @@ unsigned int FACTRecord::GetSize()
     return TotSize;
     }
 
-int FACTRecord::WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer)
+int FACTRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
     {
     if(EDID.IsLoaded())
         _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);

@@ -102,7 +102,7 @@ unsigned int DIALRecord::GetSize()
     return TotSize;
     }
 
-int DIALRecord::WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer)
+int DIALRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
     {
     if(EDID.IsLoaded())
         _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);

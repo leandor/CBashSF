@@ -107,7 +107,7 @@ unsigned int LSCRRecord::GetSize()
     return TotSize;
     }
 
-int LSCRRecord::WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer)
+int LSCRRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
     {
     if(EDID.IsLoaded())
         _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);

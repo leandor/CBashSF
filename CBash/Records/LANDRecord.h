@@ -328,8 +328,8 @@ class LANDRecord : public Record
         LANDRecord *EastLand;
         LANDRecord *NorthLand;
         LANDRecord *SouthLand;
-        LANDRecord(bool newRecord=false):Record(newRecord), WestLand(NULL), EastLand(NULL), NorthLand(NULL), SouthLand(NULL) {}
-        LANDRecord(const unsigned int &newFormID):Record(newFormID), WestLand(NULL), EastLand(NULL), NorthLand(NULL), SouthLand(NULL) {}
+        LANDRecord(bool newRecord=false):Record(newRecord), WestLand(NULL), EastLand(NULL), NorthLand(NULL), SouthLand(NULL) {IsCompressed(true);}
+        LANDRecord(const unsigned int &newFormID):Record(newFormID), WestLand(NULL), EastLand(NULL), NorthLand(NULL), SouthLand(NULL) {IsCompressed(true);}
         LANDRecord(LANDRecord *srcRecord):Record(true), WestLand(NULL), EastLand(NULL), NorthLand(NULL), SouthLand(NULL)
             {
             flags = srcRecord->flags;
@@ -444,5 +444,5 @@ class LANDRecord : public Record
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();
         unsigned int GetType() {return eLAND;}
-        int WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
     };

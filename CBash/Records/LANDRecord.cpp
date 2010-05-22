@@ -199,7 +199,7 @@ unsigned int LANDRecord::GetSize()
     return TotSize;
     }
 
-int LANDRecord::WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer)
+int LANDRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
     {
     if(DATA.IsLoaded())
         _writeSubRecord(buffer, eDATA, DATA.GetSize(), DATA.value, usedBuffer);

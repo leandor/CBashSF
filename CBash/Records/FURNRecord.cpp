@@ -129,7 +129,7 @@ unsigned int FURNRecord::GetSize()
     return TotSize;
     }
 
-int FURNRecord::WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer)
+int FURNRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
     {
     if(EDID.IsLoaded())
         _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);

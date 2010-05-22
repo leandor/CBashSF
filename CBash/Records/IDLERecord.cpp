@@ -138,7 +138,7 @@ unsigned int IDLERecord::GetSize()
     return TotSize;
     }
 
-int IDLERecord::WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer)
+int IDLERecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
     {
     if(EDID.IsLoaded())
         _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);
