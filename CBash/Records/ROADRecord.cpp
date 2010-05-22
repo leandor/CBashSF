@@ -106,7 +106,7 @@ unsigned int ROADRecord::GetSize()
     return TotSize;
     }
 
-int ROADRecord::WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer)
+int ROADRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
     {
     if(PGRP.size())
         _writeSubRecord(buffer, ePGRP, sizeof(GENPGRP) * (unsigned int)PGRP.size(), &PGRP[0], usedBuffer);
@@ -114,7 +114,6 @@ int ROADRecord::WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBu
         _writeSubRecord(buffer, ePGRR, sizeof(ROADPGRR) * (unsigned int)PGRR.size(), &PGRR[0], usedBuffer);
     return -1;
     }
-
 
 #ifdef _DEBUG
 void ROADRecord::Debug(int debugLevel)

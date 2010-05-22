@@ -1483,7 +1483,7 @@ def TestSCPT():
             print "  name    :", var.name
         print "references"
         for reference in record.references:
-            if(reference.isSCRO):
+            if(reference.IsSCRO):
                 print "  SCRO: %08X" % reference.reference
             else:
                 print "  SCRV:", reference.reference
@@ -1530,17 +1530,17 @@ def TestSCPT():
         
     newReference = newRecord.newReferencesElement()
     newReference.reference = 7
-    newReference.isSCRO = True
+    newReference.IsSCRO = True
 
     newReference = newRecord.newReferencesElement()
     newReference.reference = 8
-    newReference.isSCRO = False
+    newReference.IsSCRO = False
     newReference = newRecord.newReferencesElement()
     newReference.reference = 9
-    newReference.isSCRO = 1
+    newReference.IsSCRO = 1
     newReference = newRecord.newReferencesElement()
     newReference.reference = 10
-    newReference.isSCRO =0
+    newReference.IsSCRO =0
 
     print "SCPT:Set Test Results"
     print
@@ -1566,7 +1566,7 @@ def TestSCPT():
         print "  name    :", var.name
     print "references   :"
     for reference in newRecord.references:
-        if(reference.isSCRO):
+        if(reference.IsSCRO):
             print "  SCRO: %08X" % reference.reference
         else:
             print "  SCRV:", reference.reference
@@ -3595,14 +3595,14 @@ def TestNPC_():
         print "factions"
         for faction in record.factions:
              print "  %i: Faction: %08X, Rank: %i, Unused1:" % (faction._listIndex, faction.faction, faction.rank), faction.unused1
-        print "deathItem : %08X" % record.deathItem
-        print "race      : %08X" % record.race
+        print "deathItem : %08X" % (record.deathItem or 0)
+        print "race      : %08X" % (record.race or 0)
         
         print "spells    :"
         for spell in record.spells:
             print "  %08X" % spell
             
-        print "script    : %08X" % record.script
+        print "script    : %08X" % (record.script or 0)
         print "items     :"
         for item in record.items:
             print "  %i: item: %08X, count: %i" % (item._listIndex, item.item, item.count)
@@ -3623,7 +3623,7 @@ def TestNPC_():
         for animation in record.animations:
             print "  ", animation
         
-        print "iclass         : %08X" % record.iclass
+        print "iclass         : %08X" % (record.iclass or 0)
         print "armorer      :", record.armorer
         print "athletics    :", record.athletics
         print "blade        :", record.blade
@@ -3655,14 +3655,14 @@ def TestNPC_():
         print "endurance    :", record.endurance
         print "personality  :", record.personality
         print "luck         :", record.luck
-        print "hair        : %08X" % record.hair
+        print "hair        : %08X" % (record.hair or 0)
         print "hairLength  :", record.hairLength
-        print "eye         : %08X" % record.eye
+        print "eye         : %08X" % (record.eye or 0)
         print "hairRed     :", record.hairRed
         print "hairGreen   :", record.hairGreen
         print "hairBlue    :", record.hairBlue
         print "unused3     :", record.unused3
-        print "combatStyle : %08X" % record.combatStyle
+        print "combatStyle : %08X" % (record.combatStyle or 0)
         print "fggs_p :", record.fggs_p
         print "fgga_p :", record.fgga_p
         print "fgts_p :", record.fgts_p
@@ -6386,6 +6386,7 @@ def TestCELL():
             print "  rotZ              :", refr.rotZ
             break
 
+        print "Pathgrid"
         pgrd = record.PGRD
         if(pgrd != None):
             print
@@ -6554,55 +6555,6 @@ def TestCELL():
     newObjRef.rotY = 1
     newObjRef.rotZ = 11.2
     
-    newObjRef = newRecord.createREFRRecord()
-
-    newObjRef.eid = "WarREFRTest"    
-    newObjRef.base = 7
-    newObjRef.destinationFormID = 8
-    newObjRef.destinationPosX = 1
-    newObjRef.destinationPosY = 2
-    newObjRef.destinationPosZ = 3
-    newObjRef.destinationRotX = 4
-    newObjRef.destinationRotY = 5
-    newObjRef.destinationRotZ = 6
-    newObjRef.lockLevel = 5
-    newObjRef.unused1 = [1,2,3]
-    newObjRef.lockKey = 14
-    newObjRef.unused2 = [1,2,3,4]
-    newObjRef.lockFlags = 1
-    newObjRef.unused3 = [1,2,3]
-    newObjRef.owner = 15
-    newObjRef.rank = 1
-    newObjRef.globalVariable = 2
-    newObjRef.parent = 16
-    newObjRef.parentFlags = 1
-    newObjRef.unused4 = [1, 2, 3]
-    newObjRef.targetFormID = 17
-    newObjRef.seedOffset = 1
-    newObjRef.lod1 = 1
-    newObjRef.lod2 = 2
-    newObjRef.lod3 = 3
-    newObjRef.charge = 4
-    newObjRef.health = 5
-    newObjRef.unknownXPCIFormID = 6
-    newObjRef.unknownXPCIString = "blah?"
-    newObjRef.levelMod = 7
-    newObjRef.unknownXRTMFormID = 8
-    newObjRef.actionFlags = 1
-    newObjRef.count = 10
-    newObjRef.markerFlags = 1
-    newObjRef.markerName = "Marker!"
-    newObjRef.markerType = 1
-    newObjRef.markerUnused = [1]
-    newObjRef.scale = 1.2
-    newObjRef.soul = 6
-    newObjRef.posX = 5
-    newObjRef.posY = 4
-    newObjRef.posZ = 3 
-    newObjRef.rotX = 2
-    newObjRef.rotY = 1
-    newObjRef.rotZ = 11.2
-
     print "pathgrid..."
     newPgrd = newRecord.createPGRDRecord()
     newPgrd.count = 5
@@ -6977,7 +6929,6 @@ def TestWRLD():
         print "flags2  :", record.flags2
         print "eid     :", record.eid
 
-   
         print "full      :", record.full
         formID = record.parent
         if(formID != None):
@@ -7008,7 +6959,9 @@ def TestWRLD():
         print "unknown91 :", record.unknown91
         print "sound     :", record.sound
 ##        print "ofst_p    :", record.ofst_p
-        for wrldCell in record.CELLS:
+        print "World CELL"
+        wrldCell = record.CELL
+        if(wrldCell != None):
             print
             print "fid     : %08X" % wrldCell.fid
             print "flags1  :", wrldCell.flags1
@@ -7401,6 +7354,411 @@ def TestWRLD():
                         print "        layer8Opacity :", cColumn.layer8Opacity
                         print
                         
+            
+        for wrldCell in record.CELLS:
+            print
+            print "fid     : %08X" % wrldCell.fid
+            print "flags1  :", wrldCell.flags1
+            print "flags2  :", wrldCell.flags2
+            print "eid     :", wrldCell.eid
+
+            print "full             :", wrldCell.full
+            print "flags            :", wrldCell.flags
+            print "ambientRed       :", wrldCell.ambientRed
+            print "ambientGreen     :", wrldCell.ambientGreen
+            print "ambientBlue      :", wrldCell.ambientBlue
+            print "unused1          :", wrldCell.unused1
+            print "directionalRed   :", wrldCell.directionalRed
+            print "directionalGreen :", wrldCell.directionalGreen
+            print "directionalBlue  :", wrldCell.directionalBlue
+            print "unused2          :", wrldCell.unused2
+            print "fogRed           :", wrldCell.fogRed
+            print "fogGreen         :", wrldCell.fogGreen
+            print "fogBlue          :", wrldCell.fogBlue
+            print "unused3          :", wrldCell.unused3
+            print "fogNear          :", wrldCell.fogNear
+            print "fogFar           :", wrldCell.fogFar
+            print "directionalXY    :", wrldCell.directionalXY
+            print "directionalZ     :", wrldCell.directionalZ
+            print "directionalFade  :", wrldCell.directionalFade
+            print "fogClip          :", wrldCell.fogClip
+            print "music            :", wrldCell.music
+            formID = wrldCell.owner
+            if(formID != None):
+                print "owner            : %08X" % formID
+            else:
+                print "owner            :", formID
+                
+            print "rank             :", wrldCell.rank
+            formID = wrldCell.globalVariable
+            if(formID != None):
+                print "globalVariable   : %08X" % formID
+            else:
+                print "globalVariable   :", formID        
+            print "climate          : %08X" % wrldCell.climate
+            print "waterHeight      :", wrldCell.waterHeight
+            print "regions          :", wrldCell.regions
+            print "posX             :", wrldCell.posX
+            print "posY             :", wrldCell.posY
+            print "water            : %08X" % wrldCell.water
+
+            print "Placed NPCs"
+            for achr in wrldCell.ACHR:
+                print
+                print "  fid    : %08X" % achr.fid
+                print "  flags1 :", achr.flags1
+                print "  flags2 :", achr.flags2
+                print "  eid    :", achr.eid
+                
+                print "  base              : %08X" % achr.base
+                formID = achr.unknownXPCIFormID
+                if(formID != None):
+                    print "  unknownXPCIFormID : %08X" % formID
+                else:
+                    print "  unknownXPCIFormID :", formID
+                print "  unknownXPCIString :", achr.unknownXPCIString
+                print "  lod1              :", achr.lod1
+                print "  lod2              :", achr.lod2
+                print "  lod3              :", achr.lod3
+                formID = achr.parent
+                if(formID != None):
+                    print "  parent            : %08X" % formID
+                else:
+                    print "  parent            :", formID
+                print "  parentFlags       :", achr.parentFlags
+                print "  unused1           :", achr.unused1
+                formID = achr.merchantContainer
+                if(formID != None):
+                    print "  merchantContainer : %08X" % formID
+                else:
+                    print "  merchantContainer :", formID
+                formID = achr.horse
+                if(formID != None):
+                    print "  horse             : %08X" % formID
+                else:
+                    print "  horse             :", formID
+                print "  xrgd_p            :", achr.xrgd_p
+                print "  scale             :", achr.scale
+                print "  posX              :", achr.posX
+                print "  posY              :", achr.posY
+                print "  posZ              :", achr.posZ
+                print "  rotX              :", achr.rotX
+                print "  rotY              :", achr.rotY
+                print "  rotZ              :", achr.rotZ
+                break
+
+            print "Placed Creatures"
+            for acre in wrldCell.ACRE:
+                print
+                print "  fid    : %08X" % acre.fid
+                print "  flags1 :", acre.flags1
+                print "  flags2 :", acre.flags2
+                print "  eid    :", acre.eid
+
+                print "  base           : %08X" % acre.base
+                formID = acre.owner
+                if(formID != None):
+                    print "  owner          : %08X" % formID
+                else:
+                    print "  owner          :", formID
+                    
+                print "  rank           :", acre.rank
+                formID = acre.globalVariable
+                if(formID != None):
+                    print "  globalVariable : %08X" % formID
+                else:
+                    print "  globalVariable :", formID
+                formID = acre.parent
+                if(formID != None):
+                    print "  parent         : %08X" % formID
+                else:
+                    print "  parent         :", formID
+                print "  parentFlags    :", acre.parentFlags
+                print "  unused1        :", acre.unused1
+                print "  xrgd_p         :", acre.xrgd_p
+                print "  scale          :", acre.scale
+                print "  posX           :", acre.posX
+                print "  posY           :", acre.posY
+                print "  posZ           :", acre.posZ
+                print "  rotX           :", acre.rotX
+                print "  rotY           :", acre.rotY
+                print "  rotZ           :", acre.rotZ
+                break
+
+            print "Placed Objects"
+            for refr in wrldCell.REFR:
+                print
+                print "  fid    : %08X" % refr.fid
+                print "  flags1 :", refr.flags1
+                print "  flags2 :", refr.flags2
+                print "  eid    :", refr.eid
+                formID = refr.base
+                if(formID != None):
+                    print "  base              : %08X" % formID
+                else:
+                    print "  base              :", formID
+                formID = refr.destinationFormID
+                if(formID != None):
+                    print "  destinationFormID : %08X" % formID
+                else:
+                    print "  destinationFormID :", formID
+
+                print "  destinationPosX   :", refr.destinationPosX
+                print "  destinationPosY   :", refr.destinationPosY
+                print "  destinationPosZ   :", refr.destinationPosZ
+                print "  destinationRotX   :", refr.destinationRotX
+                print "  destinationRotY   :", refr.destinationRotY
+                print "  destinationRotZ   :", refr.destinationRotZ
+                print "  lockLevel         :", refr.lockLevel
+                print "  unused1           :", refr.unused1
+
+                formID = refr.lockKey
+                if(formID != None):
+                    print "  lockKey           : %08X" % formID
+                else:
+                    print "  lockKey           :", formID
+
+                print "  unused2           :", refr.unused2
+                print "  lockFlags         :", refr.lockFlags
+                print "  unused3           :", refr.unused3
+                formID = refr.owner
+                if(formID != None):
+                    print "  owner             : %08X" % formID
+                else:
+                    print "  owner             :", formID
+                    
+                print "  rank              :", refr.rank
+                formID = refr.globalVariable
+                if(formID != None):
+                    print "  globalVariable    : %08X" % formID
+                else:
+                    print "  globalVariable    :", formID
+                formID = refr.parent
+                if(formID != None):
+                    print "  parent            : %08X" % formID
+                else:
+                    print "  parent            :", formID
+                print "  parentFlags       :", refr.parentFlags
+                print "  unused4           :", refr.unused4
+                formID = refr.targetFormID
+                if(formID != None):
+                    print "  targetFormID      : %08X" % formID
+                else:
+                    print "  targetFormID      :", formID
+                print "  seed              :", refr.seed
+                print "  seedOffset        :", refr.seedOffset
+                print "  lod1              :", refr.lod1
+                print "  lod2              :", refr.lod2
+                print "  lod3              :", refr.lod3
+                print "  charge            :", refr.charge
+                print "  health            :", refr.health
+                formID = refr.unknownXPCIFormID
+                if(formID != None):
+                    print "  unknownXPCIFormID : %08X" % formID
+                else:
+                    print "  unknownXPCIFormID :", formID
+                print "  unknownXPCIString :", refr.unknownXPCIString
+                print "  levelMod          :", refr.levelMod
+                formID = refr.unknownXRTMFormID
+                if(formID != None):
+                    print "  unknownXRTMFormID : %08X" % formID
+                else:
+                    print "  unknownXRTMFormID :", formID
+                print "  actionFlags       :", refr.actionFlags
+                print "  count             :", refr.count
+                print "  markerFlags       :", refr.markerFlags
+                print "  markerName        :", refr.markerName
+                print "  markerType        :", refr.markerType
+                print "  markerUnused      :", refr.markerUnused
+                print "  scale             :", refr.scale
+                print "  soul              :", refr.soul
+                print "  posX              :", refr.posX
+                print "  posY              :", refr.posY
+                print "  posZ              :", refr.posZ
+                print "  rotX              :", refr.rotX
+                print "  rotY              :", refr.rotY
+                print "  rotZ              :", refr.rotZ
+                break
+
+            pgrd = wrldCell.PGRD
+            if(pgrd != None):
+                print
+                print "  PGRD"
+                print "  fid    : %08X" % pgrd.fid
+                print "  flags1 :", pgrd.flags1
+                print "  flags2 :", pgrd.flags2
+
+                print "  count :", pgrd.count
+                print "  PGRP"
+                for pgrp in pgrd.PGRP:
+                    print "    x           :", pgrp.x
+                    print "    y           :", pgrp.y
+                    print "    z           :", pgrp.z
+                    print "    connections :", pgrp.connections
+                    print "    unused1     :", pgrp.unused1
+                    break
+
+                print "  PGAG :", pgrd.PGAG
+                print "  PGRR :", pgrd.PGRR
+                print "  PGRI"
+                for pgri in pgrd.PGRI:
+                    print "    point   :", pgri.point
+                    print "    unused1 :", pgri.unused1
+                    print "    x       :", pgri.x
+                    print "    y       :", pgri.y
+                    print "    z       :", pgri.z
+                    break
+                print "  PGRL"
+                for pgrl in pgrd.PGRL:
+                    print "    reference : %08X" % pgrl.reference
+                    print "    points"
+                    for point in pgrl.points:
+                        print "      ", point
+                    break
+            cLand = wrldCell.LAND
+            if(cLand != None):
+                print
+                print "  LAND"
+                print "  fid    : %08X" % cLand.fid
+                print "  flags1 :", cLand.flags1
+                print "  flags2 :", cLand.flags2
+
+
+                print "  data         :", cLand.data
+                print "  normals"
+                for cRow in cLand.normals:
+                    for cColumn in cRow:
+                        print "    Co-ords : ", cColumn._listIndex, ",", cColumn._listX2Index
+                        print "        x   :", cColumn.x
+                        print "        y   :", cColumn.y
+                        print "        z   :", cColumn.z
+                        print
+                        break
+                    break
+                print "  heightOffset :", cLand.heightOffset
+                print "  heights"
+                for cRow in cLand.heights:
+                    for cColumn in cRow:
+                        print "    Co-ords    : ", cColumn._listIndex, ",", cColumn._listX2Index
+                        print "        height :", cColumn.height
+                        print
+                        break
+                    break
+                print "  unused1      :", cLand.unused1
+                print "  colors"
+                for cRow in cLand.colors:
+                    for cColumn in cRow:
+                        print "    Co-ords   : ", cColumn._listIndex, ",", cColumn._listX2Index
+                        print "        red   :", cColumn.red
+                        print "        green :", cColumn.green
+                        print "        blue  :", cColumn.blue
+                        print
+                        break
+                    break
+                print "  baseTextures"
+                for baseTexture in cLand.baseTextures:
+                    print "    texture  : %08X" % baseTexture.texture
+                    print "    quadrant :", baseTexture.quadrant
+                    print "    unused1  :", baseTexture.unused1
+                    print "    layer    :", baseTexture.layer
+                    print
+                    break
+                print "  alphaLayers"
+                for alphaLayer in cLand.alphaLayers:
+                    print "    texture  : %08X" % alphaLayer.texture
+                    print "    quadrant :", alphaLayer.quadrant
+                    print "    unused1  :", alphaLayer.unused1
+                    print "    layer    :", alphaLayer.layer
+                    print "    opacities"
+                    for cOpacity in alphaLayer.opacities:
+                        print "      position :", cOpacity.position
+                        print "      unused1  :", cOpacity.unused1
+                        print "      opacity  :", cOpacity.opacity
+                        print
+                        break
+                    print
+                    break
+                print "  vertexTextures"
+                for vertexTexture in cLand.vertexTextures:
+                    print "    texture  : %08X" % vertexTexture.texture
+                    print
+                    break
+
+                print "  Position"
+                for cRow in cLand.Position:
+                    for cColumn in cRow:
+                        print "    Co-ords row:", cColumn._listIndex, ", col:", cColumn._listX2Index
+                        print "        height        :", cColumn.height
+                        print "        normalX       :", cColumn.normalX
+                        print "        normalY       :", cColumn.normalY
+                        print "        normalZ       :", cColumn.normalZ
+                        print "        red           :", cColumn.red
+                        print "        green         :", cColumn.green
+                        print "        blue          :", cColumn.blue
+                        formID = cColumn.baseTexture
+                        if(formID != None):
+                            print "        baseTexture   : %08X" % formID
+                        else:
+                            print "        baseTexture   :", formID
+                            
+                        formID = cColumn.layer1Texture
+                        if(formID != None):
+                            print "        layer1Texture : %08X" % formID
+                        else:
+                            print "        layer1Texture :", formID
+                        print "        layer1Opacity :", cColumn.layer1Opacity
+                        
+                        formID = cColumn.layer2Texture
+                        if(formID != None):
+                            print "        layer2Texture : %08X" % formID
+                        else:
+                            print "        layer2Texture :", formID
+                        print "        layer2Opacity :", cColumn.layer2Opacity
+                       
+                        formID = cColumn.layer3Texture
+                        if(formID != None):
+                            print "        layer3Texture : %08X" % formID
+                        else:
+                            print "        layer3Texture :", formID
+                        print "        layer3Opacity :", cColumn.layer3Opacity
+                        
+                        formID = cColumn.layer4Texture
+                        if(formID != None):
+                            print "        layer4Texture : %08X" % formID
+                        else:
+                            print "        layer4Texture :", formID
+                        print "        layer4Opacity :", cColumn.layer4Opacity
+                        
+                        formID = cColumn.layer5Texture
+                        if(formID != None):
+                            print "        layer5Texture : %08X" % formID
+                        else:
+                            print "        layer5Texture :", formID
+                        print "        layer5Opacity :", cColumn.layer5Opacity
+                        
+                        formID = cColumn.layer6Texture
+                        if(formID != None):
+                            print "        layer6Texture : %08X" % formID
+                        else:
+                            print "        layer6Texture :", formID
+                        print "        layer6Opacity :", cColumn.layer6Opacity
+                        
+                        formID = cColumn.layer7Texture
+                        if(formID != None):
+                            print "        layer7Texture : %08X" % formID
+                        else:
+                            print "        layer7Texture :", formID
+                        print "        layer7Opacity :", cColumn.layer7Opacity
+                        
+                        formID = cColumn.layer8Texture
+                        if(formID != None):
+                            print "        layer8Texture : %08X" % formID
+                        else:
+                            print "        layer8Texture :", formID
+                        print "        layer8Opacity :", cColumn.layer8Opacity
+                        print
+                        break
+                    break
             break
         break
 
@@ -7464,11 +7822,23 @@ def TestWRLD():
         trgWrld = record.CopyAsOverride(newMod)
         road = record.ROAD
         if(road != None): road.CopyAsOverride(trgWrld)
+        cell = record.CELL
+        if(cell != None):
+            trgCell = cell.CopyAsOverride(trgWrld,isWorldCell=True)
+            cLand = cell.LAND
+            if(cLand != None): cLand.CopyAsOverride(trgCell)
+            for npcRef in cell.ACHR:
+                npcRef.CopyAsOverride(trgCell)
+            for creaRef in cell.ACRE:
+                creaRef.CopyAsOverride(trgCell)
+            for objRef in cell.REFR:
+                objRef.CopyAsOverride(trgCell)
+            Pgrd = cell.PGRD
+            if(Pgrd != None): Pgrd.CopyAsOverride(trgCell)
         for wrldCell in record.CELLS:
             trgCell = wrldCell.CopyAsOverride(trgWrld)
             cLand = wrldCell.LAND
-            if(cLand):
-                cLand.CopyAsOverride(trgCell)
+            if(cLand != None): cLand.CopyAsOverride(trgCell)
             for npcRef in wrldCell.ACHR:
                 npcRef.CopyAsOverride(trgCell)
             for creaRef in wrldCell.ACRE:
@@ -7476,27 +7846,26 @@ def TestWRLD():
             for objRef in wrldCell.REFR:
                 objRef.CopyAsOverride(trgCell)
             Pgrd = wrldCell.PGRD
-            if(Pgrd): Pgrd.CopyAsOverride(trgCell)
+            if(Pgrd != None): Pgrd.CopyAsOverride(trgCell)
         
-
-    print "WRLD:CopyAsNew Test"
-    for record in Current[0].WRLD:
-        trgWrld = record.CopyAsNew(newMod)
-        road = record.ROAD
-        if(road != None): road.CopyAsNew(trgWrld)
-        for wrldCell in record.CELLS:
-            cLand = wrldCell.LAND
-            if(cLand):
-                trgCell = wrldCell.CopyAsNew(trgWrld)
-                cLand.CopyAsNew(trgCell)
-            for npcRef in wrldCell.ACHR:
-                npcRef.CopyAsNew(trgCell)
-            for creaRef in wrldCell.ACRE:
-                creaRef.CopyAsNew(trgCell)
-            for objRef in wrldCell.REFR:
-                objRef.CopyAsNew(trgCell)
-            Pgrd = wrldCell.PGRD
-            if(Pgrd): Pgrd.CopyAsNew(trgCell)
+##    print "WRLD:CopyAsNew Test"
+##    for record in Current[0].WRLD:
+##        trgWrld = record.CopyAsNew(newMod)
+##        road = record.ROAD
+##        if(road != None): road.CopyAsNew(trgWrld)
+##        for wrldCell in record.CELLS:
+##            cLand = wrldCell.LAND
+##            if(cLand):
+##                trgCell = wrldCell.CopyAsNew(trgWrld)
+##                cLand.CopyAsNew(trgCell)
+##            for npcRef in wrldCell.ACHR:
+##                npcRef.CopyAsNew(trgCell)
+##            for creaRef in wrldCell.ACRE:
+##                creaRef.CopyAsNew(trgCell)
+##            for objRef in wrldCell.REFR:
+##                objRef.CopyAsNew(trgCell)
+##            Pgrd = wrldCell.PGRD
+##            if(Pgrd): Pgrd.CopyAsNew(trgCell)
 
     print "WRLD:Save Test - TestWRLD.esp"
     newMod.safeSave()
@@ -7530,9 +7899,9 @@ def TestDIAL():
             print "  dialType     :", info.dialType
             print "  flags        :", info.flags
             print "  unused1      :", info.unused1
-            print "  quest        : %08X" % info.quest
-            print "  topic        : %08X" % info.topic
-            print "  prevInfo     : %08X" % info.prevInfo
+            print "  quest        : %08X" % (info.quest or 0)
+            print "  topic        : %08X" % (info.topic or 0)
+            print "  prevInfo     : %08X" % (info.prevInfo or 0)
             print "  addTopics"
             for topic in info.addTopics:
                 print "    %08X" % topic
@@ -7577,7 +7946,7 @@ def TestDIAL():
             
             print "  references"
             for reference in info.references:
-                if(reference.isSCRO):
+                if(reference.IsSCRO):
                     print "    SCRO: %08X" % reference.reference
                 else:
                     print "    SCRV:", reference.reference
@@ -7693,16 +8062,16 @@ def TestDIAL():
 
     newReference = newInfo.newReferencesElement()
     newReference.reference = 7
-    newReference.isSCRO = True
+    newReference.IsSCRO = True
     newReference = newInfo.newReferencesElement()
     newReference.reference = 8
-    newReference.isSCRO = False
+    newReference.IsSCRO = False
     newReference = newInfo.newReferencesElement()
     newReference.reference = 9
-    newReference.isSCRO = 1
+    newReference.IsSCRO = 1
     newReference = newInfo.newReferencesElement()
     newReference.reference = 10
-    newReference.isSCRO =0
+    newReference.IsSCRO =0
 
     newInfo.references = [newInfo.references[3], newInfo.references[1], newInfo.references[0]]
 
@@ -7885,16 +8254,16 @@ def TestDIAL():
 
     newReference = newInfo.newReferencesElement()
     newReference.reference = 7
-    newReference.isSCRO = True
+    newReference.IsSCRO = True
     newReference = newInfo.newReferencesElement()
     newReference.reference = 8
-    newReference.isSCRO = False
+    newReference.IsSCRO = False
     newReference = newInfo.newReferencesElement()
     newReference.reference = 9
-    newReference.isSCRO = 1
+    newReference.IsSCRO = 1
     newReference = newInfo.newReferencesElement()
     newReference.reference = 10
-    newReference.isSCRO =0
+    newReference.IsSCRO =0
 
     newInfo.references = [newInfo.references[3], newInfo.references[1], newInfo.references[0]]    
         
@@ -7968,7 +8337,7 @@ def TestDIAL():
         
         print "  references"
         for reference in info.references:
-            if(reference.isSCRO):
+            if(reference.IsSCRO):
                 print "    SCRO: %08X" % reference.reference
             else:
                 print "    SCRV:", reference.reference
@@ -8054,7 +8423,7 @@ def TestQUST():
                 print "    scriptText   :", entry.scriptText
                 print "    references"
                 for reference in entry.references:
-                    if(reference.isSCRO):
+                    if(reference.IsSCRO):
                         print "      SCRO: %08X" % reference.reference
                     else:
                         print "      SCRV:", reference.reference
@@ -8192,19 +8561,19 @@ def TestQUST():
     newEntry.scriptText = "10Another futile attempt at making this thing work"
     newReference = newEntry.newReferencesElement()
     newReference.reference = 7
-    newReference.isSCRO = True
+    newReference.IsSCRO = True
     
     newReference = newEntry.newReferencesElement()
     newReference.reference = 8
-    newReference.isSCRO = False
+    newReference.IsSCRO = False
     
     newReference = newEntry.newReferencesElement()
     newReference.reference = 9
-    newReference.isSCRO = False
+    newReference.IsSCRO = False
     
     newReference = newEntry.newReferencesElement()
     newReference.reference = 10
-    newReference.isSCRO = True
+    newReference.IsSCRO = True
 
     newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]    
 
@@ -8259,19 +8628,19 @@ def TestQUST():
     newEntry.scriptText = "20Another futile attempt at making this thing work"
     newReference = newEntry.newReferencesElement()
     newReference.reference = 7
-    newReference.isSCRO = True
+    newReference.IsSCRO = True
     
     newReference = newEntry.newReferencesElement()
     newReference.reference = 8
-    newReference.isSCRO = False
+    newReference.IsSCRO = False
     
     newReference = newEntry.newReferencesElement()
     newReference.reference = 9
-    newReference.isSCRO = False
+    newReference.IsSCRO = False
     
     newReference = newEntry.newReferencesElement()
     newReference.reference = 10
-    newReference.isSCRO = True
+    newReference.IsSCRO = True
 
     newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]
 
@@ -8326,19 +8695,19 @@ def TestQUST():
     newEntry.scriptText = "30Another futile attempt at making this thing work"
     newReference = newEntry.newReferencesElement()
     newReference.reference = 7
-    newReference.isSCRO = True
+    newReference.IsSCRO = True
     
     newReference = newEntry.newReferencesElement()
     newReference.reference = 8
-    newReference.isSCRO = False
+    newReference.IsSCRO = False
     
     newReference = newEntry.newReferencesElement()
     newReference.reference = 9
-    newReference.isSCRO = False
+    newReference.IsSCRO = False
     
     newReference = newEntry.newReferencesElement()
     newReference.reference = 10
-    newReference.isSCRO = True
+    newReference.IsSCRO = True
 
     newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]  
 
@@ -8397,19 +8766,19 @@ def TestQUST():
     newEntry.scriptText = "11Another futile attempt at making this thing work"
     newReference = newEntry.newReferencesElement()
     newReference.reference = 7
-    newReference.isSCRO = True
+    newReference.IsSCRO = True
     
     newReference = newEntry.newReferencesElement()
     newReference.reference = 8
-    newReference.isSCRO = False
+    newReference.IsSCRO = False
     
     newReference = newEntry.newReferencesElement()
     newReference.reference = 9
-    newReference.isSCRO = False
+    newReference.IsSCRO = False
     
     newReference = newEntry.newReferencesElement()
     newReference.reference = 10
-    newReference.isSCRO = True
+    newReference.IsSCRO = True
 
     newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]    
 
@@ -8464,19 +8833,19 @@ def TestQUST():
     newEntry.scriptText = "21Another futile attempt at making this thing work"
     newReference = newEntry.newReferencesElement()
     newReference.reference = 7
-    newReference.isSCRO = True
+    newReference.IsSCRO = True
     
     newReference = newEntry.newReferencesElement()
     newReference.reference = 8
-    newReference.isSCRO = False
+    newReference.IsSCRO = False
     
     newReference = newEntry.newReferencesElement()
     newReference.reference = 9
-    newReference.isSCRO = False
+    newReference.IsSCRO = False
     
     newReference = newEntry.newReferencesElement()
     newReference.reference = 10
-    newReference.isSCRO = True
+    newReference.IsSCRO = True
 
     newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]
 
@@ -8531,19 +8900,19 @@ def TestQUST():
     newEntry.scriptText = "31Another futile attempt at making this thing work"
     newReference = newEntry.newReferencesElement()
     newReference.reference = 7
-    newReference.isSCRO = True
+    newReference.IsSCRO = True
     
     newReference = newEntry.newReferencesElement()
     newReference.reference = 8
-    newReference.isSCRO = False
+    newReference.IsSCRO = False
     
     newReference = newEntry.newReferencesElement()
     newReference.reference = 9
-    newReference.isSCRO = False
+    newReference.IsSCRO = False
     
     newReference = newEntry.newReferencesElement()
     newReference.reference = 10
-    newReference.isSCRO = True
+    newReference.IsSCRO = True
 
     newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]  
 
@@ -8602,19 +8971,19 @@ def TestQUST():
     newEntry.scriptText = "12Another futile attempt at making this thing work"
     newReference = newEntry.newReferencesElement()
     newReference.reference = 7
-    newReference.isSCRO = True
+    newReference.IsSCRO = True
     
     newReference = newEntry.newReferencesElement()
     newReference.reference = 8
-    newReference.isSCRO = False
+    newReference.IsSCRO = False
     
     newReference = newEntry.newReferencesElement()
     newReference.reference = 9
-    newReference.isSCRO = False
+    newReference.IsSCRO = False
     
     newReference = newEntry.newReferencesElement()
     newReference.reference = 10
-    newReference.isSCRO = True
+    newReference.IsSCRO = True
 
     newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]    
 
@@ -8669,19 +9038,19 @@ def TestQUST():
     newEntry.scriptText = "22Another futile attempt at making this thing work"
     newReference = newEntry.newReferencesElement()
     newReference.reference = 7
-    newReference.isSCRO = True
+    newReference.IsSCRO = True
     
     newReference = newEntry.newReferencesElement()
     newReference.reference = 8
-    newReference.isSCRO = False
+    newReference.IsSCRO = False
     
     newReference = newEntry.newReferencesElement()
     newReference.reference = 9
-    newReference.isSCRO = False
+    newReference.IsSCRO = False
     
     newReference = newEntry.newReferencesElement()
     newReference.reference = 10
-    newReference.isSCRO = True
+    newReference.IsSCRO = True
 
     newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]
 
@@ -8736,19 +9105,19 @@ def TestQUST():
     newEntry.scriptText = "32Another futile attempt at making this thing work"
     newReference = newEntry.newReferencesElement()
     newReference.reference = 7
-    newReference.isSCRO = True
+    newReference.IsSCRO = True
     
     newReference = newEntry.newReferencesElement()
     newReference.reference = 8
-    newReference.isSCRO = False
+    newReference.IsSCRO = False
     
     newReference = newEntry.newReferencesElement()
     newReference.reference = 9
-    newReference.isSCRO = False
+    newReference.IsSCRO = False
     
     newReference = newEntry.newReferencesElement()
     newReference.reference = 10
-    newReference.isSCRO = True
+    newReference.IsSCRO = True
 
     newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]  
 
@@ -8936,7 +9305,7 @@ def TestQUST():
             print "    scriptText   :", entry.scriptText
             print "    references"
             for reference in entry.references:
-                if(reference.isSCRO):
+                if(reference.IsSCRO):
                     print "      SCRO: %08X" % reference.reference
                 else:
                     print "      SCRV:", reference.reference
@@ -10250,14 +10619,17 @@ from timeit import Timer
 ##print "Min:%.15f, Avg:%.15f, Max:%.15f" % (mini, avgi, maxi)
 
 ##phonenumber = raw_input(">")
-Current = Collection()
-Current.addMod("Oblivion.esm")
-Current.fullLoad(LoadMasters=True)
-##Current.minimalLoad(LoadMasters=True)
-phonenumber = raw_input(">")
-del Current
-phonenumber = raw_input("!")
-
+##Current = Collection()
+##Current.addMod("Oblivion.esm")
+##fixMod = Current.addMod("Oscuro's_Oblivion_Overhaul.esm")
+####Current.addMod("Oscuro's_Oblivion_Overhaul.esp")
+##Current.fullLoad(LoadMasters=True)
+####Current.minimalLoad(LoadMasters=True)
+####fixMod.TES4.masters = ["Oblivion.esm"]
+##fixMod.safeSave()
+##phonenumber = raw_input(">")
+##del Current
+##phonenumber = raw_input("!")
 
 ##TestReadWriteAll()
 ##TestTES4()
@@ -10306,7 +10678,7 @@ phonenumber = raw_input("!")
 ##TestCLMT()
 ##TestREGN()
 ##TestCELL()
-##TestWRLD()
+TestWRLD()
 ##TestDIAL()
 ##TestQUST()
 ##TestIDLE()

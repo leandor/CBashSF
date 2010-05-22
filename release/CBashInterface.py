@@ -23,16 +23,6 @@ class BaseRecord(object):
     def CopyAsNew(self, targetMod):
         CBash.CopyFIDRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
         return
-    def get_recType(self):
-        CBash.ReadFIDField.restype = POINTER(c_int)
-        return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 0).contents.value
-    def set_recType(self, nValue):
-        CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 0, nValue)
-    recType = property(get_recType, set_recType)
-    @property
-    def size(self):
-        CBash.ReadFIDField.restype = POINTER(c_ulong)
-        return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 1).contents.value
     def get_flags1(self):
         CBash.ReadFIDField.restype = POINTER(c_int)
         return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 2).contents.value
@@ -123,56 +113,6 @@ class BaseRecord(object):
         if (nValue == True): self.flags1 |= 0x00080000
         else: self.flags1 &= ~0x00080000
     IsCantWait = property(get_IsCantWait, set_IsCantWait)
-    
-class SubRecord(object):    
-    def __init__(self, CollectionIndex, ModName, recordID, parentID):
-        self._CollectionIndex = CollectionIndex
-        self._ModName = ModName
-        self._recordID = recordID
-        self._parentID = parentID
-    def LoadRecord(self):
-        CBash.LoadRecord(self._CollectionIndex, self._ModName, self._recordID)
-        return
-    def UnloadRecord(self):
-        CBash.UnloadRecord(self._CollectionIndex, self._ModName, self._recordID)
-        return
-    def DeleteRecord(self):
-        CBash.DeleteRecord(self._CollectionIndex, self._ModName, self._recordID)
-        return
-    def CopyAsOverride(self, targetMod):
-        CBash.CopyFIDRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
-        return
-    def CopyAsNew(self, targetMod):
-        CBash.CopyFIDRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
-        return
-    def get_recType(self):
-        CBash.ReadFIDField.restype = POINTER(c_int)
-        return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 0).contents.value
-    def set_recType(self, nValue):
-        CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 0, nValue)
-    recType = property(get_recType, set_recType)
-    @property
-    def size(self):
-        CBash.ReadFIDField.restype = POINTER(c_ulong)
-        return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 1).contents.value
-    def get_flags1(self):
-        CBash.ReadFIDField.restype = POINTER(c_int)
-        return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 2).contents.value
-    def set_flags1(self, nValue):
-        CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 2, nValue)
-    flags1 = property(get_flags1, set_flags1)
-    def get_fid(self):
-        CBash.ReadFIDField.restype = POINTER(c_int)
-        return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 3).contents.value
-    def set_fid(self, nValue):
-        CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 3, nValue)
-    fid = property(get_fid, set_fid)
-    def get_flags2(self):
-        CBash.ReadFIDField.restype = POINTER(c_int)
-        return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 4).contents.value
-    def set_flags2(self, nValue):
-        CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 4, nValue)
-    flags2 = property(get_flags2, set_flags2)
     
 class TES4Record(object):
     def __init__(self, CollectionIndex, ModName):
@@ -7281,28 +7221,28 @@ class LVLRecord(BaseRecord):
         for oEntry, nValue in zip(self.entries, nValues):
             oEntry.level, oEntry.unused1, oEntry.listId, oEntry.count, oEntry.unused2 = nValue
     entries = property(get_entries, set_entries)
-    def get_CalcFromAllLevels(self):
+    def get_IsCalcFromAllLevels(self):
         return (self.flags & 0x00000001) != 0 or (chanceNone & 0x00000080) != 0
-    def set_CalcFromAllLevels(self, nValue):
+    def set_IsCalcFromAllLevels(self, nValue):
         if (nValue == True):
             chanceNone &= ~0x00000080
             flags |= 0x00000001
         else:
             chanceNone &= ~0x00000080
             flags &= ~0x00000001
-    CalcFromAllLevels = property(get_CalcFromAllLevels, set_CalcFromAllLevels)
-    def get_CalcForEachItem(self):
+    IsCalcFromAllLevels = property(get_IsCalcFromAllLevels, set_IsCalcFromAllLevels)
+    def get_IsCalcForEachItem(self):
         return (self.flags & 0x00000002) != 0
-    def set_CalcForEachItem(self, nValue):
+    def set_IsCalcForEachItem(self, nValue):
         if (nValue == True): self.flags |= 0x00000002
         else: self.flags &= ~0x00000002
-    CalcForEachItem = property(get_CalcForEachItem, set_CalcForEachItem)
-    def get_UseAllSpells(self):
+    IsCalcForEachItem = property(get_IsCalcForEachItem, set_IsCalcForEachItem)
+    def get_IsUseAllSpells(self):
         return (self.flags & 0x00000004) != 0
-    def set_UseAllSpells(self, nValue):
+    def set_IsUseAllSpells(self, nValue):
         if (nValue == True): self.flags |= 0x00000004
         else: self.flags &= ~0x00000004
-    UseAllSpells = property(get_UseAllSpells, set_UseAllSpells)
+    IsUseAllSpells = property(get_IsUseAllSpells, set_IsUseAllSpells)
 
 class LVLCRecord(LVLRecord):
     def CopyAsOverride(self, targetMod):
@@ -9533,29 +9473,39 @@ class REGNRecord(BaseRecord):
     entries = property(get_entries, set_entries)
     
 class CELLRecord(BaseRecord):
-    def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyCELLRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
-        if(FID): return CELLRecord(self._CollectionIndex, targetMod._ModName, FID)
+    def CopyAsOverride(self, target, isWorldCell=False):
+        if isinstance(target, ModFile):
+            FID = CBash.CopyCELLRecord(self._CollectionIndex, self._ModName, self._recordID, target._ModName, 0, c_bool(True), c_bool(False))
+        else:
+            FID = CBash.CopyCELLRecord(self._CollectionIndex, self._ModName, self._recordID, target._ModName, target._recordID, c_bool(True), c_bool(isWorldCell))
+        if(FID): return CELLRecord(self._CollectionIndex, target._ModName, FID)
         return None
-    def CopyAsNew(self, targetMod):
-        FID = CBash.CopyCELLRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
-        if(FID): return CELLRecord(self._CollectionIndex, targetMod._ModName, FID)
+    def CopyAsNew(self, target, isWorldCell=False):
+        if isinstance(target, ModFile):
+            FID = CBash.CopyCELLRecord(self._CollectionIndex, self._ModName, self._recordID, target._ModName, 0, c_bool(False), c_bool(False))
+        else:
+            FID = CBash.CopyCELLRecord(self._CollectionIndex, self._ModName, self._recordID, target._ModName, target._recordID, c_bool(False), c_bool(isWorldCell))
+        if(FID): return CELLRecord(self._CollectionIndex, target._ModName, FID)
         return None
     def createACHRRecord(self):
         FID = CBash.CreateACHRRecord(self._CollectionIndex, self._ModName, self._recordID)
-        if(FID): return ACHRRecord(self._CollectionIndex, self._ModName, FID, self._recordID)
+        if(FID): return ACHRRecord(self._CollectionIndex, self._ModName, FID)
         return None
     def createACRERecord(self):
         FID = CBash.CreateACRERecord(self._CollectionIndex, self._ModName, self._recordID)
-        if(FID): return ACRERecord(self._CollectionIndex, self._ModName, FID, self._recordID)
+        if(FID): return ACRERecord(self._CollectionIndex, self._ModName, FID)
         return None
     def createREFRRecord(self):
         FID = CBash.CreateREFRRecord(self._CollectionIndex, self._ModName, self._recordID)
-        if(FID): return REFRRecord(self._CollectionIndex, self._ModName, FID, self._recordID)
+        if(FID): return REFRRecord(self._CollectionIndex, self._ModName, FID)
         return None
     def createPGRDRecord(self):
         FID = CBash.CreatePGRDRecord(self._CollectionIndex, self._ModName, self._recordID)
-        if(FID): return PGRDRecord(self._CollectionIndex, self._ModName, FID, self._recordID)
+        if(FID): return PGRDRecord(self._CollectionIndex, self._ModName, FID)
+        return None
+    def createLANDRecord(self):
+        FID = CBash.CreateLANDRecord(self._CollectionIndex, self._ModName, self._recordID)
+        if(FID): return LANDRecord(self._CollectionIndex, self._ModName, FID, self._recordID)
         return None
     def get_full(self):
         CBash.ReadFIDField.restype = c_char_p
@@ -9809,7 +9759,7 @@ class CELLRecord(BaseRecord):
         if(numSubRecords > 0):
             cRecords = (POINTER(c_uint) * numSubRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 36, byref(cRecords))
-            return [ACHRRecord(self._CollectionIndex, self._ModName, x.contents.value, self._recordID) for x in cRecords]
+            return [ACHRRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
         else: return []
     @property
     def ACRE(self):
@@ -9817,7 +9767,7 @@ class CELLRecord(BaseRecord):
         if(numSubRecords > 0):
             cRecords = (POINTER(c_uint) * numSubRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 37, byref(cRecords))
-            return [ACRERecord(self._CollectionIndex, self._ModName, x.contents.value, self._recordID) for x in cRecords]
+            return [ACRERecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
         else: return []
     @property
     def REFR(self):
@@ -9825,14 +9775,17 @@ class CELLRecord(BaseRecord):
         if(numSubRecords > 0):
             cRecords = (POINTER(c_uint) * numSubRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 38, byref(cRecords))
-            return [REFRRecord(self._CollectionIndex, self._ModName, x.contents.value, self._recordID) for x in cRecords]
+            return [REFRRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
         else: return []
     def get_PGRD(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 39)
-        if(retValue): return PGRDRecord(self._CollectionIndex, self._ModName, retValue.contents.value, self._recordID)
+        if(retValue): return PGRDRecord(self._CollectionIndex, self._ModName, retValue.contents.value)
         else: return None
     def set_PGRD(self, nPGRD):
+        if(nPGRD == None and self.PGRD != None):
+            self.PGRD.DeleteRecord()
+            return
         curPGRD = self.PGRD
         if(curPGRD == None):
             curPGRD = self.createPGRDRecord()
@@ -9843,6 +9796,28 @@ class CELLRecord(BaseRecord):
         curPGRD.PGRI = nPGRD.PGRI
         curPGRD.PGRL = nPGRD.PGRL
     PGRD = property(get_PGRD, set_PGRD)
+    def get_LAND(self):
+        CBash.ReadFIDField.restype = POINTER(c_uint)
+        retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 40)
+        if(retValue): return LANDRecord(self._CollectionIndex, self._ModName, retValue.contents.value)
+        else: return None
+    def set_LAND(self, nLAND):
+        if(nLAND == None and self.LAND != None):
+            self.LAND.DeleteRecord()
+            return
+        curLAND = self.LAND
+        if(curLAND == None):
+            curLAND = self.createLANDRecord()
+        curLAND.data = nLAND.data
+        curLAND.normals = nLAND.normals
+        curLAND.heights = nLAND.heights
+        curLAND.heightOffset = nLAND.heightOffset
+        curLAND.unused1 = nLAND.unused1
+        curLAND.colors = nLAND.colors
+        curLAND.baseTextures = nLAND.baseTextures
+        curLAND.alphaLayers = nLAND.alphaLayers
+        curLAND.vertexTextures = nLAND.vertexTextures
+    LAND = property(get_LAND, set_LAND)
     def get_IsInterior(self):
         return (self.flags & 0x00000001) != 0
     def set_IsInterior(self, nValue):
@@ -9904,21 +9879,15 @@ class CELLRecord(BaseRecord):
         elif(self.get_IsDungeon()): self.IsDefault = True
     IsDungeon = property(get_IsDungeon, set_IsDungeon)
     
-class ACHRRecord(SubRecord):
+class ACHRRecord(BaseRecord):
     def CopyAsOverride(self, targetCELL):
-        FID = CBash.CopyACHRRecord(self._CollectionIndex, self._ModName, self._recordID, self._parentID, targetCELL._ModName, targetCELL._recordID, c_bool(True))
-        if(FID): return ACHRRecord(self._CollectionIndex, targetCELL._ModName, FID, targetCELL._recordID)
+        FID = CBash.CopyACHRRecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetCELL._recordID, c_bool(True))
+        if(FID): return ACHRRecord(self._CollectionIndex, targetCELL._ModName, FID)
         return None
     def CopyAsNew(self, targetCELL):
-        FID = CBash.CopyACHRRecord(self._CollectionIndex, self._ModName, self._recordID, self._parentID, targetCELL._ModName, targetCELL._recordID, c_bool(False))
-        if(FID): return ACHRRecord(self._CollectionIndex, targetCELL._ModName, FID, targetCELL._recordID)
+        FID = CBash.CopyACHRRecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetCELL._recordID, c_bool(False))
+        if(FID): return ACHRRecord(self._CollectionIndex, targetCELL._ModName, FID)
         return None
-    def get_eid(self):
-        CBash.ReadFIDField.restype = c_char_p
-        return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 5)
-    def set_eid(self, nValue):
-        CBash.SetFIDFieldStr(self._CollectionIndex, self._ModName, self._recordID, 5, nValue)
-    eid = property(get_eid, set_eid)
     def get_base(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 6)
@@ -10081,21 +10050,15 @@ class ACHRRecord(SubRecord):
         else: self.parentFlags &= ~0x00000001
     IsOppositeParent = property(get_IsOppositeParent, set_IsOppositeParent)
     
-class ACRERecord(SubRecord):
+class ACRERecord(BaseRecord):
     def CopyAsOverride(self, targetCELL):
-        FID = CBash.CopyACRERecord(self._CollectionIndex, self._ModName, self._recordID, self._parentID, targetCELL._ModName, targetCELL._recordID, c_bool(True))
-        if(FID): return ACRERecord(self._CollectionIndex, targetCELL._ModName, FID, targetCELL._recordID)
+        FID = CBash.CopyACRERecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetCELL._recordID, c_bool(True))
+        if(FID): return ACRERecord(self._CollectionIndex, targetCELL._ModName, FID)
         return None
     def CopyAsNew(self, targetCELL):
-        FID = CBash.CopyACRERecord(self._CollectionIndex, self._ModName, self._recordID, self._parentID, targetCELL._ModName, targetCELL._recordID, c_bool(False))
-        if(FID): return ACRERecord(self._CollectionIndex, targetCELL._ModName, FID, targetCELL._recordID)
+        FID = CBash.CopyACRERecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetCELL._recordID, c_bool(False))
+        if(FID): return ACRERecord(self._CollectionIndex, targetCELL._ModName, FID)
         return None
-    def get_eid(self):
-        CBash.ReadFIDField.restype = c_char_p
-        return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 5)
-    def set_eid(self, nValue):
-        CBash.SetFIDFieldStr(self._CollectionIndex, self._ModName, self._recordID, 5, nValue)
-    eid = property(get_eid, set_eid)
     def get_base(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 6)
@@ -10228,21 +10191,15 @@ class ACRERecord(SubRecord):
         else: self.parentFlags &= ~0x00000001
     IsOppositeParent = property(get_IsOppositeParent, set_IsOppositeParent)
     
-class REFRRecord(SubRecord):
+class REFRRecord(BaseRecord):
     def CopyAsOverride(self, targetCELL):
-        FID = CBash.CopyREFRRecord(self._CollectionIndex, self._ModName, self._recordID, self._parentID, targetCELL._ModName, targetCELL._recordID, c_bool(True))
-        if(FID): return REFRRecord(self._CollectionIndex, targetCELL._ModName, FID, targetCELL._recordID)
+        FID = CBash.CopyREFRRecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetCELL._recordID, c_bool(True))
+        if(FID): return REFRRecord(self._CollectionIndex, targetCELL._ModName, FID)
         return None
     def CopyAsNew(self, targetCELL):
-        FID = CBash.CopyREFRRecord(self._CollectionIndex, self._ModName, self._recordID, self._parentID, targetCELL._ModName, targetCELL._recordID, c_bool(False))
-        if(FID): return REFRRecord(self._CollectionIndex, targetCELL._ModName, FID, targetCELL._recordID)
+        FID = CBash.CopyREFRRecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetCELL._recordID, c_bool(False))
+        if(FID): return REFRRecord(self._CollectionIndex, targetCELL._ModName, FID)
         return None
-    def get_eid(self):
-        CBash.ReadFIDField.restype = c_char_p
-        return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 5)
-    def set_eid(self, nValue):
-        CBash.SetFIDFieldStr(self._CollectionIndex, self._ModName, self._recordID, 5, nValue)
-    eid = property(get_eid, set_eid)
     def get_base(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 6)
@@ -10793,14 +10750,14 @@ class REFRRecord(SubRecord):
         elif(self.get_IsGrandSoul()): IsNoSoul = True
     IsGrandSoul = property(get_IsGrandSoul, set_IsGrandSoul)
     
-class PGRDRecord(SubRecord):
+class PGRDRecord(BaseRecord):
     def CopyAsOverride(self, targetCELL):
-        FID = CBash.CopyPGRDRecord(self._CollectionIndex, self._ModName, self._recordID, self._parentID, targetCELL._ModName, targetCELL._recordID, c_bool(True))
-        if(FID): return PGRDRecord(self._CollectionIndex, targetCELL._ModName, FID, targetCELL._recordID)
+        FID = CBash.CopyPGRDRecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetCELL._recordID, c_bool(True))
+        if(FID): return PGRDRecord(self._CollectionIndex, targetCELL._ModName, FID)
         return None
     def CopyAsNew(self, targetCELL):
-        FID = CBash.CopyPGRDRecord(self._CollectionIndex, self._ModName, self._recordID, self._parentID, targetCELL._ModName, targetCELL._recordID, c_bool(False))
-        if(FID): return PGRDRecord(self._CollectionIndex, targetCELL._ModName, FID, targetCELL._recordID)
+        FID = CBash.CopyPGRDRecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetCELL._recordID, c_bool(False))
+        if(FID): return PGRDRecord(self._CollectionIndex, targetCELL._ModName, FID)
         return None
     class PGRPRecord(object):
         def __init__(self, CollectionIndex, ModName, recordID, listIndex):
@@ -10862,7 +10819,7 @@ class PGRDRecord(SubRecord):
             if(retValue): return retValue.contents.value
             else: return None
         def set_point(self, nValue):
-            CBash.SetFIDListFieldUC(self._CollectionIndex, self._ModName, self._recordID, 10, self._listIndex, 1, c_ushort(nValue))
+            CBash.SetFIDListFieldUS(self._CollectionIndex, self._ModName, self._recordID, 10, self._listIndex, 1, c_ushort(nValue))
         point = property(get_point, set_point)
         def get_unused1(self):
             numRecords = CBash.GetFIDListArraySize(self._CollectionIndex, self._ModName, self._recordID, 10, self._listIndex, 2)
@@ -10914,15 +10871,13 @@ class PGRDRecord(SubRecord):
         reference = property(get_reference, set_reference)
         def get_points(self):
             numRecords = CBash.GetFIDListArraySize(self._CollectionIndex, self._ModName, self._recordID, 11, self._listIndex, 2)
-            if(numRecords > 0):
-                cRecords = (c_uint * numRecords)()
+            if(numRecords > 0):                
+                cRecords = POINTER(c_uint * numRecords)()
                 CBash.GetFIDListArray(self._CollectionIndex, self._ModName, self._recordID, 11, self._listIndex, 2, byref(cRecords))
-                return [cRecords[x] for x in range(0, numRecords)]
+                return [cRecords.contents[x] for x in range(0, numRecords)]
             else: return []
-        def set_points(self, nValue):
-            length = len(nValue)
-            cRecords = (c_uint * length)(*nValue)
-            CBash.SetFIDListFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 11, self._listIndex, 2, cRecords, length)
+        def set_points(self, nValues):
+            CBash.SetFIDListFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 11, self._listIndex, 2, struct.pack('I' * len(nValues), *nValues), len(nValues))
         points = property(get_points, set_points)
     def newPGRPElement(self):
         listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 7)
@@ -11026,6 +10981,18 @@ class WRLDRecord(BaseRecord):
     def CopyAsNew(self, targetMod):
         FID = CBash.CopyWRLDRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
         if(FID): return WRLDRecord(self._CollectionIndex, targetMod._ModName, FID)
+        return None
+    def createWorldCELLRecord(self):
+        FID = CBash.CreateCELLRecord(self._CollectionIndex, self._ModName, self._recordID, c_bool(True))
+        if(FID): return CELLRecord(self._CollectionIndex, self._ModName, FID)
+        return None
+    def createCELLRecord(self):
+        FID = CBash.CreateCELLRecord(self._CollectionIndex, self._ModName, self._recordID, c_bool(False))
+        if(FID): return CELLRecord(self._CollectionIndex, self._ModName, FID)
+        return None
+    def createROADRecord(self):
+        FID = CBash.CreateROADRecord(self._CollectionIndex, self._ModName, self._recordID)
+        if(FID): return ROADRecord(self._CollectionIndex, self._ModName, FID)
         return None
     def get_full(self):
         CBash.ReadFIDField.restype = c_char_p
@@ -11170,6 +11137,78 @@ class WRLDRecord(BaseRecord):
         length = len(nValue)
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 23, struct.pack('B' * length, *nValue), length)
     ofst_p = property(get_ofst_p, set_ofst_p)
+    def get_ROAD(self):
+        CBash.ReadFIDField.restype = POINTER(c_uint)
+        retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 24)
+        if(retValue): return ROADRecord(self._CollectionIndex, self._ModName, retValue.contents.value)
+        else: return None
+    def set_ROAD(self, nROAD):
+        if(nCELL == None and self.ROAD != None):
+            self.ROAD.DeleteRecord()
+            return
+        curROAD = self.ROAD
+        if(curROAD == None):
+            curROAD = self.createROADRecord()
+        curROAD.PGRP = nROAD.PGRP
+        curROAD.PGRR = nROAD.PGRR
+    ROAD = property(get_ROAD, set_ROAD)
+    def get_CELL(self):
+        CBash.ReadFIDField.restype = POINTER(c_uint)
+        retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 25)
+        if(retValue): return CELLRecord(self._CollectionIndex, self._ModName, retValue.contents.value)
+        else: return None
+    def set_CELL(self, nCELL):
+        if(nCELL == None and self.CELL != None):
+            self.CELL.DeleteRecord()
+            return
+        curCELL = self.CELL
+        if(curCELL == None):
+            curCELL = self.createWorldCELLRecord()
+
+        curCELL.flags1 = nCELL.flags1
+        curCELL.flags2 = nCELL.flags2
+        curCELL.eid = nCELL.eid
+
+        curCELL.full = nCELL.full
+        curCELL.flags = nCELL.flags
+        curCELL.ambientRed = nCELL.ambientRed
+        curCELL.ambientGreen = nCELL.ambientGreen
+        curCELL.ambientBlue = nCELL.ambientBlue
+        curCELL.unused1 = nCELL.unused1
+        curCELL.directionalRed = nCELL.directionalRed
+        curCELL.directionalGreen = nCELL.directionalGreen
+        curCELL.directionalBlue = nCELL.directionalBlue
+        curCELL.unused2 = nCELL.unused2
+        curCELL.fogRed = nCELL.fogRed
+        curCELL.fogGreen = nCELL.fogGreen
+        curCELL.fogBlue = nCELL.fogBlue
+        curCELL.unused3 = nCELL.unused3
+        curCELL.fogNear = nCELL.fogNear
+        curCELL.fogFar = nCELL.fogFar
+        curCELL.directionalXY = nCELL.directionalXY
+        curCELL.directionalZ = nCELL.directionalZ
+        curCELL.directionalFade = nCELL.directionalFade
+        curCELL.fogClip = nCELL.fogClip
+        curCELL.music = nCELL.music
+        curCELL.owner = nCELL.owner
+        curCELL.rank = nCELL.rank
+        curCELL.globalVariable = nCELL.globalVariable
+        curCELL.climate = nCELL.climate
+        curCELL.waterHeight = nCELL.waterHeight
+        curCELL.regions = nCELL.regions
+        curCELL.posX = nCELL.posX
+        curCELL.posY = nCELL.posY
+        curCELL.water = nCELL.water
+    CELL = property(get_CELL, set_CELL)
+    @property
+    def CELLS(self):
+        numSubRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 26)
+        if(numSubRecords > 0):
+            cRecords = (POINTER(c_uint) * numSubRecords)()
+            CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 26, byref(cRecords))
+            return [CELLRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
+        else: return []
+
     def get_IsSmallWorld(self):
         return (self.flags & 0x00000001) != 0
     def set_IsSmallWorld(self, nValue):
@@ -11225,6 +11264,715 @@ class WRLDRecord(BaseRecord):
         elif(self.get_IsDungeon()): self.IsDefault = True
     IsDungeon = property(get_IsDungeon, set_IsDungeon)
     
+class ROADRecord(BaseRecord):
+    def CopyAsOverride(self, targetWRLD):
+        FID = CBash.CopyROADRecord(self._CollectionIndex, self._ModName, self._recordID, targetWRLD._ModName, targetWRLD._recordID, c_bool(True))
+        if(FID): return ROADRecord(self._CollectionIndex, targetWRLD._ModName, FID)
+        return None
+    def CopyAsNew(self, targetWRLD):
+        FID = CBash.CopyROADRecord(self._CollectionIndex, self._ModName, self._recordID, targetWRLD._ModName, targetWRLD._recordID, c_bool(False))
+        if(FID): return ROADRecord(self._CollectionIndex, targetWRLD._ModName, FID)
+        return None
+    class PGRPRecord(object):
+        def __init__(self, CollectionIndex, ModName, recordID, listIndex):
+            self._CollectionIndex = CollectionIndex
+            self._ModName = ModName
+            self._recordID = recordID
+            self._listIndex = listIndex
+        def get_x(self):
+            CBash.ReadFIDListField.restype = POINTER(c_float)
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 1)
+            if(retValue): return retValue.contents.value
+            else: return None
+        def set_x(self, nValue):
+            CBash.SetFIDListFieldF(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 1, c_float(nValue))
+        x = property(get_x, set_x)
+        def get_y(self):
+            CBash.ReadFIDListField.restype = POINTER(c_float)
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 2)
+            if(retValue): return retValue.contents.value
+            else: return None
+        def set_y(self, nValue):
+            CBash.SetFIDListFieldF(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 2, c_float(nValue))
+        y = property(get_y, set_y)
+        def get_z(self):
+            CBash.ReadFIDListField.restype = POINTER(c_float)
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 3)
+            if(retValue): return retValue.contents.value
+            else: return None
+        def set_z(self, nValue):
+            CBash.SetFIDListFieldF(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 3, c_float(nValue))
+        z = property(get_z, set_z)
+        def get_connections(self):
+            CBash.ReadFIDListField.restype = POINTER(c_ubyte)
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 4)
+            if(retValue): return retValue.contents.value
+            else: return None
+        def set_connections(self, nValue):
+            CBash.SetFIDListFieldUC(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 4, c_ubyte(nValue))
+        connections = property(get_connections, set_connections)
+        def get_unused1(self):
+            numRecords = CBash.GetFIDListArraySize(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 5)
+            if(numRecords > 0):
+                cRecords = POINTER(c_ubyte * numRecords)()
+                CBash.GetFIDListArray(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 5, byref(cRecords))
+                return [cRecords.contents[x] for x in range(0, numRecords)]
+            else: return []
+        def set_unused1(self, nValue):
+            CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 5, struct.pack('3B', *nValue), 3)
+        unused1 = property(get_unused1, set_unused1)
+    class PGRRRecord(object):
+        def __init__(self, CollectionIndex, ModName, recordID, listIndex):
+            self._CollectionIndex = CollectionIndex
+            self._ModName = ModName
+            self._recordID = recordID
+            self._listIndex = listIndex
+        def get_x(self):
+            CBash.ReadFIDListField.restype = POINTER(c_float)
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 1)
+            if(retValue): return retValue.contents.value
+            else: return None
+        def set_x(self, nValue):
+            CBash.SetFIDListFieldF(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 1, c_float(nValue))
+        x = property(get_x, set_x)
+        def get_y(self):
+            CBash.ReadFIDListField.restype = POINTER(c_float)
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 2)
+            if(retValue): return retValue.contents.value
+            else: return None
+        def set_y(self, nValue):
+            CBash.SetFIDListFieldF(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 2, c_float(nValue))
+        y = property(get_y, set_y)
+        def get_z(self):
+            CBash.ReadFIDListField.restype = POINTER(c_float)
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 3)
+            if(retValue): return retValue.contents.value
+            else: return None
+        def set_z(self, nValue):
+            CBash.SetFIDListFieldF(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 3, c_float(nValue))
+        z = property(get_z, set_z)
+    def newPGRPElement(self):
+        listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 6)
+        if(listIndex == -1): return None
+        return self.PGRPRecord(self._CollectionIndex, self._ModName, self._recordID, listIndex)
+    def newPGRRElement(self):
+        listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 7)
+        if(listIndex == -1): return None
+        return self.PGRRRecord(self._CollectionIndex, self._ModName, self._recordID, listIndex)
+    def get_PGRP(self):
+        numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 6)
+        if(numRecords > 0): return [self.PGRPRecord(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
+        else: return []
+    def set_PGRP(self, nPGRP):
+        diffLength = len(nPGRP) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 6)
+        nValues = [(nPGRPRecord.x, nPGRPRecord.y, nPGRPRecord.z, nPGRPRecord.connections, nPGRPRecord.unused1) for nPGRPRecord in nPGRP]
+        while(diffLength < 0):
+            CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 6)
+            diffLength += 1
+        while(diffLength > 0):
+            CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 6)
+            diffLength -= 1
+        for oPGRPRecord, nValue in zip(self.PGRP, nValues):
+            oPGRPRecord.x, oPGRPRecord.y, oPGRPRecord.z, oPGRPRecord.connections, oPGRPRecord.unused1 = nValue
+    PGRP = property(get_PGRP, set_PGRP)
+    def get_PGRR(self):
+        numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 7)
+        if(numRecords > 0): return [self.PGRRRecord(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
+        else: return []
+    def set_PGRR(self, nPGRR):
+        diffLength = len(nPGRR) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 7)
+        nValues = [(nPGRRRecord.x, nPGRRRecord.y, nPGRRRecord.z) for nPGRRRecord in nPGRR]
+        while(diffLength < 0):
+            CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 7)
+            diffLength += 1
+        while(diffLength > 0):
+            CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 7)
+            diffLength -= 1
+        for oPGRRRecord, nValue in zip(self.PGRR, nValues):
+            oPGRRRecord.x, oPGRRRecord.y, oPGRRRecord.z = nValue
+    PGRR = property(get_PGRR, set_PGRR)
+
+class LANDRecord(BaseRecord):
+    def CopyAsOverride(self, targetCELL):
+        FID = CBash.CopyLANDRecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetCELL._recordID, c_bool(True))
+        if(FID): return LANDRecord(self._CollectionIndex, targetCELL._ModName, FID)
+        return None
+    def CopyAsNew(self, targetCELL):
+        FID = CBash.CopyLANDRecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetCELL._recordID, c_bool(False))
+        if(FID): return LANDRecord(self._CollectionIndex, targetCELL._ModName, FID)
+        return None
+    class Normal(object):
+        def __init__(self, CollectionIndex, ModName, recordID, listIndex, listX2Index):
+            self._CollectionIndex = CollectionIndex
+            self._ModName = ModName
+            self._recordID = recordID
+            self._listIndex = listIndex
+            self._listX2Index = listX2Index
+        def get_x(self):
+            CBash.ReadFIDListX2Field.restype = POINTER(c_ubyte)
+            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 0, self._listX2Index, 1)
+            if(retValue): return retValue.contents.value
+            else: return None
+        def set_x(self, nValue):
+            CBash.SetFIDListX2FieldUC(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 0, self._listX2Index, 1, c_ubyte(nValue))
+        x = property(get_x, set_x)
+        def get_y(self):
+            CBash.ReadFIDListX2Field.restype = POINTER(c_ubyte)
+            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 0, self._listX2Index, 2)
+            if(retValue): return retValue.contents.value
+            else: return None
+        def set_y(self, nValue):
+            CBash.SetFIDListX2FieldUC(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 0, self._listX2Index, 2, c_ubyte(nValue))
+        y = property(get_y, set_y)
+        def get_z(self):
+            CBash.ReadFIDListX2Field.restype = POINTER(c_ubyte)
+            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 0, self._listX2Index, 3)
+            if(retValue): return retValue.contents.value
+            else: return None
+        def set_z(self, nValue):
+            CBash.SetFIDListX2FieldUC(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 0, self._listX2Index, 3, c_ubyte(nValue))
+        z = property(get_z, set_z)
+    class Height(object):
+        def __init__(self, CollectionIndex, ModName, recordID, listIndex, listX2Index):
+            self._CollectionIndex = CollectionIndex
+            self._ModName = ModName
+            self._recordID = recordID
+            self._listIndex = listIndex
+            self._listX2Index = listX2Index
+        def get_height(self):
+            CBash.ReadFIDListX2Field.restype = POINTER(c_byte)
+            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 9, self._listIndex, 0, self._listX2Index, 1)
+            if(retValue): return retValue.contents.value
+            else: return None
+        def set_height(self, nValue):
+            CBash.SetFIDListX2FieldC(self._CollectionIndex, self._ModName, self._recordID, 9, self._listIndex, 0, self._listX2Index, 1, c_ubyte(nValue))
+        height = property(get_height, set_height)
+    class Color(object):
+        def __init__(self, CollectionIndex, ModName, recordID, listIndex, listX2Index):
+            self._CollectionIndex = CollectionIndex
+            self._ModName = ModName
+            self._recordID = recordID
+            self._listIndex = listIndex
+            self._listX2Index = listX2Index
+        def get_red(self):
+            CBash.ReadFIDListX2Field.restype = POINTER(c_ubyte)
+            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 11, self._listIndex, 0, self._listX2Index, 1)
+            if(retValue): return retValue.contents.value
+            else: return None
+        def set_red(self, nValue):
+            CBash.SetFIDListX2FieldUC(self._CollectionIndex, self._ModName, self._recordID, 11, self._listIndex, 0, self._listX2Index, 1, c_ubyte(nValue))
+        red = property(get_red, set_red)
+        def get_green(self):
+            CBash.ReadFIDListX2Field.restype = POINTER(c_ubyte)
+            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 11, self._listIndex, 0, self._listX2Index, 2)
+            if(retValue): return retValue.contents.value
+            else: return None
+        def set_green(self, nValue):
+            CBash.SetFIDListX2FieldUC(self._CollectionIndex, self._ModName, self._recordID, 11, self._listIndex, 0, self._listX2Index, 2, c_ubyte(nValue))
+        green = property(get_green, set_green)
+        def get_blue(self):
+            CBash.ReadFIDListX2Field.restype = POINTER(c_ubyte)
+            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 11, self._listIndex, 0, self._listX2Index, 3)
+            if(retValue): return retValue.contents.value
+            else: return None
+        def set_blue(self, nValue):
+            CBash.SetFIDListX2FieldUC(self._CollectionIndex, self._ModName, self._recordID, 11, self._listIndex, 0, self._listX2Index, 3, c_ubyte(nValue))
+        blue = property(get_blue, set_blue)
+    class BaseTexture(object):
+        def __init__(self, CollectionIndex, ModName, recordID, subField, listIndex):
+            self._CollectionIndex = CollectionIndex
+            self._ModName = ModName
+            self._recordID = recordID
+            self._subField = subField
+            self._listIndex = listIndex
+        def get_texture(self):
+            CBash.ReadFIDListField.restype = POINTER(c_uint)
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1)
+            if(retValue): return retValue.contents.value
+            else: return None
+        def set_texture(self, nValue):
+            CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1, nValue)
+        texture = property(get_texture, set_texture)
+        def get_quadrant(self):
+            CBash.ReadFIDListField.restype = POINTER(c_byte)
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2)
+            if(retValue): return retValue.contents.value
+            else: return None
+        def set_quadrant(self, nValue):
+            CBash.SetFIDListFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2, c_byte(nValue))
+        quadrant = property(get_quadrant, set_quadrant)
+        def get_unused1(self):
+            numRecords = CBash.GetFIDListArraySize(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3)
+            if(numRecords > 0):
+                cRecords = POINTER(c_ubyte * numRecords)()
+                CBash.GetFIDListArray(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3, byref(cRecords))
+                return [cRecords.contents[x] for x in range(0, numRecords)]
+            else: return []
+        def set_unused1(self, nValue):
+            CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3, struct.pack('B', *nValue), 1)
+        unused1 = property(get_unused1, set_unused1)
+        def get_layer(self):
+            CBash.ReadFIDListField.restype = POINTER(c_short)
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 4)
+            if(retValue): return retValue.contents.value
+            else: return None
+        def set_layer(self, nValue):
+            CBash.SetFIDListFieldS(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 4, c_short(nValue))
+        layer = property(get_layer, set_layer)
+    class AlphaLayer(object):
+        class Opacity(object):
+            def __init__(self, CollectionIndex, ModName, recordID, listIndex, listX2Index):
+                self._CollectionIndex = CollectionIndex
+                self._ModName = ModName
+                self._recordID = recordID
+                self._listIndex = listIndex
+                self._listX2Index = listX2Index
+            def get_position(self):
+                CBash.ReadFIDListX2Field.restype = POINTER(c_ushort)
+                retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 1)
+                if(retValue): return retValue.contents.value
+                else: return None
+            def set_position(self, nValue):
+                CBash.SetFIDListX2FieldUS(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 1, c_ushort(nValue))
+            position = property(get_position, set_position)
+            def get_unused1(self):
+                numRecords = CBash.GetFIDListX2ArraySize(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 2)
+                if(numRecords > 0):
+                    cRecords = POINTER(c_ubyte * numRecords)()
+                    CBash.GetFIDListX2Array(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 2, byref(cRecords))
+                    return [cRecords.contents[x] for x in range(0, numRecords)]
+                else: return []
+            def set_unused1(self, nValue):
+                CBash.SetFIDListX2FieldR(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 2, struct.pack('2B', *nValue), 2)
+            unused1 = property(get_unused1, set_unused1)
+            def get_opacity(self):
+                CBash.ReadFIDListX2Field.restype = POINTER(c_float)
+                retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 3)
+                if(retValue): return retValue.contents.value
+                else: return None
+            def set_opacity(self, nValue):
+                CBash.SetFIDListX2FieldF(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 3, c_float(nValue))
+            opacity = property(get_opacity, set_opacity)
+        def __init__(self, CollectionIndex, ModName, recordID, subField, listIndex):
+            self._CollectionIndex = CollectionIndex
+            self._ModName = ModName
+            self._recordID = recordID
+            self._subField = subField
+            self._listIndex = listIndex
+        def newOpacitiesElement(self):
+            listX2Index = CBash.CreateFIDListX2Element(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 5)
+            if(listX2Index == -1): return None
+            return self.Opacity(self._CollectionIndex, self._ModName, self._recordID, self._listIndex, listX2Index)
+        def get_texture(self):
+            CBash.ReadFIDListField.restype = POINTER(c_uint)
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1)
+            if(retValue): return retValue.contents.value
+            else: return None
+        def set_texture(self, nValue):
+            CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1, nValue)
+        texture = property(get_texture, set_texture)
+        def get_quadrant(self):
+            CBash.ReadFIDListField.restype = POINTER(c_byte)
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2)
+            if(retValue): return retValue.contents.value
+            else: return None
+        def set_quadrant(self, nValue):
+            CBash.SetFIDListFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2, c_byte(nValue))
+        quadrant = property(get_quadrant, set_quadrant)
+        def get_unused1(self):
+            numRecords = CBash.GetFIDListArraySize(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3)
+            if(numRecords > 0):
+                cRecords = POINTER(c_ubyte * numRecords)()
+                CBash.GetFIDListArray(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3, byref(cRecords))
+                return [cRecords.contents[x] for x in range(0, numRecords)]
+            else: return []
+        def set_unused1(self, nValue):
+            CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3, struct.pack('B', *nValue), 1)
+        unused1 = property(get_unused1, set_unused1)
+        def get_layer(self):
+            CBash.ReadFIDListField.restype = POINTER(c_short)
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 4)
+            if(retValue): return retValue.contents.value
+            else: return None
+        def set_layer(self, nValue):
+            CBash.SetFIDListFieldS(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 4, c_short(nValue))
+        layer = property(get_layer, set_layer)
+        def get_opacities(self):
+            numRecords = CBash.GetFIDListX2Size(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 5)
+            if(numRecords > 0): return [self.Opacity(self._CollectionIndex, self._ModName, self._recordID, self._listIndex, x) for x in range(0, numRecords)]
+            else: return []
+        def set_opacities(self, nOpacities):
+            diffLength = len(nOpacities) - CBash.GetFIDListX2Size(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 5)
+            nValues = [(nOpacity.position, nOpacity.unused1, nOpacity.opacity) for nOpacity in nOpacities]
+            while(diffLength < 0):
+                CBash.DeleteFIDListX2Element(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 5)
+                diffLength += 1
+            while(diffLength > 0):
+                CBash.CreateFIDListX2Element(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 5)
+                diffLength -= 1
+            for oOpacity, nValue in zip(self.opacities, nValues):
+                oOpacity.position, oOpacity.unused1, oOpacity.opacity = nValue
+        opacities = property(get_opacities, set_opacities)
+    class VertexTexture(object):
+        def __init__(self, CollectionIndex, ModName, recordID, subField, listIndex):
+            self._CollectionIndex = CollectionIndex
+            self._ModName = ModName
+            self._recordID = recordID
+            self._subField = subField
+            self._listIndex = listIndex
+        def get_texture(self):
+            CBash.ReadFIDListField.restype = POINTER(c_uint)
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1)
+            if(retValue): return retValue.contents.value
+            else: return None
+        def set_texture(self, nValue):
+            CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1, nValue)
+        texture = property(get_texture, set_texture)
+    class Positions(object):
+        def __init__(self, CollectionIndex, ModName, recordID, listIndex, listX2Index):
+            self._CollectionIndex = CollectionIndex
+            self._ModName = ModName
+            self._recordID = recordID
+            self._listIndex = listIndex
+            self._listX2Index = listX2Index
+        def get_height(self):
+            CBash.ReadFIDListX2Field.restype = POINTER(c_float)
+            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 1)
+            if(retValue): return retValue.contents.value
+            else: return None
+        def set_height(self, nValue):
+            CBash.SetFIDListX2FieldF(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 1, c_float(nValue))
+        height = property(get_height, set_height)
+        def get_normalX(self):
+            CBash.ReadFIDListX2Field.restype = POINTER(c_ubyte)
+            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 2)
+            if(retValue): return retValue.contents.value
+            else: return None
+        def set_normalX(self, nValue):
+            CBash.SetFIDListX2FieldUC(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 2, c_ubyte(nValue))
+        normalX = property(get_normalX, set_normalX)
+        def get_normalY(self):
+            CBash.ReadFIDListX2Field.restype = POINTER(c_ubyte)
+            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 3)
+            if(retValue): return retValue.contents.value
+            else: return None
+        def set_normalY(self, nValue):
+            CBash.SetFIDListX2FieldUC(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 3, c_ubyte(nValue))
+        normalY = property(get_normalY, set_normalY)
+        def get_normalZ(self):
+            CBash.ReadFIDListX2Field.restype = POINTER(c_ubyte)
+            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 4)
+            if(retValue): return retValue.contents.value
+            else: return None
+        def set_normalZ(self, nValue):
+            CBash.SetFIDListX2FieldUC(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 4, c_ubyte(nValue))
+        normalZ = property(get_normalZ, set_normalZ)
+        def get_red(self):
+            CBash.ReadFIDListX2Field.restype = POINTER(c_ubyte)
+            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 5)
+            if(retValue): return retValue.contents.value
+            else: return None
+        def set_red(self, nValue):
+            CBash.SetFIDListX2FieldUC(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 5, c_ubyte(nValue))
+        red = property(get_red, set_red)
+        def get_green(self):
+            CBash.ReadFIDListX2Field.restype = POINTER(c_ubyte)
+            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 6)
+            if(retValue): return retValue.contents.value
+            else: return None
+        def set_green(self, nValue):
+            CBash.SetFIDListX2FieldUC(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 6, c_ubyte(nValue))
+        green = property(get_green, set_green)
+        def get_blue(self):
+            CBash.ReadFIDListX2Field.restype = POINTER(c_ubyte)
+            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 7)
+            if(retValue): return retValue.contents.value
+            else: return None
+        def set_blue(self, nValue):
+            CBash.SetFIDListX2FieldUC(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 7, c_ubyte(nValue))
+        blue = property(get_blue, set_blue)
+        def get_baseTexture(self):
+            CBash.ReadFIDListX2Field.restype = POINTER(c_uint)
+            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 8)
+            if(retValue): return retValue.contents.value
+            else: return None
+        def set_baseTexture(self, nValue):
+            CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 8, nValue)
+        baseTexture = property(get_baseTexture, set_baseTexture)
+        def get_layer1Texture(self):
+            CBash.ReadFIDListX2Field.restype = POINTER(c_uint)
+            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 9)
+            if(retValue): return retValue.contents.value
+            else: return None
+        def set_layer1Texture(self, nValue):
+            CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 9, nValue)
+        layer1Texture = property(get_layer1Texture, set_layer1Texture)
+        def get_layer1Opacity(self):
+            CBash.ReadFIDListX2Field.restype = POINTER(c_float)
+            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 10)
+            if(retValue): return retValue.contents.value
+            else: return None
+        def set_layer1Opacity(self, nValue):
+            CBash.SetFIDListX2FieldF(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 10, c_float(nValue))
+        layer1Opacity = property(get_layer1Opacity, set_layer1Opacity)
+        def get_layer2Texture(self):
+            CBash.ReadFIDListX2Field.restype = POINTER(c_uint)
+            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 11)
+            if(retValue): return retValue.contents.value
+            else: return None
+        def set_layer2Texture(self, nValue):
+            CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 11, nValue)
+        layer2Texture = property(get_layer2Texture, set_layer2Texture)
+        def get_layer2Opacity(self):
+            CBash.ReadFIDListX2Field.restype = POINTER(c_float)
+            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 12)
+            if(retValue): return retValue.contents.value
+            else: return None
+        def set_layer2Opacity(self, nValue):
+            CBash.SetFIDListX2FieldF(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 12, c_float(nValue))
+        layer2Opacity = property(get_layer2Opacity, set_layer2Opacity)
+        def get_layer3Texture(self):
+            CBash.ReadFIDListX2Field.restype = POINTER(c_uint)
+            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 13)
+            if(retValue): return retValue.contents.value
+            else: return None
+        def set_layer3Texture(self, nValue):
+            CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 13, nValue)
+        layer3Texture = property(get_layer3Texture, set_layer3Texture)
+        def get_layer3Opacity(self):
+            CBash.ReadFIDListX2Field.restype = POINTER(c_float)
+            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 14)
+            if(retValue): return retValue.contents.value
+            else: return None
+        def set_layer3Opacity(self, nValue):
+            CBash.SetFIDListX2FieldF(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 14, c_float(nValue))
+        layer3Opacity = property(get_layer3Opacity, set_layer3Opacity)
+        def get_layer4Texture(self):
+            CBash.ReadFIDListX2Field.restype = POINTER(c_uint)
+            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 15)
+            if(retValue): return retValue.contents.value
+            else: return None
+        def set_layer4Texture(self, nValue):
+            CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 15, nValue)
+        layer4Texture = property(get_layer4Texture, set_layer4Texture)
+        def get_layer4Opacity(self):
+            CBash.ReadFIDListX2Field.restype = POINTER(c_float)
+            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 16)
+            if(retValue): return retValue.contents.value
+            else: return None
+        def set_layer4Opacity(self, nValue):
+            CBash.SetFIDListX2FieldF(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 16, c_float(nValue))
+        layer4Opacity = property(get_layer4Opacity, set_layer4Opacity)
+        def get_layer5Texture(self):
+            CBash.ReadFIDListX2Field.restype = POINTER(c_uint)
+            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 17)
+            if(retValue): return retValue.contents.value
+            else: return None
+        def set_layer5Texture(self, nValue):
+            CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 17, nValue)
+        layer5Texture = property(get_layer5Texture, set_layer5Texture)
+        def get_layer5Opacity(self):
+            CBash.ReadFIDListX2Field.restype = POINTER(c_float)
+            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 18)
+            if(retValue): return retValue.contents.value
+            else: return None
+        def set_layer5Opacity(self, nValue):
+            CBash.SetFIDListX2FieldF(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 18, c_float(nValue))
+        layer5Opacity = property(get_layer5Opacity, set_layer5Opacity)
+        def get_layer6Texture(self):
+            CBash.ReadFIDListX2Field.restype = POINTER(c_uint)
+            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 19)
+            if(retValue): return retValue.contents.value
+            else: return None
+        def set_layer6Texture(self, nValue):
+            CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 19, nValue)
+        layer6Texture = property(get_layer6Texture, set_layer6Texture)
+        def get_layer6Opacity(self):
+            CBash.ReadFIDListX2Field.restype = POINTER(c_float)
+            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 20)
+            if(retValue): return retValue.contents.value
+            else: return None
+        def set_layer6Opacity(self, nValue):
+            CBash.SetFIDListX2FieldF(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 20, c_float(nValue))
+        layer6Opacity = property(get_layer6Opacity, set_layer6Opacity)
+        def get_layer7Texture(self):
+            CBash.ReadFIDListX2Field.restype = POINTER(c_uint)
+            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 21)
+            if(retValue): return retValue.contents.value
+            else: return None
+        def set_layer7Texture(self, nValue):
+            CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 21, nValue)
+        layer7Texture = property(get_layer7Texture, set_layer7Texture)
+        def get_layer7Opacity(self):
+            CBash.ReadFIDListX2Field.restype = POINTER(c_float)
+            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 22)
+            if(retValue): return retValue.contents.value
+            else: return None
+        def set_layer7Opacity(self, nValue):
+            CBash.SetFIDListX2FieldF(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 22, c_float(nValue))
+        layer7Opacity = property(get_layer7Opacity, set_layer7Opacity)
+        def get_layer8Texture(self):
+            CBash.ReadFIDListX2Field.restype = POINTER(c_uint)
+            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 23)
+            if(retValue): return retValue.contents.value
+            else: return None
+        def set_layer8Texture(self, nValue):
+            CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 23, nValue)
+        layer8Texture = property(get_layer8Texture, set_layer8Texture)
+        def get_layer8Opacity(self):
+            CBash.ReadFIDListX2Field.restype = POINTER(c_float)
+            retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 24)
+            if(retValue): return retValue.contents.value
+            else: return None
+        def set_layer8Opacity(self, nValue):
+            CBash.SetFIDListX2FieldF(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 24, c_float(nValue))
+        layer8Opacity = property(get_layer8Opacity, set_layer8Opacity)
+
+    def newBaseTexturesElement(self):
+        listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 12)
+        if(listIndex == -1): return None
+        return self.BaseTexture(self._CollectionIndex, self._ModName, self._recordID, 12, listIndex)
+    def newAlphaLayersElement(self):
+        listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 13)
+        if(listIndex == -1): return None
+        return self.AlphaLayer(self._CollectionIndex, self._ModName, self._recordID, 13, listIndex)
+    def newVertexTexturesElement(self):
+        listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 14)
+        if(listIndex == -1): return None
+        return self.VertexTexture(self._CollectionIndex, self._ModName, self._recordID, 14, listIndex)
+    def get_data(self):
+        numRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 6)
+        if(numRecords > 0):
+            cRecords = POINTER(c_ubyte * numRecords)()
+            CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 6, byref(cRecords))
+            return [cRecords.contents[x] for x in range(0, numRecords)]
+        else: return []
+    def set_data(self, nValue):
+        length = len(nValue)
+        CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 6, struct.pack('B' * length, *nValue), length)
+    data = property(get_data, set_data)
+    def get_normals(self):
+        return [[self.Normal(self._CollectionIndex, self._ModName, self._recordID, x, y) for y in range(0,33)] for x in range(0,33)]
+    def set_normals(self, nNormals):
+        if(len(nNormals) != 33):
+            return
+        nValues = [(nNormal.x, nNormal.y, nNormal.z) for nNormal in nNormals]
+        for oNormal, nValue in zip(self.normals, nValues):
+            oNormal.x, oNormal.y, oNormal.z = nValue
+    normals = property(get_normals, set_normals)
+    def get_heights(self):
+        return [[self.Height(self._CollectionIndex, self._ModName, self._recordID, x, y) for y in range(0,33)] for x in range(0,33)]
+    def set_heights(self, nHeights):
+        if(len(nNormals) != 33):
+            return
+        nValues = [nHeight.height for nHeight in nHeights]
+        for oHeight, nValue in zip(self.heights, nValues):
+            oHeight.height = nValue
+    heights = property(get_heights, set_heights)
+    def get_heightOffset(self):
+        CBash.ReadFIDField.restype = POINTER(c_float)
+        retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
+        if(retValue): return retValue.contents.value
+        else: return None
+    def set_heightOffset(self, nValue):
+        CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 8, c_float(nValue))
+    heightOffset = property(get_heightOffset, set_heightOffset)
+    def get_unused1(self):
+        numRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 10)
+        if(numRecords > 0):
+            cRecords = POINTER(c_ubyte * numRecords)()
+            CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 10, byref(cRecords))
+            return [cRecords.contents[x] for x in range(0, numRecords)]
+        else: return []
+    def set_unused1(self, nValue):
+        CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 10, struct.pack('3B', *nValue), 3)
+    unused1 = property(get_unused1, set_unused1)
+    def get_colors(self):
+        return [[self.Color(self._CollectionIndex, self._ModName, self._recordID, x, y)for y in range(0,33)]for x in range(0,33)]
+    def set_colors(self, nColors):
+        if(len(nColors) != 33):
+            return
+        nValues = [(nColor.red, nColor.green, nColor.blue) for nColor in nColors]
+        for oColor, nValue in zip(self.colors, nValues):
+            oColor.red, oColor.green, oColor.blue = nValue
+    colors = property(get_colors, set_colors)
+    def get_baseTextures(self):
+        numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 12)
+        if(numRecords > 0): return [self.BaseTexture(self._CollectionIndex, self._ModName, self._recordID, 12, x) for x in range(0, numRecords)]
+        else: return []
+    def set_baseTextures(self, nBaseTextures):
+        diffLength = len(nBaseTextures) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 12)
+        nValues = [(nBaseTexture.texture, nBaseTexture.quadrant, nBaseTexture.unused1, nBaseTexture.layer) for nBaseTexture in nBaseTextures]
+        while(diffLength < 0):
+            CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 12)
+            diffLength += 1
+        while(diffLength > 0):
+            CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 12)
+            diffLength -= 1
+        for oBaseTexture, nValue in zip(self.baseTextures, nValues):
+            oBaseTexture.texture, oBaseTexture.quadrant, oBaseTexture.unused1, oBaseTexture.layer = nValue
+    baseTextures = property(get_baseTextures, set_baseTextures)
+    def get_alphaLayers(self):
+        numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 13)
+        if(numRecords > 0): return [self.AlphaLayer(self._CollectionIndex, self._ModName, self._recordID, 13, x) for x in range(0, numRecords)]
+        else: return []
+    def set_alphaLayers(self, nAlphaLayers):
+        diffLength = len(nAlphaLayers) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 13)
+        nValues = [(nAlphaLayer.texture, nAlphaLayer.quadrant, nAlphaLayer.unused1, nAlphaLayer.layer,
+                  [(nOpacity.position, nOpacity.unused1, nOpacity.opacity) for nOpacity in nAlphaLayer.opacities]) for nAlphaLayer in nAlphaLayers]
+        while(diffLength < 0):
+            CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 13)
+            diffLength += 1
+        while(diffLength > 0):
+            CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 13)
+            diffLength -= 1
+        for oAlphaLayer, nValue in zip(self.alphaLayers, nValues):
+            oAlphaLayer.texture = nValue[0]
+            oAlphaLayer.quadrant = nValue[1]
+            oAlphaLayer.unused1 = nValue[2]
+            oAlphaLayer.layer = nValue[3]
+            diffLength = len(nValue[4]) - CBash.GetFIDListX2Size(self._CollectionIndex, self._ModName, self._recordID, 13, oTarget._listIndex, 5)
+            while(diffLength < 0):
+                CBash.DeleteFIDListX2Element(self._CollectionIndex, self._ModName, self._recordID, 13, oTarget._listIndex, 5)
+                diffLength += 1
+            while(diffLength > 0):
+                CBash.CreateFIDListX2Element(self._CollectionIndex, self._ModName, self._recordID, 13, oTarget._listIndex, 5)
+                diffLength -= 1
+            for oOpacity, eValue in zip(oAlphaLayer.opacities, nValue[4]):
+                oOpacity.position, oOpacity.unused1, oOpacity.opacity = eValue
+    alphaLayers = property(get_alphaLayers, set_alphaLayers)
+    def get_vertexTextures(self):
+        numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 14)
+        if(numRecords > 0): return [self.BaseTexture(self._CollectionIndex, self._ModName, self._recordID, 14, x) for x in range(0, numRecords)]
+        else: return []
+    def set_vertexTextures(self, nVertexTextures):
+        diffLength = len(nVertexTextures) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 14)
+        nValues = [nVertexTexture.texture for nVertexTexture in nVertexTextures]
+        while(diffLength < 0):
+            CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 14)
+            diffLength += 1
+        while(diffLength > 0):
+            CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 14)
+            diffLength -= 1
+        for oVertexTexture, nValue in zip(self.vertexTextures, nValues):
+            oVertexTexture.texture = nValue
+    vertexTextures = property(get_vertexTextures, set_vertexTextures)
+    def get_positions(self):
+        return [[self.Positions(self._CollectionIndex, self._ModName, self._recordID, row, column) for column in range(0,33)] for row in range(0,33)]
+    def set_positions(self, nPositions):
+        if(len(nPositions) != 33):
+            return
+        nValues = [(nPosition.height, nPosition.normalX, nPosition.normalY, nPosition.normalZ, nPosition.red, nPosition.green,
+                    nPosition.blue, nPosition.baseTexture, nPosition.layer1Texture, nPosition.layer1Opacity, nPosition.layer2Texture, nPosition.layer2Opacity,
+                    nPosition.layer3Texture, nPosition.layer3Opacity, nPosition.layer4Texture, nPosition.layer4Opacity, nPosition.layer5Texture, nPosition.layer5Opacity,
+                    nPosition.layer6Texture, nPosition.layer6Opacity, nPosition.layer7Texture, nPosition.layer7Opacity, nPosition.layer8Texture, nPosition.layer8Opacity) for nPosition in nPositions]
+        for oPosition, nValue in zip(self.Position, nValues):
+            oPosition.height, oPosition.normalX, oPosition.normalY, oPosition.normalZ, oPosition.red, oPosition.green,
+            oPosition.blue, oPosition.baseTexture, oPosition.layer1Texture, oPosition.layer1Opacity, oPosition.layer2Texture, oPosition.layer2Opacity,
+            oPosition.layer3Texture, oPosition.layer3Opacity, oPosition.layer4Texture, oPosition.layer4Opacity, oPosition.layer5Texture, oPosition.layer5Opacity,
+            oPosition.layer6Texture, oPosition.layer6Opacity, oPosition.layer7Texture, oPosition.layer7Opacity, oPosition.layer8Texture, oPosition.layer8Opacity = nValue
+    Position = property(get_positions, set_positions)
+
 class DIALRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyDIALRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -11236,7 +11984,7 @@ class DIALRecord(BaseRecord):
         return None
     def createINFORecord(self):
         FID = CBash.CreateINFORecord(self._CollectionIndex, self._ModName, self._recordID)
-        if(FID): return INFORecord(self._CollectionIndex, self._ModName, FID, self._recordID)
+        if(FID): return INFORecord(self._CollectionIndex, self._ModName, FID)
         return None
     def get_quests(self):
         numRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 6)
@@ -11268,7 +12016,7 @@ class DIALRecord(BaseRecord):
         if(numSubRecords > 0):
             cRecords = (POINTER(c_uint) * numSubRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 9, byref(cRecords))
-            return [INFORecord(self._CollectionIndex, self._ModName, x.contents.value, self._recordID) for x in cRecords]
+            return [INFORecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
         else: return []
     def get_IsTopic(self):
         return (self.dialType == 0)
@@ -11313,14 +12061,14 @@ class DIALRecord(BaseRecord):
         elif(self.get_IsMisc()): self.IsTopic = True
     IsMisc = property(get_IsMisc, set_IsMisc)
     
-class INFORecord(SubRecord):
+class INFORecord(BaseRecord):
     def CopyAsOverride(self, targetDIAL):
-        FID = CBash.CopyINFORecord(self._CollectionIndex, self._ModName, self._recordID, self._parentID, targetDIAL._ModName, targetDIAL._recordID, c_bool(True))
-        if(FID): return INFORecord(self._CollectionIndex, targetDIAL._ModName, FID, targetDIAL._recordID)
+        FID = CBash.CopyINFORecord(self._CollectionIndex, self._ModName, self._recordID, targetDIAL._ModName, targetDIAL._recordID, c_bool(True))
+        if(FID): return INFORecord(self._CollectionIndex, targetDIAL._ModName, FID)
         return None
     def CopyAsNew(self, targetDIAL):
-        FID = CBash.CopyINFORecord(self._CollectionIndex, self._ModName, self._recordID, self._parentID, targetDIAL._ModName, targetDIAL._recordID, c_bool(False))
-        if(FID): return INFORecord(self._CollectionIndex, targetDIAL._ModName, FID, targetDIAL._recordID)
+        FID = CBash.CopyINFORecord(self._CollectionIndex, self._ModName, self._recordID, targetDIAL._ModName, targetDIAL._recordID, c_bool(False))
+        if(FID): return INFORecord(self._CollectionIndex, targetDIAL._ModName, FID)
         return None
     class Response(object):
         def __init__(self, CollectionIndex, ModName, recordID, listIndex):
@@ -11586,22 +12334,21 @@ class INFORecord(SubRecord):
             self._listIndex = listIndex
         def get_reference(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 25, self._listIndex, 1).contents.value
+            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 24, self._listIndex, 1).contents.value
         def set_reference(self, nValue):
-            CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 25, self._listIndex, 1, nValue)
+            CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 24, self._listIndex, 1, nValue)
         reference = property(get_reference, set_reference)
         def get_IsSCRO(self):
             CBash.ReadFIDListField.restype = POINTER(c_bool)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 25, self._listIndex, 2).contents.value
+            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 24, self._listIndex, 2).contents.value
         def set_IsSCRO(self, nValue):
             if isinstance(nValue, bool):
-                if(nValue): CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 25, self._listIndex, 2, 1)
-                else: CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 25, self._listIndex, 2, 0)
-            else: CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 25, self._listIndex, 2, nValue)
+                if(nValue): CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 24, self._listIndex, 2, 1)
+                else: CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 24, self._listIndex, 2, 0)
+            else: CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 24, self._listIndex, 2, nValue)
         IsSCRO = property(get_IsSCRO, set_IsSCRO)
     def newResponsesElement(self):
         listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 13)
-        print listIndex
         if(listIndex == -1): return None
         return self.Response(self._CollectionIndex, self._ModName, self._recordID, listIndex)
     def newConditionsElement(self):
@@ -11609,7 +12356,7 @@ class INFORecord(SubRecord):
         if(listIndex == -1): return None
         return self.Condition(self._CollectionIndex, self._ModName, self._recordID, 14, listIndex)
     def newReferencesElement(self):
-        listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 25)
+        listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 24)
         if(listIndex == -1): return None
         return self.Reference(self._CollectionIndex, self._ModName, self._recordID, listIndex) 
     def get_dialType(self):
@@ -11724,88 +12471,77 @@ class INFORecord(SubRecord):
     def set_linksFrom(self, nValue):
         CBash.SetFIDFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 16, struct.pack('I' * len(nValue), *nValue), len(nValue))
     linksFrom = property(get_linksFrom, set_linksFrom)
-    def get_schd_p(self):
+    def get_unused2(self):
         numRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 17)
         if(numRecords > 0):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 17, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
         else: return []
-    def set_schd_p(self, nValue):
-        length = len(nValue)
-        CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 17, struct.pack('B' * length, *nValue), length)
-    schd_p = property(get_schd_p, set_schd_p)
-    def get_unused2(self):
-        numRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 18)
-        if(numRecords > 0):
-            cRecords = POINTER(c_ubyte * numRecords)()
-            CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 18, byref(cRecords))
-            return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
     def set_unused2(self, nValue):
-        CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 18, struct.pack('4B', *nValue), 4)
+        CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 17, struct.pack('4B', *nValue), 4)
     unused2 = property(get_unused2, set_unused2)
     def get_numRefs(self):
+        CBash.ReadFIDField.restype = POINTER(c_uint)
+        retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 18)
+        if(retValue): return retValue.contents.value
+        else: return None
+    def set_numRefs(self, nValue):
+        CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 18, nValue)
+    numRefs = property(get_numRefs, set_numRefs)
+    def get_compiledSize(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 19)
         if(retValue): return retValue.contents.value
         else: return None
-    def set_numRefs(self, nValue):
+    def set_compiledSize(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 19, nValue)
-    numRefs = property(get_numRefs, set_numRefs)
-    def get_compiledSize(self):
+    compiledSize = property(get_compiledSize, set_compiledSize)
+    def get_lastIndex(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 20)
         if(retValue): return retValue.contents.value
         else: return None
-    def set_compiledSize(self, nValue):
+    def set_lastIndex(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 20, nValue)
-    compiledSize = property(get_compiledSize, set_compiledSize)
-    def get_lastIndex(self):
+    lastIndex = property(get_lastIndex, set_lastIndex)
+    def get_scriptType(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 21)
         if(retValue): return retValue.contents.value
         else: return None
-    def set_lastIndex(self, nValue):
-        CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 21, nValue)
-    lastIndex = property(get_lastIndex, set_lastIndex)
-    def get_scriptType(self):
-        CBash.ReadFIDField.restype = POINTER(c_uint)
-        retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 22)
-        if(retValue): return retValue.contents.value
-        else: return None
     def set_scriptType(self, nValue):
-        CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 22, nValue)
+        CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 21, nValue)
     scriptType = property(get_scriptType, set_scriptType)
     def get_compiled_p(self):
-        numRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 23)
+        numRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 22)
         if(numRecords > 0):
             cRecords = POINTER(c_ubyte * numRecords)()
-            CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 23, byref(cRecords))
+            CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 22, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
         else: return []
     def set_compiled_p(self, nValue):
         length = len(nValue)
-        CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 23, struct.pack('B' * length, *nValue), length)
+        CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 22, struct.pack('B' * length, *nValue), length)
     compiled_p = property(get_compiled_p, set_compiled_p)
     def get_scriptText(self):
         CBash.ReadFIDField.restype = c_char_p
-        return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 24)
+        return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 23)
     def set_scriptText(self, nValue):
-        CBash.SetFIDFieldStr(self._CollectionIndex, self._ModName, self._recordID, 24, nValue)
+        CBash.SetFIDFieldStr(self._CollectionIndex, self._ModName, self._recordID, 23, nValue)
     scriptText = property(get_scriptText, set_scriptText)
     def get_references(self):
-        numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 25)
+        numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 24)
         if(numRecords > 0): return [self.Reference(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
         else: return []
     def set_references(self, nReferences):
-        diffLength = len(nReferences) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 25)
+        diffLength = len(nReferences) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 24)
         nValues = [(nReference.reference,nReference.IsSCRO) for nReference in nReferences]
         while(diffLength < 0):
-            CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 25)
+            CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 24)
             diffLength += 1
         while(diffLength > 0):
-            CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 25)
+            CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 24)
             diffLength -= 1
         for oReference, nValue in zip(self.references, nValues):
             oReference.reference, oReference.IsSCRO = nValue  
@@ -15578,7 +16314,7 @@ class ModFile(object):
         if(FID): return REGNRecord(self._CollectionIndex, self._ModName, FID)
         return None
     def createCELLRecord(self):
-        FID = CBash.CreateCELLRecord(self._CollectionIndex, self._ModName)
+        FID = CBash.CreateCELLRecord(self._CollectionIndex, self._ModName, 0, c_bool(False))
         if(FID): return CELLRecord(self._CollectionIndex, self._ModName, FID)
         return None
     def createWRLDRecord(self):

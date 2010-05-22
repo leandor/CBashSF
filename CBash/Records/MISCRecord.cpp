@@ -139,7 +139,7 @@ unsigned int MISCRecord::GetSize()
     return TotSize;
     }
 
-int MISCRecord::WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer)
+int MISCRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
     {
     if(EDID.IsLoaded())
         _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);

@@ -170,7 +170,7 @@ unsigned int WTHRRecord::GetSize()
     return TotSize;
     }
 
-int WTHRRecord::WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer)
+int WTHRRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
     {
     if(EDID.IsLoaded())
         _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);

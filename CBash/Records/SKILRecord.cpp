@@ -147,7 +147,7 @@ unsigned int SKILRecord::GetSize()
     return TotSize;
     }
 
-int SKILRecord::WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer)
+int SKILRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
     {
     if(EDID.IsLoaded())
         _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);

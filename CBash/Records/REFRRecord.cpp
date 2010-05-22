@@ -381,7 +381,7 @@ unsigned int REFRRecord::GetSize()
     return TotSize;
     }
 
-int REFRRecord::WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer)
+int REFRRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
     {
     char null = 0;
 

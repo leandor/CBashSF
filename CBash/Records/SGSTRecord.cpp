@@ -192,7 +192,7 @@ unsigned int SGSTRecord::GetSize()
     return TotSize;
     }
 
-int SGSTRecord::WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer)
+int SGSTRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
     {
     if(EDID.IsLoaded())
         _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);

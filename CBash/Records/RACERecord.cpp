@@ -891,7 +891,7 @@ unsigned int RACERecord::GetSize()
     return TotSize;
     }
 
-int RACERecord::WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer)
+int RACERecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
     {
     unsigned int curINDX = 0;
     if(EDID.IsLoaded())

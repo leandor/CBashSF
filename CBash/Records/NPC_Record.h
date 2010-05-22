@@ -254,8 +254,8 @@ class NPC_Record : public Record
         RAWBYTES FGTS;
         ReqRecordField<NPC_FNAM> FNAM;
 
-        NPC_Record(bool newRecord=false):Record(newRecord) {}
-        NPC_Record(const unsigned int &newFormID):Record(newFormID) {}
+        NPC_Record(bool newRecord=false):Record(newRecord) {IsCompressed(true);}
+        NPC_Record(const unsigned int &newFormID):Record(newFormID) {IsCompressed(true);}
         NPC_Record(NPC_Record *srcRecord):Record(true)
             {
             flags = srcRecord->flags;
@@ -450,7 +450,7 @@ class NPC_Record : public Record
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();
         unsigned int GetType() {return eNPC_;}
-        int WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
 
         bool IsFemale()
             {

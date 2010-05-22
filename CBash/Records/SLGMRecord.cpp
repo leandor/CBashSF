@@ -156,7 +156,7 @@ unsigned int SLGMRecord::GetSize()
     return TotSize;
     }
 
-int SLGMRecord::WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer)
+int SLGMRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
     {
     if(EDID.IsLoaded())
         _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);

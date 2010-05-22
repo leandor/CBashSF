@@ -141,8 +141,8 @@ class PGRDRecord : public Record
         std::vector<PGRDPGRI> PGRI;
         std::vector<PGRDPGRL *> PGRL;
 
-        PGRDRecord(bool newRecord=false):Record(newRecord) {}
-        PGRDRecord(const unsigned int &newFormID):Record(newFormID) {}
+        PGRDRecord(bool newRecord=false):Record(newRecord) {IsCompressed(true);}
+        PGRDRecord(const unsigned int &newFormID):Record(newFormID) {IsCompressed(true);}
         PGRDRecord(PGRDRecord *srcRecord):Record(true)
             {
             flags = srcRecord->flags;
@@ -220,5 +220,5 @@ class PGRDRecord : public Record
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();
         unsigned int GetType() {return ePGRD;}
-        int WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
     };

@@ -171,7 +171,7 @@ unsigned int PGRDRecord::GetSize()
     return TotSize;
     }
 
-int PGRDRecord::WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer)
+int PGRDRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
     {
     if(DATA.IsLoaded())
         _writeSubRecord(buffer, eDATA, DATA.GetSize(), &DATA.value, usedBuffer);

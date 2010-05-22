@@ -102,7 +102,7 @@ unsigned int STATRecord::GetSize()
     return TotSize;
     }
 
-int STATRecord::WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer)
+int STATRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
     {
     if(EDID.IsLoaded())
         _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);

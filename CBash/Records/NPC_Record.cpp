@@ -318,7 +318,7 @@ unsigned int NPC_Record::GetSize()
     return TotSize;
     }
 
-int NPC_Record::WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer)
+int NPC_Record::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
     {
     unsigned int cSize = 0;
     if(EDID.IsLoaded())

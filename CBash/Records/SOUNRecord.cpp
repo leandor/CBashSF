@@ -96,7 +96,7 @@ unsigned int SOUNRecord::GetSize()
     return TotSize;
     }
 
-int SOUNRecord::WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer)
+int SOUNRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
     {
     if(EDID.IsLoaded())
         _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);

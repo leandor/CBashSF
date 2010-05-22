@@ -156,7 +156,7 @@ unsigned int WEAPRecord::GetSize()
     return TotSize;
     }
 
-int WEAPRecord::WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer)
+int WEAPRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
     {
     if(EDID.IsLoaded())
         _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);

@@ -103,14 +103,14 @@ class TES4Record : public Record
         unsigned int GetFieldArraySize(const unsigned int Field);
         void GetFieldArray(const unsigned int Field, void **FieldValues);
 
-
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();
         unsigned int GetType() {return eTES4;}
-        int WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
         #ifdef _DEBUG
         void Debug(int debugLevel);
         #endif
+
         bool IsESM()
             {
             if(!IsLoaded()) return false;

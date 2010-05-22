@@ -84,7 +84,7 @@ unsigned int SBSPRecord::GetSize()
     return TotSize;
     }
 
-int SBSPRecord::WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer)
+int SBSPRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
     {
     if(EDID.IsLoaded())
         _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);

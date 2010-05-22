@@ -213,7 +213,7 @@ class WRLDRecord : public Record
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();
         unsigned int GetType() {return eWRLD;}
-        int WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
 
         bool IsSmallWorld()
             {
@@ -335,36 +335,4 @@ class WRLDRecord : public Record
             if(!SNAM.IsLoaded()) return;
             SNAM->flags = Type;
             }
-    };
-
-struct sortBlocks
-    {
-     bool operator()(const unsigned int &l, const unsigned int &r) const
-        {
-        return l < r;
-        }
-    };
-
-struct WritableSubBlock
-    {
-    unsigned int size;
-    std::vector<WritableCell> WritableRecords;
-    };
-struct WritableBlock
-    {
-    unsigned int size;
-    std::map<unsigned int, WritableSubBlock, sortBlocks> SubBlock;
-    };
-
-struct WritableWorld
-    {
-    unsigned int WorldGRUPSize;
-    unsigned int WorldSize;
-    unsigned int RoadSize;
-    unsigned int CellSize;
-    unsigned int ChildrenSize;
-    unsigned int PersistentSize;
-    std::vector<Record *> Persistent;
-    std::vector<unsigned int> PersistentSizes;
-    std::map<unsigned int, WritableBlock, sortBlocks> Block;
     };

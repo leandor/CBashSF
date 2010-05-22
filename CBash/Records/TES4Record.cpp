@@ -60,6 +60,7 @@ int TES4Record::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
             case eMAST:
                 curMAST.Read(buffer, subSize, curPos);
                 MAST.push_back(curMAST);
+                curMAST.Unload();
                 break;
             case eDATA:
                 curPos += subSize;
@@ -125,7 +126,7 @@ unsigned int TES4Record::GetSize()
     return TotSize;
     }
 
-int TES4Record::WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer)
+int TES4Record::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
     {
     TES4DATA DATA;
 
