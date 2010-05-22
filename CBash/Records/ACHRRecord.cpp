@@ -179,7 +179,7 @@ unsigned int ACHRRecord::GetSize()
     return TotSize;
     }
 
-int ACHRRecord::WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer)
+int ACHRRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
     {
     char null = 0;
 

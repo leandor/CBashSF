@@ -158,7 +158,7 @@ unsigned int ACRERecord::GetSize()
     return TotSize;
     }
 
-int ACRERecord::WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer)
+int ACRERecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
     {
     char null = 0;
 

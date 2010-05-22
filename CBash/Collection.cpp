@@ -71,7 +71,7 @@ int Collection::AddMod(const char *ModName, bool CreateIfNotExist)
 int Collection::SafeSaveMod(char *ModName)
     {
     _chdir(ModsDir);
-    unsigned char localBuffer[BUFFERSIZE];
+    FileBuffer buffer(BUFFERSIZE);
     //Saves to a temp file, then if successful, renames any existing files, and then renames temp file to ModName
     ModFile *curModFile = NULL;
     errno_t err;
@@ -83,8 +83,6 @@ int Collection::SafeSaveMod(char *ModName)
 
     char *backupName = NULL;
     unsigned int bakAttempts = 0, bakSize = 0;
-    unsigned int usedBuffer = 0;
-    int fh;
 
     for(unsigned int p = 0;p < ModFiles.size();p++)
         if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
@@ -101,44 +99,16 @@ int Collection::SafeSaveMod(char *ModName)
         }
 
     tName[0] = 'x';
-    err = _sopen_s(&fh, tName,  _O_CREAT | _O_WRONLY | _O_BINARY, _SH_DENYWR, _S_IREAD | _S_IWRITE );
 
-    if( err != 0 )
-        {
-        switch(err)
-            {
-            case EACCES:
-                printf("Given path is a directory, or file is read-only, but an open-for-writing operation was attempted.\n");
-                return -1;
-            case EEXIST:
-                printf("_O_CREAT and _O_EXCL flags were specified, but filename already exists.\n");
-                return -1;
-            case EINVAL:
-                printf("Invalid oflag, shflag, or pmode  argument, or pfh or filename was a null pointer.\n");
-                return -1;
-            case EMFILE:
-                printf("No more file descriptors available.\n");
-                return -1;
-            case ENOENT:
-                printf("File or path not found.\n");
-                return -1;
-            default:
-                printf("Unknown error\n");
-                return -1;
-            }
-        _close(fh);
+    if(buffer.open_write(tName) == -1)
         return -1;
-        }
+
     //Return all FormIDs in the mod to a writable state
     CollapseFormIDs(ModName);
+    //Save the mod to temp file, using FileBuffer to write in chunks
+    curModFile->Save(buffer);
 
-    //Save the mod to temp file, using localBuffer to write in chunks
-    curModFile->Save(&fh, localBuffer, usedBuffer);
-
-    //flush the buffer
-    _write(fh, localBuffer, usedBuffer);
-    usedBuffer = 0;
-    _close(fh);
+    buffer.close();
 
     //Return all FormIDs in the mod to an editable state
     ExpandFormIDs(ModName);
@@ -230,6 +200,7 @@ int Collection::SafeSaveMod(char *ModName)
         }
     else
         _utime(ModName, &originalTimes);
+    printf("done\n");
     return 0;
     }
 
@@ -2063,14 +2034,19 @@ unsigned int Collection::CreateREGNRecord(char *ModName)
     return newRecordFID;
     }
 
-unsigned int Collection::CreateCELLRecord(char *ModName, unsigned int parentFID)
+unsigned int Collection::CreateCELLRecord(char *ModName, unsigned int parentFID, bool isWorldCELL)
     {
     ModFile *curModFile = NULL;
     CELLRecord *curRecord = NULL;
     WRLDRecord *parentRecord = NULL;
     unsigned int newRecordFID = 0;
-    if(parentFID != 0)
+    bool hasParent = (parentFID != 0);
+    if(hasParent)
+        {
         LookupRecord(ModName, parentFID, curModFile, parentRecord);
+        if(isWorldCELL && parentRecord->CELL != NULL)
+            return 0;
+        }
     else
         curModFile = LookupModFile(ModName);
 
@@ -2078,16 +2054,16 @@ unsigned int Collection::CreateCELLRecord(char *ModName, unsigned int parentFID)
         {
         newRecordFID = NextFreeExpandedFID(curModFile);
         curRecord = new CELLRecord(newRecordFID);
-        if(parentRecord != NULL)
+        curRecord->IsInterior(!hasParent);
+        if(hasParent)
             {
-            parentRecord->CELLS.push_back(curRecord);
-            curRecord->IsInterior(false);
+            if(isWorldCELL)
+                parentRecord->CELL = curRecord;
+            else
+                parentRecord->CELLS.push_back(curRecord);
             }
         else
-            {
             curModFile->CELL.Records.push_back(curRecord);
-            curRecord->IsInterior(true);
-            }
         FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
         }
     return newRecordFID;
@@ -3895,17 +3871,22 @@ unsigned int Collection::CopyREGNRecord(char *ModName, unsigned int srcRecordFID
     return copyRecord->formID;
     }
 
-unsigned int Collection::CopyCELLRecord(char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride)
+unsigned int Collection::CopyCELLRecord(char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride, bool isWorldCELL)
     {
     ModFile *srcMod = NULL;
     ModFile *destMod = NULL;
     WRLDRecord *destParentRecord = NULL;
     CELLRecord *srcRecord = NULL;
     CELLRecord *copyRecord = NULL;
+    bool hasParent = (destParentFID != 0);
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
-    if(destParentFID != 0)
+    if(hasParent)
+        {
         LookupRecord(destModName, destParentFID, destMod, destParentRecord);
+        if(isWorldCELL && destParentRecord->CELL != NULL)
+            return 0;
+        }
     else
         destMod = LookupModFile(destModName);
 
@@ -3919,16 +3900,16 @@ unsigned int Collection::CopyCELLRecord(char *ModName, unsigned int srcRecordFID
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
 
-    if(destParentRecord != NULL)
+    copyRecord->IsInterior(!hasParent);
+    if(hasParent)
         {
-        destParentRecord->CELLS.push_back(copyRecord);
-        copyRecord->IsInterior(false);
+        if(isWorldCELL)
+            destParentRecord->CELL = copyRecord;
+        else
+            destParentRecord->CELLS.push_back(copyRecord);
         }
     else
-        {
         destMod->CELL.Records.push_back(copyRecord);
-        copyRecord->IsInterior(true);
-        }
 
     if(asOverride)
         destMod->FormIDHandler.AddMaster(srcRecordFID);
@@ -4066,7 +4047,7 @@ unsigned int Collection::CopyWRLDRecord(char *ModName, unsigned int srcRecordFID
     ModFile *destMod = NULL;
     WRLDRecord *srcRecord = NULL;
     WRLDRecord *copyRecord = NULL;
-    CELLRecord *worldCellRecord = NULL;
+    //CELLRecord *worldCellRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
     destMod = LookupModFile(destModName);
@@ -4079,16 +4060,16 @@ unsigned int Collection::CopyWRLDRecord(char *ModName, unsigned int srcRecordFID
     srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
 
     copyRecord = new WRLDRecord(srcRecord);
-    if(srcRecord->CELL != NULL)
-        {
-        srcRecord->CELL->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
-        copyRecord->CELL = new CELLRecord(srcRecord->CELL);
-        }
+    //if(srcRecord->CELL != NULL)
+    //    {
+    //    srcRecord->CELL->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    //    copyRecord->CELL = new CELLRecord(srcRecord->CELL);
+    //    }
     if(!asOverride)
         {
         copyRecord->formID = NextFreeExpandedFID(destMod);
-        if(copyRecord->CELL != NULL)
-            copyRecord->CELL->formID = NextFreeExpandedFID(destMod);
+        //if(copyRecord->CELL != NULL)
+        //    copyRecord->CELL->formID = NextFreeExpandedFID(destMod);
         }
 
     destMod->WRLD.Records.push_back(copyRecord);

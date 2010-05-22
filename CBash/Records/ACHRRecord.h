@@ -55,13 +55,7 @@ class ACHRRecord : public Record
         OptRecordField<GENXSCL> XSCL;
         ReqRecordField<GENPOSDATA> DATA;
         ACHRRecord(bool newRecord=false):Record(newRecord) {IsPersistent(true);}
-        ACHRRecord(const unsigned int &newFormID):Record(true)
-            {
-            flags = 0;
-            formID = newFormID;
-            flagsUnk = 0;
-            IsPersistent(true);
-            }
+        ACHRRecord(const unsigned int &newFormID):Record(newFormID) {IsPersistent(true);}
         ACHRRecord(ACHRRecord *srcRecord):Record(true)
             {
             flags = srcRecord->flags;
@@ -140,7 +134,7 @@ class ACHRRecord : public Record
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();
         unsigned int GetType() {return eACHR;}
-        int WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
         bool IsOppositeParent()
             {
             if(!XESP.IsLoaded()) return false;

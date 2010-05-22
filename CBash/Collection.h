@@ -310,7 +310,7 @@ class Collection
         unsigned int CreateWTHRRecord(char *ModName);
         unsigned int CreateCLMTRecord(char *ModName);
         unsigned int CreateREGNRecord(char *ModName);
-        unsigned int CreateCELLRecord(char *ModName, unsigned int parentFID);
+        unsigned int CreateCELLRecord(char *ModName, unsigned int parentFID, bool isWorldCELL);
         unsigned int CreateACHRRecord(char *ModName, unsigned int parentFID);
         unsigned int CreateACRERecord(char *ModName, unsigned int parentFID);
         unsigned int CreateREFRRecord(char *ModName, unsigned int parentFID);
@@ -375,7 +375,7 @@ class Collection
         unsigned int CopyWTHRRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
         unsigned int CopyCLMTRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
         unsigned int CopyREGNRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyCELLRecord(char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride);
+        unsigned int CopyCELLRecord(char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride, bool isWorldCELL);
         unsigned int CopyACHRRecord(char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride);
         unsigned int CopyACRERecord(char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride);
         unsigned int CopyREFRRecord(char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride);

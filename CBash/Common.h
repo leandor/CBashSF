@@ -76,6 +76,8 @@ inline void _readBuffer(void *_DstBuf, const void *_SrcBuf, unsigned int _MaxCha
     memcpy(_DstBuf,(unsigned char*)_SrcBuf+_BufPos,_MaxCharCount);
     _BufPos += _MaxCharCount;
     }
+void _writeBuffer(void *_DstBuf, const void *_SrcBuf, unsigned int _MaxCharCount, unsigned int &_BufPos);
+void _writeSubRecord(void *_DstBuf, unsigned int _Type, unsigned int _MaxCharCount, const void *_SrcBuf, unsigned int &_BufPos);
 
 template<class T>
 struct RecordField
@@ -567,11 +569,91 @@ struct sortFormID
 
 bool FileExists(const char *FileName);
 
-void _assignBuffer(void **_DstBuf, unsigned char *_SrcBuf, unsigned int _MaxCharCount, unsigned int &_BufPos);
-void _readBuffer(void *_DstBuf, const void *_SrcBuf, unsigned int _MaxCharCount, unsigned int &_BufPos);
-void _writeBuffer(void *_DstBuf, const void *_SrcBuf, unsigned int _MaxCharCount, unsigned int &_BufPos);
-void _writeSubRecord(void *_DstBuf, unsigned int _Type, unsigned int _MaxCharCount, const void *_SrcBuf, unsigned int &_BufPos);
+class WritableRecord
+    {
+    public:
+        unsigned int recSize;
+        unsigned char *recBuffer;
+        WritableRecord():recSize(0), recBuffer(NULL) {}
+    };
 
+class WritableDialogue : public WritableRecord
+    {
+    public:
+        unsigned int ChildrenSize;
+        std::vector<WritableRecord> Children;
+        WritableDialogue():WritableRecord(), ChildrenSize(0) {}
+    };
+
+class WritableCell : public WritableRecord
+    {
+    public:
+        unsigned int formID;
+        unsigned int ChildrenSize;
+        unsigned int PersistentSize;
+        unsigned int VWDSize;
+        unsigned int TemporarySize;
+        std::vector<WritableRecord> Persistent;
+        std::vector<WritableRecord> VWD;
+        std::vector<WritableRecord> Temporary;
+        WritableCell():WritableRecord(), formID(0), ChildrenSize(0), PersistentSize(0), VWDSize(0), TemporarySize(0) {}
+    };
+
+class WritableWorld : public WritableRecord
+    {
+    public:
+        struct sortBlocks
+            {
+             bool operator()(const unsigned int &l, const unsigned int &r) const
+                {
+                return l < r;
+                }
+            };
+        struct WritableBlock
+            {
+            struct WritableSubBlock
+                {
+                unsigned int size;
+                std::vector<WritableCell> CELLS;
+                };
+            unsigned int size;
+            std::map<unsigned int, WritableSubBlock, sortBlocks> SubBlock;
+            };
+        unsigned int formID;
+        unsigned int WorldGRUPSize;
+        WritableRecord ROAD;
+        WritableCell CELL;
+        std::map<unsigned int, WritableBlock, sortBlocks> Block;
+        WritableWorld():WritableRecord(), formID(0), WorldGRUPSize(0) {}
+    };
+
+class FileBuffer
+    {
+    protected:
+        unsigned char *_Buffer;
+        unsigned int _BufSize;
+        unsigned int _BufPos;
+        int fh;
+    public:
+        FileBuffer():_Buffer(NULL), _BufSize(0), _BufPos(0), fh(-1) {}
+        FileBuffer(unsigned int nSize):_Buffer(NULL), _BufSize(nSize), _BufPos(0), fh(-1)
+            {
+            if(_BufSize == 0)
+                return;
+            _Buffer = new unsigned char[_BufSize];
+            }
+        ~FileBuffer()
+            {
+            delete []_Buffer;
+            }
+
+        int open_write(const char *FileName);
+        void close();
+        void resize(unsigned int nSize);
+        void write(const void *_SrcBuf, unsigned int _SrcSize);
+        void write(WritableRecord &writeRecord);
+        void flush();
+    };
 
 enum API_FieldTypes {
     UNKNOWN_FIELD = -1,

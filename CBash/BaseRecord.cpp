@@ -35,22 +35,13 @@ int Record::Read(unsigned char *fileBuffer, _FormIDHandler &FormIDHandler)
     if (IsCompressed())
         {
         if(expandedRecSize >= BUFFERSIZE)
-            {
-            #ifdef _DEBUG
-            printf("!!!COMPRESSED RECORD: recStart: %u, formID: %08X, hSize:%u, recSize:%u\n", recStart, formID, Header.Header.size, recSize);
-            printf("New Buffer:%u\n", recSize);
-            #endif
             buffer = new unsigned char[expandedRecSize];
-            }
         else
-            {
             buffer = &localBuffer[0];
-            }
         uncompress(buffer, (uLongf*)&expandedRecSize, &fileBuffer[recStart + 4], recSize - 4);
         ParseRecord(buffer, expandedRecSize);
         if(buffer != &localBuffer[0])
             delete [] buffer;
-        IsCompressed(false);
         }
     else
         ParseRecord(&fileBuffer[recStart], recSize);
@@ -58,51 +49,38 @@ int Record::Read(unsigned char *fileBuffer, _FormIDHandler &FormIDHandler)
     return 0;
     }
 
-void Record::WriteHeader(int *fh, unsigned char *buffer, unsigned int curRecType, unsigned int &recSize, unsigned int &usedBuffer)
+int Record::Write(WritableRecord &writeRecord)
     {
-    IsLoaded(false);
-    _writeBuffer(buffer, &curRecType, 4, usedBuffer);
-    _writeBuffer(buffer, &recSize, 4, usedBuffer);
-    _writeBuffer(buffer, &flags, 4, usedBuffer);
-    _writeBuffer(buffer, &formID, 4, usedBuffer);
-    _writeBuffer(buffer, &flagsUnk, 4, usedBuffer);
-    IsLoaded(true);
-    return;
-    }
+    if(!IsLoaded())
+        return -1;
+    unsigned long compSize = 0;
+    unsigned char *compBuffer = NULL;
+    unsigned int usedBuffer = 0;
+    writeRecord.recSize = GetSize();
+    //Make the new buffer.
+    writeRecord.recBuffer = new unsigned char[writeRecord.recSize + 20];
+    //Write the record to the new buffer
+    WriteRecord(&writeRecord.recBuffer[20], usedBuffer);
+    //IsCompressed(true);
+    if(IsCompressed())
+        {
+        compSize = compressBound(writeRecord.recSize);
+        compBuffer = new unsigned char[compSize + 24];
+        memcpy(&compBuffer[20], &writeRecord.recSize, 4);
+        compress2(&compBuffer[24], &compSize, &writeRecord.recBuffer[20], writeRecord.recSize, 6);
+        delete []writeRecord.recBuffer;
+        writeRecord.recBuffer = compBuffer;
+        writeRecord.recSize = compSize + 4;
+        }
 
-int Record::Write(int *fh, unsigned char *buffer, unsigned int &recSize, unsigned int &usedBuffer)
-    {
-    unsigned char *fileBuffer = NULL;
-    unsigned int buffTemp = recSize + 620;
-    if((usedBuffer + buffTemp) > BUFFERSIZE) //600 should give enough space for any XXXX records that might be made
-        {
-        //Flush the buffer if it is getting full
-        _write(*fh, buffer, usedBuffer);
-        usedBuffer = 0;
-        }
-    if(buffTemp < BUFFERSIZE)
-        {
-        WriteHeader(fh, buffer, GetType(), recSize, usedBuffer);
-        WriteRecord(fh, buffer, usedBuffer);
-        }
-    else
-        {
-        #ifdef _DEBUG
-        printf("!!!LARGE RECORD FOUND!!!: %s, %i\n", PrintFormID(formID), buffTemp);
-        #endif
-        //If the record is larger than an empty buffer, allocate one and use that instead.
-        //First, flush the existing buffer
-        _write(*fh, buffer, usedBuffer);
-        usedBuffer = 0;
-        //Make the new buffer. It is given extra space in case of excess XXXX records
-        fileBuffer = new unsigned char[buffTemp + 1800];
-        buffTemp = 0;
-        //Write the record to the new buffer
-        WriteHeader(fh, fileBuffer, GetType(), recSize, buffTemp);
-        WriteRecord(fh, fileBuffer, buffTemp);
-        //Flush the new buffer, and delete it
-        _write(*fh, fileBuffer, buffTemp);
-        delete []fileBuffer;
-        }
+    IsLoaded(false);
+    usedBuffer = GetType();
+    memcpy(&writeRecord.recBuffer[0], &usedBuffer, 4);
+    memcpy(&writeRecord.recBuffer[4], &writeRecord.recSize, 4);
+    memcpy(&writeRecord.recBuffer[8], &flags, 4);
+    memcpy(&writeRecord.recBuffer[12], &formID, 4);
+    memcpy(&writeRecord.recBuffer[16], &flagsUnk, 4);
+    IsLoaded(true);
+
     return 0;
     }

@@ -147,7 +147,7 @@ unsigned int AMMORecord::GetSize()
     return TotSize;
     }
 
-int AMMORecord::WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer)
+int AMMORecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
     {
     if(EDID.IsLoaded())
         _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);

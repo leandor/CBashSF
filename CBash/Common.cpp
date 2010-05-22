@@ -215,13 +215,11 @@ bool FileExists(const char *FileName)
 //    return ( _stricmp(l,r) == 0 );
 //    }
 
-
-
 void _writeBuffer(void *_DstBuf, const void *_SrcBuf, unsigned int _MaxCharCount, unsigned int &_BufPos)
     {
-    if(_SrcBuf == NULL)
+    if(_SrcBuf == NULL || _MaxCharCount == 0)
         return;
-    memcpy((unsigned char*)_DstBuf+_BufPos,_SrcBuf,_MaxCharCount);
+    memcpy((unsigned char*)_DstBuf + _BufPos, _SrcBuf, _MaxCharCount);
     _BufPos += _MaxCharCount;
     }
 
@@ -247,6 +245,97 @@ void _writeSubRecord(void *_DstBuf, unsigned int _Type, unsigned int _MaxCharCou
     _writeBuffer(_DstBuf, _SrcBuf, _MaxCharCount, _BufPos);
     return;
     }
+
+int FileBuffer::open_write(const char *FileName)
+    {
+    if(fh != -1)
+        return -1;
+    errno_t err = _sopen_s(&fh, FileName, _O_CREAT | _O_WRONLY | _O_BINARY, _SH_DENYWR, _S_IREAD | _S_IWRITE );
+    if( err != 0 )
+        {
+        switch(err)
+            {
+            case EACCES:
+                printf("Given path is a directory, or file is read-only, but an open-for-writing operation was attempted.\n");
+                return -1;
+            case EEXIST:
+                printf("_O_CREAT and _O_EXCL flags were specified, but filename already exists.\n");
+                return -1;
+            case EINVAL:
+                printf("Invalid oflag, shflag, or pmode  argument, or pfh or filename was a null pointer.\n");
+                return -1;
+            case EMFILE:
+                printf("No more file descriptors available.\n");
+                return -1;
+            case ENOENT:
+                printf("File or path not found.\n");
+                return -1;
+            default:
+                printf("Unknown error\n");
+                return -1;
+            }
+        _close(fh);
+        return -1;
+        }
+    return 0;
+    }
+
+void FileBuffer::close()
+    {
+    if(fh == -1 || _Buffer == NULL)
+        return;
+    flush();
+    _close(fh);
+    return;
+    }
+
+void FileBuffer::resize(unsigned int nSize)
+    {
+    flush();
+    delete []_Buffer;
+    _BufSize = nSize;
+    _Buffer = new unsigned char[_BufSize];
+    return;
+    }
+
+void FileBuffer::write(const void *_SrcBuf, unsigned int _SrcSize)
+    {
+    if(fh == -1 || _SrcBuf == NULL || _SrcSize == 0)
+        return;
+    //Flush the buffer if it is getting full
+    if((_BufPos + _SrcSize + 40) >= _BufSize)
+        flush();
+    //Use the buffer if there's room
+    if(_SrcSize + 40 < _BufSize)
+        {
+        memcpy(_Buffer + _BufPos, _SrcBuf, _SrcSize);
+        _BufPos += _SrcSize;
+        }
+    else
+        {
+        //Otherwise, flush the buffer and write directly to disk.
+        flush();
+        _write(fh, _SrcBuf, _SrcSize);
+        }
+    return;
+    }
+
+void FileBuffer::write(WritableRecord &writeRecord)
+    {
+    write(writeRecord.recBuffer, writeRecord.recSize + 20);
+    delete []writeRecord.recBuffer;
+    return;
+    }
+
+void FileBuffer::flush()
+    {
+    if(fh == -1 || _Buffer == NULL || _BufPos == 0)
+        return;
+    _write(fh, _Buffer, _BufPos);
+    _BufPos = 0;
+    return;
+    }
+
 
 #ifdef _DEBUG
 void PrintIndent(const unsigned int &indentation)

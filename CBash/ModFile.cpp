@@ -72,6 +72,333 @@ int ModFile::LoadTES4()
     return 1;
     }
 
+void ModFile::UpdateFormCount()
+    {
+    unsigned int formCount = 0, GRUPCount = 0, childCount = 0;
+    GRUPCount = (unsigned int)GMST.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)GLOB.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)CLAS.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)FACT.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)HAIR.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)EYES.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)RACE.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)SOUN.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)SKIL.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)MGEF.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)SCPT.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)LTEX.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)ENCH.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)SPEL.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)BSGN.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)ACTI.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)APPA.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)ARMO.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)BOOK.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)CLOT.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)CONT.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)DOOR.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)INGR.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)LIGH.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)MISC.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)STAT.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)GRAS.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)TREE.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)FLOR.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)FURN.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)WEAP.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)AMMO.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)NPC_.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)CREA.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)LVLC.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)SLGM.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)KEYM.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)ALCH.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)SBSP.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)SGST.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)LVLI.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)WTHR.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)CLMT.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)REGN.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+
+    GRUPCount = (unsigned int)CELL.Records.size();
+    if(GRUPCount)
+        {
+        ++formCount += GRUPCount;
+        childCount = 0;
+        std::vector<unsigned int> BlockHeaders(10, 0);
+        std::vector< std::vector<unsigned int> > SubBlockHeaders(10, std::vector<unsigned int>(10, 0));
+        int ObjectID, BlockIndex, SubBlockIndex;
+        for(unsigned int p = 0; p < GRUPCount; ++p)
+            {
+            bool hasTemp = false, hasVWD = false, hasPersistent = false;
+            if(CELL.Records[p]->PGRD != NULL)
+                ++childCount;
+            childCount += (unsigned int)CELL.Records[p]->REFR.size();
+            for(unsigned int x = 0; x < CELL.Records[p]->REFR.size(); ++x)
+                {
+                if(hasPersistent == false && CELL.Records[p]->REFR[x]->IsPersistent())
+                    hasPersistent = true;
+                else if(hasVWD == false && CELL.Records[p]->REFR[x]->IsVWD())
+                    hasVWD = true;
+                else if(hasTemp == false)
+                    hasTemp = true;
+                else
+                    break;
+                }
+
+            childCount += (unsigned int)CELL.Records[p]->ACHR.size();
+            for(unsigned int x = 0; x < CELL.Records[p]->ACHR.size(); ++x)
+                {
+                if(hasPersistent == false && CELL.Records[p]->ACHR[x]->IsPersistent())
+                    hasPersistent = true;
+                else if(hasVWD == false && CELL.Records[p]->ACHR[x]->IsVWD())
+                    hasVWD = true;
+                else if(hasTemp == false)
+                    hasTemp = true;
+                else
+                    break;
+                }
+            childCount += (unsigned int)CELL.Records[p]->ACRE.size();
+            for(unsigned int x = 0; x < CELL.Records[p]->ACRE.size(); ++x)
+                {
+                if(hasPersistent == false && CELL.Records[p]->ACRE[x]->IsPersistent())
+                    hasPersistent = true;
+                else if(hasVWD == false && CELL.Records[p]->ACRE[x]->IsVWD())
+                    hasVWD = true;
+                else if(hasTemp == false)
+                    hasTemp = true;
+                else
+                    break;
+                }
+            //Account for Children GRUPs
+            if(hasPersistent) ++childCount;
+            if(hasVWD) ++childCount;
+            if(hasTemp) ++childCount;
+            //Account for Children GRUP
+            if(hasPersistent || hasVWD || hasTemp) ++childCount;
+
+            ObjectID = CELL.Records[p]->formID & 0x00FFFFFF;
+            BlockIndex = ObjectID % 10;
+            SubBlockIndex = (ObjectID / 10) % 10;
+            if(BlockHeaders[BlockIndex] == 0)
+                {
+                ++childCount;
+                BlockHeaders[BlockIndex] = 1;
+                }
+            if(SubBlockHeaders[BlockIndex][SubBlockIndex] == 0)
+                {
+                ++childCount;
+                SubBlockHeaders[BlockIndex][SubBlockIndex] = 1;
+                }
+            }
+        if(childCount) ++formCount += childCount;
+        }
+
+    GRUPCount = (unsigned int)WRLD.Records.size();
+    if(GRUPCount)
+        {
+        ++formCount += GRUPCount;
+        childCount = 0;
+        bool hasTemp = false, hasVWD = false, hasPersistent = false, hasWRLDGRUP = false;
+
+        int gridX, gridY, BlockIndex, SubBlockIndex;
+        WritableWorld WriteWorld;
+        unsigned int numCELLS;
+        for(unsigned int x = 0; x < GRUPCount; ++x)
+            {
+            if(WRLD.Records[x]->ROAD != NULL)
+                {
+                ++childCount;
+                hasWRLDGRUP = true;
+                }
+            childCount += numCELLS = (unsigned int)WRLD.Records[x]->CELLS.size();
+            for(unsigned int p = 0; p < numCELLS; ++p)
+                {
+                hasWRLDGRUP = true;
+                hasTemp = false;
+                hasVWD = false;
+                hasPersistent = false;
+                if(WRLD.Records[x]->CELLS[p]->PGRD != NULL)
+                    ++childCount;
+                childCount += (unsigned int)WRLD.Records[x]->CELLS[p]->REFR.size();
+                for(unsigned int z = 0; z < WRLD.Records[x]->CELLS[p]->REFR.size(); ++z)
+                    {
+                    if(hasPersistent == false && WRLD.Records[x]->CELLS[p]->REFR[z]->IsPersistent())
+                        hasPersistent = true;
+                    else if(hasVWD == false && WRLD.Records[x]->CELLS[p]->REFR[z]->IsVWD())
+                        hasVWD = true;
+                    else if(hasTemp == false)
+                        hasTemp = true;
+                    else
+                        break;
+                    }
+
+                childCount += (unsigned int)WRLD.Records[x]->CELLS[p]->ACHR.size();
+                for(unsigned int z = 0; z < WRLD.Records[x]->CELLS[p]->ACHR.size(); ++z)
+                    {
+                    if(hasPersistent == false && WRLD.Records[x]->CELLS[p]->ACHR[z]->IsPersistent())
+                        hasPersistent = true;
+                    else if(hasVWD == false && WRLD.Records[x]->CELLS[p]->ACHR[z]->IsVWD())
+                        hasVWD = true;
+                    else if(hasTemp == false)
+                        hasTemp = true;
+                    else
+                        break;
+                    }
+                childCount += (unsigned int)WRLD.Records[x]->CELLS[p]->ACRE.size();
+                for(unsigned int z = 0; z < WRLD.Records[x]->CELLS[p]->ACRE.size(); ++z)
+                    {
+                    if(hasPersistent == false && WRLD.Records[x]->CELLS[p]->ACRE[z]->IsPersistent())
+                        hasPersistent = true;
+                    else if(hasVWD == false && WRLD.Records[x]->CELLS[p]->ACRE[z]->IsVWD())
+                        hasVWD = true;
+                    else if(hasTemp == false)
+                        hasTemp = true;
+                    else
+                        break;
+                    }
+                //Account for Children GRUPs
+                if(hasPersistent) ++childCount;
+                if(hasVWD) ++childCount;
+                if(hasTemp) ++childCount;
+                //Account for Children GRUP
+                if(hasPersistent || hasVWD || hasTemp) ++childCount;
+
+                gridX = (int)floor(WRLD.Records[x]->CELLS[p]->XCLC.value.posX / 8.0);
+                gridY = (int)floor(WRLD.Records[x]->CELLS[p]->XCLC.value.posY / 8.0);
+                SubBlockIndex = (gridX << 16 & 0xFFFF0000) | (gridY & 0x0000FFFF);
+                gridX = (int)floor(gridX / 4.0);
+                gridY = (int)floor(gridY / 4.0);
+                BlockIndex = (gridX << 16 & 0xFFFF0000) | (gridY & 0x0000FFFF);
+                if(WriteWorld.Block[BlockIndex].size == 0)
+                    {
+                    ++childCount;
+                    WriteWorld.Block[BlockIndex].size = 1;
+                    }
+                if(WriteWorld.Block[BlockIndex].SubBlock[SubBlockIndex].size == 0)
+                    {
+                    ++childCount;
+                    WriteWorld.Block[BlockIndex].SubBlock[SubBlockIndex].size = 1;
+                    }
+                }
+            hasPersistent = false;
+            if(WRLD.Records[x]->CELL != NULL || hasPersistent)
+                {
+                hasWRLDGRUP = true;
+                ++childCount;
+                if(WRLD.Records[x]->CELL != NULL)
+                    {
+                    for(unsigned int z = 0; z < WRLD.Records[x]->CELL->ACHR.size(); ++z)
+                        {
+                        if(WRLD.Records[x]->CELL->ACHR[z]->IsPersistent())
+                            {
+                            ++childCount;
+                            hasPersistent = true;
+                            }
+                        }
+
+                    for(unsigned int z = 0; z < WRLD.Records[x]->CELL->ACRE.size(); ++z)
+                        {
+                        if(WRLD.Records[x]->CELL->ACRE[z]->IsPersistent())
+                            {
+                            ++childCount;
+                            hasPersistent = true;
+                            }
+                        }
+
+                    for(unsigned int z = 0; z < WRLD.Records[x]->CELL->REFR.size(); ++z)
+                        {
+                        if(WRLD.Records[x]->CELL->REFR[z]->IsPersistent())
+                            {
+                            ++childCount;
+                            hasPersistent = true;
+                            }
+                        }
+                    }
+                if(hasPersistent) childCount += 2;
+                }
+            if(hasWRLDGRUP) ++childCount;
+            }
+
+        if(childCount) ++formCount += childCount;
+        }
+
+    GRUPCount = (unsigned int)DIAL.Records.size();
+    if(GRUPCount)
+        {
+        ++formCount += GRUPCount;
+        childCount = 0;
+        for(unsigned int p = 0; p < GRUPCount; ++p)
+            childCount += (unsigned int)DIAL.Records[p]->INFO.size();
+        if(childCount) ++formCount += childCount;
+        }
+
+    GRUPCount = (unsigned int)QUST.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)IDLE.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)PACK.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)CSTY.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)LSCR.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)LVSP.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)ANIO.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)WATR.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+    GRUPCount = (unsigned int)EFSH.Records.size();
+    if(GRUPCount) ++formCount += GRUPCount;
+
+    TES4.HEDR.value.numRecords = formCount;
+    }
+
 int ModFile::Load(boost::threadpool::pool &Threads, const bool &FullLoad)
     {
     enum IgTopRecords {
@@ -565,522 +892,70 @@ void ModFile::ExpandFormIDs()
     EFSH.ExpandFormIDs(FormIDHandler);
     }
 
-int ModFile::Save(int *fh, unsigned char *buffer, unsigned int &usedBuffer)
+int ModFile::Save(FileBuffer &buffer)
     {
-    unsigned int formCount = 0, GRUPCount = 0, CELLSizes = 0, WRLDSizes = 0;
-    std::vector<WritableDialogue> DIALSizes;
-    std::vector< std::vector< std::vector<WritableCell> > > BlockedRecords(10, std::vector< std::vector<WritableCell> > (10, std::vector<WritableCell>()));
-    std::vector<unsigned int> BlockHeaders(10, 0);
-    std::vector< std::vector<unsigned int> > SubBlockHeaders(10, std::vector<unsigned int>(10, 0));
-    std::vector<WritableWorld> WritableWorlds;
-    std::vector<unsigned int> GMSTSizes;
-    std::vector<unsigned int> GLOBSizes;
-    std::vector<unsigned int> CLASSizes;
-    std::vector<unsigned int> FACTSizes;
-    std::vector<unsigned int> HAIRSizes;
-    std::vector<unsigned int> EYESSizes;
-    std::vector<unsigned int> RACESizes;
-    std::vector<unsigned int> SOUNSizes;
-    std::vector<unsigned int> SKILSizes;
-    std::vector<unsigned int> MGEFSizes;
-    std::vector<unsigned int> SCPTSizes;
-    std::vector<unsigned int> LTEXSizes;
-    std::vector<unsigned int> ENCHSizes;
-    std::vector<unsigned int> SPELSizes;
-    std::vector<unsigned int> BSGNSizes;
-    std::vector<unsigned int> ACTISizes;
-    std::vector<unsigned int> APPASizes;
-    std::vector<unsigned int> ARMOSizes;
-    std::vector<unsigned int> BOOKSizes;
-    std::vector<unsigned int> CLOTSizes;
-    std::vector<unsigned int> CONTSizes;
-    std::vector<unsigned int> DOORSizes;
-    std::vector<unsigned int> INGRSizes;
-    std::vector<unsigned int> LIGHSizes;
-    std::vector<unsigned int> MISCSizes;
-    std::vector<unsigned int> STATSizes;
-    std::vector<unsigned int> GRASSizes;
-    std::vector<unsigned int> TREESizes;
-    std::vector<unsigned int> FLORSizes;
-    std::vector<unsigned int> FURNSizes;
-    std::vector<unsigned int> WEAPSizes;
-    std::vector<unsigned int> AMMOSizes;
-    std::vector<unsigned int> NPC_Sizes;
-    std::vector<unsigned int> CREASizes;
-    std::vector<unsigned int> LVLCSizes;
-    std::vector<unsigned int> SLGMSizes;
-    std::vector<unsigned int> KEYMSizes;
-    std::vector<unsigned int> ALCHSizes;
-    std::vector<unsigned int> SBSPSizes;
-    std::vector<unsigned int> SGSTSizes;
-    std::vector<unsigned int> LVLISizes;
-    std::vector<unsigned int> WTHRSizes;
-    std::vector<unsigned int> CLMTSizes;
-    std::vector<unsigned int> REGNSizes;
-    std::vector<unsigned int> QUSTSizes;
-    std::vector<unsigned int> IDLESizes;
-    std::vector<unsigned int> PACKSizes;
-    std::vector<unsigned int> CSTYSizes;
-    std::vector<unsigned int> LSCRSizes;
-    std::vector<unsigned int> LVSPSizes;
-    std::vector<unsigned int> ANIOSizes;
-    std::vector<unsigned int> WATRSizes;
-    std::vector<unsigned int> EFSHSizes;
-    GRUPCount = (unsigned int)GMST.Records.size();
-    if(GRUPCount)
-        {
-        GMST.GetSizes(GMSTSizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)GLOB.Records.size();
-    if(GRUPCount)
-        {
-        GLOB.GetSizes(GLOBSizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)CLAS.Records.size();
-    if(GRUPCount)
-        {
-        CLAS.GetSizes(CLASSizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)FACT.Records.size();
-    if(GRUPCount)
-        {
-        FACT.GetSizes(FACTSizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)HAIR.Records.size();
-    if(GRUPCount)
-        {
-        HAIR.GetSizes(HAIRSizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)EYES.Records.size();
-    if(GRUPCount)
-        {
-        EYES.GetSizes(EYESSizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)RACE.Records.size();
-    if(GRUPCount)
-        {
-        RACE.GetSizes(RACESizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)SOUN.Records.size();
-    if(GRUPCount)
-        {
-        SOUN.GetSizes(SOUNSizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)SKIL.Records.size();
-    if(GRUPCount)
-        {
-        SKIL.GetSizes(SKILSizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)MGEF.Records.size();
-    if(GRUPCount)
-        {
-        MGEF.GetSizes(MGEFSizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)SCPT.Records.size();
-    if(GRUPCount)
-        {
-        SCPT.GetSizes(SCPTSizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)LTEX.Records.size();
-    if(GRUPCount)
-        {
-        LTEX.GetSizes(LTEXSizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)ENCH.Records.size();
-    if(GRUPCount)
-        {
-        ENCH.GetSizes(ENCHSizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)SPEL.Records.size();
-    if(GRUPCount)
-        {
-        SPEL.GetSizes(SPELSizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)BSGN.Records.size();
-    if(GRUPCount)
-        {
-        BSGN.GetSizes(BSGNSizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)ACTI.Records.size();
-    if(GRUPCount)
-        {
-        ACTI.GetSizes(ACTISizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)APPA.Records.size();
-    if(GRUPCount)
-        {
-        APPA.GetSizes(APPASizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)ARMO.Records.size();
-    if(GRUPCount)
-        {
-        ARMO.GetSizes(ARMOSizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)BOOK.Records.size();
-    if(GRUPCount)
-        {
-        BOOK.GetSizes(BOOKSizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)CLOT.Records.size();
-    if(GRUPCount)
-        {
-        CLOT.GetSizes(CLOTSizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)CONT.Records.size();
-    if(GRUPCount)
-        {
-        CONT.GetSizes(CONTSizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)DOOR.Records.size();
-    if(GRUPCount)
-        {
-        DOOR.GetSizes(DOORSizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)INGR.Records.size();
-    if(GRUPCount)
-        {
-        INGR.GetSizes(INGRSizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)LIGH.Records.size();
-    if(GRUPCount)
-        {
-        LIGH.GetSizes(LIGHSizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)MISC.Records.size();
-    if(GRUPCount)
-        {
-        MISC.GetSizes(MISCSizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)STAT.Records.size();
-    if(GRUPCount)
-        {
-        STAT.GetSizes(STATSizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)GRAS.Records.size();
-    if(GRUPCount)
-        {
-        GRAS.GetSizes(GRASSizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)TREE.Records.size();
-    if(GRUPCount)
-        {
-        TREE.GetSizes(TREESizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)FLOR.Records.size();
-    if(GRUPCount)
-        {
-        FLOR.GetSizes(FLORSizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)FURN.Records.size();
-    if(GRUPCount)
-        {
-        FURN.GetSizes(FURNSizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)WEAP.Records.size();
-    if(GRUPCount)
-        {
-        WEAP.GetSizes(WEAPSizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)AMMO.Records.size();
-    if(GRUPCount)
-        {
-        AMMO.GetSizes(AMMOSizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)NPC_.Records.size();
-    if(GRUPCount)
-        {
-        NPC_.GetSizes(NPC_Sizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)CREA.Records.size();
-    if(GRUPCount)
-        {
-        CREA.GetSizes(CREASizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)LVLC.Records.size();
-    if(GRUPCount)
-        {
-        LVLC.GetSizes(LVLCSizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)SLGM.Records.size();
-    if(GRUPCount)
-        {
-        SLGM.GetSizes(SLGMSizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)KEYM.Records.size();
-    if(GRUPCount)
-        {
-        KEYM.GetSizes(KEYMSizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)ALCH.Records.size();
-    if(GRUPCount)
-        {
-        ALCH.GetSizes(ALCHSizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)SBSP.Records.size();
-    if(GRUPCount)
-        {
-        SBSP.GetSizes(SBSPSizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)SGST.Records.size();
-    if(GRUPCount)
-        {
-        SGST.GetSizes(SGSTSizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)LVLI.Records.size();
-    if(GRUPCount)
-        {
-        LVLI.GetSizes(LVLISizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)WTHR.Records.size();
-    if(GRUPCount)
-        {
-        WTHR.GetSizes(WTHRSizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)CLMT.Records.size();
-    if(GRUPCount)
-        {
-        CLMT.GetSizes(CLMTSizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)REGN.Records.size();
-    if(GRUPCount)
-        {
-        REGN.GetSizes(REGNSizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-
-    GRUPCount = (unsigned int)CELL.Records.size();
-    if(GRUPCount)
-        {
-        GRUPCount = CELL.GetSizes(CELLSizes, BlockedRecords, BlockHeaders, SubBlockHeaders);
-        formCount += GRUPCount;
-        }
-
-    GRUPCount = (unsigned int)WRLD.Records.size();
-    if(GRUPCount)
-        {
-        GRUPCount = WRLD.GetSizes(WRLDSizes, WritableWorlds, FormIDHandler);
-        formCount += GRUPCount;
-        }
-
-    GRUPCount = (unsigned int)DIAL.Records.size();
-    if(GRUPCount)
-        {
-        GRUPCount = DIAL.GetSizes(DIALSizes);
-        formCount += GRUPCount;
-        }
-    if(GRUPCount) ++formCount, formCount += GRUPCount;
-
-    GRUPCount = (unsigned int)QUST.Records.size();
-    if(GRUPCount)
-        {
-        QUST.GetSizes(QUSTSizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)IDLE.Records.size();
-    if(GRUPCount)
-        {
-        IDLE.GetSizes(IDLESizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)PACK.Records.size();
-    if(GRUPCount)
-        {
-        PACK.GetSizes(PACKSizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)CSTY.Records.size();
-    if(GRUPCount)
-        {
-        CSTY.GetSizes(CSTYSizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)LSCR.Records.size();
-    if(GRUPCount)
-        {
-        LSCR.GetSizes(LSCRSizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)LVSP.Records.size();
-    if(GRUPCount)
-        {
-        LVSP.GetSizes(LVSPSizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)ANIO.Records.size();
-    if(GRUPCount)
-        {
-        ANIO.GetSizes(ANIOSizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)WATR.Records.size();
-    if(GRUPCount)
-        {
-        WATR.GetSizes(WATRSizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-    GRUPCount = (unsigned int)EFSH.Records.size();
-    if(GRUPCount)
-        {
-        EFSH.GetSizes(EFSHSizes);
-        ++formCount;
-        formCount += GRUPCount;
-        }
-
+    UpdateFormCount();
+    {
+    WritableRecord WriteTES4;
+    TES4.Write(WriteTES4);
+    buffer.write(WriteTES4);
+    }
     //ADD DEFINITIONS HERE
-    TES4.HEDR.value.numRecords = formCount;
-    //reusing variables
-    GRUPCount = TES4.GetSize();
-    TES4.Write(fh, buffer, GRUPCount, usedBuffer);
-    GMST.WriteGRUP(GMSTSizes, eGMST, fh, buffer, usedBuffer);
-    GLOB.WriteGRUP(GLOBSizes, eGLOB, fh, buffer, usedBuffer);
-    CLAS.WriteGRUP(CLASSizes, eCLAS, fh, buffer, usedBuffer);
-    FACT.WriteGRUP(FACTSizes, eFACT, fh, buffer, usedBuffer);
-    HAIR.WriteGRUP(HAIRSizes, eHAIR, fh, buffer, usedBuffer);
-    EYES.WriteGRUP(EYESSizes, eEYES, fh, buffer, usedBuffer);
-    RACE.WriteGRUP(RACESizes, eRACE, fh, buffer, usedBuffer);
-    SOUN.WriteGRUP(SOUNSizes, eSOUN, fh, buffer, usedBuffer);
-    SKIL.WriteGRUP(SKILSizes, eSKIL, fh, buffer, usedBuffer);
-    MGEF.WriteGRUP(MGEFSizes, eMGEF, fh, buffer, usedBuffer);
-    SCPT.WriteGRUP(SCPTSizes, eSCPT, fh, buffer, usedBuffer);
-    LTEX.WriteGRUP(LTEXSizes, eLTEX, fh, buffer, usedBuffer);
-    ENCH.WriteGRUP(ENCHSizes, eENCH, fh, buffer, usedBuffer);
-    SPEL.WriteGRUP(SPELSizes, eSPEL, fh, buffer, usedBuffer);
-    BSGN.WriteGRUP(BSGNSizes, eBSGN, fh, buffer, usedBuffer);
-    ACTI.WriteGRUP(ACTISizes, eACTI, fh, buffer, usedBuffer);
-    APPA.WriteGRUP(APPASizes, eAPPA, fh, buffer, usedBuffer);
-    ARMO.WriteGRUP(ARMOSizes, eARMO, fh, buffer, usedBuffer);
-    BOOK.WriteGRUP(BOOKSizes, eBOOK, fh, buffer, usedBuffer);
-    CLOT.WriteGRUP(CLOTSizes, eCLOT, fh, buffer, usedBuffer);
-    CONT.WriteGRUP(CONTSizes, eCONT, fh, buffer, usedBuffer);
-    DOOR.WriteGRUP(DOORSizes, eDOOR, fh, buffer, usedBuffer);
-    INGR.WriteGRUP(INGRSizes, eINGR, fh, buffer, usedBuffer);
-    LIGH.WriteGRUP(LIGHSizes, eLIGH, fh, buffer, usedBuffer);
-    MISC.WriteGRUP(MISCSizes, eMISC, fh, buffer, usedBuffer);
-    STAT.WriteGRUP(STATSizes, eSTAT, fh, buffer, usedBuffer);
-    GRAS.WriteGRUP(GRASSizes, eGRAS, fh, buffer, usedBuffer);
-    TREE.WriteGRUP(TREESizes, eTREE, fh, buffer, usedBuffer);
-    FLOR.WriteGRUP(FLORSizes, eFLOR, fh, buffer, usedBuffer);
-    FURN.WriteGRUP(FURNSizes, eFURN, fh, buffer, usedBuffer);
-    WEAP.WriteGRUP(WEAPSizes, eWEAP, fh, buffer, usedBuffer);
-    AMMO.WriteGRUP(AMMOSizes, eAMMO, fh, buffer, usedBuffer);
-    NPC_.WriteGRUP(NPC_Sizes, eNPC_, fh, buffer, usedBuffer);
-    CREA.WriteGRUP(CREASizes, eCREA, fh, buffer, usedBuffer);
-    LVLC.WriteGRUP(LVLCSizes, eLVLC, fh, buffer, usedBuffer);
-    SLGM.WriteGRUP(SLGMSizes, eSLGM, fh, buffer, usedBuffer);
-    KEYM.WriteGRUP(KEYMSizes, eKEYM, fh, buffer, usedBuffer);
-    ALCH.WriteGRUP(ALCHSizes, eALCH, fh, buffer, usedBuffer);
-    SBSP.WriteGRUP(SBSPSizes, eSBSP, fh, buffer, usedBuffer);
-    SGST.WriteGRUP(SGSTSizes, eSGST, fh, buffer, usedBuffer);
-    LVLI.WriteGRUP(LVLISizes, eLVLI, fh, buffer, usedBuffer);
-    WTHR.WriteGRUP(WTHRSizes, eWTHR, fh, buffer, usedBuffer);
-    CLMT.WriteGRUP(CLMTSizes, eCLMT, fh, buffer, usedBuffer);
-    REGN.WriteGRUP(REGNSizes, eREGN, fh, buffer, usedBuffer);
-    CELL.WriteGRUP(CELLSizes, BlockedRecords, BlockHeaders, SubBlockHeaders, fh, buffer, usedBuffer);
-    WRLD.WriteGRUP(WRLDSizes, WritableWorlds, fh, buffer, usedBuffer);
-    DIAL.WriteGRUP(DIALSizes, fh, buffer, usedBuffer);
-    QUST.WriteGRUP(QUSTSizes, eQUST, fh, buffer, usedBuffer);
-    IDLE.WriteGRUP(IDLESizes, eIDLE, fh, buffer, usedBuffer);
-    PACK.WriteGRUP(PACKSizes, ePACK, fh, buffer, usedBuffer);
-    CSTY.WriteGRUP(CSTYSizes, eCSTY, fh, buffer, usedBuffer);
-    LSCR.WriteGRUP(LSCRSizes, eLSCR, fh, buffer, usedBuffer);
-    LVSP.WriteGRUP(LVSPSizes, eLVSP, fh, buffer, usedBuffer);
-    ANIO.WriteGRUP(ANIOSizes, eANIO, fh, buffer, usedBuffer);
-    WATR.WriteGRUP(WATRSizes, eWATR, fh, buffer, usedBuffer);
-    EFSH.WriteGRUP(EFSHSizes, eEFSH, fh, buffer, usedBuffer);
+    GMST.WriteGRUP(eGMST, buffer);
+    GLOB.WriteGRUP(eGLOB, buffer);
+    CLAS.WriteGRUP(eCLAS, buffer);
+    FACT.WriteGRUP(eFACT, buffer);
+    HAIR.WriteGRUP(eHAIR, buffer);
+    EYES.WriteGRUP(eEYES, buffer);
+    RACE.WriteGRUP(eRACE, buffer);
+    SOUN.WriteGRUP(eSOUN, buffer);
+    SKIL.WriteGRUP(eSKIL, buffer);
+    MGEF.WriteGRUP(eMGEF, buffer);
+    SCPT.WriteGRUP(eSCPT, buffer);
+    LTEX.WriteGRUP(eLTEX, buffer);
+    ENCH.WriteGRUP(eENCH, buffer);
+    SPEL.WriteGRUP(eSPEL, buffer);
+    BSGN.WriteGRUP(eBSGN, buffer);
+    ACTI.WriteGRUP(eACTI, buffer);
+    APPA.WriteGRUP(eAPPA, buffer);
+    ARMO.WriteGRUP(eARMO, buffer);
+    BOOK.WriteGRUP(eBOOK, buffer);
+    CLOT.WriteGRUP(eCLOT, buffer);
+    CONT.WriteGRUP(eCONT, buffer);
+    DOOR.WriteGRUP(eDOOR, buffer);
+    INGR.WriteGRUP(eINGR, buffer);
+    LIGH.WriteGRUP(eLIGH, buffer);
+    MISC.WriteGRUP(eMISC, buffer);
+    STAT.WriteGRUP(eSTAT, buffer);
+    GRAS.WriteGRUP(eGRAS, buffer);
+    TREE.WriteGRUP(eTREE, buffer);
+    FLOR.WriteGRUP(eFLOR, buffer);
+    FURN.WriteGRUP(eFURN, buffer);
+    WEAP.WriteGRUP(eWEAP, buffer);
+    AMMO.WriteGRUP(eAMMO, buffer);
+    NPC_.WriteGRUP(eNPC_, buffer);
+    CREA.WriteGRUP(eCREA, buffer);
+    LVLC.WriteGRUP(eLVLC, buffer);
+    SLGM.WriteGRUP(eSLGM, buffer);
+    KEYM.WriteGRUP(eKEYM, buffer);
+    ALCH.WriteGRUP(eALCH, buffer);
+    SBSP.WriteGRUP(eSBSP, buffer);
+    SGST.WriteGRUP(eSGST, buffer);
+    LVLI.WriteGRUP(eLVLI, buffer);
+    WTHR.WriteGRUP(eWTHR, buffer);
+    CLMT.WriteGRUP(eCLMT, buffer);
+    REGN.WriteGRUP(eREGN, buffer);
+    CELL.WriteGRUP(buffer);
+    WRLD.WriteGRUP(buffer, FormIDHandler);
+    DIAL.WriteGRUP(buffer);
+    QUST.WriteGRUP(eQUST, buffer);
+    IDLE.WriteGRUP(eIDLE, buffer);
+    PACK.WriteGRUP(ePACK, buffer);
+    CSTY.WriteGRUP(eCSTY, buffer);
+    LSCR.WriteGRUP(eLSCR, buffer);
+    LVSP.WriteGRUP(eLVSP, buffer);
+    ANIO.WriteGRUP(eANIO, buffer);
+    WATR.WriteGRUP(eWATR, buffer);
+    EFSH.WriteGRUP(eEFSH, buffer);
     return -1;
     }

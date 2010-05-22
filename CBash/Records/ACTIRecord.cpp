@@ -129,7 +129,7 @@ unsigned int ACTIRecord::GetSize()
     return TotSize;
     }
 
-int ACTIRecord::WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer)
+int ACTIRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
     {
     if(EDID.IsLoaded())
         _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);

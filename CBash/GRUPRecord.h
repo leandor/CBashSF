@@ -23,7 +23,6 @@ GPL License and Copyright Notice ============================================
 // GRUPRecord.h
 #include "Common.h"
 #include "BaseRecord.h"
-#include "Records/GMSTRecord.h"
 #include "Records/DIALRecord.h"
 #include "Records/INFORecord.h"
 #include "Records/CELLRecord.h"
@@ -101,31 +100,29 @@ class GRUPRecords
                 }
             return;
             }
-        void GetSizes(std::vector<unsigned int> &RecordSizes)
+        void WriteGRUP(unsigned int TopLabel, FileBuffer &buffer)
             {
             unsigned int numRecords = (unsigned int)Records.size();
             if(numRecords == 0)
                 return;
-            RecordSizes.resize(numRecords + 1);
-            RecordSizes[0] = numRecords * 20; //Accounts for all record headers
-            for(unsigned int p = 0; p < numRecords; p++)
-                RecordSizes[0] += RecordSizes[p + 1] = Records[p]->GetSize();
-            RecordSizes[0] += 20; //Top GRUP
-            return;
-            }
-        void WriteGRUP(std::vector<unsigned int> &RecordSizes, unsigned int TopLabel, int *fh, unsigned char *buffer, unsigned int &usedBuffer)
-            {
-            if(Records.size() == 0)
-                return;
             unsigned int type = eGRUP;
             unsigned int gType = eTop;
-            _writeBuffer(buffer, &type, 4, usedBuffer);
-            _writeBuffer(buffer, &RecordSizes[0], 4, usedBuffer);
-            _writeBuffer(buffer, &TopLabel, 4, usedBuffer);
-            _writeBuffer(buffer, &gType, 4, usedBuffer);
-            _writeBuffer(buffer, &stamp, 4, usedBuffer);
-            for(unsigned int p = 0; p < Records.size(); p++)
-                Records[p]->Write(fh, buffer, RecordSizes[1 + p], usedBuffer);
+            unsigned int TopSize = (numRecords * 20) + 20; //Accounts for all record headers and Top GRUP
+            std::vector<WritableRecord> WritableRecords;
+            WritableRecords.resize(numRecords);
+            for(unsigned int p = 0; p < numRecords; p++)
+                {
+                Records[p]->Write(WritableRecords[p]);
+                TopSize += WritableRecords[p].recSize;
+                }
+
+            buffer.write(&type, 4);
+            buffer.write(&TopSize, 4);
+            buffer.write(&TopLabel, 4);
+            buffer.write(&gType, 4);
+            buffer.write(&stamp, 4);
+            for(unsigned int p = 0; p < numRecords; p++)
+                buffer.write(WritableRecords[p]);
             }
         #ifdef _DEBUG
         void Debug(int debugLevel)
@@ -257,64 +254,56 @@ class GRUPRecords<DIALRecord>
                 }
             return;
             }
-        unsigned int GetSizes(std::vector<WritableDialogue> &WriteInfo)
+        void WriteGRUP(FileBuffer &buffer)
             {
-            unsigned int GRUPCount = (unsigned int)Records.size(); //Parent Records
-            unsigned int numDIALRecords = GRUPCount;
-            unsigned int numINFORecords;
+            unsigned int numDIALRecords = (unsigned int)Records.size(); //Parent Records
             if(numDIALRecords == 0)
-                return 0;
-            DIALRecord *curRecord = NULL;
-            WriteInfo.resize(numDIALRecords + 1);
-            ++GRUPCount; //Top GRUP
-            WriteInfo[0].CellSize = 20; //Top GRUP
-            WriteInfo[0].CellSize += numDIALRecords * 20; //Accounts for all DIAL record headers
-            for(unsigned int p = 0; p < numDIALRecords; ++p)
-                {
-                curRecord = Records[p];
-                WriteInfo[0].CellSize += WriteInfo[p + 1].CellSize = curRecord->GetSize();
-                numINFORecords = (unsigned int)curRecord->INFO.size();
-                if(numINFORecords)
-                    {
-                    ++GRUPCount; //Children GRUP
-                    GRUPCount += numINFORecords; //Children Records
-                    WriteInfo[p + 1].ChildrenSize = 20; //Children GRUP
-                    WriteInfo[p + 1].ChildrenSize += numINFORecords * 20; //Accounts for all INFO record headers
-                    WriteInfo[p + 1].ChildrenSizes.resize(numINFORecords);
-                    for(unsigned int y = 0; y < numINFORecords; ++y)
-                        WriteInfo[p + 1].ChildrenSize += WriteInfo[p + 1].ChildrenSizes[y] = curRecord->INFO[y]->GetSize();
-                    WriteInfo[0].CellSize += WriteInfo[p + 1].ChildrenSize;
-                    }
-                }
-            return GRUPCount;
-            }
-        void WriteGRUP(std::vector<WritableDialogue> &WriteInfo, int *fh, unsigned char *buffer, unsigned int &usedBuffer)
-            {
-            if(Records.size() == 0)
                 return;
-            DIALRecord *curRecord = NULL;
             unsigned int type = eGRUP;
             unsigned int TopLabel = eDIAL;
             unsigned int gType = eTop;
-            _writeBuffer(buffer, &type, 4, usedBuffer);
-            _writeBuffer(buffer, &WriteInfo[0].CellSize, 4, usedBuffer);
-            _writeBuffer(buffer, &TopLabel, 4, usedBuffer);
-            _writeBuffer(buffer, &gType, 4, usedBuffer);
-            _writeBuffer(buffer, &stamp, 4, usedBuffer);
-            gType = eTopicChildren;
-            for(unsigned int p = 0; p < Records.size(); ++p)
+            std::vector<WritableDialogue> WriteDial;
+            unsigned int numINFORecords;
+            unsigned int TopSize = (numDIALRecords * 20) + 20; //Top GRUP & accounts for all DIAL record headers
+            WriteDial.resize(numDIALRecords);
+            for(unsigned int p = 0; p < numDIALRecords; ++p)
                 {
-                curRecord = Records[p];
-                curRecord->Write(fh, buffer, WriteInfo[1 + p].CellSize, usedBuffer);
-                if(curRecord->INFO.size())
+                Records[p]->Write(WriteDial[p]);
+                TopSize += WriteDial[p].recSize;
+
+                numINFORecords = (unsigned int)Records[p]->INFO.size(); //Children Records
+                if(numINFORecords)
                     {
-                    _writeBuffer(buffer, &type, 4, usedBuffer);
-                    _writeBuffer(buffer, &WriteInfo[1 + p].ChildrenSize, 4, usedBuffer);
-                    _writeBuffer(buffer, &curRecord->formID, 4, usedBuffer);
-                    _writeBuffer(buffer, &gType, 4, usedBuffer);
-                    _writeBuffer(buffer, &stamp, 4, usedBuffer);
-                    for(unsigned int x = 0; x < curRecord->INFO.size(); ++x)
-                        curRecord->INFO[x]->Write(fh, buffer, WriteInfo[1 + p].ChildrenSizes[x], usedBuffer);
+                    WriteDial[p].ChildrenSize = (numINFORecords * 20) + 20; //Children GRUP & accounts for all INFO record headers
+                    WriteDial[p].Children.resize(numINFORecords);
+                    for(unsigned int y = 0; y < numINFORecords; ++y)
+                        {
+                        Records[p]->INFO[y]->Write(WriteDial[p].Children[y]);
+                        WriteDial[p].ChildrenSize += WriteDial[p].Children[y].recSize;
+                        }
+                    TopSize += WriteDial[p].ChildrenSize;
+                    }
+                }
+
+            buffer.write(&type, 4);
+            buffer.write(&TopSize, 4);
+            buffer.write(&TopLabel, 4);
+            buffer.write(&gType, 4);
+            buffer.write(&stamp, 4);
+            gType = eTopicChildren;
+            for(unsigned int p = 0; p < numDIALRecords; ++p)
+                {
+                buffer.write(WriteDial[p]);
+
+                if(WriteDial[p].Children.size())
+                    {
+                    buffer.write(&type, 4);
+                    buffer.write(&WriteDial[p].ChildrenSize, 4);
+                    buffer.write(&Records[p]->formID, 4);
+                    buffer.write(&gType, 4);
+                    buffer.write(&stamp, 4);
+                    for(unsigned int y = 0; y < WriteDial[p].Children.size(); ++y)
+                        buffer.write(WriteDial[p].Children[y]);
                     }
                 }
             }
@@ -521,131 +510,112 @@ class GRUPRecords<CELLRecord>
                 }
             return;
             }
-        unsigned int GetSizes(unsigned int &TopSize, std::vector< std::vector< std::vector<WritableCell> > > &BlockedRecords, std::vector<unsigned int> &BlockHeaders, std::vector< std::vector<unsigned int> > &SubBlockHeaders)
+        void WriteGRUP(FileBuffer &buffer)
             {
-            unsigned int numRecords = (unsigned int)Records.size();
-            if(numRecords == 0)
-                return 0;
-            unsigned int GRUPCount = numRecords;
-            unsigned int curSize = 0;
+            unsigned int numCELLRecords = (unsigned int)Records.size();
+            if(numCELLRecords == 0)
+                return;
+
+            unsigned int TopSize = (numCELLRecords * 20) + 20; //Accounts for all Cell record headers and itself
+            std::vector< std::vector< std::vector<WritableCell> > > BlockedRecords(10, std::vector< std::vector<WritableCell> > (10, std::vector<WritableCell>()));
+            std::vector<unsigned int> BlockHeaders(10, 0);
+            std::vector< std::vector<unsigned int> > SubBlockHeaders(10, std::vector<unsigned int>(10, 0));
+
             int ObjectID, BlockIndex, SubBlockIndex;
             CELLRecord *curRecord = NULL;
             WritableCell curICELL;
-            BlockedRecords.reserve(numRecords);
-            TopSize = (numRecords * 20) + 20; //Accounts for all Cell record headers and itself
-            ++GRUPCount; //Top GRUP
-            for(unsigned int x = 0; x < numRecords; ++x)
+            WritableRecord curWriteRecord;
+            BlockedRecords.reserve(numCELLRecords);
+            for(unsigned int p = 0; p < numCELLRecords; ++p)
                 {
-                curICELL.curRecord = curRecord = Records[x];
-                curICELL.CellSize = curRecord->GetSize();
+                curRecord = Records[p];
+                curRecord->Write(curICELL);
+                TopSize += curICELL.recSize;
+
+                curICELL.formID = curRecord->formID;
                 curICELL.ChildrenSize = 0;
                 curICELL.PersistentSize = 0;
                 curICELL.Persistent.clear();
-                curICELL.PersistentSizes.clear();
                 curICELL.VWDSize = 0;
                 curICELL.VWD.clear();
-                curICELL.VWDSizes.clear();
                 curICELL.TemporarySize = 0;
                 curICELL.Temporary.clear();
-                curICELL.TemporarySizes.clear();
-
-                TopSize += curICELL.CellSize; //Record Header
 
                 if(curRecord->PGRD != NULL)
                     {
-                    curICELL.TemporarySize += 20; //Record Header
-                    curICELL.TemporarySize += curSize = curRecord->PGRD->GetSize();
-                    curICELL.Temporary.push_back(curRecord->PGRD);
-                    curICELL.TemporarySizes.push_back(curSize);
+                    curRecord->PGRD->Write(curWriteRecord);
+                    curICELL.TemporarySize += curWriteRecord.recSize + 20; //Record Header
+                    curICELL.Temporary.push_back(curWriteRecord);
                     }
 
                 for(unsigned int y = 0; y < curRecord->ACHR.size(); ++y)
                     {
+                    curRecord->ACHR[y]->Write(curWriteRecord);
                     if(curRecord->ACHR[y]->IsPersistent())
                         {
-                        curICELL.PersistentSize += 20; //Record Header
-                        curICELL.PersistentSize += curSize = curRecord->ACHR[y]->GetSize();
-                        curICELL.Persistent.push_back(curRecord->ACHR[y]);
-                        curICELL.PersistentSizes.push_back(curSize);
+                        curICELL.PersistentSize += curWriteRecord.recSize + 20; //Record Header
+                        curICELL.Persistent.push_back(curWriteRecord);
                         }
                     else if(curRecord->ACHR[y]->IsVWD())
                         {
-                        curICELL.VWDSize += 20; //Record Header
-                        curICELL.VWDSize += curSize = curRecord->ACHR[y]->GetSize();
-                        curICELL.VWD.push_back(curRecord->ACHR[y]);
-                        curICELL.VWDSizes.push_back(curSize);
+                        curICELL.VWDSize += curWriteRecord.recSize + 20; //Record Header
+                        curICELL.VWD.push_back(curWriteRecord);
                         }
                     else
                         {
-                        curICELL.TemporarySize += 20; //Record Header
-                        curICELL.TemporarySize += curSize = curRecord->ACHR[y]->GetSize();
-                        curICELL.Temporary.push_back(curRecord->ACHR[y]);
-                        curICELL.TemporarySizes.push_back(curSize);
+                        curICELL.TemporarySize += curWriteRecord.recSize + 20; //Record Header
+                        curICELL.Temporary.push_back(curWriteRecord);
                         }
                     }
 
                 for(unsigned int y = 0; y < curRecord->ACRE.size(); ++y)
                     {
+                    curRecord->ACRE[y]->Write(curWriteRecord);
                     if(curRecord->ACRE[y]->IsPersistent())
                         {
-                        curICELL.PersistentSize += 20; //Record Header
-                        curICELL.PersistentSize += curSize = curRecord->ACRE[y]->GetSize();
-                        curICELL.Persistent.push_back(curRecord->ACRE[y]);
-                        curICELL.PersistentSizes.push_back(curSize);
+                        curICELL.PersistentSize += curWriteRecord.recSize + 20; //Record Header
+                        curICELL.Persistent.push_back(curWriteRecord);
                         }
                     else if(curRecord->ACRE[y]->IsVWD())
                         {
-                        curICELL.VWDSize += 20; //Record Header
-                        curICELL.VWDSize += curSize = curRecord->ACRE[y]->GetSize();
-                        curICELL.VWD.push_back(curRecord->ACRE[y]);
-                        curICELL.VWDSizes.push_back(curSize);
+                        curICELL.VWDSize += curWriteRecord.recSize + 20; //Record Header
+                        curICELL.VWD.push_back(curWriteRecord);
                         }
                     else
                         {
-                        curICELL.TemporarySize += 20; //Record Header
-                        curICELL.TemporarySize += curSize = curRecord->ACRE[y]->GetSize();
-                        curICELL.Temporary.push_back(curRecord->ACRE[y]);
-                        curICELL.TemporarySizes.push_back(curSize);
+                        curICELL.TemporarySize += curWriteRecord.recSize + 20; //Record Header
+                        curICELL.Temporary.push_back(curWriteRecord);
                         }
                     }
 
                 for(unsigned int y = 0; y < curRecord->REFR.size(); ++y)
                     {
+                    curRecord->REFR[y]->Write(curWriteRecord);
                     if(curRecord->REFR[y]->IsPersistent())
                         {
-                        curICELL.PersistentSize += 20; //Record Header
-                        curICELL.PersistentSize += curSize = curRecord->REFR[y]->GetSize();
-                        curICELL.Persistent.push_back(curRecord->REFR[y]);
-                        curICELL.PersistentSizes.push_back(curSize);
+                        curICELL.PersistentSize += curWriteRecord.recSize + 20; //Record Header
+                        curICELL.Persistent.push_back(curWriteRecord);
                         }
                     else if(curRecord->REFR[y]->IsVWD())
                         {
-                        curICELL.VWDSize += 20; //Record Header
-                        curICELL.VWDSize += curSize = curRecord->REFR[y]->GetSize();
-                        curICELL.VWD.push_back(curRecord->REFR[y]);
-                        curICELL.VWDSizes.push_back(curSize);
+                        curICELL.VWDSize += curWriteRecord.recSize + 20; //Record Header
+                        curICELL.VWD.push_back(curWriteRecord);
                         }
                     else
                         {
-                        curICELL.TemporarySize += 20; //Record Header
-                        curICELL.TemporarySize += curSize = curRecord->REFR[y]->GetSize();
-                        curICELL.Temporary.push_back(curRecord->REFR[y]);
-                        curICELL.TemporarySizes.push_back(curSize);
+                        curICELL.TemporarySize += curWriteRecord.recSize + 20; //Record Header
+                        curICELL.Temporary.push_back(curWriteRecord);
                         }
                     }
                 //Account for GRUPs
-                GRUPCount += (unsigned int)curRecord->ACHR.size();
-                GRUPCount += (unsigned int)curRecord->ACRE.size();
-                GRUPCount += (unsigned int)curRecord->REFR.size();
-                if(curICELL.PersistentSize)
-                    ++GRUPCount, curICELL.PersistentSize += 20;
-                if(curICELL.VWDSize)
-                    ++GRUPCount, curICELL.VWDSize += 20;
-                if(curICELL.TemporarySize)
-                    ++GRUPCount, curICELL.TemporarySize += 20;
+                if(curICELL.PersistentSize) curICELL.PersistentSize += 20;
+                if(curICELL.VWDSize) curICELL.VWDSize += 20;
+                if(curICELL.TemporarySize) curICELL.TemporarySize += 20;
+
                 curICELL.ChildrenSize += curICELL.PersistentSize + curICELL.VWDSize + curICELL.TemporarySize;
-                if(curICELL.ChildrenSize)
-                    ++GRUPCount, curICELL.ChildrenSize += 20;
+
+                if(curICELL.ChildrenSize) curICELL.ChildrenSize += 20;
+
                 TopSize += curICELL.ChildrenSize;
 
                 ObjectID = curRecord->formID & 0x00FFFFFF;
@@ -653,44 +623,34 @@ class GRUPRecords<CELLRecord>
                 SubBlockIndex = (ObjectID / 10) % 10;
                 if(BlockHeaders[BlockIndex] == 0)
                     {
-                    ++GRUPCount;
                     TopSize += 20;
                     BlockHeaders[BlockIndex] = 20;
                     }
                 if(SubBlockHeaders[BlockIndex][SubBlockIndex] == 0)
                     {
-                    ++GRUPCount;
                     TopSize += 20;
                     BlockHeaders[BlockIndex] += 20;
                     SubBlockHeaders[BlockIndex][SubBlockIndex] = 20;
                     }
                 BlockHeaders[BlockIndex] += 20; //Cell Record Header
                 SubBlockHeaders[BlockIndex][SubBlockIndex] += 20; //Cell Record Header
-                BlockHeaders[BlockIndex] += curICELL.CellSize;
+                BlockHeaders[BlockIndex] += curICELL.recSize;
                 BlockHeaders[BlockIndex] += curICELL.ChildrenSize;
-                SubBlockHeaders[BlockIndex][SubBlockIndex] += curICELL.CellSize;
+                SubBlockHeaders[BlockIndex][SubBlockIndex] += curICELL.recSize;
                 SubBlockHeaders[BlockIndex][SubBlockIndex] += curICELL.ChildrenSize;
 
                 BlockedRecords[BlockIndex][SubBlockIndex].push_back(curICELL);
                 }
-            return GRUPCount;
-            }
-        void WriteGRUP(unsigned int TopSize, std::vector< std::vector< std::vector<WritableCell> > > &BlockedRecords, std::vector<unsigned int> &BlockHeaders, std::vector< std::vector<unsigned int> > &SubBlockHeaders, int *fh, unsigned char *buffer, unsigned int &usedBuffer)
-            {
-            if(Records.size() == 0)
-                return;
 
-            CELLRecord *curRecord = NULL;
-            WritableCell *curICELL = NULL;
             unsigned int type = eGRUP;
             unsigned int gLabel = eCELL;
             unsigned int gType = eTop;
             unsigned int gSize = 0;
-            _writeBuffer(buffer, &type, 4, usedBuffer);
-            _writeBuffer(buffer, &TopSize, 4, usedBuffer);
-            _writeBuffer(buffer, &gLabel, 4, usedBuffer);
-            _writeBuffer(buffer, &gType, 4, usedBuffer);
-            _writeBuffer(buffer, &stamp, 4, usedBuffer);
+            buffer.write(&type, 4);
+            buffer.write(&TopSize, 4);
+            buffer.write(&gLabel, 4);
+            buffer.write(&gType, 4);
+            buffer.write(&stamp, 4);
 
             for(unsigned int curBlock = 0; curBlock < 10; ++curBlock)
                 {
@@ -702,67 +662,64 @@ class GRUPRecords<CELLRecord>
                         {
                         if(gType == eInteriorBlock)
                             {
-                            _writeBuffer(buffer, &type, 4, usedBuffer);
-                            _writeBuffer(buffer, &BlockHeaders[curBlock], 4, usedBuffer);
-                            _writeBuffer(buffer, &curBlock, 4, usedBuffer);
-                            _writeBuffer(buffer, &gType, 4, usedBuffer);
-                            _writeBuffer(buffer, &stamp, 4, usedBuffer);
+                            buffer.write(&type, 4);
+                            buffer.write(&BlockHeaders[curBlock], 4);
+                            buffer.write(&curBlock, 4);
+                            buffer.write(&gType, 4);
+                            buffer.write(&stamp, 4);
                             }
                         gType = eInteriorSubBlock;
-                        _writeBuffer(buffer, &type, 4, usedBuffer);
-                        _writeBuffer(buffer, &SubBlockHeaders[curBlock][curSubBlock], 4, usedBuffer);
-                        _writeBuffer(buffer, &curSubBlock, 4, usedBuffer);
-                        _writeBuffer(buffer, &gType, 4, usedBuffer);
-                        _writeBuffer(buffer, &stamp, 4, usedBuffer);
+                        buffer.write(&type, 4);
+                        buffer.write(&SubBlockHeaders[curBlock][curSubBlock], 4);
+                        buffer.write(&curSubBlock, 4);
+                        buffer.write(&gType, 4);
+                        buffer.write(&stamp, 4);
                         for(unsigned int p = 0; p < gSize; ++p)
                             {
-                            curICELL = &BlockedRecords[curBlock][curSubBlock][p];
-                            curRecord = curICELL->curRecord;
-                            curRecord->Write(fh, buffer, curICELL->CellSize, usedBuffer);
-
-                            if(curICELL->ChildrenSize)
+                            curICELL = BlockedRecords[curBlock][curSubBlock][p];
+                            buffer.write(curICELL);
+                            if(curICELL.ChildrenSize)
                                 {
                                 gType = eCellChildren;
-                                _writeBuffer(buffer, &type, 4, usedBuffer);
-                                _writeBuffer(buffer, &curICELL->ChildrenSize, 4, usedBuffer);
-                                _writeBuffer(buffer, &curRecord->formID, 4, usedBuffer);
-                                _writeBuffer(buffer, &gType, 4, usedBuffer);
-                                _writeBuffer(buffer, &stamp, 4, usedBuffer);
-
-                                if(curICELL->PersistentSize)
+                                buffer.write(&type, 4);
+                                buffer.write(&curICELL.ChildrenSize, 4);
+                                buffer.write(&curICELL.formID, 4);
+                                buffer.write(&gType, 4);
+                                buffer.write(&stamp, 4);
+                                if(curICELL.PersistentSize)
                                     {
                                     gType = eCellPersistent;
-                                    _writeBuffer(buffer, &type, 4, usedBuffer);
-                                    _writeBuffer(buffer, &curICELL->PersistentSize, 4, usedBuffer);
-                                    _writeBuffer(buffer, &curRecord->formID, 4, usedBuffer);
-                                    _writeBuffer(buffer, &gType, 4, usedBuffer);
-                                    _writeBuffer(buffer, &stamp, 4, usedBuffer);
-                                    for(unsigned int x = 0; x < curICELL->Persistent.size(); ++x)
-                                        curICELL->Persistent[x]->Write(fh, buffer, curICELL->PersistentSizes[x], usedBuffer);
+                                    buffer.write(&type, 4);
+                                    buffer.write(&curICELL.PersistentSize, 4);
+                                    buffer.write(&curICELL.formID, 4);
+                                    buffer.write(&gType, 4);
+                                    buffer.write(&stamp, 4);
+                                    for(unsigned int x = 0; x < curICELL.Persistent.size(); ++x)
+                                        buffer.write(curICELL.Persistent[x]);
                                     }
 
-                                if(curICELL->VWDSize)
+                                if(curICELL.VWDSize)
                                     {
                                     gType = eCellVWD;
-                                    _writeBuffer(buffer, &type, 4, usedBuffer);
-                                    _writeBuffer(buffer, &curICELL->VWDSize, 4, usedBuffer);
-                                    _writeBuffer(buffer, &curRecord->formID, 4, usedBuffer);
-                                    _writeBuffer(buffer, &gType, 4, usedBuffer);
-                                    _writeBuffer(buffer, &stamp, 4, usedBuffer);
-                                    for(unsigned int x = 0; x < curICELL->VWD.size(); ++x)
-                                        curICELL->VWD[x]->Write(fh, buffer, curICELL->VWDSizes[x], usedBuffer);
+                                    buffer.write(&type, 4);
+                                    buffer.write(&curICELL.VWDSize, 4);
+                                    buffer.write(&curICELL.formID, 4);
+                                    buffer.write(&gType, 4);
+                                    buffer.write(&stamp, 4);
+                                    for(unsigned int x = 0; x < curICELL.VWD.size(); ++x)
+                                        buffer.write(curICELL.VWD[x]);
                                     }
 
-                                if(curICELL->TemporarySize)
+                                if(curICELL.TemporarySize)
                                     {
                                     gType = eCellTemporary;
-                                    _writeBuffer(buffer, &type, 4, usedBuffer);
-                                    _writeBuffer(buffer, &curICELL->TemporarySize, 4, usedBuffer);
-                                    _writeBuffer(buffer, &curRecord->formID, 4, usedBuffer);
-                                    _writeBuffer(buffer, &gType, 4, usedBuffer);
-                                    _writeBuffer(buffer, &stamp, 4, usedBuffer);
-                                    for(unsigned int x = 0; x < curICELL->Temporary.size(); ++x)
-                                        curICELL->Temporary[x]->Write(fh, buffer, curICELL->TemporarySizes[x], usedBuffer);
+                                    buffer.write(&type, 4);
+                                    buffer.write(&curICELL.TemporarySize, 4);
+                                    buffer.write(&curICELL.formID, 4);
+                                    buffer.write(&gType, 4);
+                                    buffer.write(&stamp, 4);
+                                    for(unsigned int x = 0; x < curICELL.Temporary.size(); ++x)
+                                        buffer.write(curICELL.Temporary[x]);
                                     }
                                 }
                             }
@@ -1144,165 +1101,147 @@ class GRUPRecords<WRLDRecord>
                 }
             return;
             }
-        unsigned int GetSizes(unsigned int &TopSize, std::vector<WritableWorld> &WritableWorlds, _FormIDHandler &FormIDHandler)
+
+        void WriteGRUP(FileBuffer &buffer, _FormIDHandler &FormIDHandler)
             {
             unsigned int numWrldRecords = (unsigned int)Records.size();
             if(numWrldRecords == 0)
-                return 0;
+                return;
             unsigned int numCellRecords;
-            unsigned int GRUPCount = numWrldRecords;
-            unsigned int curSize = 0;
             int gridX, gridY;
             unsigned int BlockIndex, SubBlockIndex;
             WRLDRecord *curWorld;
             CELLRecord *curCell;
+            WritableRecord curWriteRecord;
             WritableCell curWriteCell;
             WritableWorld curWriteWorld;
+            std::vector<WritableWorld> WritableWorlds;
             WritableWorlds.reserve(numWrldRecords);
-            TopSize = (numWrldRecords * 20) + 20; //Accounts for all World record headers and itself
-            ++GRUPCount; //Top GRUP
+            unsigned int TopSize = (numWrldRecords * 20) + 20; //Accounts for all World record headers and itself
 
             for(unsigned int x = 0; x < numWrldRecords; ++x)
                 {
                 curWorld = Records[x];
-                curWriteWorld.WorldSize = curWorld->GetSize();
-                TopSize += curWriteWorld.WorldSize;
+                curWorld->Write(curWriteWorld);
+                TopSize += curWriteWorld.recSize;
                 curWriteWorld.WorldGRUPSize = 0;
-                curWriteWorld.RoadSize = 0;
-                curWriteWorld.CellSize = 0;
-                curWriteWorld.ChildrenSize = 0;
-                curWriteWorld.PersistentSize = 0;
-                curWriteWorld.Persistent.clear();
-                curWriteWorld.PersistentSizes.clear();
+                curWriteWorld.formID = curWorld->formID;
+                curWriteWorld.ROAD.recBuffer = NULL;
+                curWriteWorld.ROAD.recSize = 0;
+                curWriteWorld.CELL.recBuffer = NULL;
+                curWriteWorld.CELL.recSize = 0;
+                curWriteWorld.CELL.ChildrenSize = 0;
+                curWriteWorld.CELL.PersistentSize = 0;
+                curWriteWorld.CELL.Persistent.clear();
                 curWriteWorld.Block.clear();
 
                 if(curWorld->ROAD != NULL)
                     {
-                    curWriteWorld.WorldGRUPSize += 20; //Record Header
-                    ++GRUPCount; //Record Header
-                    curWriteWorld.WorldGRUPSize += curWriteWorld.RoadSize = curWorld->ROAD->GetSize();
+                    curWorld->ROAD->Write(curWriteWorld.ROAD);
+                    curWriteWorld.WorldGRUPSize += curWriteWorld.ROAD.recSize + 20; //Record Header
                     }
 
-                GRUPCount += numCellRecords = (unsigned int)curWorld->CELLS.size();
+                numCellRecords = (unsigned int)curWorld->CELLS.size();
                 curWriteWorld.WorldGRUPSize += (numCellRecords * 20); //All cell record headers
-                for(unsigned int y = 0; y < numCellRecords; ++y)
+                for(unsigned int p = 0; p < numCellRecords; ++p)
                     {
-                    curWriteCell.curRecord = curCell = curWorld->CELLS[y];
-                    curWriteWorld.WorldGRUPSize += curWriteCell.CellSize = curCell->GetSize();
+                    curCell = curWorld->CELLS[p];
+                    curCell->Write(curWriteCell);
+                    curWriteWorld.WorldGRUPSize += curWriteCell.recSize;
+
+                    curWriteCell.formID = curCell->formID;
                     curWriteCell.ChildrenSize = 0;
                     curWriteCell.PersistentSize = 0;
                     curWriteCell.Persistent.clear();
-                    curWriteCell.PersistentSizes.clear();
                     curWriteCell.VWDSize = 0;
                     curWriteCell.VWD.clear();
-                    curWriteCell.VWDSizes.clear();
                     curWriteCell.TemporarySize = 0;
                     curWriteCell.Temporary.clear();
-                    curWriteCell.TemporarySizes.clear();
 
                     if(curCell->LAND != NULL)
                         {
-                        curWriteCell.TemporarySize += 20; //Record Header
-                        curWriteCell.TemporarySize += curSize = curCell->LAND->GetSize();
-                        curWriteCell.Temporary.push_back(curCell->LAND);
-                        curWriteCell.TemporarySizes.push_back(curSize);
+                        curCell->LAND->Write(curWriteRecord);
+                        curWriteCell.TemporarySize += curWriteRecord.recSize + 20; //Record Header
+                        curWriteCell.Temporary.push_back(curWriteRecord);
                         }
 
                     if(curCell->PGRD != NULL)
                         {
-                        curWriteCell.TemporarySize += 20; //Record Header
-                        curWriteCell.TemporarySize += curSize = curCell->PGRD->GetSize();
-                        curWriteCell.Temporary.push_back(curCell->PGRD);
-                        curWriteCell.TemporarySizes.push_back(curSize);
+                        curCell->PGRD->Write(curWriteRecord);
+                        curWriteCell.TemporarySize += curWriteRecord.recSize + 20; //Record Header
+                        curWriteCell.Temporary.push_back(curWriteRecord);
                         }
 
-                    for(unsigned int z = 0; z < curCell->ACHR.size(); ++z)
+                    for(unsigned int y = 0; y < curCell->ACHR.size(); ++y)
                         {
-                        if(curCell->ACHR[z]->IsPersistent())
+                        curCell->ACHR[y]->Write(curWriteRecord);
+                        if(curCell->ACHR[y]->IsPersistent())
                             {
-                            curWriteWorld.PersistentSize += 20; //Record Header
-                            curWriteWorld.PersistentSize += curSize = curCell->ACHR[z]->GetSize();
-                            curWriteWorld.Persistent.push_back(curCell->ACHR[z]);
-                            curWriteWorld.PersistentSizes.push_back(curSize);
+                            curWriteWorld.CELL.PersistentSize += curWriteRecord.recSize + 20; //Record Header
+                            curWriteWorld.CELL.Persistent.push_back(curWriteRecord);
                             }
-                        else if(curCell->ACHR[z]->IsVWD())
+                        else if(curCell->ACHR[y]->IsVWD())
                             {
-                            curWriteCell.VWDSize += 20; //Record Header
-                            curWriteCell.VWDSize += curSize = curCell->ACHR[z]->GetSize();
-                            curWriteCell.VWD.push_back(curCell->ACHR[z]);
-                            curWriteCell.VWDSizes.push_back(curSize);
+                            curWriteCell.VWDSize += curWriteRecord.recSize + 20; //Record Header
+                            curWriteCell.VWD.push_back(curWriteRecord);
                             }
                         else
                             {
-                            curWriteCell.TemporarySize += 20; //Record Header
-                            curWriteCell.TemporarySize += curSize = curCell->ACHR[z]->GetSize();
-                            curWriteCell.Temporary.push_back(curCell->ACHR[z]);
-                            curWriteCell.TemporarySizes.push_back(curSize);
+                            curWriteCell.TemporarySize += curWriteRecord.recSize + 20; //Record Header
+                            curWriteCell.Temporary.push_back(curWriteRecord);
                             }
                         }
 
-                    for(unsigned int z = 0; z < curCell->ACRE.size(); ++z)
+                    for(unsigned int y = 0; y < curCell->ACRE.size(); ++y)
                         {
-                        if(curCell->ACRE[z]->IsPersistent())
+                        curCell->ACRE[y]->Write(curWriteRecord);
+                        if(curCell->ACRE[y]->IsPersistent())
                             {
-                            curWriteWorld.PersistentSize += 20; //Record Header
-                            curWriteWorld.PersistentSize += curSize = curCell->ACRE[z]->GetSize();
-                            curWriteWorld.Persistent.push_back(curCell->ACRE[z]);
-                            curWriteWorld.PersistentSizes.push_back(curSize);
+                            curWriteWorld.CELL.PersistentSize += curWriteRecord.recSize + 20; //Record Header
+                            curWriteWorld.CELL.Persistent.push_back(curWriteRecord);
                             }
-                        else if(curCell->ACRE[z]->IsVWD())
+                        else if(curCell->ACRE[y]->IsVWD())
                             {
-                            curWriteCell.VWDSize += 20; //Record Header
-                            curWriteCell.VWDSize += curSize = curCell->ACRE[z]->GetSize();
-                            curWriteCell.VWD.push_back(curCell->ACRE[z]);
-                            curWriteCell.VWDSizes.push_back(curSize);
+                            curWriteCell.VWDSize += curWriteRecord.recSize + 20; //Record Header
+                            curWriteCell.VWD.push_back(curWriteRecord);
                             }
                         else
                             {
-                            curWriteCell.TemporarySize += 20; //Record Header
-                            curWriteCell.TemporarySize += curSize = curCell->ACRE[z]->GetSize();
-                            curWriteCell.Temporary.push_back(curCell->ACRE[z]);
-                            curWriteCell.TemporarySizes.push_back(curSize);
+                            curWriteCell.TemporarySize += curWriteRecord.recSize + 20; //Record Header
+                            curWriteCell.Temporary.push_back(curWriteRecord);
                             }
                         }
 
-                    for(unsigned int z = 0; z < curCell->REFR.size(); ++z)
+                    for(unsigned int y = 0; y < curCell->REFR.size(); ++y)
                         {
-                        if(curCell->REFR[z]->IsPersistent())
+                        curCell->REFR[y]->Write(curWriteRecord);
+                        if(curCell->REFR[y]->IsPersistent())
                             {
-                            curWriteWorld.PersistentSize += 20; //Record Header
-                            curWriteWorld.PersistentSize += curSize = curCell->REFR[z]->GetSize();
-                            curWriteWorld.Persistent.push_back(curCell->REFR[z]);
-                            curWriteWorld.PersistentSizes.push_back(curSize);
+                            curWriteWorld.CELL.PersistentSize += curWriteRecord.recSize + 20; //Record Header
+                            curWriteWorld.CELL.Persistent.push_back(curWriteRecord);
                             }
-                        else if(curCell->REFR[z]->IsVWD())
+                        else if(curCell->REFR[y]->IsVWD())
                             {
-                            curWriteCell.VWDSize += 20; //Record Header
-                            curWriteCell.VWDSize += curSize = curCell->REFR[z]->GetSize();
-                            curWriteCell.VWD.push_back(curCell->REFR[z]);
-                            curWriteCell.VWDSizes.push_back(curSize);
+                            curWriteCell.VWDSize += curWriteRecord.recSize + 20; //Record Header
+                            curWriteCell.VWD.push_back(curWriteRecord);
                             }
                         else
                             {
-                            curWriteCell.TemporarySize += 20; //Record Header
-                            curWriteCell.TemporarySize += curSize = curCell->REFR[z]->GetSize();
-                            curWriteCell.Temporary.push_back(curCell->REFR[z]);
-                            curWriteCell.TemporarySizes.push_back(curSize);
+                            curWriteCell.TemporarySize += curWriteRecord.recSize + 20; //Record Header
+                            curWriteCell.Temporary.push_back(curWriteRecord);
                             }
                         }
-
                     //Account for GRUPs
-                    GRUPCount += (unsigned int)curCell->ACHR.size();
-                    GRUPCount += (unsigned int)curCell->ACRE.size();
-                    GRUPCount += (unsigned int)curCell->REFR.size();
-                    if(curWriteCell.VWDSize)
-                        ++GRUPCount, curWriteCell.VWDSize += 20;
-                    if(curWriteCell.TemporarySize)
-                        ++GRUPCount, curWriteCell.TemporarySize += 20;
+                    //if(curWriteCell.PersistentSize) curWriteCell.PersistentSize += 20;
+                    if(curWriteCell.VWDSize) curWriteCell.VWDSize += 20;
+                    if(curWriteCell.TemporarySize) curWriteCell.TemporarySize += 20;
+
                     curWriteCell.ChildrenSize += curWriteCell.VWDSize + curWriteCell.TemporarySize;
-                    if(curWriteCell.ChildrenSize)
-                        ++GRUPCount, curWriteCell.ChildrenSize += 20;
+
+                    if(curWriteCell.ChildrenSize) curWriteCell.ChildrenSize += 20;
+
                     curWriteWorld.WorldGRUPSize += curWriteCell.ChildrenSize;
+
 
                     gridX = (int)floor(curCell->XCLC.value.posX / 8.0);
                     gridY = (int)floor(curCell->XCLC.value.posY / 8.0);
@@ -1310,16 +1249,13 @@ class GRUPRecords<WRLDRecord>
                     gridX = (int)floor(gridX / 4.0);
                     gridY = (int)floor(gridY / 4.0);
                     BlockIndex = (gridX << 16 & 0xFFFF0000) | (gridY & 0x0000FFFF);
-
                     if(curWriteWorld.Block[BlockIndex].SubBlock.size() == 0)
                         {
-                        ++GRUPCount;
                         curWriteWorld.WorldGRUPSize += 20;
                         curWriteWorld.Block[BlockIndex].size = 20;
                         }
-                    if(curWriteWorld.Block[BlockIndex].SubBlock[SubBlockIndex].WritableRecords.size() == 0)
+                    if(curWriteWorld.Block[BlockIndex].SubBlock[SubBlockIndex].CELLS.size() == 0)
                         {
-                        ++GRUPCount;
                         curWriteWorld.WorldGRUPSize += 20;
                         curWriteWorld.Block[BlockIndex].size += 20;
                         curWriteWorld.Block[BlockIndex].SubBlock[SubBlockIndex].size = 20;
@@ -1327,14 +1263,15 @@ class GRUPRecords<WRLDRecord>
 
                     curWriteWorld.Block[BlockIndex].size += 20; //Cell Record Header
                     curWriteWorld.Block[BlockIndex].SubBlock[SubBlockIndex].size += 20; //Cell Record Header
-                    curWriteWorld.Block[BlockIndex].size += curWriteCell.CellSize;
+                    curWriteWorld.Block[BlockIndex].size += curWriteCell.recSize;
                     curWriteWorld.Block[BlockIndex].size += curWriteCell.ChildrenSize;
-                    curWriteWorld.Block[BlockIndex].SubBlock[SubBlockIndex].size += curWriteCell.CellSize;
+                    curWriteWorld.Block[BlockIndex].SubBlock[SubBlockIndex].size += curWriteCell.recSize;
                     curWriteWorld.Block[BlockIndex].SubBlock[SubBlockIndex].size += curWriteCell.ChildrenSize;
 
-                    curWriteWorld.Block[BlockIndex].SubBlock[SubBlockIndex].WritableRecords.push_back(curWriteCell);
+                    curWriteWorld.Block[BlockIndex].SubBlock[SubBlockIndex].CELLS.push_back(curWriteCell);
                     }
-                if(curWriteWorld.PersistentSize != 0)
+
+                if(curWriteWorld.CELL.PersistentSize != 0)
                     {
                     if(curWorld->CELL == NULL) //create a default dummy cell for persistents
                         {
@@ -1349,9 +1286,18 @@ class GRUPRecords<WRLDRecord>
 
                 if(curWorld->CELL != NULL)
                     {
-                    curWriteWorld.WorldGRUPSize += 20; //Record Header
-                    ++GRUPCount; //Record Header
                     curCell = curWorld->CELL;
+                    curCell->Write(curWriteWorld.CELL);
+                    curWriteWorld.CELL.formID = curCell->formID;
+                    curWriteWorld.CELL.ChildrenSize = 0;
+                    curWriteWorld.CELL.PersistentSize = 0;
+                    curWriteWorld.CELL.Persistent.clear();
+                    curWriteWorld.CELL.VWDSize = 0;
+                    curWriteWorld.CELL.VWD.clear();
+                    curWriteWorld.CELL.TemporarySize = 0;
+                    curWriteWorld.CELL.Temporary.clear();
+
+                    curWriteWorld.WorldGRUPSize += 20; //Record Header
                     //Only persistent references will be saved in the dummy cell.
                     //Others will be silently discarded.  Could resolve them to their proper cell...
                     //But, it'd add another order of complexity. This's good enough, for now.
@@ -1359,11 +1305,9 @@ class GRUPRecords<WRLDRecord>
                         {
                         if(curCell->ACHR[z]->IsPersistent())
                             {
-                            ++GRUPCount; //Record Header
-                            curWriteWorld.PersistentSize += 20; //Record Header
-                            curWriteWorld.PersistentSize += curSize = curCell->ACHR[z]->GetSize();
-                            curWriteWorld.Persistent.push_back(curCell->ACHR[z]);
-                            curWriteWorld.PersistentSizes.push_back(curSize);
+                            curCell->ACHR[z]->Write(curWriteRecord);
+                            curWriteWorld.CELL.PersistentSize += curWriteRecord.recSize + 20; //Record Header
+                            curWriteWorld.CELL.Persistent.push_back(curWriteRecord);
                             }
                         }
 
@@ -1371,11 +1315,9 @@ class GRUPRecords<WRLDRecord>
                         {
                         if(curCell->ACRE[z]->IsPersistent())
                             {
-                            ++GRUPCount; //Record Header
-                            curWriteWorld.PersistentSize += 20; //Record Header
-                            curWriteWorld.PersistentSize += curSize = curCell->ACRE[z]->GetSize();
-                            curWriteWorld.Persistent.push_back(curCell->ACRE[z]);
-                            curWriteWorld.PersistentSizes.push_back(curSize);
+                            curCell->ACRE[z]->Write(curWriteRecord);
+                            curWriteWorld.CELL.PersistentSize += curWriteRecord.recSize + 20; //Record Header
+                            curWriteWorld.CELL.Persistent.push_back(curWriteRecord);
                             }
                         }
 
@@ -1383,141 +1325,124 @@ class GRUPRecords<WRLDRecord>
                         {
                         if(curCell->REFR[z]->IsPersistent())
                             {
-                            ++GRUPCount; //Record Header
-                            curWriteWorld.PersistentSize += 20; //Record Header
-                            curWriteWorld.PersistentSize += curSize = curCell->REFR[z]->GetSize();
-                            curWriteWorld.Persistent.push_back(curCell->REFR[z]);
-                            curWriteWorld.PersistentSizes.push_back(curSize);
+                            curCell->REFR[z]->Write(curWriteRecord);
+                            curWriteWorld.CELL.PersistentSize += curWriteRecord.recSize + 20; //Record Header
+                            curWriteWorld.CELL.Persistent.push_back(curWriteRecord);
                             }
                         }
 
                     //Account for GRUPs
-                    if(curWriteWorld.PersistentSize)
-                        ++GRUPCount, curWriteWorld.PersistentSize += 20;
-                    curWriteWorld.ChildrenSize += curWriteWorld.PersistentSize;
-                    if(curWriteWorld.ChildrenSize)
-                        ++GRUPCount, curWriteWorld.ChildrenSize += 20;
-                    curWriteWorld.WorldGRUPSize += curWriteWorld.ChildrenSize;
-                    curWriteWorld.WorldGRUPSize += curWriteWorld.CellSize = curWorld->CELL->GetSize();
+                    if(curWriteWorld.CELL.PersistentSize)
+                        curWriteWorld.CELL.PersistentSize += 20;
+                    curWriteWorld.CELL.ChildrenSize += curWriteWorld.CELL.PersistentSize;
+                    if(curWriteWorld.CELL.ChildrenSize)
+                        curWriteWorld.CELL.ChildrenSize += 20;
+                    curWriteWorld.WorldGRUPSize += curWriteWorld.CELL.ChildrenSize;
+                    curWriteWorld.WorldGRUPSize += curWriteWorld.CELL.recSize;
                     }
 
                 if(curWriteWorld.WorldGRUPSize != 0)
-                    ++GRUPCount, curWriteWorld.WorldGRUPSize += 20;
+                    curWriteWorld.WorldGRUPSize += 20;
                 TopSize += curWriteWorld.WorldGRUPSize;
                 WritableWorlds.push_back(curWriteWorld);
                 }
-            return GRUPCount;
-            }
-        void WriteGRUP(unsigned int &TopSize, std::vector<WritableWorld> &WritableWorlds, int *fh, unsigned char *buffer, unsigned int &usedBuffer)
-            {
-            unsigned int numWrldRecords = (unsigned int)Records.size();
-            if(numWrldRecords == 0)
-                return;
 
-            CELLRecord *curCellRecord = NULL;
-            WRLDRecord *curWorldRecord = NULL;
-            WritableWorld *curWRLD = NULL;
-            WritableCell *curCELL = NULL;
             unsigned int type = eGRUP;
             unsigned int gLabel = eWRLD;
             unsigned int gType = eTop;
             unsigned int gSize = 0;
-            _writeBuffer(buffer, &type, 4, usedBuffer);
-            _writeBuffer(buffer, &TopSize, 4, usedBuffer);
-            _writeBuffer(buffer, &gLabel, 4, usedBuffer);
-            _writeBuffer(buffer, &gType, 4, usedBuffer);
-            _writeBuffer(buffer, &stamp, 4, usedBuffer);
 
+            buffer.write(&type, 4);
+            buffer.write(&TopSize, 4);
+            buffer.write(&gLabel, 4);
+            buffer.write(&gType, 4);
+            buffer.write(&stamp, 4);
             for(unsigned int z = 0; z < numWrldRecords; ++z)
                 {
-                curWorldRecord = Records[z];
-                curWRLD = &WritableWorlds[z];
-                curWorldRecord->Write(fh, buffer, curWRLD->WorldSize, usedBuffer);
-                if(curWRLD->WorldGRUPSize != 0)
+                buffer.flush();
+                buffer.write(WritableWorlds[z]);
+
+                if(WritableWorlds[z].WorldGRUPSize != 0)
                     {
                     gType = eWorld;
-                    _writeBuffer(buffer, &type, 4, usedBuffer);
-                    _writeBuffer(buffer, &curWRLD->WorldGRUPSize, 4, usedBuffer);
-                    _writeBuffer(buffer, &curWorldRecord->formID, 4, usedBuffer);
-                    _writeBuffer(buffer, &gType, 4, usedBuffer);
-                    _writeBuffer(buffer, &stamp, 4, usedBuffer);
-                    if(curWorldRecord->ROAD != NULL)
-                        curWorldRecord->ROAD->Write(fh, buffer, curWRLD->RoadSize, usedBuffer);
-                    if(curWorldRecord->CELL != NULL)
+                    buffer.write(&type, 4);
+                    buffer.write(&WritableWorlds[z].WorldGRUPSize, 4);
+                    buffer.write(&WritableWorlds[z].formID, 4);
+                    buffer.write(&gType, 4);
+                    buffer.write(&stamp, 4);
+
+                    buffer.write(WritableWorlds[z].ROAD);
+                    buffer.write(WritableWorlds[z].CELL);
+                    if(WritableWorlds[z].CELL.ChildrenSize != 0)
                         {
-                        curWorldRecord->CELL->Write(fh, buffer, curWRLD->CellSize, usedBuffer);
-                        if(curWRLD->ChildrenSize != 0)
+                        gType = eCellChildren;
+                        buffer.write(&type, 4);
+                        buffer.write(&WritableWorlds[z].CELL.ChildrenSize, 4);
+                        buffer.write(&WritableWorlds[z].CELL.formID, 4);
+                        buffer.write(&gType, 4);
+                        buffer.write(&stamp, 4);
+                        if(WritableWorlds[z].CELL.PersistentSize != 0)
                             {
-                            gType = eCellChildren;
-                            _writeBuffer(buffer, &type, 4, usedBuffer);
-                            _writeBuffer(buffer, &curWRLD->ChildrenSize, 4, usedBuffer);
-                            _writeBuffer(buffer, &curWorldRecord->CELL->formID, 4, usedBuffer);
-                            _writeBuffer(buffer, &gType, 4, usedBuffer);
-                            _writeBuffer(buffer, &stamp, 4, usedBuffer);
-                            if(curWRLD->PersistentSize != 0)
-                                {
-                                gType = eCellPersistent;
-                                _writeBuffer(buffer, &type, 4, usedBuffer);
-                                _writeBuffer(buffer, &curWRLD->PersistentSize, 4, usedBuffer);
-                                _writeBuffer(buffer, &curWorldRecord->CELL->formID, 4, usedBuffer);
-                                _writeBuffer(buffer, &gType, 4, usedBuffer);
-                                _writeBuffer(buffer, &stamp, 4, usedBuffer);
-                                for(unsigned int x = 0; x < curWRLD->Persistent.size(); ++x)
-                                    curWRLD->Persistent[x]->Write(fh, buffer, curWRLD->PersistentSizes[x], usedBuffer);
-                                }
+                            gType = eCellPersistent;
+                            buffer.write(&type, 4);
+                            buffer.write(&WritableWorlds[z].CELL.PersistentSize, 4);
+                            buffer.write(&WritableWorlds[z].CELL.formID, 4);
+                            buffer.write(&gType, 4);
+                            buffer.write(&stamp, 4);
+                            for(unsigned int x = 0; x < WritableWorlds[z].CELL.Persistent.size(); ++x)
+                                buffer.write(WritableWorlds[z].CELL.Persistent[x]);
                             }
                         }
-                    for(std::map<unsigned int, WritableBlock, sortBlocks>::iterator curBlock = curWRLD->Block.begin(); curBlock != curWRLD->Block.end(); ++curBlock)
+
+                    for(std::map<unsigned int, WritableWorld::WritableBlock, WritableWorld::sortBlocks>::iterator curBlock = WritableWorlds[z].Block.begin(); curBlock != WritableWorlds[z].Block.end(); ++curBlock)
                         {
                         gType = eExteriorBlock;
-                        _writeBuffer(buffer, &type, 4, usedBuffer);
-                        _writeBuffer(buffer, &curBlock->second.size, 4, usedBuffer);
-                        _writeBuffer(buffer, &curBlock->first, 4, usedBuffer);
-                        _writeBuffer(buffer, &gType, 4, usedBuffer);
-                        _writeBuffer(buffer, &stamp, 4, usedBuffer);
-                        for(std::map<unsigned int, WritableSubBlock, sortBlocks>::iterator curSubBlock = curBlock->second.SubBlock.begin(); curSubBlock != curBlock->second.SubBlock.end(); ++curSubBlock)
+                        buffer.write(&type, 4);
+                        buffer.write(&curBlock->second.size, 4);
+                        buffer.write(&curBlock->first, 4);
+                        buffer.write(&gType, 4);
+                        buffer.write(&stamp, 4);
+                        for(std::map<unsigned int, WritableWorld::WritableBlock::WritableSubBlock, WritableWorld::sortBlocks>::iterator curSubBlock = curBlock->second.SubBlock.begin(); curSubBlock != curBlock->second.SubBlock.end(); ++curSubBlock)
                             {
-                            gSize = (unsigned int)curSubBlock->second.WritableRecords.size();
+                            gSize = (unsigned int)curSubBlock->second.CELLS.size();
                             gType = eExteriorSubBlock;
-                            _writeBuffer(buffer, &type, 4, usedBuffer);
-                            _writeBuffer(buffer, &curSubBlock->second.size, 4, usedBuffer);
-                            _writeBuffer(buffer, &curSubBlock->first, 4, usedBuffer);
-                            _writeBuffer(buffer, &gType, 4, usedBuffer);
-                            _writeBuffer(buffer, &stamp, 4, usedBuffer);
+                            buffer.write(&type, 4);
+                            buffer.write(&curSubBlock->second.size, 4);
+                            buffer.write(&curSubBlock->first, 4);
+                            buffer.write(&gType, 4);
+                            buffer.write(&stamp, 4);
                             for(unsigned int p = 0; p < gSize; ++p)
                                 {
-                                curCELL = &curSubBlock->second.WritableRecords[p];
-                                curCellRecord = curCELL->curRecord;
-                                curCellRecord->Write(fh, buffer, curCELL->CellSize, usedBuffer);
-                                if(curCELL->ChildrenSize)
+                                buffer.write(curSubBlock->second.CELLS[p]);
+                                if(curSubBlock->second.CELLS[p].ChildrenSize)
                                     {
                                     gType = eCellChildren;
-                                    _writeBuffer(buffer, &type, 4, usedBuffer);
-                                    _writeBuffer(buffer, &curCELL->ChildrenSize, 4, usedBuffer);
-                                    _writeBuffer(buffer, &curCellRecord->formID, 4, usedBuffer);
-                                    _writeBuffer(buffer, &gType, 4, usedBuffer);
-                                    _writeBuffer(buffer, &stamp, 4, usedBuffer);
-                                    if(curCELL->VWDSize)
+                                    buffer.write(&type, 4);
+                                    buffer.write(&curSubBlock->second.CELLS[p].ChildrenSize, 4);
+                                    buffer.write(&curSubBlock->second.CELLS[p].formID, 4);
+                                    buffer.write(&gType, 4);
+                                    buffer.write(&stamp, 4);
+                                    if(curSubBlock->second.CELLS[p].VWDSize)
                                         {
                                         gType = eCellVWD;
-                                        _writeBuffer(buffer, &type, 4, usedBuffer);
-                                        _writeBuffer(buffer, &curCELL->VWDSize, 4, usedBuffer);
-                                        _writeBuffer(buffer, &curCellRecord->formID, 4, usedBuffer);
-                                        _writeBuffer(buffer, &gType, 4, usedBuffer);
-                                        _writeBuffer(buffer, &stamp, 4, usedBuffer);
-                                        for(unsigned int x = 0; x < curCELL->VWD.size(); ++x)
-                                            curCELL->VWD[x]->Write(fh, buffer, curCELL->VWDSizes[x], usedBuffer);
+                                        buffer.write(&type, 4);
+                                        buffer.write(&curSubBlock->second.CELLS[p].VWDSize, 4);
+                                        buffer.write(&curSubBlock->second.CELLS[p].formID, 4);
+                                        buffer.write(&gType, 4);
+                                        buffer.write(&stamp, 4);
+                                        for(unsigned int x = 0; x < curSubBlock->second.CELLS[p].VWD.size(); ++x)
+                                            buffer.write(curSubBlock->second.CELLS[p].VWD[x]);
                                         }
-                                    if(curCELL->TemporarySize)
+                                    if(curSubBlock->second.CELLS[p].TemporarySize)
                                         {
                                         gType = eCellTemporary;
-                                        _writeBuffer(buffer, &type, 4, usedBuffer);
-                                        _writeBuffer(buffer, &curCELL->TemporarySize, 4, usedBuffer);
-                                        _writeBuffer(buffer, &curCellRecord->formID, 4, usedBuffer);
-                                        _writeBuffer(buffer, &gType, 4, usedBuffer);
-                                        _writeBuffer(buffer, &stamp, 4, usedBuffer);
-                                        for(unsigned int x = 0; x < curCELL->Temporary.size(); ++x)
-                                            curCELL->Temporary[x]->Write(fh, buffer, curCELL->TemporarySizes[x], usedBuffer);
+                                        buffer.write(&type, 4);
+                                        buffer.write(&curSubBlock->second.CELLS[p].TemporarySize, 4);
+                                        buffer.write(&curSubBlock->second.CELLS[p].formID, 4);
+                                        buffer.write(&gType, 4);
+                                        buffer.write(&stamp, 4);
+                                        for(unsigned int x = 0; x < curSubBlock->second.CELLS[p].Temporary.size(); ++x)
+                                            buffer.write(curSubBlock->second.CELLS[p].Temporary[x]);
                                         }
                                     }
                                 }

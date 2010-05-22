@@ -54,13 +54,7 @@ class ACRERecord : public Record
         //Used on reading
         ACRERecord(bool newRecord=false):Record(newRecord) {IsTemporary(true);}
         //Used on new records
-        ACRERecord(const unsigned int &newFormID):Record(true)
-            {
-            flags = 0;
-            formID = newFormID;
-            flagsUnk = 0;
-            IsTemporary(true);
-            }
+        ACRERecord(const unsigned int &newFormID):Record(newFormID) {IsTemporary(true);}
         //Used on copying records
         ACRERecord(ACRERecord *srcRecord):Record(true)
             {
@@ -134,7 +128,7 @@ class ACRERecord : public Record
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();
         unsigned int GetType() {return eACRE;}
-        int WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
         bool IsOppositeParent()
             {
             if(!XESP.IsLoaded()) return false;

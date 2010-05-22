@@ -170,10 +170,11 @@ class ModFile
         int Open();
         int Close();
         int LoadTES4();
+        void UpdateFormCount();
         int Load(boost::threadpool::pool &Threads, const bool &FullLoad);
         void CollapseFormIDs();
         void ExpandFormIDs();
-        int Save(int *fh, unsigned char *buffer, unsigned int &usedBuffer);
+        int Save(FileBuffer &buffer);
         #ifdef _DEBUG
         void Debug(int debugLevel);
         #endif

@@ -129,6 +129,7 @@ int SafeSaveMod(const unsigned int CollectionIndex, char *curFileName)
     try
         {
         Collections[CollectionIndex]->SafeSaveMod(curFileName);
+    printf("done!\n");
         }
     catch(...)
         {
@@ -1357,9 +1358,9 @@ unsigned int CreateREGNRecord(const unsigned int CollectionIndex, char *ModName)
     return Collections[CollectionIndex]->CreateREGNRecord(ModName);
     }
 
-unsigned int CreateCELLRecord(const unsigned int CollectionIndex, char *ModName, unsigned int parentFID)
+unsigned int CreateCELLRecord(const unsigned int CollectionIndex, char *ModName, unsigned int parentFID, bool isWorldCELL)
     {
-    return Collections[CollectionIndex]->CreateCELLRecord(ModName, parentFID);
+    return Collections[CollectionIndex]->CreateCELLRecord(ModName, parentFID, isWorldCELL);
     }
 
 unsigned int CreateACHRRecord(const unsigned int CollectionIndex, char *ModName, unsigned int parentFID)
@@ -1396,7 +1397,6 @@ unsigned int CreateLANDRecord(const unsigned int CollectionIndex, char *ModName,
     {
     return Collections[CollectionIndex]->CreateLANDRecord(ModName, parentFID);
     }
-
 
 unsigned int CreateDIALRecord(const unsigned int CollectionIndex, char *ModName)
     {
@@ -1674,9 +1674,9 @@ unsigned int CopyREGNRecord(const unsigned int CollectionIndex, char *ModName, u
     return Collections[CollectionIndex]->CopyREGNRecord(ModName, srcRecordFID, destModName, asOverride);
     }
 
-unsigned int CopyCELLRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride)
+unsigned int CopyCELLRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride, bool isWorldCELL)
     {
-    return Collections[CollectionIndex]->CopyCELLRecord(ModName, srcRecordFID, destModName, destParentFID, asOverride);
+    return Collections[CollectionIndex]->CopyCELLRecord(ModName, srcRecordFID, destModName, destParentFID, asOverride, isWorldCELL);
     }
 
 unsigned int CopyACHRRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride)

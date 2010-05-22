@@ -246,8 +246,12 @@ unsigned int CELLRecord::GetFieldArraySize(const unsigned int Field)
             if(XCLL.IsLoaded())
                 return 1;
             return 0;
-        case 32: //regions
-            return (unsigned int)XCLR.size();
+        case 36: //ACHR
+            return (unsigned int)ACHR.size();
+        case 37: //ACRE
+            return (unsigned int)ACRE.size();
+        case 38: //REFR
+            return (unsigned int)REFR.size();
         default:
             return 0;
         }
@@ -278,6 +282,18 @@ void CELLRecord::GetFieldArray(const unsigned int Field, void **FieldValues)
         case 32: //regions
             for(unsigned int p = 0;p < XCLR.size();p++)
                 FieldValues[p] = &XCLR[p];
+            return;
+        case 36: //ACHR
+            for(unsigned int p = 0;p < ACHR.size();p++)
+                FieldValues[p] = &ACHR[p]->formID;
+            return;
+        case 37: //ACRE
+            for(unsigned int p = 0;p < ACRE.size();p++)
+                FieldValues[p] = &ACRE[p]->formID;
+            return;
+        case 38: //REFR
+            for(unsigned int p = 0;p < REFR.size();p++)
+                FieldValues[p] = &REFR[p]->formID;
             return;
         default:
             *FieldValues = NULL;

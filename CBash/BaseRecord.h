@@ -1239,9 +1239,8 @@ class Record
         virtual void ExpandFormIDs(_FormIDHandler &FormIDHandler) abstract {};
         virtual void CollapseFormIDs(_FormIDHandler &FormIDHandler) abstract {};
         virtual void CopyFrom(Record *temp) {return;}
-        virtual int WriteRecord(int *fh, unsigned char *buffer, unsigned int &usedBuffer) abstract {};
-        void WriteHeader(int *fh, unsigned char *buffer, unsigned int curRecType, unsigned int &recSize, unsigned int &usedBuffer);
-        int Write(int *fh, unsigned char *buffer, unsigned int &recSize, unsigned int &usedBuffer);
+        virtual int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer) abstract {};
+        int Write(WritableRecord &writeRecord);
         virtual int ParseRecord(unsigned char *buffer, const unsigned int &recSize) abstract {};
 
         bool IsDeleted() const

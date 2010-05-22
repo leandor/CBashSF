@@ -209,7 +209,6 @@ void CLMTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
 
 void CLMTRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue)
     {
-    //All size maintenence done by Create/Delete
     switch(subField)
         {
         case 6: //weathers
@@ -232,7 +231,6 @@ void CLMTRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
 
 void CLMTRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, int FieldValue)
     {
-    //All size maintenence done by Create/Delete
     switch(subField)
         {
         case 6: //weathers
