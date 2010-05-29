@@ -31,7 +31,7 @@ extern "C" __declspec(dllexport) int MinimalLoad(const unsigned int CollectionIn
 extern "C" __declspec(dllexport) int FullLoad(const unsigned int CollectionIndex, const bool LoadMasters);
 ////////////////////////////////////////////////////////////////////////
 extern "C" __declspec(dllexport) int GetChangedMods(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int SafeSaveMod(const unsigned int CollectionIndex, char *ModName);
+extern "C" __declspec(dllexport) int SafeSaveMod(const unsigned int CollectionIndex, char *ModName, bool CloseMod);
 extern "C" __declspec(dllexport) int SafeSaveAllChangedMods(const unsigned int CollectionIndex);
 ////////////////////////////////////////////////////////////////////////
 extern "C" __declspec(dllexport) int LoadRecord(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID);

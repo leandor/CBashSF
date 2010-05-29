@@ -100,7 +100,7 @@ class GRUPRecords
                 }
             return;
             }
-        void WriteGRUP(unsigned int TopLabel, FileBuffer &buffer)
+        void WriteGRUP(unsigned int TopLabel, FileBuffer &buffer, bool CloseMod)
             {
             unsigned int numRecords = (unsigned int)Records.size();
             if(numRecords == 0)
@@ -114,8 +114,11 @@ class GRUPRecords
                 {
                 Records[p]->Write(WritableRecords[p]);
                 TopSize += WritableRecords[p].recSize;
+                if(CloseMod)
+                    delete Records[p];
                 }
-
+            if(CloseMod)
+                Records.clear();
             buffer.write(&type, 4);
             buffer.write(&TopSize, 4);
             buffer.write(&TopLabel, 4);
@@ -254,7 +257,7 @@ class GRUPRecords<DIALRecord>
                 }
             return;
             }
-        void WriteGRUP(FileBuffer &buffer)
+        void WriteGRUP(FileBuffer &buffer, bool CloseMod)
             {
             unsigned int numDIALRecords = (unsigned int)Records.size(); //Parent Records
             if(numDIALRecords == 0)
@@ -280,10 +283,19 @@ class GRUPRecords<DIALRecord>
                         {
                         Records[p]->INFO[y]->Write(WriteDial[p].Children[y]);
                         WriteDial[p].ChildrenSize += WriteDial[p].Children[y].recSize;
+                        if(CloseMod)
+                            delete Records[p]->INFO[y];
                         }
                     TopSize += WriteDial[p].ChildrenSize;
                     }
+                if(CloseMod)
+                    {
+                    Records[p]->INFO.clear();
+                    delete Records[p];
+                    }
                 }
+            if(CloseMod)
+                Records.clear();
 
             buffer.write(&type, 4);
             buffer.write(&TopSize, 4);
@@ -510,7 +522,7 @@ class GRUPRecords<CELLRecord>
                 }
             return;
             }
-        void WriteGRUP(FileBuffer &buffer)
+        void WriteGRUP(FileBuffer &buffer, bool CloseMod)
             {
             unsigned int numCELLRecords = (unsigned int)Records.size();
             if(numCELLRecords == 0)
@@ -546,6 +558,11 @@ class GRUPRecords<CELLRecord>
                     curRecord->PGRD->Write(curWriteRecord);
                     curICELL.TemporarySize += curWriteRecord.recSize + 20; //Record Header
                     curICELL.Temporary.push_back(curWriteRecord);
+                    if(CloseMod)
+                        {
+                        delete curRecord->PGRD;
+                        curRecord->PGRD = NULL;
+                        }
                     }
 
                 for(unsigned int y = 0; y < curRecord->ACHR.size(); ++y)
@@ -566,7 +583,11 @@ class GRUPRecords<CELLRecord>
                         curICELL.TemporarySize += curWriteRecord.recSize + 20; //Record Header
                         curICELL.Temporary.push_back(curWriteRecord);
                         }
+                    if(CloseMod)
+                        delete curRecord->ACHR[y];
                     }
+                if(CloseMod)
+                    curRecord->ACHR.clear();
 
                 for(unsigned int y = 0; y < curRecord->ACRE.size(); ++y)
                     {
@@ -586,7 +607,11 @@ class GRUPRecords<CELLRecord>
                         curICELL.TemporarySize += curWriteRecord.recSize + 20; //Record Header
                         curICELL.Temporary.push_back(curWriteRecord);
                         }
+                    if(CloseMod)
+                        delete curRecord->ACRE[y];
                     }
+                if(CloseMod)
+                    curRecord->ACRE.clear();
 
                 for(unsigned int y = 0; y < curRecord->REFR.size(); ++y)
                     {
@@ -606,7 +631,12 @@ class GRUPRecords<CELLRecord>
                         curICELL.TemporarySize += curWriteRecord.recSize + 20; //Record Header
                         curICELL.Temporary.push_back(curWriteRecord);
                         }
+                    if(CloseMod)
+                        delete curRecord->REFR[y];
                     }
+                if(CloseMod)
+                    curRecord->REFR.clear();
+
                 //Account for GRUPs
                 if(curICELL.PersistentSize) curICELL.PersistentSize += 20;
                 if(curICELL.VWDSize) curICELL.VWDSize += 20;
@@ -640,8 +670,12 @@ class GRUPRecords<CELLRecord>
                 SubBlockHeaders[BlockIndex][SubBlockIndex] += curICELL.ChildrenSize;
 
                 BlockedRecords[BlockIndex][SubBlockIndex].push_back(curICELL);
+                if(CloseMod)
+                    delete curRecord;
                 }
-
+            if(CloseMod)
+                Records.clear();;
+                
             unsigned int type = eGRUP;
             unsigned int gLabel = eCELL;
             unsigned int gType = eTop;
@@ -1102,7 +1136,7 @@ class GRUPRecords<WRLDRecord>
             return;
             }
 
-        void WriteGRUP(FileBuffer &buffer, _FormIDHandler &FormIDHandler)
+        void WriteGRUP(FileBuffer &buffer, bool CloseMod, _FormIDHandler &FormIDHandler)
             {
             unsigned int numWrldRecords = (unsigned int)Records.size();
             if(numWrldRecords == 0)
@@ -1139,6 +1173,11 @@ class GRUPRecords<WRLDRecord>
                     {
                     curWorld->ROAD->Write(curWriteWorld.ROAD);
                     curWriteWorld.WorldGRUPSize += curWriteWorld.ROAD.recSize + 20; //Record Header
+                    if(CloseMod)
+                        {
+                        delete curWorld->ROAD;
+                        curWorld->ROAD = NULL;
+                        }
                     }
 
                 numCellRecords = (unsigned int)curWorld->CELLS.size();
@@ -1163,6 +1202,11 @@ class GRUPRecords<WRLDRecord>
                         curCell->LAND->Write(curWriteRecord);
                         curWriteCell.TemporarySize += curWriteRecord.recSize + 20; //Record Header
                         curWriteCell.Temporary.push_back(curWriteRecord);
+                        if(CloseMod)
+                            {
+                            delete curCell->LAND;
+                            curCell->LAND = NULL;
+                            }
                         }
 
                     if(curCell->PGRD != NULL)
@@ -1170,6 +1214,11 @@ class GRUPRecords<WRLDRecord>
                         curCell->PGRD->Write(curWriteRecord);
                         curWriteCell.TemporarySize += curWriteRecord.recSize + 20; //Record Header
                         curWriteCell.Temporary.push_back(curWriteRecord);
+                        if(CloseMod)
+                            {
+                            delete curCell->PGRD;
+                            curCell->PGRD = NULL;
+                            }
                         }
 
                     for(unsigned int y = 0; y < curCell->ACHR.size(); ++y)
@@ -1190,7 +1239,11 @@ class GRUPRecords<WRLDRecord>
                             curWriteCell.TemporarySize += curWriteRecord.recSize + 20; //Record Header
                             curWriteCell.Temporary.push_back(curWriteRecord);
                             }
+                        if(CloseMod)
+                            delete curCell->ACHR[y];
                         }
+                    if(CloseMod)
+                        curCell->ACHR.clear();
 
                     for(unsigned int y = 0; y < curCell->ACRE.size(); ++y)
                         {
@@ -1210,7 +1263,11 @@ class GRUPRecords<WRLDRecord>
                             curWriteCell.TemporarySize += curWriteRecord.recSize + 20; //Record Header
                             curWriteCell.Temporary.push_back(curWriteRecord);
                             }
+                        if(CloseMod)
+                            delete curCell->ACRE[y];
                         }
+                    if(CloseMod)
+                        curCell->ACRE.clear();
 
                     for(unsigned int y = 0; y < curCell->REFR.size(); ++y)
                         {
@@ -1230,7 +1287,11 @@ class GRUPRecords<WRLDRecord>
                             curWriteCell.TemporarySize += curWriteRecord.recSize + 20; //Record Header
                             curWriteCell.Temporary.push_back(curWriteRecord);
                             }
+                        if(CloseMod)
+                            delete curCell->REFR[y];
                         }
+                    if(CloseMod)
+                        curCell->REFR.clear();
                     //Account for GRUPs
                     //if(curWriteCell.PersistentSize) curWriteCell.PersistentSize += 20;
                     if(curWriteCell.VWDSize) curWriteCell.VWDSize += 20;
@@ -1269,7 +1330,12 @@ class GRUPRecords<WRLDRecord>
                     curWriteWorld.Block[BlockIndex].SubBlock[SubBlockIndex].size += curWriteCell.ChildrenSize;
 
                     curWriteWorld.Block[BlockIndex].SubBlock[SubBlockIndex].CELLS.push_back(curWriteCell);
+
+                    if(CloseMod)
+                        delete curCell;
                     }
+                if(CloseMod)
+                    curWorld->CELLS.clear();
 
                 if(curWriteWorld.CELL.PersistentSize != 0)
                     {
@@ -1309,7 +1375,11 @@ class GRUPRecords<WRLDRecord>
                             curWriteWorld.CELL.PersistentSize += curWriteRecord.recSize + 20; //Record Header
                             curWriteWorld.CELL.Persistent.push_back(curWriteRecord);
                             }
+                        if(CloseMod)
+                            delete curCell->ACHR[z];
                         }
+                    if(CloseMod)
+                        curCell->ACHR.clear();
 
                     for(unsigned int z = 0; z < curCell->ACRE.size(); ++z)
                         {
@@ -1319,7 +1389,11 @@ class GRUPRecords<WRLDRecord>
                             curWriteWorld.CELL.PersistentSize += curWriteRecord.recSize + 20; //Record Header
                             curWriteWorld.CELL.Persistent.push_back(curWriteRecord);
                             }
+                        if(CloseMod)
+                            delete curCell->ACRE[z];
                         }
+                    if(CloseMod)
+                        curCell->ACRE.clear();
 
                     for(unsigned int z = 0; z < curCell->REFR.size(); ++z)
                         {
@@ -1329,7 +1403,11 @@ class GRUPRecords<WRLDRecord>
                             curWriteWorld.CELL.PersistentSize += curWriteRecord.recSize + 20; //Record Header
                             curWriteWorld.CELL.Persistent.push_back(curWriteRecord);
                             }
+                        if(CloseMod)
+                            delete curCell->REFR[z];
                         }
+                    if(CloseMod)
+                        curCell->REFR.clear();
 
                     //Account for GRUPs
                     if(curWriteWorld.CELL.PersistentSize)
@@ -1339,13 +1417,25 @@ class GRUPRecords<WRLDRecord>
                         curWriteWorld.CELL.ChildrenSize += 20;
                     curWriteWorld.WorldGRUPSize += curWriteWorld.CELL.ChildrenSize;
                     curWriteWorld.WorldGRUPSize += curWriteWorld.CELL.recSize;
+
+                    if(CloseMod)
+                        {
+                        delete curCell;
+                        curWorld->CELL = NULL;
+                        }
                     }
 
                 if(curWriteWorld.WorldGRUPSize != 0)
                     curWriteWorld.WorldGRUPSize += 20;
                 TopSize += curWriteWorld.WorldGRUPSize;
                 WritableWorlds.push_back(curWriteWorld);
+
+                if(CloseMod)
+                    delete curWorld;
                 }
+
+            if(CloseMod)
+                Records.clear();
 
             unsigned int type = eGRUP;
             unsigned int gLabel = eWRLD;
@@ -1370,7 +1460,6 @@ class GRUPRecords<WRLDRecord>
                     buffer.write(&WritableWorlds[z].formID, 4);
                     buffer.write(&gType, 4);
                     buffer.write(&stamp, 4);
-
                     buffer.write(WritableWorlds[z].ROAD);
                     buffer.write(WritableWorlds[z].CELL);
                     if(WritableWorlds[z].CELL.ChildrenSize != 0)

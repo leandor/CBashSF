@@ -124,12 +124,11 @@ int GetChangedMods(const unsigned int CollectionIndex)
     return Collections[CollectionIndex]->GetChangedMods();
     }
 
-int SafeSaveMod(const unsigned int CollectionIndex, char *curFileName)
+int SafeSaveMod(const unsigned int CollectionIndex, char *curFileName, bool CloseMod)
 	{
     try
         {
-        Collections[CollectionIndex]->SafeSaveMod(curFileName);
-    printf("done!\n");
+        Collections[CollectionIndex]->SafeSaveMod(curFileName, CloseMod);
         }
     catch(...)
         {
@@ -172,7 +171,7 @@ int UnloadRecord(const unsigned int CollectionIndex, char *ModName, unsigned int
     {
     try
         {
-        Collections[CollectionIndex]->LoadRecord(ModName, recordFID);
+        Collections[CollectionIndex]->UnloadRecord(ModName, recordFID);
         }
     catch(...)
         {

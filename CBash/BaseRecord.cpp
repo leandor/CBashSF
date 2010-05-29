@@ -52,7 +52,11 @@ int Record::Read(unsigned char *fileBuffer, _FormIDHandler &FormIDHandler)
 int Record::Write(WritableRecord &writeRecord)
     {
     if(!IsLoaded())
+        {
+        writeRecord.recSize = 0;
+        writeRecord.recBuffer = NULL;
         return -1;
+        }
     unsigned long compSize = 0;
     unsigned char *compBuffer = NULL;
     unsigned int usedBuffer = 0;

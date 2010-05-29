@@ -174,7 +174,7 @@ class ModFile
         int Load(boost::threadpool::pool &Threads, const bool &FullLoad);
         void CollapseFormIDs();
         void ExpandFormIDs();
-        int Save(FileBuffer &buffer);
+        int Save(FileBuffer &buffer, bool CloseMod);
         #ifdef _DEBUG
         void Debug(int debugLevel);
         #endif

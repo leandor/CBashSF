@@ -82,12 +82,11 @@ class GMSTRecord : public Record
     public:
         STRING EDID;
         GMSTDATA DATA;
+
         GMSTRecord(bool newRecord=false):Record(newRecord) {}
         GMSTRecord(const unsigned int &newFormID):Record(newFormID) {}
         GMSTRecord(GMSTRecord *srcRecord):Record(true)
             {
-            if(srcRecord == NULL)
-                return;
             unsigned int vSize;
             flags = srcRecord->flags;
             formID = srcRecord->formID;
@@ -112,13 +111,10 @@ class GMSTRecord : public Record
                 }
             return;
             }
-        GMSTRecord(const unsigned int &newFormID, char *newRecordEDID):Record(true)
+        GMSTRecord(const unsigned int &newFormID, char *newRecordEDID):Record(newFormID)
             {
             EDID.Copy(newRecordEDID);
             DATA.format = EDID.value[0];
-            flags = 0;
-            formID = newFormID;
-            flagsUnk = 0;
             }
         ~GMSTRecord() {}
         void Unload() //GMSTs should always be loaded, so do nothing.

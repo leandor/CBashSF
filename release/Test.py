@@ -24,226 +24,308 @@ def TestReadWriteAll():
     for record in Current[0].GLOB:
         record.CopyAsNew(newMod)
         record.CopyAsOverride(newMod)
+        record.UnloadRecord()
     for record in Current[0].CLAS:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].FACT:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].HAIR:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].EYES:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].RACE:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].SOUN:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].SKIL:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].MGEF:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].SCPT:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].LTEX:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].ENCH:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].SPEL:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].BSGN:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].ACTI:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].APPA:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].ARMO:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].BOOK:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].CLOT:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].CONT:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].DOOR:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].INGR:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].LIGH:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].MISC:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].STAT:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].GRAS:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].TREE:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].FLOR:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].FURN:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].WEAP:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].AMMO:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
     for record in Current[0].NPC_:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].CREA:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].LVLC:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].SLGM:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].KEYM:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].ALCH:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].SBSP:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].SGST:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].LVLI:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].WTHR:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].CLMT:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].REGN:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
-##    for record in Current[0].CELL:
-##        trgCell = record.CopyAsOverride(newMod)
-##        for npcRef in record.ACHR:
-##            npcRef.CopyAsOverride(trgCell)
-##        for creaRef in record.ACRE:
-##            creaRef.CopyAsOverride(trgCell)
-##        for objRef in record.REFR:
-##            objRef.CopyAsOverride(trgCell)
-##        Pgrd = record.PGRD
-##        if(Pgrd): Pgrd.CopyAsOverride(trgCell)
-##        
-##        trgCell = record.CopyAsNew(newMod)
-##        for npcRef in record.ACHR:
-##            npcRef.CopyAsNew(trgCell)
-##        for creaRef in record.ACRE:
-##            creaRef.CopyAsNew(trgCell)
-##        for objRef in record.REFR:
-##            objRef.CopyAsNew(trgCell)
-##        Pgrd = record.PGRD
-##        if(Pgrd): Pgrd.CopyAsNew(trgCell)
-##
-##        
-##    for record in Current[0].WRLD:
-##        trgWrld = record.CopyAsOverride(newMod)
-##        road = record.ROAD
-##        if(road != None): road.CopyAsOverride(trgWrld)
-##        for wrldCell in record.CELLS:
-##            trgCell = wrldCell.CopyAsOverride(trgWrld)
-##            cLand = wrldCell.LAND
-##            if(cLand):
-##                cLand.CopyAsOverride(trgCell)
-##            for npcRef in wrldCell.ACHR:
-##                npcRef.CopyAsOverride(trgCell)
-##            for creaRef in wrldCell.ACRE:
-##                creaRef.CopyAsOverride(trgCell)
-##            for objRef in wrldCell.REFR:
-##                objRef.CopyAsOverride(trgCell)
-##            Pgrd = wrldCell.PGRD
-##            if(Pgrd): Pgrd.CopyAsOverride(trgCell)
-##            
-##        trgWrld = record.CopyAsNew(newMod)
-##        road = record.ROAD
-##        if(road != None): road.CopyAsNew(trgWrld)
-##        for wrldCell in record.CELLS:
-##            trgCell = wrldCell.CopyAsNew(trgWrld)
-##            cLand = wrldCell.LAND
-##            if(cLand):
-##                cLand.CopyAsNew(trgCell)
-##            for npcRef in wrldCell.ACHR:
-##                npcRef.CopyAsNew(trgCell)
-##            for creaRef in wrldCell.ACRE:
-##                creaRef.CopyAsNew(trgCell)
-##            for objRef in wrldCell.REFR:
-##                objRef.CopyAsNew(trgCell)
-##            Pgrd = wrldCell.PGRD
-##            if(Pgrd): Pgrd.CopyAsNew(trgCell)
-##            
-##    for record in Current[0].DIAL:
-##        newOver = record.CopyAsOverride(newMod)
-##        newNew = record.CopyAsNew(newMod)
-##        for info in record.INFO:
-##            info.CopyAsOverride(newOver)
-##            info.CopyAsNew(newNew)
+        record.UnloadRecord()
+    for record in Current[0].CELL:
+        trgCellOver = record.CopyAsOverride(newMod)
+        trgCellNew = record.CopyAsNew(newMod)
+        for npcRef in record.ACHR:
+            npcRef.CopyAsOverride(trgCellOver)
+            npcRef.CopyAsNew(trgCellNew)
+            npcRef.UnloadRecord()
+        for creaRef in record.ACRE:
+            creaRef.CopyAsOverride(trgCellOver)
+            creaRef.CopyAsNew(trgCellNew)
+            creaRef.UnloadRecord()
+        for objRef in record.REFR:
+            objRef.CopyAsOverride(trgCellOver)
+            objRef.CopyAsNew(trgCellNew)
+            objRef.UnloadRecord()
+        Pgrd = record.PGRD
+        if(Pgrd):
+            Pgrd.CopyAsOverride(trgCellOver)
+            Pgrd.CopyAsNew(trgCellNew)
+            Pgrd.UnloadRecord()
+        record.UnloadRecord()
+
+    for record in Current[0].WRLD:
+        trgWrldOver = record.CopyAsOverride(newMod)
+        trgWrldNew = record.CopyAsNew(newMod)
+        road = record.ROAD
+        if(road != None):
+            road.CopyAsOverride(trgWrldOver)
+            road.CopyAsNew(trgWrldNew)
+            road.UnloadRecord()
+        cell = record.CELL
+        if(cell != None):
+            trgCellOver = cell.CopyAsOverride(trgWrldOver,isWorldCell=True)
+            trgCellNew = cell.CopyAsNew(trgWrldNew,isWorldCell=True)
+            cLand = cell.LAND
+            if(cLand != None):
+                cLand.CopyAsOverride(trgCellOver)
+                cLand.CopyAsNew(trgCellNew)
+                cLand.UnloadRecord()
+            for npcRef in cell.ACHR:
+                npcRef.CopyAsOverride(trgCellOver)
+                npcRef.CopyAsNew(trgCellNew)
+                npcRef.UnloadRecord()
+            for creaRef in cell.ACRE:
+                creaRef.CopyAsOverride(trgCellOver)
+                creaRef.CopyAsNew(trgCellNew)
+                creaRef.UnloadRecord()
+            for objRef in cell.REFR:
+                objRef.CopyAsOverride(trgCellOver)
+                objRef.CopyAsNew(trgCellNew)
+                objRef.UnloadRecord()
+            Pgrd = cell.PGRD
+            if(Pgrd != None):
+                Pgrd.CopyAsOverride(trgCellOver)
+                Pgrd.CopyAsNew(trgCellNew)
+                Pgrd.UnloadRecord()
+            cell.UnloadRecord()
+        for wrldCell in record.CELLS:
+            trgCellOver = wrldCell.CopyAsOverride(trgWrldOver)
+            trgCellNew = wrldCell.CopyAsNew(trgWrldNew)
+            cLand = wrldCell.LAND
+            if(cLand != None):
+                cLand.CopyAsOverride(trgCellOver)
+                cLand.CopyAsNew(trgCellNew)
+                cLand.UnloadRecord()
+            for npcRef in wrldCell.ACHR:
+                npcRef.CopyAsOverride(trgCellOver)
+                npcRef.CopyAsNew(trgCellNew)
+                npcRef.UnloadRecord()
+            for creaRef in wrldCell.ACRE:
+                creaRef.CopyAsOverride(trgCellOver)
+                creaRef.CopyAsNew(trgCellNew)
+                creaRef.UnloadRecord()
+            for objRef in wrldCell.REFR:
+                objRef.CopyAsOverride(trgCellOver)
+                objRef.CopyAsNew(trgCellNew)
+                objRef.UnloadRecord()
+            Pgrd = wrldCell.PGRD
+            if(Pgrd != None):
+                Pgrd.CopyAsOverride(trgCellOver)
+                Pgrd.CopyAsNew(trgCellNew)
+                Pgrd.UnloadRecord()
+            wrldCell.UnloadRecord()
+        record.UnloadRecord()
+        
+    for record in Current[0].DIAL:
+        newOver = record.CopyAsOverride(newMod)
+        newNew = record.CopyAsNew(newMod)
+        for info in record.INFO:
+            info.CopyAsOverride(newOver)
+            info.CopyAsNew(newNew)
+            info.UnloadRecord()
+        record.UnloadRecord()
     for record in Current[0].QUST:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].IDLE:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].PACK:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].CSTY:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].LSCR:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].LVSP:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].ANIO:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].WATR:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
     for record in Current[0].EFSH:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
+        record.UnloadRecord()
 
     print "ALL:Save Test - TestALL.esp"
-    newMod.safeSave()
+    newMod.safeCloseSave()
     print "ALL:Finished testing"
+
 def TestTES4():
     Current = Collection()
     Current.addMod("Oblivion.esm")
@@ -307,7 +389,7 @@ def TestGMST():
     print "GMST:Read Test"
     for record in Current.GMST:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -323,7 +405,7 @@ def TestGMST():
     print "value..."
     newRecord.value = "It works!"
     print "GMST:Set Test Results"
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -343,7 +425,7 @@ def TestGLOB():
     print "GLOB:Read Test"
     for record in Current.GLOB:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -365,7 +447,7 @@ def TestGLOB():
     print "value..."
     newRecord.value = 12.2
     print "GLOB:Set Test Results"
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -389,7 +471,7 @@ def TestCLAS():
     print "CLAS:Read Test"
     for record in Current.CLAS:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -463,7 +545,7 @@ def TestCLAS():
         
     print "CLAS:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -504,7 +586,7 @@ def TestFACT():
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current.FACT:
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -512,7 +594,7 @@ def TestFACT():
         print "full                :", record.full
         print "relations           :"
         for relation in record.relations:
-            print "  %i: Faction: %08X, Mod: %i" % (relation._listIndex, relation.faction, relation.mod)
+            print "  %i: Faction: %s, Mod: %i" % (relation._listIndex, PrintFormID(relation.faction), relation.mod)
 
         print "flags               :", record.flags
         print "crimeGoldMultiplier :", record.crimeGoldMultiplier
@@ -566,14 +648,14 @@ def TestFACT():
 
     print "FACT:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid    
     print "full               :", newRecord.full    
     print "relations          :"
     for relation in newRecord.relations:
-        print "  %i: Faction: %08X, Mod: %i" % (relation._listIndex, relation.faction, relation.mod)
+        print "  %i: Faction: %s, Mod: %i" % (relation._listIndex, PrintFormID(relation.faction), relation.mod)
     print "flags              :", newRecord.flags    
     print "crimeGoldMultiplier:", newRecord.crimeGoldMultiplier
     print "ranks              :"
@@ -599,7 +681,7 @@ def TestHAIR():
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current.HAIR:
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -644,7 +726,7 @@ def TestHAIR():
 
     print "HAIR:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid    
@@ -675,7 +757,7 @@ def TestEYES():
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current.EYES:
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -706,7 +788,7 @@ def TestEYES():
 
     print "EYES:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid    
@@ -733,7 +815,7 @@ def TestRACE():
     Current.minimalLoad(LoadMasters=True)
     for record in Current.RACE:
         print
-        print "fid    : %08X" % record.fid
+        print "fid    :", PrintFormID(record.fid)
         print "flags1 :", record.flags1
         print "flags2 :", record.flags2
         print "eid    :", record.eid
@@ -742,11 +824,11 @@ def TestRACE():
         print "text      :", record.text
         print "spells    :"
         for spell in record.spells:
-            print "  %08X" % spell
+            print "  ", PrintFormID(spell)
             
         print "relations :"
         for relation in record.relations:
-            print "  %i: Faction: %08X, Mod: %i" % (relation._listIndex, relation.faction, relation.mod)
+            print "  %i: Faction: %s, Mod: %i" % (relation._listIndex, PrintFormID(relation.faction), relation.mod)
         
         print "  skill1:", record.skill1, ", boost:", record.skill1Boost
         print "  skill2:", record.skill2, ", boost:", record.skill2Boost
@@ -859,11 +941,11 @@ def TestRACE():
 
         print "hairs :"
         for hair in record.hairs:
-            print "  %08X" % hair
+            print "  ", PrintFormID(hair)
 
         print "eyes :"
         for eye in record.eyes:
-            print "  %08X" % eye
+            print "  ", PrintFormID(eye)
 
         print "fggs_p:", record.fggs_p   
         print "fgga_p:", record.fgga_p 
@@ -1029,7 +1111,7 @@ def TestRACE():
     
     print "RACE:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -1038,11 +1120,11 @@ def TestRACE():
     print "text      :", newRecord.text
     print "spells    :"
     for spell in newRecord.spells:
-        print "  %08X" % spell
+        print "  ", PrintFormID(spell)
         
     print "relations :"
     for relation in newRecord.relations:
-        print "  %i: Faction: %08X, Mod: %i" % (relation._listIndex, relation.faction, relation.mod)
+        print "  %i: Faction: %s, Mod: %i" % (relation._listIndex, PrintFormID(relation.faction), relation.mod)
     
     print "  skill1:", newRecord.skill1, ", boost:", newRecord.skill1Boost
     print "  skill2:", newRecord.skill2, ", boost:", newRecord.skill2Boost
@@ -1155,11 +1237,11 @@ def TestRACE():
 
     print "hairs :"
     for hair in newRecord.hairs:
-        print "  %08X" % hair
+        print "  ", PrintFormID(hair)
 
     print "eyes :"
     for eye in newRecord.eyes:
-        print "  %08X" % eye
+        print "  ", PrintFormID(eye)
 
     print "fggs_p:", newRecord.fggs_p   
     print "fgga_p:", newRecord.fgga_p 
@@ -1188,7 +1270,7 @@ def TestSOUN():
 
     for record in Current.SOUN:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -1228,7 +1310,7 @@ def TestSOUN():
     
     print "SOUN:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -1264,7 +1346,7 @@ def TestSKIL():
 
     for record in Current.SKIL:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -1307,7 +1389,7 @@ def TestSKIL():
     
     print "SKIL:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -1344,7 +1426,7 @@ def TestMGEF():
 
     for record in Current.MGEF:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -1357,19 +1439,19 @@ def TestMGEF():
         print "modt_p          :", record.modt_p
         print "flags           :", record.flags
         print "baseCost        :", record.baseCost
-        print "associated      : %08X" % record.associated
+        print "associated      :", PrintFormID(record.associated)
         print "school          :", record.school
         print "resistValue     :", record.resistValue
         print "unk1            :", record.unk1
         print "unused1         :", record.unused1
-        print "light           : %08X" % record.light
+        print "light           :", PrintFormID(record.light)
         print "projectileSpeed :", record.projectileSpeed
-        print "effectShader    : %08X" % record.effectShader
-        print "enchantEffect   : %08X" % record.enchantEffect
-        print "castingSound    : %08X" % record.castingSound
-        print "boltSound       : %08X" % record.boltSound
-        print "hitSound        : %08X" % record.hitSound
-        print "areaSound       : %08X" % record.areaSound
+        print "effectShader    :", PrintFormID(record.effectShader)
+        print "enchantEffect   :", PrintFormID(record.enchantEffect)
+        print "castingSound    :", PrintFormID(record.castingSound)
+        print "boltSound       :", PrintFormID(record.boltSound)
+        print "hitSound        :", PrintFormID(record.hitSound)
+        print "areaSound       :", PrintFormID(record.areaSound)
         print "cefEnchantment  :", record.cefEnchantment
         print "cefBarter       :", record.cefBarter
         print "counterEffects  :"
@@ -1410,7 +1492,7 @@ def TestMGEF():
     
     print "MGEF:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -1423,19 +1505,19 @@ def TestMGEF():
     print "modt_p          :", newRecord.modt_p
     print "flags           :", newRecord.flags
     print "baseCost        :", newRecord.baseCost
-    print "associated      : %08X" % newRecord.associated
+    print "associated      :", PrintFormID(newRecord.associated)
     print "school          :", newRecord.school
     print "resistValue     :", newRecord.resistValue
     print "unk1            :", newRecord.unk1
     print "unused1         :", newRecord.unused1
-    print "light           : %08X" % newRecord.light
+    print "light           :", PrintFormID(newRecord.light)
     print "projectileSpeed :", newRecord.projectileSpeed
-    print "effectShader    : %08X" % newRecord.effectShader
-    print "enchantEffect   : %08X" % newRecord.enchantEffect
-    print "castingSound    : %08X" % newRecord.castingSound
-    print "boltSound       : %08X" % newRecord.boltSound
-    print "hitSound        : %08X" % newRecord.hitSound
-    print "areaSound       : %08X" % newRecord.areaSound
+    print "effectShader    :", PrintFormID(newRecord.effectShader)
+    print "enchantEffect   :", PrintFormID(newRecord.enchantEffect)
+    print "castingSound    :", PrintFormID(newRecord.castingSound)
+    print "boltSound       :", PrintFormID(newRecord.boltSound)
+    print "hitSound        :", PrintFormID(newRecord.hitSound)
+    print "areaSound       :", PrintFormID(newRecord.areaSound)
     print "cefEnchantment  :", newRecord.cefEnchantment
     print "cefBarter       :", newRecord.cefBarter
     print "counterEffects  :"
@@ -1461,7 +1543,7 @@ def TestSCPT():
     x = 0
     for record in Current.SCPT:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -1484,7 +1566,7 @@ def TestSCPT():
         print "references"
         for reference in record.references:
             if(reference.IsSCRO):
-                print "  SCRO: %08X" % reference.reference
+                print "  SCRO:", PrintFormID(reference.reference)
             else:
                 print "  SCRV:", reference.reference
         break
@@ -1544,7 +1626,7 @@ def TestSCPT():
 
     print "SCPT:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -1567,7 +1649,7 @@ def TestSCPT():
     print "references   :"
     for reference in newRecord.references:
         if(reference.IsSCRO):
-            print "  SCRO: %08X" % reference.reference
+            print "  SCRO:", PrintFormID(reference.reference)
         else:
             print "  SCRV:", reference.reference
 
@@ -1592,7 +1674,7 @@ def TestLTEX():
 
     for record in Current.LTEX:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -1604,7 +1686,7 @@ def TestLTEX():
         print "specular    :", record.specular
         print "grass    :"
         for grass in record.grass:
-            print "  %08X" % grass
+            print "  ", PrintFormID(grass)
         break
 
     print "LTEX:Create Record Test"
@@ -1628,7 +1710,7 @@ def TestLTEX():
     
     print "LTEX:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -1639,7 +1721,7 @@ def TestLTEX():
     print "specular    :", newRecord.specular
     print "grass    :"
     for grass in newRecord.grass:
-        print "  %08X" % grass
+        print "  ", PrintFormID(grass)
             
     print "LTEX:CopyAsOverride Test"
     for record in Current[0].LTEX:
@@ -1662,7 +1744,7 @@ def TestENCH():
 
     for record in Current.ENCH:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -1682,7 +1764,7 @@ def TestENCH():
             print "  duration   :", effect.duration
             print "  recipient  :", effect.recipient
             print "  actorValue :", effect.actorValue
-            print "  script     : %08X" % effect.script
+            print "  script     :", PrintFormID(effect.script)
             print "  school     :", effect.school
             print "  visual     :", effect.visual
             print "  flags      :", effect.flags
@@ -1739,7 +1821,7 @@ def TestENCH():
     newEffect.full = "ENCH??"
     print "ENCH:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -1758,7 +1840,7 @@ def TestENCH():
         print "  duration   :", effect.duration
         print "  recipient  :", effect.recipient
         print "  actorValue :", effect.actorValue
-        print "  script     : %08X" % effect.script
+        print "  script     :", PrintFormID(effect.script)
         print "  school     :", effect.school
         print "  visual     :", effect.visual
         print "  flags      :", effect.flags
@@ -1786,7 +1868,7 @@ def TestSPEL():
 
     for record in Current.SPEL:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -1806,7 +1888,7 @@ def TestSPEL():
             print "  duration   :", effect.duration
             print "  recipient  :", effect.recipient
             print "  actorValue :", effect.actorValue
-            print "  script     : %08X" % effect.script
+            print "  script     :", PrintFormID(effect.script)
             print "  school     :", effect.school
             print "  visual     :", effect.visual
             print "  flags      :", effect.flags
@@ -1863,7 +1945,7 @@ def TestSPEL():
     newEffect.full = "SPEL??"
     print "SPEL:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -1882,7 +1964,7 @@ def TestSPEL():
         print "  duration   :", effect.duration
         print "  recipient  :", effect.recipient
         print "  actorValue :", effect.actorValue
-        print "  script     : %08X" % effect.script
+        print "  script     :", PrintFormID(effect.script)
         print "  school     :", effect.school
         print "  visual     :", effect.visual
         print "  flags      :", effect.flags
@@ -1909,7 +1991,7 @@ def TestBSGN():
 
     for record in Current.BSGN:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -1919,7 +2001,7 @@ def TestBSGN():
         print "text      :", record.text
         print "spells    :"
         for spell in record.spells:
-            print "  %08X" % spell
+            print "  ", PrintFormID(spell)
         break
 
     print "BSGN:Create Record Test"
@@ -1938,7 +2020,7 @@ def TestBSGN():
     newRecord.spells = [0xFF000121, 0xFE000222]
     print "BSGN:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -1948,7 +2030,7 @@ def TestBSGN():
     print "text      :", newRecord.text
     print "spells    :"
     for spell in newRecord.spells:
-        print "  %08X" % spell
+        print "  ", PrintFormID(spell)
     print "BSGN:CopyAsOverride Test"
     for record in Current[0].BSGN:
         record.CopyAsOverride(newMod)
@@ -1971,7 +2053,7 @@ def TestACTI():
 
     for record in Current.ACTI:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -2009,7 +2091,7 @@ def TestACTI():
     
     print "ACTI:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -2041,7 +2123,7 @@ def TestAPPA():
 
     for record in Current.APPA:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -2087,7 +2169,7 @@ def TestAPPA():
     newRecord.quality = 3.0
     print "APPA:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -2124,14 +2206,14 @@ def TestARMO():
 
     for record in Current.ARMO:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
 
         print "full          :", record.full
-        print "script        : %08X" % record.script
-        print "enchantment   : %08X" % record.enchantment
+        print "script        :", PrintFormID(record.script)
+        print "enchantment   :", PrintFormID(record.enchantment)
         print "enchantPoints :", record.enchantPoints
         print "flags         :", record.flags
         print "maleBody.modPath  :", record.maleBody.modPath
@@ -2192,13 +2274,13 @@ def TestARMO():
         
     print "ARMO:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
     print "full          :", newRecord.full
-    print "script        : %08X" % newRecord.script
-    print "enchantment   : %08X" % newRecord.enchantment
+    print "script        :", PrintFormID(newRecord.script)
+    print "enchantment   :", PrintFormID(newRecord.enchantment)
     print "enchantPoints :", newRecord.enchantPoints
     print "flags         :", newRecord.flags
     print "maleBody.modPath  :", newRecord.maleBody.modPath
@@ -2240,7 +2322,7 @@ def TestBOOK():
 
     for record in Current.BOOK:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -2252,8 +2334,8 @@ def TestBOOK():
 
         print "iconPath      :", record.iconPath
         print "text          :", record.text
-        print "script        : %08X" % record.script
-        print "enchantment   : %08X" % record.enchantment
+        print "script        :", PrintFormID(record.script)
+        print "enchantment   :", PrintFormID(record.enchantment)
         print "enchantPoints :", record.enchantPoints
         print "flags         :", record.flags
         print "teaches       :", record.teaches
@@ -2294,7 +2376,7 @@ def TestBOOK():
     
     print "BOOK:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -2306,8 +2388,8 @@ def TestBOOK():
 
     print "iconPath      :", newRecord.iconPath
     print "text          :", newRecord.text
-    print "script        : %08X" % newRecord.script
-    print "enchantment   : %08X" % newRecord.enchantment
+    print "script        :", PrintFormID(newRecord.script)
+    print "enchantment   :", PrintFormID(newRecord.enchantment)
     print "enchantPoints :", newRecord.enchantPoints
     print "flags         :", newRecord.flags
     print "teaches       :", newRecord.teaches
@@ -2334,14 +2416,14 @@ def TestCLOT():
 
     for record in Current.CLOT:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
 
         print "full          :", record.full
-        print "script        : %08X" % record.script
-        print "enchantment   : %08X" % record.enchantment
+        print "script        :", PrintFormID(record.script)
+        print "enchantment   :", PrintFormID(record.enchantment)
         print "enchantPoints :", record.enchantPoints
         print "flags         :", record.flags
         print "maleBody.modPath  :", record.maleBody.modPath
@@ -2396,13 +2478,13 @@ def TestCLOT():
     newRecord.weight = 6
     print "CLOT:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
     print "full          :", newRecord.full
-    print "script        : %08X" % newRecord.script
-    print "enchantment   : %08X" % newRecord.enchantment
+    print "script        :", PrintFormID(newRecord.script)
+    print "enchantment   :", PrintFormID(newRecord.enchantment)
     print "enchantPoints :", newRecord.enchantPoints
     print "flags         :", newRecord.flags
     print "maleBody.modPath  :", newRecord.maleBody.modPath
@@ -2442,7 +2524,7 @@ def TestCONT():
 
     for record in Current.CONT:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -2452,14 +2534,14 @@ def TestCONT():
         print "modb    :", record.modb
         print "modt_p  :", record.modt_p
 
-        print "script     : %08X" % record.script
+        print "script     :", PrintFormID(record.script)
         print "items      :"
         for item in record.items:
-            print "  %i: item: %08X, count: %i" % (item._listIndex, item.item, item.count)
+            print "  %i: item: %s, count: %i" % (item._listIndex, PrintFormID(item.item), item.count)
         print "flags      :", record.flags
         print "weight     :", record.weight
-        print "soundOpen  : %08X" % record.soundOpen
-        print "soundClose : %08X" % record.soundClose
+        print "soundOpen  :", PrintFormID(record.soundOpen)
+        print "soundClose :", PrintFormID(record.soundClose)
 
         break
 
@@ -2503,7 +2585,7 @@ def TestCONT():
 
     print "CONT:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -2513,14 +2595,14 @@ def TestCONT():
     print "modb    :", newRecord.modb
     print "modt_p  :", newRecord.modt_p
 
-    print "script     : %08X" % newRecord.script
+    print "script     :", PrintFormID(newRecord.script)
     print "items      :"
     for item in newRecord.items:
-        print "  %i: item: %08X, count: %i" % (item._listIndex, item.item, item.count)
+        print "  %i: item: %s, count: %i" % (item._listIndex, PrintFormID(item.item), item.count)
     print "flags      :", newRecord.flags
     print "weight     :", newRecord.weight
-    print "soundOpen  : %08X" % newRecord.soundOpen
-    print "soundClose : %08X" % newRecord.soundClose
+    print "soundOpen  :", PrintFormID(newRecord.soundOpen)
+    print "soundClose :", PrintFormID(newRecord.soundClose)
         
     print "CONT:CopyAsOverride Test"
     for record in Current[0].CONT:
@@ -2543,7 +2625,7 @@ def TestDOOR():
 
     for record in Current.DOOR:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -2553,15 +2635,15 @@ def TestDOOR():
         print "modb    :", record.modb
         print "modt_p  :", record.modt_p
 
-        print "script     : %08X" % record.script
-        print "soundOpen  : %08X" % record.soundOpen
-        print "soundClose : %08X" % record.soundClose
-        print "soundLoop  : %08X" % record.soundLoop
+        print "script     :", PrintFormID(record.script)
+        print "soundOpen  :", PrintFormID(record.soundOpen)
+        print "soundClose :", PrintFormID(record.soundClose)
+        print "soundLoop  :", PrintFormID(record.soundLoop)
 
         print "flags   :", record.flags
         print "destinations :"
         for destination in record.destinations:
-            print "  %08X" % destination
+            print "  ", PrintFormID(destination)
         break
 
     print "DOOR:Create Record Test"
@@ -2592,7 +2674,7 @@ def TestDOOR():
     newRecord.destinations = [0xFF000121, 0xFE000222]
     print "DOOR:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -2602,15 +2684,15 @@ def TestDOOR():
     print "modb    :", newRecord.modb
     print "modt_p  :", newRecord.modt_p
 
-    print "script     : %08X" % newRecord.script
-    print "soundOpen  : %08X" % newRecord.soundOpen
-    print "soundClose : %08X" % newRecord.soundClose
-    print "soundLoop  : %08X" % newRecord.soundLoop
+    print "script     :", PrintFormID(newRecord.script)
+    print "soundOpen  :", PrintFormID(newRecord.soundOpen)
+    print "soundClose :", PrintFormID(newRecord.soundClose)
+    print "soundLoop  :", PrintFormID(newRecord.soundLoop)
 
     print "flags   :", newRecord.flags
     print "destinations :"
     for destination in newRecord.destinations:
-        print "  %08X" % destination
+        print "  ", PrintFormID(destination)
 
     print "DOOR:CopyAsOverride Test"
     for record in Current[0].DOOR:
@@ -2633,7 +2715,7 @@ def TestINGR():
 
     for record in Current.INGR:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -2644,7 +2726,7 @@ def TestINGR():
         print "modt_p  :", record.modt_p
 
         print "iconPath:", record.iconPath
-        print "script  : %08X" % record.script
+        print "script  :", PrintFormID(record.script)
         print "weight  :", record.weight
         print "value   :", record.value
         print "flags   :", record.flags
@@ -2660,7 +2742,7 @@ def TestINGR():
             print "  duration   :", effect.duration
             print "  recipient  :", effect.recipient
             print "  actorValue :", effect.actorValue
-            print "  script     : %08X" % effect.script
+            print "  script     :", PrintFormID(effect.script)
             print "  school     :", effect.school
             print "  visual     :", effect.visual
             print "  flags      :", effect.flags
@@ -2730,7 +2812,7 @@ def TestINGR():
     
     print "INGR:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -2741,7 +2823,7 @@ def TestINGR():
     print "modt_p  :", newRecord.modt_p
 
     print "iconPath:", newRecord.iconPath
-    print "script  : %08X" % newRecord.script
+    print "script  :", PrintFormID(newRecord.script)
     print "weight  :", newRecord.weight
     print "value   :", newRecord.value
     print "flags   :", newRecord.flags
@@ -2757,7 +2839,7 @@ def TestINGR():
         print "  duration   :", effect.duration
         print "  recipient  :", effect.recipient
         print "  actorValue :", effect.actorValue
-        print "  script     : %08X" % effect.script
+        print "  script     :", PrintFormID(effect.script)
         print "  school     :", effect.school
         print "  visual     :", effect.visual
         print "  flags      :", effect.flags
@@ -2785,7 +2867,7 @@ def TestLIGH():
 
     for record in Current.LIGH:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -2793,7 +2875,7 @@ def TestLIGH():
         print "modPath :", record.modPath
         print "modb    :", record.modb
         print "modt_p  :", record.modt_p
-        print "script  : %08X" % record.script
+        print "script  :", PrintFormID(record.script)
         print "full    :", record.full
         print "iconPath:", record.iconPath
         print "duration:", record.duration
@@ -2810,7 +2892,7 @@ def TestLIGH():
         print "value   :", record.value
         print "weight  :", record.weight
         print "fade    :", record.fade
-        print "sound   : %08X" % record.sound
+        print "sound   :", PrintFormID(record.sound)
         break
 
     print "LIGH:Create Record Test"
@@ -2855,7 +2937,7 @@ def TestLIGH():
 
     print "LIGH:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -2863,7 +2945,7 @@ def TestLIGH():
     print "modPath :", newRecord.modPath
     print "modb    :", newRecord.modb
     print "modt_p  :", newRecord.modt_p
-    print "script  : %08X" % newRecord.script
+    print "script  :", PrintFormID(newRecord.script)
     print "full    :", newRecord.full
     print "iconPath:", newRecord.iconPath
     print "duration:", newRecord.duration
@@ -2880,7 +2962,7 @@ def TestLIGH():
     print "value   :", newRecord.value
     print "weight  :", newRecord.weight
     print "fade    :", newRecord.fade
-    print "sound   : %08X" % newRecord.sound
+    print "sound   :", PrintFormID(newRecord.sound)
         
     print "LIGH:CopyAsOverride Test"
     for record in Current[0].LIGH:
@@ -2903,7 +2985,7 @@ def TestMISC():
 
     for record in Current.MISC:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -2914,7 +2996,7 @@ def TestMISC():
         print "modt_p  :", record.modt_p
 
         print "iconPath:", record.iconPath
-        print "script  : %08X" % record.script
+        print "script  :", PrintFormID(record.script)
         print "value   :", record.value
         print "weight  :", record.weight
         break
@@ -2946,7 +3028,7 @@ def TestMISC():
 
     print "MISC:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -2980,7 +3062,7 @@ def TestSTAT():
 
     for record in Current.STAT:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -3009,7 +3091,7 @@ def TestSTAT():
     
     print "STAT:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -3038,7 +3120,7 @@ def TestGRAS():
 
     for record in Current.GRAS:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -3091,7 +3173,7 @@ def TestGRAS():
     
     print "GRAS:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -3135,7 +3217,7 @@ def TestTREE():
 
     for record in Current.TREE:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -3156,7 +3238,7 @@ def TestTREE():
         print "widthBill    :", record.widthBill
         print "heightBill   :", record.heightBill
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -3190,7 +3272,7 @@ def TestTREE():
 
     print "TREE:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -3232,7 +3314,7 @@ def TestFLOR():
 
     for record in Current.FLOR:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -3272,7 +3354,7 @@ def TestFLOR():
 
     print "FLOR:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -3308,7 +3390,7 @@ def TestFURN():
 
     for record in Current.FURN:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -3346,7 +3428,7 @@ def TestFURN():
     
     print "FURN:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -3380,7 +3462,7 @@ def TestWEAP():
 
     for record in Current.WEAP:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -3390,8 +3472,8 @@ def TestWEAP():
         print "modb          :", record.modb
         print "modt_p        :", record.modt_p
         print "iconPath      :", record.iconPath
-        print "script        : %08X" % record.script
-        print "enchantment   : %08X" % record.enchantment
+        print "script        :", PrintFormID(record.script)
+        print "enchantment   :", PrintFormID(record.enchantment)
         print "enchantPoints :", record.enchantPoints                    
         print "weaponType    :", record.weaponType
         print "speed         :", record.speed
@@ -3440,7 +3522,7 @@ def TestWEAP():
 
     print "WEAP:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -3450,8 +3532,8 @@ def TestWEAP():
     print "modb          :", newRecord.modb
     print "modt_p        :", newRecord.modt_p
     print "iconPath      :", newRecord.iconPath
-    print "script        : %08X" % newRecord.script
-    print "enchantment   : %08X" % newRecord.enchantment
+    print "script        :", PrintFormID(newRecord.script)
+    print "enchantment   :", PrintFormID(newRecord.enchantment)
     print "enchantPoints :", newRecord.enchantPoints                    
     print "weaponType    :", newRecord.weaponType
     print "speed         :", newRecord.speed
@@ -3483,7 +3565,7 @@ def TestAMMO():
 
     for record in Current.AMMO:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -3493,7 +3575,7 @@ def TestAMMO():
         print "modb          :", record.modb
         print "modt_p        :", record.modt_p
         print "iconPath      :", record.iconPath
-        print "enchantment   : %08X" % record.enchantment
+        print "enchantment   :", PrintFormID(record.enchantment)
         print "enchantPoints :", record.enchantPoints     
         print "speed         :", record.speed  
         print "flags         :", record.flags
@@ -3536,7 +3618,7 @@ def TestAMMO():
     
     print "AMMO:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -3546,7 +3628,7 @@ def TestAMMO():
     print "modb          :", newRecord.modb
     print "modt_p        :", newRecord.modt_p
     print "iconPath      :", newRecord.iconPath
-    print "enchantment   : %08X" % newRecord.enchantment
+    print "enchantment   :", PrintFormID(newRecord.enchantment)
     print "enchantPoints :", newRecord.enchantPoints     
     print "speed         :", newRecord.speed  
     print "flags         :", newRecord.flags
@@ -3576,7 +3658,7 @@ def TestNPC_():
 
     for record in Current.NPC_:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -3594,18 +3676,18 @@ def TestNPC_():
         print "calcMax    :", record.calcMax
         print "factions"
         for faction in record.factions:
-             print "  %i: Faction: %08X, Rank: %i, Unused1:" % (faction._listIndex, faction.faction, faction.rank), faction.unused1
-        print "deathItem : %08X" % (record.deathItem or 0)
-        print "race      : %08X" % (record.race or 0)
+             print "  %i: Faction: %s, Rank: %i, Unused1:" % (faction._listIndex, PrintFormID(faction.faction), faction.rank), faction.unused1
+        print "deathItem :", PrintFormID(record.deathItem)
+        print "race      :", PrintFormID(record.race)
         
         print "spells    :"
         for spell in record.spells:
-            print "  %08X" % spell
+            print "  ", PrintFormID(spell)
             
-        print "script    : %08X" % (record.script or 0)
+        print "script    :", PrintFormID(record.script)
         print "items     :"
         for item in record.items:
-            print "  %i: item: %08X, count: %i" % (item._listIndex, item.item, item.count)
+            print "  %i: item: %s, count: %i" % (item._listIndex, PrintFormID(item.item), item.count)
         print "aggression     :", record.aggression
         print "confidence     :", record.confidence
         print "energyLevel    :", record.energyLevel
@@ -3617,13 +3699,13 @@ def TestNPC_():
 
         print "aiPackages     :"
         for package in record.aiPackages:
-            print "  %08X" % package
+            print "  ", PrintFormID(package)
 
         print "animations     :"
         for animation in record.animations:
             print "  ", animation
         
-        print "iclass         : %08X" % (record.iclass or 0)
+        print "iclass         :", PrintFormID(record.iclass)
         print "armorer      :", record.armorer
         print "athletics    :", record.athletics
         print "blade        :", record.blade
@@ -3655,14 +3737,14 @@ def TestNPC_():
         print "endurance    :", record.endurance
         print "personality  :", record.personality
         print "luck         :", record.luck
-        print "hair        : %08X" % (record.hair or 0)
+        print "hair        :", PrintFormID(record.hair)
         print "hairLength  :", record.hairLength
-        print "eye         : %08X" % (record.eye or 0)
+        print "eye         :", PrintFormID(record.eye)
         print "hairRed     :", record.hairRed
         print "hairGreen   :", record.hairGreen
         print "hairBlue    :", record.hairBlue
         print "unused3     :", record.unused3
-        print "combatStyle : %08X" % (record.combatStyle or 0)
+        print "combatStyle :", PrintFormID(record.combatStyle)
         print "fggs_p :", record.fggs_p
         print "fgga_p :", record.fgga_p
         print "fgts_p :", record.fgts_p
@@ -3798,7 +3880,7 @@ def TestNPC_():
 
     print "NPC_:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -3816,18 +3898,18 @@ def TestNPC_():
     print "calcMax    :", newRecord.calcMax
     print "factions"
     for faction in newRecord.factions:
-         print "  %i: Faction: %08X, Rank: %i, Unused1:" % (faction._listIndex, faction.faction, faction.rank), faction.unused1
-    print "deathItem : %08X" % newRecord.deathItem
-    print "race      : %08X" % newRecord.race
+         print "  %i: Faction: %s, Rank: %i, Unused1:" % (faction._listIndex, PrintFormID(faction.faction), faction.rank), faction.unused1
+    print "deathItem :", PrintFormID(newRecord.deathItem)
+    print "race      :", PrintFormID(newRecord.race)
     
     print "spells    :"
     for spell in newRecord.spells:
-        print "  %08X" % spell
+        print "  ", PrintFormID(spell)
         
-    print "script    : %08X" % newRecord.script
+    print "script    :", PrintFormID(newRecord.script)
     print "items     :"
     for item in newRecord.items:
-        print "  %i: item: %08X, count: %i" % (item._listIndex, item.item, item.count)
+        print "  %i: item: %s, count: %i" % (item._listIndex, PrintFormID(item.item), item.count)
     print "aggression     :", newRecord.aggression
     print "confidence     :", newRecord.confidence
     print "energyLevel    :", newRecord.energyLevel
@@ -3839,13 +3921,13 @@ def TestNPC_():
 
     print "aiPackages     :"
     for package in newRecord.aiPackages:
-        print "  %08X" % package
+        print "  ", PrintFormID(package)
 
     print "animations     :"
     for animation in newRecord.animations:
         print "  ", animation
     
-    print "iclass         : %08X" % newRecord.iclass
+    print "iclass         :", PrintFormID(newRecord.iclass)
     print "armorer      :", newRecord.armorer
     print "athletics    :", newRecord.athletics
     print "blade        :", newRecord.blade
@@ -3877,14 +3959,14 @@ def TestNPC_():
     print "endurance    :", newRecord.endurance
     print "personality  :", newRecord.personality
     print "luck         :", newRecord.luck
-    print "hair        : %08X" % newRecord.hair
+    print "hair        :", PrintFormID(newRecord.hair)
     print "hairLength  :", newRecord.hairLength
-    print "eye         : %08X" % newRecord.eye
+    print "eye         :", PrintFormID(newRecord.eye)
     print "hairRed     :", newRecord.hairRed
     print "hairGreen   :", newRecord.hairGreen
     print "hairBlue    :", newRecord.hairBlue
     print "unused3     :", newRecord.unused3
-    print "combatStyle : %08X" % newRecord.combatStyle
+    print "combatStyle :", PrintFormID(newRecord.combatStyle)
     print "fggs_p :", newRecord.fggs_p
     print "fgga_p :", newRecord.fgga_p
     print "fgts_p :", newRecord.fgts_p
@@ -3910,7 +3992,7 @@ def TestCREA():
 
     for record in Current.CREA:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -3922,7 +4004,7 @@ def TestCREA():
 
         print "spells"
         for spell in record.spells:
-            print "  %08X" % spell
+            print "  ", PrintFormID(spell)
             
         print "bodyParts"
         for bodyPart in record.bodyParts:
@@ -3940,14 +4022,14 @@ def TestCREA():
         
         print "factions"
         for faction in record.factions:
-             print "  %i: Faction: %08X, Rank: %i, Unused1:" % (faction._listIndex, faction.faction, faction.rank), faction.unused1
+             print "  %i: Faction: %s, Rank: %i, Unused1:" % (faction._listIndex, PrintFormID(faction.faction), faction.rank), faction.unused1
 
-        print "deathItem : %08X" % record.deathItem
-        print "script    : %08X" % record.script
+        print "deathItem :", PrintFormID(record.deathItem)
+        print "script    :", PrintFormID(record.script)
 
         print "items"
         for item in record.items:
-            print "  %i: item: %08X, count: %i" % (item._listIndex, item.item, item.count)
+            print "  %i: item: %s, count: %i" % (item._listIndex, PrintFormID(item.item), item.count)
 
         print "aggression     :", record.aggression
         print "confidence     :", record.confidence
@@ -3960,7 +4042,7 @@ def TestCREA():
 
         print "aiPackages     :"
         for package in record.aiPackages:
-            print "  %08X" % package
+            print "  ", PrintFormID(package)
 
         print "animations     :"
         for animation in record.animations:
@@ -3985,17 +4067,17 @@ def TestCREA():
         print "luck         :", record.luck
         
         print "attackReach  :", record.attackReach
-        print "combatStyle  : %08X" % record.combatStyle
+        print "combatStyle  :", PrintFormID(record.combatStyle)
         print "turningSpeed :", record.turningSpeed
         print "baseScale    :", record.baseScale
         print "footWeight   :", record.footWeight
-        print "inheritsSoundsFrom  : %08X" % record.inheritsSoundsFrom
+        print "inheritsSoundsFrom  :", PrintFormID(record.inheritsSoundsFrom)
         print "bloodSprayPath      :", record.bloodSprayPath
         print "bloodDecalPath      :", record.bloodDecalPath
         
         print "sounds"
         for sound in record.sounds:
-            print "  %i: type: %u, sound: %08X, chance:%i" % (sound._listIndex, sound.type, sound.sound, sound.chance)
+            print "  %i: type: %u, sound: %s, chance:%i" % (sound._listIndex, sound.type, PrintFormID(sound.sound), sound.chance)
         break
 
     print "CREA:Create Record Test"
@@ -4128,7 +4210,7 @@ def TestCREA():
     
     print "CREA:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -4140,7 +4222,7 @@ def TestCREA():
 
     print "spells"
     for spell in newRecord.spells:
-        print "  %08X" % spell
+        print "  ", PrintFormID(spell)
         
     print "bodyParts"
     for bodyPart in newRecord.bodyParts:
@@ -4158,14 +4240,14 @@ def TestCREA():
     
     print "factions"
     for faction in newRecord.factions:
-         print "  %i: Faction: %08X, Rank: %i, Unused1:" % (faction._listIndex, faction.faction, faction.rank), faction.unused1
+         print "  %i: Faction: %s, Rank: %i, Unused1:" % (faction._listIndex, PrintFormID(faction.faction), faction.rank), faction.unused1
 
-    print "deathItem : %08X" % newRecord.deathItem
-    print "script    : %08X" % newRecord.script
+    print "deathItem :", PrintFormID(newRecord.deathItem)
+    print "script    :", PrintFormID(newRecord.script)
 
     print "items"
     for item in newRecord.items:
-        print "  %i: item: %08X, count: %i" % (item._listIndex, item.item, item.count)
+        print "  %i: item: %s, count: %i" % (item._listIndex, PrintFormID(item.item), item.count)
 
     print "aggression     :", newRecord.aggression
     print "confidence     :", newRecord.confidence
@@ -4178,7 +4260,7 @@ def TestCREA():
 
     print "aiPackages     :"
     for package in newRecord.aiPackages:
-        print "  %08X" % package
+        print "  ", PrintFormID(package)
 
     print "animations     :"
     for animation in newRecord.animations:
@@ -4203,17 +4285,17 @@ def TestCREA():
     print "luck         :", newRecord.luck
     
     print "attackReach  :", newRecord.attackReach
-    print "combatStyle  : %08X" % newRecord.combatStyle
+    print "combatStyle  :", PrintFormID(newRecord.combatStyle)
     print "turningSpeed :", newRecord.turningSpeed
     print "baseScale    :", newRecord.baseScale
     print "footWeight   :", newRecord.footWeight
-    print "inheritsSoundsFrom  : %08X" % newRecord.inheritsSoundsFrom
+    print "inheritsSoundsFrom  :", PrintFormID(newRecord.inheritsSoundsFrom)
     print "bloodSprayPath      :", newRecord.bloodSprayPath
     print "bloodDecalPath      :", newRecord.bloodDecalPath
     
     print "sounds"
     for sound in newRecord.sounds:
-        print "  %i: type: %u, sound: %08X, chance:%i" % (sound._listIndex, sound.type, sound.sound, sound.chance)
+        print "  %i: type: %u, sound: %s, chance:%i" % (sound._listIndex, sound.type, PrintFormID(sound.sound), sound.chance)
     print "CREA:CopyAsOverride Test"
     for record in Current[0].CREA:
         record.CopyAsOverride(newMod)
@@ -4235,21 +4317,21 @@ def TestLVLC():
 
     for record in Current.LVLC:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
 
         print "chanceNone :", record.chanceNone
         print "flags      :", record.flags
-        print "script     : %08X" % record.script
-        print "template   : %08X" % record.template
+        print "script     :", PrintFormID(record.script)
+        print "template   :", PrintFormID(record.template)
         print "entries"
         for entry in record.entries:
             print
             print "  level   :", entry.level
             print "  unused1 :", entry.unused1
-            print "  listId  : %08X" % entry.listId
+            print "  listId  :", PrintFormID(entry.listId)
             print "  count   :", entry.count
             print "  unused2 :", entry.unused2
         break
@@ -4298,21 +4380,21 @@ def TestLVLC():
 
     print "LVLC:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
 
     print "chanceNone :", newRecord.chanceNone
     print "flags      :", newRecord.flags
-    print "script     : %08X" % newRecord.script
-    print "template   : %08X" % newRecord.template
+    print "script     :", PrintFormID(newRecord.script)
+    print "template   :", PrintFormID(newRecord.template)
     print "entries"
     for entry in newRecord.entries:
         print
         print "  level   :", entry.level
         print "  unused1 :", entry.unused1
-        print "  listId  : %08X" % entry.listId
+        print "  listId  :", PrintFormID(entry.listId)
         print "  count   :", entry.count
         print "  unused2 :", entry.unused2
             
@@ -4337,7 +4419,7 @@ def TestSLGM():
 
     for record in Current.SLGM:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -4348,7 +4430,7 @@ def TestSLGM():
         print "modt_p  :", record.modt_p
 
         print "iconPath:", record.iconPath
-        print "script  : %08X" % record.script
+        print "script  :", PrintFormID(record.script)
         print "value   :", record.value
         print "weight  :", record.weight
 
@@ -4386,7 +4468,7 @@ def TestSLGM():
     
     print "SLGM:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -4397,7 +4479,7 @@ def TestSLGM():
     print "modt_p  :", newRecord.modt_p
 
     print "iconPath:", newRecord.iconPath
-    print "script  : %08X" % newRecord.script
+    print "script  :", PrintFormID(newRecord.script)
     print "value   :", newRecord.value
     print "weight  :", newRecord.weight
 
@@ -4425,7 +4507,7 @@ def TestKEYM():
 
     for record in Current.KEYM:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -4436,7 +4518,7 @@ def TestKEYM():
         print "modt_p  :", record.modt_p
 
         print "iconPath:", record.iconPath
-        print "script  : %08X" % record.script
+        print "script  :", PrintFormID(record.script)
         print "value   :", record.value
         print "weight  :", record.weight
         break
@@ -4468,7 +4550,7 @@ def TestKEYM():
 
     print "KEYM:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -4502,7 +4584,7 @@ def TestALCH():
 
     for record in Current.ALCH:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -4513,7 +4595,7 @@ def TestALCH():
         print "modt_p  :", record.modt_p
 
         print "iconPath:", record.iconPath
-        print "script  : %08X" % record.script
+        print "script  :", PrintFormID(record.script)
         print "weight  :", record.weight
         print "value   :", record.value
         print "flags   :", record.flags
@@ -4529,7 +4611,7 @@ def TestALCH():
             print "  duration   :", effect.duration
             print "  recipient  :", effect.recipient
             print "  actorValue :", effect.actorValue
-            print "  script     : %08X" % effect.script
+            print "  script     :", PrintFormID(effect.script)
             print "  school     :", effect.school
             print "  visual     :", effect.visual
             print "  flags      :", effect.flags
@@ -4599,7 +4681,7 @@ def TestALCH():
     
     print "ALCH:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -4610,7 +4692,7 @@ def TestALCH():
     print "modt_p  :", newRecord.modt_p
 
     print "iconPath:", newRecord.iconPath
-    print "script  : %08X" % newRecord.script
+    print "script  :", PrintFormID(newRecord.script)
     print "weight  :", newRecord.weight
     print "value   :", newRecord.value
     print "flags   :", newRecord.flags
@@ -4626,7 +4708,7 @@ def TestALCH():
         print "  duration   :", effect.duration
         print "  recipient  :", effect.recipient
         print "  actorValue :", effect.actorValue
-        print "  script     : %08X" % effect.script
+        print "  script     :", PrintFormID(effect.script)
         print "  school     :", effect.school
         print "  visual     :", effect.visual
         print "  flags      :", effect.flags
@@ -4653,7 +4735,7 @@ def TestSBSP():
 
     for record in Current.SBSP:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -4673,7 +4755,7 @@ def TestSBSP():
 
     print "SBSP:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -4700,7 +4782,7 @@ def TestSGST():
 
     for record in Current.SGST:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -4711,7 +4793,7 @@ def TestSGST():
         print "modt_p  :", record.modt_p
 
         print "iconPath:", record.iconPath
-        print "script  : %08X" % record.script
+        print "script  :", PrintFormID(record.script)
 
         print "effects :"
         for effect in record.effects:
@@ -4722,7 +4804,7 @@ def TestSGST():
             print "  duration   :", effect.duration
             print "  recipient  :", effect.recipient
             print "  actorValue :", effect.actorValue
-            print "  script     : %08X" % effect.script
+            print "  script     :", PrintFormID(effect.script)
             print "  school     :", effect.school
             print "  visual     :", effect.visual
             print "  flags      :", effect.flags
@@ -4814,7 +4896,7 @@ def TestSGST():
 
     print "SGST:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -4825,7 +4907,7 @@ def TestSGST():
     print "modt_p  :", newRecord.modt_p
 
     print "iconPath:", newRecord.iconPath
-    print "script  : %08X" % newRecord.script
+    print "script  :", PrintFormID(newRecord.script)
 
     print "effects :"
     for effect in newRecord.effects:
@@ -4836,7 +4918,7 @@ def TestSGST():
         print "  duration   :", effect.duration
         print "  recipient  :", effect.recipient
         print "  actorValue :", effect.actorValue
-        print "  script     : %08X" % effect.script
+        print "  script     :", PrintFormID(effect.script)
         print "  school     :", effect.school
         print "  visual     :", effect.visual
         print "  flags      :", effect.flags
@@ -4869,7 +4951,7 @@ def TestLVLI():
 
     for record in Current.LVLI:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -4881,7 +4963,7 @@ def TestLVLI():
             print
             print "  level   :", entry.level
             print "  unused1 :", entry.unused1
-            print "  listId  : %08X" % entry.listId
+            print "  listId  :", PrintFormID(entry.listId)
             print "  count   :", entry.count
             print "  unused2 :", entry.unused2
         print "data_p :", record.data_p
@@ -4930,7 +5012,7 @@ def TestLVLI():
 
     print "LVLI:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -4942,7 +5024,7 @@ def TestLVLI():
         print
         print "  level   :", entry.level
         print "  unused1 :", entry.unused1
-        print "  listId  : %08X" % entry.listId
+        print "  listId  :", PrintFormID(entry.listId)
         print "  count   :", entry.count
         print "  unused2 :", entry.unused2
     print "data_p :", newRecord.data_p
@@ -4967,7 +5049,7 @@ def TestWTHR():
 
     for record in Current.WTHR:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -5186,7 +5268,7 @@ def TestWTHR():
         print "boltBlue        :", record.boltBlue
         print "sounds"
         for sound in record.sounds:
-            print "  sound: %08X, type: %u" % (sound.sound, sound.type)
+            print "  sound: %s, type: %u" % (PrintFormID(sound.sound), sound.type)
         break
 
     print "WTHR:Create Record Test"
@@ -5423,7 +5505,7 @@ def TestWTHR():
     
     print "WTHR:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -5642,7 +5724,7 @@ def TestWTHR():
     print "boltBlue        :", newRecord.boltBlue
     print "sounds"
     for sound in newRecord.sounds:
-        print "  sound: %08X, type: %u" % (sound.sound, sound.type)
+        print "  sound: %s, type: %u" % (PrintFormID(sound.sound), sound.type)
         
     print "WTHR:CopyAsOverride Test"
     for record in Current[0].WTHR:
@@ -5665,14 +5747,14 @@ def TestCLMT():
 
     for record in Current.CLMT:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
 
         print "weathers"
         for weather in record.weathers:
-            print "  weather: %08X, chance: %u" % (weather.weather, weather.chance)
+            print "  weather: %s, chance: %u" % (PrintFormID(weather.weather), weather.chance)
         print "sunPath     :", record.sunPath
         print "glarePath   :", record.glarePath
         print "modPath     :", record.modPath
@@ -5731,14 +5813,14 @@ def TestCLMT():
 
     print "CLMT:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
 
     print "weathers"
     for weather in newRecord.weathers:
-        print "  weather: %08X, chance: %u" % (weather.weather, weather.chance)
+        print "  weather: %s, chance: %u" % (PrintFormID(weather.weather), weather.chance)
     print "sunPath     :", newRecord.sunPath
     print "glarePath   :", newRecord.glarePath
     print "modPath     :", newRecord.modPath
@@ -5771,7 +5853,7 @@ def TestREGN():
 
     for record in Current.REGN:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -5781,7 +5863,7 @@ def TestREGN():
         print "mapGreen   :", record.mapGreen
         print "mapBlue    :", record.mapBlue
         print "unused1    :", record.unused1
-        print "worldspace : %08X" % record.worldspace
+        print "worldspace :", PrintFormID(record.worldspace)
         print "areas"
         for area in record.areas:
             print "  edgeFalloff :", area.edgeFalloff
@@ -5797,7 +5879,7 @@ def TestREGN():
             print "  unused1   :", entry.unused1
             print "  objects"
             for recObject in entry.objects:
-                print "    objectId        : %08X" % recObject.objectId
+                print "    objectId        :", PrintFormID(recObject.objectId)
                 print "    parentIndex     :", recObject.parentIndex
                 print "    unused1         :", recObject.unused1
                 print "    density         :", recObject.density
@@ -5821,19 +5903,19 @@ def TestREGN():
             print "  iconPath  :", entry.iconPath
             print "  grasses"
             for grass in entry.grasses:
-                print "    grass : %08X" % grass.grass,
+                print "    grass :", PrintFormID(grass.grass,)
                 print ", unk1 :", grass.unk1
                 print
             print "  musicType :", entry.musicType
             print "  sounds"
             for sound in entry.sounds:
-                print "    sound  : %08X" % sound.sound
+                print "    sound  :", PrintFormID(sound.sound)
                 print "    flags  :", sound.flags
                 print "    chance :", sound.chance
                 print
             print "  weathers"
             for weather in entry.weathers:
-                print "    weather : %08X" % weather.weather
+                print "    weather :", PrintFormID(weather.weather)
                 print "    chance  :", weather.chance
                 print
             print
@@ -6078,7 +6160,7 @@ def TestREGN():
     
     print "REGN:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -6088,7 +6170,7 @@ def TestREGN():
     print "mapGreen   :", newRecord.mapGreen
     print "mapBlue    :", newRecord.mapBlue
     print "unused1    :", newRecord.unused1
-    print "worldspace : %08X" % newRecord.worldspace
+    print "worldspace :", PrintFormID(newRecord.worldspace)
     print "areas"
     for area in newRecord.areas:
         print "  edgeFalloff :", area.edgeFalloff
@@ -6104,7 +6186,7 @@ def TestREGN():
         print "  unused1   :", entry.unused1
         print "  objects"
         for recObject in entry.objects:
-            print "    objectId        : %08X" % recObject.objectId
+            print "    objectId        :", PrintFormID(recObject.objectId)
             print "    parentIndex     :", recObject.parentIndex
             print "    unused1         :", recObject.unused1
             print "    density         :", recObject.density
@@ -6128,17 +6210,17 @@ def TestREGN():
         print "  iconPath  :", entry.iconPath
         print "  grasses"
         for grass in entry.grasses:
-            print "    grass : %08X" % grass.grass,
+            print "    grass :", PrintFormID(grass.grass),
             print ", unk1 :", grass.unk1
         print "  musicType :", entry.musicType
         print "  sounds"
         for sound in entry.sounds:
-            print "    sound  : %08X" % sound.sound
+            print "    sound  :", PrintFormID(sound.sound)
             print "    flags  :", sound.flags
             print "    chance :", sound.chance
         print "  weathers"
         for weather in entry.weathers:
-            print "    weather : %08X" % weather.weather
+            print "    weather :", PrintFormID(weather.weather)
             print "    chance  :", weather.chance
         print
     print "REGN:CopyAsOverride Test"
@@ -6163,7 +6245,7 @@ def TestCELL():
     x = 0
     for record in Current.CELL:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -6189,60 +6271,36 @@ def TestCELL():
         print "directionalFade  :", record.directionalFade
         print "fogClip          :", record.fogClip
         print "music            :", record.music
-        formID = record.owner
-        if(formID != None):
-            print "owner            : %08X" % formID
-        else:
-            print "owner            :", formID
+        print "owner            :", PrintFormID(record.owner)
             
         print "rank             :", record.rank
-        formID = record.globalVariable
-        if(formID != None):
-            print "globalVariable   : %08X" % formID
-        else:
-            print "globalVariable   :", formID        
-        print "climate          : %08X" % record.climate
+        print "globalVariable   :", PrintFormID(record.globalVariable)        
+        print "climate          :", PrintFormID(record.climate)
         print "waterHeight      :", record.waterHeight
         print "regions          :", record.regions
         print "posX             :", record.posX
         print "posY             :", record.posY
-        print "water            : %08X" % record.water
+        print "water            :", PrintFormID(record.water)
 
         print "Placed NPCs"
         for achr in record.ACHR:
             print
-            print "  fid    : %08X" % achr.fid
+            print "  fid    :", PrintFormID(achr.fid)
             print "  flags1 :", achr.flags1
             print "  flags2 :", achr.flags2
             print "  eid    :", achr.eid
             
-            print "  base              : %08X" % achr.base
-            formID = achr.unknownXPCIFormID
-            if(formID != None):
-                print "  unknownXPCIFormID : %08X" % formID
-            else:
-                print "  unknownXPCIFormID :", formID
+            print "  base              :", PrintFormID(achr.base)
+            print "  unknownXPCIFormID :", PrintFormID(achr.unknownXPCIFormID)
             print "  unknownXPCIString :", achr.unknownXPCIString
             print "  lod1              :", achr.lod1
             print "  lod2              :", achr.lod2
             print "  lod3              :", achr.lod3
-            formID = achr.parent
-            if(formID != None):
-                print "  parent            : %08X" % formID
-            else:
-                print "  parent            :", formID
+            print "  parent            :", PrintFormID(achr.parent)
             print "  parentFlags       :", achr.parentFlags
             print "  unused1           :", achr.unused1
-            formID = achr.merchantContainer
-            if(formID != None):
-                print "  merchantContainer : %08X" % formID
-            else:
-                print "  merchantContainer :", formID
-            formID = achr.horse
-            if(formID != None):
-                print "  horse             : %08X" % formID
-            else:
-                print "  horse             :", formID
+            print "  merchantContainer :", PrintFormID(achr.merchantContainer)
+            print "  horse             :", PrintFormID(achr.horse)
             print "  xrgd_p            :", achr.xrgd_p
             print "  scale             :", achr.scale
             print "  posX              :", achr.posX
@@ -6256,29 +6314,17 @@ def TestCELL():
         print "Placed Creatures"
         for acre in record.ACRE:
             print
-            print "  fid    : %08X" % acre.fid
+            print "  fid    :", PrintFormID(acre.fid)
             print "  flags1 :", acre.flags1
             print "  flags2 :", acre.flags2
             print "  eid    :", acre.eid
 
-            print "  base           : %08X" % acre.base
-            formID = acre.owner
-            if(formID != None):
-                print "  owner          : %08X" % formID
-            else:
-                print "  owner          :", formID
+            print "  base           :", PrintFormID(acre.base)
+            print "  owner          :", PrintFormID(acre.owner)
                 
             print "  rank           :", acre.rank
-            formID = acre.globalVariable
-            if(formID != None):
-                print "  globalVariable : %08X" % formID
-            else:
-                print "  globalVariable :", formID
-            formID = acre.parent
-            if(formID != None):
-                print "  parent         : %08X" % formID
-            else:
-                print "  parent         :", formID
+            print "  globalVariable :", PrintFormID(acre.globalVariable)
+            print "  parent         :", PrintFormID(acre.parent)
             print "  parentFlags    :", acre.parentFlags
             print "  unused1        :", acre.unused1
             print "  xrgd_p         :", acre.xrgd_p
@@ -6294,20 +6340,12 @@ def TestCELL():
         print "Placed Objects"
         for refr in record.REFR:
             print
-            print "  fid    : %08X" % refr.fid
+            print "  fid    :", PrintFormID(refr.fid)
             print "  flags1 :", refr.flags1
             print "  flags2 :", refr.flags2
             print "  eid    :", refr.eid
-            formID = refr.base
-            if(formID != None):
-                print "  base              : %08X" % formID
-            else:
-                print "  base              :", formID
-            formID = refr.destinationFormID
-            if(formID != None):
-                print "  destinationFormID : %08X" % formID
-            else:
-                print "  destinationFormID :", formID
+            print "  base              :", PrintFormID(refr.base)
+            print "  destinationFormID :", PrintFormID(refr.destinationFormID)
 
             print "  destinationPosX   :", refr.destinationPosX
             print "  destinationPosY   :", refr.destinationPosY
@@ -6318,39 +6356,19 @@ def TestCELL():
             print "  lockLevel         :", refr.lockLevel
             print "  unused1           :", refr.unused1
 
-            formID = refr.lockKey
-            if(formID != None):
-                print "  lockKey           : %08X" % formID
-            else:
-                print "  lockKey           :", formID
+            print "  lockKey           :", PrintFormID(refr.lockKey)
 
             print "  unused2           :", refr.unused2
             print "  lockFlags         :", refr.lockFlags
             print "  unused3           :", refr.unused3
-            formID = refr.owner
-            if(formID != None):
-                print "  owner             : %08X" % formID
-            else:
-                print "  owner             :", formID
+            print "  owner             :", PrintFormID(refr.owner)
                 
             print "  rank              :", refr.rank
-            formID = refr.globalVariable
-            if(formID != None):
-                print "  globalVariable    : %08X" % formID
-            else:
-                print "  globalVariable    :", formID
-            formID = refr.parent
-            if(formID != None):
-                print "  parent            : %08X" % formID
-            else:
-                print "  parent            :", formID
+            print "  globalVariable    :", PrintFormID(refr.globalVariable)
+            print "  parent            :", PrintFormID(refr.parent)
             print "  parentFlags       :", refr.parentFlags
             print "  unused4           :", refr.unused4
-            formID = refr.targetFormID
-            if(formID != None):
-                print "  targetFormID      : %08X" % formID
-            else:
-                print "  targetFormID      :", formID
+            print "  targetFormID      :", PrintFormID(refr.targetFormID)
             print "  seed              :", refr.seed
             print "  seedOffset        :", refr.seedOffset
             print "  lod1              :", refr.lod1
@@ -6358,18 +6376,10 @@ def TestCELL():
             print "  lod3              :", refr.lod3
             print "  charge            :", refr.charge
             print "  health            :", refr.health
-            formID = refr.unknownXPCIFormID
-            if(formID != None):
-                print "  unknownXPCIFormID : %08X" % formID
-            else:
-                print "  unknownXPCIFormID :", formID
+            print "  unknownXPCIFormID :", PrintFormID(refr.unknownXPCIFormID)
             print "  unknownXPCIString :", refr.unknownXPCIString
             print "  levelMod          :", refr.levelMod
-            formID = refr.unknownXRTMFormID
-            if(formID != None):
-                print "  unknownXRTMFormID : %08X" % formID
-            else:
-                print "  unknownXRTMFormID :", formID
+            print "  unknownXRTMFormID :", PrintFormID(refr.unknownXRTMFormID)
             print "  actionFlags       :", refr.actionFlags
             print "  count             :", refr.count
             print "  markerFlags       :", refr.markerFlags
@@ -6390,7 +6400,7 @@ def TestCELL():
         pgrd = record.PGRD
         if(pgrd != None):
             print
-            print "  fid    : %08X" % pgrd.fid
+            print "  fid    :", PrintFormID(pgrd.fid)
             print "  flags1 :", pgrd.flags1
             print "  flags2 :", pgrd.flags2
 
@@ -6416,7 +6426,7 @@ def TestCELL():
                 break
             print "  PGRL"
             for pgrl in pgrd.PGRL:
-                print "    reference : %08X" % pgrl.reference
+                print "    reference :", PrintFormID(pgrl.reference)
                 print "    points"
                 for point in pgrl.points:
                     print "      ", point
@@ -6654,7 +6664,7 @@ def TestCELL():
 
     print "CELL:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -6680,39 +6690,35 @@ def TestCELL():
     print "directionalFade  :", newRecord.directionalFade
     print "fogClip          :", newRecord.fogClip
     print "music            :", newRecord.music
-    print "owner            : %08X" % newRecord.owner
+    print "owner            :", PrintFormID(newRecord.owner)
     print "rank             :", newRecord.rank
     print "globalVariable   :", newRecord.globalVariable
-    print "climate          : %08X" % newRecord.climate
+    print "climate          :", PrintFormID(newRecord.climate)
     print "waterHeight      :", newRecord.waterHeight
     print "regions          :", newRecord.regions
     print "posX             :", newRecord.posX
     print "posY             :", newRecord.posY
-    print "water            : %08X" % newRecord.water
+    print "water            :", PrintFormID(newRecord.water)
 
     print "Placed NPCs"
     for achr in newRecord.ACHR:
         print
-        print "  fid    : %08X" % achr.fid
+        print "  fid    :", PrintFormID(achr.fid)
         print "  flags1 :", achr.flags1
         print "  flags2 :", achr.flags2
         print "  eid    :", achr.eid
         
-        print "  base              : %08X" % achr.base
-        formID = achr.unknownXPCIFormID
-        if(formID != None):
-            print "  unknownXPCIFormID : %08X" % formID
-        else:
-            print "  unknownXPCIFormID :", formID
+        print "  base              :", PrintFormID(achr.base)
+        print "  unknownXPCIFormID :", PrintFormID(achr.unknownXPCIFormID)
         print "  unknownXPCIString :", achr.unknownXPCIString
         print "  lod1              :", achr.lod1
         print "  lod2              :", achr.lod2
         print "  lod3              :", achr.lod3
-        print "  parent            : %08X" % achr.parent
+        print "  parent            :", PrintFormID(achr.parent)
         print "  parentFlags       :", achr.parentFlags
         print "  unused1           :", achr.unused1
-        print "  merchantContainer : %08X" % achr.merchantContainer
-        print "  horse             : %08X" % achr.horse
+        print "  merchantContainer :", PrintFormID(achr.merchantContainer)
+        print "  horse             :", PrintFormID(achr.horse)
         print "  xrgd_p            :", achr.xrgd_p
         print "  scale             :", achr.scale
         print "  posX              :", achr.posX
@@ -6725,29 +6731,17 @@ def TestCELL():
     print "Placed Creatures"
     for acre in newRecord.ACRE:
         print
-        print "  fid    : %08X" % acre.fid
+        print "  fid    :", PrintFormID(acre.fid)
         print "  flags1 :", acre.flags1
         print "  flags2 :", acre.flags2
         print "  eid    :", acre.eid
 
-        print "  base           : %08X" % acre.base
-        formID = acre.owner
-        if(formID != None):
-            print "  owner          : %08X" % formID
-        else:
-            print "  owner          :", formID
+        print "  base           :", PrintFormID(acre.base)
+        print "  owner          :", PrintFormID(acre.owner)
             
         print "  rank           :", acre.rank
-        formID = acre.globalVariable
-        if(formID != None):
-            print "  globalVariable : %08X" % formID
-        else:
-            print "  globalVariable :", formID
-        formID = acre.parent
-        if(formID != None):
-            print "  parent         : %08X" % formID
-        else:
-            print "  parent         :", formID
+        print "  globalVariable :", PrintFormID(acre.globalVariable)
+        print "  parent         :", PrintFormID(acre.parent)
         print "  parentFlags    :", acre.parentFlags
         print "  unused1        :", acre.unused1
         print "  xrgd_p         :", acre.xrgd_p
@@ -6762,20 +6756,12 @@ def TestCELL():
     print "Placed Objects"
     for refr in newRecord.REFR:
         print
-        print "  fid    : %08X" % refr.fid
+        print "  fid    :", PrintFormID(refr.fid)
         print "  flags1 :", refr.flags1
         print "  flags2 :", refr.flags2
         print "  eid    :", refr.eid
-        formID = refr.base
-        if(formID != None):
-            print "  base              : %08X" % formID
-        else:
-            print "  base              :", formID
-        formID = refr.destinationFormID
-        if(formID != None):
-            print "  destinationFormID : %08X" % formID
-        else:
-            print "  destinationFormID :", formID
+        print "  base              :", PrintFormID(refr.base)
+        print "  destinationFormID :", PrintFormID(refr.destinationFormID)
 
         print "  destinationPosX   :", refr.destinationPosX
         print "  destinationPosY   :", refr.destinationPosY
@@ -6786,39 +6772,19 @@ def TestCELL():
         print "  lockLevel         :", refr.lockLevel
         print "  unused1           :", refr.unused1
 
-        formID = refr.lockKey
-        if(formID != None):
-            print "  lockKey           : %08X" % formID
-        else:
-            print "  lockKey           :", formID
+        print "  lockKey           :", PrintFormID(refr.lockKey)
 
         print "  unused2           :", refr.unused2
         print "  lockFlags         :", refr.lockFlags
         print "  unused3           :", refr.unused3
-        formID = refr.owner
-        if(formID != None):
-            print "  owner             : %08X" % formID
-        else:
-            print "  owner             :", formID
+        print "  owner             :", PrintFormID(refr.owner)
             
         print "  rank              :", refr.rank
-        formID = refr.globalVariable
-        if(formID != None):
-            print "  globalVariable    : %08X" % formID
-        else:
-            print "  globalVariable    :", formID
-        formID = refr.parent
-        if(formID != None):
-            print "  parent            : %08X" % formID
-        else:
-            print "  parent            :", formID
+        print "  globalVariable    :", PrintFormID(refr.globalVariable)
+        print "  parent            :", PrintFormID(refr.parent)
         print "  parentFlags       :", refr.parentFlags
         print "  unused4           :", refr.unused4
-        formID = refr.targetFormID
-        if(formID != None):
-            print "  targetFormID      : %08X" % formID
-        else:
-            print "  targetFormID      :", formID
+        print "  targetFormID      :", PrintFormID(refr.targetFormID)
         print "  seed              :", refr.seed
         print "  seedOffset        :", refr.seedOffset
         print "  lod1              :", refr.lod1
@@ -6826,18 +6792,10 @@ def TestCELL():
         print "  lod3              :", refr.lod3
         print "  charge            :", refr.charge
         print "  health            :", refr.health
-        formID = refr.unknownXPCIFormID
-        if(formID != None):
-            print "  unknownXPCIFormID : %08X" % formID
-        else:
-            print "  unknownXPCIFormID :", formID
+        print "  unknownXPCIFormID :", PrintFormID(refr.unknownXPCIFormID)
         print "  unknownXPCIString :", refr.unknownXPCIString
         print "  levelMod          :", refr.levelMod
-        formID = refr.unknownXRTMFormID
-        if(formID != None):
-            print "  unknownXRTMFormID : %08X" % formID
-        else:
-            print "  unknownXRTMFormID :", formID
+        print "  unknownXRTMFormID :", PrintFormID(refr.unknownXRTMFormID)
         print "  actionFlags       :", refr.actionFlags
         print "  count             :", refr.count
         print "  markerFlags       :", refr.markerFlags
@@ -6857,7 +6815,7 @@ def TestCELL():
     pgrd = newRecord.PGRD
     if(pgrd != None):
         print
-        print "  fid    : %08X" % pgrd.fid
+        print "  fid    :", PrintFormID(pgrd.fid)
         print "  flags1 :", pgrd.flags1
         print "  flags2 :", pgrd.flags2
 
@@ -6883,7 +6841,7 @@ def TestCELL():
             break
         print "  PGRL"
         for pgrl in pgrd.PGRL:
-            print "    reference : %08X" % pgrl.reference
+            print "    reference :", PrintFormID(pgrl.reference)
             print "    points"
             for point in pgrl.points:
                 print "      ", point
@@ -6924,27 +6882,15 @@ def TestWRLD():
 
     for record in Current[0].WRLD:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
 
         print "full      :", record.full
-        formID = record.parent
-        if(formID != None):
-            print "parent    : %08X" % formID
-        else:
-            print "parent    :", formID
-        formID = record.climate
-        if(formID != None):
-            print "climate   : %08X" % formID
-        else:
-            print "climate   :", formID
-        formID = record.water
-        if(formID != None):
-            print "water     : %08X" % formID
-        else:
-            print "water     :", formID
+        print "parent    :", PrintFormID(record.parent)
+        print "climate   :", PrintFormID(record.climate)
+        print "water     :", PrintFormID(record.water)
         print "mapPath   :", record.mapPath
         print "dimX      :", record.dimX
         print "dimY      :", record.dimY
@@ -6963,7 +6909,7 @@ def TestWRLD():
         wrldCell = record.CELL
         if(wrldCell != None):
             print
-            print "fid     : %08X" % wrldCell.fid
+            print "fid     :", PrintFormID(wrldCell.fid)
             print "flags1  :", wrldCell.flags1
             print "flags2  :", wrldCell.flags2
             print "eid     :", wrldCell.eid
@@ -6989,60 +6935,36 @@ def TestWRLD():
             print "directionalFade  :", wrldCell.directionalFade
             print "fogClip          :", wrldCell.fogClip
             print "music            :", wrldCell.music
-            formID = wrldCell.owner
-            if(formID != None):
-                print "owner            : %08X" % formID
-            else:
-                print "owner            :", formID
+            print "owner            :", PrintFormID(wrldCell.owner)
                 
             print "rank             :", wrldCell.rank
-            formID = wrldCell.globalVariable
-            if(formID != None):
-                print "globalVariable   : %08X" % formID
-            else:
-                print "globalVariable   :", formID        
-            print "climate          : %08X" % wrldCell.climate
+            print "globalVariable   :", PrintFormID(wrldCell.globalVariable)        
+            print "climate          :", PrintFormID(wrldCell.climate)
             print "waterHeight      :", wrldCell.waterHeight
             print "regions          :", wrldCell.regions
             print "posX             :", wrldCell.posX
             print "posY             :", wrldCell.posY
-            print "water            : %08X" % wrldCell.water
+            print "water            :", PrintFormID(wrldCell.water)
 
             print "Placed NPCs"
             for achr in wrldCell.ACHR:
                 print
-                print "  fid    : %08X" % achr.fid
+                print "  fid    :", PrintFormID(achr.fid)
                 print "  flags1 :", achr.flags1
                 print "  flags2 :", achr.flags2
                 print "  eid    :", achr.eid
                 
-                print "  base              : %08X" % achr.base
-                formID = achr.unknownXPCIFormID
-                if(formID != None):
-                    print "  unknownXPCIFormID : %08X" % formID
-                else:
-                    print "  unknownXPCIFormID :", formID
+                print "  base              :", PrintFormID(achr.base)
+                print "  unknownXPCIFormID :", PrintFormID(achr.unknownXPCIFormID)
                 print "  unknownXPCIString :", achr.unknownXPCIString
                 print "  lod1              :", achr.lod1
                 print "  lod2              :", achr.lod2
                 print "  lod3              :", achr.lod3
-                formID = achr.parent
-                if(formID != None):
-                    print "  parent            : %08X" % formID
-                else:
-                    print "  parent            :", formID
+                print "  parent            :", PrintFormID(achr.parent)
                 print "  parentFlags       :", achr.parentFlags
                 print "  unused1           :", achr.unused1
-                formID = achr.merchantContainer
-                if(formID != None):
-                    print "  merchantContainer : %08X" % formID
-                else:
-                    print "  merchantContainer :", formID
-                formID = achr.horse
-                if(formID != None):
-                    print "  horse             : %08X" % formID
-                else:
-                    print "  horse             :", formID
+                print "  merchantContainer :", PrintFormID(achr.merchantContainer)
+                print "  horse             :", PrintFormID(achr.horse)
                 print "  xrgd_p            :", achr.xrgd_p
                 print "  scale             :", achr.scale
                 print "  posX              :", achr.posX
@@ -7056,29 +6978,17 @@ def TestWRLD():
             print "Placed Creatures"
             for acre in wrldCell.ACRE:
                 print
-                print "  fid    : %08X" % acre.fid
+                print "  fid    :", PrintFormID(acre.fid)
                 print "  flags1 :", acre.flags1
                 print "  flags2 :", acre.flags2
                 print "  eid    :", acre.eid
 
-                print "  base           : %08X" % acre.base
-                formID = acre.owner
-                if(formID != None):
-                    print "  owner          : %08X" % formID
-                else:
-                    print "  owner          :", formID
+                print "  base           :", PrintFormID(acre.base)
+                print "  owner          :", PrintFormID(acre.owner)
                     
                 print "  rank           :", acre.rank
-                formID = acre.globalVariable
-                if(formID != None):
-                    print "  globalVariable : %08X" % formID
-                else:
-                    print "  globalVariable :", formID
-                formID = acre.parent
-                if(formID != None):
-                    print "  parent         : %08X" % formID
-                else:
-                    print "  parent         :", formID
+                print "  globalVariable :", PrintFormID(acre.globalVariable)
+                print "  parent         :", PrintFormID(acre.parent)
                 print "  parentFlags    :", acre.parentFlags
                 print "  unused1        :", acre.unused1
                 print "  xrgd_p         :", acre.xrgd_p
@@ -7094,20 +7004,12 @@ def TestWRLD():
             print "Placed Objects"
             for refr in wrldCell.REFR:
                 print
-                print "  fid    : %08X" % refr.fid
+                print "  fid    :", PrintFormID(refr.fid)
                 print "  flags1 :", refr.flags1
                 print "  flags2 :", refr.flags2
                 print "  eid    :", refr.eid
-                formID = refr.base
-                if(formID != None):
-                    print "  base              : %08X" % formID
-                else:
-                    print "  base              :", formID
-                formID = refr.destinationFormID
-                if(formID != None):
-                    print "  destinationFormID : %08X" % formID
-                else:
-                    print "  destinationFormID :", formID
+                print "  base              :", PrintFormID(refr.base)
+                print "  destinationFormID :", PrintFormID(refr.destinationFormID)
 
                 print "  destinationPosX   :", refr.destinationPosX
                 print "  destinationPosY   :", refr.destinationPosY
@@ -7118,39 +7020,19 @@ def TestWRLD():
                 print "  lockLevel         :", refr.lockLevel
                 print "  unused1           :", refr.unused1
 
-                formID = refr.lockKey
-                if(formID != None):
-                    print "  lockKey           : %08X" % formID
-                else:
-                    print "  lockKey           :", formID
+                print "  lockKey           :", PrintFormID(refr.lockKey)
 
                 print "  unused2           :", refr.unused2
                 print "  lockFlags         :", refr.lockFlags
                 print "  unused3           :", refr.unused3
-                formID = refr.owner
-                if(formID != None):
-                    print "  owner             : %08X" % formID
-                else:
-                    print "  owner             :", formID
+                print "  owner             :", PrintFormID(refr.owner)
                     
                 print "  rank              :", refr.rank
-                formID = refr.globalVariable
-                if(formID != None):
-                    print "  globalVariable    : %08X" % formID
-                else:
-                    print "  globalVariable    :", formID
-                formID = refr.parent
-                if(formID != None):
-                    print "  parent            : %08X" % formID
-                else:
-                    print "  parent            :", formID
+                print "  globalVariable    :", PrintFormID(refr.globalVariable)
+                print "  parent            :", PrintFormID(refr.parent)
                 print "  parentFlags       :", refr.parentFlags
                 print "  unused4           :", refr.unused4
-                formID = refr.targetFormID
-                if(formID != None):
-                    print "  targetFormID      : %08X" % formID
-                else:
-                    print "  targetFormID      :", formID
+                print "  targetFormID      :", PrintFormID(refr.targetFormID)
                 print "  seed              :", refr.seed
                 print "  seedOffset        :", refr.seedOffset
                 print "  lod1              :", refr.lod1
@@ -7158,18 +7040,10 @@ def TestWRLD():
                 print "  lod3              :", refr.lod3
                 print "  charge            :", refr.charge
                 print "  health            :", refr.health
-                formID = refr.unknownXPCIFormID
-                if(formID != None):
-                    print "  unknownXPCIFormID : %08X" % formID
-                else:
-                    print "  unknownXPCIFormID :", formID
+                print "  unknownXPCIFormID :", PrintFormID(refr.unknownXPCIFormID)
                 print "  unknownXPCIString :", refr.unknownXPCIString
                 print "  levelMod          :", refr.levelMod
-                formID = refr.unknownXRTMFormID
-                if(formID != None):
-                    print "  unknownXRTMFormID : %08X" % formID
-                else:
-                    print "  unknownXRTMFormID :", formID
+                print "  unknownXRTMFormID :", PrintFormID(refr.unknownXRTMFormID)
                 print "  actionFlags       :", refr.actionFlags
                 print "  count             :", refr.count
                 print "  markerFlags       :", refr.markerFlags
@@ -7190,7 +7064,7 @@ def TestWRLD():
             if(pgrd != None):
                 print
                 print "  PGRD"
-                print "  fid    : %08X" % pgrd.fid
+                print "  fid    :", PrintFormID(pgrd.fid)
                 print "  flags1 :", pgrd.flags1
                 print "  flags2 :", pgrd.flags2
 
@@ -7216,7 +7090,7 @@ def TestWRLD():
                     break
                 print "  PGRL"
                 for pgrl in pgrd.PGRL:
-                    print "    reference : %08X" % pgrl.reference
+                    print "    reference :", PrintFormID(pgrl.reference)
                     print "    points"
                     for point in pgrl.points:
                         print "      ", point
@@ -7225,7 +7099,7 @@ def TestWRLD():
             if(cLand != None):
                 print
                 print "  LAND"
-                print "  fid    : %08X" % cLand.fid
+                print "  fid    :", PrintFormID(cLand.fid)
                 print "  flags1 :", cLand.flags1
                 print "  flags2 :", cLand.flags2
 
@@ -7257,14 +7131,14 @@ def TestWRLD():
                         print
                 print "  baseTextures"
                 for baseTexture in cLand.baseTextures:
-                    print "    texture  : %08X" % baseTexture.texture
+                    print "    texture  :", PrintFormID(baseTexture.texture)
                     print "    quadrant :", baseTexture.quadrant
                     print "    unused1  :", baseTexture.unused1
                     print "    layer    :", baseTexture.layer
                     print
                 print "  alphaLayers"
                 for alphaLayer in cLand.alphaLayers:
-                    print "    texture  : %08X" % alphaLayer.texture
+                    print "    texture  :", PrintFormID(alphaLayer.texture)
                     print "    quadrant :", alphaLayer.quadrant
                     print "    unused1  :", alphaLayer.unused1
                     print "    layer    :", alphaLayer.layer
@@ -7277,7 +7151,7 @@ def TestWRLD():
                     print
                 print "  vertexTextures"
                 for vertexTexture in cLand.vertexTextures:
-                    print "    texture  : %08X" % vertexTexture.texture
+                    print "    texture  :", PrintFormID(vertexTexture.texture)
                     print
 
                 print "  Position"
@@ -7291,73 +7165,37 @@ def TestWRLD():
                         print "        red           :", cColumn.red
                         print "        green         :", cColumn.green
                         print "        blue          :", cColumn.blue
-                        formID = cColumn.baseTexture
-                        if(formID != None):
-                            print "        baseTexture   : %08X" % formID
-                        else:
-                            print "        baseTexture   :", formID
+                        print "        baseTexture   :", PrintFormID(cColumn.baseTexture)
                             
-                        formID = cColumn.layer1Texture
-                        if(formID != None):
-                            print "        layer1Texture : %08X" % formID
-                        else:
-                            print "        layer1Texture :", formID
+                        print "        layer1Texture :", PrintFormID(cColumn.layer1Texture)
                         print "        layer1Opacity :", cColumn.layer1Opacity
                         
-                        formID = cColumn.layer2Texture
-                        if(formID != None):
-                            print "        layer2Texture : %08X" % formID
-                        else:
-                            print "        layer2Texture :", formID
+                        print "        layer2Texture :", PrintFormID(cColumn.layer2Texture)
                         print "        layer2Opacity :", cColumn.layer2Opacity
                        
-                        formID = cColumn.layer3Texture
-                        if(formID != None):
-                            print "        layer3Texture : %08X" % formID
-                        else:
-                            print "        layer3Texture :", formID
+                        print "        layer3Texture :", PrintFormID(cColumn.layer3Texture)
                         print "        layer3Opacity :", cColumn.layer3Opacity
                         
-                        formID = cColumn.layer4Texture
-                        if(formID != None):
-                            print "        layer4Texture : %08X" % formID
-                        else:
-                            print "        layer4Texture :", formID
+                        print "        layer4Texture :", PrintFormID(cColumn.layer4Texture)
                         print "        layer4Opacity :", cColumn.layer4Opacity
                         
-                        formID = cColumn.layer5Texture
-                        if(formID != None):
-                            print "        layer5Texture : %08X" % formID
-                        else:
-                            print "        layer5Texture :", formID
+                        print "        layer5Texture :", PrintFormID(cColumn.layer5Texture)
                         print "        layer5Opacity :", cColumn.layer5Opacity
                         
-                        formID = cColumn.layer6Texture
-                        if(formID != None):
-                            print "        layer6Texture : %08X" % formID
-                        else:
-                            print "        layer6Texture :", formID
+                        print "        layer6Texture :", PrintFormID(cColumn.layer6Texture)
                         print "        layer6Opacity :", cColumn.layer6Opacity
                         
-                        formID = cColumn.layer7Texture
-                        if(formID != None):
-                            print "        layer7Texture : %08X" % formID
-                        else:
-                            print "        layer7Texture :", formID
+                        print "        layer7Texture :", PrintFormID(cColumn.layer7Texture)
                         print "        layer7Opacity :", cColumn.layer7Opacity
                         
-                        formID = cColumn.layer8Texture
-                        if(formID != None):
-                            print "        layer8Texture : %08X" % formID
-                        else:
-                            print "        layer8Texture :", formID
+                        print "        layer8Texture :", PrintFormID(cColumn.layer8Texture)
                         print "        layer8Opacity :", cColumn.layer8Opacity
                         print
                         
             
         for wrldCell in record.CELLS:
             print
-            print "fid     : %08X" % wrldCell.fid
+            print "fid     :", PrintFormID(wrldCell.fid)
             print "flags1  :", wrldCell.flags1
             print "flags2  :", wrldCell.flags2
             print "eid     :", wrldCell.eid
@@ -7383,60 +7221,36 @@ def TestWRLD():
             print "directionalFade  :", wrldCell.directionalFade
             print "fogClip          :", wrldCell.fogClip
             print "music            :", wrldCell.music
-            formID = wrldCell.owner
-            if(formID != None):
-                print "owner            : %08X" % formID
-            else:
-                print "owner            :", formID
+            print "owner            :", PrintFormID(wrldCell.owner)
                 
             print "rank             :", wrldCell.rank
-            formID = wrldCell.globalVariable
-            if(formID != None):
-                print "globalVariable   : %08X" % formID
-            else:
-                print "globalVariable   :", formID        
-            print "climate          : %08X" % wrldCell.climate
+            print "globalVariable   :", PrintFormID(wrldCell.globalVariable)        
+            print "climate          :", PrintFormID(wrldCell.climate)
             print "waterHeight      :", wrldCell.waterHeight
             print "regions          :", wrldCell.regions
             print "posX             :", wrldCell.posX
             print "posY             :", wrldCell.posY
-            print "water            : %08X" % wrldCell.water
+            print "water            :", PrintFormID(wrldCell.water)
 
             print "Placed NPCs"
             for achr in wrldCell.ACHR:
                 print
-                print "  fid    : %08X" % achr.fid
+                print "  fid    :", PrintFormID(achr.fid)
                 print "  flags1 :", achr.flags1
                 print "  flags2 :", achr.flags2
                 print "  eid    :", achr.eid
                 
-                print "  base              : %08X" % achr.base
-                formID = achr.unknownXPCIFormID
-                if(formID != None):
-                    print "  unknownXPCIFormID : %08X" % formID
-                else:
-                    print "  unknownXPCIFormID :", formID
+                print "  base              :", PrintFormID(achr.base)
+                print "  unknownXPCIFormID :", PrintFormID(achr.unknownXPCIFormID)
                 print "  unknownXPCIString :", achr.unknownXPCIString
                 print "  lod1              :", achr.lod1
                 print "  lod2              :", achr.lod2
                 print "  lod3              :", achr.lod3
-                formID = achr.parent
-                if(formID != None):
-                    print "  parent            : %08X" % formID
-                else:
-                    print "  parent            :", formID
+                print "  parent            :", PrintFormID(achr.parent)
                 print "  parentFlags       :", achr.parentFlags
                 print "  unused1           :", achr.unused1
-                formID = achr.merchantContainer
-                if(formID != None):
-                    print "  merchantContainer : %08X" % formID
-                else:
-                    print "  merchantContainer :", formID
-                formID = achr.horse
-                if(formID != None):
-                    print "  horse             : %08X" % formID
-                else:
-                    print "  horse             :", formID
+                print "  merchantContainer :", PrintFormID(achr.merchantContainer)
+                print "  horse             :", PrintFormID(achr.horse)
                 print "  xrgd_p            :", achr.xrgd_p
                 print "  scale             :", achr.scale
                 print "  posX              :", achr.posX
@@ -7450,29 +7264,17 @@ def TestWRLD():
             print "Placed Creatures"
             for acre in wrldCell.ACRE:
                 print
-                print "  fid    : %08X" % acre.fid
+                print "  fid    :", PrintFormID(acre.fid)
                 print "  flags1 :", acre.flags1
                 print "  flags2 :", acre.flags2
                 print "  eid    :", acre.eid
 
-                print "  base           : %08X" % acre.base
-                formID = acre.owner
-                if(formID != None):
-                    print "  owner          : %08X" % formID
-                else:
-                    print "  owner          :", formID
+                print "  base           :", PrintFormID(acre.base)
+                print "  owner          :", PrintFormID(acre.owner)
                     
                 print "  rank           :", acre.rank
-                formID = acre.globalVariable
-                if(formID != None):
-                    print "  globalVariable : %08X" % formID
-                else:
-                    print "  globalVariable :", formID
-                formID = acre.parent
-                if(formID != None):
-                    print "  parent         : %08X" % formID
-                else:
-                    print "  parent         :", formID
+                print "  globalVariable :", PrintFormID(acre.globalVariable)
+                print "  parent         :", PrintFormID(acre.parent)
                 print "  parentFlags    :", acre.parentFlags
                 print "  unused1        :", acre.unused1
                 print "  xrgd_p         :", acre.xrgd_p
@@ -7488,20 +7290,12 @@ def TestWRLD():
             print "Placed Objects"
             for refr in wrldCell.REFR:
                 print
-                print "  fid    : %08X" % refr.fid
+                print "  fid    :", PrintFormID(refr.fid)
                 print "  flags1 :", refr.flags1
                 print "  flags2 :", refr.flags2
                 print "  eid    :", refr.eid
-                formID = refr.base
-                if(formID != None):
-                    print "  base              : %08X" % formID
-                else:
-                    print "  base              :", formID
-                formID = refr.destinationFormID
-                if(formID != None):
-                    print "  destinationFormID : %08X" % formID
-                else:
-                    print "  destinationFormID :", formID
+                print "  base              :", PrintFormID(refr.base)
+                print "  destinationFormID :", PrintFormID(refr.destinationFormID)
 
                 print "  destinationPosX   :", refr.destinationPosX
                 print "  destinationPosY   :", refr.destinationPosY
@@ -7512,39 +7306,19 @@ def TestWRLD():
                 print "  lockLevel         :", refr.lockLevel
                 print "  unused1           :", refr.unused1
 
-                formID = refr.lockKey
-                if(formID != None):
-                    print "  lockKey           : %08X" % formID
-                else:
-                    print "  lockKey           :", formID
+                print "  lockKey           :", PrintFormID(refr.lockKey)
 
                 print "  unused2           :", refr.unused2
                 print "  lockFlags         :", refr.lockFlags
                 print "  unused3           :", refr.unused3
-                formID = refr.owner
-                if(formID != None):
-                    print "  owner             : %08X" % formID
-                else:
-                    print "  owner             :", formID
+                print "  owner             :", PrintFormID(refr.owner)
                     
                 print "  rank              :", refr.rank
-                formID = refr.globalVariable
-                if(formID != None):
-                    print "  globalVariable    : %08X" % formID
-                else:
-                    print "  globalVariable    :", formID
-                formID = refr.parent
-                if(formID != None):
-                    print "  parent            : %08X" % formID
-                else:
-                    print "  parent            :", formID
+                print "  globalVariable    :", PrintFormID(refr.globalVariable)
+                print "  parent            :", PrintFormID(refr.parent)
                 print "  parentFlags       :", refr.parentFlags
                 print "  unused4           :", refr.unused4
-                formID = refr.targetFormID
-                if(formID != None):
-                    print "  targetFormID      : %08X" % formID
-                else:
-                    print "  targetFormID      :", formID
+                print "  targetFormID      :", PrintFormID(refr.targetFormID)
                 print "  seed              :", refr.seed
                 print "  seedOffset        :", refr.seedOffset
                 print "  lod1              :", refr.lod1
@@ -7552,18 +7326,10 @@ def TestWRLD():
                 print "  lod3              :", refr.lod3
                 print "  charge            :", refr.charge
                 print "  health            :", refr.health
-                formID = refr.unknownXPCIFormID
-                if(formID != None):
-                    print "  unknownXPCIFormID : %08X" % formID
-                else:
-                    print "  unknownXPCIFormID :", formID
+                print "  unknownXPCIFormID :", PrintFormID(refr.unknownXPCIFormID)
                 print "  unknownXPCIString :", refr.unknownXPCIString
                 print "  levelMod          :", refr.levelMod
-                formID = refr.unknownXRTMFormID
-                if(formID != None):
-                    print "  unknownXRTMFormID : %08X" % formID
-                else:
-                    print "  unknownXRTMFormID :", formID
+                print "  unknownXRTMFormID :", PrintFormID(refr.unknownXRTMFormID)
                 print "  actionFlags       :", refr.actionFlags
                 print "  count             :", refr.count
                 print "  markerFlags       :", refr.markerFlags
@@ -7584,7 +7350,7 @@ def TestWRLD():
             if(pgrd != None):
                 print
                 print "  PGRD"
-                print "  fid    : %08X" % pgrd.fid
+                print "  fid    :", PrintFormID(pgrd.fid)
                 print "  flags1 :", pgrd.flags1
                 print "  flags2 :", pgrd.flags2
 
@@ -7610,7 +7376,7 @@ def TestWRLD():
                     break
                 print "  PGRL"
                 for pgrl in pgrd.PGRL:
-                    print "    reference : %08X" % pgrl.reference
+                    print "    reference :", PrintFormID(pgrl.reference)
                     print "    points"
                     for point in pgrl.points:
                         print "      ", point
@@ -7619,7 +7385,7 @@ def TestWRLD():
             if(cLand != None):
                 print
                 print "  LAND"
-                print "  fid    : %08X" % cLand.fid
+                print "  fid    :", PrintFormID(cLand.fid)
                 print "  flags1 :", cLand.flags1
                 print "  flags2 :", cLand.flags2
 
@@ -7657,7 +7423,7 @@ def TestWRLD():
                     break
                 print "  baseTextures"
                 for baseTexture in cLand.baseTextures:
-                    print "    texture  : %08X" % baseTexture.texture
+                    print "    texture  :", PrintFormID(baseTexture.texture)
                     print "    quadrant :", baseTexture.quadrant
                     print "    unused1  :", baseTexture.unused1
                     print "    layer    :", baseTexture.layer
@@ -7665,7 +7431,7 @@ def TestWRLD():
                     break
                 print "  alphaLayers"
                 for alphaLayer in cLand.alphaLayers:
-                    print "    texture  : %08X" % alphaLayer.texture
+                    print "    texture  :", PrintFormID(alphaLayer.texture)
                     print "    quadrant :", alphaLayer.quadrant
                     print "    unused1  :", alphaLayer.unused1
                     print "    layer    :", alphaLayer.layer
@@ -7680,7 +7446,7 @@ def TestWRLD():
                     break
                 print "  vertexTextures"
                 for vertexTexture in cLand.vertexTextures:
-                    print "    texture  : %08X" % vertexTexture.texture
+                    print "    texture  :", PrintFormID(vertexTexture.texture)
                     print
                     break
 
@@ -7695,66 +7461,30 @@ def TestWRLD():
                         print "        red           :", cColumn.red
                         print "        green         :", cColumn.green
                         print "        blue          :", cColumn.blue
-                        formID = cColumn.baseTexture
-                        if(formID != None):
-                            print "        baseTexture   : %08X" % formID
-                        else:
-                            print "        baseTexture   :", formID
+                        print "        baseTexture   :", PrintFormID(cColumn.baseTexture)
                             
-                        formID = cColumn.layer1Texture
-                        if(formID != None):
-                            print "        layer1Texture : %08X" % formID
-                        else:
-                            print "        layer1Texture :", formID
+                        print "        layer1Texture :", PrintFormID(cColumn.layer1Texture)
                         print "        layer1Opacity :", cColumn.layer1Opacity
                         
-                        formID = cColumn.layer2Texture
-                        if(formID != None):
-                            print "        layer2Texture : %08X" % formID
-                        else:
-                            print "        layer2Texture :", formID
+                        print "        layer2Texture :", PrintFormID(cColumn.layer2Texture)
                         print "        layer2Opacity :", cColumn.layer2Opacity
                        
-                        formID = cColumn.layer3Texture
-                        if(formID != None):
-                            print "        layer3Texture : %08X" % formID
-                        else:
-                            print "        layer3Texture :", formID
+                        print "        layer3Texture :", PrintFormID(cColumn.layer3Texture)
                         print "        layer3Opacity :", cColumn.layer3Opacity
                         
-                        formID = cColumn.layer4Texture
-                        if(formID != None):
-                            print "        layer4Texture : %08X" % formID
-                        else:
-                            print "        layer4Texture :", formID
+                        print "        layer4Texture :", PrintFormID(cColumn.layer4Texture)
                         print "        layer4Opacity :", cColumn.layer4Opacity
                         
-                        formID = cColumn.layer5Texture
-                        if(formID != None):
-                            print "        layer5Texture : %08X" % formID
-                        else:
-                            print "        layer5Texture :", formID
+                        print "        layer5Texture :", PrintFormID(cColumn.layer5Texture)
                         print "        layer5Opacity :", cColumn.layer5Opacity
                         
-                        formID = cColumn.layer6Texture
-                        if(formID != None):
-                            print "        layer6Texture : %08X" % formID
-                        else:
-                            print "        layer6Texture :", formID
+                        print "        layer6Texture :", PrintFormID(cColumn.layer6Texture)
                         print "        layer6Opacity :", cColumn.layer6Opacity
                         
-                        formID = cColumn.layer7Texture
-                        if(formID != None):
-                            print "        layer7Texture : %08X" % formID
-                        else:
-                            print "        layer7Texture :", formID
+                        print "        layer7Texture :", PrintFormID(cColumn.layer7Texture)
                         print "        layer7Opacity :", cColumn.layer7Opacity
                         
-                        formID = cColumn.layer8Texture
-                        if(formID != None):
-                            print "        layer8Texture : %08X" % formID
-                        else:
-                            print "        layer8Texture :", formID
+                        print "        layer8Texture :", PrintFormID(cColumn.layer8Texture)
                         print "        layer8Opacity :", cColumn.layer8Opacity
                         print
                         break
@@ -7793,15 +7523,15 @@ def TestWRLD():
 
     print "WRLD:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
 
     print "full      :", newRecord.full
-    print "parent    : %08X" % newRecord.parent
-    print "climate   : %08X" % newRecord.climate
-    print "water     : %08X" % newRecord.water
+    print "parent    :", PrintFormID(newRecord.parent)
+    print "climate   :", PrintFormID(newRecord.climate)
+    print "water     :", PrintFormID(newRecord.water)
     print "mapPath   :", newRecord.mapPath
     print "dimX      :", newRecord.dimX
     print "dimY      :", newRecord.dimY
@@ -7821,54 +7551,104 @@ def TestWRLD():
     for record in Current[0].WRLD:
         trgWrld = record.CopyAsOverride(newMod)
         road = record.ROAD
-        if(road != None): road.CopyAsOverride(trgWrld)
+        if(road != None):
+            road.CopyAsOverride(trgWrld)
+            road.UnloadRecord()
         cell = record.CELL
         if(cell != None):
             trgCell = cell.CopyAsOverride(trgWrld,isWorldCell=True)
             cLand = cell.LAND
-            if(cLand != None): cLand.CopyAsOverride(trgCell)
+            if(cLand != None):
+                cLand.CopyAsOverride(trgCell)
+                cLand.UnloadRecord()
             for npcRef in cell.ACHR:
                 npcRef.CopyAsOverride(trgCell)
+                npcRef.UnloadRecord()
             for creaRef in cell.ACRE:
                 creaRef.CopyAsOverride(trgCell)
+                creaRef.UnloadRecord()
             for objRef in cell.REFR:
                 objRef.CopyAsOverride(trgCell)
+                objRef.UnloadRecord()
             Pgrd = cell.PGRD
-            if(Pgrd != None): Pgrd.CopyAsOverride(trgCell)
+            if(Pgrd != None):
+                Pgrd.CopyAsOverride(trgCell)
+                Pgrd.UnloadRecord()
+            cell.UnloadRecord()
         for wrldCell in record.CELLS:
             trgCell = wrldCell.CopyAsOverride(trgWrld)
             cLand = wrldCell.LAND
-            if(cLand != None): cLand.CopyAsOverride(trgCell)
+            if(cLand != None):
+                cLand.CopyAsOverride(trgCell)
+                cLand.UnloadRecord()
             for npcRef in wrldCell.ACHR:
                 npcRef.CopyAsOverride(trgCell)
+                npcRef.UnloadRecord()
             for creaRef in wrldCell.ACRE:
                 creaRef.CopyAsOverride(trgCell)
+                creaRef.UnloadRecord()
             for objRef in wrldCell.REFR:
                 objRef.CopyAsOverride(trgCell)
+                objRef.UnloadRecord()
             Pgrd = wrldCell.PGRD
-            if(Pgrd != None): Pgrd.CopyAsOverride(trgCell)
-        
-##    print "WRLD:CopyAsNew Test"
-##    for record in Current[0].WRLD:
-##        trgWrld = record.CopyAsNew(newMod)
-##        road = record.ROAD
-##        if(road != None): road.CopyAsNew(trgWrld)
-##        for wrldCell in record.CELLS:
-##            cLand = wrldCell.LAND
-##            if(cLand):
-##                trgCell = wrldCell.CopyAsNew(trgWrld)
-##                cLand.CopyAsNew(trgCell)
-##            for npcRef in wrldCell.ACHR:
-##                npcRef.CopyAsNew(trgCell)
-##            for creaRef in wrldCell.ACRE:
-##                creaRef.CopyAsNew(trgCell)
-##            for objRef in wrldCell.REFR:
-##                objRef.CopyAsNew(trgCell)
-##            Pgrd = wrldCell.PGRD
-##            if(Pgrd): Pgrd.CopyAsNew(trgCell)
+            if(Pgrd != None):
+                Pgrd.CopyAsOverride(trgCell)
+                Pgrd.UnloadRecord()
+            wrldCell.UnloadRecord()
+        record.UnloadRecord()
 
+    print "WRLD:CopyAsNew Test"
+    for record in Current[0].WRLD:
+        trgWrld = record.CopyAsNew(newMod)
+        road = record.ROAD
+        if(road != None):
+            road.CopyAsNew(trgWrld)
+            road.UnloadRecord()
+        cell = record.CELL
+        if(cell != None):
+            trgCell = cell.CopyAsNew(trgWrld,isWorldCell=True)
+            cLand = cell.LAND
+            if(cLand != None):
+                cLand.CopyAsNew(trgCell)
+                cLand.UnloadRecord()
+            for npcRef in cell.ACHR:
+                npcRef.CopyAsNew(trgCell)
+                npcRef.UnloadRecord()
+            for creaRef in cell.ACRE:
+                creaRef.CopyAsNew(trgCell)
+                creaRef.UnloadRecord()
+            for objRef in cell.REFR:
+                objRef.CopyAsNew(trgCell)
+                objRef.UnloadRecord()
+            Pgrd = cell.PGRD
+            if(Pgrd != None):
+                Pgrd.CopyAsNew(trgCell)
+                Pgrd.UnloadRecord()
+            cell.UnloadRecord()
+        for wrldCell in record.CELLS:
+            trgCell = wrldCell.CopyAsNew(trgWrld)
+            cLand = wrldCell.LAND
+            if(cLand != None):
+                cLand.CopyAsNew(trgCell)
+                cLand.UnloadRecord()
+            for npcRef in wrldCell.ACHR:
+                npcRef.CopyAsNew(trgCell)
+                npcRef.UnloadRecord()
+            for creaRef in wrldCell.ACRE:
+                creaRef.CopyAsNew(trgCell)
+                creaRef.UnloadRecord()
+            for objRef in wrldCell.REFR:
+                objRef.CopyAsNew(trgCell)
+                objRef.UnloadRecord()
+            Pgrd = wrldCell.PGRD
+            if(Pgrd != None):
+                Pgrd.CopyAsNew(trgCell)
+                Pgrd.UnloadRecord()
+            wrldCell.UnloadRecord()
+        record.UnloadRecord()
+            
     print "WRLD:Save Test - TestWRLD.esp"
-    newMod.safeSave()
+    newMod.safeCloseSave()
     print "WRLD:Finished testing"
     
 def TestDIAL():
@@ -7879,32 +7659,32 @@ def TestDIAL():
 
     for record in Current.DIAL:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
 
         print "quests"
         for quest in record.quests:
-            print "  %08X" % quest
+            print "  ", PrintFormID(quest)
         print "full     :", record.full
         print "dialType :", record.dialType
 
         print "infos"
         for info in record.INFO:
             print
-            print "  fid    : %08X" % info.fid
+            print "  fid    :", PrintFormID(info.fid)
             print "  flags1 :", info.flags1
             print "  flags2 :", info.flags2            
             print "  dialType     :", info.dialType
             print "  flags        :", info.flags
             print "  unused1      :", info.unused1
-            print "  quest        : %08X" % (info.quest or 0)
-            print "  topic        : %08X" % (info.topic or 0)
-            print "  prevInfo     : %08X" % (info.prevInfo or 0)
+            print "  quest        :", PrintFormID(info.quest)
+            print "  topic        :", PrintFormID(info.topic)
+            print "  prevInfo     :", PrintFormID(info.prevInfo)
             print "  addTopics"
             for topic in info.addTopics:
-                print "    %08X" % topic
+                print "    ", PrintFormID(topic)
             
             print "  responses"
             for response in info.responses:
@@ -7930,11 +7710,11 @@ def TestDIAL():
             
             print "  choices"
             for choice in info.choices:
-                print "    %08X" % choice
+                print "    ", PrintFormID(choice)
                 
             print "  linksFrom"
             for linksFrom in info.linksFrom:
-                print "    %08X" % linksFrom
+                print "    ", PrintFormID(linksFrom)
                 
             print "  unused2      :", info.unused2
             print "  numRefs      :", info.numRefs
@@ -7947,7 +7727,7 @@ def TestDIAL():
             print "  references"
             for reference in info.references:
                 if(reference.IsSCRO):
-                    print "    SCRO: %08X" % reference.reference
+                    print "    SCRO:", PrintFormID(reference.reference)
                 else:
                     print "    SCRV:", reference.reference
         break
@@ -8269,33 +8049,33 @@ def TestDIAL():
         
     print "DIAL:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
     
     print "quests"
     for quest in newRecord.quests:
-        print "  %08X" % quest
+        print "  ", PrintFormID(quest)
     print "full     :", newRecord.full
     print "dialType :", newRecord.dialType
 
     print "infos"
     for info in newRecord.INFO:
         print
-        print "  fid    : %08X" % info.fid
+        print "  fid    :", PrintFormID(info.fid)
         print "  flags1 :", info.flags1
         print "  flags2 :", info.flags2
         
         print "  dialType     :", info.dialType
         print "  flags        :", info.flags
         print "  unused1      :", info.unused1
-        print "  quest        : %08X" % info.quest
-        print "  topic        : %08X" % info.topic
-        print "  prevInfo     : %08X" % info.prevInfo
+        print "  quest        :", PrintFormID(info.quest)
+        print "  topic        :", PrintFormID(info.topic)
+        print "  prevInfo     :", PrintFormID(info.prevInfo)
         print "  addTopics"
         for topic in info.addTopics:
-            print "    %08X" % topic
+            print "    ", PrintFormID(topic)
         
         print "  responses"
         for response in info.responses:
@@ -8321,11 +8101,11 @@ def TestDIAL():
         
         print "  choices"
         for choice in info.choices:
-            print "    %08X" % choice
+            print "    ", PrintFormID(choice)
             
         print "  linksFrom"
         for linksFrom in info.linksFrom:
-            print "    %08X" % linksFrom
+            print "    ", PrintFormID(linksFrom)
             
         print "  unused2      :", info.unused2
         print "  numRefs      :", info.numRefs
@@ -8338,7 +8118,7 @@ def TestDIAL():
         print "  references"
         for reference in info.references:
             if(reference.IsSCRO):
-                print "    SCRO: %08X" % reference.reference
+                print "    SCRO:", PrintFormID(reference.reference)
             else:
                 print "    SCRV:", reference.reference
     
@@ -8368,12 +8148,12 @@ def TestQUST():
     x = 0
     for record in Current.QUST:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
 
-        print "script     : %08X" % record.script
+        print "script     :", PrintFormID(record.script)
         print "full       :", record.full
         print "iconPath   :", record.iconPath
         print "flags      :", record.flags
@@ -8424,7 +8204,7 @@ def TestQUST():
                 print "    references"
                 for reference in entry.references:
                     if(reference.IsSCRO):
-                        print "      SCRO: %08X" % reference.reference
+                        print "      SCRO:", PrintFormID(reference.reference)
                     else:
                         print "      SCRV:", reference.reference
                     if(x == 4):
@@ -8435,7 +8215,7 @@ def TestQUST():
         for target in record.targets:
             if(x == 5):
                 x = 6
-            print "  targetId : %08X" % target.targetId
+            print "  targetId :", PrintFormID(target.targetId)
             print "  flags    :", target.flags
             print "  unused1  :", target.unused1
             print "  conditions"
@@ -9258,12 +9038,12 @@ def TestQUST():
     
     print "QUST:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
 
-    print "script     : %08X" % newRecord.script
+    print "script     :", PrintFormID(newRecord.script)
     print "full       :", newRecord.full
     print "iconPath   :", newRecord.iconPath
     print "flags      :", newRecord.flags
@@ -9306,14 +9086,14 @@ def TestQUST():
             print "    references"
             for reference in entry.references:
                 if(reference.IsSCRO):
-                    print "      SCRO: %08X" % reference.reference
+                    print "      SCRO:", PrintFormID(reference.reference)
                 else:
                     print "      SCRV:", reference.reference
             print
         print
     print "targets"
     for target in newRecord.targets:
-        print "  targetId : %08X" % target.targetId
+        print "  targetId :", PrintFormID(target.targetId)
         print "  flags    :", target.flags
         print "  unused1  :", target.unused1
         print "  conditions"
@@ -9348,7 +9128,7 @@ def TestIDLE():
 
     for record in Current.IDLE:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -9369,8 +9149,8 @@ def TestIDLE():
             print
 
         print "group  :", record.group
-        print "parent : %08X" % record.parent
-        print "prevId : %08X" % record.prevId
+        print "parent :", PrintFormID(record.parent)
+        print "prevId :", PrintFormID(record.prevId)
         
         break
 
@@ -9435,7 +9215,7 @@ def TestIDLE():
 
     print "IDLE:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -9456,8 +9236,8 @@ def TestIDLE():
         print
 
     print "group  :", newRecord.group
-    print "parent : %08X" % newRecord.parent
-    print "prevId : %08X" % newRecord.prevId
+    print "parent :", PrintFormID(newRecord.parent)
+    print "prevId :", PrintFormID(newRecord.prevId)
     
     print "IDLE:CopyAsOverride Test"
     for record in Current[0].IDLE:
@@ -9480,7 +9260,7 @@ def TestPACK():
 
     for record in Current.PACK:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -9491,7 +9271,7 @@ def TestPACK():
         
         print "locType   :", record.locType
         if(record.locType != 5):
-            print "locId     : %08X" % record.locId
+            print "locId     :", PrintFormID(record.locId)
         else:
             print "locId     :", record.locId
         print "locRadius :", record.locRadius
@@ -9504,7 +9284,7 @@ def TestPACK():
         
         print "targetType  :", record.targetType
         if(record.targetType != 2):
-            print "targetId    : %08X" % record.targetId
+            print "targetId    :", PrintFormID(record.targetId)
         else:
             print "targetId    :", record.targetId
         print "targetCount :", record.targetCount
@@ -9587,7 +9367,7 @@ def TestPACK():
 
     print "PACK:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -9598,7 +9378,7 @@ def TestPACK():
     
     print "locType   :", newRecord.locType
     if(newRecord.locType != 5):
-        print "locId     : %08X" % newRecord.locId
+        print "locId     :", PrintFormID(newRecord.locId)
     else:
         print "locId     :", newRecord.locId
     print "locRadius :", newRecord.locRadius
@@ -9611,7 +9391,7 @@ def TestPACK():
     
     print "targetType  :", newRecord.targetType
     if(newRecord.targetType != 2):
-        print "targetId    : %08X" % newRecord.targetId
+        print "targetId    :", PrintFormID(newRecord.targetId)
     else:
         print "targetId    :", newRecord.targetId
     print "targetCount :", newRecord.targetCount
@@ -9648,7 +9428,7 @@ def TestCSTY():
 
     for record in Current.CSTY:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -9796,7 +9576,7 @@ def TestCSTY():
 
     print "CSTY:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -9887,7 +9667,7 @@ def TestLSCR():
 
     for record in Current.LSCR:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -9896,8 +9676,8 @@ def TestLSCR():
         print "text     :", record.text
         print "locations"
         for location in record.locations:
-            print "  direct   : %08X" % location.direct
-            print "  indirect : %08X" % location.indirect
+            print "  direct   :", PrintFormID(location.direct)
+            print "  indirect :", PrintFormID(location.indirect)
             print "  gridY    :", location.gridY
             print "  gridX    :", location.gridX
 
@@ -9944,7 +9724,7 @@ def TestLSCR():
     
     print "LSCR:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -9953,8 +9733,8 @@ def TestLSCR():
     print "text     :", newRecord.text
     print "locations"
     for location in newRecord.locations:
-        print "  direct   : %08X" % location.direct
-        print "  indirect : %08X" % location.indirect
+        print "  direct   :", PrintFormID(location.direct)
+        print "  indirect :", PrintFormID(location.indirect)
         print "  gridY    :", location.gridY
         print "  gridX    :", location.gridX
         
@@ -9979,7 +9759,7 @@ def TestLVSP():
 
     for record in Current.LVSP:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -9991,7 +9771,7 @@ def TestLVSP():
             print
             print "  level   :", entry.level
             print "  unused1 :", entry.unused1
-            print "  listId  : %08X" % entry.listId
+            print "  listId  :", PrintFormID(entry.listId)
             print "  count   :", entry.count
             print "  unused2 :", entry.unused2
         break
@@ -10037,7 +9817,7 @@ def TestLVSP():
 
     print "LVSP:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -10049,7 +9829,7 @@ def TestLVSP():
         print
         print "  level   :", entry.level
         print "  unused1 :", entry.unused1
-        print "  listId  : %08X" % entry.listId
+        print "  listId  :", PrintFormID(entry.listId)
         print "  count   :", entry.count
         print "  unused2 :", entry.unused2
 
@@ -10074,7 +9854,7 @@ def TestANIO():
 
     for record in Current.ANIO:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -10083,7 +9863,7 @@ def TestANIO():
         print "modb    :", record.modb
         print "modt_p  :", record.modt_p
 
-        print "animationId : %08X" % record.animationId       
+        print "animationId :", PrintFormID(record.animationId       )
 
         break
 
@@ -10107,7 +9887,7 @@ def TestANIO():
     newRecord.animationId = 7
     print "ANIO:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -10116,7 +9896,7 @@ def TestANIO():
     print "modb    :", newRecord.modb
     print "modt_p  :", newRecord.modt_p
 
-    print "animationId : %08X" % newRecord.animationId     
+    print "animationId :", PrintFormID(newRecord.animationId     )
     
     print "ANIO:CopyAsOverride Test"
     for record in Current[0].ANIO:
@@ -10139,7 +9919,7 @@ def TestWATR():
 
     for record in Current.WATR:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -10148,7 +9928,7 @@ def TestWATR():
         print "opacity       :", record.opacity
         print "flags         :", record.flags                    
         print "material      :", record.material                    
-        print "sound         : %08X" % record.sound                    
+        print "sound         :", PrintFormID(record.sound                    )
         print "windVelocity  :", record.windVelocity
         print "windDirection :", record.windDirection
         print "waveAmp       :", record.waveAmp
@@ -10185,9 +9965,9 @@ def TestWATR():
         print "dispDampner   :", record.dispDampner
         print "dispSize      :", record.dispSize
         print "damage        :", record.damage                    
-        print "dayWater      : %08X" % record.dayWater
-        print "nightWater    : %08X" % record.nightWater
-        print "underWater    : %08X" % record.underWater    
+        print "dayWater      :", PrintFormID(record.dayWater)
+        print "nightWater    :", PrintFormID(record.nightWater)
+        print "underWater    :", PrintFormID(record.underWater    )
         break
 
     print "WATR:Create Record Test"
@@ -10247,7 +10027,7 @@ def TestWATR():
 
     print "WATR:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -10256,7 +10036,7 @@ def TestWATR():
     print "opacity       :", newRecord.opacity
     print "flags         :", newRecord.flags                    
     print "material      :", newRecord.material                    
-    print "sound         : %08X" % newRecord.sound                    
+    print "sound         :", PrintFormID(newRecord.sound                    )
     print "windVelocity  :", newRecord.windVelocity
     print "windDirection :", newRecord.windDirection
     print "waveAmp       :", newRecord.waveAmp
@@ -10293,9 +10073,9 @@ def TestWATR():
     print "dispDampner   :", newRecord.dispDampner
     print "dispSize      :", newRecord.dispSize
     print "damage        :", newRecord.damage                    
-    print "dayWater      : %08X" % newRecord.dayWater
-    print "nightWater    : %08X" % newRecord.nightWater
-    print "underWater    : %08X" % newRecord.underWater    
+    print "dayWater      :", PrintFormID(newRecord.dayWater)
+    print "nightWater    :", PrintFormID(newRecord.nightWater)
+    print "underWater    :", PrintFormID(newRecord.underWater    )
     
     print "WATR:CopyAsOverride Test"
     for record in Current[0].WATR:
@@ -10318,7 +10098,7 @@ def TestEFSH():
 
     for record in Current.EFSH:
         print
-        print "fid     : %08X" % record.fid
+        print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -10487,7 +10267,7 @@ def TestEFSH():
 
     print "EFSH:Set Test Results"
     print
-    print "fid    : %08X" % newRecord.fid
+    print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid

@@ -892,7 +892,7 @@ void ModFile::ExpandFormIDs()
     EFSH.ExpandFormIDs(FormIDHandler);
     }
 
-int ModFile::Save(FileBuffer &buffer)
+int ModFile::Save(FileBuffer &buffer, bool CloseMod)
     {
     UpdateFormCount();
     {
@@ -900,62 +900,66 @@ int ModFile::Save(FileBuffer &buffer)
     TES4.Write(WriteTES4);
     buffer.write(WriteTES4);
     }
+
     //ADD DEFINITIONS HERE
-    GMST.WriteGRUP(eGMST, buffer);
-    GLOB.WriteGRUP(eGLOB, buffer);
-    CLAS.WriteGRUP(eCLAS, buffer);
-    FACT.WriteGRUP(eFACT, buffer);
-    HAIR.WriteGRUP(eHAIR, buffer);
-    EYES.WriteGRUP(eEYES, buffer);
-    RACE.WriteGRUP(eRACE, buffer);
-    SOUN.WriteGRUP(eSOUN, buffer);
-    SKIL.WriteGRUP(eSKIL, buffer);
-    MGEF.WriteGRUP(eMGEF, buffer);
-    SCPT.WriteGRUP(eSCPT, buffer);
-    LTEX.WriteGRUP(eLTEX, buffer);
-    ENCH.WriteGRUP(eENCH, buffer);
-    SPEL.WriteGRUP(eSPEL, buffer);
-    BSGN.WriteGRUP(eBSGN, buffer);
-    ACTI.WriteGRUP(eACTI, buffer);
-    APPA.WriteGRUP(eAPPA, buffer);
-    ARMO.WriteGRUP(eARMO, buffer);
-    BOOK.WriteGRUP(eBOOK, buffer);
-    CLOT.WriteGRUP(eCLOT, buffer);
-    CONT.WriteGRUP(eCONT, buffer);
-    DOOR.WriteGRUP(eDOOR, buffer);
-    INGR.WriteGRUP(eINGR, buffer);
-    LIGH.WriteGRUP(eLIGH, buffer);
-    MISC.WriteGRUP(eMISC, buffer);
-    STAT.WriteGRUP(eSTAT, buffer);
-    GRAS.WriteGRUP(eGRAS, buffer);
-    TREE.WriteGRUP(eTREE, buffer);
-    FLOR.WriteGRUP(eFLOR, buffer);
-    FURN.WriteGRUP(eFURN, buffer);
-    WEAP.WriteGRUP(eWEAP, buffer);
-    AMMO.WriteGRUP(eAMMO, buffer);
-    NPC_.WriteGRUP(eNPC_, buffer);
-    CREA.WriteGRUP(eCREA, buffer);
-    LVLC.WriteGRUP(eLVLC, buffer);
-    SLGM.WriteGRUP(eSLGM, buffer);
-    KEYM.WriteGRUP(eKEYM, buffer);
-    ALCH.WriteGRUP(eALCH, buffer);
-    SBSP.WriteGRUP(eSBSP, buffer);
-    SGST.WriteGRUP(eSGST, buffer);
-    LVLI.WriteGRUP(eLVLI, buffer);
-    WTHR.WriteGRUP(eWTHR, buffer);
-    CLMT.WriteGRUP(eCLMT, buffer);
-    REGN.WriteGRUP(eREGN, buffer);
-    CELL.WriteGRUP(buffer);
-    WRLD.WriteGRUP(buffer, FormIDHandler);
-    DIAL.WriteGRUP(buffer);
-    QUST.WriteGRUP(eQUST, buffer);
-    IDLE.WriteGRUP(eIDLE, buffer);
-    PACK.WriteGRUP(ePACK, buffer);
-    CSTY.WriteGRUP(eCSTY, buffer);
-    LSCR.WriteGRUP(eLSCR, buffer);
-    LVSP.WriteGRUP(eLVSP, buffer);
-    ANIO.WriteGRUP(eANIO, buffer);
-    WATR.WriteGRUP(eWATR, buffer);
-    EFSH.WriteGRUP(eEFSH, buffer);
+    GMST.WriteGRUP(eGMST, buffer, CloseMod);
+    GLOB.WriteGRUP(eGLOB, buffer, CloseMod);
+    CLAS.WriteGRUP(eCLAS, buffer, CloseMod);
+    FACT.WriteGRUP(eFACT, buffer, CloseMod);
+    HAIR.WriteGRUP(eHAIR, buffer, CloseMod);
+    EYES.WriteGRUP(eEYES, buffer, CloseMod);
+    RACE.WriteGRUP(eRACE, buffer, CloseMod);
+    SOUN.WriteGRUP(eSOUN, buffer, CloseMod);
+    SKIL.WriteGRUP(eSKIL, buffer, CloseMod);
+    MGEF.WriteGRUP(eMGEF, buffer, CloseMod);
+    SCPT.WriteGRUP(eSCPT, buffer, CloseMod);
+    LTEX.WriteGRUP(eLTEX, buffer, CloseMod);
+    ENCH.WriteGRUP(eENCH, buffer, CloseMod);
+    SPEL.WriteGRUP(eSPEL, buffer, CloseMod);
+    BSGN.WriteGRUP(eBSGN, buffer, CloseMod);
+    ACTI.WriteGRUP(eACTI, buffer, CloseMod);
+    APPA.WriteGRUP(eAPPA, buffer, CloseMod);
+    ARMO.WriteGRUP(eARMO, buffer, CloseMod);
+    BOOK.WriteGRUP(eBOOK, buffer, CloseMod);
+    CLOT.WriteGRUP(eCLOT, buffer, CloseMod);
+    CONT.WriteGRUP(eCONT, buffer, CloseMod);
+    DOOR.WriteGRUP(eDOOR, buffer, CloseMod);
+    INGR.WriteGRUP(eINGR, buffer, CloseMod);
+    LIGH.WriteGRUP(eLIGH, buffer, CloseMod);
+    MISC.WriteGRUP(eMISC, buffer, CloseMod);
+    STAT.WriteGRUP(eSTAT, buffer, CloseMod);
+    GRAS.WriteGRUP(eGRAS, buffer, CloseMod);
+    TREE.WriteGRUP(eTREE, buffer, CloseMod);
+    FLOR.WriteGRUP(eFLOR, buffer, CloseMod);
+    FURN.WriteGRUP(eFURN, buffer, CloseMod);
+    WEAP.WriteGRUP(eWEAP, buffer, CloseMod);
+    AMMO.WriteGRUP(eAMMO, buffer, CloseMod);
+    NPC_.WriteGRUP(eNPC_, buffer, CloseMod);
+    CREA.WriteGRUP(eCREA, buffer, CloseMod);
+    LVLC.WriteGRUP(eLVLC, buffer, CloseMod);
+    SLGM.WriteGRUP(eSLGM, buffer, CloseMod);
+    KEYM.WriteGRUP(eKEYM, buffer, CloseMod);
+    ALCH.WriteGRUP(eALCH, buffer, CloseMod);
+    SBSP.WriteGRUP(eSBSP, buffer, CloseMod);
+    SGST.WriteGRUP(eSGST, buffer, CloseMod);
+    LVLI.WriteGRUP(eLVLI, buffer, CloseMod);
+    WTHR.WriteGRUP(eWTHR, buffer, CloseMod);
+    CLMT.WriteGRUP(eCLMT, buffer, CloseMod);
+    REGN.WriteGRUP(eREGN, buffer, CloseMod);
+    CELL.WriteGRUP(buffer, CloseMod);
+    WRLD.WriteGRUP(buffer, CloseMod, FormIDHandler);
+    DIAL.WriteGRUP(buffer, CloseMod);
+    QUST.WriteGRUP(eQUST, buffer, CloseMod);
+    IDLE.WriteGRUP(eIDLE, buffer, CloseMod);
+    PACK.WriteGRUP(ePACK, buffer, CloseMod);
+    CSTY.WriteGRUP(eCSTY, buffer, CloseMod);
+    LSCR.WriteGRUP(eLSCR, buffer, CloseMod);
+    LVSP.WriteGRUP(eLVSP, buffer, CloseMod);
+    ANIO.WriteGRUP(eANIO, buffer, CloseMod);
+    WATR.WriteGRUP(eWATR, buffer, CloseMod);
+    EFSH.WriteGRUP(eEFSH, buffer, CloseMod);
+    
+    if(CloseMod)
+        Close();
     return -1;
     }

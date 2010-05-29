@@ -303,10 +303,10 @@ void FileBuffer::write(const void *_SrcBuf, unsigned int _SrcSize)
     if(fh == -1 || _SrcBuf == NULL || _SrcSize == 0)
         return;
     //Flush the buffer if it is getting full
-    if((_BufPos + _SrcSize + 40) >= _BufSize)
+    if((_BufPos + _SrcSize ) >= _BufSize)
         flush();
     //Use the buffer if there's room
-    if(_SrcSize + 40 < _BufSize)
+    if(_SrcSize < _BufSize)
         {
         memcpy(_Buffer + _BufPos, _SrcBuf, _SrcSize);
         _BufPos += _SrcSize;

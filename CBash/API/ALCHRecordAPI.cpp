@@ -199,7 +199,9 @@ unsigned int ALCHRecord::GetListArraySize(const unsigned int subField, const uns
             switch(listField)
                 {
                 case 12: //unused1
-                    return 3;
+                    if(Effects[listIndex]->SCIT.IsLoaded())
+                        return 3;
+                    return 0;
                 default:
                     return 0;
                 }

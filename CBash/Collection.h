@@ -54,7 +54,7 @@ class Collection
         int NewMod(const char *ModName);
         bool IsModAdded(const char *ModName);
         int AddMod(const char *ModName, bool CreateIfNotExist=false);
-        int SafeSaveMod(char *ModName);
+        int SafeSaveMod(char *ModName, bool CloseMod=false);
         int SafeSaveAllChangedMods();
 
         void IndexRecords(ModFile *curModFile);

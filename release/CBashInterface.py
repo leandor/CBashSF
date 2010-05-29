@@ -3,6 +3,16 @@ import struct
 
 CBash = CDLL("CBash.dll")
 
+class PrintFormID(object):
+    def __init__(self, formID):
+        self._FormID = formID
+    def __repr__(self):
+        if(self._FormID): return "%08X" % self._FormID
+        return "None"
+    def __str__(self):
+        if(self._FormID): return "%08X" % self._FormID
+        return "None"
+
 class BaseRecord(object):
     def __init__(self, CollectionIndex, ModName, recordID):
         self._CollectionIndex = CollectionIndex
@@ -25,19 +35,25 @@ class BaseRecord(object):
         return
     def get_flags1(self):
         CBash.ReadFIDField.restype = POINTER(c_int)
-        return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 2).contents.value
+        retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 2)
+        if(retValue): return retValue.contents.value
+        return None
     def set_flags1(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 2, nValue)
     flags1 = property(get_flags1, set_flags1)
     def get_fid(self):
         CBash.ReadFIDField.restype = POINTER(c_int)
-        return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 3).contents.value
+        retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 3)
+        if(retValue): return retValue.contents.value
+        return None
     def set_fid(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 3, nValue)
     fid = property(get_fid, set_fid)
     def get_flags2(self):
         CBash.ReadFIDField.restype = POINTER(c_int)
-        return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 4).contents.value
+        retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 4)
+        if(retValue): return retValue.contents.value
+        return None
     def set_flags2(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 4, nValue)
     flags2 = property(get_flags2, set_flags2)
@@ -120,41 +136,55 @@ class TES4Record(object):
         self._ModName = ModName
     def get_recType(self):
         CBash.ReadTES4Field.restype = POINTER(c_uint)
-        return CBash.ReadTES4Field(self._CollectionIndex, self._ModName, 0).contents.value
+        retValue = CBash.ReadTES4Field(self._CollectionIndex, self._ModName, 0)
+        if(retValue): return retValue.contents.value
+        return None
     def set_recType(self, nValue):
         CBash.SetTES4FieldUI(self._CollectionIndex, self._ModName, 0, nValue)
     recType = property(get_recType, set_recType)
     @property
     def size(self):
         CBash.ReadTES4Field.restype = POINTER(c_ulong)
-        return CBash.ReadTES4Field(self._CollectionIndex, self._ModName, 1).contents.value
+        retValue = CBash.ReadTES4Field(self._CollectionIndex, self._ModName, 1)
+        if(retValue): return retValue.contents.value
+        return None
     def get_flags1(self):
         CBash.ReadTES4Field.restype = POINTER(c_uint)
-        return CBash.ReadTES4Field(self._CollectionIndex, self._ModName, 2).contents.value
+        retValue = CBash.ReadTES4Field(self._CollectionIndex, self._ModName, 2)
+        if(retValue): return retValue.contents.value
+        return None
     def set_flags1(self, nValue):
         CBash.SetTES4FieldUI(self._CollectionIndex, self._ModName, 2, nValue)
     flags1 = property(get_flags1, set_flags1)
     def get_flags2(self):
         CBash.ReadTES4Field.restype = POINTER(c_uint)
-        return CBash.ReadTES4Field(self._CollectionIndex, self._ModName, 4).contents.value
+        retValue = CBash.ReadTES4Field(self._CollectionIndex, self._ModName, 4)
+        if(retValue): return retValue.contents.value
+        return None
     def set_flags2(self, nValue):
         CBash.SetTES4FieldUI(self._CollectionIndex, self._ModName, 4, nValue)
     flags2 = property(get_flags2, set_flags2)
     def get_version(self):
         CBash.ReadTES4Field.restype = POINTER(c_float)
-        return CBash.ReadTES4Field(self._CollectionIndex, self._ModName, 6).contents.value
+        retValue = CBash.ReadTES4Field(self._CollectionIndex, self._ModName, 6)
+        if(retValue): return retValue.contents.value
+        return None
     def set_version(self, nValue):
         CBash.SetTES4FieldF(self._CollectionIndex, self._ModName, 6, c_float(nValue))
     version = property(get_version, set_version)
     def get_numRecords(self):
         CBash.ReadTES4Field.restype = POINTER(c_uint)
-        return CBash.ReadTES4Field(self._CollectionIndex, self._ModName, 7).contents.value
+        retValue = CBash.ReadTES4Field(self._CollectionIndex, self._ModName, 7)
+        if(retValue): return retValue.contents.value
+        return None
     def set_numRecords(self, nValue):
         CBash.SetTES4FieldUI(self._CollectionIndex, self._ModName, 7, nValue)
     numRecords = property(get_numRecords, set_numRecords)
     def get_nextObject(self):
         CBash.ReadTES4Field.restype = POINTER(c_uint)
-        return CBash.ReadTES4Field(self._CollectionIndex, self._ModName, 8).contents.value
+        retValue = CBash.ReadTES4Field(self._CollectionIndex, self._ModName, 8)
+        if(retValue): return retValue.contents.value
+        return None
     def set_nextObject(self, nValue):
         CBash.SetTES4FieldUI(self._CollectionIndex, self._ModName, 8, nValue)
     nextObject = property(get_nextObject, set_nextObject)
@@ -164,7 +194,7 @@ class TES4Record(object):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetTES4FieldArray(self._CollectionIndex, self._ModName, 9, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_ofst_p(self, nValue):
         length = len(nValue)
         CBash.SetTES4FieldR(self._CollectionIndex, self._ModName, 9, struct.pack('B' * length, *nValue), length)
@@ -175,7 +205,7 @@ class TES4Record(object):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetTES4FieldArray(self._CollectionIndex, self._ModName, 10, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_dele_p(self, nValue):
         length = len(nValue)
         CBash.SetTES4FieldR(self._CollectionIndex, self._ModName, 10, struct.pack('B' * length, *nValue), length)
@@ -198,7 +228,7 @@ class TES4Record(object):
             cRecords = (POINTER(c_char_p) * numRecords)()
             CBash.GetTES4FieldArray(self._CollectionIndex, self._ModName, 13, cRecords)
             return [string_at(cRecords[x]) for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_masters(self, nValue):
         length = len(nValue)
         cRecords = (c_char_p * length)(*nValue)
@@ -229,29 +259,39 @@ class GMSTRecord(object):
 
     def get_recType(self):
         CBash.ReadGMSTField.restype = POINTER(c_int)
-        return CBash.ReadGMSTField(self._CollectionIndex, self._ModName, self._recordID, 0).contents.value
+        retValue = CBash.ReadGMSTField(self._CollectionIndex, self._ModName, self._recordID, 0)
+        if(retValue): return retValue.contents.value
+        return None
     def set_recType(self, nValue):
         CBash.SetGMSTFieldUI(self._CollectionIndex, self._ModName, self._recordID, 0, nValue)
     recType = property(get_recType, set_recType)
     @property
     def size(self):
         CBash.ReadGMSTField.restype = POINTER(c_ulong)
-        return CBash.ReadGMSTField(self._CollectionIndex, self._ModName, self._recordID, 1).contents.value
+        retValue = CBash.ReadGMSTField(self._CollectionIndex, self._ModName, self._recordID, 1)
+        if(retValue): return retValue.contents.value
+        return None
     def get_flags1(self):
         CBash.ReadGMSTField.restype = POINTER(c_int)
-        return CBash.ReadGMSTField(self._CollectionIndex, self._ModName, self._recordID, 2).contents.value
+        retValue = CBash.ReadGMSTField(self._CollectionIndex, self._ModName, self._recordID, 2)
+        if(retValue): return retValue.contents.value
+        return None
     def set_flags1(self, nValue):
         CBash.SetGMSTFieldUI(self._CollectionIndex, self._ModName, self._recordID, 2, nValue)
     flags1 = property(get_flags1, set_flags1)
     def get_fid(self):
         CBash.ReadGMSTField.restype = POINTER(c_int)
-        return CBash.ReadGMSTField(self._CollectionIndex, self._ModName, self._recordID, 3).contents.value
+        retValue = CBash.ReadGMSTField(self._CollectionIndex, self._ModName, self._recordID, 3)
+        if(retValue): return retValue.contents.value
+        return None
     def set_fid(self, nValue):
         CBash.SetGMSTFieldUI(self._CollectionIndex, self._ModName, self._recordID, 3, nValue)
     fid = property(get_fid, set_fid)
     def get_flags2(self):
         CBash.ReadGMSTField.restype = POINTER(c_int)
-        return CBash.ReadGMSTField(self._CollectionIndex, self._ModName, self._recordID, 4).contents.value
+        retValue = CBash.ReadGMSTField(self._CollectionIndex, self._ModName, self._recordID, 4)
+        if(retValue): return retValue.contents.value
+        return None
     def set_flags2(self, nValue):
         CBash.SetGMSTFieldUI(self._CollectionIndex, self._ModName, self._recordID, 4, nValue)
     flags2 = property(get_flags2, set_flags2)
@@ -271,7 +311,9 @@ class GMSTRecord(object):
         elif(rFormat == 3):
             CBash.ReadGMSTField.restype = c_char_p
             return CBash.ReadGMSTField(self._CollectionIndex, self._ModName, self._recordID, 6)
-        return CBash.ReadGMSTField(self._CollectionIndex, self._ModName, self._recordID, 6).contents.value
+        retValue = CBash.ReadGMSTField(self._CollectionIndex, self._ModName, self._recordID, 6)
+        if(retValue): return retValue.contents.value
+        return None
     def set_value(self, nValue):
         rFormat = CBash.GetGMSTFieldType(self._CollectionIndex, self._ModName, self._recordID, 6)
         if(rFormat == 1 and type(nValue) is int):
@@ -293,13 +335,17 @@ class GLOBRecord(BaseRecord):
         return None
     def get_format(self):
         CBash.ReadFIDField.restype = POINTER(c_char)
-        return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 6).contents.value
+        retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 6)
+        if(retValue): return retValue.contents.value
+        return None
     def set_format(self, nValue):
         CBash.SetFIDFieldC(self._CollectionIndex, self._ModName, self._recordID, 6, c_char(nValue))
     format = property(get_format, set_format)
     def get_value(self):
         CBash.ReadFIDField.restype = POINTER(c_float)
-        return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 7).contents.value
+        retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
+        if(retValue): return retValue.contents.value
+        return None
     def set_value(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 7, c_float(nValue))
     value = property(get_value, set_value)
@@ -333,95 +379,123 @@ class CLASRecord(BaseRecord):
     iconPath = property(get_iconPath, set_iconPath)
     def get_primary1(self):
         CBash.ReadFIDField.restype = POINTER(c_int)
-        return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 9).contents.value
+        retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
+        if(retValue): return retValue.contents.value
+        return None
     def set_primary1(self, nValue):
         CBash.SetFIDFieldI(self._CollectionIndex, self._ModName, self._recordID, 9, nValue)
     primary1 = property(get_primary1, set_primary1)
     def get_primary2(self):
         CBash.ReadFIDField.restype = POINTER(c_int)
-        return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 10).contents.value
+        retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
+        if(retValue): return retValue.contents.value
+        return None
     def set_primary2(self, nValue):
         CBash.SetFIDFieldI(self._CollectionIndex, self._ModName, self._recordID, 10, nValue)
         
     primary2 = property(get_primary2, set_primary2)
     def get_specialization(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
-        return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 11).contents.value
+        retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
+        if(retValue): return retValue.contents.value
+        return None
     def set_specialization(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 11, nValue)
         
     specialization = property(get_specialization, set_specialization)
     def get_major1(self):
         CBash.ReadFIDField.restype = POINTER(c_int)
-        return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 12).contents.value
+        retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
+        if(retValue): return retValue.contents.value
+        return None
     def set_major1(self, nValue):
         CBash.SetFIDFieldI(self._CollectionIndex, self._ModName, self._recordID, 12, nValue)
         
     major1 = property(get_major1, set_major1)
     def get_major2(self):
         CBash.ReadFIDField.restype = POINTER(c_int)
-        return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 13).contents.value
+        retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
+        if(retValue): return retValue.contents.value
+        return None
     def set_major2(self, nValue):
         CBash.SetFIDFieldI(self._CollectionIndex, self._ModName, self._recordID, 13, nValue)
         
     major2 = property(get_major2, set_major2)
     def get_major3(self):
         CBash.ReadFIDField.restype = POINTER(c_int)
-        return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 14).contents.value
+        retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 14)
+        if(retValue): return retValue.contents.value
+        return None
     def set_major3(self, nValue):
         CBash.SetFIDFieldI(self._CollectionIndex, self._ModName, self._recordID, 14, nValue)
         
     major3 = property(get_major3, set_major3)
     def get_major4(self):
         CBash.ReadFIDField.restype = POINTER(c_int)
-        return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 15).contents.value
+        retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 15)
+        if(retValue): return retValue.contents.value
+        return None
     def set_major4(self, nValue):
         CBash.SetFIDFieldI(self._CollectionIndex, self._ModName, self._recordID, 15, nValue)
         
     major4 = property(get_major4, set_major4)
     def get_major5(self):
         CBash.ReadFIDField.restype = POINTER(c_int)
-        return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 16).contents.value
+        retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 16)
+        if(retValue): return retValue.contents.value
+        return None
     def set_major5(self, nValue):
         CBash.SetFIDFieldI(self._CollectionIndex, self._ModName, self._recordID, 16, nValue)
         
     major5 = property(get_major5, set_major5)
     def get_major6(self):
         CBash.ReadFIDField.restype = POINTER(c_int)
-        return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 17).contents.value
+        retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 17)
+        if(retValue): return retValue.contents.value
+        return None
     def set_major6(self, nValue):
         CBash.SetFIDFieldI(self._CollectionIndex, self._ModName, self._recordID, 17, nValue)
         
     major6 = property(get_major6, set_major6)
     def get_major7(self):
         CBash.ReadFIDField.restype = POINTER(c_int)
-        return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 18).contents.value
+        retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 18)
+        if(retValue): return retValue.contents.value
+        return None
     def set_major7(self, nValue):
         CBash.SetFIDFieldI(self._CollectionIndex, self._ModName, self._recordID, 18, nValue)
         
     major7 = property(get_major7, set_major7)
     def get_flags(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
-        return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 19).contents.value
+        retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 19)
+        if(retValue): return retValue.contents.value
+        return None
     def set_flags(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 19, nValue)
         
     flags = property(get_flags, set_flags)
     def get_services(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
-        return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 20).contents.value
+        retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 20)
+        if(retValue): return retValue.contents.value
+        return None
     def set_services(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 20, nValue)
     services = property(get_services, set_services)
     def get_trainSkill(self):
         CBash.ReadFIDField.restype = POINTER(c_byte)
-        return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 21).contents.value
+        retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 21)
+        if(retValue): return retValue.contents.value
+        return None
     def set_trainSkill(self, nValue):
         CBash.SetFIDFieldC(self._CollectionIndex, self._ModName, self._recordID, 21, c_byte(nValue))
     trainSkill = property(get_trainSkill, set_trainSkill)
     def get_trainLevel(self):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
-        return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 22).contents.value
+        retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 22)
+        if(retValue): return retValue.contents.value
+        return None
     def set_trainLevel(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 22, c_ubyte(nValue))
     trainLevel = property(get_trainLevel, set_trainLevel)
@@ -431,7 +505,7 @@ class CLASRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 23, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused1(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 23, struct.pack('2B', *nValue), 2)
     unused1 = property(get_unused1, set_unused1)
@@ -549,13 +623,17 @@ class FACTRecord(BaseRecord):
             self._listIndex = listIndex
         def get_faction(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 1).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 1)
+            if(retValue): return retValue.contents.value
+            return None
         def set_faction(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 1, nValue)
         faction = property(get_faction, set_faction)
         def get_mod(self):
             CBash.ReadFIDListField.restype = POINTER(c_int)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 2).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 2)
+            if(retValue): return retValue.contents.value
+            return None
         def set_mod(self, nValue):
             CBash.SetFIDListFieldI(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 2, nValue)
         mod = property(get_mod, set_mod)
@@ -568,7 +646,9 @@ class FACTRecord(BaseRecord):
             self._listIndex = listIndex
         def get_rank(self):
             CBash.ReadFIDListField.restype = POINTER(c_int)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 10, self._listIndex, 1).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 10, self._listIndex, 1)
+            if(retValue): return retValue.contents.value
+            return None
         def set_rank(self, nValue):
             CBash.SetFIDListFieldI(self._CollectionIndex, self._ModName, self._recordID, 10, self._listIndex, 1, nValue)
         rank = property(get_rank, set_rank)
@@ -611,7 +691,7 @@ class FACTRecord(BaseRecord):
     def get_relations(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 7)
         if(numRecords > 0): return [self.Relation(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_relations(self, nRelations):
         diffLength = len(nRelations) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 7)
         nValues = [(relation.faction,relation.mod) for relation in nRelations]
@@ -628,7 +708,7 @@ class FACTRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_flags(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 8, c_ubyte(nValue))
     flags = property(get_flags, set_flags)
@@ -636,14 +716,14 @@ class FACTRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_crimeGoldMultiplier(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 9, c_float(nValue))       
     crimeGoldMultiplier = property(get_crimeGoldMultiplier, set_crimeGoldMultiplier)
     def get_ranks(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 10)
         if(numRecords > 0): return [self.Rank(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_ranks(self, nRanks):
         diffLength = len(nRanks) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 10)
         nValues = [(nRank.rank, nRank.male, nRank.female, nRank.insigniaPath) for nRank in nRanks]
@@ -700,7 +780,7 @@ class HAIRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_modb(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 8, c_float(nValue))
     modb = property(get_modb, set_modb)
@@ -710,7 +790,7 @@ class HAIRRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 9, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_modt_p(self, nValue):
         length = len(nValue)
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 9, struct.pack('B' * length, *nValue), length)
@@ -725,7 +805,7 @@ class HAIRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_flags(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 11, c_ubyte(nValue))
     flags = property(get_flags, set_flags)
@@ -789,7 +869,7 @@ class EYESRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_flags(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 8, c_ubyte(nValue))
     flags = property(get_flags, set_flags)
@@ -817,13 +897,17 @@ class RACERecord(BaseRecord):
             self._listIndex = listIndex
         def get_faction(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 9, self._listIndex, 1).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 9, self._listIndex, 1)
+            if(retValue): return retValue.contents.value
+            return None
         def set_faction(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 9, self._listIndex, 1, nValue)
         faction = property(get_faction, set_faction)
         def get_mod(self):
             CBash.ReadFIDListField.restype = POINTER(c_int)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 9, self._listIndex, 2).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 9, self._listIndex, 2)
+            if(retValue): return retValue.contents.value
+            return None
         def set_mod(self, nValue):
             CBash.SetFIDListFieldI(self._CollectionIndex, self._ModName, self._recordID, 9, self._listIndex, 2, nValue)
         mod = property(get_mod, set_mod)
@@ -844,7 +928,7 @@ class RACERecord(BaseRecord):
             CBash.ReadFIDField.restype = POINTER(c_float)
             retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 1)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_modb(self, nValue):
             CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 1, c_float(nValue))
         modb = property(get_modb, set_modb)
@@ -860,7 +944,7 @@ class RACERecord(BaseRecord):
                 cRecords = POINTER(c_ubyte * numRecords)()
                 CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 3, byref(cRecords))
                 return [cRecords.contents[x] for x in range(0, numRecords)]
-            else: return []
+            return []
         def set_modt_p(self, nValue):
             length = len(nValue)
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 3, struct.pack('B' * length, *nValue), length)
@@ -882,7 +966,7 @@ class RACERecord(BaseRecord):
             CBash.ReadFIDField.restype = POINTER(c_float)
             retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 1)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_modb(self, nValue):
             CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 1, c_float(nValue))
         modb = property(get_modb, set_modb)
@@ -892,7 +976,7 @@ class RACERecord(BaseRecord):
                 cRecords = POINTER(c_ubyte * numRecords)()
                 CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 2, byref(cRecords))
                 return [cRecords.contents[x] for x in range(0, numRecords)]
-            else: return []
+            return []
         def set_modt_p(self, nValue):
             length = len(nValue)
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 2, struct.pack('B' * length, *nValue), length)
@@ -919,7 +1003,7 @@ class RACERecord(BaseRecord):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 8, byref(cRecords))
             return [cRecords[x].contents.value for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_spells(self, nValue):
         length = len(nValue)
         cRecords = (c_uint * length)(*nValue)
@@ -928,7 +1012,7 @@ class RACERecord(BaseRecord):
     def get_relations(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 9)
         if(numRecords > 0): return [self.Relation(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_relations(self, nRelations):
         diffLength = len(nRelations) - len(self.relations)
         nValues = [(relation.faction,relation.mod) for relation in nRelations]
@@ -945,7 +1029,7 @@ class RACERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_byte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_skill1(self, nValue):
         CBash.SetFIDFieldC(self._CollectionIndex, self._ModName, self._recordID, 10, c_byte(nValue))
     skill1 = property(get_skill1, set_skill1)
@@ -953,7 +1037,7 @@ class RACERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_byte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_skill1Boost(self, nValue):
         CBash.SetFIDFieldC(self._CollectionIndex, self._ModName, self._recordID, 11, c_byte(nValue))
     skill1Boost = property(get_skill1Boost, set_skill1Boost)
@@ -961,7 +1045,7 @@ class RACERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_byte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_skill2(self, nValue):
         CBash.SetFIDFieldC(self._CollectionIndex, self._ModName, self._recordID, 12, c_byte(nValue))
     skill2 = property(get_skill2, set_skill2)
@@ -969,7 +1053,7 @@ class RACERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_byte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_skill2Boost(self, nValue):
         CBash.SetFIDFieldC(self._CollectionIndex, self._ModName, self._recordID, 13, c_byte(nValue))
     skill2Boost = property(get_skill2Boost, set_skill2Boost)
@@ -977,7 +1061,7 @@ class RACERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_byte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 14)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_skill3(self, nValue):
         CBash.SetFIDFieldC(self._CollectionIndex, self._ModName, self._recordID, 14, c_byte(nValue))
     skill3 = property(get_skill3, set_skill3)
@@ -985,7 +1069,7 @@ class RACERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_byte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 15)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_skill3Boost(self, nValue):
         CBash.SetFIDFieldC(self._CollectionIndex, self._ModName, self._recordID, 15, c_byte(nValue))
     skill3Boost = property(get_skill3Boost, set_skill3Boost)
@@ -993,7 +1077,7 @@ class RACERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_byte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 16)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_skill4(self, nValue):
         CBash.SetFIDFieldC(self._CollectionIndex, self._ModName, self._recordID, 16, c_byte(nValue))
     skill4 = property(get_skill4, set_skill4)
@@ -1001,7 +1085,7 @@ class RACERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_byte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 17)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_skill4Boost(self, nValue):
         CBash.SetFIDFieldC(self._CollectionIndex, self._ModName, self._recordID, 17, c_byte(nValue))
     skill4Boost = property(get_skill4Boost, set_skill4Boost)
@@ -1009,7 +1093,7 @@ class RACERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_byte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 18)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_skill5(self, nValue):
         CBash.SetFIDFieldC(self._CollectionIndex, self._ModName, self._recordID, 18, c_byte(nValue))
     skill5 = property(get_skill5, set_skill5)
@@ -1017,7 +1101,7 @@ class RACERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_byte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 19)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_skill5Boost(self, nValue):
         CBash.SetFIDFieldC(self._CollectionIndex, self._ModName, self._recordID, 19, c_byte(nValue))
     skill5Boost = property(get_skill5Boost, set_skill5Boost)
@@ -1025,7 +1109,7 @@ class RACERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_byte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 20)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_skill6(self, nValue):
         CBash.SetFIDFieldC(self._CollectionIndex, self._ModName, self._recordID, 20, c_byte(nValue))
     skill6 = property(get_skill6, set_skill6)
@@ -1033,7 +1117,7 @@ class RACERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_byte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 21)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_skill6Boost(self, nValue):
         CBash.SetFIDFieldC(self._CollectionIndex, self._ModName, self._recordID, 21, c_byte(nValue))
     skill6Boost = property(get_skill6Boost, set_skill6Boost)
@@ -1041,7 +1125,7 @@ class RACERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_byte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 22)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_skill7(self, nValue):
         CBash.SetFIDFieldC(self._CollectionIndex, self._ModName, self._recordID, 22, c_byte(nValue))
     skill7 = property(get_skill7, set_skill7)
@@ -1049,7 +1133,7 @@ class RACERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_byte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 23)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_skill7Boost(self, nValue):
         CBash.SetFIDFieldC(self._CollectionIndex, self._ModName, self._recordID, 23, c_byte(nValue))
     skill7Boost = property(get_skill7Boost, set_skill7Boost)
@@ -1059,7 +1143,7 @@ class RACERecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 24, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused1(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 24, struct.pack('2B', *nValue), 2)
     unused1 = property(get_unused1, set_unused1)
@@ -1067,7 +1151,7 @@ class RACERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 25)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_maleHeight(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 25, c_float(nValue))
     maleHeight = property(get_maleHeight, set_maleHeight)
@@ -1075,7 +1159,7 @@ class RACERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 26)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_femaleHeight(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 26, c_float(nValue))   
     femaleHeight = property(get_femaleHeight, set_femaleHeight)
@@ -1083,7 +1167,7 @@ class RACERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 27)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_maleWeight(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 27, c_float(nValue))   
     maleWeight = property(get_maleWeight, set_maleWeight)
@@ -1091,7 +1175,7 @@ class RACERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 28)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_femaleWeight(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 28, c_float(nValue))          
     femaleWeight = property(get_femaleWeight, set_femaleWeight)
@@ -1099,7 +1183,7 @@ class RACERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 29)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_flags(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 29, c_uint(nValue))
     flags = property(get_flags, set_flags)
@@ -1107,7 +1191,7 @@ class RACERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 30)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_maleVoice(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 30, c_uint(nValue))
     maleVoice = property(get_maleVoice, set_maleVoice)
@@ -1115,7 +1199,7 @@ class RACERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 31)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_femaleVoice(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 31, c_uint(nValue))
     femaleVoice = property(get_femaleVoice, set_femaleVoice)
@@ -1123,7 +1207,7 @@ class RACERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 32)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_defaultHairMale(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 32, c_uint(nValue))
     defaultHairMale = property(get_defaultHairMale, set_defaultHairMale)
@@ -1131,7 +1215,7 @@ class RACERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 33)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_defaultHairFemale(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 33, c_uint(nValue))
     defaultHairFemale = property(get_defaultHairFemale, set_defaultHairFemale)
@@ -1139,7 +1223,7 @@ class RACERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 34)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_defaultHairColor(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 34, c_ubyte(nValue))
     defaultHairColor = property(get_defaultHairColor, set_defaultHairColor)
@@ -1147,7 +1231,7 @@ class RACERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 35)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_mainClamp(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 35, c_float(nValue))
     mainClamp = property(get_mainClamp, set_mainClamp)
@@ -1155,7 +1239,7 @@ class RACERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 36)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_faceClamp(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 36, c_float(nValue))
     faceClamp = property(get_faceClamp, set_faceClamp)
@@ -1163,7 +1247,7 @@ class RACERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 37)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_maleStrength(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 37, c_ubyte(nValue))
     maleStrength = property(get_maleStrength, set_maleStrength)
@@ -1171,7 +1255,7 @@ class RACERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 38)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_maleIntelligence(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 38, c_ubyte(nValue))
     maleIntelligence = property(get_maleIntelligence, set_maleIntelligence)
@@ -1179,7 +1263,7 @@ class RACERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 39)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_maleWillpower(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 39, c_ubyte(nValue))
     maleWillpower = property(get_maleWillpower, set_maleWillpower)
@@ -1187,7 +1271,7 @@ class RACERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 40)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_maleAgility(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 40, c_ubyte(nValue))
     maleAgility = property(get_maleAgility, set_maleAgility)
@@ -1195,7 +1279,7 @@ class RACERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 41)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_maleSpeed(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 41, c_ubyte(nValue))
     maleSpeed = property(get_maleSpeed, set_maleSpeed)
@@ -1203,7 +1287,7 @@ class RACERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 42)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_maleEndurance(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 42, c_ubyte(nValue))
     maleEndurance = property(get_maleEndurance, set_maleEndurance)
@@ -1211,7 +1295,7 @@ class RACERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 43)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_malePersonality(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 43, c_ubyte(nValue))
     malePersonality = property(get_malePersonality, set_malePersonality)
@@ -1219,7 +1303,7 @@ class RACERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 44)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_maleLuck(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 44, c_ubyte(nValue))
     maleLuck = property(get_maleLuck, set_maleLuck)
@@ -1227,7 +1311,7 @@ class RACERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 45)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_femaleStrength(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 45, c_ubyte(nValue))
     femaleStrength = property(get_femaleStrength, set_femaleStrength)
@@ -1235,7 +1319,7 @@ class RACERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 46)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_femaleIntelligence(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 46, c_ubyte(nValue))
     femaleIntelligence = property(get_femaleIntelligence, set_femaleIntelligence)
@@ -1243,7 +1327,7 @@ class RACERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 47)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_femaleWillpower(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 47, c_ubyte(nValue))
     femaleWillpower = property(get_femaleWillpower, set_femaleWillpower)
@@ -1251,7 +1335,7 @@ class RACERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 48)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_femaleAgility(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 48, c_ubyte(nValue))
     femaleAgility = property(get_femaleAgility, set_femaleAgility)
@@ -1259,7 +1343,7 @@ class RACERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 49)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_femaleSpeed(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 49, c_ubyte(nValue))
     femaleSpeed = property(get_femaleSpeed, set_femaleSpeed)
@@ -1267,7 +1351,7 @@ class RACERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 50)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_femaleEndurance(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 50, c_ubyte(nValue))
     femaleEndurance = property(get_femaleEndurance, set_femaleEndurance)
@@ -1275,7 +1359,7 @@ class RACERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 51)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_femalePersonality(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 51, c_ubyte(nValue))
     femalePersonality = property(get_femalePersonality, set_femalePersonality)
@@ -1283,7 +1367,7 @@ class RACERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 52)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_femaleLuck(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 52, c_ubyte(nValue))
     femaleLuck = property(get_femaleLuck, set_femaleLuck)
@@ -1386,7 +1470,7 @@ class RACERecord(BaseRecord):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 105, byref(cRecords))
             return [cRecords[x].contents.value for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_hairs(self, nValue):
         length = len(nValue)
         cRecords = (c_uint * length)(*nValue)
@@ -1398,7 +1482,7 @@ class RACERecord(BaseRecord):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 106, byref(cRecords))
             return [cRecords[x].contents.value for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_eyes(self, nValue):
         length = len(nValue)
         cRecords = (c_uint * length)(*nValue)
@@ -1410,7 +1494,7 @@ class RACERecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 107, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_fggs_p(self, nValue):
         length = len(nValue)
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 107, struct.pack('B' * length, *nValue), length)
@@ -1421,7 +1505,7 @@ class RACERecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 108, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_fgga_p(self, nValue):
         length = len(nValue)
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 108, struct.pack('B' * length, *nValue), length)
@@ -1432,7 +1516,7 @@ class RACERecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 109, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_fgts_p(self, nValue):
         length = len(nValue)
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 109, struct.pack('B' * length, *nValue), length)
@@ -1443,7 +1527,7 @@ class RACERecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 110, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_snam(self, nValue):
         length = len(nValue)
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 110, struct.pack('B' * length, *nValue), length)
@@ -1474,7 +1558,7 @@ class SOUNRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_minDistance(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 7, c_ubyte(nValue))
     minDistance = property(get_minDistance, set_minDistance)
@@ -1482,7 +1566,7 @@ class SOUNRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_maxDistance(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 8, c_ubyte(nValue))        
     maxDistance = property(get_maxDistance, set_maxDistance)
@@ -1490,7 +1574,7 @@ class SOUNRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_byte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_freqAdjustment(self, nValue):
         CBash.SetFIDFieldC(self._CollectionIndex, self._ModName, self._recordID, 9, c_byte(nValue))        
     freqAdjustment = property(get_freqAdjustment, set_freqAdjustment)
@@ -1498,7 +1582,7 @@ class SOUNRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_unused1(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 10, c_ubyte(nValue))        
     unused1 = property(get_unused1, set_unused1)
@@ -1506,7 +1590,7 @@ class SOUNRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ushort)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_flags(self, nValue):
         CBash.SetFIDFieldUS(self._CollectionIndex, self._ModName, self._recordID, 11, c_ushort(nValue))
     flags = property(get_flags, set_flags)
@@ -1516,7 +1600,7 @@ class SOUNRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 12, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused2(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 12, struct.pack('2B', *nValue), 2)
     unused2 = property(get_unused2, set_unused2)
@@ -1524,7 +1608,7 @@ class SOUNRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_short)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_staticAtten(self, nValue):
         CBash.SetFIDFieldS(self._CollectionIndex, self._ModName, self._recordID, 13, c_short(nValue))
     staticAtten = property(get_staticAtten, set_staticAtten)
@@ -1532,7 +1616,7 @@ class SOUNRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 14)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_stopTime(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 14, c_ubyte(nValue))
     stopTime = property(get_stopTime, set_stopTime)
@@ -1540,7 +1624,7 @@ class SOUNRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 15)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_startTime(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 15, c_ubyte(nValue))
     startTime = property(get_startTime, set_startTime)
@@ -1606,7 +1690,7 @@ class SKILRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_int)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 6)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_skill(self, nValue):
         CBash.SetFIDFieldI(self._CollectionIndex, self._ModName, self._recordID, 6, nValue)
     skill = property(get_skill, set_skill)
@@ -1626,7 +1710,7 @@ class SKILRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_int)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_action(self, nValue):
         CBash.SetFIDFieldI(self._CollectionIndex, self._ModName, self._recordID, 9, nValue)
     action = property(get_action, set_action)
@@ -1634,7 +1718,7 @@ class SKILRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_int)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_attribute(self, nValue):
         CBash.SetFIDFieldI(self._CollectionIndex, self._ModName, self._recordID, 10, nValue)
     attribute = property(get_attribute, set_attribute)
@@ -1642,7 +1726,7 @@ class SKILRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_specialization(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 11, c_uint(nValue))
     specialization = property(get_specialization, set_specialization)
@@ -1650,7 +1734,7 @@ class SKILRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_use0(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 12, c_float(nValue))
     use0 = property(get_use0, set_use0)
@@ -1658,7 +1742,7 @@ class SKILRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_use1(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 13, c_float(nValue))
     use1 = property(get_use1, set_use1)
@@ -1723,7 +1807,7 @@ class MGEFRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_modb(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 10, c_float(nValue))
     modb = property(get_modb, set_modb)
@@ -1733,7 +1817,7 @@ class MGEFRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 11, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_modt_p(self, nValue):
         length = len(nValue)
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 11, struct.pack('B' * length, *nValue), length)
@@ -1742,7 +1826,7 @@ class MGEFRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_flags(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 12, c_uint(nValue))
     flags = property(get_flags, set_flags)
@@ -1750,7 +1834,7 @@ class MGEFRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_baseCost(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 13, c_float(nValue))
     baseCost = property(get_baseCost, set_baseCost)
@@ -1758,7 +1842,7 @@ class MGEFRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 14)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_associated(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 14, c_uint(nValue))
     associated = property(get_associated, set_associated)
@@ -1766,7 +1850,7 @@ class MGEFRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 15)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_school(self, nValue):
         CBash.SetFIDFieldI(self._CollectionIndex, self._ModName, self._recordID, 15, nValue)
     school = property(get_school, set_school)
@@ -1774,7 +1858,7 @@ class MGEFRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_int)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 16)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_resistValue(self, nValue):
         CBash.SetFIDFieldI(self._CollectionIndex, self._ModName, self._recordID, 16, nValue)
     resistValue = property(get_resistValue, set_resistValue)
@@ -1782,7 +1866,7 @@ class MGEFRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ushort)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 17)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_unk1(self, nValue):
         CBash.SetFIDFieldUS(self._CollectionIndex, self._ModName, self._recordID, 17, c_ushort(nValue))
     unk1 = property(get_unk1, set_unk1)
@@ -1792,7 +1876,7 @@ class MGEFRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 18, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused1(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 18, struct.pack('2B', *nValue), 2)
     unused1 = property(get_unused1, set_unused1)
@@ -1800,7 +1884,7 @@ class MGEFRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 19)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_light(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 19, c_uint(nValue))
     light = property(get_light, set_light)
@@ -1808,7 +1892,7 @@ class MGEFRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 20)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_projectileSpeed(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 20, c_float(nValue))
     projectileSpeed = property(get_projectileSpeed, set_projectileSpeed)
@@ -1816,7 +1900,7 @@ class MGEFRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 21)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_effectShader(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 21, c_uint(nValue))
     effectShader = property(get_effectShader, set_effectShader)
@@ -1824,7 +1908,7 @@ class MGEFRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 22)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_enchantEffect(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 22, c_uint(nValue))
     enchantEffect = property(get_enchantEffect, set_enchantEffect)
@@ -1832,7 +1916,7 @@ class MGEFRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 23)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_castingSound(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 23, c_uint(nValue))
     castingSound = property(get_castingSound, set_castingSound)
@@ -1840,7 +1924,7 @@ class MGEFRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 24)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_boltSound(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 24, c_uint(nValue))
     boltSound = property(get_boltSound, set_boltSound)
@@ -1848,7 +1932,7 @@ class MGEFRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 25)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_hitSound(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 25, c_uint(nValue))
     hitSound = property(get_hitSound, set_hitSound)
@@ -1856,7 +1940,7 @@ class MGEFRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 26)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_areaSound(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 26, c_uint(nValue))
     areaSound = property(get_areaSound, set_areaSound)
@@ -1864,7 +1948,7 @@ class MGEFRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 27)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_cefEnchantment(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 27, c_float(nValue))
     cefEnchantment = property(get_cefEnchantment, set_cefEnchantment)
@@ -1872,7 +1956,7 @@ class MGEFRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 28)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_cefBarter(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 28, c_float(nValue))
     cefBarter = property(get_cefBarter, set_cefBarter)
@@ -1882,7 +1966,7 @@ class MGEFRecord(BaseRecord):
             cRecords = POINTER(c_uint * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 29, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_counterEffects(self, nValue):
         CBash.SetFIDFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 29, struct.pack('I' * len(nValue), *nValue), len(nValue))
     counterEffects = property(get_counterEffects, set_counterEffects)
@@ -2064,7 +2148,9 @@ class SCPTRecord(BaseRecord):
             self._listIndex = listIndex
         def get_listIndex(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 1).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 1)
+            if(retValue): return retValue.contents.value
+            return None
         def set_listIndex(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 1, nValue)
         index = property(get_listIndex, set_listIndex)
@@ -2074,13 +2160,15 @@ class SCPTRecord(BaseRecord):
                 cRecords = POINTER(c_ubyte * numRecords)()
                 CBash.GetFIDListArray(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 2, byref(cRecords))
                 return [cRecords.contents[x] for x in range(0, numRecords)]
-            else: return []
+            return []
         def set_unused1(self, nValue):
             CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 2, struct.pack('12B', *nValue), 12)
         unused1 = property(get_unused1, set_unused1)
         def get_flags(self):
             CBash.ReadFIDListField.restype = POINTER(c_ubyte)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 3).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 3)
+            if(retValue): return retValue.contents.value
+            return None
         def set_flags(self, nValue):
             CBash.SetFIDListFieldUC(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 3, c_ubyte(nValue))
         flags = property(get_flags, set_flags)
@@ -2090,7 +2178,7 @@ class SCPTRecord(BaseRecord):
                 cRecords = POINTER(c_ubyte * numRecords)()
                 CBash.GetFIDListArray(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 4, byref(cRecords))
                 return [cRecords.contents[x] for x in range(0, numRecords)]
-            else: return []
+            return []
         def set_unused2(self, nValue):
             CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 4, struct.pack('7B', *nValue), 7)
         unused2 = property(get_unused2, set_unused2)
@@ -2114,13 +2202,17 @@ class SCPTRecord(BaseRecord):
             self._listIndex = listIndex
         def get_reference(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 14, self._listIndex, 1).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 14, self._listIndex, 1)
+            if(retValue): return retValue.contents.value
+            return None
         def set_reference(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 14, self._listIndex, 1, nValue)
         reference = property(get_reference, set_reference)
         def get_IsSCRO(self):
             CBash.ReadFIDListField.restype = POINTER(c_bool)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 14, self._listIndex, 2).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 14, self._listIndex, 2)
+            if(retValue): return retValue.contents.value
+            return None
         def set_IsSCRO(self, nValue):
             if isinstance(nValue, bool):
                 if(nValue): CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 14, self._listIndex, 2, 1)
@@ -2141,7 +2233,7 @@ class SCPTRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 6, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused1(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 6, struct.pack('2B', *nValue), 2)
     unused1 = property(get_unused1, set_unused1)
@@ -2149,7 +2241,7 @@ class SCPTRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_numRefs(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 7, c_uint(nValue))
     numRefs = property(get_numRefs, set_numRefs)
@@ -2157,7 +2249,7 @@ class SCPTRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_compiledSize(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 8, c_uint(nValue))
     compiledSize = property(get_compiledSize, set_compiledSize)
@@ -2165,7 +2257,7 @@ class SCPTRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_lastIndex(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 9, c_uint(nValue))
     lastIndex = property(get_lastIndex, set_lastIndex)
@@ -2173,7 +2265,7 @@ class SCPTRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_scriptType(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 10, c_uint(nValue))
     scriptType = property(get_scriptType, set_scriptType)
@@ -2183,7 +2275,7 @@ class SCPTRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 11, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_compiled_p(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 11, struct.pack('B' * len(nValue), *nValue), len(nValue))
     compiled_p = property(get_compiled_p, set_compiled_p)
@@ -2196,7 +2288,7 @@ class SCPTRecord(BaseRecord):
     def get_vars(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 13)
         if(numRecords > 0): return [self.Var(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_vars(self, nVars):
         diffLength = len(nVars) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 13)
         nValues = [(nVar.index, nVar.unused1, nVar.flags, nVar.unused2, nVar.name) for nVar in nVars]
@@ -2212,7 +2304,7 @@ class SCPTRecord(BaseRecord):
     def get_references(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 14)
         if(numRecords > 0): return [self.Reference(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_references(self, nReferences):
         diffLength = len(nReferences) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 14)
         nValues = [(nReference.reference,nReference.IsSCRO) for nReference in nReferences]
@@ -2245,7 +2337,7 @@ class LTEXRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_flags(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 7, c_ubyte(nValue))
     flags = property(get_flags, set_flags)
@@ -2253,7 +2345,7 @@ class LTEXRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_friction(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 8, c_ubyte(nValue))
     friction = property(get_friction, set_friction)
@@ -2261,7 +2353,7 @@ class LTEXRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_restitution(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 9, c_ubyte(nValue))
     restitution = property(get_restitution, set_restitution)
@@ -2269,7 +2361,7 @@ class LTEXRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_specular(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 10, c_ubyte(nValue))
     specular = property(get_specular, set_specular)
@@ -2279,7 +2371,7 @@ class LTEXRecord(BaseRecord):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 11, byref(cRecords))
             return [cRecords[x].contents.value for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_grass(self, nValue):
         length = len(nValue)
         cRecords = (c_uint * length)(*nValue)
@@ -2395,67 +2487,89 @@ class ENCHRecord(BaseRecord):
         ##name0 and name are both are always the same value, so setting one will set both. They're basically aliases
         def get_name0(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1)
+            if(retValue): return retValue.contents.value
+            return None
         def set_name0(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1, nValue)
         name0 = property(get_name0, set_name0)
         def get_name(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2)
+            if(retValue): return retValue.contents.value
+            return None
         def set_name(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2, nValue)
         name = property(get_name, set_name)
         def get_magnitude(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3)
+            if(retValue): return retValue.contents.value
+            return None
         def set_magnitude(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3, nValue)
         magnitude = property(get_magnitude, set_magnitude)
         def get_area(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 4).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 4)
+            if(retValue): return retValue.contents.value
+            return None
         def set_area(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 4, nValue)
         area = property(get_area, set_area)
         def get_duration(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 5).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 5)
+            if(retValue): return retValue.contents.value
+            return None
         def set_duration(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 5, nValue)
         duration = property(get_duration, set_duration)
         def get_recipient(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 6).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 6)
+            if(retValue): return retValue.contents.value
+            return None
         def set_recipient(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 6, nValue)
         recipient = property(get_recipient, set_recipient)
         def get_actorValue(self):
             CBash.ReadFIDListField.restype = POINTER(c_int)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 7).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 7)
+            if(retValue): return retValue.contents.value
+            return None
         def set_actorValue(self, nValue):
             CBash.SetFIDListFieldI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 7, nValue)
         actorValue = property(get_actorValue, set_actorValue)
         def get_script(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 8).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 8)
+            if(retValue): return retValue.contents.value
+            return None
         def set_script(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 8, nValue)
         script = property(get_script, set_script)
         def get_school(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 9).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 9)
+            if(retValue): return retValue.contents.value
+            return None
         def set_school(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 9, nValue)
         school = property(get_school, set_school)
         def get_visual(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 10).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 10)
+            if(retValue): return retValue.contents.value
+            return None
         def set_visual(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 10, nValue)
         visual = property(get_visual, set_visual)
         def get_flags(self):
             CBash.ReadFIDListField.restype = POINTER(c_ubyte)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 11).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 11)
+            if(retValue): return retValue.contents.value
+            return None
         def set_flags(self, nValue):
             CBash.SetFIDListFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 11, c_ubyte(nValue))
         flags = property(get_flags, set_flags)
@@ -2465,7 +2579,7 @@ class ENCHRecord(BaseRecord):
                 cRecords = POINTER(c_ubyte * numRecords)()
                 CBash.GetFIDListArray(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 12, byref(cRecords))
                 return [cRecords.contents[x] for x in range(0, numRecords)]
-            else: return []
+            return []
         def set_unused1(self, nValue):
             CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 12, struct.pack('3B', *nValue), 3)
         unused1 = property(get_unused1, set_unused1)
@@ -2497,7 +2611,7 @@ class ENCHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_itemType(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 7, c_uint(nValue))
     itemType = property(get_itemType, set_itemType)
@@ -2505,7 +2619,7 @@ class ENCHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_chargeAmount(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 8, c_uint(nValue))
     chargeAmount = property(get_chargeAmount, set_chargeAmount)
@@ -2513,7 +2627,7 @@ class ENCHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_enchantCost(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 9, c_uint(nValue))
     enchantCost = property(get_enchantCost, set_enchantCost)
@@ -2521,7 +2635,7 @@ class ENCHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_flags(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 10, c_ubyte(nValue))
     flags = property(get_flags, set_flags)
@@ -2531,14 +2645,14 @@ class ENCHRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 11, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused1(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 11, struct.pack('3B', *nValue), 3)
     unused1 = property(get_unused1, set_unused1)
     def get_effects(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 12)
         if(numRecords > 0): return [self.Effect(self._CollectionIndex, self._ModName, self._recordID, 12, x) for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_effects(self, nEffects):
         diffLength = len(nEffects) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 12)
         nValues = [(nVar.name0, nVar.name, nVar.magnitude, nVar.area, nVar.duration, nVar.recipient, nVar.actorValue, nVar.script, nVar.school, nVar.visual, nVar.flags, nVar.unused1, nVar.full) for nVar in nVars]
@@ -2601,67 +2715,89 @@ class SPELRecord(BaseRecord):
         ##name0 and name are both are always the same value, so setting one will set both. They're basically aliases
         def get_name0(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1)
+            if(retValue): return retValue.contents.value
+            return None
         def set_name0(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1, nValue)
         name0 = property(get_name0, set_name0)
         def get_name(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2)
+            if(retValue): return retValue.contents.value
+            return None
         def set_name(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2, nValue)
         name = property(get_name, set_name)
         def get_magnitude(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3)
+            if(retValue): return retValue.contents.value
+            return None
         def set_magnitude(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3, nValue)
         magnitude = property(get_magnitude, set_magnitude)
         def get_area(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 4).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 4)
+            if(retValue): return retValue.contents.value
+            return None
         def set_area(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 4, nValue)
         area = property(get_area, set_area)
         def get_duration(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 5).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 5)
+            if(retValue): return retValue.contents.value
+            return None
         def set_duration(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 5, nValue)
         duration = property(get_duration, set_duration)
         def get_recipient(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 6).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 6)
+            if(retValue): return retValue.contents.value
+            return None
         def set_recipient(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 6, nValue)
         recipient = property(get_recipient, set_recipient)
         def get_actorValue(self):
             CBash.ReadFIDListField.restype = POINTER(c_int)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 7).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 7)
+            if(retValue): return retValue.contents.value
+            return None
         def set_actorValue(self, nValue):
             CBash.SetFIDListFieldI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 7, nValue)
         actorValue = property(get_actorValue, set_actorValue)
         def get_script(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 8).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 8)
+            if(retValue): return retValue.contents.value
+            return None
         def set_script(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 8, nValue)
         script = property(get_script, set_script)
         def get_school(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 9).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 9)
+            if(retValue): return retValue.contents.value
+            return None
         def set_school(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 9, nValue)
         school = property(get_school, set_school)
         def get_visual(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 10).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 10)
+            if(retValue): return retValue.contents.value
+            return None
         def set_visual(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 10, nValue)
         visual = property(get_visual, set_visual)
         def get_flags(self):
             CBash.ReadFIDListField.restype = POINTER(c_ubyte)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 11).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 11)
+            if(retValue): return retValue.contents.value
+            return None
         def set_flags(self, nValue):
             CBash.SetFIDListFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 11, c_ubyte(nValue))
         flags = property(get_flags, set_flags)
@@ -2671,7 +2807,7 @@ class SPELRecord(BaseRecord):
                 cRecords = POINTER(c_ubyte * numRecords)()
                 CBash.GetFIDListArray(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 12, byref(cRecords))
                 return [cRecords.contents[x] for x in range(0, numRecords)]
-            else: return []
+            return []
         def set_unused1(self, nValue):
             CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 12, struct.pack('3B', *nValue), 3)
         unused1 = property(get_unused1, set_unused1)
@@ -2702,7 +2838,7 @@ class SPELRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_spellType(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 7, c_uint(nValue))
     spellType = property(get_spellType, set_spellType)
@@ -2710,7 +2846,7 @@ class SPELRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_cost(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 8, c_uint(nValue))
     cost = property(get_cost, set_cost)
@@ -2718,7 +2854,7 @@ class SPELRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_level(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 9, c_uint(nValue))
     level = property(get_level, set_level)
@@ -2726,7 +2862,7 @@ class SPELRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_flags(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 10, c_ubyte(nValue))
     flags = property(get_flags, set_flags)
@@ -2736,14 +2872,14 @@ class SPELRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 11, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused1(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 11, struct.pack('3B', *nValue), 3)
     unused1 = property(get_unused1, set_unused1)
     def get_effects(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 12)
         if(numRecords > 0): return [self.Effect(self._CollectionIndex, self._ModName, self._recordID, 12, x) for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_effects(self, nEffects):
         diffLength = len(nEffects) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 12)
         nValues = [(nVar.name0, nVar.name, nVar.magnitude, nVar.area, nVar.duration, nVar.recipient, nVar.actorValue, nVar.script, nVar.school, nVar.visual, nVar.flags, nVar.unused1, nVar.full) for nVar in nVars]
@@ -2898,7 +3034,7 @@ class BSGNRecord(BaseRecord):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 9, byref(cRecords))
             return [cRecords[x].contents.value for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_spells(self, nValue):
         length = len(nValue)
         cRecords = (c_uint * length)(*nValue)
@@ -2930,7 +3066,7 @@ class ACTIRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_modb(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 8, c_float(nValue))
     modb = property(get_modb, set_modb)
@@ -2940,7 +3076,7 @@ class ACTIRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 9, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_modt_p(self, nValue):
         length = len(nValue)
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 9, struct.pack('B' * length, *nValue), length)
@@ -2949,7 +3085,7 @@ class ACTIRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_script(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 10, c_uint(nValue))
     script = property(get_script, set_script)
@@ -2957,7 +3093,7 @@ class ACTIRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_sound(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 11, c_uint(nValue))
     sound = property(get_sound, set_sound)
@@ -2987,7 +3123,7 @@ class APPARecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_modb(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 8, c_float(nValue))
     modb = property(get_modb, set_modb)
@@ -2997,7 +3133,7 @@ class APPARecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 9, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_modt_p(self, nValue):
         length = len(nValue)
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 9, struct.pack('B' * length, *nValue), length)
@@ -3012,7 +3148,7 @@ class APPARecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_script(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 11, c_uint(nValue))
     script = property(get_script, set_script)
@@ -3020,7 +3156,7 @@ class APPARecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_apparatus(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 12, c_ubyte(nValue))
     apparatus = property(get_apparatus, set_apparatus)
@@ -3028,7 +3164,7 @@ class APPARecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_value(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 13, c_uint(nValue))
     value = property(get_value, set_value)
@@ -3036,7 +3172,7 @@ class APPARecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 14)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_weight(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 14, c_float(nValue))
     weight = property(get_weight, set_weight)
@@ -3044,7 +3180,7 @@ class APPARecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 15)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_quality(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 15, c_float(nValue))
     quality = property(get_quality, set_quality)
@@ -3098,7 +3234,7 @@ class ARMORecord(BaseRecord):
             CBash.ReadFIDField.restype = POINTER(c_float)
             retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 1)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_modb(self, nValue):
             CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 1, c_float(nValue))
         modb = property(get_modb, set_modb)
@@ -3108,7 +3244,7 @@ class ARMORecord(BaseRecord):
                 cRecords = POINTER(c_ubyte * numRecords)()
                 CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 2, byref(cRecords))
                 return [cRecords.contents[x] for x in range(0, numRecords)]
-            else: return []
+            return []
         def set_modt_p(self, nValue):
             length = len(nValue)
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 2, struct.pack('B' * length, *nValue), length)
@@ -3123,7 +3259,7 @@ class ARMORecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_script(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 7, c_uint(nValue))
     script = property(get_script, set_script)
@@ -3131,7 +3267,7 @@ class ARMORecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_enchantment(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 8, c_uint(nValue))
     enchantment = property(get_enchantment, set_enchantment)
@@ -3139,7 +3275,7 @@ class ARMORecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ushort)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_enchantPoints(self, nValue):
         CBash.SetFIDFieldUS(self._CollectionIndex, self._ModName, self._recordID, 9, c_ushort(nValue))
     enchantPoints = property(get_enchantPoints, set_enchantPoints)
@@ -3147,7 +3283,7 @@ class ARMORecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_flags(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 10, c_uint(nValue))
     flags = property(get_flags, set_flags)
@@ -3179,7 +3315,7 @@ class ARMORecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ushort)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 25)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_strength(self, nValue):
         CBash.SetFIDFieldUS(self._CollectionIndex, self._ModName, self._recordID, 25, c_ushort(nValue))
     strength = property(get_strength, set_strength)
@@ -3187,7 +3323,7 @@ class ARMORecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 26)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_value(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 26, c_uint(nValue))
     value = property(get_value, set_value)
@@ -3195,7 +3331,7 @@ class ARMORecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 27)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_health(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 27, c_uint(nValue))
     health = property(get_health, set_health)
@@ -3203,7 +3339,7 @@ class ARMORecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 28)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_weight(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 28, c_float(nValue))
     weight = property(get_weight, set_weight)
@@ -3353,7 +3489,7 @@ class BOOKRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_modb(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 8, c_float(nValue))
     modb = property(get_modb, set_modb)
@@ -3363,7 +3499,7 @@ class BOOKRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 9, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_modt_p(self, nValue):
         length = len(nValue)
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 9, struct.pack('B' * length, *nValue), length)
@@ -3384,7 +3520,7 @@ class BOOKRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_script(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 12, c_uint(nValue))
     script = property(get_script, set_script)
@@ -3392,7 +3528,7 @@ class BOOKRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_enchantment(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 13, c_uint(nValue))
     enchantment = property(get_enchantment, set_enchantment)
@@ -3400,7 +3536,7 @@ class BOOKRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ushort)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 14)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_enchantPoints(self, nValue):
         CBash.SetFIDFieldUS(self._CollectionIndex, self._ModName, self._recordID, 14, c_ushort(nValue))
     enchantPoints = property(get_enchantPoints, set_enchantPoints)
@@ -3408,7 +3544,7 @@ class BOOKRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 15)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_flags(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 15, c_ubyte(nValue))
     flags = property(get_flags, set_flags)
@@ -3416,7 +3552,7 @@ class BOOKRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_byte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 16)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_teaches(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 16, c_byte(nValue))
     teaches = property(get_teaches, set_teaches)
@@ -3424,7 +3560,7 @@ class BOOKRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 17)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_value(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 17, c_uint(nValue))
     value = property(get_value, set_value)
@@ -3432,7 +3568,7 @@ class BOOKRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 18)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_weight(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 18, c_float(nValue))
     weight = property(get_weight, set_weight)
@@ -3474,7 +3610,7 @@ class CLOTRecord(BaseRecord):
             CBash.ReadFIDField.restype = POINTER(c_float)
             retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 1)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_modb(self, nValue):
             CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 1, c_float(nValue))
         modb = property(get_modb, set_modb)
@@ -3484,7 +3620,7 @@ class CLOTRecord(BaseRecord):
                 cRecords = POINTER(c_ubyte * numRecords)()
                 CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 2, byref(cRecords))
                 return [cRecords.contents[x] for x in range(0, numRecords)]
-            else: return []
+            return []
         def set_modt_p(self, nValue):
             length = len(nValue)
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 2, struct.pack('B' * length, *nValue), length)
@@ -3499,7 +3635,7 @@ class CLOTRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_script(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 7, c_uint(nValue))
     script = property(get_script, set_script)
@@ -3507,7 +3643,7 @@ class CLOTRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_enchantment(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 8, c_uint(nValue))
     enchantment = property(get_enchantment, set_enchantment)
@@ -3515,7 +3651,7 @@ class CLOTRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ushort)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_enchantPoints(self, nValue):
         CBash.SetFIDFieldUS(self._CollectionIndex, self._ModName, self._recordID, 9, c_ushort(nValue))
     enchantPoints = property(get_enchantPoints, set_enchantPoints)
@@ -3523,7 +3659,7 @@ class CLOTRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_flags(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 10, c_uint(nValue))
     flags = property(get_flags, set_flags)
@@ -3555,7 +3691,7 @@ class CLOTRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 25)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_value(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 25, c_uint(nValue))
     value = property(get_value, set_value)
@@ -3563,7 +3699,7 @@ class CLOTRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 26)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_weight(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 26, c_float(nValue))
     weight = property(get_weight, set_weight)
@@ -3700,13 +3836,17 @@ class CONTRecord(BaseRecord):
             self._listIndex = listIndex
         def get_item(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1)
+            if(retValue): return retValue.contents.value
+            return None
         def set_item(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1, nValue)
         item = property(get_item, set_item)
         def get_count(self):
             CBash.ReadFIDListField.restype = POINTER(c_int)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2)
+            if(retValue): return retValue.contents.value
+            return None
         def set_count(self, nValue):
             CBash.SetFIDListFieldI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2, nValue)
         count = property(get_count, set_count)
@@ -3730,7 +3870,7 @@ class CONTRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_modb(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 8, c_float(nValue))
     modb = property(get_modb, set_modb)
@@ -3740,7 +3880,7 @@ class CONTRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 9, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_modt_p(self, nValue):
         length = len(nValue)
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 9, struct.pack('B' * length, *nValue), length)
@@ -3749,14 +3889,14 @@ class CONTRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_script(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 10, c_uint(nValue))
     script = property(get_script, set_script)
     def get_items(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 11)
         if(numRecords > 0): return [self.Item(self._CollectionIndex, self._ModName, self._recordID, 11, x) for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_items(self, nItems):
         diffLength = len(nItems) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 11)
         nValues = [(item.item, item.count) for item in nItems]
@@ -3773,7 +3913,7 @@ class CONTRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_flags(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 12, c_ubyte(nValue))
     flags = property(get_flags, set_flags)
@@ -3781,7 +3921,7 @@ class CONTRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_weight(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 13, c_float(nValue))
     weight = property(get_weight, set_weight)
@@ -3789,7 +3929,7 @@ class CONTRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 14)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_soundOpen(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 14, c_uint(nValue))
     soundOpen = property(get_soundOpen, set_soundOpen)
@@ -3797,7 +3937,7 @@ class CONTRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 15)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_soundClose(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 15, c_uint(nValue))
     soundClose = property(get_soundClose, set_soundClose)
@@ -3833,7 +3973,7 @@ class DOORRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_modb(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 8, c_float(nValue))
     modb = property(get_modb, set_modb)
@@ -3843,7 +3983,7 @@ class DOORRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 9, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_modt_p(self, nValue):
         length = len(nValue)
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 9, struct.pack('B' * length, *nValue), length)
@@ -3852,7 +3992,7 @@ class DOORRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_script(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 10, c_uint(nValue))
     script = property(get_script, set_script)
@@ -3860,7 +4000,7 @@ class DOORRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_soundOpen(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 11, c_uint(nValue))
     soundOpen = property(get_soundOpen, set_soundOpen)
@@ -3868,7 +4008,7 @@ class DOORRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_soundClose(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 12, c_uint(nValue))
     soundClose = property(get_soundClose, set_soundClose)
@@ -3876,7 +4016,7 @@ class DOORRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_soundLoop(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 13, c_uint(nValue))
     soundLoop = property(get_soundLoop, set_soundLoop)
@@ -3884,7 +4024,7 @@ class DOORRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 14)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_flags(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 14, c_ubyte(nValue))
     flags = property(get_flags, set_flags)
@@ -3894,7 +4034,7 @@ class DOORRecord(BaseRecord):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 15, byref(cRecords))
             return [cRecords[x].contents.value for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_destinations(self, nValue):
         length = len(nValue)
         cRecords = (c_uint * length)(*nValue)
@@ -3944,67 +4084,89 @@ class INGRRecord(BaseRecord):
         ##name0 and name are both are always the same value, so setting one will set both. They're basically aliases
         def get_name0(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1)
+            if(retValue): return retValue.contents.value
+            return None
         def set_name0(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1, nValue)
         name0 = property(get_name0, set_name0)
         def get_name(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2)
+            if(retValue): return retValue.contents.value
+            return None
         def set_name(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2, nValue)
         name = property(get_name, set_name)
         def get_magnitude(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3)
+            if(retValue): return retValue.contents.value
+            return None
         def set_magnitude(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3, nValue)
         magnitude = property(get_magnitude, set_magnitude)
         def get_area(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 4).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 4)
+            if(retValue): return retValue.contents.value
+            return None
         def set_area(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 4, nValue)
         area = property(get_area, set_area)
         def get_duration(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 5).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 5)
+            if(retValue): return retValue.contents.value
+            return None
         def set_duration(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 5, nValue)
         duration = property(get_duration, set_duration)
         def get_recipient(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 6).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 6)
+            if(retValue): return retValue.contents.value
+            return None
         def set_recipient(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 6, nValue)
         recipient = property(get_recipient, set_recipient)
         def get_actorValue(self):
             CBash.ReadFIDListField.restype = POINTER(c_int)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 7).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 7)
+            if(retValue): return retValue.contents.value
+            return None
         def set_actorValue(self, nValue):
             CBash.SetFIDListFieldI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 7, nValue)
         actorValue = property(get_actorValue, set_actorValue)
         def get_script(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 8).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 8)
+            if(retValue): return retValue.contents.value
+            return None
         def set_script(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 8, nValue)
         script = property(get_script, set_script)
         def get_school(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 9).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 9)
+            if(retValue): return retValue.contents.value
+            return None
         def set_school(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 9, nValue)
         school = property(get_school, set_school)
         def get_visual(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 10).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 10)
+            if(retValue): return retValue.contents.value
+            return None
         def set_visual(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 10, nValue)
         visual = property(get_visual, set_visual)
         def get_flags(self):
             CBash.ReadFIDListField.restype = POINTER(c_ubyte)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 11).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 11)
+            if(retValue): return retValue.contents.value
+            return None
         def set_flags(self, nValue):
             CBash.SetFIDListFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 11, c_ubyte(nValue))
         flags = property(get_flags, set_flags)
@@ -4014,7 +4176,7 @@ class INGRRecord(BaseRecord):
                 cRecords = POINTER(c_ubyte * numRecords)()
                 CBash.GetFIDListArray(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 12, byref(cRecords))
                 return [cRecords.contents[x] for x in range(0, numRecords)]
-            else: return []
+            return []
         def set_unused1(self, nValue):
             CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 12, struct.pack('3B', *nValue), 3)
         unused1 = property(get_unused1, set_unused1)
@@ -4050,7 +4212,7 @@ class INGRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_modb(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 8, c_float(nValue))
     modb = property(get_modb, set_modb)
@@ -4060,7 +4222,7 @@ class INGRRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 9, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_modt_p(self, nValue):
         length = len(nValue)
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 9, struct.pack('B' * length, *nValue), length)
@@ -4075,7 +4237,7 @@ class INGRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_script(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 11, c_uint(nValue))
     script = property(get_script, set_script)
@@ -4083,7 +4245,7 @@ class INGRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_weight(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 12, c_float(nValue))
     weight = property(get_weight, set_weight)
@@ -4091,7 +4253,7 @@ class INGRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_int)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_value(self, nValue):
         CBash.SetFIDFieldI(self._CollectionIndex, self._ModName, self._recordID, 13, c_int(nValue))
     value = property(get_value, set_value)
@@ -4099,7 +4261,7 @@ class INGRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 14)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_flags(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 14, c_ubyte(nValue))
     flags = property(get_flags, set_flags)
@@ -4109,14 +4271,14 @@ class INGRRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 15, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused1(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 15, struct.pack('3B', *nValue), 3)
     unused1 = property(get_unused1, set_unused1)
     def get_effects(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 16)
         if(numRecords > 0): return [self.Effect(self._CollectionIndex, self._ModName, self._recordID, 16, x) for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_effects(self, nEffects):
         diffLength = len(nEffects) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 16)
         nValues = [(nEffect.name0, nEffect.name, nEffect.magnitude, nEffect.area, nEffect.duration, nEffect.recipient, nEffect.actorValue, nEffect.script, nEffect.school, nEffect.visual, nEffect.flags, nEffect.unused1, nEffect.full) for nEffect in nEffects]
@@ -4161,7 +4323,7 @@ class LIGHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_modb(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 7, c_float(nValue))
     modb = property(get_modb, set_modb)
@@ -4171,7 +4333,7 @@ class LIGHRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 8, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_modt_p(self, nValue):
         length = len(nValue)
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 8, struct.pack('B' * length, *nValue), length)
@@ -4180,7 +4342,7 @@ class LIGHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_script(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 9, c_uint(nValue))
     script = property(get_script, set_script)
@@ -4200,7 +4362,7 @@ class LIGHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_int)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_duration(self, nValue):
         CBash.SetFIDFieldI(self._CollectionIndex, self._ModName, self._recordID, 12, c_int(nValue))
     duration = property(get_duration, set_duration)
@@ -4208,7 +4370,7 @@ class LIGHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_radius(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 13, c_uint(nValue))
     radius = property(get_radius, set_radius)
@@ -4216,7 +4378,7 @@ class LIGHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 14)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_red(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 14, c_ubyte(nValue))
     red = property(get_red, set_red)
@@ -4224,7 +4386,7 @@ class LIGHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 15)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_green(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 15, c_ubyte(nValue))
     green = property(get_green, set_green)
@@ -4232,7 +4394,7 @@ class LIGHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 16)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_blue(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 16, c_ubyte(nValue))
     blue = property(get_blue, set_blue)
@@ -4242,7 +4404,7 @@ class LIGHRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 17, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused1(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 17, struct.pack('B', *nValue), 1)
     unused1 = property(get_unused1, set_unused1)
@@ -4250,7 +4412,7 @@ class LIGHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 18)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_flags(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 18, c_uint(nValue))
     flags = property(get_flags, set_flags)
@@ -4258,7 +4420,7 @@ class LIGHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 19)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_falloff(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 19, c_float(nValue))
     falloff = property(get_falloff, set_falloff)
@@ -4266,7 +4428,7 @@ class LIGHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 20)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_fov(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 20, c_float(nValue))
     fov = property(get_fov, set_fov)
@@ -4274,7 +4436,7 @@ class LIGHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 21)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_value(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 21, c_uint(nValue))
     value = property(get_value, set_value)
@@ -4282,7 +4444,7 @@ class LIGHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 22)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_weight(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 22, c_float(nValue))
     weight = property(get_weight, set_weight)
@@ -4290,7 +4452,7 @@ class LIGHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 23)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_fade(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 23, c_float(nValue))
     fade = property(get_fade, set_fade)
@@ -4298,7 +4460,7 @@ class LIGHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 24)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_sound(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 24, c_uint(nValue))
     sound = property(get_sound, set_sound)
@@ -4388,7 +4550,7 @@ class MISCRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_modb(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 8, c_float(nValue))
     modb = property(get_modb, set_modb)
@@ -4398,7 +4560,7 @@ class MISCRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 9, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_modt_p(self, nValue):
         length = len(nValue)
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 9, struct.pack('B' * length, *nValue), length)
@@ -4413,7 +4575,7 @@ class MISCRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_script(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 11, c_uint(nValue))
     script = property(get_script, set_script)
@@ -4421,7 +4583,7 @@ class MISCRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_value(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 12, c_uint(nValue))
     value = property(get_value, set_value)
@@ -4429,7 +4591,7 @@ class MISCRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_weight(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 13, c_float(nValue))
     weight = property(get_weight, set_weight)
@@ -4453,7 +4615,7 @@ class STATRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_modb(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 7, c_float(nValue))
     modb = property(get_modb, set_modb)
@@ -4463,7 +4625,7 @@ class STATRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 8, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_modt_p(self, nValue):
         length = len(nValue)
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 8, struct.pack('B' * length, *nValue), length)
@@ -4487,7 +4649,7 @@ class GRASRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_modb(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 7, c_float(nValue))
     modb = property(get_modb, set_modb)
@@ -4497,7 +4659,7 @@ class GRASRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 8, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_modt_p(self, nValue):
         length = len(nValue)
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 8, struct.pack('B' * length, *nValue), length)
@@ -4506,7 +4668,7 @@ class GRASRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_density(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 9, c_ubyte(nValue))
     density = property(get_density, set_density)
@@ -4514,7 +4676,7 @@ class GRASRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_minSlope(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 10, c_ubyte(nValue))
     minSlope = property(get_minSlope, set_minSlope)
@@ -4522,7 +4684,7 @@ class GRASRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_maxSlope(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 11, c_ubyte(nValue))
     maxSlope = property(get_maxSlope, set_maxSlope)
@@ -4532,7 +4694,7 @@ class GRASRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 12, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused1(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 12, struct.pack('B', *nValue), 1)
     unused1 = property(get_unused1, set_unused1)
@@ -4540,7 +4702,7 @@ class GRASRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ushort)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_waterDistance(self, nValue):
         CBash.SetFIDFieldUS(self._CollectionIndex, self._ModName, self._recordID, 13, c_ushort(nValue))
     waterDistance = property(get_waterDistance, set_waterDistance)
@@ -4550,7 +4712,7 @@ class GRASRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 14, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused2(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 14, struct.pack('2B', *nValue), 2)
     unused2 = property(get_unused2, set_unused2)
@@ -4558,7 +4720,7 @@ class GRASRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 15)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_waterOp(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 15, nValue)
     waterOp = property(get_waterOp, set_waterOp)
@@ -4566,7 +4728,7 @@ class GRASRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 16)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_posRange(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 16, c_float(nValue))
     posRange = property(get_posRange, set_posRange)
@@ -4574,7 +4736,7 @@ class GRASRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 17)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_heightRange(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 17, c_float(nValue))
     heightRange = property(get_heightRange, set_heightRange)
@@ -4582,7 +4744,7 @@ class GRASRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 18)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_colorRange(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 18, c_float(nValue))
     colorRange = property(get_colorRange, set_colorRange)
@@ -4590,7 +4752,7 @@ class GRASRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 19)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_wavePeriod(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 19, c_float(nValue))
     wavePeriod = property(get_wavePeriod, set_wavePeriod)
@@ -4598,7 +4760,7 @@ class GRASRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 20)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_flags(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 20, c_ubyte(nValue))
     flags = property(get_flags, set_flags)
@@ -4608,7 +4770,7 @@ class GRASRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 21, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused3(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 21, struct.pack('3B', *nValue), 3)
     unused3 = property(get_unused3, set_unused3)
@@ -4650,7 +4812,7 @@ class TREERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_modb(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 7, c_float(nValue))
     modb = property(get_modb, set_modb)
@@ -4660,7 +4822,7 @@ class TREERecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 8, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_modt_p(self, nValue):
         length = len(nValue)
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 8, struct.pack('B' * length, *nValue), length)
@@ -4677,7 +4839,7 @@ class TREERecord(BaseRecord):
             cRecords = POINTER(c_uint * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 10, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_speedTree(self, nValue):
         CBash.SetFIDFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 10, struct.pack('I' * len(nValue), *nValue), len(nValue))
     speedTree = property(get_speedTree, set_speedTree)
@@ -4685,7 +4847,7 @@ class TREERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_curvature(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 11, c_float(nValue))
     curvature = property(get_curvature, set_curvature)
@@ -4693,7 +4855,7 @@ class TREERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_minAngle(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 12, c_float(nValue))
     minAngle = property(get_minAngle, set_minAngle)
@@ -4701,7 +4863,7 @@ class TREERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_maxAngle(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 13, c_float(nValue))
     maxAngle = property(get_maxAngle, set_maxAngle)
@@ -4709,7 +4871,7 @@ class TREERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 14)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_branchDim(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 14, c_float(nValue))
     branchDim = property(get_branchDim, set_branchDim)
@@ -4717,7 +4879,7 @@ class TREERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 15)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_leafDim(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 15, c_float(nValue))
     leafDim = property(get_leafDim, set_leafDim)
@@ -4725,7 +4887,7 @@ class TREERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_int)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 16)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_shadowRadius(self, nValue):
         CBash.SetFIDFieldI(self._CollectionIndex, self._ModName, self._recordID, 16, nValue)
     shadowRadius = property(get_shadowRadius, set_shadowRadius)
@@ -4733,7 +4895,7 @@ class TREERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 17)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_rockSpeed         (self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 17, c_float(nValue))
     rockSpeed          = property(get_rockSpeed         , set_rockSpeed         )
@@ -4741,7 +4903,7 @@ class TREERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 18)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_rustleSpeed  (self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 18, c_float(nValue))
     rustleSpeed   = property(get_rustleSpeed  , set_rustleSpeed  )
@@ -4749,7 +4911,7 @@ class TREERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 19)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_widthBill(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 19, c_float(nValue))
     widthBill = property(get_widthBill, set_widthBill)
@@ -4757,7 +4919,7 @@ class TREERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 20)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_heightBill(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 20, c_float(nValue))
     heightBill = property(get_heightBill, set_heightBill)
@@ -4786,7 +4948,7 @@ class FLORRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_modb(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 8, c_float(nValue))
     modb = property(get_modb, set_modb)
@@ -4796,7 +4958,7 @@ class FLORRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 9, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_modt_p(self, nValue):
         length = len(nValue)
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 9, struct.pack('B' * length, *nValue), length)
@@ -4805,7 +4967,7 @@ class FLORRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_script(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 10, nValue)
     script = property(get_script, set_script)
@@ -4813,7 +4975,7 @@ class FLORRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_ingredient(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 11, nValue)
     ingredient = property(get_ingredient, set_ingredient)
@@ -4821,7 +4983,7 @@ class FLORRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_spring(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 12, c_ubyte(nValue))
     spring = property(get_spring, set_spring)
@@ -4829,7 +4991,7 @@ class FLORRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_summer(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 13, c_ubyte(nValue))
     summer = property(get_summer, set_summer)
@@ -4837,7 +4999,7 @@ class FLORRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 14)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_fall(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 14, c_ubyte(nValue))
     fall = property(get_fall, set_fall)
@@ -4845,7 +5007,7 @@ class FLORRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 15)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_winter(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 15, c_ubyte(nValue))
     winter = property(get_winter, set_winter)
@@ -4874,7 +5036,7 @@ class FURNRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_modb(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 8, c_float(nValue))
     modb = property(get_modb, set_modb)
@@ -4884,7 +5046,7 @@ class FURNRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 9, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_modt_p(self, nValue):
         length = len(nValue)
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 9, struct.pack('B' * length, *nValue), length)
@@ -4893,7 +5055,7 @@ class FURNRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_script(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 10, c_uint(nValue))
     script = property(get_script, set_script)
@@ -4901,7 +5063,7 @@ class FURNRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_flags(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 11, nValue)
     flags = property(get_flags, set_flags)
@@ -5131,7 +5293,7 @@ class WEAPRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_modb(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 8, c_float(nValue))
     modb = property(get_modb, set_modb)
@@ -5141,7 +5303,7 @@ class WEAPRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 9, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_modt_p(self, nValue):
         length = len(nValue)
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 9, struct.pack('B' * length, *nValue), length)
@@ -5156,7 +5318,7 @@ class WEAPRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_script(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 11, c_uint(nValue))
     script = property(get_script, set_script)
@@ -5164,7 +5326,7 @@ class WEAPRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_enchantment(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 12, nValue)
     enchantment = property(get_enchantment, set_enchantment)
@@ -5172,7 +5334,7 @@ class WEAPRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ushort)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_enchantPoints(self, nValue):
         CBash.SetFIDFieldUS(self._CollectionIndex, self._ModName, self._recordID, 13, c_ushort(nValue))
     enchantPoints = property(get_enchantPoints, set_enchantPoints)                    
@@ -5180,7 +5342,7 @@ class WEAPRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 14)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_weaponType(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 14, nValue)
     weaponType = property(get_weaponType, set_weaponType)
@@ -5188,7 +5350,7 @@ class WEAPRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 15)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_speed(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 15, c_float(nValue))
     speed = property(get_speed, set_speed)
@@ -5196,7 +5358,7 @@ class WEAPRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 16)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_reach(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 16, c_float(nValue))
     reach = property(get_reach, set_reach)
@@ -5204,7 +5366,7 @@ class WEAPRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 17)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_flags(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 17, nValue)
     flags = property(get_flags, set_flags)
@@ -5212,7 +5374,7 @@ class WEAPRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 18)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_value(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 18, nValue)
     value = property(get_value, set_value)
@@ -5220,7 +5382,7 @@ class WEAPRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 19)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_health(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 19, nValue)
     health = property(get_health, set_health)
@@ -5228,7 +5390,7 @@ class WEAPRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 20)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_weight(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 20, c_float(nValue))
     weight = property(get_weight, set_weight)
@@ -5236,7 +5398,7 @@ class WEAPRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ushort)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 21)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_damage(self, nValue):
         CBash.SetFIDFieldUS(self._CollectionIndex, self._ModName, self._recordID, 21, c_ushort(nValue))
     damage = property(get_damage, set_damage)
@@ -5314,7 +5476,7 @@ class AMMORecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_modb(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 8, c_float(nValue))
     modb = property(get_modb, set_modb)
@@ -5324,7 +5486,7 @@ class AMMORecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 9, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_modt_p(self, nValue):
         length = len(nValue)
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 9, struct.pack('B' * length, *nValue), length)
@@ -5339,7 +5501,7 @@ class AMMORecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_enchantment(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 11, nValue)
     enchantment = property(get_enchantment, set_enchantment)
@@ -5347,7 +5509,7 @@ class AMMORecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ushort)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_enchantPoints(self, nValue):
         CBash.SetFIDFieldUS(self._CollectionIndex, self._ModName, self._recordID, 12, c_ushort(nValue))
     enchantPoints = property(get_enchantPoints, set_enchantPoints)     
@@ -5355,7 +5517,7 @@ class AMMORecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_speed(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 13, c_float(nValue))
     speed = property(get_speed, set_speed)  
@@ -5363,7 +5525,7 @@ class AMMORecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 14)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_flags(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 14, nValue)
     flags = property(get_flags, set_flags)
@@ -5373,7 +5535,7 @@ class AMMORecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 15, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused1(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 15, struct.pack('3B', *nValue), 3)
     unused1 = property(get_unused1, set_unused1)
@@ -5381,7 +5543,7 @@ class AMMORecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 16)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_value(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 16, nValue)
     value = property(get_value, set_value)
@@ -5389,7 +5551,7 @@ class AMMORecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 17)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_weight(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 17, c_float(nValue))
     weight = property(get_weight, set_weight)
@@ -5397,7 +5559,7 @@ class AMMORecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ushort)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 18)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_damage(self, nValue):
         CBash.SetFIDFieldUS(self._CollectionIndex, self._ModName, self._recordID, 18, c_ushort(nValue))
     damage = property(get_damage, set_damage)
@@ -5432,13 +5594,17 @@ class NPC_Record(BaseRecord):
             self._listIndex = listIndex
         def get_faction(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1)
+            if(retValue): return retValue.contents.value
+            return None
         def set_faction(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1, nValue)
         faction = property(get_faction, set_faction)
         def get_rank(self):
             CBash.ReadFIDListField.restype = POINTER(c_ubyte)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2)
+            if(retValue): return retValue.contents.value
+            return None
         def set_rank(self, nValue):
             CBash.SetFIDListFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2, c_ubyte(nValue))
         rank = property(get_rank, set_rank)
@@ -5448,7 +5614,7 @@ class NPC_Record(BaseRecord):
                 cRecords = POINTER(c_ubyte * numRecords)()
                 CBash.GetFIDListArray(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3, byref(cRecords))
                 return [cRecords.contents[x] for x in range(0, numRecords)]
-            else: return []
+            return []
         def set_unused1(self, nValue):
             CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3, struct.pack('3B', *nValue), 3)
         unused1 = property(get_unused1, set_unused1)
@@ -5461,13 +5627,17 @@ class NPC_Record(BaseRecord):
             self._listIndex = listIndex
         def get_item(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1)
+            if(retValue): return retValue.contents.value
+            return None
         def set_item(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1, nValue)
         item = property(get_item, set_item)
         def get_count(self):
             CBash.ReadFIDListField.restype = POINTER(c_int)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2)
+            if(retValue): return retValue.contents.value
+            return None
         def set_count(self, nValue):
             CBash.SetFIDListFieldI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2, nValue)
         count = property(get_count, set_count)
@@ -5496,7 +5666,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_modb(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 8, c_float(nValue))
     modb = property(get_modb, set_modb)
@@ -5506,7 +5676,7 @@ class NPC_Record(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 9, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_modt_p(self, nValue):
         length = len(nValue)
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 9, struct.pack('B' * length, *nValue), length)
@@ -5515,7 +5685,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_flags(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 10, nValue)
     flags = property(get_flags, set_flags)
@@ -5523,7 +5693,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ushort)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_baseSpell(self, nValue):
         CBash.SetFIDFieldUS(self._CollectionIndex, self._ModName, self._recordID, 11, c_ushort(nValue))
     baseSpell = property(get_baseSpell, set_baseSpell)
@@ -5531,7 +5701,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ushort)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_fatigue(self, nValue):
         CBash.SetFIDFieldUS(self._CollectionIndex, self._ModName, self._recordID, 12, c_ushort(nValue))
     fatigue = property(get_fatigue, set_fatigue)
@@ -5539,7 +5709,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ushort)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_barterGold(self, nValue):
         CBash.SetFIDFieldUS(self._CollectionIndex, self._ModName, self._recordID, 13, c_ushort(nValue))
     barterGold = property(get_barterGold, set_barterGold)
@@ -5547,7 +5717,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_short)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 14)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_level(self, nValue):
         CBash.SetFIDFieldS(self._CollectionIndex, self._ModName, self._recordID, 14, c_short(nValue))
     level = property(get_level, set_level)
@@ -5555,7 +5725,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ushort)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 15)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_calcMin(self, nValue):
         CBash.SetFIDFieldUS(self._CollectionIndex, self._ModName, self._recordID, 15, c_ushort(nValue))
     calcMin = property(get_calcMin, set_calcMin)
@@ -5563,14 +5733,14 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ushort)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 16)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_calcMax(self, nValue):
         CBash.SetFIDFieldUS(self._CollectionIndex, self._ModName, self._recordID, 16, c_ushort(nValue))
     calcMax = property(get_calcMax, set_calcMax)
     def get_factions(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 17)
         if(numRecords > 0): return [self.Faction(self._CollectionIndex, self._ModName, self._recordID, 17, x) for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_factions(self, nFactions):
         diffLength = len(nFactions) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 17)
         nValues = [(faction.faction,faction.rank,faction.unused1) for faction in nFactions]
@@ -5587,7 +5757,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 18)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_deathItem(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 18, nValue)
     deathItem = property(get_deathItem, set_deathItem)
@@ -5595,7 +5765,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 19)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_race(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 19, nValue)
     race = property(get_race, set_race)
@@ -5605,7 +5775,7 @@ class NPC_Record(BaseRecord):
             cRecords = POINTER(c_uint * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 20, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_spells(self, nValue):
         CBash.SetFIDFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 20, struct.pack('I' * len(nValue), *nValue), len(nValue))
     spells = property(get_spells, set_spells)
@@ -5613,14 +5783,14 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 21)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_script(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 21, nValue)
     script = property(get_script, set_script)
     def get_items(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 22)
         if(numRecords > 0): return [self.Item(self._CollectionIndex, self._ModName, self._recordID, 22, x) for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_items(self, nItems):
         diffLength = len(nItems) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 22)
         nValues = [(item.item, item.count) for item in nItems]
@@ -5637,7 +5807,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 23)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_aggression(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 23, c_ubyte(nValue))
     aggression = property(get_aggression, set_aggression)
@@ -5645,7 +5815,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 24)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_confidence(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 24, c_ubyte(nValue))
     confidence = property(get_confidence, set_confidence)
@@ -5653,7 +5823,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 25)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_energyLevel(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 25, c_ubyte(nValue))
     energyLevel = property(get_energyLevel, set_energyLevel)
@@ -5661,7 +5831,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 26)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_responsibility(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 26, c_ubyte(nValue))
     responsibility = property(get_responsibility, set_responsibility)
@@ -5669,7 +5839,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 27)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_services(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 27, nValue)
     services = property(get_services, set_services)
@@ -5677,7 +5847,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_byte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 28)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_trainSkill(self, nValue):
         CBash.SetFIDFieldC(self._CollectionIndex, self._ModName, self._recordID, 28, c_byte(nValue))
     trainSkill = property(get_trainSkill, set_trainSkill)
@@ -5685,7 +5855,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 29)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_trainLevel(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 29, c_ubyte(nValue))
     trainLevel = property(get_trainLevel, set_trainLevel)
@@ -5695,7 +5865,7 @@ class NPC_Record(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 30, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused1(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 30, struct.pack('2B', *nValue), 2)
     unused1 = property(get_unused1, set_unused1)
@@ -5705,7 +5875,7 @@ class NPC_Record(BaseRecord):
             cRecords = POINTER(c_uint * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 31, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_aiPackages(self, nValue):
         CBash.SetFIDFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 31, struct.pack('I' * len(nValue), *nValue), len(nValue))
     aiPackages = property(get_aiPackages, set_aiPackages)
@@ -5715,7 +5885,7 @@ class NPC_Record(BaseRecord):
             cRecords = (POINTER(c_char_p) * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 32, byref(cRecords))
             return [string_at(cRecords[x]) for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_animations(self, nValue):
         length = len(nValue)
         cRecords = (c_char_p * length)(*nValue)
@@ -5725,7 +5895,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 33)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_iclass(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 33, nValue)
     iclass = property(get_iclass, set_iclass)
@@ -5733,7 +5903,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 34)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_armorer(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 34, c_ubyte(nValue))
     armorer = property(get_armorer, set_armorer)
@@ -5741,7 +5911,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 35)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_athletics(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 35, c_ubyte(nValue))
     athletics = property(get_athletics, set_athletics)
@@ -5749,7 +5919,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 36)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_blade(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 36, c_ubyte(nValue))
     blade = property(get_blade, set_blade)
@@ -5757,7 +5927,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 37)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_block(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 37, c_ubyte(nValue))
     block = property(get_block, set_block)
@@ -5765,7 +5935,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 38)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_blunt(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 38, c_ubyte(nValue))
     blunt = property(get_blunt, set_blunt)
@@ -5773,7 +5943,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 39)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_h2h(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 39, c_ubyte(nValue))
     h2h = property(get_h2h, set_h2h)
@@ -5781,7 +5951,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 40)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_heavyArmor(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 40, c_ubyte(nValue))
     heavyArmor = property(get_heavyArmor, set_heavyArmor)
@@ -5789,7 +5959,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 41)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_alchemy(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 41, c_ubyte(nValue))
     alchemy = property(get_alchemy, set_alchemy)
@@ -5797,7 +5967,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 42)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_alteration(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 42, c_ubyte(nValue))
     alteration = property(get_alteration, set_alteration)
@@ -5805,7 +5975,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 43)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_conjuration(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 43, c_ubyte(nValue))
     conjuration = property(get_conjuration, set_conjuration)
@@ -5813,7 +5983,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 44)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_destruction(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 44, c_ubyte(nValue))
     destruction = property(get_destruction, set_destruction)
@@ -5821,7 +5991,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 45)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_illusion(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 45, c_ubyte(nValue))
     illusion = property(get_illusion, set_illusion)
@@ -5829,7 +5999,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 46)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_mysticism(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 46, c_ubyte(nValue))
     mysticism = property(get_mysticism, set_mysticism)
@@ -5837,7 +6007,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 47)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_restoration(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 47, c_ubyte(nValue))
     restoration = property(get_restoration, set_restoration)
@@ -5845,7 +6015,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 48)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_acrobatics(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 48, c_ubyte(nValue))
     acrobatics = property(get_acrobatics, set_acrobatics)
@@ -5853,7 +6023,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 49)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_lightArmor(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 49, c_ubyte(nValue))
     lightArmor = property(get_lightArmor, set_lightArmor)
@@ -5861,7 +6031,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 50)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_marksman(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 50, c_ubyte(nValue))
     marksman = property(get_marksman, set_marksman)
@@ -5869,7 +6039,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 51)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_mercantile(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 51, c_ubyte(nValue))
     mercantile = property(get_mercantile, set_mercantile)
@@ -5877,7 +6047,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 52)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_security(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 52, c_ubyte(nValue))
     security = property(get_security, set_security)
@@ -5885,7 +6055,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 53)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_sneak(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 53, c_ubyte(nValue))
     sneak = property(get_sneak, set_sneak)
@@ -5893,7 +6063,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 54)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_speechcraft(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 54, c_ubyte(nValue))
     speechcraft = property(get_speechcraft, set_speechcraft)
@@ -5901,7 +6071,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ushort)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 55)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_health(self, nValue):
         CBash.SetFIDFieldUS(self._CollectionIndex, self._ModName, self._recordID, 55, c_ushort(nValue))
     health = property(get_health, set_health)
@@ -5911,7 +6081,7 @@ class NPC_Record(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 56, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused2(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 56, struct.pack('2B', *nValue), 2)
     unused2 = property(get_unused2, set_unused2)
@@ -5919,7 +6089,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 57)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_strength(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 57, c_ubyte(nValue))
     strength = property(get_strength, set_strength)
@@ -5927,7 +6097,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 58)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_intelligence(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 58, c_ubyte(nValue))
     intelligence = property(get_intelligence, set_intelligence)
@@ -5935,7 +6105,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 59)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_willpower(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 59, c_ubyte(nValue))
     willpower = property(get_willpower, set_willpower)
@@ -5943,7 +6113,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 60)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_agility(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 60, c_ubyte(nValue))
     agility = property(get_agility, set_agility)
@@ -5951,7 +6121,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 61)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_speed(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 61, c_ubyte(nValue))
     speed = property(get_speed, set_speed)
@@ -5959,7 +6129,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 62)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_endurance(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 62, c_ubyte(nValue))
     endurance = property(get_endurance, set_endurance)
@@ -5967,7 +6137,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 63)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_personality(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 63, c_ubyte(nValue))
     personality = property(get_personality, set_personality)
@@ -5975,7 +6145,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 64)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_luck(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 64, c_ubyte(nValue))
     luck = property(get_luck, set_luck)
@@ -5983,7 +6153,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 65)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_hair(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 65, nValue)
     hair = property(get_hair, set_hair)
@@ -5991,7 +6161,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 66)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_hairLength(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 66, c_float(nValue))
     hairLength = property(get_hairLength, set_hairLength)
@@ -5999,7 +6169,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 67)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_eye(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 67, nValue)
     eye = property(get_eye, set_eye)
@@ -6007,7 +6177,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 68)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_hairRed(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 68, c_ubyte(nValue))
     hairRed = property(get_hairRed, set_hairRed)
@@ -6015,7 +6185,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 69)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_hairGreen(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 69, c_ubyte(nValue))
     hairGreen = property(get_hairGreen, set_hairGreen)
@@ -6023,7 +6193,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 70)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_hairBlue(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 70, c_ubyte(nValue))
     hairBlue = property(get_hairBlue, set_hairBlue)
@@ -6033,7 +6203,7 @@ class NPC_Record(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 71, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused3(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 71, struct.pack('B', *nValue), 1)
     unused3 = property(get_unused3, set_unused3)
@@ -6041,7 +6211,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 72)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_combatStyle(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 72, nValue)
     combatStyle = property(get_combatStyle, set_combatStyle)
@@ -6051,7 +6221,7 @@ class NPC_Record(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 73, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_fggs_p(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 73, struct.pack('200B', *nValue), 200)
     fggs_p = property(get_fggs_p, set_fggs_p)
@@ -6061,7 +6231,7 @@ class NPC_Record(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 74, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_fgga_p(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 74, struct.pack('120B', *nValue), 120)
     fgga_p = property(get_fgga_p, set_fgga_p)
@@ -6071,7 +6241,7 @@ class NPC_Record(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 75, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_fgts_p(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 75, struct.pack('200B', *nValue), 200)
     fgts_p = property(get_fgts_p, set_fgts_p)
@@ -6079,7 +6249,7 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ushort)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 76)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_fnam(self, nValue):
         CBash.SetFIDFieldUS(self._CollectionIndex, self._ModName, self._recordID, 76, c_ushort(nValue))
     fnam = property(get_fnam, set_fnam)
@@ -6270,13 +6440,17 @@ class CREARecord(BaseRecord):
             self._listIndex = listIndex
         def get_faction(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1)
+            if(retValue): return retValue.contents.value
+            return None
         def set_faction(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1, nValue)
         faction = property(get_faction, set_faction)
         def get_rank(self):
             CBash.ReadFIDListField.restype = POINTER(c_ubyte)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2)
+            if(retValue): return retValue.contents.value
+            return None
         def set_rank(self, nValue):
             CBash.SetFIDListFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2, c_ubyte(nValue))
         rank = property(get_rank, set_rank)
@@ -6286,7 +6460,7 @@ class CREARecord(BaseRecord):
                 cRecords = POINTER(c_ubyte * numRecords)()
                 CBash.GetFIDListArray(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3, byref(cRecords))
                 return [cRecords.contents[x] for x in range(0, numRecords)]
-            else: return []
+            return []
         def set_unused1(self, nValue):
             CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3, struct.pack('3B', *nValue), 3)
         unused1 = property(get_unused1, set_unused1)
@@ -6299,13 +6473,17 @@ class CREARecord(BaseRecord):
             self._listIndex = listIndex
         def get_item(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1)
+            if(retValue): return retValue.contents.value
+            return None
         def set_item(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1, nValue)
         item = property(get_item, set_item)
         def get_count(self):
             CBash.ReadFIDListField.restype = POINTER(c_int)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2)
+            if(retValue): return retValue.contents.value
+            return None
         def set_count(self, nValue):
             CBash.SetFIDListFieldI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2, nValue)
         count = property(get_count, set_count)
@@ -6318,19 +6496,25 @@ class CREARecord(BaseRecord):
             self._listIndex = listIndex
         def get_type(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1)
+            if(retValue): return retValue.contents.value
+            return None
         def set_type(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1, nValue)
         type = property(get_type, set_type)
         def get_sound(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2)
+            if(retValue): return retValue.contents.value
+            return None
         def set_sound(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2, nValue)
         sound = property(get_sound, set_sound)
         def get_chance(self):
             CBash.ReadFIDListField.restype = POINTER(c_ubyte)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3)
+            if(retValue): return retValue.contents.value
+            return None
         def set_chance(self, nValue):
             CBash.SetFIDListFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3, c_ubyte(nValue))
         chance = property(get_chance, set_chance)
@@ -6362,7 +6546,7 @@ class CREARecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_modb(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 8, c_float(nValue))
     modb = property(get_modb, set_modb)
@@ -6372,7 +6556,7 @@ class CREARecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 9, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_modt_p(self, nValue):
         length = len(nValue)
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 9, struct.pack('B' * length, *nValue), length)
@@ -6383,7 +6567,7 @@ class CREARecord(BaseRecord):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 10, byref(cRecords))
             return [cRecords[x].contents.value for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_spells(self, nValue):
         CBash.SetFIDFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 10, struct.pack('I' * len(nValue), *nValue), len(nValue))
     spells = property(get_spells, set_spells)
@@ -6393,7 +6577,7 @@ class CREARecord(BaseRecord):
             cRecords = cRecords = (POINTER(c_char_p) * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 11, byref(cRecords))
             return [string_at(cRecords[x]) for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_bodyParts(self, nValue):
         length = len(nValue)
         cRecords = (c_char_p * length)(*nValue)
@@ -6405,7 +6589,7 @@ class CREARecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 12, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_nift_p(self, nValue):
         length = len(nValue)
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 12, struct.pack('B' * length, *nValue), length)
@@ -6414,7 +6598,7 @@ class CREARecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_flags(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 13, nValue)
     flags = property(get_flags, set_flags)
@@ -6422,7 +6606,7 @@ class CREARecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ushort)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 14)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_baseSpell(self, nValue):
         CBash.SetFIDFieldUS(self._CollectionIndex, self._ModName, self._recordID, 14, c_ushort(nValue))
     baseSpell = property(get_baseSpell, set_baseSpell)
@@ -6430,7 +6614,7 @@ class CREARecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ushort)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 15)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_fatigue(self, nValue):
         CBash.SetFIDFieldUS(self._CollectionIndex, self._ModName, self._recordID, 15, c_ushort(nValue))
     fatigue = property(get_fatigue, set_fatigue)
@@ -6438,7 +6622,7 @@ class CREARecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ushort)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 16)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_barterGold(self, nValue):
         CBash.SetFIDFieldUS(self._CollectionIndex, self._ModName, self._recordID, 16, c_ushort(nValue))
     barterGold = property(get_barterGold, set_barterGold)
@@ -6446,7 +6630,7 @@ class CREARecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_short)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 17)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_level(self, nValue):
         CBash.SetFIDFieldS(self._CollectionIndex, self._ModName, self._recordID, 17, c_short(nValue))
     level = property(get_level, set_level)
@@ -6454,7 +6638,7 @@ class CREARecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ushort)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 18)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_calcMin(self, nValue):
         CBash.SetFIDFieldUS(self._CollectionIndex, self._ModName, self._recordID, 18, c_ushort(nValue))
     calcMin = property(get_calcMin, set_calcMin)
@@ -6462,14 +6646,14 @@ class CREARecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ushort)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 19)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_calcMax(self, nValue):
         CBash.SetFIDFieldUS(self._CollectionIndex, self._ModName, self._recordID, 19, c_ushort(nValue))
     calcMax = property(get_calcMax, set_calcMax)
     def get_factions(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 20)
         if(numRecords > 0): return [self.Faction(self._CollectionIndex, self._ModName, self._recordID, 20, x) for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_factions(self, nFactions):
         diffLength = len(nFactions) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 20)
         nValues = [(faction.faction,faction.rank,faction.unused1) for faction in nFactions]
@@ -6486,7 +6670,7 @@ class CREARecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 21)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_deathItem(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 21, nValue)
     deathItem = property(get_deathItem, set_deathItem)
@@ -6494,14 +6678,14 @@ class CREARecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 22)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_script(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 22, nValue)
     script = property(get_script, set_script)
     def get_items(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 23)
         if(numRecords > 0): return [self.Item(self._CollectionIndex, self._ModName, self._recordID, 23, x) for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_items(self, nItems):
         diffLength = len(nItems) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 23)
         nValues = [(item.item, item.count) for item in nItems]
@@ -6518,7 +6702,7 @@ class CREARecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 24)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_aggression(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 24, c_ubyte(nValue))
     aggression = property(get_aggression, set_aggression)
@@ -6526,7 +6710,7 @@ class CREARecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 25)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_confidence(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 25, c_ubyte(nValue))
     confidence = property(get_confidence, set_confidence)
@@ -6534,7 +6718,7 @@ class CREARecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 26)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_energyLevel(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 26, c_ubyte(nValue))
     energyLevel = property(get_energyLevel, set_energyLevel)
@@ -6542,7 +6726,7 @@ class CREARecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 27)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_responsibility(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 27, c_ubyte(nValue))
     responsibility = property(get_responsibility, set_responsibility)
@@ -6550,7 +6734,7 @@ class CREARecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 28)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_services(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 28, nValue)
     services = property(get_services, set_services)
@@ -6558,7 +6742,7 @@ class CREARecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_byte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 29)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_trainSkill(self, nValue):
         CBash.SetFIDFieldC(self._CollectionIndex, self._ModName, self._recordID, 29, c_byte(nValue))
     trainSkill = property(get_trainSkill, set_trainSkill)
@@ -6566,7 +6750,7 @@ class CREARecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 30)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_trainLevel(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 30, c_ubyte(nValue))
     trainLevel = property(get_trainLevel, set_trainLevel)
@@ -6576,7 +6760,7 @@ class CREARecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 31, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused1(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 31, struct.pack('2B', *nValue), 2)
     unused1 = property(get_unused1, set_unused1)
@@ -6586,7 +6770,7 @@ class CREARecord(BaseRecord):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 32, byref(cRecords))
             return [cRecords[x].contents.value for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_aiPackages(self, nValue):
         CBash.SetFIDFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 32, struct.pack('I' * len(nValue), *nValue), len(nValue))
     aiPackages = property(get_aiPackages, set_aiPackages)
@@ -6596,7 +6780,7 @@ class CREARecord(BaseRecord):
             cRecords = cRecords = (POINTER(c_char_p) * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 33, byref(cRecords))
             return [string_at(cRecords[x]) for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_animations(self, nValue):
         length = len(nValue)
         cRecords = (c_char_p * length)(*nValue)
@@ -6606,7 +6790,7 @@ class CREARecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 34)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_creatureType(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 34, c_ubyte(nValue))
     creatureType = property(get_creatureType, set_creatureType)
@@ -6614,7 +6798,7 @@ class CREARecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 35)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_combat(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 35, c_ubyte(nValue))
     combat = property(get_combat, set_combat)
@@ -6622,7 +6806,7 @@ class CREARecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 36)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_magic(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 36, c_ubyte(nValue))
     magic = property(get_magic, set_magic)
@@ -6630,7 +6814,7 @@ class CREARecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 37)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_stealth(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 37, c_ubyte(nValue))
     stealth = property(get_stealth, set_stealth)
@@ -6638,7 +6822,7 @@ class CREARecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 38)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_soul(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 38, c_ubyte(nValue))
     soul = property(get_soul, set_soul)
@@ -6648,7 +6832,7 @@ class CREARecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 39, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused2(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 39, struct.pack('B', *nValue), 1)
     unused2 = property(get_unused2, set_unused2)
@@ -6656,7 +6840,7 @@ class CREARecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ushort)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 40)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_health(self, nValue):
         CBash.SetFIDFieldUS(self._CollectionIndex, self._ModName, self._recordID, 40, c_ushort(nValue))
     health = property(get_health, set_health)
@@ -6666,7 +6850,7 @@ class CREARecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 41, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused3(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 41, struct.pack('2B', *nValue), 2)
     unused3 = property(get_unused3, set_unused3)
@@ -6674,7 +6858,7 @@ class CREARecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ushort)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 42)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_attackDamage(self, nValue):
         CBash.SetFIDFieldUS(self._CollectionIndex, self._ModName, self._recordID, 42, c_ushort(nValue))
     attackDamage = property(get_attackDamage, set_attackDamage)
@@ -6682,7 +6866,7 @@ class CREARecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 43)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_strength(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 43, c_ubyte(nValue))
     strength = property(get_strength, set_strength)
@@ -6690,7 +6874,7 @@ class CREARecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 44)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_intelligence(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 44, c_ubyte(nValue))
     intelligence = property(get_intelligence, set_intelligence)
@@ -6698,7 +6882,7 @@ class CREARecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 45)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_willpower(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 45, c_ubyte(nValue))
     willpower = property(get_willpower, set_willpower)
@@ -6706,7 +6890,7 @@ class CREARecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 46)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_agility(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 46, c_ubyte(nValue))
     agility = property(get_agility, set_agility)
@@ -6714,7 +6898,7 @@ class CREARecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 47)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_speed(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 47, c_ubyte(nValue))
     speed = property(get_speed, set_speed)
@@ -6722,7 +6906,7 @@ class CREARecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 48)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_endurance(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 48, c_ubyte(nValue))
     endurance = property(get_endurance, set_endurance)
@@ -6730,7 +6914,7 @@ class CREARecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 49)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_personality(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 49, c_ubyte(nValue))
     personality = property(get_personality, set_personality)
@@ -6738,7 +6922,7 @@ class CREARecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 50)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_luck(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 50, c_ubyte(nValue))
     luck = property(get_luck, set_luck)
@@ -6746,7 +6930,7 @@ class CREARecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 51)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_attackReach(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 51, c_ubyte(nValue))
     attackReach = property(get_attackReach, set_attackReach)
@@ -6754,7 +6938,7 @@ class CREARecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 52)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_combatStyle(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 52, nValue)
     combatStyle = property(get_combatStyle, set_combatStyle)
@@ -6762,7 +6946,7 @@ class CREARecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 53)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_turningSpeed(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 53, c_float(nValue))
     turningSpeed = property(get_turningSpeed, set_turningSpeed)
@@ -6770,7 +6954,7 @@ class CREARecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 54)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_baseScale(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 54, c_float(nValue))
     baseScale = property(get_baseScale, set_baseScale)
@@ -6778,7 +6962,7 @@ class CREARecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 55)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_footWeight(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 55, c_float(nValue))
     footWeight = property(get_footWeight, set_footWeight)
@@ -6786,7 +6970,7 @@ class CREARecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 56)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_inheritsSoundsFrom(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 56, nValue)
     inheritsSoundsFrom = property(get_inheritsSoundsFrom, set_inheritsSoundsFrom)
@@ -6805,7 +6989,7 @@ class CREARecord(BaseRecord):
     def get_sounds(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 59)
         if(numRecords > 0): return [self.Sound(self._CollectionIndex, self._ModName, self._recordID, 59, x) for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_sounds(self, nSounds):
         diffLength = len(nSounds) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 59)
         nValues = [(nSound.type, nSound.sound, nSound.chance) for nSound in nSounds]
@@ -7149,7 +7333,9 @@ class LVLRecord(BaseRecord):
             self._listIndex = listIndex
         def get_level(self):
             CBash.ReadFIDListField.restype = POINTER(c_short)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1)
+            if(retValue): return retValue.contents.value
+            return None
         def set_level(self, nValue):
             CBash.SetFIDListFieldS(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1, c_short(nValue))
         level = property(get_level, set_level)
@@ -7159,19 +7345,23 @@ class LVLRecord(BaseRecord):
                 cRecords = POINTER(c_ubyte * numRecords)()
                 CBash.GetFIDListArray(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2, byref(cRecords))
                 return [cRecords.contents[x] for x in range(0, numRecords)]
-            else: return []
+            return []
         def set_unused1(self, nValue):
             CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2, struct.pack('2B', *nValue), 2)
         unused1 = property(get_unused1, set_unused1)
         def get_listId(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3)
+            if(retValue): return retValue.contents.value
+            return None
         def set_listId(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3, nValue)
         listId = property(get_listId, set_listId)
         def get_count(self):
             CBash.ReadFIDListField.restype = POINTER(c_short)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 4).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 4)
+            if(retValue): return retValue.contents.value
+            return None
         def set_count(self, nValue):
             CBash.SetFIDListFieldS(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 4, c_short(nValue))
         count = property(get_count, set_count)
@@ -7181,7 +7371,7 @@ class LVLRecord(BaseRecord):
                 cRecords = POINTER(c_ubyte * numRecords)()
                 CBash.GetFIDListArray(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 5, byref(cRecords))
                 return [cRecords.contents[x] for x in range(0, numRecords)]
-            else: return []
+            return []
         def set_unused2(self, nValue):
             CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 5, struct.pack('2B', *nValue), 2)
         unused2 = property(get_unused2, set_unused2)
@@ -7193,7 +7383,7 @@ class LVLRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 6)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_chanceNone(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 6, c_ubyte(nValue))
     chanceNone = property(get_chanceNone, set_chanceNone)
@@ -7201,14 +7391,14 @@ class LVLRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_flags(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 7, c_ubyte(nValue))
     flags = property(get_flags, set_flags)
     def get_entries(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 10)
         if(numRecords > 0): return [self.Entry(self._CollectionIndex, self._ModName, self._recordID, 10, x) for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_entries(self, nEntries):
         diffLength = len(nEntries) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 10)
         nValues = [(nEntry.level, nEntry.unused1, nEntry.listId, nEntry.count, nEntry.unused2) for nEntry in nEntries]
@@ -7257,7 +7447,7 @@ class LVLCRecord(LVLRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_script(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 8, nValue)
     script = property(get_script, set_script)
@@ -7265,7 +7455,7 @@ class LVLCRecord(LVLRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_template(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 9, nValue)
     template = property(get_template, set_template)
@@ -7294,7 +7484,7 @@ class SLGMRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_modb(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 8, c_float(nValue))
     modb = property(get_modb, set_modb)
@@ -7304,7 +7494,7 @@ class SLGMRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 9, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_modt_p(self, nValue):
         length = len(nValue)
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 9, struct.pack('B' * length, *nValue), length)
@@ -7319,7 +7509,7 @@ class SLGMRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_script(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 11, c_uint(nValue))
     script = property(get_script, set_script)
@@ -7327,7 +7517,7 @@ class SLGMRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_value(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 12, c_uint(nValue))
     value = property(get_value, set_value)
@@ -7335,7 +7525,7 @@ class SLGMRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_weight(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 13, c_float(nValue))
     weight = property(get_weight, set_weight)
@@ -7343,7 +7533,7 @@ class SLGMRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 14)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_soul(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 14, c_ubyte(nValue))
     soul = property(get_soul, set_soul)
@@ -7351,7 +7541,7 @@ class SLGMRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 15)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_capacity(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 15, c_ubyte(nValue))
     capacity = property(get_capacity, set_capacity)
@@ -7453,7 +7643,7 @@ class KEYMRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_modb(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 8, c_float(nValue))
     modb = property(get_modb, set_modb)
@@ -7463,7 +7653,7 @@ class KEYMRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 9, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_modt_p(self, nValue):
         length = len(nValue)
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 9, struct.pack('B' * length, *nValue), length)
@@ -7478,7 +7668,7 @@ class KEYMRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_script(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 11, c_uint(nValue))
     script = property(get_script, set_script)
@@ -7486,7 +7676,7 @@ class KEYMRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_value(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 12, c_uint(nValue))
     value = property(get_value, set_value)
@@ -7494,7 +7684,7 @@ class KEYMRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_weight(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 13, c_float(nValue))
     weight = property(get_weight, set_weight)
@@ -7517,67 +7707,89 @@ class ALCHRecord(BaseRecord):
         ##name0 and name are both are always the same value, so setting one will set both. They're basically aliases
         def get_name0(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1)
+            if(retValue): return retValue.contents.value
+            return None
         def set_name0(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1, nValue)
         name0 = property(get_name0, set_name0)
         def get_name(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2)
+            if(retValue): return retValue.contents.value
+            return None
         def set_name(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2, nValue)
         name = property(get_name, set_name)
         def get_magnitude(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3)
+            if(retValue): return retValue.contents.value
+            return None
         def set_magnitude(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3, nValue)
         magnitude = property(get_magnitude, set_magnitude)
         def get_area(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 4).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 4)
+            if(retValue): return retValue.contents.value
+            return None
         def set_area(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 4, nValue)
         area = property(get_area, set_area)
         def get_duration(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 5).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 5)
+            if(retValue): return retValue.contents.value
+            return None
         def set_duration(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 5, nValue)
         duration = property(get_duration, set_duration)
         def get_recipient(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 6).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 6)
+            if(retValue): return retValue.contents.value
+            return None
         def set_recipient(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 6, nValue)
         recipient = property(get_recipient, set_recipient)
         def get_actorValue(self):
             CBash.ReadFIDListField.restype = POINTER(c_int)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 7).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 7)
+            if(retValue): return retValue.contents.value
+            return None
         def set_actorValue(self, nValue):
             CBash.SetFIDListFieldI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 7, nValue)
         actorValue = property(get_actorValue, set_actorValue)
         def get_script(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 8).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 8)
+            if(retValue): return retValue.contents.value
+            return None
         def set_script(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 8, nValue)
         script = property(get_script, set_script)
         def get_school(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 9).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 9)
+            if(retValue): return retValue.contents.value
+            return None
         def set_school(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 9, nValue)
         school = property(get_school, set_school)
         def get_visual(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 10).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 10)
+            if(retValue): return retValue.contents.value
+            return None
         def set_visual(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 10, nValue)
         visual = property(get_visual, set_visual)
         def get_flags(self):
             CBash.ReadFIDListField.restype = POINTER(c_ubyte)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 11).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 11)
+            if(retValue): return retValue.contents.value
+            return None
         def set_flags(self, nValue):
             CBash.SetFIDListFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 11, c_ubyte(nValue))
         flags = property(get_flags, set_flags)
@@ -7587,7 +7799,7 @@ class ALCHRecord(BaseRecord):
                 cRecords = POINTER(c_ubyte * numRecords)()
                 CBash.GetFIDListArray(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 12, byref(cRecords))
                 return [cRecords.contents[x] for x in range(0, numRecords)]
-            else: return []
+            return []
         def set_unused1(self, nValue):
             CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 12, struct.pack('3B', *nValue), 3)
         unused1 = property(get_unused1, set_unused1)
@@ -7623,7 +7835,7 @@ class ALCHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_modb(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 8, c_float(nValue))
     modb = property(get_modb, set_modb)
@@ -7633,7 +7845,7 @@ class ALCHRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 9, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_modt_p(self, nValue):
         length = len(nValue)
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 9, struct.pack('B' * length, *nValue), length)
@@ -7648,7 +7860,7 @@ class ALCHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_script(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 11, c_uint(nValue))
     script = property(get_script, set_script)
@@ -7656,7 +7868,7 @@ class ALCHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_weight(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 12, c_float(nValue))
     weight = property(get_weight, set_weight)
@@ -7664,7 +7876,7 @@ class ALCHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_int)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_value(self, nValue):
         CBash.SetFIDFieldI(self._CollectionIndex, self._ModName, self._recordID, 13, c_int(nValue))
     value = property(get_value, set_value)
@@ -7672,7 +7884,7 @@ class ALCHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 14)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_flags(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 14, c_ubyte(nValue))
     flags = property(get_flags, set_flags)
@@ -7682,14 +7894,14 @@ class ALCHRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 15, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused1(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 15, struct.pack('3B', *nValue), 3)
     unused1 = property(get_unused1, set_unused1)
     def get_effects(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 16)
         if(numRecords > 0): return [self.Effect(self._CollectionIndex, self._ModName, self._recordID, 16, x) for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_effects(self, nEffects):
         diffLength = len(nEffects) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 16)
         nValues = [(nEffect.name0, nEffect.name, nEffect.magnitude, nEffect.area, nEffect.duration, nEffect.recipient, nEffect.actorValue, nEffect.script, nEffect.school, nEffect.visual, nEffect.flags, nEffect.unused1, nEffect.full) for nEffect in nEffects]
@@ -7728,7 +7940,7 @@ class SBSPRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 6)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_sizeX(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 6, c_float(nValue))
     sizeX = property(get_sizeX, set_sizeX)
@@ -7736,7 +7948,7 @@ class SBSPRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_sizeY(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 7, c_float(nValue))
     sizeY = property(get_sizeY, set_sizeY)
@@ -7744,7 +7956,7 @@ class SBSPRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_sizeZ(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 8, c_float(nValue))
     sizeZ = property(get_sizeZ, set_sizeZ)
@@ -7767,67 +7979,89 @@ class SGSTRecord(BaseRecord):
         ##name0 and name are both are always the same value, so setting one will set both. They're basically aliases
         def get_name0(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1)
+            if(retValue): return retValue.contents.value
+            return None
         def set_name0(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1, nValue)
         name0 = property(get_name0, set_name0)
         def get_name(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2)
+            if(retValue): return retValue.contents.value
+            return None
         def set_name(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2, nValue)
         name = property(get_name, set_name)
         def get_magnitude(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3)
+            if(retValue): return retValue.contents.value
+            return None
         def set_magnitude(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3, nValue)
         magnitude = property(get_magnitude, set_magnitude)
         def get_area(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 4).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 4)
+            if(retValue): return retValue.contents.value
+            return None
         def set_area(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 4, nValue)
         area = property(get_area, set_area)
         def get_duration(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 5).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 5)
+            if(retValue): return retValue.contents.value
+            return None
         def set_duration(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 5, nValue)
         duration = property(get_duration, set_duration)
         def get_recipient(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 6).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 6)
+            if(retValue): return retValue.contents.value
+            return None
         def set_recipient(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 6, nValue)
         recipient = property(get_recipient, set_recipient)
         def get_actorValue(self):
             CBash.ReadFIDListField.restype = POINTER(c_int)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 7).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 7)
+            if(retValue): return retValue.contents.value
+            return None
         def set_actorValue(self, nValue):
             CBash.SetFIDListFieldI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 7, nValue)
         actorValue = property(get_actorValue, set_actorValue)
         def get_script(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 8).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 8)
+            if(retValue): return retValue.contents.value
+            return None
         def set_script(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 8, nValue)
         script = property(get_script, set_script)
         def get_school(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 9).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 9)
+            if(retValue): return retValue.contents.value
+            return None
         def set_school(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 9, nValue)
         school = property(get_school, set_school)
         def get_visual(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 10).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 10)
+            if(retValue): return retValue.contents.value
+            return None
         def set_visual(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 10, nValue)
         visual = property(get_visual, set_visual)
         def get_flags(self):
             CBash.ReadFIDListField.restype = POINTER(c_ubyte)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 11).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 11)
+            if(retValue): return retValue.contents.value
+            return None
         def set_flags(self, nValue):
             CBash.SetFIDListFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 11, c_ubyte(nValue))
         flags = property(get_flags, set_flags)
@@ -7837,7 +8071,7 @@ class SGSTRecord(BaseRecord):
                 cRecords = POINTER(c_ubyte * numRecords)()
                 CBash.GetFIDListArray(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 12, byref(cRecords))
                 return [cRecords.contents[x] for x in range(0, numRecords)]
-            else: return []
+            return []
         def set_unused1(self, nValue):
             CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 12, struct.pack('3B', *nValue), 3)
         unused1 = property(get_unused1, set_unused1)
@@ -7873,7 +8107,7 @@ class SGSTRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_modb(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 8, c_float(nValue))
     modb = property(get_modb, set_modb)
@@ -7883,7 +8117,7 @@ class SGSTRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 9, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_modt_p(self, nValue):
         length = len(nValue)
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 9, struct.pack('B' * length, *nValue), length)
@@ -7898,14 +8132,14 @@ class SGSTRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_script(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 11, c_uint(nValue))
     script = property(get_script, set_script)
     def get_effects(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 12)
         if(numRecords > 0): return [self.Effect(self._CollectionIndex, self._ModName, self._recordID, 12, x) for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_effects(self, nEffects):
         diffLength = len(nEffects) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 12)
         nValues = [(nEffect.name0, nEffect.name, nEffect.magnitude, nEffect.area, nEffect.duration, nEffect.recipient, nEffect.actorValue, nEffect.script, nEffect.school, nEffect.visual, nEffect.flags, nEffect.unused1, nEffect.full) for nEffect in nEffects]
@@ -7922,7 +8156,7 @@ class SGSTRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_uses(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 13, c_ubyte(nValue))
     uses = property(get_uses, set_uses)
@@ -7930,7 +8164,7 @@ class SGSTRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_int)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 14)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_value(self, nValue):
         CBash.SetFIDFieldI(self._CollectionIndex, self._ModName, self._recordID, 14, nValue)
     value = property(get_value, set_value)
@@ -7938,7 +8172,7 @@ class SGSTRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 15)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_weight(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 15, c_float(nValue))
     weight = property(get_weight, set_weight)
@@ -7957,7 +8191,7 @@ class LVLIRecord(LVLRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 11, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_data_p(self, nValue):
         length = len(nValue)
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 11, struct.pack('B' * length, *nValue), length)
@@ -7981,7 +8215,7 @@ class WTHRRecord(BaseRecord):
             CBash.ReadFIDField.restype = POINTER(c_ubyte)
             retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, self._listIndex)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_riseRed(self, nValue):
             CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._listIndex, c_ubyte(nValue))
         riseRed = property(get_riseRed, set_riseRed)
@@ -7989,7 +8223,7 @@ class WTHRRecord(BaseRecord):
             CBash.ReadFIDField.restype = POINTER(c_ubyte)
             retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 1)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_riseGreen(self, nValue):
             CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 1, c_ubyte(nValue))
         riseGreen = property(get_riseGreen, set_riseGreen)
@@ -7997,7 +8231,7 @@ class WTHRRecord(BaseRecord):
             CBash.ReadFIDField.restype = POINTER(c_ubyte)
             retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 2)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_riseBlue(self, nValue):
             CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 2, c_ubyte(nValue))
         riseBlue = property(get_riseBlue, set_riseBlue)
@@ -8007,7 +8241,7 @@ class WTHRRecord(BaseRecord):
                 cRecords = POINTER(c_ubyte * numRecords)()
                 CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 3, byref(cRecords))
                 return [cRecords.contents[x] for x in range(0, numRecords)]
-            else: return []
+            return []
         def set_unused1(self, nValue):
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 3, struct.pack('B', *nValue), 1)
         unused1 = property(get_unused1, set_unused1)
@@ -8015,7 +8249,7 @@ class WTHRRecord(BaseRecord):
             CBash.ReadFIDField.restype = POINTER(c_ubyte)
             retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 4)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_dayRed(self, nValue):
             CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 4, c_ubyte(nValue))
         dayRed = property(get_dayRed, set_dayRed)
@@ -8023,7 +8257,7 @@ class WTHRRecord(BaseRecord):
             CBash.ReadFIDField.restype = POINTER(c_ubyte)
             retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 5)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_dayGreen(self, nValue):
             CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 5, c_ubyte(nValue))
         dayGreen = property(get_dayGreen, set_dayGreen)
@@ -8031,7 +8265,7 @@ class WTHRRecord(BaseRecord):
             CBash.ReadFIDField.restype = POINTER(c_ubyte)
             retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 6)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_dayBlue(self, nValue):
             CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 6, c_ubyte(nValue))
         dayBlue = property(get_dayBlue, set_dayBlue)
@@ -8041,7 +8275,7 @@ class WTHRRecord(BaseRecord):
                 cRecords = POINTER(c_ubyte * numRecords)()
                 CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 7, byref(cRecords))
                 return [cRecords.contents[x] for x in range(0, numRecords)]
-            else: return []
+            return []
         def set_unused2(self, nValue):
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 7, struct.pack('B', *nValue), 1)
         unused2 = property(get_unused2, set_unused2)
@@ -8049,7 +8283,7 @@ class WTHRRecord(BaseRecord):
             CBash.ReadFIDField.restype = POINTER(c_ubyte)
             retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 8)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_setRed(self, nValue):
             CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 8, c_ubyte(nValue))
         setRed = property(get_setRed, set_setRed)
@@ -8057,7 +8291,7 @@ class WTHRRecord(BaseRecord):
             CBash.ReadFIDField.restype = POINTER(c_ubyte)
             retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 9)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_setGreen(self, nValue):
             CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 9, c_ubyte(nValue))
         setGreen = property(get_setGreen, set_setGreen)
@@ -8065,7 +8299,7 @@ class WTHRRecord(BaseRecord):
             CBash.ReadFIDField.restype = POINTER(c_ubyte)
             retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 10)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_setBlue(self, nValue):
             CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 10, c_ubyte(nValue))
         setBlue = property(get_setBlue, set_setBlue)
@@ -8075,7 +8309,7 @@ class WTHRRecord(BaseRecord):
                 cRecords = POINTER(c_ubyte * numRecords)()
                 CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 11, byref(cRecords))
                 return [cRecords.contents[x] for x in range(0, numRecords)]
-            else: return []
+            return []
         def set_unused3(self, nValue):
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 11, struct.pack('B', *nValue), 1)
         unused3 = property(get_unused3, set_unused3)
@@ -8083,7 +8317,7 @@ class WTHRRecord(BaseRecord):
             CBash.ReadFIDField.restype = POINTER(c_ubyte)
             retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 12)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_nightRed(self, nValue):
             CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 12, c_ubyte(nValue))
         nightRed = property(get_nightRed, set_nightRed)
@@ -8091,7 +8325,7 @@ class WTHRRecord(BaseRecord):
             CBash.ReadFIDField.restype = POINTER(c_ubyte)
             retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 13)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_nightGreen(self, nValue):
             CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 13, c_ubyte(nValue))
         nightGreen = property(get_nightGreen, set_nightGreen)
@@ -8099,7 +8333,7 @@ class WTHRRecord(BaseRecord):
             CBash.ReadFIDField.restype = POINTER(c_ubyte)
             retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 14)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_nightBlue(self, nValue):
             CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 14, c_ubyte(nValue))
         nightBlue = property(get_nightBlue, set_nightBlue)
@@ -8109,7 +8343,7 @@ class WTHRRecord(BaseRecord):
                 cRecords = POINTER(c_ubyte * numRecords)()
                 CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 15, byref(cRecords))
                 return [cRecords.contents[x] for x in range(0, numRecords)]
-            else: return []
+            return []
         def set_unused4(self, nValue):
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 15, struct.pack('B', *nValue), 1)
         unused4 = property(get_unused4, set_unused4)  
@@ -8121,13 +8355,17 @@ class WTHRRecord(BaseRecord):
             self._listIndex = listIndex
         def get_sound(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 204, self._listIndex, 1).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 204, self._listIndex, 1)
+            if(retValue): return retValue.contents.value
+            return None
         def set_sound(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 204, self._listIndex, 1, nValue)
         sound = property(get_sound, set_sound)
         def get_type(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 204, self._listIndex, 2).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 204, self._listIndex, 2)
+            if(retValue): return retValue.contents.value
+            return None
         def set_type(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 204, self._listIndex, 2, nValue)
         type = property(get_type, set_type)
@@ -8181,7 +8419,7 @@ class WTHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_modb(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 9, c_float(nValue))
     modb = property(get_modb, set_modb)
@@ -8191,7 +8429,7 @@ class WTHRRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 10, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_modt_p(self, nValue):
         length = len(nValue)
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 10, struct.pack('B' * length, *nValue), length)
@@ -8230,7 +8468,7 @@ class WTHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 171)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_fogDayNear(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 171, c_float(nValue))
     fogDayNear = property(get_fogDayNear, set_fogDayNear)
@@ -8238,7 +8476,7 @@ class WTHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 172)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_fogDayFar(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 172, c_float(nValue))
     fogDayFar = property(get_fogDayFar, set_fogDayFar)
@@ -8246,7 +8484,7 @@ class WTHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 173)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_fogNightNear(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 173, c_float(nValue))
     fogNightNear = property(get_fogNightNear, set_fogNightNear)
@@ -8254,7 +8492,7 @@ class WTHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 174)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_fogNightFar(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 174, c_float(nValue))
     fogNightFar = property(get_fogNightFar, set_fogNightFar)
@@ -8262,7 +8500,7 @@ class WTHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 175)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_eyeAdaptSpeed(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 175, c_float(nValue))
     eyeAdaptSpeed = property(get_eyeAdaptSpeed, set_eyeAdaptSpeed)
@@ -8270,7 +8508,7 @@ class WTHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 176)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_blurRadius(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 176, c_float(nValue))
     blurRadius = property(get_blurRadius, set_blurRadius)
@@ -8278,7 +8516,7 @@ class WTHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 177)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_blurPasses(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 177, c_float(nValue))
     blurPasses = property(get_blurPasses, set_blurPasses)
@@ -8286,7 +8524,7 @@ class WTHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 178)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_emissiveMult(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 178, c_float(nValue))
     emissiveMult = property(get_emissiveMult, set_emissiveMult)
@@ -8294,7 +8532,7 @@ class WTHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 179)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_targetLum(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 179, c_float(nValue))
     targetLum = property(get_targetLum, set_targetLum)
@@ -8302,7 +8540,7 @@ class WTHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 180)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_upperLumClamp(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 180, c_float(nValue))
     upperLumClamp = property(get_upperLumClamp, set_upperLumClamp)
@@ -8310,7 +8548,7 @@ class WTHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 181)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_brightScale(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 181, c_float(nValue))
     brightScale = property(get_brightScale, set_brightScale)
@@ -8318,7 +8556,7 @@ class WTHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 182)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_brightClamp(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 182, c_float(nValue))
     brightClamp = property(get_brightClamp, set_brightClamp)
@@ -8326,7 +8564,7 @@ class WTHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 183)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_lumRampNoTex(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 183, c_float(nValue))
     lumRampNoTex = property(get_lumRampNoTex, set_lumRampNoTex)
@@ -8334,7 +8572,7 @@ class WTHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 184)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_lumRampMin(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 184, c_float(nValue))
     lumRampMin = property(get_lumRampMin, set_lumRampMin)
@@ -8342,7 +8580,7 @@ class WTHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 185)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_lumRampMax(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 185, c_float(nValue))
     lumRampMax = property(get_lumRampMax, set_lumRampMax)
@@ -8350,7 +8588,7 @@ class WTHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 186)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_sunlightDimmer(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 186, c_float(nValue))
     sunlightDimmer = property(get_sunlightDimmer, set_sunlightDimmer)
@@ -8358,7 +8596,7 @@ class WTHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 187)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_grassDimmer(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 187, c_float(nValue))
     grassDimmer = property(get_grassDimmer, set_grassDimmer)
@@ -8366,7 +8604,7 @@ class WTHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 188)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_treeDimmer(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 188, c_float(nValue))
     treeDimmer = property(get_treeDimmer, set_treeDimmer)
@@ -8374,7 +8612,7 @@ class WTHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 189)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_windSpeed(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 189, c_ubyte(nValue))
     windSpeed = property(get_windSpeed, set_windSpeed)
@@ -8382,7 +8620,7 @@ class WTHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 190)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_lowerCloudSpeed(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 190, c_ubyte(nValue))
     lowerCloudSpeed = property(get_lowerCloudSpeed, set_lowerCloudSpeed)
@@ -8390,7 +8628,7 @@ class WTHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 191)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_upperCloudSpeed(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 191, c_ubyte(nValue))
     upperCloudSpeed = property(get_upperCloudSpeed, set_upperCloudSpeed)
@@ -8398,7 +8636,7 @@ class WTHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 192)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_transDelta(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 192, c_ubyte(nValue))
     transDelta = property(get_transDelta, set_transDelta)
@@ -8406,7 +8644,7 @@ class WTHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 193)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_sunGlare(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 193, c_ubyte(nValue))
     sunGlare = property(get_sunGlare, set_sunGlare)
@@ -8414,7 +8652,7 @@ class WTHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 194)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_sunDamage(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 194, c_ubyte(nValue))
     sunDamage = property(get_sunDamage, set_sunDamage)
@@ -8422,7 +8660,7 @@ class WTHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 195)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_rainFadeIn(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 195, c_ubyte(nValue))
     rainFadeIn = property(get_rainFadeIn, set_rainFadeIn)
@@ -8430,7 +8668,7 @@ class WTHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 196)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_rainFadeOut(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 196, c_ubyte(nValue))
     rainFadeOut = property(get_rainFadeOut, set_rainFadeOut)
@@ -8438,7 +8676,7 @@ class WTHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 197)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_boltFadeIn(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 197, c_ubyte(nValue))
     boltFadeIn = property(get_boltFadeIn, set_boltFadeIn)
@@ -8446,7 +8684,7 @@ class WTHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 198)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_boltFadeOut(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 198, c_ubyte(nValue))
     boltFadeOut = property(get_boltFadeOut, set_boltFadeOut)
@@ -8454,7 +8692,7 @@ class WTHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 199)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_boltFrequency(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 199, c_ubyte(nValue))
     boltFrequency = property(get_boltFrequency, set_boltFrequency)
@@ -8462,7 +8700,7 @@ class WTHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 200)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_weatherType(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 200, c_ubyte(nValue))
     weatherType = property(get_weatherType, set_weatherType)
@@ -8470,7 +8708,7 @@ class WTHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 201)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_boltRed(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 201, c_ubyte(nValue))
     boltRed = property(get_boltRed, set_boltRed)
@@ -8478,7 +8716,7 @@ class WTHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 202)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_boltGreen(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 202, c_ubyte(nValue))
     boltGreen = property(get_boltGreen, set_boltGreen)
@@ -8486,14 +8724,14 @@ class WTHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 203)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_boltBlue(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 203, c_ubyte(nValue))
     boltBlue = property(get_boltBlue, set_boltBlue)
     def get_sounds(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 204)
         if(numRecords > 0): return [self.Sound(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_sounds(self, nSounds):
         diffLength = len(nSounds) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 204)
         nValues = [(nSound.sound, nSound.type) for nSound in nSounds]
@@ -8606,13 +8844,17 @@ class CLMTRecord(BaseRecord):
             self._listIndex = listIndex
         def get_weather(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 1).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 1)
+            if(retValue): return retValue.contents.value
+            return None
         def set_weather(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 1, nValue)
         weather = property(get_weather, set_weather)
         def get_chance(self):
             CBash.ReadFIDListField.restype = POINTER(c_int)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 2).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 2)
+            if(retValue): return retValue.contents.value
+            return None
         def set_chance(self, nValue):
             CBash.SetFIDListFieldI(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 2, nValue)
         chance = property(get_chance, set_chance)
@@ -8624,7 +8866,7 @@ class CLMTRecord(BaseRecord):
     def get_weathers(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 6)
         if(numRecords > 0): return [self.Weather(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_weathers(self, nWeathers):
         diffLength = len(nWeathers) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 6)
         nValues = [(nWeather.weather, nWeather.chance) for nWeather in nWeathers]
@@ -8659,7 +8901,7 @@ class CLMTRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_modb(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 10, c_float(nValue))
     modb = property(get_modb, set_modb)
@@ -8669,7 +8911,7 @@ class CLMTRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 11, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_modt_p(self, nValue):
         length = len(nValue)
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 11, struct.pack('B' * length, *nValue), length)
@@ -8678,7 +8920,7 @@ class CLMTRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_riseBegin(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 12, c_ubyte(nValue))
     riseBegin = property(get_riseBegin, set_riseBegin)
@@ -8686,7 +8928,7 @@ class CLMTRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_riseEnd(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 13, c_ubyte(nValue))
     riseEnd = property(get_riseEnd, set_riseEnd)
@@ -8694,7 +8936,7 @@ class CLMTRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 14)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_setBegin(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 14, c_ubyte(nValue))
     setBegin = property(get_setBegin, set_setBegin)
@@ -8702,7 +8944,7 @@ class CLMTRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 15)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_setEnd(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 15, c_ubyte(nValue))
     setEnd = property(get_setEnd, set_setEnd)
@@ -8710,7 +8952,7 @@ class CLMTRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 16)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_volatility(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 16, c_ubyte(nValue))
     volatility = property(get_volatility, set_volatility)
@@ -8718,7 +8960,7 @@ class CLMTRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 17)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_phaseLength(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 17, c_ubyte(nValue))
     phaseLength = property(get_phaseLength, set_phaseLength)
@@ -8742,13 +8984,17 @@ class REGNRecord(BaseRecord):
                 self._listX2Index = listX2Index
             def get_posX(self):
                 CBash.ReadFIDListX2Field.restype = POINTER(c_float)
-                return CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 1).contents.value
+                retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 1)
+                if(retValue): return retValue.contents.value
+                return None
             def set_posX(self, nValue):
                 CBash.SetFIDListX2FieldF(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 1, c_float(nValue))
             posX = property(get_posX, set_posX)
             def get_posY(self):
                 CBash.ReadFIDListX2Field.restype = POINTER(c_float)
-                return CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 2).contents.value
+                retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 2)
+                if(retValue): return retValue.contents.value
+                return None
             def set_posY(self, nValue):
                 CBash.SetFIDListX2FieldF(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 2, c_float(nValue))
             posY = property(get_posY, set_posY)
@@ -8764,14 +9010,16 @@ class REGNRecord(BaseRecord):
             return self.Points(self._CollectionIndex, self._ModName, self._recordID, self._listIndex, listX2Index)
         def get_edgeFalloff(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 1).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 1)
+            if(retValue): return retValue.contents.value
+            return None
         def set_edgeFalloff(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 1, nValue)
         edgeFalloff = property(get_edgeFalloff, set_edgeFalloff)
         def get_points(self):
             numRecords = CBash.GetFIDListX2Size(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2)
             if(numRecords > 0): return [self.Points(self._CollectionIndex, self._ModName, self._recordID, self._listIndex, x) for x in range(0, numRecords)]
-            else: return []
+            return []
         def set_points(self, nPoints):
             diffLength = len(nPoints) - CBash.GetFIDListX2Size(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2)
             nValues = [(nPoint.posX, nPoint.posY) for nPoint in nPoints]
@@ -8796,7 +9044,7 @@ class REGNRecord(BaseRecord):
                 CBash.ReadFIDListX2Field.restype = POINTER(c_uint)
                 retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 1)
                 if(retValue): return retValue.contents.value
-                else: return None
+                return None
             def set_objectId(self, nValue):
                 CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 1, nValue)
             objectId = property(get_objectId, set_objectId)
@@ -8804,7 +9052,7 @@ class REGNRecord(BaseRecord):
                 CBash.ReadFIDListX2Field.restype = POINTER(c_ushort)
                 retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 2)
                 if(retValue): return retValue.contents.value
-                else: return None
+                return None
             def set_parentIndex(self, nValue):
                 CBash.SetFIDListX2FieldUS(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 2, c_ushort(nValue))
             parentIndex = property(get_parentIndex, set_parentIndex)
@@ -8814,7 +9062,7 @@ class REGNRecord(BaseRecord):
                     cRecords = POINTER(c_ubyte * numRecords)()
                     CBash.GetFIDListX2Array(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 3, byref(cRecords))
                     return [cRecords.contents[x] for x in range(0, numRecords)]
-                else: return []
+                return []
             def set_unused1(self, nValue):
                 CBash.SetFIDListX2FieldR(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 3, struct.pack('2B', *nValue), 2)
             unused1 = property(get_unused1, set_unused1)
@@ -8822,7 +9070,7 @@ class REGNRecord(BaseRecord):
                 CBash.ReadFIDListX2Field.restype = POINTER(c_float)
                 retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 4)
                 if(retValue): return retValue.contents.value
-                else: return None
+                return None
             def set_density(self, nValue):
                 CBash.SetFIDListX2FieldF(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 4, c_float(nValue))
             density = property(get_density, set_density)
@@ -8830,7 +9078,7 @@ class REGNRecord(BaseRecord):
                 CBash.ReadFIDListX2Field.restype = POINTER(c_ubyte)
                 retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 5)
                 if(retValue): return retValue.contents.value
-                else: return None
+                return None
             def set_clustering(self, nValue):
                 CBash.SetFIDListX2FieldUC(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 5, c_ubyte(nValue))
             clustering = property(get_clustering, set_clustering)
@@ -8838,7 +9086,7 @@ class REGNRecord(BaseRecord):
                 CBash.ReadFIDListX2Field.restype = POINTER(c_ubyte)
                 retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 6)
                 if(retValue): return retValue.contents.value
-                else: return None
+                return None
             def set_minSlope(self, nValue):
                 CBash.SetFIDListX2FieldUC(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 6, c_ubyte(nValue))
             minSlope = property(get_minSlope, set_minSlope)
@@ -8846,7 +9094,7 @@ class REGNRecord(BaseRecord):
                 CBash.ReadFIDListX2Field.restype = POINTER(c_ubyte)
                 retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 7)
                 if(retValue): return retValue.contents.value
-                else: return None
+                return None
             def set_maxSlope(self, nValue):
                 CBash.SetFIDListX2FieldUC(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 7, c_ubyte(nValue))
             maxSlope = property(get_maxSlope, set_maxSlope)
@@ -8854,7 +9102,7 @@ class REGNRecord(BaseRecord):
                 CBash.ReadFIDListX2Field.restype = POINTER(c_ubyte)
                 retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 8)
                 if(retValue): return retValue.contents.value
-                else: return None
+                return None
             def set_flags(self, nValue):
                 CBash.SetFIDListX2FieldUC(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 8, c_ubyte(nValue))
             flags = property(get_flags, set_flags)
@@ -8862,7 +9110,7 @@ class REGNRecord(BaseRecord):
                 CBash.ReadFIDListX2Field.restype = POINTER(c_ushort)
                 retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 9)
                 if(retValue): return retValue.contents.value
-                else: return None
+                return None
             def set_radiusWRTParent(self, nValue):
                 CBash.SetFIDListX2FieldUS(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 9, c_ushort(nValue))
             radiusWRTParent = property(get_radiusWRTParent, set_radiusWRTParent)
@@ -8870,7 +9118,7 @@ class REGNRecord(BaseRecord):
                 CBash.ReadFIDListX2Field.restype = POINTER(c_ushort)
                 retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 10)
                 if(retValue): return retValue.contents.value
-                else: return None
+                return None
             def set_radius(self, nValue):
                 CBash.SetFIDListX2FieldUS(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 10, c_ushort(nValue))
             radius = property(get_radius, set_radius)
@@ -8880,7 +9128,7 @@ class REGNRecord(BaseRecord):
                     cRecords = POINTER(c_ubyte * numRecords)()
                     CBash.GetFIDListX2Array(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 11, byref(cRecords))
                     return [cRecords.contents[x] for x in range(0, numRecords)]
-                else: return []
+                return []
             def set_unk1(self, nValue):
                 CBash.SetFIDListX2FieldR(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 11, struct.pack('4B', *nValue), 4)
             unk1 = property(get_unk1, set_unk1)
@@ -8888,7 +9136,7 @@ class REGNRecord(BaseRecord):
                 CBash.ReadFIDListX2Field.restype = POINTER(c_float)
                 retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 12)
                 if(retValue): return retValue.contents.value
-                else: return None
+                return None
             def set_maxHeight(self, nValue):
                 CBash.SetFIDListX2FieldF(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 12, c_float(nValue))
             maxHeight = property(get_maxHeight, set_maxHeight)
@@ -8896,7 +9144,7 @@ class REGNRecord(BaseRecord):
                 CBash.ReadFIDListX2Field.restype = POINTER(c_float)
                 retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 13)
                 if(retValue): return retValue.contents.value
-                else: return None
+                return None
             def set_sink(self, nValue):
                 CBash.SetFIDListX2FieldF(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 13, c_float(nValue))
             sink = property(get_sink, set_sink)
@@ -8904,7 +9152,7 @@ class REGNRecord(BaseRecord):
                 CBash.ReadFIDListX2Field.restype = POINTER(c_float)
                 retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 14)
                 if(retValue): return retValue.contents.value
-                else: return None
+                return None
             def set_sinkVar(self, nValue):
                 CBash.SetFIDListX2FieldF(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 14, c_float(nValue))
             sinkVar = property(get_sinkVar, set_sinkVar)
@@ -8912,7 +9160,7 @@ class REGNRecord(BaseRecord):
                 CBash.ReadFIDListX2Field.restype = POINTER(c_float)
                 retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 15)
                 if(retValue): return retValue.contents.value
-                else: return None
+                return None
             def set_sizeVar(self, nValue):
                 CBash.SetFIDListX2FieldF(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 15, c_float(nValue))
             sizeVar = property(get_sizeVar, set_sizeVar)
@@ -8920,7 +9168,7 @@ class REGNRecord(BaseRecord):
                 CBash.ReadFIDListX2Field.restype = POINTER(c_ushort)
                 retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 16)
                 if(retValue): return retValue.contents.value
-                else: return None
+                return None
             def set_angleVarX(self, nValue):
                 CBash.SetFIDListX2FieldUS(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 16, c_ushort(nValue))
             angleVarX = property(get_angleVarX, set_angleVarX)
@@ -8928,7 +9176,7 @@ class REGNRecord(BaseRecord):
                 CBash.ReadFIDListX2Field.restype = POINTER(c_ushort)
                 retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 17)
                 if(retValue): return retValue.contents.value
-                else: return None
+                return None
             def set_angleVarY(self, nValue):
                 CBash.SetFIDListX2FieldUS(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 17, c_ushort(nValue))
             angleVarY = property(get_angleVarY, set_angleVarY)
@@ -8936,7 +9184,7 @@ class REGNRecord(BaseRecord):
                 CBash.ReadFIDListX2Field.restype = POINTER(c_ushort)
                 retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 18)
                 if(retValue): return retValue.contents.value
-                else: return None
+                return None
             def set_angleVarZ(self, nValue):
                 CBash.SetFIDListX2FieldUS(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 18, c_ushort(nValue))
             angleVarZ = property(get_angleVarZ, set_angleVarZ)
@@ -8946,7 +9194,7 @@ class REGNRecord(BaseRecord):
                     cRecords = POINTER(c_ubyte * numRecords)()
                     CBash.GetFIDListX2Array(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 19, byref(cRecords))
                     return [cRecords.contents[x] for x in range(0, numRecords)]
-                else: return []
+                return []
             def set_unused2(self, nValue):
                 CBash.SetFIDListX2FieldR(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 19, struct.pack('2B', *nValue), 2)
             unused2 = property(get_unused2, set_unused2)
@@ -8956,7 +9204,7 @@ class REGNRecord(BaseRecord):
                     cRecords = POINTER(c_ubyte * numRecords)()
                     CBash.GetFIDListX2Array(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 20, byref(cRecords))
                     return [cRecords.contents[x] for x in range(0, numRecords)]
-                else: return []
+                return []
             def set_unk2(self, nValue):
                 CBash.SetFIDListX2FieldR(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 20, struct.pack('4B', *nValue), 4)
             unk2 = property(get_unk2, set_unk2)
@@ -9020,7 +9268,7 @@ class REGNRecord(BaseRecord):
                 CBash.ReadFIDListX2Field.restype = POINTER(c_uint)
                 retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 8, self._listX2Index, 1)
                 if(retValue): return retValue.contents.value
-                else: return None
+                return None
             def set_grass(self, nValue):
                 CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 8, self._listX2Index, 1, nValue)
             grass = property(get_grass, set_grass)
@@ -9030,7 +9278,7 @@ class REGNRecord(BaseRecord):
                     cRecords = POINTER(c_ubyte * numRecords)()
                     CBash.GetFIDListX2Array(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 8, self._listX2Index, 2, byref(cRecords))
                     return [cRecords.contents[x] for x in range(0, numRecords)]
-                else: return []
+                return []
             def set_unk1(self, nValue):
                 CBash.SetFIDListX2FieldR(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 8, self._listX2Index, 2, struct.pack('4B', *nValue), 4)
             unk1 = property(get_unk1, set_unk1)
@@ -9045,7 +9293,7 @@ class REGNRecord(BaseRecord):
                 CBash.ReadFIDListX2Field.restype = POINTER(c_uint)
                 retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 10, self._listX2Index, 1)
                 if(retValue): return retValue.contents.value
-                else: return None
+                return None
             def set_sound(self, nValue):
                 CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 10, self._listX2Index, 1, nValue)
             sound = property(get_sound, set_sound)
@@ -9053,7 +9301,7 @@ class REGNRecord(BaseRecord):
                 CBash.ReadFIDListX2Field.restype = POINTER(c_uint)
                 retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 10, self._listX2Index, 2)
                 if(retValue): return retValue.contents.value
-                else: return None
+                return None
             def set_flags(self, nValue):
                 CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 10, self._listX2Index, 2, nValue)
             flags = property(get_flags, set_flags)
@@ -9061,7 +9309,7 @@ class REGNRecord(BaseRecord):
                 CBash.ReadFIDListX2Field.restype = POINTER(c_uint)
                 retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 10, self._listX2Index, 3)
                 if(retValue): return retValue.contents.value
-                else: return None
+                return None
             def set_chance(self, nValue):
                 CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 10, self._listX2Index, 3, nValue)
             chance = property(get_chance, set_chance)
@@ -9101,7 +9349,7 @@ class REGNRecord(BaseRecord):
                 CBash.ReadFIDListX2Field.restype = POINTER(c_uint)
                 retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 11, self._listX2Index, 1)
                 if(retValue): return retValue.contents.value
-                else: return None
+                return None
             def set_weather(self, nValue):
                 CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 11, self._listX2Index, 1, nValue)
             weather = property(get_weather, set_weather)
@@ -9109,7 +9357,7 @@ class REGNRecord(BaseRecord):
                 CBash.ReadFIDListX2Field.restype = POINTER(c_uint)
                 retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 11, self._listX2Index, 2)
                 if(retValue): return retValue.contents.value
-                else: return None
+                return None
             def set_chance(self, nValue):
                 CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 11, self._listX2Index, 2, nValue)
             chance = property(get_chance, set_chance)
@@ -9140,7 +9388,7 @@ class REGNRecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 1)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_entryType(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 1, nValue)
         entryType = property(get_entryType, set_entryType)
@@ -9148,7 +9396,7 @@ class REGNRecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_ubyte)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 2)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_flags(self, nValue):
             CBash.SetFIDListFieldUC(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 2, c_ubyte(nValue))
         flags = property(get_flags, set_flags)
@@ -9156,7 +9404,7 @@ class REGNRecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_ubyte)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 3)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_priority(self, nValue):
             CBash.SetFIDListFieldUC(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 3, c_ubyte(nValue))
         priority = property(get_priority, set_priority)
@@ -9166,14 +9414,14 @@ class REGNRecord(BaseRecord):
                 cRecords = POINTER(c_ubyte * numRecords)()
                 CBash.GetFIDListArray(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 4, byref(cRecords))
                 return [cRecords.contents[x] for x in range(0, numRecords)]
-            else: return []
+            return []
         def set_unused1(self, nValue):
             CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 4, struct.pack('2B', *nValue), 2)
         unused1 = property(get_unused1, set_unused1)
         def get_objects(self):
             numRecords = CBash.GetFIDListX2Size(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5)
             if(numRecords > 0): return [self.Object(self._CollectionIndex, self._ModName, self._recordID, self._listIndex, x) for x in range(0, numRecords)]
-            else: return []
+            return []
         def set_objects(self, nObjects):
             diffLength = len(nObjects) - CBash.GetFIDListX2Size(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5)
             nValues = [(nObject.objectId, nObject.parentIndex, nObject.unused1, nObject.density, nObject.clustering, 
@@ -9204,7 +9452,7 @@ class REGNRecord(BaseRecord):
         def get_grasses(self):
             numRecords = CBash.GetFIDListX2Size(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 8)
             if(numRecords > 0): return [self.Grass(self._CollectionIndex, self._ModName, self._recordID, self._listIndex, x) for x in range(0, numRecords)]
-            else: return []
+            return []
         def set_grasses(self, nGrasses):
             diffLength = len(nGrasses) - CBash.GetFIDListX2Size(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 8)
             nValues = [(nGrass.grass, nGrass.unk1) for nGrass in nGrasses]
@@ -9221,14 +9469,14 @@ class REGNRecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 9)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_musicType(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 9, nValue)
         musicType = property(get_musicType, set_musicType)
         def get_sounds(self):
             numRecords = CBash.GetFIDListX2Size(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 10)
             if(numRecords > 0): return [self.Sound(self._CollectionIndex, self._ModName, self._recordID, self._listIndex, x) for x in range(0, numRecords)]
-            else: return []
+            return []
         def set_sounds(self, nSounds):
             diffLength = len(nSounds) - CBash.GetFIDListX2Size(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 10)
             nValues = [(nSound.sound, nSound.flags, nSound.chance) for nSound in nSounds]
@@ -9244,7 +9492,7 @@ class REGNRecord(BaseRecord):
         def get_weathers(self):
             numRecords = CBash.GetFIDListX2Size(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 11)
             if(numRecords > 0): return [self.Weather(self._CollectionIndex, self._ModName, self._recordID, self._listIndex, x) for x in range(0, numRecords)]
-            else: return []
+            return []
         def set_weathers(self, nWeathers):
             diffLength = len(nWeathers) - CBash.GetFIDListX2Size(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 11)
             nValues = [(nWeather.weather, nWeather.chance) for nWeather in nWeathers]
@@ -9336,7 +9584,7 @@ class REGNRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_mapRed(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 7, c_ubyte(nValue))
     mapRed = property(get_mapRed, set_mapRed)
@@ -9344,7 +9592,7 @@ class REGNRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_mapGreen(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 8, c_ubyte(nValue))
     mapGreen = property(get_mapGreen, set_mapGreen)
@@ -9352,7 +9600,7 @@ class REGNRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_mapBlue(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 9, c_ubyte(nValue))
     mapBlue = property(get_mapBlue, set_mapBlue)
@@ -9362,7 +9610,7 @@ class REGNRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 10, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused1(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 10, struct.pack('B', *nValue), 1)
     unused1 = property(get_unused1, set_unused1)
@@ -9370,14 +9618,14 @@ class REGNRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_worldspace(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 11, nValue)
     worldspace = property(get_worldspace, set_worldspace)
     def get_areas(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 12)
         if(numRecords > 0): return [self.Area(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_areas(self, nAreas):
         diffLength = len(nAreas) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 12)
         nValues = [(nArea.edgeFalloff, [(nPoint.posX, nPoint.posY) for nPoint in nArea.points]) for nArea in nAreas]
@@ -9402,7 +9650,7 @@ class REGNRecord(BaseRecord):
     def get_entries(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 13)
         if(numRecords > 0): return [self.Entry(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_entries(self, nEntries):
         diffLength = len(nEntries) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 13)
         nValues = [(nEntry.entryType, nEntry.flags, nEntry.priority, nEntry.unused1,
@@ -9517,7 +9765,7 @@ class CELLRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_flags(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 7, c_ubyte(nValue))
     flags = property(get_flags, set_flags)
@@ -9525,7 +9773,7 @@ class CELLRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_ambientRed(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 8, c_ubyte(nValue))
     ambientRed = property(get_ambientRed, set_ambientRed)
@@ -9533,7 +9781,7 @@ class CELLRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_ambientGreen(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 9, c_ubyte(nValue))
     ambientGreen = property(get_ambientGreen, set_ambientGreen)
@@ -9541,7 +9789,7 @@ class CELLRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_ambientBlue(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 10, c_ubyte(nValue))
     ambientBlue = property(get_ambientBlue, set_ambientBlue)
@@ -9551,7 +9799,7 @@ class CELLRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 11, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused1(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 11, struct.pack('B', *nValue), 1)
     unused1 = property(get_unused1, set_unused1)
@@ -9559,7 +9807,7 @@ class CELLRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_directionalRed(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 12, c_ubyte(nValue))
     directionalRed = property(get_directionalRed, set_directionalRed)
@@ -9567,7 +9815,7 @@ class CELLRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_directionalGreen(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 13, c_ubyte(nValue))
     directionalGreen = property(get_directionalGreen, set_directionalGreen)
@@ -9575,7 +9823,7 @@ class CELLRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 14)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_directionalBlue(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 14, c_ubyte(nValue))
     directionalBlue = property(get_directionalBlue, set_directionalBlue)
@@ -9585,7 +9833,7 @@ class CELLRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 15, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused2(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 15, struct.pack('B', *nValue), 1)
     unused2 = property(get_unused2, set_unused2)
@@ -9593,7 +9841,7 @@ class CELLRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 16)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_fogRed(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 16, c_ubyte(nValue))
     fogRed = property(get_fogRed, set_fogRed)
@@ -9601,7 +9849,7 @@ class CELLRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 17)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_fogGreen(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 17, c_ubyte(nValue))
     fogGreen = property(get_fogGreen, set_fogGreen)
@@ -9609,7 +9857,7 @@ class CELLRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 18)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_fogBlue(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 18, c_ubyte(nValue))
     fogBlue = property(get_fogBlue, set_fogBlue)
@@ -9619,7 +9867,7 @@ class CELLRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 19, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused3(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 19, struct.pack('B', *nValue), 1)
     unused3 = property(get_unused3, set_unused3)
@@ -9627,7 +9875,7 @@ class CELLRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 20)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_fogNear(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 20, c_float(nValue))
     fogNear = property(get_fogNear, set_fogNear)
@@ -9635,7 +9883,7 @@ class CELLRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 21)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_fogFar(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 21, c_float(nValue))
     fogFar = property(get_fogFar, set_fogFar)
@@ -9643,7 +9891,7 @@ class CELLRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_int)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 22)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_directionalXY(self, nValue):
         CBash.SetFIDFieldI(self._CollectionIndex, self._ModName, self._recordID, 22, nValue)
     directionalXY = property(get_directionalXY, set_directionalXY)
@@ -9651,7 +9899,7 @@ class CELLRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_int)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 23)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_directionalZ(self, nValue):
         CBash.SetFIDFieldI(self._CollectionIndex, self._ModName, self._recordID, 23, nValue)
     directionalZ = property(get_directionalZ, set_directionalZ)
@@ -9659,7 +9907,7 @@ class CELLRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 24)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_directionalFade(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 24, c_float(nValue))
     directionalFade = property(get_directionalFade, set_directionalFade)
@@ -9667,7 +9915,7 @@ class CELLRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 25)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_fogClip(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 25, c_float(nValue))
     fogClip = property(get_fogClip, set_fogClip)
@@ -9675,7 +9923,7 @@ class CELLRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 26)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_music(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 26, c_ubyte(nValue))
     music = property(get_music, set_music)
@@ -9683,7 +9931,7 @@ class CELLRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 27)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_owner(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 27, nValue)
     owner = property(get_owner, set_owner)
@@ -9691,7 +9939,7 @@ class CELLRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_int)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 28)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_rank(self, nValue):
         CBash.SetFIDFieldI(self._CollectionIndex, self._ModName, self._recordID, 28, nValue)
     rank = property(get_rank, set_rank)
@@ -9699,7 +9947,7 @@ class CELLRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 29)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_globalVariable(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 29, nValue)
     globalVariable = property(get_globalVariable, set_globalVariable)
@@ -9707,7 +9955,7 @@ class CELLRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 30)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_climate(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 30, nValue)
     climate = property(get_climate, set_climate)
@@ -9715,7 +9963,7 @@ class CELLRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 31)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_waterHeight(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 31, c_float(nValue))
     waterHeight = property(get_waterHeight, set_waterHeight)
@@ -9725,7 +9973,7 @@ class CELLRecord(BaseRecord):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 32, byref(cRecords))
             return [cRecords[x].contents.value for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_regions(self, nValue):
         CBash.SetFIDFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 32, struct.pack('I' * len(nValue), *nValue), len(nValue))
     regions = property(get_regions, set_regions)
@@ -9733,7 +9981,7 @@ class CELLRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_int)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 33)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_posX(self, nValue):
         CBash.SetFIDFieldI(self._CollectionIndex, self._ModName, self._recordID, 33, nValue)
     posX = property(get_posX, set_posX)
@@ -9741,7 +9989,7 @@ class CELLRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_int)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 34)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_posY(self, nValue):
         CBash.SetFIDFieldI(self._CollectionIndex, self._ModName, self._recordID, 34, nValue)
     posY = property(get_posY, set_posY)
@@ -9749,7 +9997,7 @@ class CELLRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 35)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_water(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 35, nValue)
     water = property(get_water, set_water)
@@ -9760,7 +10008,7 @@ class CELLRecord(BaseRecord):
             cRecords = (POINTER(c_uint) * numSubRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 36, byref(cRecords))
             return [ACHRRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def ACRE(self):
         numSubRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 37)
@@ -9768,7 +10016,7 @@ class CELLRecord(BaseRecord):
             cRecords = (POINTER(c_uint) * numSubRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 37, byref(cRecords))
             return [ACRERecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def REFR(self):
         numSubRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 38)
@@ -9776,12 +10024,12 @@ class CELLRecord(BaseRecord):
             cRecords = (POINTER(c_uint) * numSubRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 38, byref(cRecords))
             return [REFRRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     def get_PGRD(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 39)
         if(retValue): return PGRDRecord(self._CollectionIndex, self._ModName, retValue.contents.value)
-        else: return None
+        return None
     def set_PGRD(self, nPGRD):
         if(nPGRD == None and self.PGRD != None):
             self.PGRD.DeleteRecord()
@@ -9800,7 +10048,7 @@ class CELLRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 40)
         if(retValue): return LANDRecord(self._CollectionIndex, self._ModName, retValue.contents.value)
-        else: return None
+        return None
     def set_LAND(self, nLAND):
         if(nLAND == None and self.LAND != None):
             self.LAND.DeleteRecord()
@@ -9892,7 +10140,7 @@ class ACHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 6)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_base(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 6, nValue)
     base = property(get_base, set_base)
@@ -9900,7 +10148,7 @@ class ACHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_unknownXPCIFormID(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 7, nValue)
     unknownXPCIFormID = property(get_unknownXPCIFormID, set_unknownXPCIFormID)
@@ -9914,7 +10162,7 @@ class ACHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_lod1(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 9, c_float(nValue))
     lod1 = property(get_lod1, set_lod1)
@@ -9922,7 +10170,7 @@ class ACHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_lod2(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 10, c_float(nValue))
     lod2 = property(get_lod2, set_lod2)
@@ -9930,7 +10178,7 @@ class ACHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_lod3(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 11, c_float(nValue))
     lod3 = property(get_lod3, set_lod3)
@@ -9938,7 +10186,7 @@ class ACHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_parent(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 12, nValue)
     parent = property(get_parent, set_parent)
@@ -9946,7 +10194,7 @@ class ACHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_parentFlags(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 13, c_ubyte(nValue))
     parentFlags = property(get_parentFlags, set_parentFlags)
@@ -9956,7 +10204,7 @@ class ACHRRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 14, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused1(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 14, struct.pack('3B', *nValue), 3)
     unused1 = property(get_unused1, set_unused1)
@@ -9964,7 +10212,7 @@ class ACHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 15)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_merchantContainer(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 15, nValue)
     merchantContainer = property(get_merchantContainer, set_merchantContainer)
@@ -9972,7 +10220,7 @@ class ACHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 16)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_horse(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 16, nValue)
     horse = property(get_horse, set_horse)
@@ -9982,7 +10230,7 @@ class ACHRRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 17, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_xrgd_p(self, nValue):
         length = len(nValue)
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 17, struct.pack('B' * length, *nValue), length)
@@ -9991,7 +10239,7 @@ class ACHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 18)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_scale(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 18, c_float(nValue))
     scale = property(get_scale, set_scale)
@@ -9999,7 +10247,7 @@ class ACHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 19)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_posX(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 19, c_float(nValue))
     posX = property(get_posX, set_posX)
@@ -10007,7 +10255,7 @@ class ACHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 20)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_posY(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 20, c_float(nValue))
     posY = property(get_posY, set_posY)
@@ -10015,7 +10263,7 @@ class ACHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 21)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_posZ(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 21, c_float(nValue))
     posZ = property(get_posZ, set_posZ)
@@ -10023,7 +10271,7 @@ class ACHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 22)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_rotX(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 22, c_float(nValue))
     rotX = property(get_rotX, set_rotX)
@@ -10031,7 +10279,7 @@ class ACHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 23)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_rotY(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 23, c_float(nValue))
     rotY = property(get_rotY, set_rotY)
@@ -10039,7 +10287,7 @@ class ACHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 24)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_rotZ(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 24, c_float(nValue))
     rotZ = property(get_rotZ, set_rotZ)
@@ -10063,7 +10311,7 @@ class ACRERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 6)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_base(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 6, nValue)
     base = property(get_base, set_base)
@@ -10071,7 +10319,7 @@ class ACRERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_owner(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 7, nValue)
     owner = property(get_owner, set_owner)
@@ -10079,7 +10327,7 @@ class ACRERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_int)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_rank(self, nValue):
         CBash.SetFIDFieldI(self._CollectionIndex, self._ModName, self._recordID, 8, nValue)
     rank = property(get_rank, set_rank)
@@ -10087,7 +10335,7 @@ class ACRERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_globalVariable(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 9, nValue)
     globalVariable = property(get_globalVariable, set_globalVariable)
@@ -10095,7 +10343,7 @@ class ACRERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_parent(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 10, nValue)
     parent = property(get_parent, set_parent)
@@ -10103,7 +10351,7 @@ class ACRERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_parentFlags(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 11, c_ubyte(nValue))
     parentFlags = property(get_parentFlags, set_parentFlags)
@@ -10113,7 +10361,7 @@ class ACRERecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 12, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused1(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 12, struct.pack('3B', *nValue), 3)
     unused1 = property(get_unused1, set_unused1)
@@ -10123,7 +10371,7 @@ class ACRERecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 13, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_xrgd_p(self, nValue):
         length = len(nValue)
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 13, struct.pack('B' * length, *nValue), length)
@@ -10132,7 +10380,7 @@ class ACRERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 14)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_scale(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 14, c_float(nValue))
     scale = property(get_scale, set_scale)
@@ -10140,7 +10388,7 @@ class ACRERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 15)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_posX(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 15, c_float(nValue))
     posX = property(get_posX, set_posX)
@@ -10148,7 +10396,7 @@ class ACRERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 16)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_posY(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 16, c_float(nValue))
     posY = property(get_posY, set_posY)
@@ -10156,7 +10404,7 @@ class ACRERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 17)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_posZ(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 17, c_float(nValue))
     posZ = property(get_posZ, set_posZ)
@@ -10164,7 +10412,7 @@ class ACRERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 18)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_rotX(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 18, c_float(nValue))
     rotX = property(get_rotX, set_rotX)
@@ -10172,7 +10420,7 @@ class ACRERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 19)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_rotY(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 19, c_float(nValue))
     rotY = property(get_rotY, set_rotY)
@@ -10180,7 +10428,7 @@ class ACRERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 20)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_rotZ(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 20, c_float(nValue))
     rotZ = property(get_rotZ, set_rotZ)
@@ -10204,7 +10452,7 @@ class REFRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 6)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_base(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 6, nValue)
     base = property(get_base, set_base)
@@ -10212,7 +10460,7 @@ class REFRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_destinationFormID(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 7, nValue)
     destinationFormID = property(get_destinationFormID, set_destinationFormID)
@@ -10220,7 +10468,7 @@ class REFRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_destinationPosX(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 8, c_float(nValue))
     destinationPosX = property(get_destinationPosX, set_destinationPosX)
@@ -10228,7 +10476,7 @@ class REFRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_destinationPosY(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 9, c_float(nValue))
     destinationPosY = property(get_destinationPosY, set_destinationPosY)
@@ -10236,7 +10484,7 @@ class REFRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_destinationPosZ(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 10, c_float(nValue))
     destinationPosZ = property(get_destinationPosZ, set_destinationPosZ)
@@ -10244,7 +10492,7 @@ class REFRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_destinationRotX(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 11, c_float(nValue))
     destinationRotX = property(get_destinationRotX, set_destinationRotX)
@@ -10252,7 +10500,7 @@ class REFRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_destinationRotY(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 12, c_float(nValue))
     destinationRotY = property(get_destinationRotY, set_destinationRotY)
@@ -10260,7 +10508,7 @@ class REFRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_destinationRotZ(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 13, c_float(nValue))
     destinationRotZ = property(get_destinationRotZ, set_destinationRotZ)
@@ -10268,7 +10516,7 @@ class REFRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 14)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_lockLevel(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 14, c_ubyte(nValue))
     lockLevel = property(get_lockLevel, set_lockLevel)
@@ -10278,7 +10526,7 @@ class REFRRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 15, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused1(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 15, struct.pack('3B', *nValue), 3)
     unused1 = property(get_unused1, set_unused1)
@@ -10286,7 +10534,7 @@ class REFRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 16)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_lockKey(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 16, nValue)
     lockKey = property(get_lockKey, set_lockKey)
@@ -10296,7 +10544,7 @@ class REFRRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 17, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused2(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 17, struct.pack('4B', *nValue), 4)
     unused2 = property(get_unused2, set_unused2)
@@ -10304,7 +10552,7 @@ class REFRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 18)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_lockFlags(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 18, c_ubyte(nValue))
     lockFlags = property(get_lockFlags, set_lockFlags)
@@ -10314,7 +10562,7 @@ class REFRRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 19, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused3(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 19, struct.pack('3B', *nValue), 3)
     unused3 = property(get_unused3, set_unused3)
@@ -10322,7 +10570,7 @@ class REFRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 20)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_owner(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 20, nValue)
     owner = property(get_owner, set_owner)
@@ -10330,7 +10578,7 @@ class REFRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_int)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 21)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_rank(self, nValue):
         CBash.SetFIDFieldI(self._CollectionIndex, self._ModName, self._recordID, 21, nValue)
     rank = property(get_rank, set_rank)
@@ -10338,7 +10586,7 @@ class REFRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 22)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_globalVariable(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 22, nValue)
     globalVariable = property(get_globalVariable, set_globalVariable)
@@ -10346,7 +10594,7 @@ class REFRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 23)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_parent(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 23, nValue)
     parent = property(get_parent, set_parent)
@@ -10354,7 +10602,7 @@ class REFRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 24)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_parentFlags(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 24, c_ubyte(nValue))
     parentFlags = property(get_parentFlags, set_parentFlags)
@@ -10364,7 +10612,7 @@ class REFRRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 25, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused4(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 25, struct.pack('3B', *nValue), 3)
     unused4 = property(get_unused4, set_unused4)
@@ -10372,7 +10620,7 @@ class REFRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 26)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_targetFormID(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 26, nValue)
     targetFormID = property(get_targetFormID, set_targetFormID)
@@ -10380,7 +10628,7 @@ class REFRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 27)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_seed(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 27, nValue)
     seed = property(get_seed, set_seed)
@@ -10388,7 +10636,7 @@ class REFRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 27)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_seedOffset(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 27, c_ubyte(nValue))
     seedOffset = property(get_seedOffset, set_seedOffset)
@@ -10396,7 +10644,7 @@ class REFRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 28)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_lod1(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 28, c_float(nValue))
     lod1 = property(get_lod1, set_lod1)
@@ -10404,7 +10652,7 @@ class REFRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 29)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_lod2(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 29, c_float(nValue))
     lod2 = property(get_lod2, set_lod2)
@@ -10412,7 +10660,7 @@ class REFRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 30)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_lod3(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 30, c_float(nValue))
     lod3 = property(get_lod3, set_lod3)
@@ -10420,7 +10668,7 @@ class REFRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 31)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_charge(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 31, c_float(nValue))
     charge = property(get_charge, set_charge)
@@ -10428,7 +10676,7 @@ class REFRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_int)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 32)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_health(self, nValue):
         CBash.SetFIDFieldI(self._CollectionIndex, self._ModName, self._recordID, 32, nValue)
     health = property(get_health, set_health)
@@ -10436,7 +10684,7 @@ class REFRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 33)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_unknownXPCIFormID(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 33, nValue)
     unknownXPCIFormID = property(get_unknownXPCIFormID, set_unknownXPCIFormID)
@@ -10450,7 +10698,7 @@ class REFRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_int)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 35)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_levelMod(self, nValue):
         CBash.SetFIDFieldI(self._CollectionIndex, self._ModName, self._recordID, 35, nValue)
     levelMod = property(get_levelMod, set_levelMod)
@@ -10458,7 +10706,7 @@ class REFRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 36)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_unknownXRTMFormID(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 36, nValue)
     unknownXRTMFormID = property(get_unknownXRTMFormID, set_unknownXRTMFormID)
@@ -10466,7 +10714,7 @@ class REFRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 37)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_actionFlags(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 37, nValue)
     actionFlags = property(get_actionFlags, set_actionFlags)
@@ -10474,7 +10722,7 @@ class REFRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_int)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 38)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_count(self, nValue):
         CBash.SetFIDFieldI(self._CollectionIndex, self._ModName, self._recordID, 38, nValue)
     count = property(get_count, set_count)
@@ -10482,7 +10730,7 @@ class REFRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 39)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_markerFlags(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 39, c_ubyte(nValue))
     markerFlags = property(get_markerFlags, set_markerFlags)
@@ -10496,7 +10744,7 @@ class REFRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 41)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_markerType(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 41, c_ubyte(nValue))
     markerType = property(get_markerType, set_markerType)
@@ -10506,7 +10754,7 @@ class REFRRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 42, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_markerUnused(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 42, struct.pack('B', *nValue), 1)
     markerUnused = property(get_markerUnused, set_markerUnused)
@@ -10514,7 +10762,7 @@ class REFRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 43)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_scale(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 43, c_float(nValue))
     scale = property(get_scale, set_scale)
@@ -10522,7 +10770,7 @@ class REFRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 44)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_soul(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 44, c_ubyte(nValue))
     soul = property(get_soul, set_soul)
@@ -10530,7 +10778,7 @@ class REFRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 45)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_posX(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 45, c_float(nValue))
     posX = property(get_posX, set_posX)
@@ -10538,7 +10786,7 @@ class REFRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 46)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_posY(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 46, c_float(nValue))
     posY = property(get_posY, set_posY)
@@ -10546,7 +10794,7 @@ class REFRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 47)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_posZ(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 47, c_float(nValue))
     posZ = property(get_posZ, set_posZ)
@@ -10554,7 +10802,7 @@ class REFRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 48)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_rotX(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 48, c_float(nValue))
     rotX = property(get_rotX, set_rotX)
@@ -10562,7 +10810,7 @@ class REFRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 49)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_rotY(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 49, c_float(nValue))
     rotY = property(get_rotY, set_rotY)
@@ -10570,7 +10818,7 @@ class REFRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 50)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_rotZ(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 50, c_float(nValue))
     rotZ = property(get_rotZ, set_rotZ)
@@ -10769,7 +11017,7 @@ class PGRDRecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_float)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 1)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_x(self, nValue):
             CBash.SetFIDListFieldF(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 1, c_float(nValue))
         x = property(get_x, set_x)
@@ -10777,7 +11025,7 @@ class PGRDRecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_float)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 2)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_y(self, nValue):
             CBash.SetFIDListFieldF(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 2, c_float(nValue))
         y = property(get_y, set_y)
@@ -10785,7 +11033,7 @@ class PGRDRecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_float)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 3)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_z(self, nValue):
             CBash.SetFIDListFieldF(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 3, c_float(nValue))
         z = property(get_z, set_z)
@@ -10793,7 +11041,7 @@ class PGRDRecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_ubyte)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 4)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_connections(self, nValue):
             CBash.SetFIDListFieldUC(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 4, c_ubyte(nValue))
         connections = property(get_connections, set_connections)
@@ -10803,7 +11051,7 @@ class PGRDRecord(BaseRecord):
                 cRecords = POINTER(c_ubyte * numRecords)()
                 CBash.GetFIDListArray(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 5, byref(cRecords))
                 return [cRecords.contents[x] for x in range(0, numRecords)]
-            else: return []
+            return []
         def set_unused1(self, nValue):
             CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 5, struct.pack('3B', *nValue), 3)
         unused1 = property(get_unused1, set_unused1)
@@ -10817,7 +11065,7 @@ class PGRDRecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_ushort)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 10, self._listIndex, 1)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_point(self, nValue):
             CBash.SetFIDListFieldUS(self._CollectionIndex, self._ModName, self._recordID, 10, self._listIndex, 1, c_ushort(nValue))
         point = property(get_point, set_point)
@@ -10827,7 +11075,7 @@ class PGRDRecord(BaseRecord):
                 cRecords = POINTER(c_ubyte * numRecords)()
                 CBash.GetFIDListArray(self._CollectionIndex, self._ModName, self._recordID, 10, self._listIndex, 2, byref(cRecords))
                 return [cRecords.contents[x] for x in range(0, numRecords)]
-            else: return []
+            return []
         def set_unused1(self, nValue):
             CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, 10, self._listIndex, 2, struct.pack('2B', *nValue), 2)
         unused1 = property(get_unused1, set_unused1)
@@ -10835,7 +11083,7 @@ class PGRDRecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_float)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 10, self._listIndex, 3)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_x(self, nValue):
             CBash.SetFIDListFieldF(self._CollectionIndex, self._ModName, self._recordID, 10, self._listIndex, 3, c_float(nValue))
         x = property(get_x, set_x)
@@ -10843,7 +11091,7 @@ class PGRDRecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_float)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 10, self._listIndex, 4)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_y(self, nValue):
             CBash.SetFIDListFieldF(self._CollectionIndex, self._ModName, self._recordID, 10, self._listIndex, 4, c_float(nValue))
         y = property(get_y, set_y)
@@ -10851,7 +11099,7 @@ class PGRDRecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_float)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 10, self._listIndex, 5)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_z(self, nValue):
             CBash.SetFIDListFieldF(self._CollectionIndex, self._ModName, self._recordID, 10, self._listIndex, 5, c_float(nValue))
         z = property(get_z, set_z)
@@ -10865,7 +11113,7 @@ class PGRDRecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 11, self._listIndex, 1)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_reference(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 11, self._listIndex, 1, nValue)
         reference = property(get_reference, set_reference)
@@ -10875,7 +11123,7 @@ class PGRDRecord(BaseRecord):
                 cRecords = POINTER(c_uint * numRecords)()
                 CBash.GetFIDListArray(self._CollectionIndex, self._ModName, self._recordID, 11, self._listIndex, 2, byref(cRecords))
                 return [cRecords.contents[x] for x in range(0, numRecords)]
-            else: return []
+            return []
         def set_points(self, nValues):
             CBash.SetFIDListFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 11, self._listIndex, 2, struct.pack('I' * len(nValues), *nValues), len(nValues))
         points = property(get_points, set_points)
@@ -10898,14 +11146,14 @@ class PGRDRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ushort)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 6)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_count(self, nValue):
         CBash.SetFIDFieldUS(self._CollectionIndex, self._ModName, self._recordID, 6, c_ushort(nValue))
     count = property(get_count, set_count)    
     def get_PGRP(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 7)
         if(numRecords > 0): return [self.PGRPRecord(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_PGRP(self, nPGRP):
         diffLength = len(nPGRP) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 7)
         nValues = [(nPGRPRecord.x, nPGRPRecord.y, nPGRPRecord.z, nPGRPRecord.connections, nPGRPRecord.unused1) for nPGRPRecord in nPGRP]
@@ -10924,7 +11172,7 @@ class PGRDRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 8, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_PGAG(self, nValue):
         length = len(nValue)
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 8, struct.pack('B' * length, *nValue), length)
@@ -10935,7 +11183,7 @@ class PGRDRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 9, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_PGRR(self, nValue):
         length = len(nValue)
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 9, struct.pack('B' * length, *nValue), length)
@@ -10943,7 +11191,7 @@ class PGRDRecord(BaseRecord):
     def get_PGRI(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 10)
         if(numRecords > 0): return [self.PGRIRecord(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_PGRI(self, nPGRI):
         diffLength = len(nPGRI) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 10)
         nValues = [(nPGRIRecord.point, nPGRIRecord.unused1, nPGRIRecord.x, nPGRIRecord.y, nPGRIRecord.z) for nPGRIRecord in nPGRI]
@@ -10959,7 +11207,7 @@ class PGRDRecord(BaseRecord):
     def get_PGRL(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 11)
         if(numRecords > 0): return [self.PGRLRecord(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_PGRL(self, nPGRL):
         diffLength = len(nPGRL) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 11)
         nValues = [(nPGRLRecord.reference, nPGRLRecord.points) for nPGRLRecord in nPGRL]
@@ -11004,7 +11252,7 @@ class WRLDRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_parent(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 7, nValue)
     parent = property(get_parent, set_parent)
@@ -11012,7 +11260,7 @@ class WRLDRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_climate(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 8, nValue)
     climate = property(get_climate, set_climate)
@@ -11020,7 +11268,7 @@ class WRLDRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_water(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 9, nValue)
     water = property(get_water, set_water)
@@ -11034,7 +11282,7 @@ class WRLDRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_int)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_dimX(self, nValue):
         CBash.SetFIDFieldI(self._CollectionIndex, self._ModName, self._recordID, 11, nValue)
     dimX = property(get_dimX, set_dimX)
@@ -11042,7 +11290,7 @@ class WRLDRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_int)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_dimY(self, nValue):
         CBash.SetFIDFieldI(self._CollectionIndex, self._ModName, self._recordID, 12, nValue)
     dimY = property(get_dimY, set_dimY)
@@ -11050,7 +11298,7 @@ class WRLDRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_short)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_NWCellX(self, nValue):
         CBash.SetFIDFieldS(self._CollectionIndex, self._ModName, self._recordID, 13, c_short(nValue))
     NWCellX = property(get_NWCellX, set_NWCellX)
@@ -11058,7 +11306,7 @@ class WRLDRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_short)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 14)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_NWCellY(self, nValue):
         CBash.SetFIDFieldS(self._CollectionIndex, self._ModName, self._recordID, 14, c_short(nValue))
     NWCellY = property(get_NWCellY, set_NWCellY)
@@ -11066,7 +11314,7 @@ class WRLDRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_short)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 15)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_SECellX(self, nValue):
         CBash.SetFIDFieldS(self._CollectionIndex, self._ModName, self._recordID, 15, c_short(nValue))
     SECellX = property(get_SECellX, set_SECellX)
@@ -11074,7 +11322,7 @@ class WRLDRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_short)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 16)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_SECellY(self, nValue):
         CBash.SetFIDFieldS(self._CollectionIndex, self._ModName, self._recordID, 16, c_short(nValue))
     SECellY = property(get_SECellY, set_SECellY)
@@ -11082,7 +11330,7 @@ class WRLDRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 17)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_flags(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 17, c_ubyte(nValue))
     flags = property(get_flags, set_flags)
@@ -11090,7 +11338,7 @@ class WRLDRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 18)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_unknown00(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 18, c_float(nValue))
     unknown00 = property(get_unknown00, set_unknown00)
@@ -11098,7 +11346,7 @@ class WRLDRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 19)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_unknown01(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 19, c_float(nValue))
     unknown01 = property(get_unknown01, set_unknown01)
@@ -11106,7 +11354,7 @@ class WRLDRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 20)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_unknown90(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 20, c_float(nValue))
     unknown90 = property(get_unknown90, set_unknown90)
@@ -11114,7 +11362,7 @@ class WRLDRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 21)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_unknown91(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 21, c_float(nValue))
     unknown91 = property(get_unknown91, set_unknown91)
@@ -11122,7 +11370,7 @@ class WRLDRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 22)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_sound(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 22, nValue)
     sound = property(get_sound, set_sound)
@@ -11132,7 +11380,7 @@ class WRLDRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 23, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_ofst_p(self, nValue):
         length = len(nValue)
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 23, struct.pack('B' * length, *nValue), length)
@@ -11141,7 +11389,7 @@ class WRLDRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 24)
         if(retValue): return ROADRecord(self._CollectionIndex, self._ModName, retValue.contents.value)
-        else: return None
+        return None
     def set_ROAD(self, nROAD):
         if(nCELL == None and self.ROAD != None):
             self.ROAD.DeleteRecord()
@@ -11156,7 +11404,7 @@ class WRLDRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 25)
         if(retValue): return CELLRecord(self._CollectionIndex, self._ModName, retValue.contents.value)
-        else: return None
+        return None
     def set_CELL(self, nCELL):
         if(nCELL == None and self.CELL != None):
             self.CELL.DeleteRecord()
@@ -11207,7 +11455,7 @@ class WRLDRecord(BaseRecord):
             cRecords = (POINTER(c_uint) * numSubRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 26, byref(cRecords))
             return [CELLRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
 
     def get_IsSmallWorld(self):
         return (self.flags & 0x00000001) != 0
@@ -11283,7 +11531,7 @@ class ROADRecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_float)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 1)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_x(self, nValue):
             CBash.SetFIDListFieldF(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 1, c_float(nValue))
         x = property(get_x, set_x)
@@ -11291,7 +11539,7 @@ class ROADRecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_float)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 2)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_y(self, nValue):
             CBash.SetFIDListFieldF(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 2, c_float(nValue))
         y = property(get_y, set_y)
@@ -11299,7 +11547,7 @@ class ROADRecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_float)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 3)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_z(self, nValue):
             CBash.SetFIDListFieldF(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 3, c_float(nValue))
         z = property(get_z, set_z)
@@ -11307,7 +11555,7 @@ class ROADRecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_ubyte)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 4)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_connections(self, nValue):
             CBash.SetFIDListFieldUC(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 4, c_ubyte(nValue))
         connections = property(get_connections, set_connections)
@@ -11317,7 +11565,7 @@ class ROADRecord(BaseRecord):
                 cRecords = POINTER(c_ubyte * numRecords)()
                 CBash.GetFIDListArray(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 5, byref(cRecords))
                 return [cRecords.contents[x] for x in range(0, numRecords)]
-            else: return []
+            return []
         def set_unused1(self, nValue):
             CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 5, struct.pack('3B', *nValue), 3)
         unused1 = property(get_unused1, set_unused1)
@@ -11331,7 +11579,7 @@ class ROADRecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_float)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 1)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_x(self, nValue):
             CBash.SetFIDListFieldF(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 1, c_float(nValue))
         x = property(get_x, set_x)
@@ -11339,7 +11587,7 @@ class ROADRecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_float)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 2)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_y(self, nValue):
             CBash.SetFIDListFieldF(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 2, c_float(nValue))
         y = property(get_y, set_y)
@@ -11347,7 +11595,7 @@ class ROADRecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_float)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 3)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_z(self, nValue):
             CBash.SetFIDListFieldF(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 3, c_float(nValue))
         z = property(get_z, set_z)
@@ -11362,7 +11610,7 @@ class ROADRecord(BaseRecord):
     def get_PGRP(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 6)
         if(numRecords > 0): return [self.PGRPRecord(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_PGRP(self, nPGRP):
         diffLength = len(nPGRP) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 6)
         nValues = [(nPGRPRecord.x, nPGRPRecord.y, nPGRPRecord.z, nPGRPRecord.connections, nPGRPRecord.unused1) for nPGRPRecord in nPGRP]
@@ -11378,7 +11626,7 @@ class ROADRecord(BaseRecord):
     def get_PGRR(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 7)
         if(numRecords > 0): return [self.PGRRRecord(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_PGRR(self, nPGRR):
         diffLength = len(nPGRR) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 7)
         nValues = [(nPGRRRecord.x, nPGRRRecord.y, nPGRRRecord.z) for nPGRRRecord in nPGRR]
@@ -11412,7 +11660,7 @@ class LANDRecord(BaseRecord):
             CBash.ReadFIDListX2Field.restype = POINTER(c_ubyte)
             retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 0, self._listX2Index, 1)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_x(self, nValue):
             CBash.SetFIDListX2FieldUC(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 0, self._listX2Index, 1, c_ubyte(nValue))
         x = property(get_x, set_x)
@@ -11420,7 +11668,7 @@ class LANDRecord(BaseRecord):
             CBash.ReadFIDListX2Field.restype = POINTER(c_ubyte)
             retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 0, self._listX2Index, 2)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_y(self, nValue):
             CBash.SetFIDListX2FieldUC(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 0, self._listX2Index, 2, c_ubyte(nValue))
         y = property(get_y, set_y)
@@ -11428,7 +11676,7 @@ class LANDRecord(BaseRecord):
             CBash.ReadFIDListX2Field.restype = POINTER(c_ubyte)
             retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 0, self._listX2Index, 3)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_z(self, nValue):
             CBash.SetFIDListX2FieldUC(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 0, self._listX2Index, 3, c_ubyte(nValue))
         z = property(get_z, set_z)
@@ -11443,7 +11691,7 @@ class LANDRecord(BaseRecord):
             CBash.ReadFIDListX2Field.restype = POINTER(c_byte)
             retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 9, self._listIndex, 0, self._listX2Index, 1)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_height(self, nValue):
             CBash.SetFIDListX2FieldC(self._CollectionIndex, self._ModName, self._recordID, 9, self._listIndex, 0, self._listX2Index, 1, c_ubyte(nValue))
         height = property(get_height, set_height)
@@ -11458,7 +11706,7 @@ class LANDRecord(BaseRecord):
             CBash.ReadFIDListX2Field.restype = POINTER(c_ubyte)
             retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 11, self._listIndex, 0, self._listX2Index, 1)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_red(self, nValue):
             CBash.SetFIDListX2FieldUC(self._CollectionIndex, self._ModName, self._recordID, 11, self._listIndex, 0, self._listX2Index, 1, c_ubyte(nValue))
         red = property(get_red, set_red)
@@ -11466,7 +11714,7 @@ class LANDRecord(BaseRecord):
             CBash.ReadFIDListX2Field.restype = POINTER(c_ubyte)
             retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 11, self._listIndex, 0, self._listX2Index, 2)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_green(self, nValue):
             CBash.SetFIDListX2FieldUC(self._CollectionIndex, self._ModName, self._recordID, 11, self._listIndex, 0, self._listX2Index, 2, c_ubyte(nValue))
         green = property(get_green, set_green)
@@ -11474,7 +11722,7 @@ class LANDRecord(BaseRecord):
             CBash.ReadFIDListX2Field.restype = POINTER(c_ubyte)
             retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 11, self._listIndex, 0, self._listX2Index, 3)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_blue(self, nValue):
             CBash.SetFIDListX2FieldUC(self._CollectionIndex, self._ModName, self._recordID, 11, self._listIndex, 0, self._listX2Index, 3, c_ubyte(nValue))
         blue = property(get_blue, set_blue)
@@ -11489,7 +11737,7 @@ class LANDRecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_texture(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1, nValue)
         texture = property(get_texture, set_texture)
@@ -11497,7 +11745,7 @@ class LANDRecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_byte)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_quadrant(self, nValue):
             CBash.SetFIDListFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2, c_byte(nValue))
         quadrant = property(get_quadrant, set_quadrant)
@@ -11507,7 +11755,7 @@ class LANDRecord(BaseRecord):
                 cRecords = POINTER(c_ubyte * numRecords)()
                 CBash.GetFIDListArray(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3, byref(cRecords))
                 return [cRecords.contents[x] for x in range(0, numRecords)]
-            else: return []
+            return []
         def set_unused1(self, nValue):
             CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3, struct.pack('B', *nValue), 1)
         unused1 = property(get_unused1, set_unused1)
@@ -11515,7 +11763,7 @@ class LANDRecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_short)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 4)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_layer(self, nValue):
             CBash.SetFIDListFieldS(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 4, c_short(nValue))
         layer = property(get_layer, set_layer)
@@ -11531,7 +11779,7 @@ class LANDRecord(BaseRecord):
                 CBash.ReadFIDListX2Field.restype = POINTER(c_ushort)
                 retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 1)
                 if(retValue): return retValue.contents.value
-                else: return None
+                return None
             def set_position(self, nValue):
                 CBash.SetFIDListX2FieldUS(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 1, c_ushort(nValue))
             position = property(get_position, set_position)
@@ -11541,7 +11789,7 @@ class LANDRecord(BaseRecord):
                     cRecords = POINTER(c_ubyte * numRecords)()
                     CBash.GetFIDListX2Array(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 2, byref(cRecords))
                     return [cRecords.contents[x] for x in range(0, numRecords)]
-                else: return []
+                return []
             def set_unused1(self, nValue):
                 CBash.SetFIDListX2FieldR(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 2, struct.pack('2B', *nValue), 2)
             unused1 = property(get_unused1, set_unused1)
@@ -11549,7 +11797,7 @@ class LANDRecord(BaseRecord):
                 CBash.ReadFIDListX2Field.restype = POINTER(c_float)
                 retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 3)
                 if(retValue): return retValue.contents.value
-                else: return None
+                return None
             def set_opacity(self, nValue):
                 CBash.SetFIDListX2FieldF(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 3, c_float(nValue))
             opacity = property(get_opacity, set_opacity)
@@ -11567,7 +11815,7 @@ class LANDRecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_texture(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1, nValue)
         texture = property(get_texture, set_texture)
@@ -11575,7 +11823,7 @@ class LANDRecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_byte)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_quadrant(self, nValue):
             CBash.SetFIDListFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2, c_byte(nValue))
         quadrant = property(get_quadrant, set_quadrant)
@@ -11585,7 +11833,7 @@ class LANDRecord(BaseRecord):
                 cRecords = POINTER(c_ubyte * numRecords)()
                 CBash.GetFIDListArray(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3, byref(cRecords))
                 return [cRecords.contents[x] for x in range(0, numRecords)]
-            else: return []
+            return []
         def set_unused1(self, nValue):
             CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3, struct.pack('B', *nValue), 1)
         unused1 = property(get_unused1, set_unused1)
@@ -11593,14 +11841,14 @@ class LANDRecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_short)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 4)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_layer(self, nValue):
             CBash.SetFIDListFieldS(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 4, c_short(nValue))
         layer = property(get_layer, set_layer)
         def get_opacities(self):
             numRecords = CBash.GetFIDListX2Size(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 5)
             if(numRecords > 0): return [self.Opacity(self._CollectionIndex, self._ModName, self._recordID, self._listIndex, x) for x in range(0, numRecords)]
-            else: return []
+            return []
         def set_opacities(self, nOpacities):
             diffLength = len(nOpacities) - CBash.GetFIDListX2Size(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 5)
             nValues = [(nOpacity.position, nOpacity.unused1, nOpacity.opacity) for nOpacity in nOpacities]
@@ -11624,7 +11872,7 @@ class LANDRecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_texture(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1, nValue)
         texture = property(get_texture, set_texture)
@@ -11639,7 +11887,7 @@ class LANDRecord(BaseRecord):
             CBash.ReadFIDListX2Field.restype = POINTER(c_float)
             retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 1)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_height(self, nValue):
             CBash.SetFIDListX2FieldF(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 1, c_float(nValue))
         height = property(get_height, set_height)
@@ -11647,7 +11895,7 @@ class LANDRecord(BaseRecord):
             CBash.ReadFIDListX2Field.restype = POINTER(c_ubyte)
             retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 2)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_normalX(self, nValue):
             CBash.SetFIDListX2FieldUC(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 2, c_ubyte(nValue))
         normalX = property(get_normalX, set_normalX)
@@ -11655,7 +11903,7 @@ class LANDRecord(BaseRecord):
             CBash.ReadFIDListX2Field.restype = POINTER(c_ubyte)
             retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 3)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_normalY(self, nValue):
             CBash.SetFIDListX2FieldUC(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 3, c_ubyte(nValue))
         normalY = property(get_normalY, set_normalY)
@@ -11663,7 +11911,7 @@ class LANDRecord(BaseRecord):
             CBash.ReadFIDListX2Field.restype = POINTER(c_ubyte)
             retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 4)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_normalZ(self, nValue):
             CBash.SetFIDListX2FieldUC(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 4, c_ubyte(nValue))
         normalZ = property(get_normalZ, set_normalZ)
@@ -11671,7 +11919,7 @@ class LANDRecord(BaseRecord):
             CBash.ReadFIDListX2Field.restype = POINTER(c_ubyte)
             retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 5)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_red(self, nValue):
             CBash.SetFIDListX2FieldUC(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 5, c_ubyte(nValue))
         red = property(get_red, set_red)
@@ -11679,7 +11927,7 @@ class LANDRecord(BaseRecord):
             CBash.ReadFIDListX2Field.restype = POINTER(c_ubyte)
             retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 6)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_green(self, nValue):
             CBash.SetFIDListX2FieldUC(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 6, c_ubyte(nValue))
         green = property(get_green, set_green)
@@ -11687,7 +11935,7 @@ class LANDRecord(BaseRecord):
             CBash.ReadFIDListX2Field.restype = POINTER(c_ubyte)
             retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 7)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_blue(self, nValue):
             CBash.SetFIDListX2FieldUC(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 7, c_ubyte(nValue))
         blue = property(get_blue, set_blue)
@@ -11695,7 +11943,7 @@ class LANDRecord(BaseRecord):
             CBash.ReadFIDListX2Field.restype = POINTER(c_uint)
             retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 8)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_baseTexture(self, nValue):
             CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 8, nValue)
         baseTexture = property(get_baseTexture, set_baseTexture)
@@ -11703,7 +11951,7 @@ class LANDRecord(BaseRecord):
             CBash.ReadFIDListX2Field.restype = POINTER(c_uint)
             retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 9)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_layer1Texture(self, nValue):
             CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 9, nValue)
         layer1Texture = property(get_layer1Texture, set_layer1Texture)
@@ -11711,7 +11959,7 @@ class LANDRecord(BaseRecord):
             CBash.ReadFIDListX2Field.restype = POINTER(c_float)
             retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 10)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_layer1Opacity(self, nValue):
             CBash.SetFIDListX2FieldF(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 10, c_float(nValue))
         layer1Opacity = property(get_layer1Opacity, set_layer1Opacity)
@@ -11719,7 +11967,7 @@ class LANDRecord(BaseRecord):
             CBash.ReadFIDListX2Field.restype = POINTER(c_uint)
             retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 11)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_layer2Texture(self, nValue):
             CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 11, nValue)
         layer2Texture = property(get_layer2Texture, set_layer2Texture)
@@ -11727,7 +11975,7 @@ class LANDRecord(BaseRecord):
             CBash.ReadFIDListX2Field.restype = POINTER(c_float)
             retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 12)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_layer2Opacity(self, nValue):
             CBash.SetFIDListX2FieldF(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 12, c_float(nValue))
         layer2Opacity = property(get_layer2Opacity, set_layer2Opacity)
@@ -11735,7 +11983,7 @@ class LANDRecord(BaseRecord):
             CBash.ReadFIDListX2Field.restype = POINTER(c_uint)
             retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 13)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_layer3Texture(self, nValue):
             CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 13, nValue)
         layer3Texture = property(get_layer3Texture, set_layer3Texture)
@@ -11743,7 +11991,7 @@ class LANDRecord(BaseRecord):
             CBash.ReadFIDListX2Field.restype = POINTER(c_float)
             retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 14)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_layer3Opacity(self, nValue):
             CBash.SetFIDListX2FieldF(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 14, c_float(nValue))
         layer3Opacity = property(get_layer3Opacity, set_layer3Opacity)
@@ -11751,7 +11999,7 @@ class LANDRecord(BaseRecord):
             CBash.ReadFIDListX2Field.restype = POINTER(c_uint)
             retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 15)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_layer4Texture(self, nValue):
             CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 15, nValue)
         layer4Texture = property(get_layer4Texture, set_layer4Texture)
@@ -11759,7 +12007,7 @@ class LANDRecord(BaseRecord):
             CBash.ReadFIDListX2Field.restype = POINTER(c_float)
             retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 16)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_layer4Opacity(self, nValue):
             CBash.SetFIDListX2FieldF(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 16, c_float(nValue))
         layer4Opacity = property(get_layer4Opacity, set_layer4Opacity)
@@ -11767,7 +12015,7 @@ class LANDRecord(BaseRecord):
             CBash.ReadFIDListX2Field.restype = POINTER(c_uint)
             retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 17)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_layer5Texture(self, nValue):
             CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 17, nValue)
         layer5Texture = property(get_layer5Texture, set_layer5Texture)
@@ -11775,7 +12023,7 @@ class LANDRecord(BaseRecord):
             CBash.ReadFIDListX2Field.restype = POINTER(c_float)
             retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 18)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_layer5Opacity(self, nValue):
             CBash.SetFIDListX2FieldF(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 18, c_float(nValue))
         layer5Opacity = property(get_layer5Opacity, set_layer5Opacity)
@@ -11783,7 +12031,7 @@ class LANDRecord(BaseRecord):
             CBash.ReadFIDListX2Field.restype = POINTER(c_uint)
             retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 19)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_layer6Texture(self, nValue):
             CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 19, nValue)
         layer6Texture = property(get_layer6Texture, set_layer6Texture)
@@ -11791,7 +12039,7 @@ class LANDRecord(BaseRecord):
             CBash.ReadFIDListX2Field.restype = POINTER(c_float)
             retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 20)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_layer6Opacity(self, nValue):
             CBash.SetFIDListX2FieldF(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 20, c_float(nValue))
         layer6Opacity = property(get_layer6Opacity, set_layer6Opacity)
@@ -11799,7 +12047,7 @@ class LANDRecord(BaseRecord):
             CBash.ReadFIDListX2Field.restype = POINTER(c_uint)
             retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 21)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_layer7Texture(self, nValue):
             CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 21, nValue)
         layer7Texture = property(get_layer7Texture, set_layer7Texture)
@@ -11807,7 +12055,7 @@ class LANDRecord(BaseRecord):
             CBash.ReadFIDListX2Field.restype = POINTER(c_float)
             retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 22)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_layer7Opacity(self, nValue):
             CBash.SetFIDListX2FieldF(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 22, c_float(nValue))
         layer7Opacity = property(get_layer7Opacity, set_layer7Opacity)
@@ -11815,7 +12063,7 @@ class LANDRecord(BaseRecord):
             CBash.ReadFIDListX2Field.restype = POINTER(c_uint)
             retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 23)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_layer8Texture(self, nValue):
             CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 23, nValue)
         layer8Texture = property(get_layer8Texture, set_layer8Texture)
@@ -11823,7 +12071,7 @@ class LANDRecord(BaseRecord):
             CBash.ReadFIDListX2Field.restype = POINTER(c_float)
             retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 24)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_layer8Opacity(self, nValue):
             CBash.SetFIDListX2FieldF(self._CollectionIndex, self._ModName, self._recordID, 15, self._listIndex, 0, self._listX2Index, 24, c_float(nValue))
         layer8Opacity = property(get_layer8Opacity, set_layer8Opacity)
@@ -11846,7 +12094,7 @@ class LANDRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 6, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_data(self, nValue):
         length = len(nValue)
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 6, struct.pack('B' * length, *nValue), length)
@@ -11873,7 +12121,7 @@ class LANDRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_heightOffset(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 8, c_float(nValue))
     heightOffset = property(get_heightOffset, set_heightOffset)
@@ -11883,7 +12131,7 @@ class LANDRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 10, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused1(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 10, struct.pack('3B', *nValue), 3)
     unused1 = property(get_unused1, set_unused1)
@@ -11899,7 +12147,7 @@ class LANDRecord(BaseRecord):
     def get_baseTextures(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 12)
         if(numRecords > 0): return [self.BaseTexture(self._CollectionIndex, self._ModName, self._recordID, 12, x) for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_baseTextures(self, nBaseTextures):
         diffLength = len(nBaseTextures) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 12)
         nValues = [(nBaseTexture.texture, nBaseTexture.quadrant, nBaseTexture.unused1, nBaseTexture.layer) for nBaseTexture in nBaseTextures]
@@ -11915,7 +12163,7 @@ class LANDRecord(BaseRecord):
     def get_alphaLayers(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 13)
         if(numRecords > 0): return [self.AlphaLayer(self._CollectionIndex, self._ModName, self._recordID, 13, x) for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_alphaLayers(self, nAlphaLayers):
         diffLength = len(nAlphaLayers) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 13)
         nValues = [(nAlphaLayer.texture, nAlphaLayer.quadrant, nAlphaLayer.unused1, nAlphaLayer.layer,
@@ -11944,7 +12192,7 @@ class LANDRecord(BaseRecord):
     def get_vertexTextures(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 14)
         if(numRecords > 0): return [self.BaseTexture(self._CollectionIndex, self._ModName, self._recordID, 14, x) for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_vertexTextures(self, nVertexTextures):
         diffLength = len(nVertexTextures) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 14)
         nValues = [nVertexTexture.texture for nVertexTexture in nVertexTextures]
@@ -11992,7 +12240,7 @@ class DIALRecord(BaseRecord):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 6, byref(cRecords))
             return [cRecords[x].contents.value for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_quests(self, nValue):
         CBash.SetFIDFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 6, struct.pack('I' * len(nValue), *nValue), len(nValue))
     quests = property(get_quests, set_quests)
@@ -12006,7 +12254,7 @@ class DIALRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_dialType(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 8, c_ubyte(nValue))
     dialType = property(get_dialType, set_dialType)
@@ -12017,7 +12265,7 @@ class DIALRecord(BaseRecord):
             cRecords = (POINTER(c_uint) * numSubRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 9, byref(cRecords))
             return [INFORecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     def get_IsTopic(self):
         return (self.dialType == 0)
     def set_IsTopic(self, nValue):
@@ -12080,7 +12328,7 @@ class INFORecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 1)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_emotionType(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 1, nValue)
         emotionType = property(get_emotionType, set_emotionType)
@@ -12088,7 +12336,7 @@ class INFORecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_int)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 2)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_emotionValue(self, nValue):
             CBash.SetFIDListFieldI(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 2, nValue)
         emotionValue = property(get_emotionValue, set_emotionValue)
@@ -12098,7 +12346,7 @@ class INFORecord(BaseRecord):
                 cRecords = POINTER(c_ubyte * numRecords)()
                 CBash.GetFIDListArray(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 3, byref(cRecords))
                 return [cRecords.contents[x] for x in range(0, numRecords)]
-            else: return []
+            return []
         def set_unused1(self, nValue):
             CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 3, struct.pack('4B', *nValue), 4)
         unused1 = property(get_unused1, set_unused1)
@@ -12106,7 +12354,7 @@ class INFORecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_ubyte)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 4)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_responseNum(self, nValue):
             CBash.SetFIDListFieldUC(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 4, c_ubyte(nValue))
         responseNum = property(get_responseNum, set_responseNum)
@@ -12116,7 +12364,7 @@ class INFORecord(BaseRecord):
                 cRecords = POINTER(c_ubyte * numRecords)()
                 CBash.GetFIDListArray(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, byref(cRecords))
                 return [cRecords.contents[x] for x in range(0, numRecords)]
-            else: return []
+            return []
         def set_unused2(self, nValue):
             CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, struct.pack('3B', *nValue), 3)
         unused2 = property(get_unused2, set_unused2)
@@ -12185,7 +12433,7 @@ class INFORecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_ubyte)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_operType(self, nValue):
             CBash.SetFIDListFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1, c_ubyte(nValue))
         operType = property(get_operType, set_operType)
@@ -12195,7 +12443,7 @@ class INFORecord(BaseRecord):
                 cRecords = POINTER(c_ubyte * numRecords)()
                 CBash.GetFIDListArray(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2, byref(cRecords))
                 return [cRecords.contents[x] for x in range(0, numRecords)]
-            else: return []
+            return []
         def set_unused1(self, nValue):
             CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2, struct.pack('3B', *nValue), 3)
         unused1 = property(get_unused1, set_unused1)
@@ -12203,7 +12451,7 @@ class INFORecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_float)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_compValue(self, nValue):
             CBash.SetFIDListFieldF(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3, c_float(nValue))
         compValue = property(get_compValue, set_compValue)
@@ -12211,7 +12459,7 @@ class INFORecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 4)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_ifunc(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 4, nValue)
         ifunc = property(get_ifunc, set_ifunc)
@@ -12219,7 +12467,7 @@ class INFORecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 5)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_param1(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 5, nValue)
         param1 = property(get_param1, set_param1)
@@ -12227,7 +12475,7 @@ class INFORecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 6)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_param2(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 6, nValue)
         param2 = property(get_param2, set_param2)
@@ -12237,7 +12485,7 @@ class INFORecord(BaseRecord):
                 cRecords = POINTER(c_ubyte * numRecords)()
                 CBash.GetFIDListArray(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 7, byref(cRecords))
                 return [cRecords.contents[x] for x in range(0, numRecords)]
-            else: return []
+            return []
         def set_unused2(self, nValue):
             CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 7, struct.pack('4B', *nValue), 4)
         unused2 = property(get_unused2, set_unused2)
@@ -12320,7 +12568,7 @@ class INFORecord(BaseRecord):
         IsUseGlobal = property(get_IsUseGlobal, set_IsUseGlobal)
         def IsFlagMask(self, nValue, Exact=False):
             if(Exact): return ((self.operType & 0x0F) & (nValue & 0x0F)) == nValue
-            else: return ((self.operType & 0x0F) & (nValue & 0x0F)) != 0
+            return ((self.operType & 0x0F) & (nValue & 0x0F)) != 0
         def SetFlagMask(self, nValue):
             nValue &= 0x0F
             self.operType &= 0xF0
@@ -12334,13 +12582,17 @@ class INFORecord(BaseRecord):
             self._listIndex = listIndex
         def get_reference(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 24, self._listIndex, 1).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 24, self._listIndex, 1)
+            if(retValue): return retValue.contents.value
+            return None
         def set_reference(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 24, self._listIndex, 1, nValue)
         reference = property(get_reference, set_reference)
         def get_IsSCRO(self):
             CBash.ReadFIDListField.restype = POINTER(c_bool)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 24, self._listIndex, 2).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 24, self._listIndex, 2)
+            if(retValue): return retValue.contents.value
+            return None
         def set_IsSCRO(self, nValue):
             if isinstance(nValue, bool):
                 if(nValue): CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 24, self._listIndex, 2, 1)
@@ -12363,7 +12615,7 @@ class INFORecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 6)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_dialType(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 6, c_ubyte(nValue))
     dialType = property(get_dialType, set_dialType)
@@ -12371,7 +12623,7 @@ class INFORecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_flags(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 7, c_ubyte(nValue))
     flags = property(get_flags, set_flags)
@@ -12381,7 +12633,7 @@ class INFORecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 8, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused1(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 8, struct.pack('B', *nValue), 1)
     unused1 = property(get_unused1, set_unused1)
@@ -12389,7 +12641,7 @@ class INFORecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_quest(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 9, nValue)
     quest = property(get_quest, set_quest)
@@ -12397,7 +12649,7 @@ class INFORecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_topic(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 10, nValue)
     topic = property(get_topic, set_topic)
@@ -12405,7 +12657,7 @@ class INFORecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_prevInfo(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 11, nValue)
     prevInfo = property(get_prevInfo, set_prevInfo)
@@ -12415,14 +12667,14 @@ class INFORecord(BaseRecord):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 12, byref(cRecords))
             return [cRecords[x].contents.value for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_addTopics(self, nValue):
         CBash.SetFIDFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 12, struct.pack('I' * len(nValue), *nValue), len(nValue))
     addTopics = property(get_addTopics, set_addTopics)
     def get_responses(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 13)
         if(numRecords > 0): return [self.Response(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_responses(self, nResponses):
         diffLength = len(nResponses) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 13)
         nValues = [(nResponse.emotionType, nResponse.emotionValue, nResponse.unused1, nResponse.responseNum, nResponse.unused2, nResponse.responseText, nResponse.actorNotes) for nResponse in nResponses]
@@ -12438,7 +12690,7 @@ class INFORecord(BaseRecord):
     def get_conditions(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 14)
         if(numRecords > 0): return [self.Condition(self._CollectionIndex, self._ModName, self._recordID, 14, x) for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_conditions(self, nConditions):
         diffLength = len(nConditions) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 14)
         nValues = [(nCondition.operType, nCondition.unused1, nCondition.compValue, nCondition.ifunc, nCondition.param1, nCondition.param2, nCondition.unused2) for nCondition in nConditions]
@@ -12457,7 +12709,7 @@ class INFORecord(BaseRecord):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 15, byref(cRecords))
             return [cRecords[x].contents.value for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_choices(self, nValue):
         CBash.SetFIDFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 15, struct.pack('I' * len(nValue), *nValue), len(nValue))
     choices = property(get_choices, set_choices)
@@ -12467,7 +12719,7 @@ class INFORecord(BaseRecord):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 16, byref(cRecords))
             return [cRecords[x].contents.value for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_linksFrom(self, nValue):
         CBash.SetFIDFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 16, struct.pack('I' * len(nValue), *nValue), len(nValue))
     linksFrom = property(get_linksFrom, set_linksFrom)
@@ -12477,7 +12729,7 @@ class INFORecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 17, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused2(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 17, struct.pack('4B', *nValue), 4)
     unused2 = property(get_unused2, set_unused2)
@@ -12485,7 +12737,7 @@ class INFORecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 18)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_numRefs(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 18, nValue)
     numRefs = property(get_numRefs, set_numRefs)
@@ -12493,7 +12745,7 @@ class INFORecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 19)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_compiledSize(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 19, nValue)
     compiledSize = property(get_compiledSize, set_compiledSize)
@@ -12501,7 +12753,7 @@ class INFORecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 20)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_lastIndex(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 20, nValue)
     lastIndex = property(get_lastIndex, set_lastIndex)
@@ -12509,7 +12761,7 @@ class INFORecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 21)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_scriptType(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 21, nValue)
     scriptType = property(get_scriptType, set_scriptType)
@@ -12519,7 +12771,7 @@ class INFORecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 22, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_compiled_p(self, nValue):
         length = len(nValue)
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 22, struct.pack('B' * length, *nValue), length)
@@ -12533,7 +12785,7 @@ class INFORecord(BaseRecord):
     def get_references(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 24)
         if(numRecords > 0): return [self.Reference(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_references(self, nReferences):
         diffLength = len(nReferences) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 24)
         nValues = [(nReference.reference,nReference.IsSCRO) for nReference in nReferences]
@@ -12645,7 +12897,7 @@ class QUSTRecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_ubyte)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_operType(self, nValue):
             CBash.SetFIDListFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1, c_ubyte(nValue))
         operType = property(get_operType, set_operType)
@@ -12655,7 +12907,7 @@ class QUSTRecord(BaseRecord):
                 cRecords = POINTER(c_ubyte * numRecords)()
                 CBash.GetFIDListArray(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2, byref(cRecords))
                 return [cRecords.contents[x] for x in range(0, numRecords)]
-            else: return []
+            return []
         def set_unused1(self, nValue):
             CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2, struct.pack('3B', *nValue), 3)
         unused1 = property(get_unused1, set_unused1)
@@ -12663,7 +12915,7 @@ class QUSTRecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_float)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_compValue(self, nValue):
             CBash.SetFIDListFieldF(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3, c_float(nValue))
         compValue = property(get_compValue, set_compValue)
@@ -12671,7 +12923,7 @@ class QUSTRecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 4)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_ifunc(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 4, nValue)
         ifunc = property(get_ifunc, set_ifunc)
@@ -12679,7 +12931,7 @@ class QUSTRecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 5)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_param1(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 5, nValue)
         param1 = property(get_param1, set_param1)
@@ -12687,7 +12939,7 @@ class QUSTRecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 6)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_param2(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 6, nValue)
         param2 = property(get_param2, set_param2)
@@ -12697,7 +12949,7 @@ class QUSTRecord(BaseRecord):
                 cRecords = POINTER(c_ubyte * numRecords)()
                 CBash.GetFIDListArray(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 7, byref(cRecords))
                 return [cRecords.contents[x] for x in range(0, numRecords)]
-            else: return []
+            return []
         def set_unused2(self, nValue):
             CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 7, struct.pack('4B', *nValue), 4)
         unused2 = property(get_unused2, set_unused2)
@@ -12780,7 +13032,7 @@ class QUSTRecord(BaseRecord):
         IsUseGlobal = property(get_IsUseGlobal, set_IsUseGlobal)
         def IsFlagMask(self, nValue, Exact=False):
             if(Exact): return ((self.operType & 0x0F) & (nValue & 0x0F)) == nValue
-            else: return ((self.operType & 0x0F) & (nValue & 0x0F)) != 0
+            return ((self.operType & 0x0F) & (nValue & 0x0F)) != 0
         def SetFlagMask(self, nValue):
             nValue &= 0x0F
             self.operType &= 0xF0
@@ -12798,10 +13050,8 @@ class QUSTRecord(BaseRecord):
                 def get_operType(self):
                     CBash.ReadFIDListX3Field.restype = POINTER(c_ubyte)
                     retValue = CBash.ReadFIDListX3Field(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 2, self._listX3Index, 1)
-                    if(retValue):
-                        return retValue.contents.value
-                    else:
-                        return None
+                    if(retValue): return retValue.contents.value
+                    return None
                 def set_operType(self, nValue):
                     CBash.SetFIDListX3FieldUC(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 2, self._listX3Index, 1, c_ubyte(nValue))
                 operType = property(get_operType, set_operType)
@@ -12819,40 +13069,32 @@ class QUSTRecord(BaseRecord):
                 def get_compValue(self):
                     CBash.ReadFIDListX3Field.restype = POINTER(c_float)
                     retValue = CBash.ReadFIDListX3Field(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 2, self._listX3Index, 3)
-                    if(retValue):
-                        return retValue.contents.value
-                    else:
-                        return None
+                    if(retValue): return retValue.contents.value
+                    return None
                 def set_compValue(self, nValue):
                     CBash.SetFIDListX3FieldF(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 2, self._listX3Index, 3, c_float(nValue))
                 compValue = property(get_compValue, set_compValue)
                 def get_ifunc(self):
                     CBash.ReadFIDListX3Field.restype = POINTER(c_uint)
                     retValue = CBash.ReadFIDListX3Field(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 2, self._listX3Index, 4)
-                    if(retValue):
-                        return retValue.contents.value
-                    else:
-                        return None
+                    if(retValue): return retValue.contents.value
+                    return None
                 def set_ifunc(self, nValue):
                     CBash.SetFIDListX3FieldUI(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 2, self._listX3Index, 4, nValue)
                 ifunc = property(get_ifunc, set_ifunc)
                 def get_param1(self):
                     CBash.ReadFIDListX3Field.restype = POINTER(c_uint)
                     retValue = CBash.ReadFIDListX3Field(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 2, self._listX3Index, 5)
-                    if(retValue):
-                        return retValue.contents.value
-                    else:
-                        return None
+                    if(retValue): return retValue.contents.value
+                    return None
                 def set_param1(self, nValue):
                     CBash.SetFIDListX3FieldUI(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 2, self._listX3Index, 5, nValue)
                 param1 = property(get_param1, set_param1)
                 def get_param2(self):
                     CBash.ReadFIDListX3Field.restype = POINTER(c_uint)
                     retValue = CBash.ReadFIDListX3Field(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 2, self._listX3Index, 6)
-                    if(retValue):
-                        return retValue.contents.value
-                    else:
-                        return None
+                    if(retValue): return retValue.contents.value
+                    return None
                 def set_param2(self, nValue):
                     CBash.SetFIDListX3FieldUI(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 2, self._listX3Index, 6, nValue)
                 param2 = property(get_param2, set_param2)
@@ -12946,7 +13188,7 @@ class QUSTRecord(BaseRecord):
                 IsUseGlobal = property(get_IsUseGlobal, set_IsUseGlobal)
                 def IsFlagMask(self, nValue, Exact=False):
                     if(Exact): return ((self.operType & 0x0F) & (nValue & 0x0F)) == nValue
-                    else: return ((self.operType & 0x0F) & (nValue & 0x0F)) != 0
+                    return ((self.operType & 0x0F) & (nValue & 0x0F)) != 0
                 def SetFlagMask(self, nValue):
                     nValue &= 0x0F
                     self.operType &= 0xF0
@@ -12962,13 +13204,17 @@ class QUSTRecord(BaseRecord):
                     self._listX3Index = listX3Index
                 def get_reference(self):
                     CBash.ReadFIDListX3Field.restype = POINTER(c_uint)
-                    return CBash.ReadFIDListX3Field(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 11, self._listX3Index, 1).contents.value
+                    retValue = CBash.ReadFIDListX3Field(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 11, self._listX3Index, 1)
+                    if(retValue): return retValue.contents.value
+                    return None
                 def set_reference(self, nValue):
                     CBash.SetFIDListX3FieldUI(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 11, self._listX3Index, 1, nValue)
                 reference = property(get_reference, set_reference)
                 def get_IsSCRO(self):
                     CBash.ReadFIDListX3Field.restype = POINTER(c_bool)
-                    return CBash.ReadFIDListX3Field(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 11, self._listX3Index, 2).contents.value
+                    retValue = CBash.ReadFIDListX3Field(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 11, self._listX3Index, 2)
+                    if(retValue): return retValue.contents.value
+                    return None
                 def set_IsSCRO(self, nValue):
                     if isinstance(nValue, bool):
                         if(nValue):
@@ -12999,7 +13245,7 @@ class QUSTRecord(BaseRecord):
                 CBash.ReadFIDListX2Field.restype = POINTER(c_ubyte)
                 retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 1)
                 if(retValue): return retValue.contents.value
-                else: return None
+                return None
             def set_flags(self, nValue):
                 CBash.SetFIDListX2FieldUC(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 1, c_ubyte(nValue))
             flags = property(get_flags, set_flags)
@@ -13007,7 +13253,7 @@ class QUSTRecord(BaseRecord):
                 numRecords = CBash.GetFIDListX3Size(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 2)
                 if(numRecords > 0):
                     return [self.Condition(self._CollectionIndex, self._ModName, self._recordID, self._listIndex, self._listX2Index, x) for x in range(0, numRecords)]
-                else: return []
+                return []
             def set_conditions(self, nConditions):
                 diffLength = len(nConditions) - CBash.GetFIDListX3Size(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 2)
                 nValues = [(nCondition.operType, nCondition.unused1, nCondition.compValue, nCondition.ifunc, nCondition.param1, nCondition.param2, nCondition.unused2) for nCondition in nConditions]
@@ -13032,7 +13278,7 @@ class QUSTRecord(BaseRecord):
                     cRecords = POINTER(c_ubyte * numRecords)()
                     CBash.GetFIDListX2Array(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 4, byref(cRecords))
                     return [cRecords.contents[x] for x in range(0, numRecords)]
-                else: return []
+                return []
             def set_unused1(self, nValue):
                 CBash.SetFIDListX2FieldR(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 4, struct.pack('4B', *nValue), 4)
             unused1 = property(get_unused1, set_unused1)
@@ -13040,7 +13286,7 @@ class QUSTRecord(BaseRecord):
                 CBash.ReadFIDListX2Field.restype = POINTER(c_uint)
                 retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 5)
                 if(retValue): return retValue.contents.value
-                else: return None
+                return None
             def set_numRefs(self, nValue):
                 CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 5, nValue)
             numRefs = property(get_numRefs, set_numRefs)
@@ -13048,7 +13294,7 @@ class QUSTRecord(BaseRecord):
                 CBash.ReadFIDListX2Field.restype = POINTER(c_uint)
                 retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 6)
                 if(retValue): return retValue.contents.value
-                else: return None
+                return None
             def set_compiledSize(self, nValue):
                 CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 6, nValue)
             compiledSize = property(get_compiledSize, set_compiledSize)
@@ -13056,7 +13302,7 @@ class QUSTRecord(BaseRecord):
                 CBash.ReadFIDListX2Field.restype = POINTER(c_uint)
                 retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 7)
                 if(retValue): return retValue.contents.value
-                else: return None
+                return None
             def set_lastIndex(self, nValue):
                 CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 7, nValue)
             lastIndex = property(get_lastIndex, set_lastIndex)
@@ -13064,7 +13310,7 @@ class QUSTRecord(BaseRecord):
                 CBash.ReadFIDListX2Field.restype = POINTER(c_uint)
                 retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 8)
                 if(retValue): return retValue.contents.value
-                else: return None
+                return None
             def set_scriptType(self, nValue):
                 CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 8, nValue)
             scriptType = property(get_scriptType, set_scriptType)
@@ -13074,7 +13320,7 @@ class QUSTRecord(BaseRecord):
                     cRecords = POINTER(c_ubyte * numRecords)()
                     CBash.GetFIDListX2Array(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 9, byref(cRecords))
                     return [cRecords.contents[x] for x in range(0, numRecords)]
-                else: return []
+                return []
             def set_compiled_p(self, nValue):
                 length = len(nValue)
                 CBash.SetFIDListX2FieldR(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 9, struct.pack('B' * length, *nValue), length)
@@ -13089,7 +13335,7 @@ class QUSTRecord(BaseRecord):
                 numRecords = CBash.GetFIDListX3Size(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 11)
                 if(numRecords > 0):
                     return [self.Reference(self._CollectionIndex, self._ModName, self._recordID, self._listIndex, self._listX2Index, x) for x in range(0, numRecords)]
-                else: return []
+                return []
             def set_references(self, nReferences):
                 diffLength = len(nReferences) - CBash.GetFIDListX3Size(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 11)
                 nValues = [(nReference.reference,nReference.IsSCRO) for nReference in nReferences]
@@ -13121,14 +13367,14 @@ class QUSTRecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_ushort)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 1)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_stage(self, nValue):
             CBash.SetFIDListFieldUS(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 1, c_ushort(nValue))
         stage = property(get_stage, set_stage)
         def get_entries(self):
             numRecords = CBash.GetFIDListX2Size(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2)
             if(numRecords > 0): return [self.Entry(self._CollectionIndex, self._ModName, self._recordID, self._listIndex, x) for x in range(0, numRecords)]
-            else: return []
+            return []
         def set_entries(self, nEntries):
             diffLength = len(nEntries) - CBash.GetFIDListX2Size(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2)
             nValues = [(nEntry.flags,
@@ -13183,7 +13429,7 @@ class QUSTRecord(BaseRecord):
                 CBash.ReadFIDListX2Field.restype = POINTER(c_ubyte)
                 retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 4, self._listX2Index, 1)
                 if(retValue): return retValue.contents.value
-                else: return None
+                return None
             def set_operType(self, nValue):
                 CBash.SetFIDListX2FieldUC(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 4, self._listX2Index, 1, c_ubyte(nValue))
             operType = property(get_operType, set_operType)
@@ -13193,7 +13439,7 @@ class QUSTRecord(BaseRecord):
                     cRecords = POINTER(c_ubyte * numRecords)()
                     CBash.GetFIDListX2Array(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 4, self._listX2Index, 2, byref(cRecords))
                     return [cRecords.contents[x] for x in range(0, numRecords)]
-                else: return []
+                return []
             def set_unused1(self, nValue):
                 CBash.SetFIDListX2FieldR(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 4, self._listX2Index, 2, struct.pack('3B', *nValue), 3)
             unused1 = property(get_unused1, set_unused1)
@@ -13201,7 +13447,7 @@ class QUSTRecord(BaseRecord):
                 CBash.ReadFIDListX2Field.restype = POINTER(c_float)
                 retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 4, self._listX2Index, 3)
                 if(retValue): return retValue.contents.value
-                else: return None
+                return None
             def set_compValue(self, nValue):
                 CBash.SetFIDListX2FieldF(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 4, self._listX2Index, 3, c_float(nValue))
             compValue = property(get_compValue, set_compValue)
@@ -13209,7 +13455,7 @@ class QUSTRecord(BaseRecord):
                 CBash.ReadFIDListX2Field.restype = POINTER(c_uint)
                 retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 4, self._listX2Index, 4)
                 if(retValue): return retValue.contents.value
-                else: return None
+                return None
             def set_ifunc(self, nValue):
                 CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 4, self._listX2Index, 4, nValue)
             ifunc = property(get_ifunc, set_ifunc)
@@ -13217,7 +13463,7 @@ class QUSTRecord(BaseRecord):
                 CBash.ReadFIDListX2Field.restype = POINTER(c_uint)
                 retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 4, self._listX2Index, 5)
                 if(retValue): return retValue.contents.value
-                else: return None
+                return None
             def set_param1(self, nValue):
                 CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 4, self._listX2Index, 5, nValue)
             param1 = property(get_param1, set_param1)
@@ -13225,7 +13471,7 @@ class QUSTRecord(BaseRecord):
                 CBash.ReadFIDListX2Field.restype = POINTER(c_uint)
                 retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 4, self._listX2Index, 6)
                 if(retValue): return retValue.contents.value
-                else: return None
+                return None
             def set_param2(self, nValue):
                 CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 4, self._listX2Index, 6, nValue)
             param2 = property(get_param2, set_param2)
@@ -13235,7 +13481,7 @@ class QUSTRecord(BaseRecord):
                     cRecords = POINTER(c_ubyte * numRecords)()
                     CBash.GetFIDListX2Array(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 4, self._listX2Index, 7, byref(cRecords))
                     return [cRecords.contents[x] for x in range(0, numRecords)]
-                else: return []
+                return []
             def set_unused2(self, nValue):
                 CBash.SetFIDListX2FieldR(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 4, self._listX2Index, 7, struct.pack('4B', *nValue), 4)
             unused2 = property(get_unused2, set_unused2)
@@ -13318,7 +13564,7 @@ class QUSTRecord(BaseRecord):
             IsUseGlobal = property(get_IsUseGlobal, set_IsUseGlobal)
             def IsFlagMask(self, nValue, Exact=False):
                 if(Exact): return ((self.operType & 0x0F) & (nValue & 0x0F)) == nValue
-                else: return ((self.operType & 0x0F) & (nValue & 0x0F)) != 0
+                return ((self.operType & 0x0F) & (nValue & 0x0F)) != 0
             def SetFlagMask(self, nValue):
                 nValue &= 0x0F
                 self.operType &= 0xF0
@@ -13336,7 +13582,7 @@ class QUSTRecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 1)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_targetId(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 1, nValue)
         targetId = property(get_targetId, set_targetId)
@@ -13344,7 +13590,7 @@ class QUSTRecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_ubyte)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 2)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_flags(self, nValue):
             CBash.SetFIDListFieldUC(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 2, c_ubyte(nValue))
         flags = property(get_flags, set_flags)
@@ -13354,14 +13600,14 @@ class QUSTRecord(BaseRecord):
                 cRecords = POINTER(c_ubyte * numRecords)()
                 CBash.GetFIDListArray(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 3, byref(cRecords))
                 return [cRecords.contents[x] for x in range(0, numRecords)]
-            else: return []
+            return []
         def set_unused1(self, nValue):
             CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 3, struct.pack('3B', *nValue), 3)
         unused1 = property(get_unused1, set_unused1)
         def get_conditions(self):
             numRecords = CBash.GetFIDListX2Size(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 4)
             if(numRecords > 0): return [self.Condition(self._CollectionIndex, self._ModName, self._recordID, self._listIndex, x) for x in range(0, numRecords)]
-            else: return []
+            return []
         def set_conditions(self, nConditions):
             diffLength = len(nConditions) - CBash.GetFIDListX2Size(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 4)
             nValues = [(nCondition.operType, nCondition.unused1, nCondition.compValue, nCondition.ifunc, nCondition.param1, nCondition.param2, nCondition.unused2) for nCondition in nConditions]
@@ -13397,7 +13643,7 @@ class QUSTRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 6)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_script(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 6, nValue)
     script = property(get_script, set_script)
@@ -13417,7 +13663,7 @@ class QUSTRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_flags(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 9, c_ubyte(nValue))
     flags = property(get_flags, set_flags)
@@ -13425,14 +13671,14 @@ class QUSTRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_priority(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 10, c_ubyte(nValue))
     priority = property(get_priority, set_priority)
     def get_conditions(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 11)
         if(numRecords > 0): return [self.Condition(self._CollectionIndex, self._ModName, self._recordID, 11, x) for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_conditions(self, nConditions):
         diffLength = len(nConditions) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 11)
         nValues = [(nCondition.operType, nCondition.unused1, nCondition.compValue, nCondition.ifunc, nCondition.param1, nCondition.param2, nCondition.unused2) for nCondition in nConditions]
@@ -13448,7 +13694,7 @@ class QUSTRecord(BaseRecord):
     def get_stages(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 12)
         if(numRecords > 0): return [self.Stage(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_stages(self, nStages):
         diffLength = len(nStages) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 12)
         nValues = [(nStage.stage,
@@ -13497,7 +13743,7 @@ class QUSTRecord(BaseRecord):
     def get_targets(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 13)
         if(numRecords > 0): return [self.Target(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_targets(self, nTargets):
         diffLength = len(nTargets) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 13)
         nValues = [(nTarget.targetId, nTarget.flags, nTarget.unused1,
@@ -13561,7 +13807,7 @@ class IDLERecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_ubyte)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_operType(self, nValue):
             CBash.SetFIDListFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1, c_ubyte(nValue))
         operType = property(get_operType, set_operType)
@@ -13571,7 +13817,7 @@ class IDLERecord(BaseRecord):
                 cRecords = POINTER(c_ubyte * numRecords)()
                 CBash.GetFIDListArray(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2, byref(cRecords))
                 return [cRecords.contents[x] for x in range(0, numRecords)]
-            else: return []
+            return []
         def set_unused1(self, nValue):
             CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2, struct.pack('3B', *nValue), 3)
         unused1 = property(get_unused1, set_unused1)
@@ -13579,7 +13825,7 @@ class IDLERecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_float)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_compValue(self, nValue):
             CBash.SetFIDListFieldF(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3, c_float(nValue))
         compValue = property(get_compValue, set_compValue)
@@ -13587,7 +13833,7 @@ class IDLERecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 4)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_ifunc(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 4, nValue)
         ifunc = property(get_ifunc, set_ifunc)
@@ -13595,7 +13841,7 @@ class IDLERecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 5)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_param1(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 5, nValue)
         param1 = property(get_param1, set_param1)
@@ -13603,7 +13849,7 @@ class IDLERecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 6)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_param2(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 6, nValue)
         param2 = property(get_param2, set_param2)
@@ -13613,7 +13859,7 @@ class IDLERecord(BaseRecord):
                 cRecords = POINTER(c_ubyte * numRecords)()
                 CBash.GetFIDListArray(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 7, byref(cRecords))
                 return [cRecords.contents[x] for x in range(0, numRecords)]
-            else: return []
+            return []
         def set_unused2(self, nValue):
             CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 7, struct.pack('4B', *nValue), 4)
         unused2 = property(get_unused2, set_unused2)
@@ -13696,7 +13942,7 @@ class IDLERecord(BaseRecord):
         IsUseGlobal = property(get_IsUseGlobal, set_IsUseGlobal)
         def IsFlagMask(self, nValue, Exact=False):
             if(Exact): return ((self.operType & 0x0F) & (nValue & 0x0F)) == nValue
-            else: return ((self.operType & 0x0F) & (nValue & 0x0F)) != 0
+            return ((self.operType & 0x0F) & (nValue & 0x0F)) != 0
         def SetFlagMask(self, nValue):
             nValue &= 0x0F
             self.operType &= 0xF0
@@ -13716,7 +13962,7 @@ class IDLERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_modb(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 7, c_float(nValue))
     modb = property(get_modb, set_modb)
@@ -13726,7 +13972,7 @@ class IDLERecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 8, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_modt_p(self, nValue):
         length = len(nValue)
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 8, struct.pack('B' * length, *nValue), length)
@@ -13734,7 +13980,7 @@ class IDLERecord(BaseRecord):
     def get_conditions(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 9)
         if(numRecords > 0): return [self.Condition(self._CollectionIndex, self._ModName, self._recordID, 9, x) for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_conditions(self, nConditions):
         diffLength = len(nConditions) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 9)
         nValues = [(nCondition.operType, nCondition.unused1, nCondition.compValue, nCondition.ifunc, nCondition.param1, nCondition.param2, nCondition.unused2) for nCondition in nConditions]
@@ -13751,7 +13997,7 @@ class IDLERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_group(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 10, c_ubyte(nValue))
     group = property(get_group, set_group)
@@ -13759,7 +14005,7 @@ class IDLERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_parent(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 11, nValue)
     parent = property(get_parent, set_parent)
@@ -13767,7 +14013,7 @@ class IDLERecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_prevId(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 12, nValue)
     prevId = property(get_prevId, set_prevId)
@@ -13847,7 +14093,7 @@ class IDLERecord(BaseRecord):
     IsReturnFile = property(get_IsReturnFile, set_IsReturnFile)
     def IsFlagMask(self, nValue, Exact=False):
         if(Exact): return ((self.group & 0xF0) & (nValue & 0xF0)) == nValue
-        else: return ((self.group & 0xF0) & (nValue & 0xF0)) != 0
+        return ((self.group & 0xF0) & (nValue & 0xF0)) != 0
     def SetFlagMask(self, nValue):
         nValue &= 0xF0
         self.group &= 0x0F
@@ -13873,7 +14119,7 @@ class PACKRecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_ubyte)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_operType(self, nValue):
             CBash.SetFIDListFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1, c_ubyte(nValue))
         operType = property(get_operType, set_operType)
@@ -13883,7 +14129,7 @@ class PACKRecord(BaseRecord):
                 cRecords = POINTER(c_ubyte * numRecords)()
                 CBash.GetFIDListArray(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2, byref(cRecords))
                 return [cRecords.contents[x] for x in range(0, numRecords)]
-            else: return []
+            return []
         def set_unused1(self, nValue):
             CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2, struct.pack('3B', *nValue), 3)
         unused1 = property(get_unused1, set_unused1)
@@ -13891,7 +14137,7 @@ class PACKRecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_float)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_compValue(self, nValue):
             CBash.SetFIDListFieldF(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3, c_float(nValue))
         compValue = property(get_compValue, set_compValue)
@@ -13899,7 +14145,7 @@ class PACKRecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 4)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_ifunc(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 4, nValue)
         ifunc = property(get_ifunc, set_ifunc)
@@ -13907,7 +14153,7 @@ class PACKRecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 5)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_param1(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 5, nValue)
         param1 = property(get_param1, set_param1)
@@ -13915,7 +14161,7 @@ class PACKRecord(BaseRecord):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 6)
             if(retValue): return retValue.contents.value
-            else: return None
+            return None
         def set_param2(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 6, nValue)
         param2 = property(get_param2, set_param2)
@@ -13925,7 +14171,7 @@ class PACKRecord(BaseRecord):
                 cRecords = POINTER(c_ubyte * numRecords)()
                 CBash.GetFIDListArray(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 7, byref(cRecords))
                 return [cRecords.contents[x] for x in range(0, numRecords)]
-            else: return []
+            return []
         def set_unused2(self, nValue):
             CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 7, struct.pack('4B', *nValue), 4)
         unused2 = property(get_unused2, set_unused2)
@@ -14008,7 +14254,7 @@ class PACKRecord(BaseRecord):
         IsUseGlobal = property(get_IsUseGlobal, set_IsUseGlobal)
         def IsFlagMask(self, nValue, Exact=False):
             if(Exact): return ((self.operType & 0x0F) & (nValue & 0x0F)) == nValue
-            else: return ((self.operType & 0x0F) & (nValue & 0x0F)) != 0
+            return ((self.operType & 0x0F) & (nValue & 0x0F)) != 0
         def SetFlagMask(self, nValue):
             nValue &= 0x0F
             self.operType &= 0xF0
@@ -14021,7 +14267,7 @@ class PACKRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 6)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_flags(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 6, nValue)
     flags = property(get_flags, set_flags)
@@ -14029,7 +14275,7 @@ class PACKRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_aiType(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 7, c_ubyte(nValue))
     aiType = property(get_aiType, set_aiType)
@@ -14039,7 +14285,7 @@ class PACKRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 8, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused1(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 8, struct.pack('3B', *nValue), 3)
     unused1 = property(get_unused1, set_unused1)
@@ -14047,7 +14293,7 @@ class PACKRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_int)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_locType(self, nValue):
         CBash.SetFIDFieldI(self._CollectionIndex, self._ModName, self._recordID, 9, nValue)
     locType = property(get_locType, set_locType)
@@ -14055,7 +14301,7 @@ class PACKRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_locId(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 10, nValue)
     locId = property(get_locId, set_locId)
@@ -14063,7 +14309,7 @@ class PACKRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_int)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_locRadius(self, nValue):
         CBash.SetFIDFieldI(self._CollectionIndex, self._ModName, self._recordID, 11, nValue)
     locRadius = property(get_locRadius, set_locRadius)
@@ -14071,7 +14317,7 @@ class PACKRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_byte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_month(self, nValue):
         CBash.SetFIDFieldC(self._CollectionIndex, self._ModName, self._recordID, 12, c_byte(nValue))
     month = property(get_month, set_month)
@@ -14079,7 +14325,7 @@ class PACKRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_byte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_day(self, nValue):
         CBash.SetFIDFieldC(self._CollectionIndex, self._ModName, self._recordID, 13, c_byte(nValue))
     day = property(get_day, set_day)
@@ -14087,7 +14333,7 @@ class PACKRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 14)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_date(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 14, c_ubyte(nValue))
     date = property(get_date, set_date)
@@ -14095,7 +14341,7 @@ class PACKRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_byte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 15)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_time(self, nValue):
         CBash.SetFIDFieldC(self._CollectionIndex, self._ModName, self._recordID, 15, c_byte(nValue))
     time = property(get_time, set_time)
@@ -14103,7 +14349,7 @@ class PACKRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_int)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 16)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_duration(self, nValue):
         CBash.SetFIDFieldI(self._CollectionIndex, self._ModName, self._recordID, 16, nValue)
     duration = property(get_duration, set_duration)
@@ -14111,7 +14357,7 @@ class PACKRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_int)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 17)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_targetType(self, nValue):
         CBash.SetFIDFieldI(self._CollectionIndex, self._ModName, self._recordID, 17, nValue)
     targetType = property(get_targetType, set_targetType)
@@ -14119,7 +14365,7 @@ class PACKRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 18)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_targetId(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 18, nValue)
     targetId = property(get_targetId, set_targetId)
@@ -14127,14 +14373,14 @@ class PACKRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_int)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 19)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_targetCount(self, nValue):
         CBash.SetFIDFieldI(self._CollectionIndex, self._ModName, self._recordID, 19, nValue)
     targetCount = property(get_targetCount, set_targetCount)
     def get_conditions(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 20)
         if(numRecords > 0): return [self.Condition(self._CollectionIndex, self._ModName, self._recordID, 20, x) for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_conditions(self, nConditions):
         diffLength = len(nConditions) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 20)
         nValues = [(nCondition.operType, nCondition.unused1, nCondition.compValue, nCondition.ifunc, nCondition.param1, nCondition.param2, nCondition.unused2) for nCondition in nConditions]
@@ -14422,7 +14668,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 6)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_dodgeChance(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 6, c_ubyte(nValue))
     dodgeChance = property(get_dodgeChance, set_dodgeChance)
@@ -14430,7 +14676,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_lrChance(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 7, c_ubyte(nValue))
     lrChance = property(get_lrChance, set_lrChance)
@@ -14440,7 +14686,7 @@ class CSTYRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 8, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused1(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 8, struct.pack('2B', *nValue), 2)
     unused1 = property(get_unused1, set_unused1)
@@ -14448,7 +14694,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_lrTimerMin(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 9, c_float(nValue))
     lrTimerMin = property(get_lrTimerMin, set_lrTimerMin)
@@ -14456,7 +14702,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_lrTimerMax(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 10, c_float(nValue))
     lrTimerMax = property(get_lrTimerMax, set_lrTimerMax)
@@ -14464,7 +14710,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_forTimerMin(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 11, c_float(nValue))
     forTimerMin = property(get_forTimerMin, set_forTimerMin)
@@ -14472,7 +14718,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_forTimerMax(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 12, c_float(nValue))
     forTimerMax = property(get_forTimerMax, set_forTimerMax)
@@ -14480,7 +14726,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_backTimerMin(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 13, c_float(nValue))
     backTimerMin = property(get_backTimerMin, set_backTimerMin)
@@ -14488,7 +14734,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 14)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_backTimerMax(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 14, c_float(nValue))
     backTimerMax = property(get_backTimerMax, set_backTimerMax)
@@ -14496,7 +14742,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 15)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_idleTimerMin(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 15, c_float(nValue))
     idleTimerMin = property(get_idleTimerMin, set_idleTimerMin)
@@ -14504,7 +14750,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 16)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_idleTimerMax(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 16, c_float(nValue))
     idleTimerMax = property(get_idleTimerMax, set_idleTimerMax)
@@ -14512,7 +14758,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 17)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_blkChance(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 17, c_ubyte(nValue))
     blkChance = property(get_blkChance, set_blkChance)
@@ -14520,7 +14766,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 18)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_atkChance(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 18, c_ubyte(nValue))
     atkChance = property(get_atkChance, set_atkChance)
@@ -14530,7 +14776,7 @@ class CSTYRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 19, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused2(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 19, struct.pack('2B', *nValue), 2)
     unused2 = property(get_unused2, set_unused2)
@@ -14538,7 +14784,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 20)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_atkBRecoil(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 20, c_float(nValue))
     atkBRecoil = property(get_atkBRecoil, set_atkBRecoil)
@@ -14546,7 +14792,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 21)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_atkBUnc(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 21, c_float(nValue))
     atkBUnc = property(get_atkBUnc, set_atkBUnc)
@@ -14554,7 +14800,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 22)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_atkBh2h(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 22, c_float(nValue))
     atkBh2h = property(get_atkBh2h, set_atkBh2h)
@@ -14562,7 +14808,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 23)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_pAtkChance(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 23, c_ubyte(nValue))
     pAtkChance = property(get_pAtkChance, set_pAtkChance)
@@ -14572,7 +14818,7 @@ class CSTYRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 24, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused3(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 24, struct.pack('3B', *nValue), 3)
     unused3 = property(get_unused3, set_unused3)
@@ -14580,7 +14826,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 25)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_pAtkBRecoil(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 25, c_float(nValue))
     pAtkBRecoil = property(get_pAtkBRecoil, set_pAtkBRecoil)
@@ -14588,7 +14834,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 26)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_pAtkBUnc(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 26, c_float(nValue))
     pAtkBUnc = property(get_pAtkBUnc, set_pAtkBUnc)
@@ -14596,7 +14842,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 27)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_pAtkNormal(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 27, c_ubyte(nValue))
     pAtkNormal = property(get_pAtkNormal, set_pAtkNormal)
@@ -14604,7 +14850,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 28)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_pAtkFor(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 28, c_ubyte(nValue))
     pAtkFor = property(get_pAtkFor, set_pAtkFor)
@@ -14612,7 +14858,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 29)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_pAtkBack(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 29, c_ubyte(nValue))
     pAtkBack = property(get_pAtkBack, set_pAtkBack)
@@ -14620,7 +14866,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 30)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_pAtkL(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 30, c_ubyte(nValue))
     pAtkL = property(get_pAtkL, set_pAtkL)
@@ -14628,7 +14874,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 31)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_pAtkR(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 31, c_ubyte(nValue))
     pAtkR = property(get_pAtkR, set_pAtkR)
@@ -14638,7 +14884,7 @@ class CSTYRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 32, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused4(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 32, struct.pack('3B', *nValue), 3)
     unused4 = property(get_unused4, set_unused4)                    
@@ -14646,7 +14892,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 33)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_holdTimerMin(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 33, c_float(nValue))
     holdTimerMin = property(get_holdTimerMin, set_holdTimerMin)
@@ -14654,7 +14900,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 34)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_holdTimerMax(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 34, c_float(nValue))
     holdTimerMax = property(get_holdTimerMax, set_holdTimerMax)
@@ -14662,7 +14908,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 35)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_flagsA(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 35, c_ubyte(nValue))
     flagsA = property(get_flagsA, set_flagsA)
@@ -14670,7 +14916,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 36)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_acroDodge(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 36, c_ubyte(nValue))
     acroDodge = property(get_acroDodge, set_acroDodge)
@@ -14680,7 +14926,7 @@ class CSTYRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 37, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused5(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 37, struct.pack('2B', *nValue), 2)
     unused5 = property(get_unused5, set_unused5)
@@ -14688,7 +14934,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 38)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_rMultOpt(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 38, c_float(nValue))
     rMultOpt = property(get_rMultOpt, set_rMultOpt)
@@ -14696,7 +14942,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 39)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_rMultMax(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 39, c_float(nValue))
     rMultMax = property(get_rMultMax, set_rMultMax)
@@ -14704,7 +14950,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 40)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_mDistance(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 40, c_float(nValue))
     mDistance = property(get_mDistance, set_mDistance)
@@ -14712,7 +14958,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 41)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_rDistance(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 41, c_float(nValue))
     rDistance = property(get_rDistance, set_rDistance)
@@ -14720,7 +14966,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 42)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_buffStand(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 42, c_float(nValue))
     buffStand = property(get_buffStand, set_buffStand)
@@ -14728,7 +14974,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 43)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_rStand(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 43, c_float(nValue))
     rStand = property(get_rStand, set_rStand)
@@ -14736,7 +14982,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 44)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_groupStand(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 44, c_float(nValue))
     groupStand = property(get_groupStand, set_groupStand)
@@ -14744,7 +14990,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 45)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_rushChance(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 45, c_ubyte(nValue))
     rushChance = property(get_rushChance, set_rushChance)
@@ -14754,7 +15000,7 @@ class CSTYRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 46, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused6(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 46, struct.pack('3B', *nValue), 3)
     unused6 = property(get_unused6, set_unused6)
@@ -14762,7 +15008,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 47)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_rushMult(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 47, c_float(nValue))
     rushMult = property(get_rushMult, set_rushMult)
@@ -14770,7 +15016,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 48)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_flagsB(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 48, nValue)
     flagsB = property(get_flagsB, set_flagsB)
@@ -14778,7 +15024,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 49)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_dodgeFMult(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 49, c_float(nValue))
     dodgeFMult = property(get_dodgeFMult, set_dodgeFMult)
@@ -14786,7 +15032,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 50)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_dodgeFBase(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 50, c_float(nValue))
     dodgeFBase = property(get_dodgeFBase, set_dodgeFBase)
@@ -14794,7 +15040,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 51)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_encSBase(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 51, c_float(nValue))
     encSBase = property(get_encSBase, set_encSBase)
@@ -14802,7 +15048,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 52)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_encSMult(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 52, c_float(nValue))
     encSMult = property(get_encSMult, set_encSMult)
@@ -14810,7 +15056,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 53)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_dodgeAtkMult(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 53, c_float(nValue))
     dodgeAtkMult = property(get_dodgeAtkMult, set_dodgeAtkMult)
@@ -14818,7 +15064,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 54)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_dodgeNAtkMult(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 54, c_float(nValue))
     dodgeNAtkMult = property(get_dodgeNAtkMult, set_dodgeNAtkMult)
@@ -14826,7 +15072,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 55)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_dodgeBAtkMult(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 55, c_float(nValue))
     dodgeBAtkMult = property(get_dodgeBAtkMult, set_dodgeBAtkMult)
@@ -14834,7 +15080,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 56)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_dodgeBNAtkMult(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 56, c_float(nValue))
     dodgeBNAtkMult = property(get_dodgeBNAtkMult, set_dodgeBNAtkMult)
@@ -14842,7 +15088,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 57)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_dodgeFAtkMult(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 57, c_float(nValue))
     dodgeFAtkMult = property(get_dodgeFAtkMult, set_dodgeFAtkMult)
@@ -14850,7 +15096,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 58)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_dodgeFNAtkMult(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 58, c_float(nValue))
     dodgeFNAtkMult = property(get_dodgeFNAtkMult, set_dodgeFNAtkMult)
@@ -14858,7 +15104,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 59)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_blockMult(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 59, c_float(nValue))
     blockMult = property(get_blockMult, set_blockMult)
@@ -14866,7 +15112,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 60)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_blockBase(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 60, c_float(nValue))
     blockBase = property(get_blockBase, set_blockBase)
@@ -14874,7 +15120,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 61)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_blockAtkMult(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 61, c_float(nValue))
     blockAtkMult = property(get_blockAtkMult, set_blockAtkMult)
@@ -14882,7 +15128,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 62)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_blockNAtkMult(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 62, c_float(nValue))
     blockNAtkMult = property(get_blockNAtkMult, set_blockNAtkMult)
@@ -14890,7 +15136,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 63)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_atkMult(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 63, c_float(nValue))
     atkMult = property(get_atkMult, set_atkMult)
@@ -14898,7 +15144,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 64)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_atkBase(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 64, c_float(nValue))
     atkBase = property(get_atkBase, set_atkBase)
@@ -14906,7 +15152,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 65)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_atkAtkMult(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 65, c_float(nValue))
     atkAtkMult = property(get_atkAtkMult, set_atkAtkMult)
@@ -14914,7 +15160,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 66)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_atkNAtkMult(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 66, c_float(nValue))
     atkNAtkMult = property(get_atkNAtkMult, set_atkNAtkMult)
@@ -14922,7 +15168,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 67)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_atkBlockMult(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 67, c_float(nValue))
     atkBlockMult = property(get_atkBlockMult, set_atkBlockMult)
@@ -14930,7 +15176,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 68)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_pAtkFBase(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 68, c_float(nValue))
     pAtkFBase = property(get_pAtkFBase, set_pAtkFBase)
@@ -14938,7 +15184,7 @@ class CSTYRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 69)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_pAtkFMult(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 69, c_float(nValue))
     pAtkFMult = property(get_pAtkFMult, set_pAtkFMult)
@@ -15014,25 +15260,33 @@ class LSCRRecord(BaseRecord):
             self._listIndex = listIndex
         def get_direct(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 8, self._listIndex, 1).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 8, self._listIndex, 1)
+            if(retValue): return retValue.contents.value
+            return None
         def set_direct(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 8, self._listIndex, 1, nValue)
         direct = property(get_direct, set_direct)
         def get_indirect(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 8, self._listIndex, 2).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 8, self._listIndex, 2)
+            if(retValue): return retValue.contents.value
+            return None
         def set_indirect(self, nValue):
             CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 8, self._listIndex, 2, nValue)
         indirect = property(get_indirect, set_indirect)
         def get_gridY(self):
             CBash.ReadFIDListField.restype = POINTER(c_short)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 8, self._listIndex, 3).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 8, self._listIndex, 3)
+            if(retValue): return retValue.contents.value
+            return None
         def set_gridY(self, nValue):
             CBash.SetFIDListFieldS(self._CollectionIndex, self._ModName, self._recordID, 8, self._listIndex, 3, c_short(nValue))
         gridY = property(get_gridY, set_gridY)
         def get_gridX(self):
             CBash.ReadFIDListField.restype = POINTER(c_short)
-            return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 8, self._listIndex, 4).contents.value
+            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 8, self._listIndex, 4)
+            if(retValue): return retValue.contents.value
+            return None
         def set_gridX(self, nValue):
             CBash.SetFIDListFieldS(self._CollectionIndex, self._ModName, self._recordID, 8, self._listIndex, 4, c_short(nValue))
         gridX = property(get_gridX, set_gridX)
@@ -15055,7 +15309,7 @@ class LSCRRecord(BaseRecord):
     def get_locations(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 8)
         if(numRecords > 0): return [self.Location(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_locations(self, nLocations):
         diffLength = len(nLocations) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 8)
         nValues = [(nLocation.direct, nLocation.indirect, nLocation.gridY, nLocation.gridX) for nLocation in nLocations]
@@ -15097,7 +15351,7 @@ class ANIORecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_modb(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 7, c_float(nValue))
     modb = property(get_modb, set_modb)
@@ -15107,7 +15361,7 @@ class ANIORecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 8, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_modt_p(self, nValue):
         length = len(nValue)
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 8, struct.pack('B' * length, *nValue), length)
@@ -15116,7 +15370,7 @@ class ANIORecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_animationId(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 9, nValue)
     animationId = property(get_animationId, set_animationId)
@@ -15139,7 +15393,7 @@ class WATRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_opacity(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 7, c_ubyte(nValue))
     opacity = property(get_opacity, set_opacity)
@@ -15147,7 +15401,7 @@ class WATRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_flags(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 8, c_ubyte(nValue))
     flags = property(get_flags, set_flags)                    
@@ -15161,7 +15415,7 @@ class WATRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_sound(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 10, nValue)
     sound = property(get_sound, set_sound)                    
@@ -15169,7 +15423,7 @@ class WATRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_windVelocity(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 11, c_float(nValue))
     windVelocity = property(get_windVelocity, set_windVelocity)
@@ -15177,7 +15431,7 @@ class WATRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_windDirection(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 12, c_float(nValue))
     windDirection = property(get_windDirection, set_windDirection)
@@ -15185,7 +15439,7 @@ class WATRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_waveAmp(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 13, c_float(nValue))
     waveAmp = property(get_waveAmp, set_waveAmp)
@@ -15193,7 +15447,7 @@ class WATRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 14)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_waveFreq(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 14, c_float(nValue))
     waveFreq = property(get_waveFreq, set_waveFreq)
@@ -15201,7 +15455,7 @@ class WATRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 15)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_sunPower(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 15, c_float(nValue))
     sunPower = property(get_sunPower, set_sunPower)
@@ -15209,7 +15463,7 @@ class WATRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 16)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_reflectAmt(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 16, c_float(nValue))
     reflectAmt = property(get_reflectAmt, set_reflectAmt)
@@ -15217,7 +15471,7 @@ class WATRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 17)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_fresnelAmt(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 17, c_float(nValue))
     fresnelAmt = property(get_fresnelAmt, set_fresnelAmt)
@@ -15225,7 +15479,7 @@ class WATRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 18)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_xSpeed(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 18, c_float(nValue))
     xSpeed = property(get_xSpeed, set_xSpeed)
@@ -15233,7 +15487,7 @@ class WATRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 19)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_ySpeed(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 19, c_float(nValue))
     ySpeed = property(get_ySpeed, set_ySpeed)
@@ -15241,7 +15495,7 @@ class WATRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 20)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_fogNear(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 20, c_float(nValue))
     fogNear = property(get_fogNear, set_fogNear)
@@ -15249,7 +15503,7 @@ class WATRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 21)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_fogFar(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 21, c_float(nValue))
     fogFar = property(get_fogFar, set_fogFar)
@@ -15257,7 +15511,7 @@ class WATRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 22)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_shallowRed(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 22, c_ubyte(nValue))
     shallowRed = property(get_shallowRed, set_shallowRed)
@@ -15265,7 +15519,7 @@ class WATRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 23)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_shallowGreen(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 23, c_ubyte(nValue))
     shallowGreen = property(get_shallowGreen, set_shallowGreen)
@@ -15273,7 +15527,7 @@ class WATRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 24)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_shallowBlue(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 24, c_ubyte(nValue))
     shallowBlue = property(get_shallowBlue, set_shallowBlue)
@@ -15283,7 +15537,7 @@ class WATRRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 25, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused1(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 25, struct.pack('B', *nValue), 1)
     unused1 = property(get_unused1, set_unused1)
@@ -15291,7 +15545,7 @@ class WATRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 26)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_deepRed(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 26, c_ubyte(nValue))
     deepRed = property(get_deepRed, set_deepRed)
@@ -15299,7 +15553,7 @@ class WATRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 27)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_deepGreen(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 27, c_ubyte(nValue))
     deepGreen = property(get_deepGreen, set_deepGreen)
@@ -15307,7 +15561,7 @@ class WATRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 28)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_deepBlue(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 28, c_ubyte(nValue))
     deepBlue = property(get_deepBlue, set_deepBlue)
@@ -15317,7 +15571,7 @@ class WATRRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 29, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused2(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 29, struct.pack('B', *nValue), 1)
     unused2 = property(get_unused2, set_unused2)
@@ -15325,7 +15579,7 @@ class WATRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 30)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_reflRed(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 30, c_ubyte(nValue))
     reflRed = property(get_reflRed, set_reflRed)
@@ -15333,7 +15587,7 @@ class WATRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 31)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_reflGreen(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 31, c_ubyte(nValue))
     reflGreen = property(get_reflGreen, set_reflGreen)
@@ -15341,7 +15595,7 @@ class WATRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 32)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_reflBlue(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 32, c_ubyte(nValue))
     reflBlue = property(get_reflBlue, set_reflBlue)                    
@@ -15351,7 +15605,7 @@ class WATRRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 33, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused3(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 33, struct.pack('B', *nValue), 1)
     unused3 = property(get_unused3, set_unused3)
@@ -15359,7 +15613,7 @@ class WATRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 34)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_blend(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 34, c_ubyte(nValue))
     blend = property(get_blend, set_blend)
@@ -15369,7 +15623,7 @@ class WATRRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 35, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused4(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 35, struct.pack('3B', *nValue), 3)
     unused4 = property(get_unused4, set_unused4)
@@ -15377,7 +15631,7 @@ class WATRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 36)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_rainForce(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 36, c_float(nValue))
     rainForce = property(get_rainForce, set_rainForce)
@@ -15385,7 +15639,7 @@ class WATRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 37)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_rainVelocity(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 37, c_float(nValue))
     rainVelocity = property(get_rainVelocity, set_rainVelocity)
@@ -15393,7 +15647,7 @@ class WATRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 38)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_rainFalloff(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 38, c_float(nValue))
     rainFalloff = property(get_rainFalloff, set_rainFalloff)
@@ -15401,7 +15655,7 @@ class WATRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 39)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_rainDampner(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 39, c_float(nValue))
     rainDampner = property(get_rainDampner, set_rainDampner)
@@ -15409,7 +15663,7 @@ class WATRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 40)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_rainSize(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 40, c_float(nValue))
     rainSize = property(get_rainSize, set_rainSize)
@@ -15417,7 +15671,7 @@ class WATRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 41)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_dispForce(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 41, c_float(nValue))
     dispForce = property(get_dispForce, set_dispForce)
@@ -15425,7 +15679,7 @@ class WATRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 42)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_dispVelocity(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 42, c_float(nValue))
     dispVelocity = property(get_dispVelocity, set_dispVelocity)
@@ -15433,7 +15687,7 @@ class WATRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 43)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_dispFalloff(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 43, c_float(nValue))
     dispFalloff = property(get_dispFalloff, set_dispFalloff)
@@ -15441,7 +15695,7 @@ class WATRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 44)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_dispDampner(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 44, c_float(nValue))
     dispDampner = property(get_dispDampner, set_dispDampner)
@@ -15449,7 +15703,7 @@ class WATRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 45)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_dispSize(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 45, c_float(nValue))
     dispSize = property(get_dispSize, set_dispSize)
@@ -15457,7 +15711,7 @@ class WATRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ushort)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 46)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_damage(self, nValue):
         CBash.SetFIDFieldUS(self._CollectionIndex, self._ModName, self._recordID, 46, c_ushort(nValue))
     damage = property(get_damage, set_damage)                    
@@ -15465,7 +15719,7 @@ class WATRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 47)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_dayWater(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 47, nValue)
     dayWater = property(get_dayWater, set_dayWater)
@@ -15473,7 +15727,7 @@ class WATRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 48)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_nightWater(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 48, nValue)
     nightWater = property(get_nightWater, set_nightWater)
@@ -15481,7 +15735,7 @@ class WATRRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 49)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_underWater(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 49, nValue)
     underWater = property(get_underWater, set_underWater)   
@@ -15523,7 +15777,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_flags(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 8, c_ubyte(nValue))
     flags = property(get_flags, set_flags)
@@ -15533,7 +15787,7 @@ class EFSHRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 9, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused1(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 9, struct.pack('3B', *nValue), 3)
     unused1 = property(get_unused1, set_unused1)
@@ -15541,7 +15795,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_memSBlend(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 10, nValue)
     memSBlend = property(get_memSBlend, set_memSBlend)
@@ -15549,7 +15803,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_memBlendOp(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 11, nValue)
     memBlendOp = property(get_memBlendOp, set_memBlendOp)
@@ -15557,7 +15811,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_memZFunc(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 12, nValue)
     memZFunc = property(get_memZFunc, set_memZFunc)
@@ -15565,7 +15819,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_fillRed(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 13, c_ubyte(nValue))
     fillRed = property(get_fillRed, set_fillRed)
@@ -15573,7 +15827,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 14)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_fillGreen(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 14, c_ubyte(nValue))
     fillGreen = property(get_fillGreen, set_fillGreen)
@@ -15581,7 +15835,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 15)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_fillBlue(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 15, c_ubyte(nValue))
     fillBlue = property(get_fillBlue, set_fillBlue)
@@ -15591,7 +15845,7 @@ class EFSHRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 16, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused2(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 16, struct.pack('B', *nValue), 1)
     unused2 = property(get_unused2, set_unused2)
@@ -15599,7 +15853,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 17)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_fillAIn(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 17, c_float(nValue))
     fillAIn = property(get_fillAIn, set_fillAIn)
@@ -15607,7 +15861,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 18)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_fillAFull(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 18, c_float(nValue))
     fillAFull = property(get_fillAFull, set_fillAFull)
@@ -15615,7 +15869,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 19)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_fillAOut(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 19, c_float(nValue))
     fillAOut = property(get_fillAOut, set_fillAOut)
@@ -15623,7 +15877,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 20)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_fillAPRatio(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 20, c_float(nValue))
     fillAPRatio = property(get_fillAPRatio, set_fillAPRatio)
@@ -15631,7 +15885,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 21)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_fillAAmp(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 21, c_float(nValue))
     fillAAmp = property(get_fillAAmp, set_fillAAmp)
@@ -15639,7 +15893,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 22)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_fillAFreq(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 22, c_float(nValue))
     fillAFreq = property(get_fillAFreq, set_fillAFreq)
@@ -15647,7 +15901,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 23)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_fillAnimSpdU(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 23, c_float(nValue))
     fillAnimSpdU = property(get_fillAnimSpdU, set_fillAnimSpdU)
@@ -15655,7 +15909,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 24)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_fillAnimSpdV(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 24, c_float(nValue))
     fillAnimSpdV = property(get_fillAnimSpdV, set_fillAnimSpdV)
@@ -15663,7 +15917,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 25)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_edgeOff(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 25, c_float(nValue))
     edgeOff = property(get_edgeOff, set_edgeOff)
@@ -15671,7 +15925,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 26)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_edgeRed(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 26, c_ubyte(nValue))
     edgeRed = property(get_edgeRed, set_edgeRed)
@@ -15679,7 +15933,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 27)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_edgeGreen(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 27, c_ubyte(nValue))
     edgeGreen = property(get_edgeGreen, set_edgeGreen)
@@ -15687,7 +15941,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 28)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_edgeBlue(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 28, c_ubyte(nValue))
     edgeBlue = property(get_edgeBlue, set_edgeBlue)
@@ -15697,7 +15951,7 @@ class EFSHRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 29, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused3(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 29, struct.pack('B', *nValue), 1)
     unused3 = property(get_unused3, set_unused3)
@@ -15705,7 +15959,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 30)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_edgeAIn(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 30, c_float(nValue))
     edgeAIn = property(get_edgeAIn, set_edgeAIn)
@@ -15713,7 +15967,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 31)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_edgeAFull(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 31, c_float(nValue))
     edgeAFull = property(get_edgeAFull, set_edgeAFull)
@@ -15721,7 +15975,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 32)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_edgeAOut(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 32, c_float(nValue))
     edgeAOut = property(get_edgeAOut, set_edgeAOut)
@@ -15729,7 +15983,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 33)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_edgeAPRatio(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 33, c_float(nValue))
     edgeAPRatio = property(get_edgeAPRatio, set_edgeAPRatio)
@@ -15737,7 +15991,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 34)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_edgeAAmp(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 34, c_float(nValue))
     edgeAAmp = property(get_edgeAAmp, set_edgeAAmp)
@@ -15745,7 +15999,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 35)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_edgeAFreq(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 35, c_float(nValue))
     edgeAFreq = property(get_edgeAFreq, set_edgeAFreq)
@@ -15753,7 +16007,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 36)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_fillAFRatio(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 36, c_float(nValue))
     fillAFRatio = property(get_fillAFRatio, set_fillAFRatio)
@@ -15761,7 +16015,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 37)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_edgeAFRatio(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 37, c_float(nValue))
     edgeAFRatio = property(get_edgeAFRatio, set_edgeAFRatio)
@@ -15769,7 +16023,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 38)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_memDBlend(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 38, c_ubyte(nValue))
     memDBlend = property(get_memDBlend, set_memDBlend)
@@ -15777,7 +16031,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 39)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_partSBlend(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 39, c_ubyte(nValue))
     partSBlend = property(get_partSBlend, set_partSBlend)
@@ -15785,7 +16039,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 40)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_partBlendOp(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 40, c_ubyte(nValue))
     partBlendOp = property(get_partBlendOp, set_partBlendOp)
@@ -15793,7 +16047,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 41)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_partZFunc(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 41, c_ubyte(nValue))
     partZFunc = property(get_partZFunc, set_partZFunc)
@@ -15801,7 +16055,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 42)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_partDBlend(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 42, c_ubyte(nValue))
     partDBlend = property(get_partDBlend, set_partDBlend)
@@ -15809,7 +16063,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 43)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_partBUp(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 43, c_float(nValue))
     partBUp = property(get_partBUp, set_partBUp)
@@ -15817,7 +16071,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 44)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_partBFull(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 44, c_float(nValue))
     partBFull = property(get_partBFull, set_partBFull)
@@ -15825,7 +16079,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 45)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_partBDown(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 45, c_float(nValue))
     partBDown = property(get_partBDown, set_partBDown)
@@ -15833,7 +16087,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 46)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_partBFRatio(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 46, c_float(nValue))
     partBFRatio = property(get_partBFRatio, set_partBFRatio)
@@ -15841,7 +16095,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 47)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_partBPRatio(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 47, c_float(nValue))
     partBPRatio = property(get_partBPRatio, set_partBPRatio)
@@ -15849,7 +16103,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 48)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_partLTime(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 48, c_float(nValue))
     partLTime = property(get_partLTime, set_partLTime)
@@ -15857,7 +16111,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 49)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_partLDelta(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 49, c_float(nValue))
     partLDelta = property(get_partLDelta, set_partLDelta)
@@ -15865,7 +16119,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 50)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_partNSpd(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 50, c_float(nValue))
     partNSpd = property(get_partNSpd, set_partNSpd)
@@ -15873,7 +16127,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 51)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_partNAcc(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 51, c_float(nValue))
     partNAcc = property(get_partNAcc, set_partNAcc)
@@ -15881,7 +16135,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 52)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_partVel1(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 52, c_float(nValue))
     partVel1 = property(get_partVel1, set_partVel1)
@@ -15889,7 +16143,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 53)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_partVel2(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 53, c_float(nValue))
     partVel2 = property(get_partVel2, set_partVel2)
@@ -15897,7 +16151,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 54)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_partVel3(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 54, c_float(nValue))
     partVel3 = property(get_partVel3, set_partVel3)
@@ -15905,7 +16159,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 55)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_partAcc1(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 55, c_float(nValue))
     partAcc1 = property(get_partAcc1, set_partAcc1)
@@ -15913,7 +16167,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 56)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_partAcc2(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 56, c_float(nValue))
     partAcc2 = property(get_partAcc2, set_partAcc2)
@@ -15921,7 +16175,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 57)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_partAcc3(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 57, c_float(nValue))
     partAcc3 = property(get_partAcc3, set_partAcc3)
@@ -15929,7 +16183,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 58)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_partKey1(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 58, c_float(nValue))
     partKey1 = property(get_partKey1, set_partKey1)
@@ -15937,7 +16191,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 59)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_partKey2(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 59, c_float(nValue))
     partKey2 = property(get_partKey2, set_partKey2)
@@ -15945,7 +16199,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 60)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_partKey1Time(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 60, c_float(nValue))
     partKey1Time = property(get_partKey1Time, set_partKey1Time)
@@ -15953,7 +16207,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 61)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_partKey2Time(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 61, c_float(nValue))
     partKey2Time = property(get_partKey2Time, set_partKey2Time)
@@ -15961,7 +16215,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 62)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_key1Red(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 62, c_ubyte(nValue))
     key1Red = property(get_key1Red, set_key1Red)
@@ -15969,7 +16223,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 63)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_key1Green(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 63, c_ubyte(nValue))
     key1Green = property(get_key1Green, set_key1Green)
@@ -15977,7 +16231,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 64)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_key1Blue(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 64, c_ubyte(nValue))
     key1Blue = property(get_key1Blue, set_key1Blue)
@@ -15987,7 +16241,7 @@ class EFSHRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 65, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused4(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 65, struct.pack('B', *nValue), 1)
     unused4 = property(get_unused4, set_unused4)
@@ -15995,7 +16249,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 66)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_key2Red(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 66, c_ubyte(nValue))
     key2Red = property(get_key2Red, set_key2Red)
@@ -16003,7 +16257,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 67)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_key2Green(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 67, c_ubyte(nValue))
     key2Green = property(get_key2Green, set_key2Green)
@@ -16011,7 +16265,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 68)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_key2Blue(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 68, c_ubyte(nValue))
     key2Blue = property(get_key2Blue, set_key2Blue)
@@ -16021,7 +16275,7 @@ class EFSHRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 69, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused5(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 69, struct.pack('B', *nValue), 1)
     unused5 = property(get_unused5, set_unused5)
@@ -16029,7 +16283,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 70)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_key3Red(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 70, c_ubyte(nValue))
     key3Red = property(get_key3Red, set_key3Red)
@@ -16037,7 +16291,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 71)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_key3Green(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 71, c_ubyte(nValue))
     key3Green = property(get_key3Green, set_key3Green)
@@ -16045,7 +16299,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 72)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_key3Blue(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 72, c_ubyte(nValue))
     key3Blue = property(get_key3Blue, set_key3Blue)
@@ -16055,7 +16309,7 @@ class EFSHRecord(BaseRecord):
             cRecords = POINTER(c_ubyte * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 73, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
-        else: return []
+        return []
     def set_unused6(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 73, struct.pack('B', *nValue), 1)
     unused6 = property(get_unused6, set_unused6)
@@ -16063,7 +16317,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 74)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_key1A(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 74, c_float(nValue))
     key1A = property(get_key1A, set_key1A)
@@ -16071,7 +16325,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 75)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_key2A(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 75, c_float(nValue))
     key2A = property(get_key2A, set_key2A)
@@ -16079,7 +16333,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 76)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_key3A(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 76, c_float(nValue))
     key3A = property(get_key3A, set_key3A)
@@ -16087,7 +16341,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 77)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_key1Time(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 77, c_float(nValue))
     key1Time = property(get_key1Time, set_key1Time)
@@ -16095,7 +16349,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 78)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_key2Time(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 78, c_float(nValue))
     key2Time = property(get_key2Time, set_key2Time)
@@ -16103,7 +16357,7 @@ class EFSHRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 79)
         if(retValue): return retValue.contents.value
-        else: return None
+        return None
     def set_key3Time(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 79, c_float(nValue))
     key3Time = property(get_key3Time, set_key3Time)
@@ -16363,7 +16617,9 @@ class ModFile(object):
         return None
 
     def safeSave(self):
-        return CBash.SafeSaveMod(self._CollectionIndex, self._ModName)
+        return CBash.SafeSaveMod(self._CollectionIndex, self._ModName, c_bool(False))
+    def safeCloseSave(self):
+        return CBash.SafeSaveMod(self._CollectionIndex, self._ModName, c_bool(True))
     @property
     def TES4(self):
         return TES4Record(self._CollectionIndex, self._ModName)
@@ -16375,7 +16631,7 @@ class ModFile(object):
             cRecords = (POINTER(c_char_p) * numRecords)()
             CBash.GetGMSTs(self._CollectionIndex, self._ModName, cRecords)
             return [GMSTRecord(self._CollectionIndex, self._ModName, string_at(cRecords[x])) for x in range(0, numRecords)]
-        else: return []
+        return []
     @property
     def GLOB(self):
         numRecords = CBash.GetNumGLOBRecords(self._CollectionIndex, self._ModName)
@@ -16383,7 +16639,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetGLOBRecords(self._CollectionIndex, self._ModName, cRecords)
             return [GLOBRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def CLAS(self):
         numRecords = CBash.GetNumCLASRecords(self._CollectionIndex, self._ModName)
@@ -16391,7 +16647,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetCLASRecords(self._CollectionIndex, self._ModName, cRecords)
             return [CLASRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def FACT(self):
         numRecords = CBash.GetNumFACTRecords(self._CollectionIndex, self._ModName)
@@ -16399,7 +16655,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetFACTRecords(self._CollectionIndex, self._ModName, cRecords)
             return [FACTRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def HAIR(self):
         numRecords = CBash.GetNumHAIRRecords(self._CollectionIndex, self._ModName)
@@ -16407,7 +16663,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetHAIRRecords(self._CollectionIndex, self._ModName, cRecords)
             return [HAIRRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def EYES(self):
         numRecords = CBash.GetNumEYESRecords(self._CollectionIndex, self._ModName)
@@ -16415,7 +16671,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetEYESRecords(self._CollectionIndex, self._ModName, cRecords)
             return [EYESRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def RACE(self):
         numRecords = CBash.GetNumRACERecords(self._CollectionIndex, self._ModName)
@@ -16423,7 +16679,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetRACERecords(self._CollectionIndex, self._ModName, cRecords)
             return [RACERecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def SOUN(self):
         numRecords = CBash.GetNumSOUNRecords(self._CollectionIndex, self._ModName)
@@ -16431,7 +16687,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetSOUNRecords(self._CollectionIndex, self._ModName, cRecords)
             return [SOUNRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def SKIL(self):
         numRecords = CBash.GetNumSKILRecords(self._CollectionIndex, self._ModName)
@@ -16439,7 +16695,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetSKILRecords(self._CollectionIndex, self._ModName, cRecords)
             return [SKILRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def MGEF(self):
         numRecords = CBash.GetNumMGEFRecords(self._CollectionIndex, self._ModName)
@@ -16447,7 +16703,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetMGEFRecords(self._CollectionIndex, self._ModName, cRecords)
             return [MGEFRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def SCPT(self):
         numRecords = CBash.GetNumSCPTRecords(self._CollectionIndex, self._ModName)
@@ -16455,7 +16711,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetSCPTRecords(self._CollectionIndex, self._ModName, cRecords)
             return [SCPTRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def LTEX(self):
         numRecords = CBash.GetNumLTEXRecords(self._CollectionIndex, self._ModName)
@@ -16463,7 +16719,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetLTEXRecords(self._CollectionIndex, self._ModName, cRecords)
             return [LTEXRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def ENCH(self):
         numRecords = CBash.GetNumENCHRecords(self._CollectionIndex, self._ModName)
@@ -16471,7 +16727,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetENCHRecords(self._CollectionIndex, self._ModName, cRecords)
             return [ENCHRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def SPEL(self):
         numRecords = CBash.GetNumSPELRecords(self._CollectionIndex, self._ModName)
@@ -16479,7 +16735,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetSPELRecords(self._CollectionIndex, self._ModName, cRecords)
             return [SPELRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def BSGN(self):
         numRecords = CBash.GetNumBSGNRecords(self._CollectionIndex, self._ModName)
@@ -16487,7 +16743,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetBSGNRecords(self._CollectionIndex, self._ModName, cRecords)
             return [BSGNRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def ACTI(self):
         numRecords = CBash.GetNumACTIRecords(self._CollectionIndex, self._ModName)
@@ -16495,7 +16751,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetACTIRecords(self._CollectionIndex, self._ModName, cRecords)
             return [ACTIRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def APPA(self):
         numRecords = CBash.GetNumAPPARecords(self._CollectionIndex, self._ModName)
@@ -16503,7 +16759,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetAPPARecords(self._CollectionIndex, self._ModName, cRecords)
             return [APPARecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def ARMO(self):
         numRecords = CBash.GetNumARMORecords(self._CollectionIndex, self._ModName)
@@ -16511,7 +16767,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetARMORecords(self._CollectionIndex, self._ModName, cRecords)
             return [ARMORecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def BOOK(self):
         numRecords = CBash.GetNumBOOKRecords(self._CollectionIndex, self._ModName)
@@ -16519,7 +16775,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetBOOKRecords(self._CollectionIndex, self._ModName, cRecords)
             return [BOOKRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def CLOT(self):
         numRecords = CBash.GetNumCLOTRecords(self._CollectionIndex, self._ModName)
@@ -16527,7 +16783,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetCLOTRecords(self._CollectionIndex, self._ModName, cRecords)
             return [CLOTRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def CONT(self):
         numRecords = CBash.GetNumCONTRecords(self._CollectionIndex, self._ModName)
@@ -16535,7 +16791,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetCONTRecords(self._CollectionIndex, self._ModName, cRecords)
             return [CONTRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def DOOR(self):
         numRecords = CBash.GetNumDOORRecords(self._CollectionIndex, self._ModName)
@@ -16543,7 +16799,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetDOORRecords(self._CollectionIndex, self._ModName, cRecords)
             return [DOORRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def INGR(self):
         numRecords = CBash.GetNumINGRRecords(self._CollectionIndex, self._ModName)
@@ -16551,7 +16807,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetINGRRecords(self._CollectionIndex, self._ModName, cRecords)
             return [INGRRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def LIGH(self):
         numRecords = CBash.GetNumLIGHRecords(self._CollectionIndex, self._ModName)
@@ -16559,7 +16815,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetLIGHRecords(self._CollectionIndex, self._ModName, cRecords)
             return [LIGHRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def MISC(self):
         numRecords = CBash.GetNumMISCRecords(self._CollectionIndex, self._ModName)
@@ -16567,7 +16823,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetMISCRecords(self._CollectionIndex, self._ModName, cRecords)
             return [MISCRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def STAT(self):
         numRecords = CBash.GetNumSTATRecords(self._CollectionIndex, self._ModName)
@@ -16575,7 +16831,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetSTATRecords(self._CollectionIndex, self._ModName, cRecords)
             return [STATRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def GRAS(self):
         numRecords = CBash.GetNumGRASRecords(self._CollectionIndex, self._ModName)
@@ -16583,7 +16839,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetGRASRecords(self._CollectionIndex, self._ModName, cRecords)
             return [GRASRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def TREE(self):
         numRecords = CBash.GetNumTREERecords(self._CollectionIndex, self._ModName)
@@ -16591,7 +16847,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetTREERecords(self._CollectionIndex, self._ModName, cRecords)
             return [TREERecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def FLOR(self):
         numRecords = CBash.GetNumFLORRecords(self._CollectionIndex, self._ModName)
@@ -16599,7 +16855,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetFLORRecords(self._CollectionIndex, self._ModName, cRecords)
             return [FLORRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def FURN(self):
         numRecords = CBash.GetNumFURNRecords(self._CollectionIndex, self._ModName)
@@ -16607,7 +16863,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetFURNRecords(self._CollectionIndex, self._ModName, cRecords)
             return [FURNRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def WEAP(self):
         numRecords = CBash.GetNumWEAPRecords(self._CollectionIndex, self._ModName)
@@ -16615,7 +16871,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetWEAPRecords(self._CollectionIndex, self._ModName, cRecords)
             return [WEAPRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def AMMO(self):
         numRecords = CBash.GetNumAMMORecords(self._CollectionIndex, self._ModName)
@@ -16623,7 +16879,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetAMMORecords(self._CollectionIndex, self._ModName, cRecords)
             return [AMMORecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def NPC_(self):
         numRecords = CBash.GetNumNPC_Records(self._CollectionIndex, self._ModName)
@@ -16631,7 +16887,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetNPC_Records(self._CollectionIndex, self._ModName, cRecords)
             return [NPC_Record(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def CREA(self):
         numRecords = CBash.GetNumCREARecords(self._CollectionIndex, self._ModName)
@@ -16639,7 +16895,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetCREARecords(self._CollectionIndex, self._ModName, cRecords)
             return [CREARecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def LVLC(self):
         numRecords = CBash.GetNumLVLCRecords(self._CollectionIndex, self._ModName)
@@ -16647,7 +16903,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetLVLCRecords(self._CollectionIndex, self._ModName, cRecords)
             return [LVLCRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def SLGM(self):
         numRecords = CBash.GetNumSLGMRecords(self._CollectionIndex, self._ModName)
@@ -16655,7 +16911,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetSLGMRecords(self._CollectionIndex, self._ModName, cRecords)
             return [SLGMRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def KEYM(self):
         numRecords = CBash.GetNumKEYMRecords(self._CollectionIndex, self._ModName)
@@ -16663,7 +16919,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetKEYMRecords(self._CollectionIndex, self._ModName, cRecords)
             return [KEYMRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def ALCH(self):
         numRecords = CBash.GetNumALCHRecords(self._CollectionIndex, self._ModName)
@@ -16671,7 +16927,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetALCHRecords(self._CollectionIndex, self._ModName, cRecords)
             return [ALCHRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def SBSP(self):
         numRecords = CBash.GetNumSBSPRecords(self._CollectionIndex, self._ModName)
@@ -16679,7 +16935,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetSBSPRecords(self._CollectionIndex, self._ModName, cRecords)
             return [SBSPRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def SGST(self):
         numRecords = CBash.GetNumSGSTRecords(self._CollectionIndex, self._ModName)
@@ -16687,7 +16943,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetSGSTRecords(self._CollectionIndex, self._ModName, cRecords)
             return [SGSTRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def LVLI(self):
         numRecords = CBash.GetNumLVLIRecords(self._CollectionIndex, self._ModName)
@@ -16695,7 +16951,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetLVLIRecords(self._CollectionIndex, self._ModName, cRecords)
             return [LVLIRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def WTHR(self):
         numRecords = CBash.GetNumWTHRRecords(self._CollectionIndex, self._ModName)
@@ -16703,7 +16959,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetWTHRRecords(self._CollectionIndex, self._ModName, cRecords)
             return [WTHRRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def CLMT(self):
         numRecords = CBash.GetNumCLMTRecords(self._CollectionIndex, self._ModName)
@@ -16711,7 +16967,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetCLMTRecords(self._CollectionIndex, self._ModName, cRecords)
             return [CLMTRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def REGN(self):
         numRecords = CBash.GetNumREGNRecords(self._CollectionIndex, self._ModName)
@@ -16719,7 +16975,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetREGNRecords(self._CollectionIndex, self._ModName, cRecords)
             return [REGNRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def CELL(self):
         numRecords = CBash.GetNumCELLRecords(self._CollectionIndex, self._ModName)
@@ -16727,7 +16983,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetCELLRecords(self._CollectionIndex, self._ModName, cRecords)
             return [CELLRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def WRLD(self):
         numRecords = CBash.GetNumWRLDRecords(self._CollectionIndex, self._ModName)
@@ -16735,7 +16991,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetWRLDRecords(self._CollectionIndex, self._ModName, cRecords)
             return [WRLDRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def DIAL(self):
         numRecords = CBash.GetNumDIALRecords(self._CollectionIndex, self._ModName)
@@ -16743,7 +16999,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetDIALRecords(self._CollectionIndex, self._ModName, cRecords)
             return [DIALRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def QUST(self):
         numRecords = CBash.GetNumQUSTRecords(self._CollectionIndex, self._ModName)
@@ -16751,7 +17007,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetQUSTRecords(self._CollectionIndex, self._ModName, cRecords)
             return [QUSTRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def IDLE(self):
         numRecords = CBash.GetNumIDLERecords(self._CollectionIndex, self._ModName)
@@ -16759,7 +17015,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetIDLERecords(self._CollectionIndex, self._ModName, cRecords)
             return [IDLERecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def PACK(self):
         numRecords = CBash.GetNumPACKRecords(self._CollectionIndex, self._ModName)
@@ -16767,7 +17023,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetPACKRecords(self._CollectionIndex, self._ModName, cRecords)
             return [PACKRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def CSTY(self):
         numRecords = CBash.GetNumCSTYRecords(self._CollectionIndex, self._ModName)
@@ -16775,7 +17031,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetCSTYRecords(self._CollectionIndex, self._ModName, cRecords)
             return [CSTYRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def LSCR(self):
         numRecords = CBash.GetNumLSCRRecords(self._CollectionIndex, self._ModName)
@@ -16783,7 +17039,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetLSCRRecords(self._CollectionIndex, self._ModName, cRecords)
             return [LSCRRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def LVSP(self):
         numRecords = CBash.GetNumLVSPRecords(self._CollectionIndex, self._ModName)
@@ -16791,7 +17047,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetLVSPRecords(self._CollectionIndex, self._ModName, cRecords)
             return [LVSPRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def ANIO(self):
         numRecords = CBash.GetNumANIORecords(self._CollectionIndex, self._ModName)
@@ -16799,7 +17055,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetANIORecords(self._CollectionIndex, self._ModName, cRecords)
             return [ANIORecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def WATR(self):
         numRecords = CBash.GetNumWATRRecords(self._CollectionIndex, self._ModName)
@@ -16807,7 +17063,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetWATRRecords(self._CollectionIndex, self._ModName, cRecords)
             return [WATRRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def EFSH(self):
         numRecords = CBash.GetNumEFSHRecords(self._CollectionIndex, self._ModName)
@@ -16815,7 +17071,7 @@ class ModFile(object):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetEFSHRecords(self._CollectionIndex, self._ModName, cRecords)
             return [EFSHRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     
 class Collection:
     """Collection of esm/esp's."""
@@ -16831,7 +17087,7 @@ class Collection:
     def addMod(self, ModName, CreateIfNotExist=False):
         if(CBash.AddMod(self._CollectionIndex, ModName, CreateIfNotExist) != -1):
             return ModFile(self._CollectionIndex, ModName)
-        else: return None
+        return None
 
     def minimalLoad(self, LoadMasters=False):
         CBash.MinimalLoad(self._CollectionIndex, LoadMasters)
@@ -16856,7 +17112,7 @@ class Collection:
             cRecords = (POINTER(c_char_p) * numRecords)()
             CBash.GetMods(self._CollectionIndex, cRecords)
             return [TES4Record(self._CollectionIndex, string_at(cRecords[x])) for x in range(0, numRecords)]
-        else: return []
+        return []
     @property
     def GMST(self):
         numRecords = CBash.GetNumGMSTRecords(self._CollectionIndex, 0)
@@ -16864,7 +17120,7 @@ class Collection:
             cRecords = (POINTER(c_char_p) * numRecords)()
             CBash.GetGMSTs(self._CollectionIndex, 0, cRecords)
             return [GMSTRecord(self._CollectionIndex, 0, string_at(cRecords[x])) for x in range(0, numRecords)]
-        else: return []
+        return []
     @property
     def GLOB(self):
         numRecords = CBash.GetNumGLOBRecords(self._CollectionIndex, 0)
@@ -16872,7 +17128,7 @@ class Collection:
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetGLOBRecords(self._CollectionIndex, 0, cRecords)
             return [GLOBRecord(self._CollectionIndex, 0,  x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def CLAS(self):
         numRecords = CBash.GetNumCLASRecords(self._CollectionIndex, 0)
@@ -16880,7 +17136,7 @@ class Collection:
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetCLASRecords(self._CollectionIndex, 0, cRecords)
             return [CLASRecord(self._CollectionIndex, 0, x.contents.value) for x in cRecords]
-        else: return []
+        return []
     @property
     def FACT(self):
         ##Iterator is slightly faster if not iterating through entire sequence
