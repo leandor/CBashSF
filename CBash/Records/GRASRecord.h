@@ -158,6 +158,7 @@ class GRASRecord : public Record
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();
         unsigned int GetType() {return eGRAS;}
+        char * GetStrType() {return "GRAS";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
         bool IsVLighting()
             {

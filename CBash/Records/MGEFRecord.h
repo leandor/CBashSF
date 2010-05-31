@@ -226,6 +226,7 @@ class MGEFRecord : public Record
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();
         unsigned int GetType() {return eMGEF;}
+        char * GetStrType() {return "MGEF";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
         bool IsHostile()
             {

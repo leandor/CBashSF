@@ -883,5 +883,6 @@ class REGNRecord : public Record
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();
         unsigned int GetType() {return eREGN;}
+        char * GetStrType() {return "REGN";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
     };

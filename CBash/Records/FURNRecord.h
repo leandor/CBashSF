@@ -136,6 +136,7 @@ class FURNRecord : public Record
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();
         unsigned int GetType() {return eFURN;}
+        char * GetStrType() {return "FURN";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
         bool IsAnim01()
             {

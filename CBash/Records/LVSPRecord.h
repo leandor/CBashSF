@@ -177,6 +177,7 @@ class LVSPRecord : public Record
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();
         unsigned int GetType() {return eLVSP;}
+        char * GetStrType() {return "LVSP";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
 
         bool IsCalcFromAllLevels()

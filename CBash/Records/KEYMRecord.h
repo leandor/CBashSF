@@ -104,5 +104,6 @@ class KEYMRecord : public Record
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();
         unsigned int GetType() {return eKEYM;}
+        char * GetStrType() {return "KEYM";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
     };

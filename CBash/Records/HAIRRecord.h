@@ -99,6 +99,7 @@ class HAIRRecord : public Record
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();
         unsigned int GetType() {return eHAIR;}
+        char * GetStrType() {return "HAIR";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
         bool IsPlayable()
             {

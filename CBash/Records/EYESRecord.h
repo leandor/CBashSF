@@ -80,6 +80,7 @@ class EYESRecord : public Record
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();
         unsigned int GetType() {return eEYES;}
+        char * GetStrType() {return "EYES";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
         bool IsPlayable()
             {

@@ -112,6 +112,7 @@ class DIALRecord : public Record
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();
         unsigned int GetType() {return eDIAL;}
+        char * GetStrType() {return "DIAL";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
 
         bool IsTopic()

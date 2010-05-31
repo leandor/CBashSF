@@ -166,6 +166,7 @@ class ENCHRecord : public Record
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();
         unsigned int GetType() {return eENCH;}
+        char * GetStrType() {return "ENCH";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
         bool IsNoAutoCalc()
             {

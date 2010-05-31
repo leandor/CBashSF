@@ -265,6 +265,7 @@ class EFSHRecord : public Record
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();
         unsigned int GetType() {return eEFSH;}
+        char * GetStrType() {return "EFSH";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
         bool IsNoMemShader()
             {

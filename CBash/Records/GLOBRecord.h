@@ -107,5 +107,6 @@ class GLOBRecord : public Record
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();
         unsigned int GetType() {return eGLOB;}
+        char * GetStrType() {return "GLOB";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
     };

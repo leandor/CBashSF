@@ -153,6 +153,7 @@ class DOORRecord : public Record
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();
         unsigned int GetType() {return eDOOR;}
+        char * GetStrType() {return "DOOR";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
         bool IsOblivionGate()
             {

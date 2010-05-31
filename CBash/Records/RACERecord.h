@@ -640,6 +640,7 @@ class RACERecord : public Record
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();
         unsigned int GetType() {return eRACE;}
+        char * GetStrType() {return "RACE";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
 
         bool IsPlayable()

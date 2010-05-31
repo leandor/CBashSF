@@ -479,6 +479,7 @@ class REFRRecord : public Record
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();
         unsigned int GetType() {return eREFR;}
+        char * GetStrType() {return "REFR";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
         bool IsOppositeParent()
             {
