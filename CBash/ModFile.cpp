@@ -34,6 +34,12 @@ int ModFile::Open()
         {
         m_region = new mapped_region(file_mapping(FileName, read_only), read_only);
         }
+    catch(interprocess_exception &ex)
+        {
+        printf("Exception raised: %s\nUnable to memory map '%s'.\n", ex.what(), FileName);
+        throw;
+        return -1;
+        }
     catch(...)
         {
         printf("Open Error\n");

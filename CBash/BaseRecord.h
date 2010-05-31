@@ -1236,6 +1236,7 @@ class Record
         virtual void Unload() abstract {};
         virtual unsigned int GetSize() abstract {};
         virtual unsigned int GetType() {return eUnknown;}
+        virtual char * GetStrType() abstract {}
         virtual void ExpandFormIDs(_FormIDHandler &FormIDHandler) abstract {};
         virtual void CollapseFormIDs(_FormIDHandler &FormIDHandler) abstract {};
         virtual void CopyFrom(Record *temp) {return;}

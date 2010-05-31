@@ -181,6 +181,7 @@ class CONTRecord : public Record
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();
         unsigned int GetType() {return eCONT;}
+        char * GetStrType() {return "CONT";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
         bool IsRespawn()
             {

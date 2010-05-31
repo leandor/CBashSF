@@ -31,8 +31,6 @@ class Collection
     private:
         char *ModsDir;
         std::vector<ModFile *> ModFiles;
-        std::vector<char *> LoadOrder;
-        //std::list<char *> LoadOrder;
         //std::vector<int> LoadRecordTypes;
         bool isLoaded;
     public:
@@ -63,22 +61,25 @@ class Collection
         void CollapseFormIDs(char *ModName = NULL);
         void ExpandFormIDs(char *ModName = NULL);
         void ReindexFormIDs();
+        int RemoveIndex(Record *curRecord, char *ModName);
         int LoadRecord(char *ModName, unsigned int recordFID);
         int UnloadRecord(char *ModName, unsigned int recordFID);
-        int DeleteRecord(char *ModName, unsigned int recordFID);
+        int DeleteRecord(char *ModName, unsigned int recordFID, unsigned int parentFID);
+        int DeleteCELL(CELLRecord *curCell, char *ModName);
+        int DeleteGMSTRecord(char *ModName, char *recordEDID);
         int Close();
 
         template <class T>
-        int LookupRecord(char *ModName, unsigned int &recordFID, ModFile *&curModFile, T *&curRecord)
+        std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID>::iterator LookupRecord(char *ModName, unsigned int &recordFID, ModFile *&curModFile, T *&curRecord)
             {
             std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID>::iterator it;
 
             if(recordFID == 0)
-                {curModFile = NULL; curRecord = NULL; return 0;}
+                {curModFile = NULL; curRecord = NULL; return FID_ModFile_Record.end();}
 
             it = FID_ModFile_Record.find(&recordFID);
             if(it == FID_ModFile_Record.end())
-                {curModFile = NULL; curRecord = NULL; return 0;}
+                {curModFile = NULL; curRecord = NULL; return FID_ModFile_Record.end();}
 
             if(ModName == NULL)
                 curModFile = it->second.first;
@@ -94,13 +95,13 @@ class Collection
                         }
                 }
             if(curModFile == NULL)
-                {curRecord = NULL; return 0;}
+                {curRecord = NULL; return FID_ModFile_Record.end();}
             curRecord = (T *)it->second.second;
-            return 1;
+            return it;
             }
-        int LookupGMSTRecord(char *ModName, char *recordEDID, ModFile *&curModFile, GMSTRecord *&curRecord);
+        std::multimap<char *, std::pair<ModFile *, Record *>, sameStr>::iterator LookupGMSTRecord(char *ModName, char *recordEDID, ModFile *&curModFile, GMSTRecord *&curRecord);
 
-        CELLRecord *LookupCELLParent(ModFile *&curModFile, CELLRecord *&curCELL);
+        CELLRecord *LookupWorldCELL(ModFile *&curModFile, CELLRecord *&curCELL);
         void ResolveGrid(const float &posX, const float &posY, int &gridX, int &gridY);
 
         ModFile *LookupModFile(char *ModName);

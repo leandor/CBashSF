@@ -36,7 +36,8 @@ extern "C" __declspec(dllexport) int SafeSaveAllChangedMods(const unsigned int C
 ////////////////////////////////////////////////////////////////////////
 extern "C" __declspec(dllexport) int LoadRecord(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID);
 extern "C" __declspec(dllexport) int UnloadRecord(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID);
-extern "C" __declspec(dllexport) int DeleteRecord(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID);
+extern "C" __declspec(dllexport) int DeleteRecord(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, unsigned int parentFID);
+extern "C" __declspec(dllexport) int DeleteGMSTRecord(const unsigned int CollectionIndex, char *ModName, char *recordEDID);
 extern "C" __declspec(dllexport) int Close(const unsigned int CollectionIndex);
 ////////////////////////////////////////////////////////////////////////
 extern "C" __declspec(dllexport) unsigned int GetNumMods(const unsigned int CollectionIndex);

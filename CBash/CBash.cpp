@@ -181,11 +181,11 @@ int UnloadRecord(const unsigned int CollectionIndex, char *ModName, unsigned int
     return 0;
     }
 
-int DeleteRecord(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID)
+int DeleteRecord(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, unsigned int parentFID)
     {
     try
         {
-        Collections[CollectionIndex]->LoadRecord(ModName, recordFID);
+        Collections[CollectionIndex]->DeleteRecord(ModName, recordFID, parentFID);
         }
     catch(...)
         {
@@ -194,7 +194,21 @@ int DeleteRecord(const unsigned int CollectionIndex, char *ModName, unsigned int
         }
     return 0;
     }
-
+    
+int DeleteGMSTRecord(const unsigned int CollectionIndex, char *ModName, char *recordEDID)
+    {
+    try
+        {
+        Collections[CollectionIndex]->DeleteGMSTRecord(ModName, recordEDID);
+        }
+    catch(...)
+        {
+        printf("Error deleting GMST record: %s from mod:%s in collection: %i\n", recordEDID, ModName, CollectionIndex);
+        return -1;
+        }
+    return 0;
+    }
+    
 int Close(const unsigned int CollectionIndex)
     {
     try

@@ -706,7 +706,7 @@ unsigned int Collection::GetNumACHRRecords(char *ModName, unsigned int parentFID
     LookupRecord(ModName, parentFID, curModFile, parentRecord);
     if(parentRecord == NULL || curModFile == NULL)
         return 0;
-    dummyParentRecord = LookupCELLParent(curModFile, parentRecord);
+    dummyParentRecord = LookupWorldCELL(curModFile, parentRecord);
 
     cSize += (unsigned int)parentRecord->ACHR.size();
     if(dummyParentRecord != NULL)
@@ -741,7 +741,7 @@ unsigned int Collection::GetNumACRERecords(char *ModName, unsigned int parentFID
     LookupRecord(ModName, parentFID, curModFile, parentRecord);
     if(parentRecord == NULL || curModFile == NULL)
         return 0;
-    dummyParentRecord = LookupCELLParent(curModFile, parentRecord);
+    dummyParentRecord = LookupWorldCELL(curModFile, parentRecord);
 
     cSize += (unsigned int)parentRecord->ACRE.size();
     if(dummyParentRecord != NULL)
@@ -776,7 +776,7 @@ unsigned int Collection::GetNumREFRRecords(char *ModName, unsigned int parentFID
     LookupRecord(ModName, parentFID, curModFile, parentRecord);
     if(parentRecord == NULL || curModFile == NULL)
         return 0;
-    dummyParentRecord = LookupCELLParent(curModFile, parentRecord);
+    dummyParentRecord = LookupWorldCELL(curModFile, parentRecord);
 
     cSize += (unsigned int)parentRecord->REFR.size();
     if(dummyParentRecord != NULL)

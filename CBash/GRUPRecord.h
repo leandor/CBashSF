@@ -84,6 +84,19 @@ class GRUPRecords
                 Records[p]->Read(fileBuffer, FormIDHandler);
             return true;
             }
+        void DeleteRecord(Record *curRecord)
+            {
+            std::vector<T *>::iterator it;
+            it = std::find(Records.begin(), Records.end(), curRecord);
+            if(it == Records.end())
+                {
+                printf("Record %08X not found in %s\n", curRecord->formID, curRecord->GetStrType());
+                throw 1;
+                return;
+                }
+            delete curRecord;
+            Records.erase(it);
+            }
         void CollapseFormIDs(_FormIDHandler &FormIDHandler)
             {
             for(unsigned int p = 0; p < Records.size(); p++)
@@ -232,6 +245,38 @@ class GRUPRecords<DIALRecord>
                     curRecord->INFO[x]->Read(fileBuffer, FormIDHandler);
                 }
             return true;
+            }
+        void DeleteRecord(Record *curParentRecord, Record *curRecord)
+            {
+            std::vector<DIALRecord *>::iterator it;
+            it = std::find(Records.begin(), Records.end(), curParentRecord);
+            if(it == Records.end())
+                {
+                printf("Record %08X not found in %s\n", curParentRecord->formID, curParentRecord->GetStrType());
+                throw 1;
+                return;
+                }
+            if(curRecord == NULL)
+                {
+                Records.erase(it);
+                delete curParentRecord;
+                }
+            else
+                {
+                std::vector<INFORecord *>::iterator INFO_it;
+                DIALRecord *curDial = *it;
+                INFO_it = std::find(curDial->INFO.begin(), curDial->INFO.end(), curRecord);
+                if(INFO_it != curDial->INFO.end())
+                    curDial->INFO.erase(INFO_it);
+                else
+                    {
+                    printf("Record %08X with parent %08X not found in %s\n", curRecord->formID, curParentRecord->formID, curParentRecord->GetStrType());
+                    throw 1;
+                    return;
+                    }
+                delete curRecord;
+                }
+            return;
             }
         void CollapseFormIDs(_FormIDHandler &FormIDHandler)
             {
@@ -485,6 +530,60 @@ class GRUPRecords<CELLRecord>
                     curRecord->PGRD->Read(fileBuffer, FormIDHandler);
                 }
             return true;
+            }
+        void DeleteRecord(Record *curParentRecord, Record *curRecord)
+            {
+            CELLRecord *curCell = NULL;
+            std::vector<CELLRecord *>::iterator it;
+            it = std::find(Records.begin(), Records.end(), curParentRecord);
+            if(it == Records.end())
+                {
+                printf("CELL: Parent Record %08X not found in %s\n", curParentRecord->formID, curParentRecord->GetStrType());
+                throw 1;
+                return;
+                }
+            curCell = *it;
+            if(curRecord == NULL)
+                {
+                Records.erase(it);
+                delete curParentRecord;
+                }
+            else
+                {
+                if(curRecord == (Record *)curCell->PGRD)
+                    curCell->PGRD = NULL;
+                else if(curRecord == (Record *)curCell->LAND)
+                    curCell->LAND = NULL;
+                else
+                    {
+                    std::vector<ACHRRecord *>::iterator ACHR_it;
+                    std::vector<ACRERecord *>::iterator ACRE_it;
+                    std::vector<REFRRecord *>::iterator REFR_it;
+                    ACHR_it = std::find(curCell->ACHR.begin(), curCell->ACHR.end(), curRecord);
+                    if(ACHR_it != curCell->ACHR.end())
+                        curCell->ACHR.erase(ACHR_it);
+                    else
+                        {
+                        ACRE_it = std::find(curCell->ACRE.begin(), curCell->ACRE.end(), curRecord);
+                        if(ACRE_it != curCell->ACRE.end())
+                            curCell->ACRE.erase(ACRE_it);
+                        else
+                            {
+                            REFR_it = std::find(curCell->REFR.begin(), curCell->REFR.end(), curRecord);
+                            if(REFR_it != curCell->REFR.end())
+                                curCell->REFR.erase(REFR_it);
+                            else
+                                {
+                                printf("Record %08X with parent %08X not found in %s\n", curRecord->formID, curParentRecord->formID, curParentRecord->GetStrType());
+                                throw 1;
+                                return;
+                                }
+                            }
+                        }
+                    }
+                delete curRecord;
+                }
+            return;
             }
         void CollapseFormIDs(_FormIDHandler &FormIDHandler)
             {
@@ -1048,6 +1147,101 @@ class GRUPRecords<WRLDRecord>
                     }
                 }
             return true;
+            }
+        void DeleteRecord(Record *curParentRecord, Record *curRecord)
+            {
+            WRLDRecord *curWorld = NULL;
+            std::vector<WRLDRecord *>::iterator it;
+            std::vector<CELLRecord *>::iterator CELL_it;
+            it = std::find(Records.begin(), Records.end(), curParentRecord);
+            if(it == Records.end())
+                {
+                for(it = Records.begin(); it != Records.end(); it++)
+                    {
+                    curWorld = *it;
+                    if(curParentRecord == (Record *)(curWorld->CELL))
+                        break;
+                    else
+                        {
+                        CELL_it = std::find(curWorld->CELLS.begin(), curWorld->CELLS.end(), curParentRecord);
+                        if(CELL_it == curWorld->CELLS.end())
+                            {
+                            printf("WRLD:First: Parent %s Record %08X not found\n",  curParentRecord->GetStrType(), curParentRecord->formID);
+                            throw 1;
+                            return;
+                            }
+                        break;
+                        }
+                    }
+                }
+            else
+                curWorld = *it;
+            if(curRecord == NULL)
+                {
+                Records.erase(it);
+                delete curParentRecord;
+                }
+            else
+                {
+                if(curRecord == (Record *)(curWorld->CELL))
+                    curWorld->CELL = NULL;
+                else if(curRecord == (Record *)(curWorld->ROAD))
+                    curWorld->ROAD = NULL;
+                else
+                    {
+                    CELL_it = std::find(curWorld->CELLS.begin(), curWorld->CELLS.end(), curRecord);
+                    if(CELL_it == curWorld->CELLS.end())
+                        {
+                        CELLRecord *curCell = curWorld->CELL;
+                        if(curParentRecord != (Record *)curCell)
+                            {
+                            CELL_it = std::find(curWorld->CELLS.begin(), curWorld->CELLS.end(), curParentRecord);
+                            if(CELL_it == curWorld->CELLS.end())
+                                {
+                                printf("WRLD:Next: Record %08X with parent %08X not found in %s\n", curRecord->formID, curParentRecord->formID, curParentRecord->GetStrType());
+                                throw 1;
+                                return;
+                                }
+                            curCell = *CELL_it;
+                            }
+                        if(curRecord == (Record *)curCell->PGRD)
+                            curCell->PGRD = NULL;
+                        else if(curRecord == (Record *)curCell->LAND)
+                            curCell->LAND = NULL;
+                        else
+                            {
+                            std::vector<ACHRRecord *>::iterator ACHR_it;
+                            std::vector<ACRERecord *>::iterator ACRE_it;
+                            std::vector<REFRRecord *>::iterator REFR_it;
+                            ACHR_it = std::find(curCell->ACHR.begin(), curCell->ACHR.end(), curRecord);
+                            if(ACHR_it != curCell->ACHR.end())
+                                curCell->ACHR.erase(ACHR_it);
+                            else
+                                {
+                                ACRE_it = std::find(curCell->ACRE.begin(), curCell->ACRE.end(), curRecord);
+                                if(ACRE_it != curCell->ACRE.end())
+                                    curCell->ACRE.erase(ACRE_it);
+                                else
+                                    {
+                                    REFR_it = std::find(curCell->REFR.begin(), curCell->REFR.end(), curRecord);
+                                    if(REFR_it != curCell->REFR.end())
+                                        curCell->REFR.erase(REFR_it);
+                                    else
+                                        {
+                                        printf("WRLD:Last: Record %08X with parent %08X not found in %s\n", curRecord->formID, curParentRecord->formID, curParentRecord->GetStrType());
+                                        throw 1;
+                                        return;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    else
+                        curWorld->CELLS.erase(CELL_it);
+                    }
+                delete curRecord;
+                }
+            return;
             }
         void CollapseFormIDs(_FormIDHandler &FormIDHandler)
             {

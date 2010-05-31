@@ -159,6 +159,7 @@ class ALCHRecord : public Record
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();
         unsigned int GetType() {return eALCH;}
+        char * GetStrType() {return "ALCH";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
         bool IsNoAutoCalc()
             {

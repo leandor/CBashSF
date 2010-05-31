@@ -101,5 +101,6 @@ class BSGNRecord : public Record
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();
         unsigned int GetType() {return eBSGN;}
+        char * GetStrType() {return "BSGN";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
     };

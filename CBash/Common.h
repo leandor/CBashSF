@@ -30,6 +30,7 @@ GPL License and Copyright Notice ============================================
 #include <vector>
 #include <map>
 #include <boost/threadpool.hpp>
+#include <exception>
 
 #ifndef NULL
 #ifdef __cplusplus

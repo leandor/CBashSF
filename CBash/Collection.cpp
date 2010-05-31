@@ -24,9 +24,13 @@ GPL License and Copyright Notice ============================================
 #include <direct.h>
 #include <sys/utime.h>
 
-bool sortLoad(const ModFile *lhs, const ModFile *rhs)
+bool sortLoad(ModFile *lhs, ModFile *rhs)
     {
     struct stat lbuf, rbuf;
+    if(lhs->TES4.IsESM() && !rhs->TES4.IsESM())
+        return true;
+    if(!lhs->TES4.IsESM() && rhs->TES4.IsESM())
+        return false;
     if(stat(lhs->FileName, &lbuf) < 0)
         return false;
     if(stat(rhs->FileName, &rbuf) < 0)
@@ -56,14 +60,19 @@ int Collection::AddMod(const char *ModName, bool CreateIfNotExist)
         return -1;
     //Prevent loading mods more than once
     if(IsModAdded(ModName))
-        return 0;
+        return -1;
     if(CreateIfNotExist || FileExists(ModName))
         {
         char *FileName = new char[strlen(ModName)+1];
         strcpy_s(FileName, strlen(ModName)+1, ModName);
         ModFiles.push_back(new ModFile(FileName, CreateIfNotExist));
-        //LoadOrder.push_back(FileName);
         return 0;
+        }
+    else
+        {
+        printf("Unable to find %s in %s\n", ModName, ModsDir);
+        throw 1;
+        return -1;
         }
     return -1;
     }
@@ -394,22 +403,35 @@ void Collection::IndexRecords(ModFile *curModFile)
 int Collection::Load(const bool &LoadMasters, const bool &FullLoad)
     {
     ModFile *curModFile = NULL;
+    bool Preloading = false;
     if(isLoaded)
         return 0;
     try
         {
         _chdir(ModsDir);
         boost::threadpool::pool ReadThreads(NUMTHREADS);
+        std::vector<char *> LoadOrder;
+        //Brute force approach to loading all masters
+        //Could be done more elegantly with recursion
+        do {
+            Preloading = false;
+            for(unsigned char p = 0; p < (unsigned char)ModFiles.size(); ++p)
+                {
+                curModFile = ModFiles[p];
+                curModFile->LoadTES4();
+                if(LoadMasters)
+                    for(unsigned char x = 0; x < curModFile->TES4.MAST.size(); ++x)
+                        Preloading = (AddMod(curModFile->TES4.MAST[x].value) == 0 || Preloading);
+                }
+            }while(Preloading);
         std::sort(ModFiles.begin(), ModFiles.end(), sortLoad);
         LoadOrder.resize(ModFiles.size());
         for(unsigned char p = 0; p < (unsigned char)ModFiles.size(); ++p)
             LoadOrder[p] = ModFiles[p]->FileName;
-        //LoadOrder.sort(sortLoad);
         for(unsigned char p = 0; p < (unsigned char)ModFiles.size(); ++p)
             {
             curModFile = ModFiles[p];
             //Loads GRUP and Record Headers.  Fully loads GMST records.
-            curModFile->LoadTES4();
             curModFile->FormIDHandler.SetLoadOrder(LoadOrder);
             curModFile->FormIDHandler.UpdateFormIDLookup(p);
             //curModFile->Load(true);
@@ -417,6 +439,13 @@ int Collection::Load(const bool &LoadMasters, const bool &FullLoad)
             IndexRecords(curModFile);
             }
         isLoaded = true;
+        }
+    catch(std::exception& e)
+        {
+        printf(e.what());
+        isLoaded = false;
+        throw;
+        return -1;
         }
     catch(...)
         {
@@ -474,11 +503,24 @@ void Collection::ReindexFormIDs()
     {
     CollapseFormIDs();
     std::sort(ModFiles.begin(), ModFiles.end(), sortLoad);
-    //LoadOrder.sort(sortLoad);
-    //LoadOrder.unique(sameFile);
     ExpandFormIDs();
     }
 
+int Collection::RemoveIndex(Record *curRecord, char *ModName)
+    {
+    if(curRecord == NULL || ModName == NULL)
+        return -1;
+    std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID>::iterator it;
+    it = FID_ModFile_Record.find(&curRecord->formID);
+    unsigned int count = (unsigned int)FID_ModFile_Record.count(&curRecord->formID);
+    for(unsigned int x = 0; x < count;it++, x++)
+        if(_stricmp(it->second.first->FileName, ModName) == 0 )
+            {
+            FID_ModFile_Record.erase(it);
+            return 0;
+            }
+    return -1;
+    }
 int Collection::LoadRecord(char *ModName, unsigned int recordFID)
     {
     ModFile *curModFile = NULL;
@@ -506,32 +548,354 @@ int Collection::UnloadRecord(char *ModName, unsigned int recordFID)
     return 0;
     }
 
-int Collection::DeleteRecord(char *ModName, unsigned int recordFID)
+int Collection::DeleteRecord(char *ModName, unsigned int recordFID, unsigned int parentFID)
     {
     Record *curRecord = NULL;
+    Record *curParentRecord = NULL;
+    ModFile *curModFile = NULL;
+    ModFile *curParentModFile = NULL;
+    Record *curChild = NULL;
+    bool hasParent = (parentFID != 0);
     std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID>::iterator it;
-    it = FID_ModFile_Record.find(&recordFID);
-    if(ModName == NULL)
+    
+    it = LookupRecord(ModName, recordFID, curModFile, curRecord);
+
+    if(hasParent)
         {
-        if(it != FID_ModFile_Record.end())
+        LookupRecord(ModName, parentFID, curParentModFile, curParentRecord);
+        if(curParentModFile == NULL || curParentRecord == NULL || curParentModFile != curModFile)
             {
-            curRecord = it->second.second;
-            delete curRecord;
-            FID_ModFile_Record.erase(it);
-            return 0;
+            throw 1;
+            return -1;
             }
+        }
+
+    if(it == FID_ModFile_Record.end() || curModFile == NULL || curRecord == NULL)
+        {
+        throw 1;
         return -1;
         }
-    unsigned int count = (unsigned int)FID_ModFile_Record.count(&recordFID);
-    for(unsigned int x = 0; x < count;it++, x++)
-        if(_stricmp(it->second.first->FileName, ModName) == 0 )
-            {
-            curRecord = it->second.second;
-            delete curRecord;
-            FID_ModFile_Record.erase(it);
-            return 0;
-            }
-    return -1;
+
+    switch(curRecord->GetType())
+        {
+        case eGLOB:
+            curModFile->GLOB.DeleteRecord(curRecord);
+            break;
+        case eCLAS:
+            curModFile->CLAS.DeleteRecord(curRecord);
+            break;
+        case eFACT:
+            curModFile->FACT.DeleteRecord(curRecord);
+            break;
+        case eHAIR:
+            curModFile->HAIR.DeleteRecord(curRecord);
+            break;
+        case eEYES:
+            curModFile->EYES.DeleteRecord(curRecord);
+            break;
+        case eRACE:
+            curModFile->RACE.DeleteRecord(curRecord);
+            break;
+        case eSOUN:
+            curModFile->SOUN.DeleteRecord(curRecord);
+            break;
+        case eSKIL:
+            curModFile->SKIL.DeleteRecord(curRecord);
+            break;
+        case eMGEF:
+            curModFile->MGEF.DeleteRecord(curRecord);
+            break;
+        case eSCPT:
+            curModFile->SCPT.DeleteRecord(curRecord);
+            break;
+        case eLTEX:
+            curModFile->LTEX.DeleteRecord(curRecord);
+            break;
+        case eENCH:
+            curModFile->ENCH.DeleteRecord(curRecord);
+            break;
+        case eSPEL:
+            curModFile->SPEL.DeleteRecord(curRecord);
+            break;
+        case eBSGN:
+            curModFile->BSGN.DeleteRecord(curRecord);
+            break;
+        case eACTI:
+            curModFile->ACTI.DeleteRecord(curRecord);
+            break;
+        case eAPPA:
+            curModFile->APPA.DeleteRecord(curRecord);
+            break;
+        case eARMO:
+            curModFile->ARMO.DeleteRecord(curRecord);
+            break;
+        case eBOOK:
+            curModFile->BOOK.DeleteRecord(curRecord);
+            break;
+        case eCLOT:
+            curModFile->CLOT.DeleteRecord(curRecord);
+            break;
+        case eCONT:
+            curModFile->CONT.DeleteRecord(curRecord);
+            break;
+        case eDOOR:
+            curModFile->DOOR.DeleteRecord(curRecord);
+            break;
+        case eINGR:
+            curModFile->INGR.DeleteRecord(curRecord);
+            break;
+        case eLIGH:
+            curModFile->LIGH.DeleteRecord(curRecord);
+            break;
+        case eMISC:
+            curModFile->MISC.DeleteRecord(curRecord);
+            break;
+        case eSTAT:
+            curModFile->STAT.DeleteRecord(curRecord);
+            break;
+        case eGRAS:
+            curModFile->GRAS.DeleteRecord(curRecord);
+            break;
+        case eTREE:
+            curModFile->TREE.DeleteRecord(curRecord);
+            break;
+        case eFLOR:
+            curModFile->FLOR.DeleteRecord(curRecord);
+            break;
+        case eFURN:
+            curModFile->FURN.DeleteRecord(curRecord);
+            break;
+        case eWEAP:
+            curModFile->WEAP.DeleteRecord(curRecord);
+            break;
+        case eAMMO:
+            curModFile->AMMO.DeleteRecord(curRecord);
+            break;
+        case eNPC_:
+            curModFile->NPC_.DeleteRecord(curRecord);
+            break;
+        case eCREA:
+            curModFile->CREA.DeleteRecord(curRecord);
+            break;
+        case eLVLC:
+            curModFile->LVLC.DeleteRecord(curRecord);
+            break;
+        case eSLGM:
+            curModFile->SLGM.DeleteRecord(curRecord);
+            break;
+        case eKEYM:
+            curModFile->KEYM.DeleteRecord(curRecord);
+            break;
+        case eALCH:
+            curModFile->ALCH.DeleteRecord(curRecord);
+            break;
+        case eSBSP:
+            curModFile->SBSP.DeleteRecord(curRecord);
+            break;
+        case eSGST:
+            curModFile->SGST.DeleteRecord(curRecord);
+            break;
+        case eLVLI:
+            curModFile->LVLI.DeleteRecord(curRecord);
+            break;
+        case eWTHR:
+            curModFile->WTHR.DeleteRecord(curRecord);
+            break;
+        case eCLMT:
+            curModFile->CLMT.DeleteRecord(curRecord);
+            break;
+        case eREGN:
+            curModFile->REGN.DeleteRecord(curRecord);
+            break;
+        ///////////////////////////////////////////////
+        case eCELL:
+            DeleteCELL((CELLRecord *)curRecord, ModName);
+        
+            if(hasParent)
+                curModFile->WRLD.DeleteRecord(curParentRecord, curRecord);
+            else
+                curModFile->CELL.DeleteRecord(curRecord, NULL);
+            break;
+        //Fall-through is intentional
+        case ePGRD:
+        case eLAND:
+        case eACHR:
+        case eACRE:
+        case eREFR:
+            if(hasParent)
+                {
+                if(((CELLRecord *)curParentRecord)->IsInterior())
+                    curModFile->CELL.DeleteRecord(curParentRecord, curRecord);
+                else
+                    curModFile->WRLD.DeleteRecord(curParentRecord, curRecord);
+                }
+            else
+                {
+                printf("Error deleting %s record: %08X\nUnable to find parent CELL record: %08x\n", curRecord->GetStrType(), recordFID, parentFID);
+                throw 1;
+                return 0;
+                }
+            break;
+        case eWRLD:
+            curChild = ((WRLDRecord *)curRecord)->ROAD;
+            RemoveIndex(curChild, ModName);
+            delete curChild;
+            ((WRLDRecord *)curRecord)->ROAD = NULL;
+            
+            curChild = ((WRLDRecord *)curRecord)->CELL;      
+            DeleteCELL((CELLRecord *)curChild, ModName);
+            RemoveIndex(curChild, ModName);
+            delete curChild;
+            ((WRLDRecord *)curRecord)->CELL = NULL;
+            
+            for(unsigned int p = 0; p < ((WRLDRecord *)curRecord)->CELLS.size(); ++p)
+                {
+                curChild = ((WRLDRecord *)curRecord)->CELLS[p];      
+                DeleteCELL((CELLRecord *)curChild, ModName);
+                RemoveIndex(curChild, ModName);
+                delete curChild;
+                }
+            ((WRLDRecord *)curRecord)->CELLS.clear();
+
+            curModFile->WRLD.DeleteRecord(curRecord, NULL);
+            break;
+        case eROAD:
+            if(hasParent)
+                curModFile->WRLD.DeleteRecord(curParentRecord, curRecord);
+            else
+                {
+                printf("Error deleting %s record: %08X\nUnable to find parent WRLD record: %08x\n", curRecord->GetStrType(), recordFID, parentFID);
+                throw 1;
+                return 0;
+                }
+            break;
+        case eDIAL:
+            for(unsigned int p = 0; p < ((DIALRecord *)curRecord)->INFO.size(); ++p)
+                {
+                curChild = ((DIALRecord *)curRecord)->INFO[p];
+                RemoveIndex(curChild, ModName);
+                delete curChild;
+                }
+            ((DIALRecord *)curRecord)->INFO.clear();
+
+            curModFile->DIAL.DeleteRecord(curRecord, NULL);
+            break;
+        case eINFO:
+            if(hasParent)
+                curModFile->DIAL.DeleteRecord(curParentRecord, curRecord);
+            else
+                {
+                printf("Error deleting %s record: %08X\nUnable to find parent INFO record: %08x\n", curRecord->GetStrType(), recordFID, parentFID);
+                throw 1;
+                return 0;
+                }
+            break;
+        ///////////////////////////////////////////////
+        case eQUST:
+            curModFile->QUST.DeleteRecord(curRecord);
+            break;
+        case eIDLE:
+            curModFile->IDLE.DeleteRecord(curRecord);
+            break;
+        case ePACK:
+            curModFile->PACK.DeleteRecord(curRecord);
+            break;
+        case eCSTY:
+            curModFile->CSTY.DeleteRecord(curRecord);
+            break;
+        case eLSCR:
+            curModFile->LSCR.DeleteRecord(curRecord);
+            break;
+        case eLVSP:
+            curModFile->LVSP.DeleteRecord(curRecord);
+            break;
+        case eANIO:
+            curModFile->ANIO.DeleteRecord(curRecord);
+            break;
+        case eWATR:
+            curModFile->WATR.DeleteRecord(curRecord);
+            break;
+        case eEFSH:
+            curModFile->EFSH.DeleteRecord(curRecord);
+            break;
+        default:
+            printf("Error deleting record: %08X. Unknown type: %s\n", recordFID, curRecord->GetStrType());
+            break;
+        }
+
+    FID_ModFile_Record.erase(it);
+    return 0;
+    }
+    
+int Collection::DeleteCELL(CELLRecord *curCell, char *ModName)
+    {
+    if(curCell == NULL || ModName == NULL)
+        return -1;
+    Record *curChild = NULL;
+
+    curChild = curCell->PGRD;
+    RemoveIndex(curChild, ModName);
+    delete curChild;
+    curCell->PGRD = NULL;
+
+    curChild = curCell->LAND;
+    RemoveIndex(curChild, ModName);
+    delete curChild;
+    curCell->LAND = NULL;
+
+    for(unsigned int p = 0; p < curCell->ACHR.size(); ++p)
+        {
+        curChild = curCell->ACHR[p];
+        RemoveIndex(curChild, ModName);
+        delete curChild;
+        }
+    curCell->ACHR.clear();
+
+    for(unsigned int p = 0; p < curCell->ACRE.size(); ++p)
+        {
+        curChild = curCell->ACRE[p];
+        RemoveIndex(curChild, ModName);
+        delete curChild;
+        }
+    curCell->ACRE.clear();
+
+    for(unsigned int p = 0; p < curCell->REFR.size(); ++p)
+        {
+        curChild = curCell->REFR[p];
+        RemoveIndex(curChild, ModName);
+        delete curChild;
+        }
+    curCell->REFR.clear();
+    return 0;
+    }
+
+int Collection::DeleteGMSTRecord(char *ModName, char *recordEDID)
+    {
+    GMSTRecord *curRecord = NULL;
+    ModFile *curModFile = NULL;
+    std::multimap<char *, std::pair<ModFile *, Record *>, sameStr>::iterator it;
+    it = LookupGMSTRecord(ModName, recordEDID, curModFile, curRecord);
+
+    if(it == GMST_ModFile_Record.end() || curModFile == NULL || curRecord == NULL)
+        {
+        throw 1;
+        return -1;
+        }
+
+    curRecord = (GMSTRecord *)(it->second.second);
+    std::vector<GMSTRecord *>::iterator GMST_it;
+    GMST_it = std::find(curModFile->GMST.Records.begin(), curModFile->GMST.Records.end(), curRecord);
+    if(GMST_it == curModFile->GMST.Records.end())
+        {
+        printf("Record %08X not found in %s\n", curRecord->formID, curRecord->GetStrType());
+        throw 1;
+        return -1;
+        }
+    delete curRecord;
+    curModFile->GMST.Records.erase(GMST_it);
+
+    GMST_ModFile_Record.erase(it);
+    return 0;
     }
 
 int Collection::Close()
@@ -541,37 +905,37 @@ int Collection::Close()
     return -1;
     }
 
-int Collection::LookupGMSTRecord(char *ModName, char *recordEDID, ModFile *&curModFile, GMSTRecord *&curRecord)
+std::multimap<char *, std::pair<ModFile *, Record *>, sameStr>::iterator Collection::LookupGMSTRecord(char *ModName, char *recordEDID, ModFile *&curModFile, GMSTRecord *&curRecord)
     {
     std::multimap<char *, std::pair<ModFile *, Record *>, sameStr>::iterator it;
 
     if(recordEDID == NULL)
-        {curModFile = NULL; curRecord = NULL; return 0;}
+        {curModFile = NULL; curRecord = NULL; return GMST_ModFile_Record.end();}
 
     it = GMST_ModFile_Record.find(recordEDID);
     if(it == GMST_ModFile_Record.end())
-        {curModFile = NULL; curRecord = NULL; return 0;}
+        {curModFile = NULL; curRecord = NULL; return GMST_ModFile_Record.end();}
 
     if(ModName == NULL)
         curModFile = it->second.first;
     else
-        curModFile = LookupModFile(ModName);
-        //{
-        //unsigned int count = (unsigned int)GMST_ModFile_Record.count(recordEDID);
-        //for(unsigned int x = 0; x < count;++it, ++x)
-        //    if(_stricmp(it->second.first->FileName, ModName) == 0 )
-        //        {
-        //        curModFile = it->second.first;
-        //        break;
-        //        }
-        //}
+        //curModFile = LookupModFile(ModName);
+        {
+        unsigned int count = (unsigned int)GMST_ModFile_Record.count(recordEDID);
+        for(unsigned int x = 0; x < count;++it, ++x)
+            if(_stricmp(it->second.first->FileName, ModName) == 0 )
+                {
+                curModFile = it->second.first;
+                break;
+                }
+        }
     if(curModFile == NULL)
-        {curRecord = NULL; return 0;}
+        {curRecord = NULL; return GMST_ModFile_Record.end();}
     curRecord = (GMSTRecord *)it->second.second;
-    return 1;
+    return it;
     }
 
-CELLRecord *Collection::LookupCELLParent(ModFile *&curModFile, CELLRecord *&curCELL)
+CELLRecord *Collection::LookupWorldCELL(ModFile *&curModFile, CELLRecord *&curCELL)
     {
     if(curCELL->IsInterior())
         return NULL;

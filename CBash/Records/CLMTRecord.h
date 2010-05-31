@@ -163,5 +163,6 @@ class CLMTRecord : public Record
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();
         unsigned int GetType() {return eCLMT;}
+        char * GetStrType() {return "CLMT";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
     };

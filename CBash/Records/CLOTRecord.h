@@ -181,6 +181,7 @@ class CLOTRecord : public Record
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();
         unsigned int GetType() {return eCLOT;}
+        char * GetStrType() {return "CLOT";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
         bool IsHead()
             {

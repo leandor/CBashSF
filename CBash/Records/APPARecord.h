@@ -142,6 +142,7 @@ class APPARecord : public Record
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();
         unsigned int GetType() {return eAPPA;}
+        char * GetStrType() {return "APPA";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
         bool IsMortarPestle()
             {

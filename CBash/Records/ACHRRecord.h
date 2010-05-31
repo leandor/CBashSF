@@ -134,6 +134,7 @@ class ACHRRecord : public Record
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();
         unsigned int GetType() {return eACHR;}
+        char * GetStrType() {return "ACHR";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
         bool IsOppositeParent()
             {
