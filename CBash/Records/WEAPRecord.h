@@ -173,6 +173,7 @@ class WEAPRecord : public Record
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();
         unsigned int GetType() {return eWEAP;}
+        char * GetStrType() {return "WEAP";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
         bool IsNotNormalWeapon()
             {

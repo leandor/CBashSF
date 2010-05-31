@@ -260,6 +260,7 @@ class WATRRecord : public Record
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();
         unsigned int GetType() {return eWATR;}
+        char * GetStrType() {return "WATR";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
         bool IsCausesDmg()
             {

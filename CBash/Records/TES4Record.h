@@ -106,6 +106,7 @@ class TES4Record : public Record
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();
         unsigned int GetType() {return eTES4;}
+        char * GetStrType() {return "TES4";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
         #ifdef _DEBUG
         void Debug(int debugLevel);

@@ -186,6 +186,7 @@ class SPELRecord : public Record
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();
         unsigned int GetType() {return eSPEL;}
+        char * GetStrType() {return "SPEL";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
         bool IsManualCost()
             {

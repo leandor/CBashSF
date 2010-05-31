@@ -1,5 +1,251 @@
 from CBashInterface import *
 
+def TestLoadMasters():
+    Current = Collection()
+    Current.addMod("OOO Patch - Geomancy - Activator.esp")
+    Current.minimalLoad(LoadMasters=False)
+    
+def TestDeleteRecord():
+    Current = Collection()
+    Current.addMod("Oblivion.esm")
+    newMod = Current.addMod("TestDelete.esp", True)
+    Current.minimalLoad(LoadMasters=True)
+    print "Delete Test"
+    for record in Current[0].GMST:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].GLOB:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].CLAS:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].FACT:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].HAIR:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].EYES:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].RACE:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].SOUN:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].SKIL:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].MGEF:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].SCPT:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].LTEX:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].ENCH:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].SPEL:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].BSGN:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].ACTI:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].APPA:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].ARMO:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].BOOK:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].CLOT:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].CONT:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].DOOR:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].INGR:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].LIGH:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].MISC:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].STAT:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].GRAS:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].TREE:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].FLOR:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].FURN:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].WEAP:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].AMMO:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].NPC_:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].CREA:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].LVLC:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].SLGM:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].KEYM:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].ALCH:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].SBSP:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].SGST:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].LVLI:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].WTHR:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].CLMT:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].REGN:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].CELL:
+        trgCellOver = record.CopyAsOverride(newMod)
+        for npcRef in record.ACHR:
+            newRecord = npcRef.CopyAsOverride(trgCellOver)
+            newRecord.DeleteRecord(trgCellOver)
+        for creaRef in record.ACRE:
+            newRecord = creaRef.CopyAsOverride(trgCellOver)
+            newRecord.DeleteRecord(trgCellOver)
+        for objRef in record.REFR:
+            newRecord = objRef.CopyAsOverride(trgCellOver)
+            newRecord.DeleteRecord(trgCellOver)
+        Pgrd = record.PGRD
+        if(Pgrd):
+            newRecord = Pgrd.CopyAsOverride(trgCellOver)
+            newRecord.DeleteRecord(trgCellOver)
+        trgCellOver.DeleteRecord()
+
+    for record in Current[0].WRLD:
+        trgWrldOver = record.CopyAsOverride(newMod)
+        road = record.ROAD
+        if(road != None):
+            newRecord = road.CopyAsOverride(trgWrldOver)
+            newRecord.DeleteRecord(trgWrldOver)
+        cell = record.CELL
+        if(cell != None):
+            trgCellOver = cell.CopyAsOverride(trgWrldOver,isWorldCell=True)
+            cLand = cell.LAND
+            if(cLand != None):
+                newRecord = cLand.CopyAsOverride(trgCellOver)
+                newRecord.DeleteRecord(trgCellOver)
+            for npcRef in cell.ACHR:
+                newRecord = npcRef.CopyAsOverride(trgCellOver)
+                newRecord.DeleteRecord(trgCellOver)
+            for creaRef in cell.ACRE:
+                newRecord = creaRef.CopyAsOverride(trgCellOver)
+                newRecord.DeleteRecord(trgCellOver)
+            for objRef in cell.REFR:
+                newRecord = objRef.CopyAsOverride(trgCellOver)
+                newRecord.DeleteRecord(trgCellOver)
+            Pgrd = cell.PGRD
+            if(Pgrd != None):
+                newRecord = Pgrd.CopyAsOverride(trgCellOver)
+                newRecord.DeleteRecord(trgCellOver)
+            trgCellOver.DeleteRecord(trgWrldOver)
+        for wrldCell in record.CELLS:
+            trgCellOver = wrldCell.CopyAsOverride(trgWrldOver)
+            cLand = wrldCell.LAND
+            if(cLand != None):
+                newRecord = cLand.CopyAsOverride(trgCellOver)
+                newRecord.DeleteRecord(trgCellOver)
+            for npcRef in wrldCell.ACHR:
+                newRecord = npcRef.CopyAsOverride(trgCellOver)
+                newRecord.DeleteRecord(trgCellOver)
+            for creaRef in wrldCell.ACRE:
+                newRecord = creaRef.CopyAsOverride(trgCellOver)
+                newRecord.DeleteRecord(trgCellOver)
+            for objRef in wrldCell.REFR:
+                newRecord = objRef.CopyAsOverride(trgCellOver)
+                newRecord.DeleteRecord(trgCellOver)
+            Pgrd = wrldCell.PGRD
+            if(Pgrd != None):
+                newRecord = Pgrd.CopyAsOverride(trgCellOver)
+                newRecord.DeleteRecord(trgCellOver)
+            trgCellOver.DeleteRecord(trgWrldOver)
+        trgWrldOver.DeleteRecord()
+        
+    for record in Current[0].DIAL:
+        newOver = record.CopyAsOverride(newMod)
+        for info in record.INFO:
+            newRecord = info.CopyAsOverride(newOver)
+            newRecord.DeleteRecord(newOver)
+        newOver.DeleteRecord()
+    for record in Current[0].QUST:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].IDLE:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].PACK:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].CSTY:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].LSCR:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].LVSP:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].ANIO:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].WATR:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+    for record in Current[0].EFSH:
+        newRecord = record.CopyAsOverride(newMod)
+        newRecord.DeleteRecord()
+
+    print "Delete:Save Test - TestDelete.esp"
+    newMod.safeCloseSave()
+    
 def TestMinimalLoad():
     Current = Collection()
     Current.addMod("Oblivion.esm")
@@ -10411,6 +10657,8 @@ from timeit import Timer
 ##del Current
 ##phonenumber = raw_input("!")
 
+##TestLoadMasters()
+##TestDeleteRecord()
 ##TestReadWriteAll()
 ##TestTES4()
 ##TestGMST()
@@ -10458,7 +10706,7 @@ from timeit import Timer
 ##TestCLMT()
 ##TestREGN()
 ##TestCELL()
-TestWRLD()
+##TestWRLD()
 ##TestDIAL()
 ##TestQUST()
 ##TestIDLE()
