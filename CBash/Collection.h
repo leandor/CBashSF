@@ -51,7 +51,7 @@ class Collection
 
         int NewMod(const char *ModName);
         bool IsModAdded(const char *ModName);
-        int AddMod(const char *ModName, bool CreateIfNotExist=false);
+        int AddMod(const char *ModName, bool CreateIfNotExist=false, bool DummyLoad=false);
         int SafeSaveMod(char *ModName, bool CloseMod=false);
         int SafeSaveAllChangedMods();
 
@@ -106,6 +106,7 @@ class Collection
 
         ModFile *LookupModFile(char *ModName);
         char * GetModName(const unsigned int iIndex);
+        unsigned int GetCorrectedFID(char *ModName, unsigned int recordObjectID);
         int GetModIndex(const char *ModName);
 
 

@@ -59,6 +59,22 @@ void _FormIDHandler::ExpandFormID(unsigned int *&curFormID)
     return;
     }
 
+unsigned int _FormIDHandler::AssignToMod(unsigned int curFormID)
+    {
+    unsigned int newFormID = 0;
+    if(curFormID != 0)
+        newFormID = (ExpandedIndex << 24 ) | (curFormID & 0x00FFFFFF);
+    return newFormID;
+    }
+
+unsigned int _FormIDHandler::AssignToMod(unsigned int *curFormID)
+    {
+    unsigned int newFormID = 0;
+    if(*curFormID != 0)
+        newFormID = (ExpandedIndex << 24 ) | (*curFormID & 0x00FFFFFF);
+    return newFormID;
+    }
+
 void _FormIDHandler::SetLoadOrder(std::vector<char *> &cLoadOrder)
     {
     LoadOrder = cLoadOrder;

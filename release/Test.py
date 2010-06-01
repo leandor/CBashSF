@@ -253,8 +253,9 @@ def TestMinimalLoad():
 
 def TestFullLoad():
     Current = Collection()
-    Current.addMod("Oblivion.esm")
-    Current.fullLoad(LoadMasters=True)
+    newMod = Current.addMod("Oscuro's_Oblivion_Overhaul.esm")
+    Current.fullLoad(LoadMasters=False)
+    newMod.safeSave()
     
 def TestReadWriteAll():
     Current = Collection()
@@ -10657,6 +10658,8 @@ from timeit import Timer
 ##del Current
 ##phonenumber = raw_input("!")
 
+
+TestFullLoad()
 ##TestLoadMasters()
 ##TestDeleteRecord()
 ##TestReadWriteAll()

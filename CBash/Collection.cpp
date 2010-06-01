@@ -31,9 +31,9 @@ bool sortLoad(ModFile *lhs, ModFile *rhs)
         return true;
     if(!lhs->TES4.IsESM() && rhs->TES4.IsESM())
         return false;
-    if(stat(lhs->FileName, &lbuf) < 0)
+    if(rhs->IsFake() || stat(lhs->FileName, &lbuf) < 0)
         return false;
-    if(stat(rhs->FileName, &rbuf) < 0)
+    if(lhs->IsFake() || stat(rhs->FileName, &rbuf) < 0)
         return true;
     return lbuf.st_mtime < rbuf.st_mtime;
     }
@@ -51,7 +51,7 @@ bool Collection::IsModAdded(const char *ModName)
     return false;
     }
 
-int Collection::AddMod(const char *ModName, bool CreateIfNotExist)
+int Collection::AddMod(const char *ModName, bool CreateIfNotExist, bool DummyLoad)
     {
     _chdir(ModsDir);
     //Mods may not be added after collection is loaded.
@@ -61,11 +61,11 @@ int Collection::AddMod(const char *ModName, bool CreateIfNotExist)
     //Prevent loading mods more than once
     if(IsModAdded(ModName))
         return -1;
-    if(CreateIfNotExist || FileExists(ModName))
+    if(DummyLoad || CreateIfNotExist || FileExists(ModName))
         {
         char *FileName = new char[strlen(ModName)+1];
         strcpy_s(FileName, strlen(ModName)+1, ModName);
-        ModFiles.push_back(new ModFile(FileName, CreateIfNotExist));
+        ModFiles.push_back(new ModFile(FileName, CreateIfNotExist, DummyLoad));
         return 0;
         }
     else
@@ -83,8 +83,8 @@ int Collection::SafeSaveMod(char *ModName, bool CloseMod)
     FileBuffer buffer(BUFFERSIZE);
     //Saves to a temp file, then if successful, renames any existing files, and then renames temp file to ModName
     ModFile *curModFile = NULL;
-    errno_t err;
     char tName[L_tmpnam_s];
+    errno_t err;
     time_t ltime;
     struct tm currentTime;
     struct stat oTimes;
@@ -93,12 +93,10 @@ int Collection::SafeSaveMod(char *ModName, bool CloseMod)
     char *backupName = NULL;
     unsigned int bakAttempts = 0, bakSize = 0;
 
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            curModFile = ModFiles[p];
+    curModFile = LookupModFile(ModName);
 
     //Only save to files that have already been added.
-    if(curModFile == NULL)
+    if(curModFile == NULL || curModFile->IsFake())
         return -1;
     err = tmpnam_s(tName, L_tmpnam_s);
     if (err)
@@ -106,109 +104,118 @@ int Collection::SafeSaveMod(char *ModName, bool CloseMod)
         printf("Error occurred creating unique filename.\n");
         return -1;
         }
-
     tName[0] = 'x';
-
-    if(buffer.open_write(tName) == -1)
-        return -1;
-
-    //Return all FormIDs in the mod to a writable state
-    CollapseFormIDs(ModName);
-    //Save the mod to temp file, using FileBuffer to write in chunks
-    curModFile->Save(buffer, CloseMod);
-
-    buffer.close();
-
-    //Return all FormIDs in the mod to an editable state
-    ExpandFormIDs(ModName);
-
-    //Rename any existing files to a datestamped backup
-
-    time(&ltime);
-    if(ltime - lastSave < 60)
-        ltime = lastSave + 60;
-    lastSave =  ltime;
-
-    err = _localtime64_s(&currentTime, &ltime);
-    if (err)
+    try
         {
-        printf(" _localtime64_s failed due to invalid arguments.");
-        return -1;
-        }
-    originalTimes.actime = ltime;
-    originalTimes.modtime = ltime;
+        if(buffer.open_write(tName) == -1)
+            return -1;
 
-    if(FileExists(ModName))
-        {
-        stat(ModName, &oTimes);
-        originalTimes.actime = oTimes.st_atime;
-        originalTimes.modtime = oTimes.st_mtime;
+        //Return all FormIDs in the mod to a writable state
+        CollapseFormIDs(ModName);
+        //Save the mod to temp file, using FileBuffer to write in chunks
+        curModFile->Save(buffer, CloseMod);
 
-        bakSize = (unsigned int)strlen(ModName) + (unsigned int)strlen(".bak.XXXX_XX_XX_XX_XX_XX") + 1;
-        backupName = new char[bakSize];
-        strcpy_s(backupName, bakSize, ModName);
-        strftime(backupName + strlen(ModName), bakSize, ".bak.%Y_%m_%d_%H_%M_%S", &currentTime );
+        buffer.close();
 
-        //If the backup name already exists, wait in 1 second increments until a free name is available
-        //If 10 tries pass, then give up.
-        bakAttempts = 0;
-        while(FileExists(backupName))
+        //Return all FormIDs in the mod to an editable state
+        ExpandFormIDs(ModName);
+
+        //Rename any existing files to a datestamped backup
+
+        time(&ltime);
+        if(ltime - lastSave < 60)
+            ltime = lastSave + 60;
+        lastSave =  ltime;
+
+        err = _localtime64_s(&currentTime, &ltime);
+        if (err)
             {
-            if(bakAttempts > 10)
-                break;
-            bakAttempts++;
-            currentTime.tm_min++;
-            mktime(&currentTime);
-            strftime(backupName + strlen(ModName), bakSize, ".bak.%Y_%m_%d_%H_%M_%S", &currentTime);
-            };
-        err = rename(ModName, backupName);
-        if(err != 0)
-            printf("Error renaming \"%s\" to \"%s\"\n", ModName, backupName);
-        delete []backupName;
-        }
-
-    //Rename temp file to the original ModName
-    //If it fails, try to save it to a datestamped .new extension and inform the failure
-    err = rename(tName, ModName);
-    if(err != 0)
-        {
-        bakSize = (unsigned int)strlen(ModName) + (unsigned int)strlen(".new.XXXX_XX_XX_XX_XX_XX") + 1;
-        backupName = new char[bakSize];
-
-        strcpy_s(backupName, bakSize, ModName);
-        strftime(backupName+strlen(ModName), bakSize, ".new.%Y_%m_%d_%H_%M_%S", &currentTime );
-
-        //If the backup name already exists, wait in 1 second increments until a free name is available
-        //If 10 tries pass, then give up.
-        bakAttempts = 0;
-        while(FileExists(backupName))
-            {
-            if(bakAttempts > 10)
-                break;
-            bakAttempts++;
-            currentTime.tm_min++;
-            mktime(&currentTime);
-            strftime(backupName + strlen(ModName), bakSize, ".new.%Y_%m_%d_%H_%M_%S", &currentTime);
-            };
-
-        err = rename(tName, backupName);
-        if(err != 0)
-            {
-            printf("Error renaming \"%s\" to \"%s\"\n", tName, backupName);
-            delete []backupName;
+            printf(" _localtime64_s failed due to invalid arguments.");
             return -1;
             }
-        else
+        originalTimes.actime = ltime;
+        originalTimes.modtime = ltime;
+
+        if(FileExists(ModName))
             {
-            printf("Error renaming \"%s\" to \"%s\"\n", tName, ModName);
-            printf("Renamed \"%s\" to \"%s\"\n", tName, backupName);
-            _utime(backupName, &originalTimes);
+            stat(ModName, &oTimes);
+            originalTimes.actime = oTimes.st_atime;
+            originalTimes.modtime = oTimes.st_mtime;
+
+            bakSize = (unsigned int)strlen(ModName) + (unsigned int)strlen(".bak.XXXX_XX_XX_XX_XX_XX") + 1;
+            backupName = new char[bakSize];
+            strcpy_s(backupName, bakSize, ModName);
+            strftime(backupName + strlen(ModName), bakSize, ".bak.%Y_%m_%d_%H_%M_%S", &currentTime );
+
+            //If the backup name already exists, wait in 1 second increments until a free name is available
+            //If 10 tries pass, then give up.
+            bakAttempts = 0;
+            while(FileExists(backupName))
+                {
+                if(bakAttempts > 10)
+                    break;
+                bakAttempts++;
+                currentTime.tm_min++;
+                mktime(&currentTime);
+                strftime(backupName + strlen(ModName), bakSize, ".bak.%Y_%m_%d_%H_%M_%S", &currentTime);
+                };
+            err = rename(ModName, backupName);
+            if(err != 0)
+                printf("Error renaming \"%s\" to \"%s\"\n", ModName, backupName);
             delete []backupName;
-            return 0;
             }
+
+        //Rename temp file to the original ModName
+        //If it fails, try to save it to a datestamped .new extension and inform the failure
+        err = rename(tName, ModName);
+        if(err != 0)
+            {
+            bakSize = (unsigned int)strlen(ModName) + (unsigned int)strlen(".new.XXXX_XX_XX_XX_XX_XX") + 1;
+            backupName = new char[bakSize];
+
+            strcpy_s(backupName, bakSize, ModName);
+            strftime(backupName+strlen(ModName), bakSize, ".new.%Y_%m_%d_%H_%M_%S", &currentTime );
+
+            //If the backup name already exists, wait in 1 second increments until a free name is available
+            //If 10 tries pass, then give up.
+            bakAttempts = 0;
+            while(FileExists(backupName))
+                {
+                if(bakAttempts > 10)
+                    break;
+                bakAttempts++;
+                currentTime.tm_min++;
+                mktime(&currentTime);
+                strftime(backupName + strlen(ModName), bakSize, ".new.%Y_%m_%d_%H_%M_%S", &currentTime);
+                };
+
+            err = rename(tName, backupName);
+            if(err != 0)
+                {
+                printf("Error renaming \"%s\" to \"%s\"\n", tName, backupName);
+                delete []backupName;
+                return -1;
+                }
+            else
+                {
+                printf("Error renaming \"%s\" to \"%s\"\n", tName, ModName);
+                printf("Renamed \"%s\" to \"%s\"\n", tName, backupName);
+                _utime(backupName, &originalTimes);
+                delete []backupName;
+                return 0;
+                }
+            }
+        else
+            _utime(ModName, &originalTimes);
         }
-    else
-        _utime(ModName, &originalTimes);
+    catch(...)
+        {
+        if(FileExists(tName))
+            remove(tName);
+        printf("Error saving: %s\n  Temp file %s removed.\n", ModName, tName);
+        throw 1;
+        return -1;        
+        }
     return 0;
     }
 
@@ -220,6 +227,8 @@ int Collection::SafeSaveAllChangedMods()
 
 void Collection::IndexRecords(ModFile *curModFile)
     {
+    if(curModFile == NULL || curModFile->IsFake())
+        return;
     //Associates record ids at the collection level, allowing for conflicts to be determined.
     //ADD DEFINITIONS HERE
     for(std::vector<GMSTRecord *>::iterator curGMST = curModFile->GMST.Records.begin();curGMST != curModFile->GMST.Records.end();curGMST++)
@@ -419,9 +428,8 @@ int Collection::Load(const bool &LoadMasters, const bool &FullLoad)
                 {
                 curModFile = ModFiles[p];
                 curModFile->LoadTES4();
-                if(LoadMasters)
-                    for(unsigned char x = 0; x < curModFile->TES4.MAST.size(); ++x)
-                        Preloading = (AddMod(curModFile->TES4.MAST[x].value) == 0 || Preloading);
+                for(unsigned char x = 0; x < curModFile->TES4.MAST.size(); ++x)
+                    Preloading = (AddMod(curModFile->TES4.MAST[x].value, false, !LoadMasters) == 0 || Preloading);
                 }
             }while(Preloading);
         std::sort(ModFiles.begin(), ModFiles.end(), sortLoad);
@@ -459,6 +467,8 @@ int Collection::Load(const bool &LoadMasters, const bool &FullLoad)
 
 unsigned int Collection::NextFreeExpandedFID(ModFile *curModFile)
     {
+    if(curModFile == NULL || curModFile->IsFake())
+        return 0;
     unsigned int curFormID = curModFile->FormIDHandler.NextExpandedFID();
     if(FID_ModFile_Record.find(&curFormID) == FID_ModFile_Record.end())
         return curFormID;
@@ -557,7 +567,7 @@ int Collection::DeleteRecord(char *ModName, unsigned int recordFID, unsigned int
     Record *curChild = NULL;
     bool hasParent = (parentFID != 0);
     std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID>::iterator it;
-    
+
     it = LookupRecord(ModName, recordFID, curModFile, curRecord);
 
     if(hasParent)
@@ -710,7 +720,7 @@ int Collection::DeleteRecord(char *ModName, unsigned int recordFID, unsigned int
         ///////////////////////////////////////////////
         case eCELL:
             DeleteCELL((CELLRecord *)curRecord, ModName);
-        
+
             if(hasParent)
                 curModFile->WRLD.DeleteRecord(curParentRecord, curRecord);
             else
@@ -741,16 +751,16 @@ int Collection::DeleteRecord(char *ModName, unsigned int recordFID, unsigned int
             RemoveIndex(curChild, ModName);
             delete curChild;
             ((WRLDRecord *)curRecord)->ROAD = NULL;
-            
-            curChild = ((WRLDRecord *)curRecord)->CELL;      
+
+            curChild = ((WRLDRecord *)curRecord)->CELL;
             DeleteCELL((CELLRecord *)curChild, ModName);
             RemoveIndex(curChild, ModName);
             delete curChild;
             ((WRLDRecord *)curRecord)->CELL = NULL;
-            
+
             for(unsigned int p = 0; p < ((WRLDRecord *)curRecord)->CELLS.size(); ++p)
                 {
-                curChild = ((WRLDRecord *)curRecord)->CELLS[p];      
+                curChild = ((WRLDRecord *)curRecord)->CELLS[p];
                 DeleteCELL((CELLRecord *)curChild, ModName);
                 RemoveIndex(curChild, ModName);
                 delete curChild;
@@ -826,7 +836,7 @@ int Collection::DeleteRecord(char *ModName, unsigned int recordFID, unsigned int
     FID_ModFile_Record.erase(it);
     return 0;
     }
-    
+
 int Collection::DeleteCELL(CELLRecord *curCell, char *ModName)
     {
     if(curCell == NULL || ModName == NULL)
@@ -871,6 +881,11 @@ int Collection::DeleteCELL(CELLRecord *curCell, char *ModName)
 
 int Collection::DeleteGMSTRecord(char *ModName, char *recordEDID)
     {
+    if(recordEDID == NULL)
+        {
+        throw 1;
+        return -1;
+        }
     GMSTRecord *curRecord = NULL;
     ModFile *curModFile = NULL;
     std::multimap<char *, std::pair<ModFile *, Record *>, sameStr>::iterator it;
@@ -937,7 +952,7 @@ std::multimap<char *, std::pair<ModFile *, Record *>, sameStr>::iterator Collect
 
 CELLRecord *Collection::LookupWorldCELL(ModFile *&curModFile, CELLRecord *&curCELL)
     {
-    if(curCELL->IsInterior())
+    if(curModFile == NULL || curCELL == NULL || curCELL->IsInterior())
         return NULL;
     static CELLRecord *lastCELLRecord_1 = curModFile->WRLD.Records[0]->CELLS[0];
     static CELLRecord *lastCELLRecord_2 = curModFile->WRLD.Records[0]->CELLS[0];
@@ -979,14 +994,27 @@ void Collection::ResolveGrid(const float &posX, const float &posY, int &gridX, i
 
 void Collection::GetMods(char **ModNames)
     {
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        ModNames[p] = ModFiles[p]->FileName;
+    for(unsigned int p = 0;p < ModFiles.size();++p)
+        {
+        if(!ModFiles[p]->IsFake())
+            ModNames[p] = ModFiles[p]->FileName;
+        }
     return;
     }
 
 char * Collection::GetModName(const unsigned int iIndex)
     {
-    return ModFiles[iIndex]->FileName;
+    if(iIndex < ModFiles.size())
+        return ModFiles[iIndex]->FileName;
+    return NULL;
+    }
+
+unsigned int Collection::GetCorrectedFID(char *ModName, unsigned int recordObjectID)
+    {
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return curModFile->FormIDHandler.AssignToMod(recordObjectID);
     }
 
 int Collection::GetModIndex(const char *ModName)
@@ -1004,7 +1032,7 @@ int Collection::GetModIndex(const char *ModName)
         return lastModIndex_1;
         }
 
-    for(unsigned int x = 0; x < ModFiles.size();x++)
+    for(unsigned int x = 0; x < ModFiles.size();++x)
         if(_stricmp(ModName, ModFiles[x]->FileName) == 0)
             {
             lastModIndex_2 = lastModIndex_1;
@@ -1016,11 +1044,19 @@ int Collection::GetModIndex(const char *ModName)
 
 unsigned int Collection::GetNumMods()
     {
-    return (unsigned int)ModFiles.size();
+    unsigned int count = (unsigned int)ModFiles.size();
+    for(unsigned int p = 0;p < ModFiles.size();++p)
+        {
+        if(ModFiles[p]->IsFake())
+            --count;
+        }
+    return count;
     }
 
 ModFile *Collection::LookupModFile(char *ModName)
     {
+    if(ModName == NULL)
+        return NULL;
     //Caching the last results causes sporadic crashing...fix later
     //static ModFile *lastModFile_1 = ModFiles[0];
     //static ModFile *lastModFile_2 = ModFiles[0];
@@ -1049,6 +1085,8 @@ int Collection::GetChangedMods()
 
 int Collection::GetTES4FieldType(char *ModName, const unsigned int Field)
     {
+    if(ModName == NULL)
+        return -1;
     for(unsigned int p = 0;p < ModFiles.size();p++)
         if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
             return ModFiles[p]->TES4.GetFieldType(Field);
@@ -1198,6 +1236,8 @@ unsigned int Collection::GetTES4FieldArraySize(char *ModName, const unsigned int
 
 void Collection::GetTES4FieldArray(char *ModName, const unsigned int Field, void **FieldValues)
     {
+    if(ModName == NULL)
+        return;
     for(unsigned int p = 0;p < ModFiles.size();p++)
         if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
             {
@@ -1532,6 +1572,8 @@ void Collection::GetFIDListX3Array(char *ModName, unsigned int recordFID, const 
 
 void * Collection::ReadTES4Field(char *ModName, const unsigned int Field)
     {
+    if(ModName == NULL)
+        return NULL;
     for(unsigned int p = 0;p < ModFiles.size();p++)
         if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
             return ModFiles[p]->TES4.GetField(Field);

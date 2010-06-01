@@ -28,10 +28,33 @@ GPL License and Copyright Notice ============================================
 static std::vector<Collection *> Collections;
 static std::vector<Iterator *> Iterators;
 
+unsigned int GetMajor()
+    {
+    return MAJOR_VERSION;
+    }
+
+unsigned int GetMinor()
+    {
+    return MINOR_VERSION;
+    }
+
+unsigned int GetRevision()
+    {
+    return REVISION_VERSION;
+    }
+////////////////////////////////////////////////////////////////////////
 int NewCollection(const char *ModsPath)
     {
     try
         {
+        for(unsigned int p = 0; p < Collections.size(); ++p)
+            {
+            if(Collections[p] == NULL)
+                {
+                Collections[p] = new Collection(ModsPath);
+                return p;
+                }
+            }
 		Collections.push_back(new Collection(ModsPath));
 		}
     catch(...)
@@ -47,7 +70,14 @@ int DeleteCollection(const unsigned int CollectionIndex)
     try
         {
         delete Collections[CollectionIndex];
-		Collections.erase(Collections.begin() + CollectionIndex);
+        Collections[CollectionIndex] = NULL;
+        for(unsigned int p = 0; p < Collections.size(); ++p)
+            {
+            if(Collections[p] != NULL)
+                return 0;
+            }
+        Collections.clear();
+		//Collections.erase(Collections.begin() + CollectionIndex);
         //m_dumpMemoryReport("AfterDelete.txt", true);
 		}
     catch(...)
@@ -194,7 +224,7 @@ int DeleteRecord(const unsigned int CollectionIndex, char *ModName, unsigned int
         }
     return 0;
     }
-    
+
 int DeleteGMSTRecord(const unsigned int CollectionIndex, char *ModName, char *recordEDID)
     {
     try
@@ -208,7 +238,7 @@ int DeleteGMSTRecord(const unsigned int CollectionIndex, char *ModName, char *re
         }
     return 0;
     }
-    
+
 int Close(const unsigned int CollectionIndex)
     {
     try
@@ -237,6 +267,20 @@ void GetMods(const unsigned int CollectionIndex, char **ModNames)
 char * GetModName(const unsigned int CollectionIndex, const unsigned int iIndex)
     {
     return Collections[CollectionIndex]->GetModName(iIndex);
+    }
+
+unsigned int GetCorrectedFID(const unsigned int CollectionIndex, char *ModName, unsigned int recordObjectID)
+    {
+    try
+        {
+        Collections[CollectionIndex]->GetCorrectedFID(ModName, recordObjectID);
+        }
+    catch(...)
+        {
+        printf("Error getting corrected formID: %08x from mod:%s in collection: %i\n", recordObjectID, ModName, CollectionIndex);
+        return -1;
+        }
+    return 0;
     }
 
 ////////////////////////////////////////////////////////////////////////

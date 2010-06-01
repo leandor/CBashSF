@@ -92,7 +92,7 @@ class ModFile
     private:
         mapped_region *m_region;
         unsigned int fileEnd;
-        bool IsOpen, LoadedGRUPs, IsNew;
+        bool IsOpen, LoadedGRUPs, IsNew, IsDummy;
     public:
         _FormIDHandler FormIDHandler;
         unsigned char *fileBuffer;
@@ -156,9 +156,11 @@ class ModFile
         GRUPRecords<WATRRecord> WATR;
         GRUPRecords<EFSHRecord> EFSH;
 
-        ModFile(char *ModName, bool newFile=false):m_region(NULL), fileBuffer(NULL), fileEnd(0), IsOpen(newFile), LoadedGRUPs(newFile), IsNew(newFile), FileName(ModName), TES4(newFile), FormIDHandler(ModName, TES4.MAST, TES4.HEDR.value.nextObject)
+        ModFile(char *ModName, bool newFile=false, bool DummyLoad=false):m_region(NULL), fileBuffer(NULL), fileEnd(0), IsOpen(newFile),
+                                                                         LoadedGRUPs(newFile), IsNew(newFile), IsDummy(DummyLoad), FileName(ModName), TES4(DummyLoad || newFile),
+                                                                         FormIDHandler(ModName, TES4.MAST, TES4.HEDR.value.nextObject)
             {
-            if(newFile)
+            if(newFile || IsDummy)
                 TES4.IsESM(_stricmp(".esm",ModName + strlen(ModName)-4) == 0);
             }
         ~ModFile()
@@ -174,6 +176,7 @@ class ModFile
         int Load(boost::threadpool::pool &Threads, const bool &FullLoad);
         void CollapseFormIDs();
         void ExpandFormIDs();
+        bool IsFake() {return IsDummy;}
         int Save(FileBuffer &buffer, bool CloseMod);
         #ifdef _DEBUG
         void Debug(int debugLevel);

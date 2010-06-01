@@ -28,7 +28,7 @@ GPL License and Copyright Notice ============================================
 
 int ModFile::Open()
     {
-    if(IsOpen)
+    if(IsOpen || IsDummy)
         return 0;
     try
         {
@@ -54,7 +54,7 @@ int ModFile::Open()
 
 int ModFile::Close()
     {
-    if(!IsOpen)
+    if(!IsOpen || IsDummy)
         return 0;
     delete m_region;
     m_region = NULL;
@@ -65,7 +65,7 @@ int ModFile::Close()
 int ModFile::LoadTES4()
     {
     unsigned int curPos = 8;
-    if(TES4.IsLoaded())
+    if(IsDummy || TES4.IsLoaded())
         return 0;
     Open();
     _readBuffer(&TES4.flags, fileBuffer, 4, curPos);
@@ -80,6 +80,8 @@ int ModFile::LoadTES4()
 
 void ModFile::UpdateFormCount()
     {
+    if(IsDummy)
+        return;
     unsigned int formCount = 0, GRUPCount = 0, childCount = 0;
     GRUPCount = (unsigned int)GMST.Records.size();
     if(GRUPCount) ++formCount += GRUPCount;
@@ -465,7 +467,7 @@ int ModFile::Load(boost::threadpool::pool &Threads, const bool &FullLoad)
         eIgWATR=0x52545157,
         eIgEFSH=0x48535645
         };
-    if(!TES4.IsLoaded() || LoadedGRUPs)
+    if(IsDummy || !TES4.IsLoaded() || LoadedGRUPs)
         return 0;
     Open();
     LoadedGRUPs = true;
@@ -781,6 +783,9 @@ int ModFile::Load(boost::threadpool::pool &Threads, const bool &FullLoad)
 
 void ModFile::CollapseFormIDs()
     {
+    if(IsDummy)
+        return;
+    
     GMST.CollapseFormIDs(FormIDHandler);
     GLOB.CollapseFormIDs(FormIDHandler);
     CLAS.CollapseFormIDs(FormIDHandler);
@@ -838,8 +843,11 @@ void ModFile::CollapseFormIDs()
     WATR.CollapseFormIDs(FormIDHandler);
     EFSH.CollapseFormIDs(FormIDHandler);
     }
+
 void ModFile::ExpandFormIDs()
     {
+    if(IsDummy)
+        return;
     GMST.ExpandFormIDs(FormIDHandler);
     GLOB.ExpandFormIDs(FormIDHandler);
     CLAS.ExpandFormIDs(FormIDHandler);
@@ -900,6 +908,8 @@ void ModFile::ExpandFormIDs()
 
 int ModFile::Save(FileBuffer &buffer, bool CloseMod)
     {
+    if(IsDummy)
+        return -1;
     UpdateFormCount();
     {
     WritableRecord WriteTES4;
@@ -964,8 +974,8 @@ int ModFile::Save(FileBuffer &buffer, bool CloseMod)
     ANIO.WriteGRUP(eANIO, buffer, CloseMod);
     WATR.WriteGRUP(eWATR, buffer, CloseMod);
     EFSH.WriteGRUP(eEFSH, buffer, CloseMod);
-    
+
     if(CloseMod)
         Close();
-    return -1;
+    return 0;
     }

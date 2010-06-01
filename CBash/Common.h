@@ -53,6 +53,18 @@ GPL License and Copyright Notice ============================================
 #define OBJECT_ID_START    0x00000800
 #endif
 
+#ifndef MAJOR_VERSION
+#define MAJOR_VERSION    0
+#endif
+
+#ifndef MINOR_VERSION
+#define MINOR_VERSION    4
+#endif
+
+#ifndef REVISION_VERSION
+#define REVISION_VERSION    1
+#endif
+
 typedef unsigned int * FormID;
 
 extern time_t lastSave;
@@ -525,7 +537,7 @@ class _FormIDHandler
         unsigned char CollapsedIndex;
 
     public:
-        _FormIDHandler(char *cFileName, std::vector<STRING> &cMAST, unsigned int &cNextObject):FileName(cFileName), MAST(cMAST), nextObject(cNextObject) {}
+        _FormIDHandler(char *cFileName, std::vector<STRING> &cMAST, unsigned int &cNextObject):FileName(cFileName), MAST(cMAST), nextObject(cNextObject), ExpandedIndex(0), CollapsedIndex(0) {}
         void SetLoadOrder(std::vector<char *> &cLoadOrder);
         unsigned int NextExpandedFID();
         void UpdateFormIDLookup();
@@ -534,6 +546,8 @@ class _FormIDHandler
         void CollapseFormID(unsigned int *&curFormID);
         void ExpandFormID(unsigned int &curFormID);
         void ExpandFormID(unsigned int *&curFormID);
+        unsigned int AssignToMod(unsigned int curFormID);
+        unsigned int AssignToMod(unsigned int *curFormID);
         void AddMaster(unsigned int &curFormID);
         void AddMaster(unsigned int *&curFormID);
     };
@@ -581,6 +595,7 @@ class WritableRecord
 class WritableDialogue : public WritableRecord
     {
     public:
+        unsigned int formID;
         unsigned int ChildrenSize;
         std::vector<WritableRecord> Children;
         WritableDialogue():WritableRecord(), ChildrenSize(0) {}

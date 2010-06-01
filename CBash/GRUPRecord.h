@@ -317,6 +317,7 @@ class GRUPRecords<DIALRecord>
             for(unsigned int p = 0; p < numDIALRecords; ++p)
                 {
                 Records[p]->Write(WriteDial[p]);
+                WriteDial[p].formID = Records[p]->formID;
                 TopSize += WriteDial[p].recSize;
 
                 numINFORecords = (unsigned int)Records[p]->INFO.size(); //Children Records
@@ -356,7 +357,7 @@ class GRUPRecords<DIALRecord>
                     {
                     buffer.write(&type, 4);
                     buffer.write(&WriteDial[p].ChildrenSize, 4);
-                    buffer.write(&Records[p]->formID, 4);
+                    buffer.write(&WriteDial[p].formID, 4);
                     buffer.write(&gType, 4);
                     buffer.write(&stamp, 4);
                     for(unsigned int y = 0; y < WriteDial[p].Children.size(); ++y)
@@ -774,7 +775,7 @@ class GRUPRecords<CELLRecord>
                 }
             if(CloseMod)
                 Records.clear();;
-                
+
             unsigned int type = eGRUP;
             unsigned int gLabel = eCELL;
             unsigned int gType = eTop;
