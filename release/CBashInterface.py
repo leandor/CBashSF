@@ -1,7 +1,12 @@
 from ctypes import *
 import struct
+from os.path import exists
+from bolt import GPath
 
-CBash = CDLL("CBash.dll")
+if(exists(".\\CBash.dll")):
+    CBash = CDLL("CBash.dll")
+else:
+    CBash = None
 
 class PrintFormID(object):
     def __init__(self, formID):
@@ -12,6 +17,7 @@ class PrintFormID(object):
     def __str__(self):
         if(self._FormID): return "%08X" % self._FormID
         return "None"
+
 
 class BaseRecord(object):
     def __init__(self, CollectionIndex, ModName, recordID):
@@ -27,6 +33,21 @@ class BaseRecord(object):
     def DeleteRecord(self):
         CBash.DeleteRecord(self._CollectionIndex, self._ModName, self._recordID, 0)
         return
+
+    def get_longFid(self):
+        fid = self.fid
+        if(fid == None): return (None,None)
+        masterIndex = int(fid >> 24)
+        object = int(fid & 0xFFFFFFL)
+        master = CBash.GetModName(self._CollectionIndex, masterIndex)
+        return (GPath(master),object)
+    def set_longFid(self, nValue):
+        if not isinstance(nValue,tuple): return
+        fid = CBash.GetCorrectedFID(self._CollectionIndex, nValue[0].s, nValue[1])
+        if(fid == None): return
+        self.fid = fid
+    longFid = property(get_longFid, set_longFid)
+
     def CopyAsOverride(self, targetMod):
         CBash.CopyFIDRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
         return
@@ -48,6 +69,7 @@ class BaseRecord(object):
         return None
     def set_fid(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 3, nValue)
+        self._recordID = nValue
     fid = property(get_fid, set_fid)
     def get_flags2(self):
         CBash.ReadFIDField.restype = POINTER(c_int)
@@ -252,6 +274,19 @@ class GMSTRecord(object):
     def DeleteRecord(self):
         CBash.DeleteGMSTRecord(self._CollectionIndex, self._ModName, self._recordID)
         return
+    def get_longFid(self):
+        fid = self.fid
+        if(fid == None): return (None,None)
+        masterIndex = int(fid >> 24)
+        object = int(fid & 0xFFFFFFL)
+        master = CBash.GetModName(self._CollectionIndex, masterIndex)
+        return (GPath(master),object)
+    def set_longFid(self, nValue):
+        if not isinstance(nValue,tuple): return
+        fid = CBash.GetCorrectedFID(self._CollectionIndex, nValue[0].s, nValue[1])
+        if(fid == None): return
+        self.fid = fid
+    longFid = property(get_longFid, set_longFid)
     def CopyAsOverride(self, targetMod):
         recID = CBash.CopyGMSTRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName)
         if(recID): return GMSTRecord(self._CollectionIndex, targetMod._ModName, self._recordID)
@@ -286,6 +321,7 @@ class GMSTRecord(object):
         return None
     def set_fid(self, nValue):
         CBash.SetGMSTFieldUI(self._CollectionIndex, self._ModName, self._recordID, 3, nValue)
+        self._recordID = nValue
     fid = property(get_fid, set_fid)
     def get_flags2(self):
         CBash.ReadGMSTField.restype = POINTER(c_int)
@@ -16417,7 +16453,13 @@ class ModFile(object):
     def __init__(self, CollectionIndex, ModName=None):
         self._CollectionIndex = CollectionIndex
         self._ModName = ModName
-
+        self.type_class = {}
+    def MakeLongFid(self, fid):
+        if(fid == None): return (None,None)
+        masterIndex = int(fid >> 24)
+        object = int(fid & 0xFFFFFFL)
+        master = CBash.GetModName(self._CollectionIndex, masterIndex)
+        return (GPath(master),object)
     def createGMSTRecord(self, recordID):
         if(CBash.CreateGMSTRecord(self._CollectionIndex, self._ModName, recordID)):
             return GMSTRecord(self._CollectionIndex, self._ModName, recordID)
@@ -17099,7 +17141,128 @@ class ModFile(object):
             CBash.GetEFSHRecords(self._CollectionIndex, self._ModName, cRecords)
             return [EFSHRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
         return []
-    
+    ##Aggregate properties. Useful for reading, and basic editting, but not so much for copying since it doesn't keep track of parenting
+    @property
+    def CELLS(self):
+        cells = self.CELL
+        for world in self.WRLD:
+            cell = world.CELL
+            if(cell): cells = cells + [cell]
+            cells = cells + world.CELLS
+        return cells
+    @property
+    def INFOS(self):
+        infos = []
+        for dial in self.DIAL:
+            infos = infos + dial.INFO
+        return infos
+    @property
+    def ACHRS(self):
+        achrs = []
+        for cell in self.CELL:
+            achrs = achrs + cell.ACHR
+        for world in self.WRLD:
+            cell = world.CELL
+            if(cell): achrs = achrs + cell.ACHR
+            for cell in world.CELLS:
+                achrs = achrs + cell.ACHR
+        return achrs
+    @property
+    def ACRES(self):
+        acres = []
+        for cell in self.CELL:
+            acres = acres + cell.ACRE
+        for world in self.WRLD:
+            cell = world.CELL
+            if(cell): acres = acres + cell.ACRE
+            for cell in world.CELLS:
+                acres = acres + cell.ACRE
+        return acres
+    @property
+    def REFRS(self):
+        refrs = []
+        for cell in self.CELL:
+            refrs = refrs + cell.REFR
+        for world in self.WRLD:
+            cell = world.CELL
+            if(cell): refrs = refrs + cell.REFR
+            for cell in world.CELLS:
+                refrs = refrs + cell.REFR
+        return refrs
+    @property
+    def PGRDS(self):
+        pgrds = []
+        for cell in self.CELL:
+            pgrd = cell.PGRD
+            if(pgrd): pgrds = pgrds + [pgrd]
+        for world in self.WRLD:
+            cell = world.CELL
+            if(cell):
+                pgrd = cell.PGRD
+                if(pgrd): pgrds = pgrds + [pgrd]
+            for cell in world.CELLS:
+                pgrd = cell.PGRD
+                if(pgrd): pgrds = pgrds + [pgrd]
+        return pgrds
+    @property
+    def LANDS(self):
+        lands = []
+        for cell in self.CELL:
+            land = cell.LAND
+            if(land): lands = lands + [land]
+        for world in self.WRLD:
+            cell = world.CELL
+            if(cell):
+                land = cell.LAND
+                if(land): lands = lands + [land]
+            for cell in world.CELLS:
+                land = cell.LAND
+                if(land): lands = lands + [land]
+        return lands
+    @property
+    def ROADS(self):
+        roads = []
+        for world in self.WRLD:
+            road = world.ROAD
+            if(road): roads = roads + [road]
+        return roads
+    @property
+    def tops(self):
+        return dict((("GMST", self.GMST),("GLOB", self.GLOB),("CLAS", self.CLAS),("FACT", self.FACT),
+                     ("HAIR", self.HAIR),("EYES", self.EYES),("RACE", self.RACE),("SOUN", self.SOUN),
+                     ("SKIL", self.SKIL),("MGEF", self.MGEF),("SCPT", self.SCPT),("LTEX", self.LTEX),
+                     ("ENCH", self.ENCH),("SPEL", self.SPEL),("BSGN", self.BSGN),("ACTI", self.ACTI),
+                     ("APPA", self.APPA),("ARMO", self.ARMO),("BOOK", self.BOOK),("CLOT", self.CLOT),
+                     ("CONT", self.CONT),("DOOR", self.DOOR),("INGR", self.INGR),("LIGH", self.LIGH),
+                     ("MISC", self.MISC),("STAT", self.STAT),("GRAS", self.GRAS),("TREE", self.TREE),
+                     ("FLOR", self.FLOR),("FURN", self.FURN),("WEAP", self.WEAP),("AMMO", self.AMMO),
+                     ("NPC_", self.NPC_),("CREA", self.CREA),("LVLC", self.LVLC),("SLGM", self.SLGM),
+                     ("KEYM", self.KEYM),("ALCH", self.ALCH),("SBSP", self.SBSP),("SGST", self.SGST),
+                     ("LVLI", self.LVLI),("WTHR", self.WTHR),("CLMT", self.CLMT),("REGN", self.REGN),
+                     ("CELL", self.CELL),("WRLD", self.WRLD),("DIAL", self.DIAL),("QUST", self.QUST),
+                     ("IDLE", self.IDLE),("PACK", self.PACK),("CSTY", self.CSTY),("LSCR", self.LSCR),
+                     ("LVSP", self.LVSP),("ANIO", self.ANIO),("WATR", self.WATR),("EFSH", self.EFSH)))
+    @property
+    def aggregates(self):
+        return dict((("GMST", self.GMST),("GLOB", self.GLOB),("CLAS", self.CLAS),("FACT", self.FACT),
+                     ("HAIR", self.HAIR),("EYES", self.EYES),("RACE", self.RACE),("SOUN", self.SOUN),
+                     ("SKIL", self.SKIL),("MGEF", self.MGEF),("SCPT", self.SCPT),("LTEX", self.LTEX),
+                     ("ENCH", self.ENCH),("SPEL", self.SPEL),("BSGN", self.BSGN),("ACTI", self.ACTI),
+                     ("APPA", self.APPA),("ARMO", self.ARMO),("BOOK", self.BOOK),("CLOT", self.CLOT),
+                     ("CONT", self.CONT),("DOOR", self.DOOR),("INGR", self.INGR),("LIGH", self.LIGH),
+                     ("MISC", self.MISC),("STAT", self.STAT),("GRAS", self.GRAS),("TREE", self.TREE),
+                     ("FLOR", self.FLOR),("FURN", self.FURN),("WEAP", self.WEAP),("AMMO", self.AMMO),
+                     ("NPC_", self.NPC_),("CREA", self.CREA),("LVLC", self.LVLC),("SLGM", self.SLGM),
+                     ("KEYM", self.KEYM),("ALCH", self.ALCH),("SBSP", self.SBSP),("SGST", self.SGST),
+                     ("LVLI", self.LVLI),("WTHR", self.WTHR),("CLMT", self.CLMT),("REGN", self.REGN),
+                     ("CELL", self.CELLS),("ACHR", self.ACHRS),("ACRE", self.ACRES),("REFR", self.REFRS),
+                     ("PGRD", self.PGRDS),("LAND", self.LANDS),("WRLD", self.WRLD),("ROAD", self.ROADS),
+                     ("DIAL", self.DIAL),("INFO", self.INFOS),("QUST", self.QUST),("IDLE", self.IDLE),
+                     ("PACK", self.PACK),("CSTY", self.CSTY),("LSCR", self.LSCR),("LVSP", self.LVSP),
+                     ("ANIO", self.ANIO),("WATR", self.WATR),("EFSH", self.EFSH)))
+
+
+ 
 class Collection:
     """Collection of esm/esp's."""
 
