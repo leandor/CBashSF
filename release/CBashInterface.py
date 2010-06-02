@@ -1,7 +1,8 @@
 from ctypes import *
 import struct
 from os.path import exists
-from bolt import GPath
+if(exists(".\\bolt.py")):
+    from bolt import GPath
 
 if(exists(".\\CBash.dll")):
     CBash = CDLL("CBash.dll")
@@ -40,10 +41,15 @@ class BaseRecord(object):
         masterIndex = int(fid >> 24)
         object = int(fid & 0xFFFFFFL)
         master = CBash.GetModName(self._CollectionIndex, masterIndex)
-        return (GPath(master),object)
+        if(exists(".\\bolt.py")):
+            return (GPath(master),object)
+        return (master,object)
     def set_longFid(self, nValue):
         if not isinstance(nValue,tuple): return
-        fid = CBash.GetCorrectedFID(self._CollectionIndex, nValue[0].s, nValue[1])
+        if(exists(".\\bolt.py")):
+            fid = CBash.GetCorrectedFID(self._CollectionIndex, nValue[0].s, nValue[1])
+        else:
+            fid = CBash.GetCorrectedFID(self._CollectionIndex, nValue[0], nValue[1])
         if(fid == None): return
         self.fid = fid
     longFid = property(get_longFid, set_longFid)
@@ -280,10 +286,15 @@ class GMSTRecord(object):
         masterIndex = int(fid >> 24)
         object = int(fid & 0xFFFFFFL)
         master = CBash.GetModName(self._CollectionIndex, masterIndex)
-        return (GPath(master),object)
+        if(exists(".\\bolt.py")):
+            return (GPath(master),object)
+        return (master,object)
     def set_longFid(self, nValue):
         if not isinstance(nValue,tuple): return
-        fid = CBash.GetCorrectedFID(self._CollectionIndex, nValue[0].s, nValue[1])
+        if(exists(".\\bolt.py")):
+            fid = CBash.GetCorrectedFID(self._CollectionIndex, nValue[0].s, nValue[1])
+        else:
+            fid = CBash.GetCorrectedFID(self._CollectionIndex, nValue[0], nValue[1])
         if(fid == None): return
         self.fid = fid
     longFid = property(get_longFid, set_longFid)
@@ -16459,7 +16470,9 @@ class ModFile(object):
         masterIndex = int(fid >> 24)
         object = int(fid & 0xFFFFFFL)
         master = CBash.GetModName(self._CollectionIndex, masterIndex)
-        return (GPath(master),object)
+        if(exists(".\\bolt.py")):
+            return (GPath(master),object)
+        return (master,object)
     def createGMSTRecord(self, recordID):
         if(CBash.CreateGMSTRecord(self._CollectionIndex, self._ModName, recordID)):
             return GMSTRecord(self._CollectionIndex, self._ModName, recordID)

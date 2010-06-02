@@ -10659,10 +10659,10 @@ from timeit import Timer
 ##phonenumber = raw_input("!")
 
 
-TestFullLoad()
+##TestFullLoad()
 ##TestLoadMasters()
 ##TestDeleteRecord()
-##TestReadWriteAll()
+TestReadWriteAll()
 ##TestTES4()
 ##TestGMST()
 ##TestGLOB()
