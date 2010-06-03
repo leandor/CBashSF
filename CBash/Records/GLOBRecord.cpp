@@ -60,7 +60,7 @@ int GLOBRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 //printf("FileName = %s\n", FileName);
                 printf("  GLOB: Unknown subType = %04X\n", subType);
                 printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", recStart + curPos - 6);
+                printf("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
                 break;
             }
@@ -70,6 +70,8 @@ int GLOBRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
 
 unsigned int GLOBRecord::GetSize()
     {
+    if(recData != NULL)
+        return *(unsigned int*)&recData[-16];
     unsigned int cSize = 0;
     unsigned int TotSize = 0;
     if(EDID.IsLoaded())
@@ -79,17 +81,9 @@ unsigned int GLOBRecord::GetSize()
         TotSize += cSize += 6;
         }
     if(FNAM.IsLoaded())
-        {
-        cSize = FNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += FNAM.GetSize() + 6;
     if(FLTV.IsLoaded())
-        {
-        cSize = FLTV.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += FLTV.GetSize() + 6;
     return TotSize;
     }
 

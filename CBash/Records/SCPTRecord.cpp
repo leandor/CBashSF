@@ -89,9 +89,9 @@ int SCPTRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
-                printf("  SCPT: Unknown subType = %04x\n", subType);
+                printf("  SCPT: %08X - Unknown subType = %04x\n", formID, subType);
                 printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", recStart + curPos - 6);
+                printf("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
                 break;
             }
@@ -101,6 +101,8 @@ int SCPTRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
 
 unsigned int SCPTRecord::GetSize()
     {
+    if(recData != NULL)
+        return *(unsigned int*)&recData[-16];
     unsigned int cSize = 0;
     unsigned int TotSize = 0;
     if(EDID.IsLoaded())
@@ -110,11 +112,7 @@ unsigned int SCPTRecord::GetSize()
         TotSize += cSize += 6;
         }
     if(SCHR.IsLoaded())
-        {
-        cSize = SCHR.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += SCHR.GetSize() + 6;
     if(SCDA.IsLoaded())
         {
         cSize = SCDA.GetSize();
@@ -130,11 +128,7 @@ unsigned int SCPTRecord::GetSize()
     for(unsigned int p = 0; p < VARS.size(); p++)
         {
         if(VARS[p]->SLSD.IsLoaded())
-            {
-            cSize = VARS[p]->SLSD.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
+            TotSize += VARS[p]->SLSD.GetSize() + 6;
         if(VARS[p]->SCVR.IsLoaded())
             {
             cSize = VARS[p]->SCVR.GetSize();

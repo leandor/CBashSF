@@ -86,9 +86,9 @@ int WTHRRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
-                printf("  WTHR: Unknown subType = %04x\n", subType);
+                printf("  WTHR: %08X - Unknown subType = %04x\n", formID, subType);
                 printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", recStart + curPos - 6);
+                printf("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
                 break;
             }
@@ -98,6 +98,8 @@ int WTHRRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
 
 unsigned int WTHRRecord::GetSize()
     {
+    if(recData != NULL)
+        return *(unsigned int*)&recData[-16];
     unsigned int cSize = 0;
     unsigned int TotSize = 0;
     if(EDID.IsLoaded())
@@ -125,11 +127,7 @@ unsigned int WTHRRecord::GetSize()
         TotSize += cSize += 6;
         }
     if(MODL.MODB.IsLoaded())
-        {
-        cSize = MODL.MODB.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += MODL.MODB.GetSize() + 6;
     if(MODL.MODT.IsLoaded())
         {
         cSize = MODL.MODT.GetSize();
@@ -137,36 +135,16 @@ unsigned int WTHRRecord::GetSize()
         TotSize += cSize += 6;
         }
     if(NAM0.IsLoaded())
-        {
-        cSize = NAM0.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += NAM0.GetSize() + 6;
     if(FNAM.IsLoaded())
-        {
-        cSize = FNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += FNAM.GetSize() + 6;
     if(HNAM.IsLoaded())
-        {
-        cSize = HNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += HNAM.GetSize() + 6;
     if(DATA.IsLoaded())
-        {
-        cSize = DATA.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += DATA.GetSize() + 6;
     if(Sounds.size())
         for(unsigned int p = 0; p < Sounds.size(); p++)
-            {
-            cSize = Sounds[p]->GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
+            TotSize += Sounds[p]->GetSize() + 6;
     return TotSize;
     }
 

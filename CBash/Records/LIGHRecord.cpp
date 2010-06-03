@@ -79,9 +79,9 @@ int LIGHRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
-                printf("  LIGH: Unknown subType = %04x\n", subType);
+                printf("  LIGH: %08X - Unknown subType = %04x\n", formID, subType);
                 printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", recStart + curPos - 6);
+                printf("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
                 break;
             }
@@ -91,6 +91,8 @@ int LIGHRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
 
 unsigned int LIGHRecord::GetSize()
     {
+    if(recData != NULL)
+        return *(unsigned int*)&recData[-16];
     unsigned int cSize = 0;
     unsigned int TotSize = 0;
     if(EDID.IsLoaded())
@@ -106,11 +108,7 @@ unsigned int LIGHRecord::GetSize()
         TotSize += cSize += 6;
         }
     if(MODL.MODB.IsLoaded())
-        {
-        cSize = MODL.MODB.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += MODL.MODB.GetSize() + 6;
     if(MODL.MODT.IsLoaded())
         {
         cSize = MODL.MODT.GetSize();
@@ -118,11 +116,7 @@ unsigned int LIGHRecord::GetSize()
         TotSize += cSize += 6;
         }
     if(SCRI.IsLoaded())
-        {
-        cSize = SCRI.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += SCRI.GetSize() + 6;
     if(FULL.IsLoaded())
         {
         cSize = FULL.GetSize();
@@ -136,23 +130,11 @@ unsigned int LIGHRecord::GetSize()
         TotSize += cSize += 6;
         }
     if(DATA.IsLoaded())
-        {
-        cSize = DATA.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += DATA.GetSize() + 6;
     if(FNAM.IsLoaded())
-        {
-        cSize = FNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += FNAM.GetSize() + 6;
     if(SNAM.IsLoaded())
-        {
-        cSize = SNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += SNAM.GetSize() + 6;
     return TotSize;
     }
 

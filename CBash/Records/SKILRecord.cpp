@@ -78,7 +78,7 @@ int SKILRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 //printf("FileName = %s\n", FileName);
                 printf("  SKIL: Unknown subType = %04X\n", subType);
                 printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", recStart + curPos - 6);
+                printf("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
                 break;
             }
@@ -88,6 +88,8 @@ int SKILRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
 
 unsigned int SKILRecord::GetSize()
     {
+    if(recData != NULL)
+        return *(unsigned int*)&recData[-16];
     unsigned int cSize = 0;
     unsigned int TotSize = 0;
     if(EDID.IsLoaded())
@@ -97,11 +99,7 @@ unsigned int SKILRecord::GetSize()
         TotSize += cSize += 6;
         }
     if(INDX.IsLoaded())
-        {
-        cSize = INDX.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += INDX.GetSize() + 6;
     if(DESC.IsLoaded())
         {
         cSize = DESC.GetSize();
@@ -115,17 +113,9 @@ unsigned int SKILRecord::GetSize()
         TotSize += cSize += 6;
         }
     if(DATA.IsLoaded())
-        {
-        cSize = DATA.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += DATA.GetSize() + 6;
     if(ANAM.IsLoaded())
-        {
-        cSize = ANAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += ANAM.GetSize() + 6;
     if(JNAM.IsLoaded())
         {
         cSize = JNAM.GetSize();

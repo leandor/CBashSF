@@ -87,9 +87,9 @@ int WRLDRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
-                printf("  WRLD: Unknown subType = %04x\n", subType);
+                printf("  WRLD: %08X - Unknown subType = %04x\n", formID, subType);
                 printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", recStart + curPos - 6);
+                printf("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
                 break;
             }
@@ -99,6 +99,8 @@ int WRLDRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
 
 unsigned int WRLDRecord::GetSize()
     {
+    if(recData != NULL)
+        return *(unsigned int*)&recData[-16];
     unsigned int cSize = 0;
     unsigned int TotSize = 0;
     if(EDID.IsLoaded())
@@ -114,23 +116,11 @@ unsigned int WRLDRecord::GetSize()
         TotSize += cSize += 6;
         }
     if(WNAM.IsLoaded())
-        {
-        cSize = WNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += WNAM.GetSize() + 6;
     if(CNAM.IsLoaded())
-        {
-        cSize = CNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += CNAM.GetSize() + 6;
     if(NAM2.IsLoaded())
-        {
-        cSize = NAM2.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += NAM2.GetSize() + 6;
 
     if(ICON.IsLoaded())
         {
@@ -140,37 +130,17 @@ unsigned int WRLDRecord::GetSize()
         }
 
     if(MNAM.IsLoaded())
-        {
-        cSize = MNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += MNAM.GetSize() + 6;
     if(DATA.IsLoaded())
-        {
-        cSize = DATA.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += DATA.GetSize() + 6;
 
     if(NAM0.IsLoaded())
-        {
-        cSize = NAM0.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += NAM0.GetSize() + 6;
     if(NAM9.IsLoaded())
-        {
-        cSize = NAM9.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += NAM9.GetSize() + 6;
 
     if(SNAM.IsLoaded())
-        {
-        cSize = SNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += SNAM.GetSize() + 6;
     if(OFST.IsLoaded())
         {
         cSize = OFST.GetSize();

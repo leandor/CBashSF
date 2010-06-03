@@ -65,9 +65,9 @@ int LVSPRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
-                printf("  LVL?: Unknown subType = %04x\n", subType);
+                printf("  LVL?: %08X - Unknown subType = %04x\n", formID, subType);
                 printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", recStart + curPos - 6);
+                printf("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
                 break;
             }
@@ -77,6 +77,8 @@ int LVSPRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
 
 unsigned int LVSPRecord::GetSize()
     {
+    if(recData != NULL)
+        return *(unsigned int*)&recData[-16];
     unsigned int cSize = 0;
     unsigned int TotSize = 0;
     if(EDID.IsLoaded())
@@ -86,25 +88,13 @@ unsigned int LVSPRecord::GetSize()
         TotSize += cSize += 6;
         }
     if(LVLD.IsLoaded())
-        {
-        cSize = LVLD.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += LVLD.GetSize() + 6;
     if(LVLF.IsLoaded())
-        {
-        cSize = LVLF.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += LVLF.GetSize() + 6;
     if(Entries.size())
         for(unsigned int p = 0; p < Entries.size(); p++)
             if(Entries[p]->IsLoaded())
-                {
-                cSize = Entries[p]->GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
+                TotSize += Entries[p]->GetSize() + 6;
     return TotSize;
     }
 

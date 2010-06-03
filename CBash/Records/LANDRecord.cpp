@@ -123,9 +123,9 @@ int LANDRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
-                printf("  LAND: Unknown subType = %04x\n", subType);
+                printf("  LAND: %08X - Unknown subType = %04x\n", formID, subType);
                 printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", recStart + curPos - 6);
+                printf("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
                 break;
             }
@@ -135,6 +135,8 @@ int LANDRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
 
 unsigned int LANDRecord::GetSize()
     {
+    if(recData != NULL)
+        return *(unsigned int*)&recData[-16];
     unsigned int cSize = 0;
     unsigned int TotSize = 0;
     if(DATA.IsLoaded())
@@ -144,43 +146,22 @@ unsigned int LANDRecord::GetSize()
         TotSize += cSize += 6;
         }
     if(VNML.IsLoaded())
-        {
-        cSize = VNML.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += VNML.GetSize() + 6;
     if(VHGT.IsLoaded())
-        {
-        cSize = VHGT.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += VHGT.GetSize() + 6;
     if(VCLR.IsLoaded())
-        {
-        cSize = VCLR.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += VCLR.GetSize() + 6;
 
     if(BTXT.size())
         for(unsigned int p = 0; p < BTXT.size(); p++)
-            if(BTXT[p] != NULL)
-                if(BTXT[p]->IsLoaded())
-                    {
-                    cSize = BTXT[p]->GetSize();
-                    if(cSize > 65535) cSize += 10;
-                    TotSize += cSize += 6;
-                    }
+            if(BTXT[p] != NULL && BTXT[p]->IsLoaded())
+                TotSize += BTXT[p]->GetSize() + 6;
 
     if(Layers.size())
         for(unsigned int p = 0; p < Layers.size(); p++)
             {
             if(Layers[p]->ATXT.IsLoaded())
-                {
-                cSize = Layers[p]->ATXT.GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
+                TotSize += Layers[p]->ATXT.GetSize() + 6;
             if(Layers[p]->VTXT.size())
                 {
                 cSize = (sizeof(LANDVTXT) * (unsigned int)Layers[p]->VTXT.size());

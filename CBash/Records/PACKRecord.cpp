@@ -86,9 +86,9 @@ int PACKRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
-                printf("  PACK: Unknown subType = %04x\n", subType);
+                printf("  PACK: %08X - Unknown subType = %04x\n", formID, subType);
                 printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", recStart + curPos - 6);
+                printf("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
                 break;
             }
@@ -98,6 +98,8 @@ int PACKRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
 
 unsigned int PACKRecord::GetSize()
     {
+    if(recData != NULL)
+        return *(unsigned int*)&recData[-16];
     unsigned int cSize = 0;
     unsigned int TotSize = 0;
     if(EDID.IsLoaded())
@@ -107,37 +109,17 @@ unsigned int PACKRecord::GetSize()
         TotSize += cSize += 6;
         }
     if(PKDT.IsLoaded())
-        {
-        cSize = PKDT.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += PKDT.GetSize() + 6;
     if(PLDT.IsLoaded())
-        {
-        cSize = PLDT.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += PLDT.GetSize() + 6;
     if(PSDT.IsLoaded())
-        {
-        cSize = PSDT.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += PSDT.GetSize() + 6;
     if(PTDT.IsLoaded())
-        {
-        cSize = PTDT.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += PTDT.GetSize() + 6;
     if(CTDA.size())
         for(unsigned int p = 0; p < CTDA.size(); p++)
             if(CTDA[p]->IsLoaded())
-                {
-                cSize = CTDA[p]->GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
+                TotSize += CTDA[p]->GetSize() + 6;
     return TotSize;
     }
 

@@ -61,9 +61,9 @@ int STATRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
-                printf("  STAT: Unknown subType = %04x\n", subType);
+                printf("  STAT: %08X - Unknown subType = %04x\n", formID, subType);
                 printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", recStart + curPos - 6);
+                printf("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
                 break;
             }
@@ -73,6 +73,8 @@ int STATRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
 
 unsigned int STATRecord::GetSize()
     {
+    if(recData != NULL)
+        return *(unsigned int*)&recData[-16];
     unsigned int cSize = 0;
     unsigned int TotSize = 0;
     if(EDID.IsLoaded())
@@ -88,11 +90,7 @@ unsigned int STATRecord::GetSize()
         TotSize += cSize += 6;
         }
     if(MODL.MODB.IsLoaded())
-        {
-        cSize = MODL.MODB.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += MODL.MODB.GetSize() + 6;
     if(MODL.MODT.IsLoaded())
         {
         cSize = MODL.MODT.GetSize();

@@ -134,9 +134,9 @@ int INFORecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
-                printf("  INFO: Unknown subType = %04x\n", subType);
+                printf("  INFO: %08X - Unknown subType = %04x\n", formID, subType);
                 printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", recStart + curPos - 6);
+                printf("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
                 break;
             }
@@ -146,32 +146,18 @@ int INFORecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
 
 unsigned int INFORecord::GetSize()
     {
+    if(recData != NULL)
+        return *(unsigned int*)&recData[-16];
     unsigned int cSize = 0;
     unsigned int TotSize = 0;
     if(DATA.IsLoaded())
-        {
-        cSize = DATA.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += DATA.GetSize() + 6;
     if(QSTI.IsLoaded())
-        {
-        cSize = QSTI.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += QSTI.GetSize() + 6;
     if(TPIC.IsLoaded())
-        {
-        cSize = TPIC.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += TPIC.GetSize() + 6;
     if(PNAM.IsLoaded())
-        {
-        cSize = PNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += PNAM.GetSize() + 6;
     if(NAME.size())
         TotSize += (unsigned int)NAME.size() * (sizeof(unsigned int) + 6);
 
@@ -180,11 +166,7 @@ unsigned int INFORecord::GetSize()
         for(unsigned int p = 0; p < Responses.size(); p++)
             {
             if(Responses[p]->TRDT.IsLoaded())
-                {
-                cSize = Responses[p]->TRDT.GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
+                TotSize += Responses[p]->TRDT.GetSize() + 6;
             if(Responses[p]->NAM1.IsLoaded())
                 {
                 cSize = Responses[p]->NAM1.GetSize();
@@ -202,11 +184,7 @@ unsigned int INFORecord::GetSize()
     if(CTDA.size())
         for(unsigned int p = 0; p < CTDA.size(); p++)
             if(CTDA[p]->IsLoaded())
-                {
-                cSize = CTDA[p]->GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
+                TotSize += CTDA[p]->GetSize() + 6;
     if(TCLT.size())
         TotSize += (unsigned int)TCLT.size() * (sizeof(unsigned int) + 6);
     if(TCLF.size())
@@ -214,11 +192,7 @@ unsigned int INFORecord::GetSize()
     //if(SCHD.IsLoaded())
     //    cSize += SCHD.GetSize() + 6;
     if(SCHR.IsLoaded())
-        {
-        cSize = SCHR.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += SCHR.GetSize() + 6;
     if(SCDA.IsLoaded())
         {
         cSize = SCDA.GetSize();

@@ -69,9 +69,9 @@ int GMSTRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                         break;
                     default:
                         //printf("FileName = %s\n", FileName);
-                        printf("  GMST: Unknown type = %c\n", DATA.format);
+                        printf("  GMST: %08X - Unknown type = %c\n", formID, DATA.format);
                         printf("  Size = %i\n", subSize);
-                        printf("  CurPos = %04x\n\n", recStart + curPos - 6);
+                        printf("  CurPos = %04x\n\n", curPos - 6);
                         curPos = recSize;
                         break;
                     }
@@ -80,7 +80,7 @@ int GMSTRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 //printf("FileName = %s\n", FileName);
                 printf("  GMST: Unknown subType = %04X\n", subType);
                 printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", recStart + curPos - 6);
+                printf("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
                 break;
             }
@@ -90,6 +90,8 @@ int GMSTRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
 
 unsigned int GMSTRecord::GetSize()
     {
+    if(recData != NULL)
+        return *(unsigned int*)&recData[-16];
     unsigned int cSize = 0;
     unsigned int TotSize = 0;
     if(EDID.IsLoaded())

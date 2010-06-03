@@ -152,8 +152,8 @@ int RACERecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                             default:
                                 //ERROR
                                 //printf("FileName = %s\n", FileName);
-                                printf("  RACE: Unexpected INDX %I under NAM%01I: %i\n", curINDX, curNAM);
-                                printf("  CurPos = %04x\n\n", recStart + curPos - 6);
+                                printf("  RACE: %08X - Unexpected INDX %I under NAM%01I: %i\n", formID, curINDX, curNAM);
+                                printf("  CurPos = %04x\n\n", curPos - 6);
                                 curPos = recSize;
                                 break;
                             }
@@ -167,8 +167,8 @@ int RACERecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                     default:
                         //ERROR
                         //printf("FileName = %s\n", FileName);
-                        printf("  RACE: Unexpected NAM%01I: %i\n", curNAM);
-                        printf("  CurPos = %04x\n\n", recStart + curPos - 6);
+                        printf("  RACE: %08X - Unexpected NAM%01I: %i\n", formID, curNAM);
+                        printf("  CurPos = %04x\n\n", curPos - 6);
                         curPos = recSize;
                         break;
                     }
@@ -209,8 +209,8 @@ int RACERecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                             default:
                                 //ERROR
                                 //printf("FileName = %s\n", FileName);
-                                printf("  RACE: Unexpected INDX %I under NAM%01I: %i\n", curINDX, curNAM);
-                                printf("  CurPos = %04x\n\n", recStart + curPos - 6);
+                                printf("  RACE: %08X - Unexpected INDX %I under NAM%01I: %i\n", formID, curINDX, curNAM);
+                                printf("  CurPos = %04x\n\n", curPos - 6);
                                 curPos = recSize;
                                 break;
                             }
@@ -236,8 +236,8 @@ int RACERecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                             default:
                                 //ERROR
                                 //printf("FileName = %s\n", FileName);
-                                printf("  RACE: Unexpected ICON under NAM%01I: %i\n", curNAM);
-                                printf("  CurPos = %04x\n\n", recStart + curPos - 6);
+                                printf("  RACE: %08X - Unexpected ICON under NAM%01I: %i\n", formID, curNAM);
+                                printf("  CurPos = %04x\n\n", curPos - 6);
                                 curPos = recSize;
                                 break;
                             }
@@ -263,8 +263,8 @@ int RACERecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                             default:
                                 //ERROR
                                 //printf("FileName = %s\n", FileName);
-                                printf("  RACE: Unexpected ICON under NAM%01i: indx = %i\n", curNAM, curINDX);
-                                printf("  CurPos = %04x\n\n", recStart + curPos - 6);
+                                printf("  RACE: %08X - Unexpected ICON under NAM%01i: indx = %i\n", formID, curNAM, curINDX);
+                                printf("  CurPos = %04x\n\n", curPos - 6);
                                 curPos = recSize;
                                 break;
                             }
@@ -272,8 +272,8 @@ int RACERecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                     default:
                         //ERROR
                         //printf("FileName = %s\n", FileName);
-                        printf("  RACE: Unexpected ICON under NAM%01i\n", curNAM);
-                        printf("  CurPos = %04x\n\n", recStart + curPos - 6);
+                        printf("  RACE: %08X - Unexpected ICON under NAM%01i\n", formID, curNAM);
+                        printf("  CurPos = %04x\n\n", curPos - 6);
                         curPos = recSize;
                         break;
                     }
@@ -314,8 +314,8 @@ int RACERecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                             default:
                                 //ERROR
                                 //printf("FileName = %s\n", FileName);
-                                printf("  RACE: Unexpected INDX %I under NAM%01I: %i\n", curINDX, curNAM);
-                                printf("  CurPos = %04x\n\n", recStart + curPos - 6);
+                                printf("  RACE: %08X - Unexpected INDX %I under NAM%01I: %i\n", formID, curINDX, curNAM);
+                                printf("  CurPos = %04x\n\n", curPos - 6);
                                 curPos = recSize;
                                 break;
                             }
@@ -329,8 +329,8 @@ int RACERecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                     default:
                         //ERROR
                         //printf("FileName = %s\n", FileName);
-                        printf("  RACE: Unexpected MODB under NAM%01I: %i\n", curNAM);
-                        printf("  CurPos = %04x\n\n", recStart + curPos - 6);
+                        printf("  RACE: %08X - Unexpected MODB under NAM%01I: %i\n", formID, curNAM);
+                        printf("  CurPos = %04x\n\n", curPos - 6);
                         curPos = recSize;
                         break;
                     }
@@ -371,8 +371,8 @@ int RACERecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                             default:
                                 //ERROR
                                 //printf("FileName = %s\n", FileName);
-                                printf("  RACE: Unexpected INDX %I under NAM%01I: %i\n", curINDX, curNAM);
-                                printf("  CurPos = %04x\n\n", recStart + curPos - 6);
+                                printf("  RACE: %08X - Unexpected INDX %I under NAM%01I: %i\n", formID, curINDX, curNAM);
+                                printf("  CurPos = %04x\n\n", curPos - 6);
                                 curPos = recSize;
                                 break;
                             }
@@ -386,8 +386,8 @@ int RACERecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                     default:
                         //ERROR
                         //printf("FileName = %s\n", FileName);
-                        printf("  RACE: Unexpected MODT under NAM%01I: %i\n", curNAM);
-                        printf("  CurPos = %04x\n\n", recStart + curPos - 6);
+                        printf("  RACE: %08X - Unexpected MODT under NAM%01I: %i\n", formID, curNAM);
+                        printf("  CurPos = %04x\n\n", curPos - 6);
                         curPos = recSize;
                         break;
                     }
@@ -436,7 +436,7 @@ int RACERecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 //printf("FileName = %s\n", FileName);
                 printf("  RACE: Unknown subType = %04X\n", subType);
                 printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", recStart + curPos - 6);
+                printf("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
                 break;
             }
@@ -446,6 +446,8 @@ int RACERecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
 
 unsigned int RACERecord::GetSize()
     {
+    if(recData != NULL)
+        return *(unsigned int*)&recData[-16];
     unsigned int cSize = 0;
     unsigned int TotSize = 226;
     //TotSize += 96; //NAM0, INDX 0, INDX 1, INDX 2, INDX 3, INDX 4, INDX 5, INDX 6, INDX 7, INDX 8
@@ -476,53 +478,21 @@ unsigned int RACERecord::GetSize()
         TotSize += (unsigned int)SPLO.size() * (sizeof(unsigned int) + 6);
 
     for(unsigned int p = 0; p < XNAM.size(); p++)
-        {
-        cSize = XNAM[p]->GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += XNAM[p]->GetSize() + 6;
     if(DATA.IsLoaded())
-        {
-        cSize = DATA.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += DATA.GetSize() + 6;
     if(VNAM.IsLoaded())
-        {
-        cSize = VNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += VNAM.GetSize() + 6;
     if(DNAM.IsLoaded())
-        {
-        cSize = DNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += DNAM.GetSize() + 6;
     if(CNAM.IsLoaded())
-        {
-        cSize = CNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += CNAM.GetSize() + 6;
     if(PNAM.IsLoaded())
-        {
-        cSize = PNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += PNAM.GetSize() + 6;
     if(UNAM.IsLoaded())
-        {
-        cSize = UNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += UNAM.GetSize() + 6;
     if(ATTR.IsLoaded())
-        {
-        cSize = ATTR.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += ATTR.GetSize() + 6;
 
     if(MOD0.MODL.IsLoaded())
         {
@@ -531,11 +501,7 @@ unsigned int RACERecord::GetSize()
         TotSize += cSize += 6;
         }
     if(MOD0.MODB.IsLoaded())
-        {
-        cSize = MOD0.MODB.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += MOD0.MODB.GetSize() + 6;
     if(MOD0.MODT.IsLoaded())
         {
         cSize = MOD0.MODT.GetSize();
@@ -556,11 +522,7 @@ unsigned int RACERecord::GetSize()
         TotSize += cSize += 6;
         }
     if(MOD1.MODB.IsLoaded())
-        {
-        cSize = MOD1.MODB.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += MOD1.MODB.GetSize() + 6;
     if(MOD1.MODT.IsLoaded())
         {
         cSize = MOD1.MODT.GetSize();
@@ -581,11 +543,7 @@ unsigned int RACERecord::GetSize()
         TotSize += cSize += 6;
         }
     if(MOD2.MODB.IsLoaded())
-        {
-        cSize = MOD2.MODB.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += MOD2.MODB.GetSize() + 6;
     if(MOD2.MODT.IsLoaded())
         {
         cSize = MOD2.MODT.GetSize();
@@ -606,11 +564,7 @@ unsigned int RACERecord::GetSize()
         TotSize += cSize += 6;
         }
     if(MOD3.MODB.IsLoaded())
-        {
-        cSize = MOD3.MODB.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += MOD3.MODB.GetSize() + 6;
     if(MOD3.MODT.IsLoaded())
         {
         cSize = MOD3.MODT.GetSize();
@@ -631,11 +585,7 @@ unsigned int RACERecord::GetSize()
         TotSize += cSize += 6;
         }
     if(MOD4.MODB.IsLoaded())
-        {
-        cSize = MOD4.MODB.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += MOD4.MODB.GetSize() + 6;
     if(MOD4.MODT.IsLoaded())
         {
         cSize = MOD4.MODT.GetSize();
@@ -656,11 +606,7 @@ unsigned int RACERecord::GetSize()
         TotSize += cSize += 6;
         }
     if(MOD5.MODB.IsLoaded())
-        {
-        cSize = MOD5.MODB.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += MOD5.MODB.GetSize() + 6;
     if(MOD5.MODT.IsLoaded())
         {
         cSize = MOD5.MODT.GetSize();
@@ -681,11 +627,7 @@ unsigned int RACERecord::GetSize()
         TotSize += cSize += 6;
         }
     if(MOD6.MODB.IsLoaded())
-        {
-        cSize = MOD6.MODB.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += MOD6.MODB.GetSize() + 6;
     if(MOD6.MODT.IsLoaded())
         {
         cSize = MOD6.MODT.GetSize();
@@ -706,11 +648,7 @@ unsigned int RACERecord::GetSize()
         TotSize += cSize += 6;
         }
     if(MOD7.MODB.IsLoaded())
-        {
-        cSize = MOD7.MODB.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += MOD7.MODB.GetSize() + 6;
     if(MOD7.MODT.IsLoaded())
         {
         cSize = MOD7.MODT.GetSize();
@@ -731,11 +669,7 @@ unsigned int RACERecord::GetSize()
         TotSize += cSize += 6;
         }
     if(MOD8.MODB.IsLoaded())
-        {
-        cSize = MOD8.MODB.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += MOD8.MODB.GetSize() + 6;
     if(MOD8.MODT.IsLoaded())
         {
         cSize = MOD8.MODT.GetSize();
@@ -756,11 +690,7 @@ unsigned int RACERecord::GetSize()
         TotSize += cSize += 6;
         }
     if(MMODL.MODB.IsLoaded())
-        {
-        cSize = MMODL.MODB.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += MMODL.MODB.GetSize() + 6;
     if(MMODL.MODT.IsLoaded())
         {
         cSize = MMODL.MODT.GetSize();
@@ -806,11 +736,7 @@ unsigned int RACERecord::GetSize()
         TotSize += cSize += 6;
         }
     if(FMODL.MODB.IsLoaded())
-        {
-        cSize = FMODL.MODB.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += FMODL.MODB.GetSize() + 6;
     if(FMODL.MODT.IsLoaded())
         {
         cSize = FMODL.MODT.GetSize();
@@ -863,30 +789,14 @@ unsigned int RACERecord::GetSize()
         }
 
     if(FGGS.IsLoaded())
-        {
-        cSize = FGGS.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += FGGS.GetSize() + 6;
     if(FGGA.IsLoaded())
-        {
-        cSize = FGGA.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += FGGA.GetSize() + 6;
     if(FGTS.IsLoaded())
-        {
-        cSize = FGTS.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += FGTS.GetSize() + 6;
 
     if(SNAM.IsLoaded())
-        {
-        cSize = SNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += SNAM.GetSize() + 6;
 
     return TotSize;
     }

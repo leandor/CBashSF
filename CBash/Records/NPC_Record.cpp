@@ -141,9 +141,9 @@ int NPC_Record::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
-                printf("  NPC_: Unknown subType = %04x\n", subType);
+                printf("  NPC_: %08X - Unknown subType = %04x\n", formID, subType);
                 printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", recStart + curPos - 6);
+                printf("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
                 break;
 
@@ -154,6 +154,8 @@ int NPC_Record::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
 
 unsigned int NPC_Record::GetSize()
     {
+    if(recData != NULL)
+        return *(unsigned int*)&recData[-16];
     unsigned int cSize = 0;
     unsigned int TotSize = 0;
     if(EDID.IsLoaded())
@@ -175,11 +177,7 @@ unsigned int NPC_Record::GetSize()
         TotSize += cSize += 6;
         }
     if(MODL.MODB.IsLoaded())
-        {
-        cSize = MODL.MODB.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += MODL.MODB.GetSize() + 6;
     if(MODL.MODT.IsLoaded())
         {
         cSize = MODL.MODT.GetSize();
@@ -187,53 +185,25 @@ unsigned int NPC_Record::GetSize()
         TotSize += cSize += 6;
         }
     if(ACBS.IsLoaded())
-        {
-        cSize = ACBS.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += ACBS.GetSize() + 6;
     if(SNAM.size())
         for(unsigned int p = 0; p < SNAM.size(); p++)
             if(SNAM[p]->IsLoaded())
-                {
-                cSize = SNAM[p]->GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
+                TotSize += SNAM[p]->GetSize() + 6;
     if(INAM.IsLoaded())
-        {
-        cSize = INAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += INAM.GetSize() + 6;
     if(RNAM.IsLoaded())
-        {
-        cSize = RNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += RNAM.GetSize() + 6;
     if(SPLO.size())
         TotSize += (unsigned int)SPLO.size() * (sizeof(unsigned int) + 6);
     if(SCRI.IsLoaded())
-        {
-        cSize = SCRI.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += SCRI.GetSize() + 6;
     if(CNTO.size())
         for(unsigned int p = 0; p < CNTO.size(); p++)
             if(CNTO[p]->IsLoaded())
-                {
-                cSize = CNTO[p]->GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
+                TotSize += CNTO[p]->GetSize() + 6;
     if(AIDT.IsLoaded())
-        {
-        cSize = AIDT.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += AIDT.GetSize() + 6;
     if(PKID.size())
         {
         cSize = (unsigned int)PKID.size() * (sizeof(unsigned int) + 6);
@@ -250,71 +220,27 @@ unsigned int NPC_Record::GetSize()
         TotSize += cSize += 6;
         }
     if(CNAM.IsLoaded())
-        {
-        cSize = CNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += CNAM.GetSize() + 6;
     if(DATA.IsLoaded())
-        {
-        cSize = DATA.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += DATA.GetSize() + 6;
     if(HNAM.IsLoaded())
-        {
-        cSize = HNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += HNAM.GetSize() + 6;
     if(LNAM.IsLoaded())
-        {
-        cSize = LNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += LNAM.GetSize() + 6;
     if(ENAM.IsLoaded())
-        {
-        cSize = ENAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += ENAM.GetSize() + 6;
     if(HCLR.IsLoaded())
-        {
-        cSize = HCLR.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += HCLR.GetSize() + 6;
     if(ZNAM.IsLoaded())
-        {
-        cSize = ZNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += ZNAM.GetSize() + 6;
     if(FGGS.IsLoaded())
-        {
-        cSize = FGGS.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += FGGS.GetSize() + 6;
     if(FGGA.IsLoaded())
-        {
-        cSize = FGGA.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += FGGA.GetSize() + 6;
     if(FGTS.IsLoaded())
-        {
-        cSize = FGTS.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += FGTS.GetSize() + 6;
     if(FNAM.IsLoaded())
-        {
-        cSize = FNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += FNAM.GetSize() + 6;
     return TotSize;
     }
 

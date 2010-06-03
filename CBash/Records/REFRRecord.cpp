@@ -109,8 +109,8 @@ int REFRRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                         _readBuffer(&XSED->seed, buffer, 4, curPos);
                         break;
                     default:
-                        printf("  REFR: Unknown XSED size = %u\n", subSize);
-                        printf("  CurPos = %04x\n\n", recStart + curPos - 6);
+                        printf("  REFR: %08X - Unknown XSED size = %u\n", formID, subSize);
+                        printf("  CurPos = %04x\n\n", curPos - 6);
                         curPos += subSize;
                         break;
                     }
@@ -140,9 +140,9 @@ int REFRRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                         Marker->FULL.Read(buffer, subSize, curPos);
                         break;
                     default:
-                        printf("  REFR: Unexpected FULL record\n");
+                        printf("  REFR: %08X - Unexpected FULL record\n", formID);
                         printf("  Size = %i\n", subSize);
-                        printf("  CurPos = %04x\n\n", recStart + curPos - 6);
+                        printf("  CurPos = %04x\n\n", curPos - 6);
                         curPos += subSize;
                         break;
                     }
@@ -187,9 +187,9 @@ int REFRRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
-                printf("  REFR: Unknown subType = %04x\n", subType);
+                printf("  REFR: %08X - Unknown subType = %04x\n", formID, subType);
                 printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", recStart + curPos - 6);
+                printf("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
                 break;
             }
@@ -199,6 +199,8 @@ int REFRRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
 
 unsigned int REFRRecord::GetSize()
     {
+    if(recData != NULL)
+        return *(unsigned int*)&recData[-16];
     unsigned int cSize = 0;
     unsigned int TotSize = 0;
 
@@ -210,58 +212,28 @@ unsigned int REFRRecord::GetSize()
         }
 
     if(NAME.IsLoaded())
-        {
-        cSize = NAME.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += NAME.GetSize() + 6;
 
     if(XTEL.IsLoaded())
-        {
-        cSize = XTEL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += XTEL.GetSize() + 6;
 
     if(XLOC.IsLoaded())
-        {
-        cSize = XLOC.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += XLOC.GetSize() + 6;
 
     if(Ownership.IsLoaded() && Ownership->XOWN.IsLoaded())
         {
-        cSize = Ownership->XOWN.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
+        TotSize += Ownership->XOWN.GetSize() + 6;
         if(Ownership->XRNK.IsLoaded())
-            {
-            cSize = Ownership->XRNK.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
+            TotSize += Ownership->XRNK.GetSize() + 6;
         if(Ownership->XGLB.IsLoaded())
-            {
-            cSize = Ownership->XGLB.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
+            TotSize += Ownership->XGLB.GetSize() + 6;
         }
 
     if(XESP.IsLoaded())
-        {
-        cSize = XESP.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += XESP.GetSize() + 6;
 
     if(XTRG.IsLoaded())
-        {
-        cSize = XTRG.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += XTRG.GetSize() + 6;
 
     if(XSED.IsLoaded())
         if(XSED->isOffset)
@@ -269,31 +241,17 @@ unsigned int REFRRecord::GetSize()
         else TotSize += 10;
 
     if(XLOD.IsLoaded())
-        {
-        cSize = XLOD.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += XLOD.GetSize() + 6;
 
     if(XCHG.IsLoaded())
-        {
-        cSize = XCHG.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += XCHG.GetSize() + 6;
 
     if(XHLT.IsLoaded())
-        {
-        cSize = XHLT.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += XHLT.GetSize() + 6;
 
     if(XPCI.IsLoaded() && XPCI->XPCI.IsLoaded())
         {
-        cSize = XPCI->XPCI.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
+        TotSize += XPCI->XPCI.GetSize() + 6;
         if(XPCI->FULL.IsLoaded())
             {
             cSize = XPCI->FULL.GetSize();
@@ -304,42 +262,22 @@ unsigned int REFRRecord::GetSize()
         }
 
     if(XLCM.IsLoaded())
-        {
-        cSize = XLCM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += XLCM.GetSize() + 6;
 
     if(XRTM.IsLoaded())
-        {
-        cSize = XRTM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += XRTM.GetSize() + 6;
 
     if(XACT.IsLoaded())
-        {
-        cSize = XACT.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += XACT.GetSize() + 6;
 
     if(XCNT.IsLoaded())
-        {
-        cSize = XCNT.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += XCNT.GetSize() + 6;
 
     if(Marker.IsLoaded())
         {
         TotSize += 6;
         if(Marker->FNAM.IsLoaded())
-            {
-            cSize = Marker->FNAM.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
+            TotSize += Marker->FNAM.GetSize() + 6;
         if(Marker->FULL.IsLoaded())
             {
             cSize = Marker->FULL.GetSize();
@@ -347,36 +285,20 @@ unsigned int REFRRecord::GetSize()
             TotSize += cSize += 6;
             }
         if(Marker->TNAM.IsLoaded())
-            {
-            cSize = Marker->TNAM.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
+            TotSize += Marker->TNAM.GetSize() + 6;
         }
 
     if(IsOpenByDefault()) //ONAM
         TotSize += 6;
 
     if(XSCL.IsLoaded())
-        {
-        cSize = XSCL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += XSCL.GetSize() + 6;
 
     if(XSOL.IsLoaded())
-        {
-        cSize = XSOL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += XSOL.GetSize() + 6;
 
     if(DATA.IsLoaded())
-        {
-        cSize = DATA.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += DATA.GetSize() + 6;
 
     return TotSize;
     }

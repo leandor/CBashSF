@@ -211,9 +211,9 @@ int QUSTRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
-                printf("  QUST: Unknown subType = %04x\n", subType);
+                printf("  QUST: %08X - Unknown subType = %04x\n", formID, subType);
                 printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", recStart + curPos - 6);
+                printf("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
                 break;
             }
@@ -223,6 +223,8 @@ int QUSTRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
 
 unsigned int QUSTRecord::GetSize()
     {
+    if(recData != NULL)
+        return *(unsigned int*)&recData[-16];
     unsigned int cSize = 0;
     unsigned int TotSize = 0;
     if(EDID.IsLoaded())
@@ -232,11 +234,7 @@ unsigned int QUSTRecord::GetSize()
         TotSize += cSize += 6;
         }
     if(SCRI.IsLoaded())
-        {
-        cSize = SCRI.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += SCRI.GetSize() + 6;
     if(FULL.IsLoaded())
         {
         cSize = FULL.GetSize();
@@ -250,45 +248,25 @@ unsigned int QUSTRecord::GetSize()
         TotSize += cSize += 6;
         }
     if(DATA.IsLoaded())
-        {
-        cSize = DATA.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += DATA.GetSize() + 6;
     if(CTDA.size())
         for(unsigned int p = 0; p < CTDA.size(); p++)
             if(CTDA[p]->IsLoaded())
-                {
-                cSize = CTDA[p]->GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
+                TotSize += CTDA[p]->GetSize() + 6;
     if(Stages.size())
         for(unsigned int p = 0; p < Stages.size(); p++)
             {
             if(Stages[p]->INDX.IsLoaded())
-                {
-                cSize = Stages[p]->INDX.GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
+                TotSize += Stages[p]->INDX.GetSize() + 6;
             if(Stages[p]->Entries.size())
                 for(unsigned int x = 0; x < Stages[p]->Entries.size(); x++)
                     {
                     if(Stages[p]->Entries[x]->QSDT.IsLoaded())
-                        {
-                        cSize = Stages[p]->Entries[x]->QSDT.GetSize();
-                        if(cSize > 65535) cSize += 10;
-                        TotSize += cSize += 6;
-                        }
+                        TotSize += Stages[p]->Entries[x]->QSDT.GetSize() + 6;
                     if(Stages[p]->Entries[x]->CTDA.size())
                         for(unsigned int y = 0; y < Stages[p]->Entries[x]->CTDA.size(); y++)
                             if(Stages[p]->Entries[x]->CTDA[y]->IsLoaded())
-                                {
-                                cSize = Stages[p]->Entries[x]->CTDA[y]->GetSize();
-                                if(cSize > 65535) cSize += 10;
-                                TotSize += cSize += 6;
-                                }
+                                TotSize += Stages[p]->Entries[x]->CTDA[y]->GetSize() + 6;
                     if(Stages[p]->Entries[x]->CNAM.IsLoaded())
                         {
                         cSize = Stages[p]->Entries[x]->CNAM.GetSize();
@@ -296,11 +274,7 @@ unsigned int QUSTRecord::GetSize()
                         TotSize += cSize += 6;
                         }
                     if(Stages[p]->Entries[x]->SCHR.IsLoaded())
-                        {
-                        cSize = Stages[p]->Entries[x]->SCHR.GetSize();
-                        if(cSize > 65535) cSize += 10;
-                        TotSize += cSize += 6;
-                        }
+                        TotSize += Stages[p]->Entries[x]->SCHR.GetSize() + 6;
                     if(Stages[p]->Entries[x]->SCDA.IsLoaded())
                         {
                         cSize = Stages[p]->Entries[x]->SCDA.GetSize();
@@ -320,19 +294,11 @@ unsigned int QUSTRecord::GetSize()
         for(unsigned int p = 0; p < Targets.size(); p++)
             {
             if(Targets[p]->QSTA.IsLoaded())
-                {
-                cSize = Targets[p]->QSTA.GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
+                TotSize += Targets[p]->QSTA.GetSize() + 6;
             if(Targets[p]->CTDA.size())
                 for(unsigned int y = 0; y < Targets[p]->CTDA.size(); y++)
                     if(Targets[p]->CTDA[y]->IsLoaded())
-                        {
-                        cSize = Targets[p]->CTDA[y]->GetSize();
-                        if(cSize > 65535) cSize += 10;
-                        TotSize += cSize += 6;
-                        }
+                        TotSize += Targets[p]->CTDA[y]->GetSize() + 6;
             }
     return TotSize;
     }

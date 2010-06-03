@@ -65,9 +65,9 @@ int LSCRRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
-                printf("  LSCR: Unknown subType = %04x\n", subType);
+                printf("  LSCR: %08X - Unknown subType = %04x\n", formID, subType);
                 printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", recStart + curPos - 6);
+                printf("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
                 break;
             }
@@ -77,6 +77,8 @@ int LSCRRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
 
 unsigned int LSCRRecord::GetSize()
     {
+    if(recData != NULL)
+        return *(unsigned int*)&recData[-16];
     unsigned int cSize = 0;
     unsigned int TotSize = 0;
     if(EDID.IsLoaded())
@@ -99,11 +101,7 @@ unsigned int LSCRRecord::GetSize()
         }
     for(unsigned int p = 0; p < LNAM.size(); p++)
         if(LNAM[p]->IsLoaded())
-            {
-            cSize = LNAM[p]->GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
+            TotSize += LNAM[p]->GetSize() + 6;
     return TotSize;
     }
 

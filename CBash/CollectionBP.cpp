@@ -2279,6 +2279,11 @@ unsigned int Collection::CopyGMSTRecord(char *ModName, char *srcRecordEDID, char
     GMSTRecord *copyRecord = NULL;
 
     LookupGMSTRecord(ModName, srcRecordEDID, srcMod, srcRecord);
+
+    LookupGMSTRecord(destModName, srcRecordEDID, destMod, copyRecord);
+    if(copyRecord != NULL)
+        return 0;
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -3500,6 +3505,14 @@ unsigned int Collection::CopyGLOBRecord(char *ModName, unsigned int srcRecordFID
     GLOBRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -3531,6 +3544,14 @@ unsigned int Collection::CopyCLASRecord(char *ModName, unsigned int srcRecordFID
     CLASRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -3562,6 +3583,14 @@ unsigned int Collection::CopyFACTRecord(char *ModName, unsigned int srcRecordFID
     FACTRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -3593,6 +3622,14 @@ unsigned int Collection::CopyHAIRRecord(char *ModName, unsigned int srcRecordFID
     HAIRRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -3624,6 +3661,14 @@ unsigned int Collection::CopyEYESRecord(char *ModName, unsigned int srcRecordFID
     EYESRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -3655,6 +3700,14 @@ unsigned int Collection::CopyRACERecord(char *ModName, unsigned int srcRecordFID
     RACERecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -3686,6 +3739,14 @@ unsigned int Collection::CopySOUNRecord(char *ModName, unsigned int srcRecordFID
     SOUNRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -3717,6 +3778,14 @@ unsigned int Collection::CopySKILRecord(char *ModName, unsigned int srcRecordFID
     SKILRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -3748,6 +3817,14 @@ unsigned int Collection::CopyMGEFRecord(char *ModName, unsigned int srcRecordFID
     MGEFRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -3779,6 +3856,14 @@ unsigned int Collection::CopySCPTRecord(char *ModName, unsigned int srcRecordFID
     SCPTRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -3810,6 +3895,14 @@ unsigned int Collection::CopyLTEXRecord(char *ModName, unsigned int srcRecordFID
     LTEXRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -3841,6 +3934,14 @@ unsigned int Collection::CopyENCHRecord(char *ModName, unsigned int srcRecordFID
     ENCHRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -3872,6 +3973,14 @@ unsigned int Collection::CopySPELRecord(char *ModName, unsigned int srcRecordFID
     SPELRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -3903,6 +4012,14 @@ unsigned int Collection::CopyBSGNRecord(char *ModName, unsigned int srcRecordFID
     BSGNRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -3934,6 +4051,14 @@ unsigned int Collection::CopyACTIRecord(char *ModName, unsigned int srcRecordFID
     ACTIRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -3965,6 +4090,14 @@ unsigned int Collection::CopyAPPARecord(char *ModName, unsigned int srcRecordFID
     APPARecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -3996,6 +4129,14 @@ unsigned int Collection::CopyARMORecord(char *ModName, unsigned int srcRecordFID
     ARMORecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -4027,6 +4168,14 @@ unsigned int Collection::CopyBOOKRecord(char *ModName, unsigned int srcRecordFID
     BOOKRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -4058,6 +4207,14 @@ unsigned int Collection::CopyCLOTRecord(char *ModName, unsigned int srcRecordFID
     CLOTRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -4089,6 +4246,14 @@ unsigned int Collection::CopyCONTRecord(char *ModName, unsigned int srcRecordFID
     CONTRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -4120,6 +4285,14 @@ unsigned int Collection::CopyDOORRecord(char *ModName, unsigned int srcRecordFID
     DOORRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -4151,6 +4324,14 @@ unsigned int Collection::CopyINGRRecord(char *ModName, unsigned int srcRecordFID
     INGRRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -4182,6 +4363,14 @@ unsigned int Collection::CopyLIGHRecord(char *ModName, unsigned int srcRecordFID
     LIGHRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -4213,6 +4402,14 @@ unsigned int Collection::CopyMISCRecord(char *ModName, unsigned int srcRecordFID
     MISCRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -4244,6 +4441,14 @@ unsigned int Collection::CopySTATRecord(char *ModName, unsigned int srcRecordFID
     STATRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -4275,6 +4480,14 @@ unsigned int Collection::CopyGRASRecord(char *ModName, unsigned int srcRecordFID
     GRASRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -4306,6 +4519,14 @@ unsigned int Collection::CopyTREERecord(char *ModName, unsigned int srcRecordFID
     TREERecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -4337,6 +4558,14 @@ unsigned int Collection::CopyFLORRecord(char *ModName, unsigned int srcRecordFID
     FLORRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -4368,6 +4597,14 @@ unsigned int Collection::CopyFURNRecord(char *ModName, unsigned int srcRecordFID
     FURNRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -4399,6 +4636,14 @@ unsigned int Collection::CopyWEAPRecord(char *ModName, unsigned int srcRecordFID
     WEAPRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -4430,6 +4675,14 @@ unsigned int Collection::CopyAMMORecord(char *ModName, unsigned int srcRecordFID
     AMMORecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -4461,6 +4714,14 @@ unsigned int Collection::CopyNPC_Record(char *ModName, unsigned int srcRecordFID
     NPC_Record *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -4492,6 +4753,14 @@ unsigned int Collection::CopyCREARecord(char *ModName, unsigned int srcRecordFID
     CREARecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -4523,6 +4792,14 @@ unsigned int Collection::CopyLVLCRecord(char *ModName, unsigned int srcRecordFID
     LVLCRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -4554,6 +4831,14 @@ unsigned int Collection::CopySLGMRecord(char *ModName, unsigned int srcRecordFID
     SLGMRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -4585,6 +4870,14 @@ unsigned int Collection::CopyKEYMRecord(char *ModName, unsigned int srcRecordFID
     KEYMRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -4616,6 +4909,14 @@ unsigned int Collection::CopyALCHRecord(char *ModName, unsigned int srcRecordFID
     ALCHRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -4647,6 +4948,14 @@ unsigned int Collection::CopySBSPRecord(char *ModName, unsigned int srcRecordFID
     SBSPRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -4678,6 +4987,14 @@ unsigned int Collection::CopySGSTRecord(char *ModName, unsigned int srcRecordFID
     SGSTRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -4709,6 +5026,14 @@ unsigned int Collection::CopyLVLIRecord(char *ModName, unsigned int srcRecordFID
     LVLIRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -4740,6 +5065,14 @@ unsigned int Collection::CopyWTHRRecord(char *ModName, unsigned int srcRecordFID
     WTHRRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -4771,6 +5104,14 @@ unsigned int Collection::CopyCLMTRecord(char *ModName, unsigned int srcRecordFID
     CLMTRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -4802,6 +5143,14 @@ unsigned int Collection::CopyREGNRecord(char *ModName, unsigned int srcRecordFID
     REGNRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -4842,7 +5191,15 @@ unsigned int Collection::CopyCELLRecord(char *ModName, unsigned int srcRecordFID
             return 0;
         }
     else
+        {
+        if(asOverride)
+            {
+            LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+            if(copyRecord != NULL)
+                return 0;
+            }
         destMod = LookupModFile(destModName);
+        }
 
     if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
         {return 0;}
@@ -4880,6 +5237,14 @@ unsigned int Collection::CopyACHRRecord(char *ModName, unsigned int srcRecordFID
     ACHRRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     LookupRecord(destModName, destParentFID, destMod, destParentRecord);
 
     if(srcMod == NULL || destMod == NULL || srcRecord == NULL || destParentRecord == NULL || srcMod == destMod)
@@ -4911,6 +5276,14 @@ unsigned int Collection::CopyACRERecord(char *ModName, unsigned int srcRecordFID
     ACRERecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     LookupRecord(destModName, destParentFID, destMod, destParentRecord);
 
     if(srcMod == NULL || destMod == NULL || srcRecord == NULL || destParentRecord == NULL || srcMod == destMod)
@@ -4942,6 +5315,14 @@ unsigned int Collection::CopyREFRRecord(char *ModName, unsigned int srcRecordFID
     REFRRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     LookupRecord(destModName, destParentFID, destMod, destParentRecord);
 
     if(srcMod == NULL || destMod == NULL || srcRecord == NULL || destParentRecord == NULL || srcMod == destMod)
@@ -4973,6 +5354,14 @@ unsigned int Collection::CopyPGRDRecord(char *ModName, unsigned int srcRecordFID
     PGRDRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     LookupRecord(destModName, destParentFID, destMod, destParentRecord);
 
     if(destParentRecord == NULL || destParentRecord->PGRD != NULL || srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
@@ -5004,6 +5393,14 @@ unsigned int Collection::CopyWRLDRecord(char *ModName, unsigned int srcRecordFID
     //CELLRecord *worldCellRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -5045,6 +5442,14 @@ unsigned int Collection::CopyROADRecord(char *ModName, unsigned int srcRecordFID
     ROADRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     LookupRecord(destModName, destParentFID, destMod, destParentRecord);
 
     if(destParentRecord == NULL || destParentRecord->ROAD != NULL || srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
@@ -5076,6 +5481,14 @@ unsigned int Collection::CopyLANDRecord(char *ModName, unsigned int srcRecordFID
     LANDRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     LookupRecord(destModName, destParentFID, destMod, destParentRecord);
 
     if(destParentRecord == NULL || destParentRecord->LAND != NULL || srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
@@ -5106,6 +5519,14 @@ unsigned int Collection::CopyDIALRecord(char *ModName, unsigned int srcRecordFID
     DIALRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -5138,6 +5559,14 @@ unsigned int Collection::CopyINFORecord(char *ModName, unsigned int srcRecordFID
     INFORecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     LookupRecord(destModName, destParentFID, destMod, destParentRecord);
 
     if(srcMod == NULL || destMod == NULL || srcRecord == NULL || destParentRecord == NULL || srcMod == destMod)
@@ -5168,6 +5597,14 @@ unsigned int Collection::CopyQUSTRecord(char *ModName, unsigned int srcRecordFID
     QUSTRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -5199,6 +5636,14 @@ unsigned int Collection::CopyIDLERecord(char *ModName, unsigned int srcRecordFID
     IDLERecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -5230,6 +5675,14 @@ unsigned int Collection::CopyPACKRecord(char *ModName, unsigned int srcRecordFID
     PACKRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -5261,6 +5714,14 @@ unsigned int Collection::CopyCSTYRecord(char *ModName, unsigned int srcRecordFID
     CSTYRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -5292,6 +5753,14 @@ unsigned int Collection::CopyLSCRRecord(char *ModName, unsigned int srcRecordFID
     LSCRRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -5323,6 +5792,14 @@ unsigned int Collection::CopyLVSPRecord(char *ModName, unsigned int srcRecordFID
     LVSPRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -5354,6 +5831,14 @@ unsigned int Collection::CopyANIORecord(char *ModName, unsigned int srcRecordFID
     ANIORecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -5385,6 +5870,14 @@ unsigned int Collection::CopyWATRRecord(char *ModName, unsigned int srcRecordFID
     WATRRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
@@ -5416,6 +5909,14 @@ unsigned int Collection::CopyEFSHRecord(char *ModName, unsigned int srcRecordFID
     EFSHRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+
+    if(asOverride)
+        {
+        LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
+        if(copyRecord != NULL)
+            return 0;
+        }
+
     destMod = LookupModFile(destModName);
 
     //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same

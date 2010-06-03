@@ -188,9 +188,9 @@ int REGNRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
-                printf("  REGN: Unknown subType = %04x\n", subType);
+                printf("  REGN: %08X - Unknown subType = %04x\n", formID, subType);
                 printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", recStart + curPos - 6);
+                printf("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
                 break;
             }
@@ -200,6 +200,8 @@ int REGNRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
 
 unsigned int REGNRecord::GetSize()
     {
+    if(recData != NULL)
+        return *(unsigned int*)&recData[-16];
     unsigned int cSize = 0;
     unsigned int TotSize = 0;
     if(EDID.IsLoaded())
@@ -215,26 +217,14 @@ unsigned int REGNRecord::GetSize()
         TotSize += cSize += 6;
         }
     if(RCLR.IsLoaded())
-        {
-        cSize = RCLR.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += RCLR.GetSize() + 6;
     if(WNAM.IsLoaded())
-        {
-        cSize = WNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += WNAM.GetSize() + 6;
     if(Areas.size())
         for(unsigned int p = 0; p < Areas.size(); p++)
             {
             if(Areas[p]->RPLI.IsLoaded())
-                {
-                cSize = Areas[p]->RPLI.GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
+                TotSize += Areas[p]->RPLI.GetSize() + 6;
             if(Areas[p]->RPLD.size())
                 {
                 cSize = (sizeof(REGNRPLD) * (unsigned int)Areas[p]->RPLD.size());
@@ -246,11 +236,7 @@ unsigned int REGNRecord::GetSize()
         for(unsigned int p = 0; p < Entries.size(); p++)
             {
             if(Entries[p]->RDAT.IsLoaded())
-                {
-                cSize = Entries[p]->RDAT.GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
+                TotSize += Entries[p]->RDAT.GetSize() + 6;
             switch(Entries[p]->RDAT.value.entryType)
                 {
                 case eREGNObjects:
@@ -296,11 +282,7 @@ unsigned int REGNRecord::GetSize()
                     break;
                 case eREGNSounds:
                     if(Entries[p]->RDMD.IsLoaded())
-                        {
-                        cSize = Entries[p]->RDMD.GetSize();
-                        if(cSize > 65535) cSize += 10;
-                        TotSize += cSize += 6;
-                        }
+                        TotSize += Entries[p]->RDMD.GetSize() + 6;
                     TotSize += 6; //RDSD written even if empty
                     if(Entries[p]->RDSD.size())
                         {

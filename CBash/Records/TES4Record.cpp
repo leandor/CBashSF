@@ -75,7 +75,7 @@ int TES4Record::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 //printf("FileName = %s\n", FileName);
                 printf("  TES4: Unknown subType = %04X\n", subType);
                 printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", recStart + curPos - 6);
+                printf("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
                 break;
             }
@@ -85,14 +85,12 @@ int TES4Record::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
 
 unsigned int TES4Record::GetSize()
     {
+    if(recData != NULL)
+        return *(unsigned int*)&recData[-16];
     unsigned int cSize = 0;
     unsigned int TotSize = 0;
     if(HEDR.IsLoaded())
-        {
-        cSize = HEDR.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += HEDR.GetSize() + 6;
     if(OFST.IsLoaded())
         {
         cSize = OFST.GetSize();

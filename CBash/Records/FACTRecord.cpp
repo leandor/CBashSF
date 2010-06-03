@@ -99,7 +99,7 @@ int FACTRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 //printf("FileName = %s\n", FileName);
                 printf("  FACT: Unknown subType = %04X\n", subType);
                 printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", recStart + curPos - 6);
+                printf("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
                 break;
             }
@@ -109,6 +109,8 @@ int FACTRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
 
 unsigned int FACTRecord::GetSize()
     {
+    if(recData != NULL)
+        return *(unsigned int*)&recData[-16];
     unsigned int cSize = 0;
     unsigned int TotSize = 0;
     if(EDID.IsLoaded())
@@ -124,28 +126,14 @@ unsigned int FACTRecord::GetSize()
         TotSize += cSize += 6;
         }
     for(unsigned int p = 0; p < XNAM.size(); p++)
-        {
-        cSize = XNAM[p]->GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += XNAM[p]->GetSize() + 6;
     if(DATA.IsLoaded())
-        {
-        cSize = DATA.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += DATA.GetSize() + 6;
     if(CNAM.IsLoaded())
-        {
-        cSize = CNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += CNAM.GetSize() + 6;
     for(unsigned int p = 0; p < RNAM.size(); p++)
         {
-        cSize = sizeof(RNAM[p]->value.RNAM);
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
+        TotSize += sizeof(RNAM[p]->value.RNAM) + 6;
         if(RNAM[p]->value.MNAM.IsLoaded())
             {
             cSize = RNAM[p]->value.MNAM.GetSize();

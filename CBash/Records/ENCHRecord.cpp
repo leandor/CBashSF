@@ -84,9 +84,9 @@ int ENCHRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
-                printf("  ENCH: Unknown subType = %04x\n", subType);
+                printf("  ENCH: %08X - Unknown subType = %04x\n", formID, subType);
                 printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", recStart + curPos - 6);
+                printf("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
                 break;
             }
@@ -96,6 +96,8 @@ int ENCHRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
 
 unsigned int ENCHRecord::GetSize()
     {
+    if(recData != NULL)
+        return *(unsigned int*)&recData[-16];
     unsigned int cSize = 0;
     unsigned int TotSize = 0;
     if(EDID.IsLoaded())
@@ -111,32 +113,16 @@ unsigned int ENCHRecord::GetSize()
         TotSize += cSize += 6;
         }
     if(ENIT.IsLoaded())
-        {
-        cSize = ENIT.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += ENIT.GetSize() + 6;
     if(Effects.size())
         for(unsigned int p = 0; p < Effects.size(); p++)
             {
             if(Effects[p]->EFID.IsLoaded())
-                {
-                cSize = Effects[p]->EFID.GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
+                TotSize += Effects[p]->EFID.GetSize() + 6;
             if(Effects[p]->EFIT.IsLoaded())
-                {
-                cSize = Effects[p]->EFIT.GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
+                TotSize += Effects[p]->EFIT.GetSize() + 6;
             if(Effects[p]->SCIT.IsLoaded())
-                {
-                cSize = Effects[p]->SCIT.GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
+                TotSize += Effects[p]->SCIT.GetSize() + 6;
             if(Effects[p]->FULL.IsLoaded())
                 {
                 cSize = Effects[p]->FULL.GetSize();
