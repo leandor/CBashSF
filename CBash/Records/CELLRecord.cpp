@@ -104,9 +104,9 @@ int CELLRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
-                printf("  CELL: Unknown subType = %04x\n", subType);
+                printf("  CELL: %08X - Unknown subType = %04x\n", formID, subType);
                 printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", recStart + curPos - 6);
+                printf("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
                 break;
             }
@@ -116,6 +116,8 @@ int CELLRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
 
 unsigned int CELLRecord::GetSize()
     {
+    if(recData != NULL)
+        return *(unsigned int*)&recData[-16];
     unsigned int cSize = 0;
     unsigned int TotSize = 0;
     if(EDID.IsLoaded())
@@ -131,55 +133,25 @@ unsigned int CELLRecord::GetSize()
         TotSize += cSize += 6;
         }
     if(DATA.IsLoaded())
-        {
-        cSize = DATA.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += DATA.GetSize() + 6;
     if(XCLL.IsLoaded())
-        {
-        cSize = XCLL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += XCLL.GetSize() + 6;
     if(XCMT.IsLoaded())
-        {
-        cSize = XCMT.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += XCMT.GetSize() + 6;
 
     if(Ownership.IsLoaded() && Ownership->XOWN.IsLoaded())
         {
-        cSize = Ownership->XOWN.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
+        TotSize += Ownership->XOWN.GetSize() + 6;
         if(Ownership->XRNK.IsLoaded())
-            {
-            cSize = Ownership->XRNK.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
+            TotSize += Ownership->XRNK.GetSize() + 6;
         if(Ownership->XGLB.IsLoaded())
-            {
-            cSize = Ownership->XGLB.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
+            TotSize += Ownership->XGLB.GetSize() + 6;
         }
 
     if(XCCM.IsLoaded())
-        {
-        cSize = XCCM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += XCCM.GetSize() + 6;
     if(XCLW.IsLoaded())
-        {
-        cSize = XCLW.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += XCLW.GetSize() + 6;
 
     if(XCLR.size())
         {
@@ -189,17 +161,9 @@ unsigned int CELLRecord::GetSize()
         }
 
     if(XCLC.IsLoaded() && !IsInterior())
-        {
-        cSize = XCLC.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += XCLC.GetSize() + 6;
     if(XCWT.IsLoaded())
-        {
-        cSize = XCWT.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += XCWT.GetSize() + 6;
     return TotSize;
     }
 

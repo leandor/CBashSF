@@ -24,43 +24,49 @@ GPL License and Copyright Notice ============================================
 #include "BaseRecord.h"
 #include "zlib/zlib.h"
 
-int Record::Read(unsigned char *fileBuffer, _FormIDHandler &FormIDHandler)
+int Record::Read(_FormIDHandler &FormIDHandler)
     {
-    if(IsLoaded())
+    if(IsLoaded() || recData == NULL)
         return -1;
-    unsigned char localBuffer[BUFFERSIZE];
-    unsigned char *buffer = NULL;
-    unsigned int recSize = *(unsigned int*)&fileBuffer[recStart - 16];
-    unsigned int expandedRecSize = *(unsigned int*)&fileBuffer[recStart];
+    unsigned int recSize = GetSize();
     if (IsCompressed())
         {
+        unsigned char localBuffer[BUFFERSIZE];
+        unsigned char *buffer = NULL;
+        unsigned int expandedRecSize = *(unsigned int*)recData;
         if(expandedRecSize >= BUFFERSIZE)
             buffer = new unsigned char[expandedRecSize];
         else
             buffer = &localBuffer[0];
-        uncompress(buffer, (uLongf*)&expandedRecSize, &fileBuffer[recStart + 4], recSize - 4);
+        uncompress(buffer, (uLongf*)&expandedRecSize, &recData[4], recSize - 4);
         ParseRecord(buffer, expandedRecSize);
         if(buffer != &localBuffer[0])
             delete [] buffer;
         }
     else
-        ParseRecord(&fileBuffer[recStart], recSize);
+        ParseRecord(recData, recSize);
     ExpandFormIDs(FormIDHandler);
     return 0;
     }
 
-int Record::Write(WritableRecord &writeRecord)
+int Record::Write(WritableRecord &writeRecord, _FormIDHandler &FormIDHandler)
     {
+    writeRecord.recSize = GetSize();
+    writeRecord.deleteBuffer = false;
+    if(recData != NULL)
+        {
+        writeRecord.recBuffer = &recData[-20];
+        Unload();
+        return 0;
+        }
     if(!IsLoaded())
         {
         writeRecord.recSize = 0;
         writeRecord.recBuffer = NULL;
         return -1;
         }
-    unsigned long compSize = 0;
-    unsigned char *compBuffer = NULL;
+    writeRecord.deleteBuffer = true;
     unsigned int usedBuffer = 0;
-    writeRecord.recSize = GetSize();
     //Make the new buffer.
     writeRecord.recBuffer = new unsigned char[writeRecord.recSize + 20];
     //Write the record to the new buffer
@@ -68,6 +74,8 @@ int Record::Write(WritableRecord &writeRecord)
     //IsCompressed(true);
     if(IsCompressed())
         {
+        unsigned long compSize = 0;
+        unsigned char *compBuffer = NULL;
         compSize = compressBound(writeRecord.recSize);
         compBuffer = new unsigned char[compSize + 24];
         memcpy(&compBuffer[20], &writeRecord.recSize, 4);
@@ -85,6 +93,5 @@ int Record::Write(WritableRecord &writeRecord)
     memcpy(&writeRecord.recBuffer[12], &formID, 4);
     memcpy(&writeRecord.recBuffer[16], &flagsUnk, 4);
     IsLoaded(true);
-
     return 0;
     }

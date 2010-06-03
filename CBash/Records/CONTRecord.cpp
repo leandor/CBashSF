@@ -82,9 +82,9 @@ int CONTRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
-                printf("  CONT: Unknown subType = %04x\n", subType);
+                printf("  CONT: %08X - Unknown subType = %04x\n", formID, subType);
                 printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", recStart + curPos - 6);
+                printf("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
                 break;
             }
@@ -94,6 +94,8 @@ int CONTRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
 
 unsigned int CONTRecord::GetSize()
     {
+    if(recData != NULL)
+        return *(unsigned int*)&recData[-16];
     unsigned int cSize = 0;
     unsigned int TotSize = 0;
     if(EDID.IsLoaded())
@@ -115,11 +117,7 @@ unsigned int CONTRecord::GetSize()
         TotSize += cSize += 6;
         }
     if(MODL.MODB.IsLoaded())
-        {
-        cSize = MODL.MODB.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += MODL.MODB.GetSize() + 6;
     if(MODL.MODT.IsLoaded())
         {
         cSize = MODL.MODT.GetSize();
@@ -127,37 +125,17 @@ unsigned int CONTRecord::GetSize()
         TotSize += cSize += 6;
         }
     if(SCRI.IsLoaded())
-        {
-        cSize = SCRI.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += SCRI.GetSize() + 6;
     if(CNTO.size())
         for(unsigned int p = 0; p < CNTO.size(); p++)
             if(CNTO[p]->IsLoaded())
-                {
-                cSize = CNTO[p]->GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
+                TotSize += CNTO[p]->GetSize() + 6;
     if(DATA.IsLoaded())
-        {
-        cSize = DATA.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += DATA.GetSize() + 6;
     if(SNAM.IsLoaded())
-        {
-        cSize = SNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += SNAM.GetSize() + 6;
     if(QNAM.IsLoaded())
-        {
-        cSize = QNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += QNAM.GetSize() + 6;
     return TotSize;
     }
 

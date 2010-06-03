@@ -117,9 +117,9 @@ int ARMORecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
-                printf("  ARMO: Unknown subType = %04x\n", subType);
+                printf("  ARMO: %08X - Unknown subType = %04x\n", formID, subType);
                 printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", recStart + curPos - 6);
+                printf("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
                 break;
             }
@@ -129,6 +129,8 @@ int ARMORecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
 
 unsigned int ARMORecord::GetSize()
     {
+    if(recData != NULL)
+        return *(unsigned int*)&recData[-16];
     unsigned int cSize = 0;
     unsigned int TotSize = 0;
     if(EDID.IsLoaded())
@@ -144,29 +146,13 @@ unsigned int ARMORecord::GetSize()
         TotSize += cSize += 6;
         }
     if(SCRI.IsLoaded())
-        {
-        cSize = SCRI.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += SCRI.GetSize() + 6;
     if(ENAM.IsLoaded())
-        {
-        cSize = ENAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += ENAM.GetSize() + 6;
     if(ANAM.IsLoaded())
-        {
-        cSize = ANAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += ANAM.GetSize() + 6;
     if(BMDT.IsLoaded())
-        {
-        cSize = BMDT.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += BMDT.GetSize() + 6;
     if(MODL.MODL.IsLoaded())
         {
         cSize = MODL.MODL.GetSize();
@@ -174,11 +160,7 @@ unsigned int ARMORecord::GetSize()
         TotSize += cSize += 6;
         }
     if(MODL.MODB.IsLoaded())
-        {
-        cSize = MODL.MODB.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += MODL.MODB.GetSize() + 6;
     if(MODL.MODT.IsLoaded())
         {
         cSize = MODL.MODT.GetSize();
@@ -192,11 +174,7 @@ unsigned int ARMORecord::GetSize()
         TotSize += cSize += 6;
         }
     if(MOD2.MODB.IsLoaded())
-        {
-        cSize = MOD2.MODB.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += MOD2.MODB.GetSize() + 6;
     if(MOD2.MODT.IsLoaded())
         {
         cSize = MOD2.MODT.GetSize();
@@ -216,11 +194,7 @@ unsigned int ARMORecord::GetSize()
         TotSize += cSize += 6;
         }
     if(MOD3.MODB.IsLoaded())
-        {
-        cSize = MOD3.MODB.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += MOD3.MODB.GetSize() + 6;
     if(MOD3.MODT.IsLoaded())
         {
         cSize = MOD3.MODT.GetSize();
@@ -234,11 +208,7 @@ unsigned int ARMORecord::GetSize()
         TotSize += cSize += 6;
         }
     if(MOD4.MODB.IsLoaded())
-        {
-        cSize = MOD4.MODB.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += MOD4.MODB.GetSize() + 6;
     if(MOD4.MODT.IsLoaded())
         {
         cSize = MOD4.MODT.GetSize();
@@ -252,11 +222,7 @@ unsigned int ARMORecord::GetSize()
         TotSize += cSize += 6;
         }
     if(DATA.IsLoaded())
-        {
-        cSize = DATA.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += DATA.GetSize() + 6;
     return TotSize;
     }
 

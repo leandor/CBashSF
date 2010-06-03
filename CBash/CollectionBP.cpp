@@ -713,7 +713,7 @@ unsigned int Collection::GetNumACHRRecords(char *ModName, unsigned int parentFID
         {
         for(unsigned int x = 0; x < dummyParentRecord->ACHR.size();)
             {
-            dummyParentRecord->ACHR[x]->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            dummyParentRecord->ACHR[x]->Read(curModFile->FormIDHandler);
             ResolveGrid(dummyParentRecord->ACHR[x]->DATA.value.posX, dummyParentRecord->ACHR[x]->DATA.value.posY, gridX, gridY);
             if(gridX == parentRecord->XCLC.value.posX && gridY == parentRecord->XCLC.value.posY)
                 {
@@ -748,7 +748,7 @@ unsigned int Collection::GetNumACRERecords(char *ModName, unsigned int parentFID
         {
         for(unsigned int x = 0; x < dummyParentRecord->ACRE.size();)
             {
-            dummyParentRecord->ACRE[x]->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            dummyParentRecord->ACRE[x]->Read(curModFile->FormIDHandler);
             ResolveGrid(dummyParentRecord->ACRE[x]->DATA.value.posX, dummyParentRecord->ACRE[x]->DATA.value.posY, gridX, gridY);
             if(gridX == parentRecord->XCLC.value.posX && gridY == parentRecord->XCLC.value.posY)
                 {
@@ -783,7 +783,7 @@ unsigned int Collection::GetNumREFRRecords(char *ModName, unsigned int parentFID
         {
         for(unsigned int x = 0; x < dummyParentRecord->REFR.size();)
             {
-            dummyParentRecord->REFR[x]->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            dummyParentRecord->REFR[x]->Read(curModFile->FormIDHandler);
             ResolveGrid(dummyParentRecord->REFR[x]->DATA.value.posX, dummyParentRecord->REFR[x]->DATA.value.posY, gridX, gridY);
             if(gridX == parentRecord->XCLC.value.posX && gridY == parentRecord->XCLC.value.posY)
                 {
@@ -2286,7 +2286,7 @@ unsigned int Collection::CopyGMSTRecord(char *ModName, char *srcRecordEDID, char
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new GMSTRecord(srcRecord);
 
@@ -3507,7 +3507,7 @@ unsigned int Collection::CopyGLOBRecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new GLOBRecord(srcRecord);
     if(!asOverride)
@@ -3538,7 +3538,7 @@ unsigned int Collection::CopyCLASRecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new CLASRecord(srcRecord);
     if(!asOverride)
@@ -3569,7 +3569,7 @@ unsigned int Collection::CopyFACTRecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new FACTRecord(srcRecord);
     if(!asOverride)
@@ -3600,7 +3600,7 @@ unsigned int Collection::CopyHAIRRecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new HAIRRecord(srcRecord);
     if(!asOverride)
@@ -3631,7 +3631,7 @@ unsigned int Collection::CopyEYESRecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new EYESRecord(srcRecord);
     if(!asOverride)
@@ -3662,7 +3662,7 @@ unsigned int Collection::CopyRACERecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new RACERecord(srcRecord);
     if(!asOverride)
@@ -3693,7 +3693,7 @@ unsigned int Collection::CopySOUNRecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new SOUNRecord(srcRecord);
     if(!asOverride)
@@ -3724,7 +3724,7 @@ unsigned int Collection::CopySKILRecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new SKILRecord(srcRecord);
     if(!asOverride)
@@ -3755,7 +3755,7 @@ unsigned int Collection::CopyMGEFRecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new MGEFRecord(srcRecord);
     if(!asOverride)
@@ -3786,7 +3786,7 @@ unsigned int Collection::CopySCPTRecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new SCPTRecord(srcRecord);
     if(!asOverride)
@@ -3817,7 +3817,7 @@ unsigned int Collection::CopyLTEXRecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new LTEXRecord(srcRecord);
     if(!asOverride)
@@ -3848,7 +3848,7 @@ unsigned int Collection::CopyENCHRecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new ENCHRecord(srcRecord);
     if(!asOverride)
@@ -3879,7 +3879,7 @@ unsigned int Collection::CopySPELRecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new SPELRecord(srcRecord);
     if(!asOverride)
@@ -3910,7 +3910,7 @@ unsigned int Collection::CopyBSGNRecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new BSGNRecord(srcRecord);
     if(!asOverride)
@@ -3941,7 +3941,7 @@ unsigned int Collection::CopyACTIRecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new ACTIRecord(srcRecord);
     if(!asOverride)
@@ -3972,7 +3972,7 @@ unsigned int Collection::CopyAPPARecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new APPARecord(srcRecord);
     if(!asOverride)
@@ -4003,7 +4003,7 @@ unsigned int Collection::CopyARMORecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new ARMORecord(srcRecord);
     if(!asOverride)
@@ -4034,7 +4034,7 @@ unsigned int Collection::CopyBOOKRecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new BOOKRecord(srcRecord);
     if(!asOverride)
@@ -4065,7 +4065,7 @@ unsigned int Collection::CopyCLOTRecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new CLOTRecord(srcRecord);
     if(!asOverride)
@@ -4096,7 +4096,7 @@ unsigned int Collection::CopyCONTRecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new CONTRecord(srcRecord);
     if(!asOverride)
@@ -4127,7 +4127,7 @@ unsigned int Collection::CopyDOORRecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new DOORRecord(srcRecord);
     if(!asOverride)
@@ -4158,7 +4158,7 @@ unsigned int Collection::CopyINGRRecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new INGRRecord(srcRecord);
     if(!asOverride)
@@ -4189,7 +4189,7 @@ unsigned int Collection::CopyLIGHRecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new LIGHRecord(srcRecord);
     if(!asOverride)
@@ -4220,7 +4220,7 @@ unsigned int Collection::CopyMISCRecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new MISCRecord(srcRecord);
     if(!asOverride)
@@ -4251,7 +4251,7 @@ unsigned int Collection::CopySTATRecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new STATRecord(srcRecord);
     if(!asOverride)
@@ -4282,7 +4282,7 @@ unsigned int Collection::CopyGRASRecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new GRASRecord(srcRecord);
     if(!asOverride)
@@ -4313,7 +4313,7 @@ unsigned int Collection::CopyTREERecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new TREERecord(srcRecord);
     if(!asOverride)
@@ -4344,7 +4344,7 @@ unsigned int Collection::CopyFLORRecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new FLORRecord(srcRecord);
     if(!asOverride)
@@ -4375,7 +4375,7 @@ unsigned int Collection::CopyFURNRecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new FURNRecord(srcRecord);
     if(!asOverride)
@@ -4406,7 +4406,7 @@ unsigned int Collection::CopyWEAPRecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new WEAPRecord(srcRecord);
     if(!asOverride)
@@ -4437,7 +4437,7 @@ unsigned int Collection::CopyAMMORecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new AMMORecord(srcRecord);
     if(!asOverride)
@@ -4468,7 +4468,7 @@ unsigned int Collection::CopyNPC_Record(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new NPC_Record(srcRecord);
     if(!asOverride)
@@ -4499,7 +4499,7 @@ unsigned int Collection::CopyCREARecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new CREARecord(srcRecord);
     if(!asOverride)
@@ -4530,7 +4530,7 @@ unsigned int Collection::CopyLVLCRecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new LVLCRecord(srcRecord);
     if(!asOverride)
@@ -4561,7 +4561,7 @@ unsigned int Collection::CopySLGMRecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new SLGMRecord(srcRecord);
     if(!asOverride)
@@ -4592,7 +4592,7 @@ unsigned int Collection::CopyKEYMRecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new KEYMRecord(srcRecord);
     if(!asOverride)
@@ -4623,7 +4623,7 @@ unsigned int Collection::CopyALCHRecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new ALCHRecord(srcRecord);
     if(!asOverride)
@@ -4654,7 +4654,7 @@ unsigned int Collection::CopySBSPRecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new SBSPRecord(srcRecord);
     if(!asOverride)
@@ -4685,7 +4685,7 @@ unsigned int Collection::CopySGSTRecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new SGSTRecord(srcRecord);
     if(!asOverride)
@@ -4716,7 +4716,7 @@ unsigned int Collection::CopyLVLIRecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new LVLIRecord(srcRecord);
     if(!asOverride)
@@ -4747,7 +4747,7 @@ unsigned int Collection::CopyWTHRRecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new WTHRRecord(srcRecord);
     if(!asOverride)
@@ -4778,7 +4778,7 @@ unsigned int Collection::CopyCLMTRecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new CLMTRecord(srcRecord);
     if(!asOverride)
@@ -4809,7 +4809,7 @@ unsigned int Collection::CopyREGNRecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new REGNRecord(srcRecord);
     if(!asOverride)
@@ -4848,7 +4848,7 @@ unsigned int Collection::CopyCELLRecord(char *ModName, unsigned int srcRecordFID
         {return 0;}
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new CELLRecord(srcRecord);
     if(!asOverride)
@@ -4886,7 +4886,7 @@ unsigned int Collection::CopyACHRRecord(char *ModName, unsigned int srcRecordFID
         {return 0;}
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new ACHRRecord(srcRecord);
     if(!asOverride)
@@ -4917,7 +4917,7 @@ unsigned int Collection::CopyACRERecord(char *ModName, unsigned int srcRecordFID
         {return 0;}
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new ACRERecord(srcRecord);
     if(!asOverride)
@@ -4948,7 +4948,7 @@ unsigned int Collection::CopyREFRRecord(char *ModName, unsigned int srcRecordFID
         {return 0;}
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new REFRRecord(srcRecord);
     if(!asOverride)
@@ -4979,7 +4979,7 @@ unsigned int Collection::CopyPGRDRecord(char *ModName, unsigned int srcRecordFID
         {return 0;}
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new PGRDRecord(srcRecord);
     if(!asOverride)
@@ -5011,12 +5011,12 @@ unsigned int Collection::CopyWRLDRecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new WRLDRecord(srcRecord);
     //if(srcRecord->CELL != NULL)
     //    {
-    //    srcRecord->CELL->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    //    srcRecord->CELL->Read(srcMod->FormIDHandler);
     //    copyRecord->CELL = new CELLRecord(srcRecord->CELL);
     //    }
     if(!asOverride)
@@ -5051,7 +5051,7 @@ unsigned int Collection::CopyROADRecord(char *ModName, unsigned int srcRecordFID
         {return 0;}
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new ROADRecord(srcRecord);
     if(!asOverride)
@@ -5082,7 +5082,7 @@ unsigned int Collection::CopyLANDRecord(char *ModName, unsigned int srcRecordFID
         {return 0;}
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new LANDRecord(srcRecord);
     if(!asOverride)
@@ -5113,7 +5113,7 @@ unsigned int Collection::CopyDIALRecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new DIALRecord(srcRecord);
     if(!asOverride)
@@ -5144,7 +5144,7 @@ unsigned int Collection::CopyINFORecord(char *ModName, unsigned int srcRecordFID
         {return 0;}
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new INFORecord(srcRecord);
     if(!asOverride)
@@ -5175,7 +5175,7 @@ unsigned int Collection::CopyQUSTRecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new QUSTRecord(srcRecord);
     if(!asOverride)
@@ -5206,7 +5206,7 @@ unsigned int Collection::CopyIDLERecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new IDLERecord(srcRecord);
     if(!asOverride)
@@ -5237,7 +5237,7 @@ unsigned int Collection::CopyPACKRecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new PACKRecord(srcRecord);
     if(!asOverride)
@@ -5268,7 +5268,7 @@ unsigned int Collection::CopyCSTYRecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new CSTYRecord(srcRecord);
     if(!asOverride)
@@ -5299,7 +5299,7 @@ unsigned int Collection::CopyLSCRRecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new LSCRRecord(srcRecord);
     if(!asOverride)
@@ -5330,7 +5330,7 @@ unsigned int Collection::CopyLVSPRecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new LVSPRecord(srcRecord);
     if(!asOverride)
@@ -5361,7 +5361,7 @@ unsigned int Collection::CopyANIORecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new ANIORecord(srcRecord);
     if(!asOverride)
@@ -5392,7 +5392,7 @@ unsigned int Collection::CopyWATRRecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new WATRRecord(srcRecord);
     if(!asOverride)
@@ -5423,7 +5423,7 @@ unsigned int Collection::CopyEFSHRecord(char *ModName, unsigned int srcRecordFID
         return 0;
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->fileBuffer, srcMod->FormIDHandler);
+    srcRecord->Read(srcMod->FormIDHandler);
 
     copyRecord = new EFSHRecord(srcRecord);
     if(!asOverride)

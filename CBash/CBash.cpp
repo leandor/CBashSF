@@ -69,16 +69,20 @@ int DeleteCollection(const unsigned int CollectionIndex)
     {
     try
         {
-        delete Collections[CollectionIndex];
-        Collections[CollectionIndex] = NULL;
-        for(unsigned int p = 0; p < Collections.size(); ++p)
+        if(CollectionIndex < Collections.size())
             {
-            if(Collections[p] != NULL)
-                return 0;
+            Close(CollectionIndex);
+            delete Collections[CollectionIndex];
+            Collections[CollectionIndex] = NULL;
+            for(unsigned int p = 0; p < Collections.size(); ++p)
+                {
+                if(Collections[p] != NULL)
+                    return 0;
+                }
+            Collections.clear();
+		    //Collections.erase(Collections.begin() + CollectionIndex);
+            //m_dumpMemoryReport("AfterDelete.txt", true);
             }
-        Collections.clear();
-		//Collections.erase(Collections.begin() + CollectionIndex);
-        //m_dumpMemoryReport("AfterDelete.txt", true);
 		}
     catch(...)
         {
@@ -94,7 +98,10 @@ int NewMod(const unsigned int CollectionIndex, const char *ModName)
     {
     try
         {
-        Collections[CollectionIndex]->NewMod(ModName);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->NewMod(ModName);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -109,7 +116,10 @@ int AddMod(const unsigned int CollectionIndex, const char *ModName, bool CreateI
     int status = 0;
     try
         {
-        status = Collections[CollectionIndex]->AddMod(ModName, CreateIfNotExist);
+        if(CollectionIndex < Collections.size())
+            status = Collections[CollectionIndex]->AddMod(ModName, CreateIfNotExist);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -123,7 +133,10 @@ int MinimalLoad(const unsigned int CollectionIndex, const bool LoadMasters)
     {
     try
         {
-        Collections[CollectionIndex]->Load(LoadMasters, false);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->Load(LoadMasters, false);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -137,8 +150,10 @@ int FullLoad(const unsigned int CollectionIndex, const bool LoadMasters)
     {
     try
         {
-        Collections[CollectionIndex]->Load(LoadMasters, true);
-        Collections[CollectionIndex]->Close();
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->Load(LoadMasters, true);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -151,14 +166,33 @@ int FullLoad(const unsigned int CollectionIndex, const bool LoadMasters)
 ////////////////////////////////////////////////////////////////////////
 int GetChangedMods(const unsigned int CollectionIndex)
     {
-    return Collections[CollectionIndex]->GetChangedMods();
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetChangedMods();
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetChangedMods: Error\n");
+        return -1;
+        }
+    return 0;
     }
 
 int SafeSaveMod(const unsigned int CollectionIndex, char *curFileName, bool CloseMod)
 	{
     try
         {
-        Collections[CollectionIndex]->SafeSaveMod(curFileName, CloseMod);
+        if(CollectionIndex < Collections.size())
+            {
+            Collections[CollectionIndex]->SafeSaveMod(curFileName, CloseMod);
+            if(CloseMod)
+                DeleteCollection(CollectionIndex);
+            }
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -172,7 +206,10 @@ int SafeSaveAllChangedMods(const unsigned int CollectionIndex)
 	{
     try
         {
-        Collections[CollectionIndex]->SafeSaveAllChangedMods();
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SafeSaveAllChangedMods();
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -187,7 +224,10 @@ int LoadRecord(const unsigned int CollectionIndex, char *ModName, unsigned int r
     {
     try
         {
-        Collections[CollectionIndex]->LoadRecord(ModName, recordFID);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->LoadRecord(ModName, recordFID);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -201,7 +241,10 @@ int UnloadRecord(const unsigned int CollectionIndex, char *ModName, unsigned int
     {
     try
         {
-        Collections[CollectionIndex]->UnloadRecord(ModName, recordFID);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->UnloadRecord(ModName, recordFID);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -215,7 +258,10 @@ int DeleteRecord(const unsigned int CollectionIndex, char *ModName, unsigned int
     {
     try
         {
-        Collections[CollectionIndex]->DeleteRecord(ModName, recordFID, parentFID);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->DeleteRecord(ModName, recordFID, parentFID);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -229,7 +275,10 @@ int DeleteGMSTRecord(const unsigned int CollectionIndex, char *ModName, char *re
     {
     try
         {
-        Collections[CollectionIndex]->DeleteGMSTRecord(ModName, recordEDID);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->DeleteGMSTRecord(ModName, recordEDID);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -243,7 +292,8 @@ int Close(const unsigned int CollectionIndex)
     {
     try
         {
-        Collections[CollectionIndex]->Close();
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->Close();
         }
     catch(...)
         {
@@ -256,24 +306,63 @@ int Close(const unsigned int CollectionIndex)
 ////////////////////////////////////////////////////////////////////////
 unsigned int GetNumMods(const unsigned int CollectionIndex)
     {
-    return Collections[CollectionIndex]->GetNumMods();
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumMods();
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumMods: Error\n");
+        return -1;
+        }
+    return 0;
     }
 
 void GetMods(const unsigned int CollectionIndex, char **ModNames)
     {
-    Collections[CollectionIndex]->GetMods(ModNames);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetMods(ModNames);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetMods: Error\n");
+        return;
+        }
+    return;
     }
 
 char * GetModName(const unsigned int CollectionIndex, const unsigned int iIndex)
     {
-    return Collections[CollectionIndex]->GetModName(iIndex);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetModName(iIndex);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetModName: Error\n");
+        return NULL;
+        }
+    return NULL;
     }
 
 unsigned int GetCorrectedFID(const unsigned int CollectionIndex, char *ModName, unsigned int recordObjectID)
     {
     try
         {
-        Collections[CollectionIndex]->GetCorrectedFID(ModName, recordObjectID);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetCorrectedFID(ModName, recordObjectID);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -286,319 +375,1075 @@ unsigned int GetCorrectedFID(const unsigned int CollectionIndex, char *ModName, 
 ////////////////////////////////////////////////////////////////////////
 unsigned int GetNumGMSTRecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumGMSTRecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumGMSTRecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumGMSTRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumGLOBRecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumGLOBRecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumGLOBRecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumGLOBRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumCLASRecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumCLASRecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumCLASRecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumCLASRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumFACTRecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumFACTRecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumFACTRecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumFACTRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumHAIRRecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumHAIRRecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumHAIRRecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumHAIRRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumEYESRecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumEYESRecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumEYESRecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumEYESRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumRACERecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumRACERecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumRACERecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumRACERecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumSOUNRecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumSOUNRecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumSOUNRecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumSOUNRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumSKILRecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumSKILRecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumSKILRecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumSKILRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumMGEFRecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumMGEFRecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumMGEFRecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumMGEFRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumSCPTRecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumSCPTRecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumSCPTRecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumSCPTRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumLTEXRecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumLTEXRecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumLTEXRecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumLTEXRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumENCHRecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumENCHRecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumENCHRecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumENCHRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumSPELRecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumSPELRecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumSPELRecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumSPELRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumBSGNRecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumBSGNRecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumBSGNRecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumBSGNRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumACTIRecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumACTIRecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumACTIRecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumACTIRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumAPPARecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumAPPARecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumAPPARecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumAPPARecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumARMORecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumARMORecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumARMORecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumARMORecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumBOOKRecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumBOOKRecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumBOOKRecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumBOOKRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumCLOTRecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumCLOTRecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumCLOTRecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumCLOTRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumCONTRecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumCONTRecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumCONTRecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumCONTRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumDOORRecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumDOORRecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumDOORRecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumDOORRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumINGRRecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumINGRRecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumINGRRecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumINGRRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumLIGHRecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumLIGHRecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumLIGHRecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumLIGHRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumMISCRecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumMISCRecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumMISCRecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumMISCRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumSTATRecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumSTATRecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumSTATRecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumSTATRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumGRASRecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumGRASRecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumGRASRecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumGRASRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumTREERecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumTREERecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumTREERecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumTREERecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumFLORRecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumFLORRecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumFLORRecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumFLORRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumFURNRecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumFURNRecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumFURNRecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumFURNRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumWEAPRecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumWEAPRecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumWEAPRecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumWEAPRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumAMMORecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumAMMORecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumAMMORecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumAMMORecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumNPC_Records(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumNPC_Records(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumNPC_Records(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumNPC_Records: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumCREARecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumCREARecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumCREARecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumCREARecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumLVLCRecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumLVLCRecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumLVLCRecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumLVLCRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumSLGMRecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumSLGMRecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumSLGMRecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumSLGMRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumKEYMRecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumKEYMRecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumKEYMRecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumKEYMRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumALCHRecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumALCHRecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumALCHRecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumALCHRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumSBSPRecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumSBSPRecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumSBSPRecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumSBSPRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumSGSTRecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumSGSTRecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumSGSTRecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumSGSTRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumLVLIRecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumLVLIRecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumLVLIRecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumLVLIRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumWTHRRecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumWTHRRecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumWTHRRecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumWTHRRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumCLMTRecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumCLMTRecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumCLMTRecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumCLMTRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumREGNRecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumREGNRecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumREGNRecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumREGNRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumCELLRecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumCELLRecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumCELLRecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumCELLRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumACHRRecords(const unsigned int CollectionIndex, char *ModName, unsigned int parentFID)
     {
-    return Collections[CollectionIndex]->GetNumACHRRecords(ModName, parentFID);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumACHRRecords(ModName, parentFID);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumACHRRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumACRERecords(const unsigned int CollectionIndex, char *ModName, unsigned int parentFID)
     {
-    return Collections[CollectionIndex]->GetNumACRERecords(ModName, parentFID);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumACRERecords(ModName, parentFID);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumACRERecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumREFRRecords(const unsigned int CollectionIndex, char *ModName, unsigned int parentFID)
     {
-    return Collections[CollectionIndex]->GetNumREFRRecords(ModName, parentFID);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumREFRRecords(ModName, parentFID);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumREFRRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumWRLDRecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumWRLDRecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumWRLDRecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumWRLDRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumDIALRecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumDIALRecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumDIALRecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumDIALRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumQUSTRecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumQUSTRecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumQUSTRecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumQUSTRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumIDLERecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumIDLERecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumIDLERecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumIDLERecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumPACKRecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumPACKRecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumPACKRecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumPACKRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumCSTYRecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumCSTYRecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumCSTYRecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumCSTYRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumLSCRRecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumLSCRRecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumLSCRRecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumLSCRRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumLVSPRecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumLVSPRecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumLVSPRecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumLVSPRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumANIORecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumANIORecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumANIORecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumANIORecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumWATRRecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumWATRRecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumWATRRecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumWATRRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int GetNumEFSHRecords(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->GetNumEFSHRecords(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumEFSHRecords(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumEFSHRecords: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 int GetTES4FieldType(const unsigned int CollectionIndex, char *ModName, const unsigned int Field)
     {
-    return Collections[CollectionIndex]->GetTES4FieldType(ModName, Field);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetTES4FieldType(ModName, Field);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumEFSHRecords: Error\n");
+        return UNKNOWN_FIELD;
+        }
+    return UNKNOWN_FIELD;
     }
 
 unsigned int GetTES4FieldArraySize(const unsigned int CollectionIndex, char *ModName, const unsigned int Field)
     {
-    return Collections[CollectionIndex]->GetTES4FieldArraySize(ModName, Field);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetTES4FieldArraySize(ModName, Field);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetTES4FieldArraySize: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 void GetTES4FieldArray(const unsigned int CollectionIndex, char *ModName, const unsigned int Field, void **FieldValues)
     {
-    Collections[CollectionIndex]->GetTES4FieldArray(ModName, Field, FieldValues);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetTES4FieldArray(ModName, Field, FieldValues);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetTES4FieldArray: Error\n");
+        return;
+        }
+    return;
     }
 
 void * ReadTES4Field(const unsigned int CollectionIndex, char *ModName, const unsigned int Field)
     {
-    return Collections[CollectionIndex]->ReadTES4Field(ModName, Field);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->ReadTES4Field(ModName, Field);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("ReadTES4Field: Error\n");
+        return NULL;
+        }
+    return NULL;
     }
 
 ////////////////////////////////////////////////////////////////////////
@@ -606,7 +1451,10 @@ int SetTES4FieldStr(const unsigned int CollectionIndex, char *ModName, const uns
     {
     try
         {
-        Collections[CollectionIndex]->SetTES4Field(ModName, Field, FieldValue);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetTES4Field(ModName, Field, FieldValue);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -620,7 +1468,10 @@ int SetTES4FieldStrA(const unsigned int CollectionIndex, char *ModName, const un
     {
     try
         {
-        Collections[CollectionIndex]->SetTES4Field(ModName, Field, FieldValue, nSize);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetTES4Field(ModName, Field, FieldValue, nSize);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -636,7 +1487,10 @@ int SetTES4FieldUI(const unsigned int CollectionIndex, char *ModName, const unsi
     {
     try
         {
-        Collections[CollectionIndex]->SetTES4Field(ModName, Field, FieldValue);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetTES4Field(ModName, Field, FieldValue);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -650,7 +1504,10 @@ int SetTES4FieldF(const unsigned int CollectionIndex, char *ModName, const unsig
     {
     try
         {
-        Collections[CollectionIndex]->SetTES4Field(ModName, Field, FieldValue);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetTES4Field(ModName, Field, FieldValue);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -664,7 +1521,10 @@ int SetTES4FieldR(const unsigned int CollectionIndex, char *ModName, const unsig
     {
     try
         {
-        Collections[CollectionIndex]->SetTES4Field(ModName, Field, FieldValue, nSize);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetTES4Field(ModName, Field, FieldValue, nSize);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -680,28 +1540,88 @@ int SetTES4FieldR(const unsigned int CollectionIndex, char *ModName, const unsig
 ////////////////////////////////////////////////////////////////////////
 void GetGMSTs(const unsigned int CollectionIndex, char *ModName, char **RecordEIDs)
     {
-    Collections[CollectionIndex]->GetGMSTRecords(ModName, RecordEIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetGMSTRecords(ModName, RecordEIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetGMSTRecords: Error\n");
+        return;
+        }
+    return;
     }
 
 int GetGMSTFieldType(const unsigned int CollectionIndex, char *ModName, char *recordEDID, const unsigned int Field)
     {
-    return Collections[CollectionIndex]->GetGMSTFieldType(ModName, recordEDID, Field);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetGMSTFieldType(ModName, recordEDID, Field);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetGMSTFieldType: Error\n");
+        return UNKNOWN_FIELD;
+        }
+    return UNKNOWN_FIELD;
     }
 
 void * ReadGMSTField(const unsigned int CollectionIndex, char *ModName, char *recordEDID, const unsigned int Field)
     {
-    return Collections[CollectionIndex]->ReadGMSTField(ModName, recordEDID, Field);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->ReadGMSTField(ModName, recordEDID, Field);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("ReadGMSTField: Error\n");
+        return NULL;
+        }
+    return NULL;
     }
 
 ////////////////////////////////////////////////////////////////////////
 unsigned int CreateGMSTRecord(const unsigned int CollectionIndex, char *ModName, char *recordEDID)
     {
-    return Collections[CollectionIndex]->CreateGMSTRecord(ModName, recordEDID);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateGMSTRecord(ModName, recordEDID);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateGMSTRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyGMSTRecord(const unsigned int CollectionIndex, char *ModName, char *recordEDID, char *destModName)
     {
-    return Collections[CollectionIndex]->CopyGMSTRecord(ModName, recordEDID, destModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyGMSTRecord(ModName, recordEDID, destModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyGMSTRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 ////////////////////////////////////////////////////////////////////////
@@ -709,7 +1629,10 @@ int SetGMSTFieldStr(const unsigned int CollectionIndex, char *ModName, char *rec
     {
     try
         {
-        Collections[CollectionIndex]->SetGMSTField(ModName, recordEDID, Field, FieldValue);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetGMSTField(ModName, recordEDID, Field, FieldValue);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -723,7 +1646,10 @@ int SetGMSTFieldI(const unsigned int CollectionIndex, char *ModName, char *recor
     {
     try
         {
-        Collections[CollectionIndex]->SetGMSTField(ModName, recordEDID, Field, FieldValue);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetGMSTField(ModName, recordEDID, Field, FieldValue);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -737,7 +1663,10 @@ int SetGMSTFieldUI(const unsigned int CollectionIndex, char *ModName, char *reco
     {
     try
         {
-        Collections[CollectionIndex]->SetGMSTField(ModName, recordEDID, Field, FieldValue);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetGMSTField(ModName, recordEDID, Field, FieldValue);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -751,7 +1680,10 @@ int SetGMSTFieldF(const unsigned int CollectionIndex, char *ModName, char *recor
     {
     try
         {
-        Collections[CollectionIndex]->SetGMSTField(ModName, recordEDID, Field, FieldValue);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetGMSTField(ModName, recordEDID, Field, FieldValue);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -765,1065 +1697,3431 @@ int SetGMSTFieldF(const unsigned int CollectionIndex, char *ModName, char *recor
 //ADD
 unsigned int GetGLOBRecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetGLOBRecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetGLOBRecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetGLOBRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetCLASRecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetCLASRecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetCLASRecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetCLASRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetFACTRecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetFACTRecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetFACTRecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetFACTRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetHAIRRecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetHAIRRecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetHAIRRecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetHAIRRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetEYESRecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetEYESRecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetEYESRecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetEYESRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetRACERecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetRACERecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetRACERecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetRACERecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetSOUNRecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetSOUNRecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetSOUNRecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetSOUNRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetSKILRecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetSKILRecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetSKILRecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetSKILRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetMGEFRecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetMGEFRecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetMGEFRecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetMGEFRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetSCPTRecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetSCPTRecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetSCPTRecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetSCPTRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetLTEXRecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetLTEXRecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetLTEXRecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetLTEXRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetENCHRecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetENCHRecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetENCHRecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetENCHRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetSPELRecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetSPELRecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetSPELRecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetSPELRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetBSGNRecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetBSGNRecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetBSGNRecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetBSGNRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetACTIRecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetACTIRecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetACTIRecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetACTIRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetAPPARecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetAPPARecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetAPPARecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetAPPARecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetARMORecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetARMORecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetARMORecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetARMORecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetBOOKRecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetBOOKRecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetBOOKRecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetBOOKRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetCLOTRecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetCLOTRecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetCLOTRecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetCLOTRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetCONTRecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetCONTRecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetCONTRecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetCONTRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetDOORRecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetDOORRecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetDOORRecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetDOORRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetINGRRecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetINGRRecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetINGRRecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetINGRRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetLIGHRecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetLIGHRecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetLIGHRecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetLIGHRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetMISCRecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetMISCRecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetMISCRecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetMISCRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetSTATRecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetSTATRecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetSTATRecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetSTATRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetGRASRecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetGRASRecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetGRASRecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetGRASRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetTREERecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetTREERecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetTREERecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetTREERecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetFLORRecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetFLORRecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetFLORRecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetFLORRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetFURNRecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetFURNRecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetFURNRecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetFURNRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetWEAPRecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetWEAPRecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetWEAPRecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetWEAPRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetAMMORecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetAMMORecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetAMMORecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetAMMORecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetNPC_Records(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetNPC_Records(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetNPC_Records(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNPC_Records: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetCREARecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetCREARecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetCREARecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetCREARecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetLVLCRecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetLVLCRecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetLVLCRecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetLVLCRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetSLGMRecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetSLGMRecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetSLGMRecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetSLGMRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetKEYMRecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetKEYMRecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetKEYMRecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetKEYMRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetALCHRecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetALCHRecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetALCHRecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetALCHRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetSBSPRecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetSBSPRecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetSBSPRecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetSBSPRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetSGSTRecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetSGSTRecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetSGSTRecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetSGSTRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetLVLIRecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetLVLIRecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetLVLIRecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetLVLIRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetWTHRRecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetWTHRRecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetWTHRRecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetWTHRRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetCLMTRecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetCLMTRecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetCLMTRecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetCLMTRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetREGNRecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetREGNRecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetREGNRecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetREGNRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetCELLRecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetCELLRecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetCELLRecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetCELLRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetACHRRecords(const unsigned int CollectionIndex, char *ModName, unsigned int parentFID, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetACHRRecords(ModName, parentFID, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetACHRRecords(ModName, parentFID, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetACHRRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetACRERecords(const unsigned int CollectionIndex, char *ModName, unsigned int parentFID, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetACRERecords(ModName, parentFID, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetACRERecords(ModName, parentFID, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetACRERecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetREFRRecords(const unsigned int CollectionIndex, char *ModName, unsigned int parentFID, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetREFRRecords(ModName, parentFID, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetREFRRecords(ModName, parentFID, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetREFRRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetWRLDRecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetWRLDRecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetWRLDRecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetWRLDRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetDIALRecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetDIALRecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetDIALRecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetDIALRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetQUSTRecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetQUSTRecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetQUSTRecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetQUSTRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetIDLERecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetIDLERecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetIDLERecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetIDLERecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetPACKRecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetPACKRecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetPACKRecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetPACKRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetCSTYRecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetCSTYRecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetCSTYRecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetCSTYRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetLSCRRecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetLSCRRecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetLSCRRecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetLSCRRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetLVSPRecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetLVSPRecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetLVSPRecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetLVSPRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetANIORecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetANIORecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetANIORecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetANIORecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetWATRRecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetWATRRecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetWATRRecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetWATRRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 unsigned int GetEFSHRecords(const unsigned int CollectionIndex, char *ModName, unsigned int **RecordFIDs)
     {
-    Collections[CollectionIndex]->GetEFSHRecords(ModName, RecordFIDs);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->GetEFSHRecords(ModName, RecordFIDs);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetEFSHRecords: Error\n");
+        return 0;
+        }
     return 0;
     }
 
 ////////////////////////////////////////////////////////////////////////
 int GetFIDFieldType(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int Field)
     {
-    return Collections[CollectionIndex]->GetFIDFieldType(ModName, recordFID, Field);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetFIDFieldType(ModName, recordFID, Field);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetFIDFieldType: Error\n");
+        return UNKNOWN_FIELD;
+        }
+    return UNKNOWN_FIELD;
     }
 
 int GetFIDListFieldType(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listField)
     {
-    return Collections[CollectionIndex]->GetFIDListFieldType(ModName, recordFID, subField, listField);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetFIDListFieldType(ModName, recordFID, subField, listField);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetFIDListFieldType: Error\n");
+        return UNKNOWN_FIELD;
+        }
+    return UNKNOWN_FIELD;
     }
 
 int GetFIDListX2FieldType(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listField, const unsigned int listX2Field)
     {
-    return Collections[CollectionIndex]->GetFIDListX2FieldType(ModName, recordFID, subField, listField, listX2Field);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetFIDListX2FieldType(ModName, recordFID, subField, listField, listX2Field);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetFIDListX2FieldType: Error\n");
+        return UNKNOWN_FIELD;
+        }
+    return UNKNOWN_FIELD;
     }
 
 int GetFIDListX3FieldType(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listField, const unsigned int listX2Field, const unsigned int listX3Field)
     {
-    return Collections[CollectionIndex]->GetFIDListX3FieldType(ModName, recordFID, subField, listField, listX2Field, listX3Field);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetFIDListX3FieldType(ModName, recordFID, subField, listField, listX2Field, listX3Field);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetFIDListX3FieldType: Error\n");
+        return UNKNOWN_FIELD;
+        }
+    return UNKNOWN_FIELD;
     }
 ////////////////////////////////////////////////////////////////////////
 unsigned int GetFIDFieldArraySize(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int Field)
     {
-    return Collections[CollectionIndex]->GetFIDFieldArraySize(ModName, recordFID, Field);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetFIDFieldArraySize(ModName, recordFID, Field);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetFIDFieldArraySize: Error\n");
+        return 0;
+        }
+    return 0;
     }
 unsigned int GetFIDListArraySize(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField)
     {
-    return Collections[CollectionIndex]->GetFIDListArraySize(ModName, recordFID, subField, listIndex, listField);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetFIDListArraySize(ModName, recordFID, subField, listIndex, listField);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetFIDListArraySize: Error\n");
+        return 0;
+        }
+    return 0;
     }
 unsigned int GetFIDListX2ArraySize(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field)
     {
-    return Collections[CollectionIndex]->GetFIDListX2ArraySize(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetFIDListX2ArraySize(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetFIDListX2ArraySize: Error\n");
+        return 0;
+        }
+    return 0;
     }
 unsigned int GetFIDListX3ArraySize(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field)
     {
-    return Collections[CollectionIndex]->GetFIDListX3ArraySize(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetFIDListX3ArraySize(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetFIDListX3ArraySize: Error\n");
+        return 0;
+        }
+    return 0;
     }
 ////////////////////////////////////////////////////////////////////////
 unsigned int GetFIDListSize(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int Field)
     {
-    return Collections[CollectionIndex]->GetFIDListSize(ModName, recordFID, Field);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetFIDListSize(ModName, recordFID, Field);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetFIDListSize: Error\n");
+        return 0;
+        }
+    return 0;
     }
 unsigned int GetFIDListX2Size(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField)
     {
-    return Collections[CollectionIndex]->GetFIDListX2Size(ModName, recordFID, subField, listIndex, listField);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetFIDListX2Size(ModName, recordFID, subField, listIndex, listField);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetFIDListX2Size: Error\n");
+        return 0;
+        }
+    return 0;
     }
 unsigned int GetFIDListX3Size(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned int listX2Index, const unsigned int listX2Field)
     {
-    return Collections[CollectionIndex]->GetFIDListX3Size(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetFIDListX3Size(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetFIDListX3Size: Error\n");
+        return 0;
+        }
+    return 0;
     }
 ////////////////////////////////////////////////////////////////////////
 void GetFIDFieldArray(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int Field, void **FieldValues)
     {
-    return Collections[CollectionIndex]->GetFIDFieldArray(ModName, recordFID, Field, FieldValues);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetFIDFieldArray(ModName, recordFID, Field, FieldValues);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetFIDFieldArray: Error\n");
+        return;
+        }
+    return;
     }
 void GetFIDListArray(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, void **FieldValues)
     {
-    return Collections[CollectionIndex]->GetFIDListArray(ModName, recordFID, subField, listIndex, listField, FieldValues);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetFIDListArray(ModName, recordFID, subField, listIndex, listField, FieldValues);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetFIDListArray: Error\n");
+        return;
+        }
+    return;
     }
 void GetFIDListX2Array(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, void **FieldValues)
     {
-    return Collections[CollectionIndex]->GetFIDListX2Array(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, FieldValues);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetFIDListX2Array(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, FieldValues);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetFIDListX2Array: Error\n");
+        return;
+        }
+    return;
     }
 void GetFIDListX3Array(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, void **FieldValues)
     {
-    return Collections[CollectionIndex]->GetFIDListX3Array(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValues);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetFIDListX3Array(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValues);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetFIDListX3Array: Error\n");
+        return;
+        }
+    return;
     }
 ////////////////////////////////////////////////////////////////////////
 void * ReadFIDField(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int Field)
     {
-    return Collections[CollectionIndex]->ReadFIDField(ModName, recordFID, Field);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->ReadFIDField(ModName, recordFID, Field);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("ReadFIDField: Error\n");
+        return NULL;
+        }
+    return NULL;
     }
 
 void * ReadFIDListField(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField)
     {
-    return Collections[CollectionIndex]->ReadFIDListField(ModName, recordFID, subField, listIndex, listField);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->ReadFIDListField(ModName, recordFID, subField, listIndex, listField);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("ReadFIDListField: Error\n");
+        return NULL;
+        }
+    return NULL;
     }
 
 void * ReadFIDListX2Field(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field)
     {
-    return Collections[CollectionIndex]->ReadFIDListX2Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->ReadFIDListX2Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("ReadFIDListX2Field: Error\n");
+        return NULL;
+        }
+    return NULL;
     }
 
 void * ReadFIDListX3Field(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field)
     {
-    return Collections[CollectionIndex]->ReadFIDListX3Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->ReadFIDListX3Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("ReadFIDListX3Field: Error\n");
+        return NULL;
+        }
+    return NULL;
     }
 ////////////////////////////////////////////////////////////////////////
 //ADD
 unsigned int CreateGLOBRecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateGLOBRecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateGLOBRecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateGLOBRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateCLASRecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateCLASRecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateCLASRecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateCLASRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateFACTRecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateFACTRecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateFACTRecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateFACTRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateHAIRRecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateHAIRRecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateHAIRRecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateHAIRRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateEYESRecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateEYESRecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateEYESRecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateEYESRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateRACERecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateRACERecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateRACERecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateRACERecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateSOUNRecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateSOUNRecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateSOUNRecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateSOUNRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateSKILRecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateSKILRecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateSKILRecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateSKILRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateMGEFRecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateMGEFRecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateMGEFRecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateMGEFRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateSCPTRecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateSCPTRecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateSCPTRecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateSCPTRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateLTEXRecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateLTEXRecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateLTEXRecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateLTEXRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateENCHRecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateENCHRecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateENCHRecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateENCHRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateSPELRecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateSPELRecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateSPELRecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateSPELRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateBSGNRecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateBSGNRecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateBSGNRecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateBSGNRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateACTIRecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateACTIRecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateACTIRecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateACTIRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateAPPARecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateAPPARecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateAPPARecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateAPPARecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateARMORecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateARMORecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateARMORecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateARMORecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateBOOKRecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateBOOKRecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateBOOKRecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateBOOKRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateCLOTRecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateCLOTRecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateCLOTRecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateCLOTRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateCONTRecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateCONTRecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateCONTRecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateCONTRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateDOORRecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateDOORRecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateDOORRecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateDOORRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateINGRRecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateINGRRecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateINGRRecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateINGRRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateLIGHRecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateLIGHRecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateLIGHRecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateLIGHRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateMISCRecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateMISCRecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateMISCRecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateMISCRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateSTATRecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateSTATRecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateSTATRecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateSTATRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateGRASRecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateGRASRecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateGRASRecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateGRASRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateTREERecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateTREERecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateTREERecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateTREERecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateFLORRecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateFLORRecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateFLORRecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateFLORRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateFURNRecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateFURNRecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateFURNRecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateFURNRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateWEAPRecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateWEAPRecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateWEAPRecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateWEAPRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateAMMORecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateAMMORecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateAMMORecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateAMMORecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateNPC_Record(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateNPC_Record(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateNPC_Record(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateNPC_Record: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateCREARecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateCREARecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateCREARecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateCREARecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateLVLCRecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateLVLCRecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateLVLCRecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateLVLCRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateSLGMRecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateSLGMRecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateSLGMRecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateSLGMRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateKEYMRecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateKEYMRecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateKEYMRecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateKEYMRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateALCHRecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateALCHRecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateALCHRecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateALCHRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateSBSPRecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateSBSPRecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateSBSPRecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateSBSPRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateSGSTRecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateSGSTRecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateSGSTRecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateSGSTRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateLVLIRecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateLVLIRecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateLVLIRecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateLVLIRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateWTHRRecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateWTHRRecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateWTHRRecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateWTHRRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateCLMTRecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateCLMTRecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateCLMTRecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateCLMTRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateREGNRecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateREGNRecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateREGNRecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateREGNRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateCELLRecord(const unsigned int CollectionIndex, char *ModName, unsigned int parentFID, bool isWorldCELL)
     {
-    return Collections[CollectionIndex]->CreateCELLRecord(ModName, parentFID, isWorldCELL);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateCELLRecord(ModName, parentFID, isWorldCELL);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateCELLRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateACHRRecord(const unsigned int CollectionIndex, char *ModName, unsigned int parentFID)
     {
-    return Collections[CollectionIndex]->CreateACHRRecord(ModName, parentFID);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateACHRRecord(ModName, parentFID);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateACHRRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateACRERecord(const unsigned int CollectionIndex, char *ModName, unsigned int parentFID)
     {
-    return Collections[CollectionIndex]->CreateACRERecord(ModName, parentFID);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateACRERecord(ModName, parentFID);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateACRERecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateREFRRecord(const unsigned int CollectionIndex, char *ModName, unsigned int parentFID)
     {
-    return Collections[CollectionIndex]->CreateREFRRecord(ModName, parentFID);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateREFRRecord(ModName, parentFID);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateREFRRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreatePGRDRecord(const unsigned int CollectionIndex, char *ModName, unsigned int parentFID)
     {
-    return Collections[CollectionIndex]->CreatePGRDRecord(ModName, parentFID);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreatePGRDRecord(ModName, parentFID);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreatePGRDRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateWRLDRecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateWRLDRecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateWRLDRecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateWRLDRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateROADRecord(const unsigned int CollectionIndex, char *ModName, unsigned int parentFID)
     {
-    return Collections[CollectionIndex]->CreateROADRecord(ModName, parentFID);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateROADRecord(ModName, parentFID);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateROADRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateLANDRecord(const unsigned int CollectionIndex, char *ModName, unsigned int parentFID)
     {
-    return Collections[CollectionIndex]->CreateLANDRecord(ModName, parentFID);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateLANDRecord(ModName, parentFID);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateLANDRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateDIALRecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateDIALRecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateDIALRecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateDIALRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateINFORecord(const unsigned int CollectionIndex, char *ModName, unsigned int parentFID)
     {
-    return Collections[CollectionIndex]->CreateINFORecord(ModName, parentFID);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateINFORecord(ModName, parentFID);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateINFORecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateQUSTRecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateQUSTRecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateQUSTRecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateQUSTRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateIDLERecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateIDLERecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateIDLERecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateIDLERecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreatePACKRecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreatePACKRecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreatePACKRecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreatePACKRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateCSTYRecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateCSTYRecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateCSTYRecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateCSTYRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateLSCRRecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateLSCRRecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateLSCRRecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateLSCRRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateLVSPRecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateLVSPRecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateLVSPRecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateLVSPRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateANIORecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateANIORecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateANIORecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateANIORecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateWATRRecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateWATRRecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateWATRRecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateWATRRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CreateEFSHRecord(const unsigned int CollectionIndex, char *ModName)
     {
-    return Collections[CollectionIndex]->CreateEFSHRecord(ModName);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateEFSHRecord(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateEFSHRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 ////////////////////////////////////////////////////////////////////////
 //ADD
 unsigned int CopyFIDRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyFIDRecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyFIDRecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyFIDRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyGLOBRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyGLOBRecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyGLOBRecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyGLOBRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyCLASRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyCLASRecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyCLASRecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyCLASRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyFACTRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyFACTRecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyFACTRecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyFACTRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyHAIRRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyHAIRRecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyHAIRRecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyHAIRRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyEYESRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyEYESRecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyEYESRecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyEYESRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyRACERecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyRACERecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyRACERecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyRACERecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopySOUNRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopySOUNRecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopySOUNRecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopySOUNRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopySKILRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopySKILRecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopySKILRecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopySKILRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyMGEFRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyMGEFRecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyMGEFRecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyMGEFRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopySCPTRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopySCPTRecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopySCPTRecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopySCPTRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyLTEXRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyLTEXRecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyLTEXRecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyLTEXRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyENCHRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyENCHRecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyENCHRecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyENCHRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopySPELRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopySPELRecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopySPELRecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopySPELRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyBSGNRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyBSGNRecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyBSGNRecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyBSGNRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyACTIRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyACTIRecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyACTIRecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyACTIRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyAPPARecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyAPPARecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyAPPARecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyAPPARecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyARMORecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyARMORecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyARMORecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyARMORecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyBOOKRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyBOOKRecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyBOOKRecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyBOOKRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyCLOTRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyCLOTRecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyCLOTRecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyCLOTRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyCONTRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyCONTRecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyCONTRecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyCONTRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyDOORRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyDOORRecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyDOORRecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyDOORRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyINGRRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyINGRRecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyINGRRecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyINGRRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyLIGHRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyLIGHRecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyLIGHRecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyLIGHRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyMISCRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyMISCRecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyMISCRecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyMISCRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopySTATRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopySTATRecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopySTATRecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopySTATRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyGRASRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyGRASRecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyGRASRecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyGRASRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyTREERecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyTREERecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyTREERecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyTREERecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyFLORRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyFLORRecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyFLORRecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyFLORRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyFURNRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyFURNRecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyFURNRecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyFURNRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyWEAPRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyWEAPRecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyWEAPRecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyWEAPRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyAMMORecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyAMMORecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyAMMORecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyAMMORecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyNPC_Record(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyNPC_Record(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyNPC_Record(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyNPC_Record: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyCREARecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyCREARecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyCREARecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyCREARecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyLVLCRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyLVLCRecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyLVLCRecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyLVLCRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopySLGMRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopySLGMRecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopySLGMRecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopySLGMRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyKEYMRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyKEYMRecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyKEYMRecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyKEYMRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyALCHRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyALCHRecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyALCHRecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyALCHRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopySBSPRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopySBSPRecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopySBSPRecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopySBSPRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopySGSTRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopySGSTRecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopySGSTRecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopySGSTRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyLVLIRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyLVLIRecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyLVLIRecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyLVLIRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyWTHRRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyWTHRRecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyWTHRRecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyWTHRRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyCLMTRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyCLMTRecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyCLMTRecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyCLMTRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyREGNRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyREGNRecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyREGNRecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyREGNRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyCELLRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride, bool isWorldCELL)
     {
-    return Collections[CollectionIndex]->CopyCELLRecord(ModName, srcRecordFID, destModName, destParentFID, asOverride, isWorldCELL);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyCELLRecord(ModName, srcRecordFID, destModName, destParentFID, asOverride, isWorldCELL);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyCELLRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyACHRRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyACHRRecord(ModName, srcRecordFID, destModName, destParentFID, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyACHRRecord(ModName, srcRecordFID, destModName, destParentFID, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyACHRRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyACRERecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyACRERecord(ModName, srcRecordFID, destModName, destParentFID, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyACRERecord(ModName, srcRecordFID, destModName, destParentFID, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyACRERecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyREFRRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyREFRRecord(ModName, srcRecordFID, destModName, destParentFID, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyREFRRecord(ModName, srcRecordFID, destModName, destParentFID, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyREFRRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyPGRDRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyPGRDRecord(ModName, srcRecordFID, destModName, destParentFID, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyPGRDRecord(ModName, srcRecordFID, destModName, destParentFID, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyPGRDRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyWRLDRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyWRLDRecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyWRLDRecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyWRLDRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyROADRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyROADRecord(ModName, srcRecordFID, destModName, destParentFID, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyROADRecord(ModName, srcRecordFID, destModName, destParentFID, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyROADRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyLANDRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyLANDRecord(ModName, srcRecordFID, destModName, destParentFID, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyLANDRecord(ModName, srcRecordFID, destModName, destParentFID, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyLANDRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyDIALRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyDIALRecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyDIALRecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyDIALRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyINFORecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyINFORecord(ModName, srcRecordFID, destModName, destParentFID, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyINFORecord(ModName, srcRecordFID, destModName, destParentFID, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyINFORecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyQUSTRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyQUSTRecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyQUSTRecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyQUSTRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyIDLERecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyIDLERecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyIDLERecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyIDLERecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyPACKRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyPACKRecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyPACKRecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyPACKRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyCSTYRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyCSTYRecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyCSTYRecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyCSTYRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyLSCRRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyLSCRRecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyLSCRRecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyLSCRRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyLVSPRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyLVSPRecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyLVSPRecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyLVSPRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyANIORecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyANIORecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyANIORecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyANIORecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyWATRRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyWATRRecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyWATRRecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyWATRRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 unsigned int CopyEFSHRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    return Collections[CollectionIndex]->CopyEFSHRecord(ModName, srcRecordFID, destModName, asOverride);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CopyEFSHRecord(ModName, srcRecordFID, destModName, asOverride);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CopyEFSHRecord: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 ////////////////////////////////////////////////////////////////////////
@@ -1831,7 +5129,10 @@ int SetFIDFieldC(const unsigned int CollectionIndex, char *ModName, unsigned int
     {
     try
         {
-        Collections[CollectionIndex]->SetFIDField(ModName, recordFID, Field, FieldValue);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetFIDField(ModName, recordFID, Field, FieldValue);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -1844,7 +5145,10 @@ int SetFIDFieldUC(const unsigned int CollectionIndex, char *ModName, unsigned in
     {
     try
         {
-        Collections[CollectionIndex]->SetFIDField(ModName, recordFID, Field, FieldValue);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetFIDField(ModName, recordFID, Field, FieldValue);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -1857,7 +5161,10 @@ int SetFIDFieldStr(const unsigned int CollectionIndex, char *ModName, unsigned i
     {
     try
         {
-        Collections[CollectionIndex]->SetFIDField(ModName, recordFID, Field, FieldValue);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetFIDField(ModName, recordFID, Field, FieldValue);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -1870,7 +5177,10 @@ int SetFIDFieldStrA(const unsigned int CollectionIndex, char *ModName, unsigned 
     {
     try
         {
-        Collections[CollectionIndex]->SetFIDField(ModName, recordFID, Field, FieldValue, nSize);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetFIDField(ModName, recordFID, Field, FieldValue, nSize);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -1885,7 +5195,10 @@ int SetFIDFieldS(const unsigned int CollectionIndex, char *ModName, unsigned int
     {
     try
         {
-        Collections[CollectionIndex]->SetFIDField(ModName, recordFID, Field, FieldValue);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetFIDField(ModName, recordFID, Field, FieldValue);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -1898,7 +5211,10 @@ int SetFIDFieldUS(const unsigned int CollectionIndex, char *ModName, unsigned in
     {
     try
         {
-        Collections[CollectionIndex]->SetFIDField(ModName, recordFID, Field, FieldValue);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetFIDField(ModName, recordFID, Field, FieldValue);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -1911,7 +5227,10 @@ int SetFIDFieldI(const unsigned int CollectionIndex, char *ModName, unsigned int
     {
     try
         {
-        Collections[CollectionIndex]->SetFIDField(ModName, recordFID, Field, FieldValue);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetFIDField(ModName, recordFID, Field, FieldValue);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -1924,7 +5243,10 @@ int SetFIDFieldUI(const unsigned int CollectionIndex, char *ModName, unsigned in
     {
     try
         {
-        Collections[CollectionIndex]->SetFIDField(ModName, recordFID, Field, FieldValue);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetFIDField(ModName, recordFID, Field, FieldValue);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -1937,7 +5259,10 @@ int SetFIDFieldUIA(const unsigned int CollectionIndex, char *ModName, unsigned i
     {
     try
         {
-        Collections[CollectionIndex]->SetFIDField(ModName, recordFID, Field, FieldValue, nSize);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetFIDField(ModName, recordFID, Field, FieldValue, nSize);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -1953,7 +5278,10 @@ int SetFIDFieldF(const unsigned int CollectionIndex, char *ModName, unsigned int
     {
     try
         {
-        Collections[CollectionIndex]->SetFIDField(ModName, recordFID, Field, FieldValue);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetFIDField(ModName, recordFID, Field, FieldValue);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -1966,7 +5294,10 @@ int SetFIDFieldR(const unsigned int CollectionIndex, char *ModName, unsigned int
     {
     try
         {
-        Collections[CollectionIndex]->SetFIDField(ModName, recordFID, Field, FieldValue, nSize);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetFIDField(ModName, recordFID, Field, FieldValue, nSize);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -1981,35 +5312,110 @@ int SetFIDFieldR(const unsigned int CollectionIndex, char *ModName, unsigned int
 ////////////////////////////////////////////////////////////////////////
 int CreateFIDListElement(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField)
     {
-    return Collections[CollectionIndex]->CreateFIDListElement(ModName, recordFID, subField);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateFIDListElement(ModName, recordFID, subField);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateFIDListElement: Error\n");
+        return -1;
+        }
+    return 0;
     }
 int CreateFIDListX2Element(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField)
     {
-    return Collections[CollectionIndex]->CreateFIDListX2Element(ModName, recordFID, subField, listIndex, listField);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateFIDListX2Element(ModName, recordFID, subField, listIndex, listField);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateFIDListX2Element: Error\n");
+        return -1;
+        }
+    return 0;
     }
 int CreateFIDListX3Element(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned int listX2Index, const unsigned int listX2Field)
     {
-    return Collections[CollectionIndex]->CreateFIDListX3Element(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->CreateFIDListX3Element(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("CreateFIDListX3Element: Error\n");
+        return -1;
+        }
+    return 0;
     }
 ////////////////////////////////////////////////////////////////////////
 int DeleteFIDListElement(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField)
     {
-    return Collections[CollectionIndex]->DeleteFIDListElement(ModName, recordFID, subField);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->DeleteFIDListElement(ModName, recordFID, subField);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("DeleteFIDListElement: Error\n");
+        return -1;
+        }
+    return 0;
     }
 int DeleteFIDListX2Element(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField)
     {
-    return Collections[CollectionIndex]->DeleteFIDListX2Element(ModName, recordFID, subField, listIndex, listField);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->DeleteFIDListX2Element(ModName, recordFID, subField, listIndex, listField);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("DeleteFIDListX2Element: Error\n");
+        return -1;
+        }
+    return 0;
     }
 int DeleteFIDListX3Element(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned int listX2Index, const unsigned int listX2Field)
     {
-    return Collections[CollectionIndex]->DeleteFIDListX3Element(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field);
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->DeleteFIDListX3Element(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("DeleteFIDListX3Element: Error\n");
+        return -1;
+        }
+    return 0;
     }
 ////////////////////////////////////////////////////////////////////////
 int SetFIDListFieldC (const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, char FieldValue)
     {
     try
         {
-        Collections[CollectionIndex]->SetFIDListField(ModName, recordFID, subField, listIndex, listField, FieldValue);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetFIDListField(ModName, recordFID, subField, listIndex, listField, FieldValue);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -2022,7 +5428,10 @@ int SetFIDListFieldUC(const unsigned int CollectionIndex, char *ModName, unsigne
     {
     try
         {
-        Collections[CollectionIndex]->SetFIDListField(ModName, recordFID, subField, listIndex, listField, FieldValue);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetFIDListField(ModName, recordFID, subField, listIndex, listField, FieldValue);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -2035,7 +5444,10 @@ int SetFIDListFieldStr (const unsigned int CollectionIndex, char *ModName, unsig
     {
     try
         {
-        Collections[CollectionIndex]->SetFIDListField(ModName, recordFID, subField, listIndex, listField, FieldValue);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetFIDListField(ModName, recordFID, subField, listIndex, listField, FieldValue);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -2048,7 +5460,10 @@ int SetFIDListFieldStrA(const unsigned int CollectionIndex, char *ModName, unsig
     {
     try
         {
-        Collections[CollectionIndex]->SetFIDListField(ModName, recordFID, subField, listIndex, listField, FieldValue, nSize);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetFIDListField(ModName, recordFID, subField, listIndex, listField, FieldValue, nSize);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -2063,7 +5478,10 @@ int SetFIDListFieldS (const unsigned int CollectionIndex, char *ModName, unsigne
     {
     try
         {
-        Collections[CollectionIndex]->SetFIDListField(ModName, recordFID, subField, listIndex, listField, FieldValue);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetFIDListField(ModName, recordFID, subField, listIndex, listField, FieldValue);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -2076,7 +5494,10 @@ int SetFIDListFieldUS(const unsigned int CollectionIndex, char *ModName, unsigne
     {
     try
         {
-        Collections[CollectionIndex]->SetFIDListField(ModName, recordFID, subField, listIndex, listField, FieldValue);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetFIDListField(ModName, recordFID, subField, listIndex, listField, FieldValue);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -2089,7 +5510,10 @@ int SetFIDListFieldI (const unsigned int CollectionIndex, char *ModName, unsigne
     {
     try
         {
-        Collections[CollectionIndex]->SetFIDListField(ModName, recordFID, subField, listIndex, listField, FieldValue);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetFIDListField(ModName, recordFID, subField, listIndex, listField, FieldValue);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -2102,7 +5526,10 @@ int SetFIDListFieldUI(const unsigned int CollectionIndex, char *ModName, unsigne
     {
     try
         {
-        Collections[CollectionIndex]->SetFIDListField(ModName, recordFID, subField, listIndex, listField, FieldValue);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetFIDListField(ModName, recordFID, subField, listIndex, listField, FieldValue);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -2116,7 +5543,10 @@ int SetFIDListFieldUIA(const unsigned int CollectionIndex, char *ModName, unsign
     {
     try
         {
-        Collections[CollectionIndex]->SetFIDListField(ModName, recordFID, subField, listIndex, listField, FieldValue, nSize);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetFIDListField(ModName, recordFID, subField, listIndex, listField, FieldValue, nSize);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -2132,7 +5562,10 @@ int SetFIDListFieldF (const unsigned int CollectionIndex, char *ModName, unsigne
     {
     try
         {
-        Collections[CollectionIndex]->SetFIDListField(ModName, recordFID, subField, listIndex, listField, FieldValue);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetFIDListField(ModName, recordFID, subField, listIndex, listField, FieldValue);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -2145,7 +5578,10 @@ int SetFIDListFieldR (const unsigned int CollectionIndex, char *ModName, unsigne
     {
     try
         {
-        Collections[CollectionIndex]->SetFIDListField(ModName, recordFID, subField, listIndex, listField, FieldValue, nSize);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetFIDListField(ModName, recordFID, subField, listIndex, listField, FieldValue, nSize);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -2162,7 +5598,10 @@ int SetFIDListX2FieldC (const unsigned int CollectionIndex, char *ModName, unsig
     {
     try
         {
-        Collections[CollectionIndex]->SetFIDListX2Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, FieldValue);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetFIDListX2Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, FieldValue);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -2175,7 +5614,10 @@ int SetFIDListX2FieldUC(const unsigned int CollectionIndex, char *ModName, unsig
     {
     try
         {
-        Collections[CollectionIndex]->SetFIDListX2Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, FieldValue);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetFIDListX2Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, FieldValue);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -2188,7 +5630,10 @@ int SetFIDListX2FieldStr (const unsigned int CollectionIndex, char *ModName, uns
     {
     try
         {
-        Collections[CollectionIndex]->SetFIDListX2Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, FieldValue);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetFIDListX2Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, FieldValue);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -2201,7 +5646,10 @@ int SetFIDListX2FieldStrA(const unsigned int CollectionIndex, char *ModName, uns
     {
     try
         {
-        Collections[CollectionIndex]->SetFIDListX2Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, FieldValue, nSize);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetFIDListX2Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, FieldValue, nSize);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -2216,7 +5664,10 @@ int SetFIDListX2FieldS (const unsigned int CollectionIndex, char *ModName, unsig
     {
     try
         {
-        Collections[CollectionIndex]->SetFIDListX2Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, FieldValue);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetFIDListX2Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, FieldValue);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -2229,7 +5680,10 @@ int SetFIDListX2FieldUS(const unsigned int CollectionIndex, char *ModName, unsig
     {
     try
         {
-        Collections[CollectionIndex]->SetFIDListX2Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, FieldValue);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetFIDListX2Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, FieldValue);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -2242,7 +5696,10 @@ int SetFIDListX2FieldI (const unsigned int CollectionIndex, char *ModName, unsig
     {
     try
         {
-        Collections[CollectionIndex]->SetFIDListX2Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, FieldValue);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetFIDListX2Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, FieldValue);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -2255,7 +5712,10 @@ int SetFIDListX2FieldUI(const unsigned int CollectionIndex, char *ModName, unsig
     {
     try
         {
-        Collections[CollectionIndex]->SetFIDListX2Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, FieldValue);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetFIDListX2Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, FieldValue);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -2268,7 +5728,10 @@ int SetFIDListX2FieldF (const unsigned int CollectionIndex, char *ModName, unsig
     {
     try
         {
-        Collections[CollectionIndex]->SetFIDListX2Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, FieldValue);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetFIDListX2Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, FieldValue);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -2281,7 +5744,10 @@ int SetFIDListX2FieldR (const unsigned int CollectionIndex, char *ModName, unsig
     {
     try
         {
-        Collections[CollectionIndex]->SetFIDListX2Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, FieldValue, nSize);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetFIDListX2Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, FieldValue, nSize);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -2298,7 +5764,10 @@ int SetFIDListX3FieldC (const unsigned int CollectionIndex, char *ModName, unsig
     {
     try
         {
-        Collections[CollectionIndex]->SetFIDListX3Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValue);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetFIDListX3Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValue);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -2311,7 +5780,10 @@ int SetFIDListX3FieldUC(const unsigned int CollectionIndex, char *ModName, unsig
     {
     try
         {
-        Collections[CollectionIndex]->SetFIDListX3Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValue);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetFIDListX3Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValue);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -2324,7 +5796,10 @@ int SetFIDListX3FieldStr (const unsigned int CollectionIndex, char *ModName, uns
     {
     try
         {
-        Collections[CollectionIndex]->SetFIDListX3Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValue);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetFIDListX3Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValue);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -2337,7 +5812,10 @@ int SetFIDListX3FieldStrA(const unsigned int CollectionIndex, char *ModName, uns
     {
     try
         {
-        Collections[CollectionIndex]->SetFIDListX3Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValue, nSize);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetFIDListX3Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValue, nSize);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -2352,7 +5830,10 @@ int SetFIDListX3FieldS (const unsigned int CollectionIndex, char *ModName, unsig
     {
     try
         {
-        Collections[CollectionIndex]->SetFIDListX3Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValue);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetFIDListX3Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValue);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -2365,7 +5846,10 @@ int SetFIDListX3FieldUS(const unsigned int CollectionIndex, char *ModName, unsig
     {
     try
         {
-        Collections[CollectionIndex]->SetFIDListX3Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValue);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetFIDListX3Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValue);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -2378,7 +5862,10 @@ int SetFIDListX3FieldI (const unsigned int CollectionIndex, char *ModName, unsig
     {
     try
         {
-        Collections[CollectionIndex]->SetFIDListX3Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValue);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetFIDListX3Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValue);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -2391,7 +5878,10 @@ int SetFIDListX3FieldUI(const unsigned int CollectionIndex, char *ModName, unsig
     {
     try
         {
-        Collections[CollectionIndex]->SetFIDListX3Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValue);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetFIDListX3Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValue);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -2404,7 +5894,10 @@ int SetFIDListX3FieldF (const unsigned int CollectionIndex, char *ModName, unsig
     {
     try
         {
-        Collections[CollectionIndex]->SetFIDListX3Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValue);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetFIDListX3Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValue);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -2417,7 +5910,10 @@ int SetFIDListX3FieldR (const unsigned int CollectionIndex, char *ModName, unsig
     {
     try
         {
-        Collections[CollectionIndex]->SetFIDListX3Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValue, nSize);
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->SetFIDListX3Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValue, nSize);
+        else
+            throw 1;
         }
     catch(...)
         {
@@ -2432,345 +5928,974 @@ int SetFIDListX3FieldR (const unsigned int CollectionIndex, char *ModName, unsig
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 //ADD
-unsigned int StartGLOBIterator(const unsigned int CollectionIndex)
+int StartGLOBIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eGLOB));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eGLOB));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartGLOBIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartCLASIterator(const unsigned int CollectionIndex)
+int StartCLASIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eCLAS));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eCLAS));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartCLASIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartFACTIterator(const unsigned int CollectionIndex)
+int StartFACTIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eFACT));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eFACT));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartFACTIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartHAIRIterator(const unsigned int CollectionIndex)
+int StartHAIRIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eHAIR));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eHAIR));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartHAIRIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartEYESIterator(const unsigned int CollectionIndex)
+int StartEYESIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eEYES));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eEYES));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartEYESIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartRACEIterator(const unsigned int CollectionIndex)
+int StartRACEIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eRACE));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eRACE));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartRACEIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartSOUNIterator(const unsigned int CollectionIndex)
+int StartSOUNIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eSOUN));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eSOUN));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartSOUNIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartSKILIterator(const unsigned int CollectionIndex)
+int StartSKILIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eSKIL));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eSKIL));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartSKILIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartMGEFIterator(const unsigned int CollectionIndex)
+int StartMGEFIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eMGEF));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eMGEF));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartMGEFIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartSCPTIterator(const unsigned int CollectionIndex)
+int StartSCPTIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eSCPT));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eSCPT));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartSCPTIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartLTEXIterator(const unsigned int CollectionIndex)
+int StartLTEXIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eLTEX));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eLTEX));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartLTEXIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartENCHIterator(const unsigned int CollectionIndex)
+int StartENCHIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eENCH));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eENCH));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartENCHIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartSPELIterator(const unsigned int CollectionIndex)
+int StartSPELIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eSPEL));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eSPEL));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartSPELIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartBSGNIterator(const unsigned int CollectionIndex)
+int StartBSGNIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eBSGN));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eBSGN));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartBSGNIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartACTIIterator(const unsigned int CollectionIndex)
+int StartACTIIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eACTI));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eACTI));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartACTIIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartAPPAIterator(const unsigned int CollectionIndex)
+int StartAPPAIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eAPPA));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eAPPA));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartAPPAIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartARMOIterator(const unsigned int CollectionIndex)
+int StartARMOIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eARMO));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eARMO));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartARMOIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartBOOKIterator(const unsigned int CollectionIndex)
+int StartBOOKIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eBOOK));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eBOOK));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartBOOKIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartCLOTIterator(const unsigned int CollectionIndex)
+int StartCLOTIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eCLOT));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eCLOT));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartCLOTIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartCONTIterator(const unsigned int CollectionIndex)
+int StartCONTIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eCONT));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eCONT));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartCONTIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartDOORIterator(const unsigned int CollectionIndex)
+int StartDOORIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eDOOR));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eDOOR));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartDOORIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartINGRIterator(const unsigned int CollectionIndex)
+int StartINGRIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eINGR));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eINGR));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartINGRIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartLIGHIterator(const unsigned int CollectionIndex)
+int StartLIGHIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eLIGH));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eLIGH));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartLIGHIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartMISCIterator(const unsigned int CollectionIndex)
+int StartMISCIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eMISC));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eMISC));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartMISCIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartSTATIterator(const unsigned int CollectionIndex)
+int StartSTATIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eSTAT));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eSTAT));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartSTATIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartGRASIterator(const unsigned int CollectionIndex)
+int StartGRASIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eGRAS));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eGRAS));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartGRASIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartTREEIterator(const unsigned int CollectionIndex)
+int StartTREEIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eTREE));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eTREE));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartTREEIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartFLORIterator(const unsigned int CollectionIndex)
+int StartFLORIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eFLOR));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eFLOR));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartFLORIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartFURNIterator(const unsigned int CollectionIndex)
+int StartFURNIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eFURN));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eFURN));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartFURNIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartWEAPIterator(const unsigned int CollectionIndex)
+int StartWEAPIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eWEAP));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eWEAP));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartWEAPIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartAMMOIterator(const unsigned int CollectionIndex)
+int StartAMMOIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eAMMO));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eAMMO));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartAMMOIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartNPC_Iterator(const unsigned int CollectionIndex)
+int StartNPC_Iterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eNPC_));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eNPC_));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartNPC_Iterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartCREAIterator(const unsigned int CollectionIndex)
+int StartCREAIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eCREA));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eCREA));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartCREAIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartLVLCIterator(const unsigned int CollectionIndex)
+int StartLVLCIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eLVLC));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eLVLC));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartLVLCIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartSLGMIterator(const unsigned int CollectionIndex)
+int StartSLGMIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eSLGM));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eSLGM));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartSLGMIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartKEYMIterator(const unsigned int CollectionIndex)
+int StartKEYMIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eKEYM));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eKEYM));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartKEYMIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartALCHIterator(const unsigned int CollectionIndex)
+int StartALCHIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eALCH));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eALCH));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartALCHIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartSBSPIterator(const unsigned int CollectionIndex)
+int StartSBSPIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eSBSP));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eSBSP));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartSBSPIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartSGSTIterator(const unsigned int CollectionIndex)
+int StartSGSTIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eSGST));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eSGST));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartSGSTIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartLVLIIterator(const unsigned int CollectionIndex)
+int StartLVLIIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eLVLI));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eLVLI));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartLVLIIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartWTHRIterator(const unsigned int CollectionIndex)
+int StartWTHRIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eWTHR));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eWTHR));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartWTHRIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartCLMTIterator(const unsigned int CollectionIndex)
+int StartCLMTIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eCLMT));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eCLMT));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartCLMTIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartREGNIterator(const unsigned int CollectionIndex)
+int StartREGNIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eREGN));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eREGN));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartREGNIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartCELLIterator(const unsigned int CollectionIndex)
+int StartCELLIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eCELL));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eCELL));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartCELLIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartWRLDIterator(const unsigned int CollectionIndex)
+int StartWRLDIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eWRLD));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eWRLD));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartWRLDIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartDIALIterator(const unsigned int CollectionIndex)
+int StartDIALIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eDIAL));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eDIAL));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartDIALIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartQUSTIterator(const unsigned int CollectionIndex)
+int StartQUSTIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eQUST));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eQUST));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartQUSTIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartIDLEIterator(const unsigned int CollectionIndex)
+int StartIDLEIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eIDLE));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eIDLE));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartIDLEIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartPACKIterator(const unsigned int CollectionIndex)
+int StartPACKIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], ePACK));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], ePACK));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartPACKIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartCSTYIterator(const unsigned int CollectionIndex)
+int StartCSTYIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eCSTY));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eCSTY));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartCSTYIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartLSCRIterator(const unsigned int CollectionIndex)
+int StartLSCRIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eLSCR));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eLSCR));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartLSCRIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartLVSPIterator(const unsigned int CollectionIndex)
+int StartLVSPIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eLVSP));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eLVSP));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartLVSPIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartANIOIterator(const unsigned int CollectionIndex)
+int StartANIOIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eANIO));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eANIO));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartANIOIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartWATRIterator(const unsigned int CollectionIndex)
+int StartWATRIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eWATR));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eWATR));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartWATRIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
-unsigned int StartEFSHIterator(const unsigned int CollectionIndex)
+int StartEFSHIterator(const unsigned int CollectionIndex)
     {
-    Iterators.push_back(new Iterator(Collections[CollectionIndex], eEFSH));
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Iterators.push_back(new Iterator(Collections[CollectionIndex], eEFSH));
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StartEFSHIterator: Error\n");
+        return -1;
+        }
     return (unsigned int)Iterators.size() - 1;
     }
 
 ////////////////////////////////////////////////////////////////////////
 long long IncrementIterator(const unsigned int IteratorID)
     {
-    return Iterators[IteratorID]->IncrementIterator();
+    try
+        {
+        if(IteratorID < Iterators.size())
+            return Iterators[IteratorID]->IncrementIterator();
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("IncrementIterator: Error\n");
+        return 0;
+        }
+    return 0;
     }
 
 void StopIterator(const unsigned int IteratorID)
     {
-    Iterators.erase(Iterators.begin() + IteratorID);
+    try
+        {
+        if(IteratorID < Iterators.size())
+            Iterators.erase(Iterators.begin() + IteratorID);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("StopIterator: Error\n");
+        return;
+        }
+    return;
     }
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////

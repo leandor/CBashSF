@@ -1080,11 +1080,11 @@ class Record
             _fIsLoaded              = 0x80000000 //Not an actual flag. Used only by CBash internally. Won't be written.
             };
     public:
-        unsigned int recStart;
+        unsigned char *recData;
         unsigned int flags, formID, flagsUnk;
 
-        Record(bool newRecord=false):flags(0), formID(0), flagsUnk(0), recStart(0) {IsLoaded(newRecord);}
-        Record(const unsigned int &newFormID):flags(0), formID(newFormID), flagsUnk(_fIsLoaded), recStart(0) {}
+        Record(bool newRecord=false):flags(0), formID(0), flagsUnk(0), recData(NULL) {IsLoaded(newRecord);}
+        Record(const unsigned int &newFormID):flags(0), formID(newFormID), flagsUnk(_fIsLoaded), recData(NULL) {}
 
         virtual ~Record() {}
         #ifdef _DEBUG
@@ -1232,7 +1232,7 @@ class Record
         virtual int DeleteListX2Element(const unsigned int subField, const unsigned int listIndex, const unsigned int listField) {return -1;}
         virtual int DeleteListX3Element(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field) {return -1;}
 
-        int Read(unsigned char *fileBuffer, _FormIDHandler &FormIDHandler);
+        int Read(_FormIDHandler &FormIDHandler);
         virtual void Unload() abstract {};
         virtual unsigned int GetSize() abstract {};
         virtual unsigned int GetType() {return eUnknown;}
@@ -1241,7 +1241,7 @@ class Record
         virtual void CollapseFormIDs(_FormIDHandler &FormIDHandler) abstract {};
         virtual void CopyFrom(Record *temp) {return;}
         virtual int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer) abstract {};
-        int Write(WritableRecord &writeRecord);
+        int Write(WritableRecord &writeRecord, _FormIDHandler &FormIDHandler);
         virtual int ParseRecord(unsigned char *buffer, const unsigned int &recSize) abstract {};
 
         bool IsDeleted() const

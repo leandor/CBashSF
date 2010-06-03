@@ -26,11 +26,13 @@ GPL License and Copyright Notice ============================================
 #include <io.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <share.h>
 #include <errno.h>
-#include <vector>
-#include <map>
-#include <boost/threadpool.hpp>
 #include <exception>
+#include <vector>
+#include <list>
+#include <map>
+
 
 #ifndef NULL
 #ifdef __cplusplus
@@ -42,11 +44,6 @@ GPL License and Copyright Notice ============================================
 
 #ifndef BUFFERSIZE
 #define BUFFERSIZE    65536
-#endif
-
-
-#ifndef NUMTHREADS
-#define NUMTHREADS    boost::thread::hardware_concurrency()
 #endif
 
 #ifndef OBJECT_ID_START
@@ -62,7 +59,7 @@ GPL License and Copyright Notice ============================================
 #endif
 
 #ifndef REVISION_VERSION
-#define REVISION_VERSION    1
+#define REVISION_VERSION    2
 #endif
 
 typedef unsigned int * FormID;
@@ -589,7 +586,9 @@ class WritableRecord
     public:
         unsigned int recSize;
         unsigned char *recBuffer;
+        bool deleteBuffer;
         WritableRecord():recSize(0), recBuffer(NULL) {}
+        virtual ~WritableRecord() {}
     };
 
 class WritableDialogue : public WritableRecord
@@ -599,6 +598,7 @@ class WritableDialogue : public WritableRecord
         unsigned int ChildrenSize;
         std::vector<WritableRecord> Children;
         WritableDialogue():WritableRecord(), ChildrenSize(0) {}
+        ~WritableDialogue() {}
     };
 
 class WritableCell : public WritableRecord
@@ -613,6 +613,7 @@ class WritableCell : public WritableRecord
         std::vector<WritableRecord> VWD;
         std::vector<WritableRecord> Temporary;
         WritableCell():WritableRecord(), formID(0), ChildrenSize(0), PersistentSize(0), VWDSize(0), TemporarySize(0) {}
+        ~WritableCell() {}
     };
 
 class WritableWorld : public WritableRecord
@@ -641,6 +642,7 @@ class WritableWorld : public WritableRecord
         WritableCell CELL;
         std::map<unsigned int, WritableBlock, sortBlocks> Block;
         WritableWorld():WritableRecord(), formID(0), WorldGRUPSize(0) {}
+        ~WritableWorld() {}
     };
 
 class FileBuffer
@@ -666,6 +668,7 @@ class FileBuffer
         int open_write(const char *FileName);
         void close();
         void resize(unsigned int nSize);
+        void seek(long _Offset, int _Origin);
         void write(const void *_SrcBuf, unsigned int _SrcSize);
         void write(WritableRecord &writeRecord);
         void flush();

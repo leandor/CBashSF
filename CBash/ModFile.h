@@ -84,6 +84,7 @@ GPL License and Copyright Notice ============================================
 #include "Records/EFSHRecord.h"
 #include <boost/interprocess/file_mapping.hpp>
 #include <boost/interprocess/mapped_region.hpp>
+#include <boost/threadpool.hpp>
 
 using namespace boost::interprocess;
 
@@ -172,7 +173,6 @@ class ModFile
         int Open();
         int Close();
         int LoadTES4();
-        void UpdateFormCount();
         int Load(boost::threadpool::pool &Threads, const bool &FullLoad);
         void CollapseFormIDs();
         void ExpandFormIDs();

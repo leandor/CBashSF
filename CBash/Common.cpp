@@ -21,9 +21,6 @@ GPL License and Copyright Notice ============================================
 */
 // Common.cpp
 #include "Common.h"
-#include <vector>
-#include <list>
-#include <sys/stat.h>
 
 time_t lastSave = time(NULL);
 
@@ -314,6 +311,14 @@ void FileBuffer::resize(unsigned int nSize)
     return;
     }
 
+void FileBuffer::seek(long _Offset, int _Origin)
+    {
+    if(fh == -1)
+        return;
+    flush();
+    _lseek(fh, _Offset, _Origin);
+    }
+
 void FileBuffer::write(const void *_SrcBuf, unsigned int _SrcSize)
     {
     if(fh == -1 || _SrcBuf == NULL || _SrcSize == 0)
@@ -339,7 +344,8 @@ void FileBuffer::write(const void *_SrcBuf, unsigned int _SrcSize)
 void FileBuffer::write(WritableRecord &writeRecord)
     {
     write(writeRecord.recBuffer, writeRecord.recSize + 20);
-    delete []writeRecord.recBuffer;
+    if(writeRecord.deleteBuffer)
+        delete []writeRecord.recBuffer;
     return;
     }
 

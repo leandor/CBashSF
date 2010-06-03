@@ -46,11 +46,8 @@ class BaseRecord(object):
         return (master,object)
     def set_longFid(self, nValue):
         if not isinstance(nValue,tuple): return
-        if(exists(".\\bolt.py")):
-            fid = CBash.GetCorrectedFID(self._CollectionIndex, nValue[0].s, nValue[1])
-        else:
-            fid = CBash.GetCorrectedFID(self._CollectionIndex, nValue[0], nValue[1])
-        if(fid == None): return
+        fid = CBash.GetCorrectedFID(self._CollectionIndex, nValue[0].s, nValue[1])
+        if(fid == 0): return
         self.fid = fid
     longFid = property(get_longFid, set_longFid)
 
@@ -291,11 +288,8 @@ class GMSTRecord(object):
         return (master,object)
     def set_longFid(self, nValue):
         if not isinstance(nValue,tuple): return
-        if(exists(".\\bolt.py")):
-            fid = CBash.GetCorrectedFID(self._CollectionIndex, nValue[0].s, nValue[1])
-        else:
-            fid = CBash.GetCorrectedFID(self._CollectionIndex, nValue[0], nValue[1])
-        if(fid == None): return
+        fid = CBash.GetCorrectedFID(self._CollectionIndex, nValue[0].s, nValue[1])
+        if(fid == 0): return
         self.fid = fid
     longFid = property(get_longFid, set_longFid)
     def CopyAsOverride(self, targetMod):
@@ -16473,6 +16467,11 @@ class ModFile(object):
         if(exists(".\\bolt.py")):
             return (GPath(master),object)
         return (master,object)
+    def MakeShortFid(self, longFid):
+        if not isinstance(longFid, tuple): return longFid
+        fid = CBash.GetCorrectedFID(self._CollectionIndex, nValue[0].s, nValue[1])
+        if(fid == 0): return None
+        return fid
     def createGMSTRecord(self, recordID):
         if(CBash.CreateGMSTRecord(self._CollectionIndex, self._ModName, recordID)):
             return GMSTRecord(self._CollectionIndex, self._ModName, recordID)
@@ -17305,7 +17304,6 @@ class Collection:
         CBash.Close(self._CollectionIndex)
 
     def __del__(self):
-        self.close()
         CBash.DeleteCollection(self._CollectionIndex)
 
     @property

@@ -161,9 +161,9 @@ int CREARecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
-                printf("  CREA: Unknown subType = %04x\n", subType);
+                printf("  CREA: %08X - Unknown subType = %04x\n", formID, subType);
                 printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", recStart + curPos - 6);
+                printf("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
                 break;
             }
@@ -173,6 +173,8 @@ int CREARecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
 
 unsigned int CREARecord::GetSize()
     {
+    if(recData != NULL)
+        return *(unsigned int*)&recData[-16];
     unsigned int cSize = 0;
     unsigned int TotSize = 0;
     if(EDID.IsLoaded())
@@ -194,11 +196,7 @@ unsigned int CREARecord::GetSize()
         TotSize += cSize += 6;
         }
     if(MODL.MODB.IsLoaded())
-        {
-        cSize = MODL.MODB.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += MODL.MODB.GetSize() + 6;
     if(MODL.MODT.IsLoaded())
         {
         cSize = MODL.MODT.GetSize();
@@ -223,45 +221,21 @@ unsigned int CREARecord::GetSize()
         TotSize += cSize += 6;
         }
     if(ACBS.IsLoaded())
-        {
-        cSize = ACBS.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += ACBS.GetSize() + 6;
     if(SNAM.size())
         for(unsigned int p = 0; p < SNAM.size(); p++)
             if(SNAM[p]->IsLoaded())
-                {
-                cSize = SNAM[p]->GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
+                TotSize += SNAM[p]->GetSize() + 6;
     if(INAM.IsLoaded())
-        {
-        cSize = INAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += INAM.GetSize() + 6;
     if(SCRI.IsLoaded())
-        {
-        cSize = SCRI.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += SCRI.GetSize() + 6;
     if(CNTO.size())
         for(unsigned int p = 0; p < CNTO.size(); p++)
             if(CNTO[p]->IsLoaded())
-                {
-                cSize = CNTO[p]->GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
+                TotSize += CNTO[p]->GetSize() + 6;
     if(AIDT.IsLoaded())
-        {
-        cSize = AIDT.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += AIDT.GetSize() + 6;
     if(PKID.size())
         {
         cSize = (unsigned int)PKID.size() * (sizeof(unsigned int) + 6);
@@ -278,47 +252,19 @@ unsigned int CREARecord::GetSize()
         TotSize += cSize += 6;
         }
     if(DATA.IsLoaded())
-        {
-        cSize = DATA.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += DATA.GetSize() + 6;
     if(RNAM.IsLoaded())
-        {
-        cSize = RNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += RNAM.GetSize() + 6;
     if(ZNAM.IsLoaded())
-        {
-        cSize = ZNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += ZNAM.GetSize() + 6;
     if(TNAM.IsLoaded())
-        {
-        cSize = TNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += TNAM.GetSize() + 6;
     if(BNAM.IsLoaded())
-        {
-        cSize = BNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += BNAM.GetSize() + 6;
     if(WNAM.IsLoaded())
-        {
-        cSize = WNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += WNAM.GetSize() + 6;
     if(CSCR.IsLoaded())
-        {
-        cSize = CSCR.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += CSCR.GetSize() + 6;
     if(NAM0.IsLoaded())
         {
         cSize = NAM0.GetSize();
@@ -335,23 +281,11 @@ unsigned int CREARecord::GetSize()
         for(unsigned int p = 0; p < Sounds.size(); p++)
             {
             if(Sounds[p]->CSDT.IsLoaded())
-                {
-                cSize = Sounds[p]->CSDT.GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
+                TotSize += Sounds[p]->CSDT.GetSize() + 6;
             if(Sounds[p]->CSDI.IsLoaded())
-                {
-                cSize = Sounds[p]->CSDI.GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
+                TotSize += Sounds[p]->CSDI.GetSize() + 6;
             if(Sounds[p]->CSDC.IsLoaded())
-                {
-                cSize = Sounds[p]->CSDC.GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
+                TotSize += Sounds[p]->CSDC.GetSize() + 6;
             }
     return TotSize;
     }

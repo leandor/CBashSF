@@ -79,6 +79,11 @@ int Collection::AddMod(const char *ModName, bool CreateIfNotExist, bool DummyLoa
 
 int Collection::SafeSaveMod(char *ModName, bool CloseMod)
     {
+    if(CloseMod)
+        {
+        GMST_ModFile_Record.clear();
+        FID_ModFile_Record.clear();
+        }
     _chdir(ModsDir);
     FileBuffer buffer(BUFFERSIZE);
     //Saves to a temp file, then if successful, renames any existing files, and then renames temp file to ModName
@@ -210,6 +215,7 @@ int Collection::SafeSaveMod(char *ModName, bool CloseMod)
         }
     catch(...)
         {
+        buffer.close();
         if(FileExists(tName))
             remove(tName);
         printf("Error saving: %s\n  Temp file %s removed.\n", ModName, tName);
@@ -538,10 +544,10 @@ int Collection::LoadRecord(char *ModName, unsigned int recordFID)
 
     LookupRecord(ModName, recordFID, curModFile, curRecord);
 
-    if(curModFile == NULL || curRecord == NULL)
+    if(curModFile == NULL || curRecord == NULL || curRecord->recData == NULL)
         return -1;
 
-    curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+    curRecord->Read(curModFile->FormIDHandler);
     return 0;
     }
 
@@ -551,7 +557,7 @@ int Collection::UnloadRecord(char *ModName, unsigned int recordFID)
     Record *curRecord = NULL;
 
     LookupRecord(ModName, recordFID, curModFile, curRecord);
-    if(curModFile == NULL || curRecord == NULL)
+    if(curModFile == NULL || curRecord == NULL || curRecord->recData == NULL)
         return -1;
 
     curRecord->Unload();
@@ -1122,7 +1128,7 @@ int Collection::GetFIDFieldType(char *ModName, unsigned int recordFID, const uns
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             return curRecord->GetFieldType(Field);
             }
         return 0;
@@ -1133,7 +1139,7 @@ int Collection::GetFIDFieldType(char *ModName, unsigned int recordFID, const uns
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             return curRecord->GetFieldType(Field);
             }
     return 0;
@@ -1151,7 +1157,7 @@ int Collection::GetFIDListFieldType(char *ModName, unsigned int recordFID, const
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             return curRecord->GetListFieldType(subField, listField);
             }
         return 0;
@@ -1162,7 +1168,7 @@ int Collection::GetFIDListFieldType(char *ModName, unsigned int recordFID, const
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             return curRecord->GetListFieldType(subField, listField);
             }
     return 0;
@@ -1180,7 +1186,7 @@ int Collection::GetFIDListX2FieldType(char *ModName, unsigned int recordFID, con
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             return curRecord->GetListX2FieldType(subField, listField, listX2Field);
             }
         return 0;
@@ -1191,7 +1197,7 @@ int Collection::GetFIDListX2FieldType(char *ModName, unsigned int recordFID, con
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             return curRecord->GetListX2FieldType(subField, listField, listX2Field);
             }
     return 0;
@@ -1209,7 +1215,7 @@ int Collection::GetFIDListX3FieldType(char *ModName, unsigned int recordFID, con
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             return curRecord->GetListX3FieldType(subField, listField, listX2Field, listX3Field);
             }
         return 0;
@@ -1220,7 +1226,7 @@ int Collection::GetFIDListX3FieldType(char *ModName, unsigned int recordFID, con
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             return curRecord->GetListX3FieldType(subField, listField, listX2Field, listX3Field);
             }
     return 0;
@@ -1259,7 +1265,7 @@ unsigned int Collection::GetFIDFieldArraySize(char *ModName, unsigned int record
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             return curRecord->GetFieldArraySize(Field);
             }
         return 0;
@@ -1270,7 +1276,7 @@ unsigned int Collection::GetFIDFieldArraySize(char *ModName, unsigned int record
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             return curRecord->GetFieldArraySize(Field);
             }
     return 0;
@@ -1288,7 +1294,7 @@ unsigned int Collection::GetFIDListSize(char *ModName, unsigned int recordFID, c
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             return curRecord->GetListSize(Field);
             }
         return 0;
@@ -1299,7 +1305,7 @@ unsigned int Collection::GetFIDListSize(char *ModName, unsigned int recordFID, c
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             return curRecord->GetListSize(Field);
             }
     return 0;
@@ -1317,7 +1323,7 @@ unsigned int Collection::GetFIDListX2Size(char *ModName, unsigned int recordFID,
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             return curRecord->GetListX2Size(subField, listIndex, listField);
             }
         return 0;
@@ -1328,7 +1334,7 @@ unsigned int Collection::GetFIDListX2Size(char *ModName, unsigned int recordFID,
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             return curRecord->GetListX2Size(subField, listIndex, listField);
             }
     return 0;
@@ -1346,7 +1352,7 @@ unsigned int Collection::GetFIDListX3Size(char *ModName, unsigned int recordFID,
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             return curRecord->GetListX3Size(subField, listIndex, listField, listX2Index, listX2Field);
             }
         return 0;
@@ -1357,7 +1363,7 @@ unsigned int Collection::GetFIDListX3Size(char *ModName, unsigned int recordFID,
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             return curRecord->GetListX3Size(subField, listIndex, listField, listX2Index, listX2Field);
             }
     return 0;
@@ -1375,7 +1381,7 @@ unsigned int Collection::GetFIDListArraySize(char *ModName, unsigned int recordF
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             return curRecord->GetListArraySize(subField, listIndex, listField);
             }
         return 0;
@@ -1386,7 +1392,7 @@ unsigned int Collection::GetFIDListArraySize(char *ModName, unsigned int recordF
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             return curRecord->GetListArraySize(subField, listIndex, listField);
             }
     return 0;
@@ -1404,7 +1410,7 @@ unsigned int Collection::GetFIDListX2ArraySize(char *ModName, unsigned int recor
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             return curRecord->GetListX2ArraySize(subField, listIndex, listField, listX2Index, listX2Field);
             }
         return 0;
@@ -1415,7 +1421,7 @@ unsigned int Collection::GetFIDListX2ArraySize(char *ModName, unsigned int recor
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             return curRecord->GetListX2ArraySize(subField, listIndex, listField, listX2Index, listX2Field);
             }
     return 0;
@@ -1433,7 +1439,7 @@ unsigned int Collection::GetFIDListX3ArraySize(char *ModName, unsigned int recor
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             return curRecord->GetListX3ArraySize(subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field);
             }
         return 0;
@@ -1444,7 +1450,7 @@ unsigned int Collection::GetFIDListX3ArraySize(char *ModName, unsigned int recor
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             return curRecord->GetListX3ArraySize(subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field);
             }
     return 0;
@@ -1462,7 +1468,7 @@ void Collection::GetFIDFieldArray(char *ModName, unsigned int recordFID, const u
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             curRecord->GetFieldArray(Field, FieldValues);
             }
         return;
@@ -1473,7 +1479,7 @@ void Collection::GetFIDFieldArray(char *ModName, unsigned int recordFID, const u
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             curRecord->GetFieldArray(Field, FieldValues);
             return;
             }
@@ -1492,7 +1498,7 @@ void Collection::GetFIDListArray(char *ModName, unsigned int recordFID, const un
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             curRecord->GetListArray(subField, listIndex, listField, FieldValues);
             }
         return;
@@ -1503,7 +1509,7 @@ void Collection::GetFIDListArray(char *ModName, unsigned int recordFID, const un
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             curRecord->GetListArray(subField, listIndex, listField, FieldValues);
             return;
             }
@@ -1522,7 +1528,7 @@ void Collection::GetFIDListX2Array(char *ModName, unsigned int recordFID, const 
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             curRecord->GetListX2Array(subField, listIndex, listField, listX2Index, listX2Field, FieldValues);
             }
         return;
@@ -1533,7 +1539,7 @@ void Collection::GetFIDListX2Array(char *ModName, unsigned int recordFID, const 
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             curRecord->GetListX2Array(subField, listIndex, listField, listX2Index, listX2Field, FieldValues);
             return;
             }
@@ -1552,7 +1558,7 @@ void Collection::GetFIDListX3Array(char *ModName, unsigned int recordFID, const 
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             curRecord->GetListX3Array(subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValues);
             }
         return;
@@ -1563,7 +1569,7 @@ void Collection::GetFIDListX3Array(char *ModName, unsigned int recordFID, const 
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             curRecord->GetListX3Array(subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValues);
             return;
             }
@@ -1609,7 +1615,7 @@ void * Collection::ReadFIDField(char *ModName, unsigned int recordFID, const uns
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             return curRecord->GetField(Field);
             }
         return NULL;
@@ -1620,7 +1626,7 @@ void * Collection::ReadFIDField(char *ModName, unsigned int recordFID, const uns
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             return curRecord->GetField(Field);
             }
     return NULL;
@@ -1638,7 +1644,7 @@ void * Collection::ReadFIDListField(char *ModName, unsigned int recordFID, const
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             return curRecord->GetListField(subField, listIndex, listField);
             }
         return NULL;
@@ -1649,7 +1655,7 @@ void * Collection::ReadFIDListField(char *ModName, unsigned int recordFID, const
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             return curRecord->GetListField(subField, listIndex, listField);
             }
     return NULL;
@@ -1666,7 +1672,7 @@ void * Collection::ReadFIDListX2Field(char *ModName, unsigned int recordFID, con
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             return curRecord->GetListX2Field(subField, listIndex, listField, listX2Index, listX2Field);
             }
         return NULL;
@@ -1677,7 +1683,7 @@ void * Collection::ReadFIDListX2Field(char *ModName, unsigned int recordFID, con
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             return curRecord->GetListX2Field(subField, listIndex, listField, listX2Index, listX2Field);
             }
     return NULL;
@@ -1694,7 +1700,7 @@ void * Collection::ReadFIDListX3Field(char *ModName, unsigned int recordFID, con
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             return curRecord->GetListX3Field(subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field);
             }
         return NULL;
@@ -1705,7 +1711,7 @@ void * Collection::ReadFIDListX3Field(char *ModName, unsigned int recordFID, con
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             return curRecord->GetListX3Field(subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field);
             }
     return NULL;
@@ -1725,7 +1731,7 @@ int Collection::CreateFIDListElement(char *ModName, unsigned int recordFID, cons
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             listIndex = curRecord->CreateListElement(subField);
             }
         return listIndex;
@@ -1736,7 +1742,7 @@ int Collection::CreateFIDListElement(char *ModName, unsigned int recordFID, cons
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             listIndex = curRecord->CreateListElement(subField);
             return listIndex;
             }
@@ -1756,7 +1762,7 @@ int Collection::CreateFIDListX2Element(char *ModName, unsigned int recordFID, co
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             rListIndex = curRecord->CreateListX2Element(subField, listIndex, listField);
             }
         return rListIndex;
@@ -1767,7 +1773,7 @@ int Collection::CreateFIDListX2Element(char *ModName, unsigned int recordFID, co
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             rListIndex = curRecord->CreateListX2Element(subField, listIndex, listField);
             return rListIndex;
             }
@@ -1787,7 +1793,7 @@ int Collection::CreateFIDListX3Element(char *ModName, unsigned int recordFID, co
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             rListIndex = curRecord->CreateListX3Element(subField, listIndex, listField, listX2Index, listX2Field);
             }
         return rListIndex;
@@ -1798,7 +1804,7 @@ int Collection::CreateFIDListX3Element(char *ModName, unsigned int recordFID, co
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             rListIndex = curRecord->CreateListX3Element(subField, listIndex, listField, listX2Index, listX2Field);
             return rListIndex;
             }
@@ -1818,7 +1824,7 @@ int Collection::DeleteFIDListElement(char *ModName, unsigned int recordFID, cons
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             listIndex = curRecord->DeleteListElement(subField);
             }
         return listIndex;
@@ -1829,7 +1835,7 @@ int Collection::DeleteFIDListElement(char *ModName, unsigned int recordFID, cons
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             listIndex = curRecord->DeleteListElement(subField);
             return listIndex;
             }
@@ -1849,7 +1855,7 @@ int Collection::DeleteFIDListX2Element(char *ModName, unsigned int recordFID, co
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             rListIndex = curRecord->DeleteListX2Element(subField, listIndex, listField);
             }
         return rListIndex;
@@ -1860,7 +1866,7 @@ int Collection::DeleteFIDListX2Element(char *ModName, unsigned int recordFID, co
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             rListIndex = curRecord->DeleteListX2Element(subField, listIndex, listField);
             return rListIndex;
             }
@@ -1880,7 +1886,7 @@ int Collection::DeleteFIDListX3Element(char *ModName, unsigned int recordFID, co
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             rListIndex = curRecord->DeleteListX3Element(subField, listIndex, listField, listX2Index, listX2Field);
             }
         return rListIndex;
@@ -1891,7 +1897,7 @@ int Collection::DeleteFIDListX3Element(char *ModName, unsigned int recordFID, co
             {
             curModFile = it->second.first;
             curRecord = it->second.second;
-            curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+            curRecord->Read(curModFile->FormIDHandler);
             rListIndex = curRecord->DeleteListX3Element(subField, listIndex, listField, listX2Index, listX2Field);
             return rListIndex;
             }

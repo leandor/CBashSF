@@ -25,6 +25,11 @@ GPL License and Copyright Notice ============================================
 #include <vector>
 #include <list>
 #include <map>
+#include <boost/threadpool.hpp>
+
+#ifndef NUMTHREADS
+#define NUMTHREADS    boost::thread::hardware_concurrency()
+#endif
 
 class Collection
     {
@@ -499,8 +504,9 @@ class Collection
                         {
                         curModFile = it->second.first;
                         curRecord = it->second.second;
-                        curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+                        curRecord->Read(curModFile->FormIDHandler);
                         curRecord->SetField(curModFile->FormIDHandler, Field, FieldValue, nSize);
+                        curRecord->recData = NULL;
                         }
                     return;
                     }
@@ -511,8 +517,9 @@ class Collection
                         {
                         curModFile = it->second.first;
                         curRecord = it->second.second;
-                        curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+                        curRecord->Read(curModFile->FormIDHandler);
                         curRecord->SetField(curModFile->FormIDHandler, Field, FieldValue, nSize);
+                        curRecord->recData = NULL;
                         return;
                         }
                 }
@@ -539,8 +546,9 @@ class Collection
                         {
                         curModFile = it->second.first;
                         curRecord = it->second.second;
-                        curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+                        curRecord->Read(curModFile->FormIDHandler);
                         curRecord->SetField(curModFile->FormIDHandler, Field, FieldValue);
+                        curRecord->recData = NULL;
                         }
                     return;
                     }
@@ -551,8 +559,9 @@ class Collection
                         {
                         curModFile = it->second.first;
                         curRecord = it->second.second;
-                        curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+                        curRecord->Read(curModFile->FormIDHandler);
                         curRecord->SetField(curModFile->FormIDHandler, Field, FieldValue);
+                        curRecord->recData = NULL;
                         return;
                         }
                 }
@@ -579,8 +588,9 @@ class Collection
                         {
                         curModFile = it->second.first;
                         curRecord = it->second.second;
-                        curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+                        curRecord->Read(curModFile->FormIDHandler);
                         curRecord->SetListField(curModFile->FormIDHandler, subField, listIndex, listField, FieldValue, nSize);
+                        curRecord->recData = NULL;
                         }
                     return;
                     }
@@ -591,8 +601,9 @@ class Collection
                         {
                         curModFile = it->second.first;
                         curRecord = it->second.second;
-                        curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+                        curRecord->Read(curModFile->FormIDHandler);
                         curRecord->SetListField(curModFile->FormIDHandler, subField, listIndex, listField, FieldValue, nSize);
+                        curRecord->recData = NULL;
                         return;
                         }
                 }
@@ -619,8 +630,9 @@ class Collection
                         {
                         curModFile = it->second.first;
                         curRecord = it->second.second;
-                        curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+                        curRecord->Read(curModFile->FormIDHandler);
                         curRecord->SetListField(curModFile->FormIDHandler, subField, listIndex, listField, FieldValue);
+                        curRecord->recData = NULL;
                         }
                     return;
                     }
@@ -631,8 +643,9 @@ class Collection
                         {
                         curModFile = it->second.first;
                         curRecord = it->second.second;
-                        curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+                        curRecord->Read(curModFile->FormIDHandler);
                         curRecord->SetListField(curModFile->FormIDHandler, subField, listIndex, listField, FieldValue);
+                        curRecord->recData = NULL;
                         return;
                         }
                 }
@@ -659,8 +672,9 @@ class Collection
                         {
                         curModFile = it->second.first;
                         curRecord = it->second.second;
-                        curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+                        curRecord->Read(curModFile->FormIDHandler);
                         curRecord->SetListX2Field(curModFile->FormIDHandler, subField, listIndex, listField, listX2Index, listX2Field, FieldValue, nSize);
+                        curRecord->recData = NULL;
                         }
                     return;
                     }
@@ -671,8 +685,9 @@ class Collection
                         {
                         curModFile = it->second.first;
                         curRecord = it->second.second;
-                        curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+                        curRecord->Read(curModFile->FormIDHandler);
                         curRecord->SetListX2Field(curModFile->FormIDHandler, subField, listIndex, listField, listX2Index, listX2Field, FieldValue, nSize);
+                        curRecord->recData = NULL;
                         return;
                         }
                 }
@@ -699,8 +714,9 @@ class Collection
                         {
                         curModFile = it->second.first;
                         curRecord = it->second.second;
-                        curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+                        curRecord->Read(curModFile->FormIDHandler);
                         curRecord->SetListX2Field(curModFile->FormIDHandler, subField, listIndex, listField, listX2Index, listX2Field, FieldValue);
+                        curRecord->recData = NULL;
                         }
                     return;
                     }
@@ -711,8 +727,9 @@ class Collection
                         {
                         curModFile = it->second.first;
                         curRecord = it->second.second;
-                        curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+                        curRecord->Read(curModFile->FormIDHandler);
                         curRecord->SetListX2Field(curModFile->FormIDHandler, subField, listIndex, listField, listX2Index, listX2Field, FieldValue);
+                        curRecord->recData = NULL;
                         return;
                         }
                 }
@@ -739,8 +756,9 @@ class Collection
                         {
                         curModFile = it->second.first;
                         curRecord = it->second.second;
-                        curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+                        curRecord->Read(curModFile->FormIDHandler);
                         curRecord->SetListX3Field(curModFile->FormIDHandler, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValue, nSize);
+                        curRecord->recData = NULL;
                         }
                     return;
                     }
@@ -751,8 +769,9 @@ class Collection
                         {
                         curModFile = it->second.first;
                         curRecord = it->second.second;
-                        curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+                        curRecord->Read(curModFile->FormIDHandler);
                         curRecord->SetListX3Field(curModFile->FormIDHandler, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValue, nSize);
+                        curRecord->recData = NULL;
                         return;
                         }
                 }
@@ -779,8 +798,9 @@ class Collection
                         {
                         curModFile = it->second.first;
                         curRecord = it->second.second;
-                        curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+                        curRecord->Read(curModFile->FormIDHandler);
                         curRecord->SetListX3Field(curModFile->FormIDHandler, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValue);
+                        curRecord->recData = NULL;
                         }
                     return;
                     }
@@ -791,8 +811,9 @@ class Collection
                         {
                         curModFile = it->second.first;
                         curRecord = it->second.second;
-                        curRecord->Read(curModFile->fileBuffer, curModFile->FormIDHandler);
+                        curRecord->Read(curModFile->FormIDHandler);
                         curRecord->SetListX3Field(curModFile->FormIDHandler, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValue);
+                        curRecord->recData = NULL;
                         return;
                         }
                 }

@@ -79,9 +79,9 @@ int ACRERecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
-                printf("  ACRE: Unknown subType = %04x\n", subType);
+                printf("  ACRE: %08X - Unknown subType = %04x\n", formID, subType);
                 printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", recStart + curPos - 6);
+                printf("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
                 break;
             }
@@ -91,6 +91,8 @@ int ACRERecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
 
 unsigned int ACRERecord::GetSize()
     {
+    if(recData != NULL)
+        return *(unsigned int*)&recData[-16];
     unsigned int cSize = 0;
     unsigned int TotSize = 0;
 
@@ -102,37 +104,19 @@ unsigned int ACRERecord::GetSize()
         }
 
     if(NAME.IsLoaded())
-        {
-        cSize = NAME.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += NAME.GetSize() + 6;
 
     if(Ownership.IsLoaded() && Ownership->XOWN.IsLoaded())
         {
-        cSize = Ownership->XOWN.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
+        TotSize += Ownership->XOWN.GetSize() + 6;
         if(Ownership->XRNK.IsLoaded())
-            {
-            cSize = Ownership->XRNK.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
+            TotSize += Ownership->XRNK.GetSize() + 6;
         if(Ownership->XGLB.IsLoaded())
-            {
-            cSize = Ownership->XGLB.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
+            TotSize += Ownership->XGLB.GetSize() + 6;
         }
 
     if(XESP.IsLoaded())
-        {
-        cSize = XESP.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += XESP.GetSize() + 6;
 
     if(XRGD.IsLoaded())
         {
@@ -142,18 +126,10 @@ unsigned int ACRERecord::GetSize()
         }
 
     if(XSCL.IsLoaded())
-        {
-        cSize = XSCL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += XSCL.GetSize() + 6;
 
     if(DATA.IsLoaded())
-        {
-        cSize = DATA.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        TotSize += DATA.GetSize() + 6;
 
     return TotSize;
     }
