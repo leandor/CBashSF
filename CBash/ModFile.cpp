@@ -577,7 +577,7 @@ int ModFile::CleanMasters()
         if(EFSH.CheckMasters(p, FormIDHandler)) break;
         //Master not used, so remove it.
         TES4.MAST.erase(TES4.MAST.begin() + p);
-        --p;
+        --p; //Keep the value from incrementing
         ++cleaned;
         }
     return cleaned;
