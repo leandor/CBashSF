@@ -149,6 +149,8 @@ class LVLIRecord : public Record
 
         void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
+            if(!IsLoaded())
+                return;
             for(unsigned int x = 0; x < Entries.size(); x++)
                 FormIDs.push_back(&Entries[x]->value.listId);
             }
@@ -176,7 +178,7 @@ class LVLIRecord : public Record
         //void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize();
+        unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eLVLI;}
         char * GetStrType() {return "LVLI";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);

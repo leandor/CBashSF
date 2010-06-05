@@ -260,6 +260,8 @@ class PACKRecord : public Record
 
         void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
+            if(!IsLoaded())
+                return;
             std::pair<unsigned int, unsigned int> CTDAFunction;
             std::map<unsigned int, std::pair<unsigned int,unsigned int>>::const_iterator curCTDAFunction;
             if(PLDT.IsLoaded() && PLDT->locType != 5)
@@ -308,7 +310,7 @@ class PACKRecord : public Record
 
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize();
+        unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return ePACK;}
         char * GetStrType() {return "PACK";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);

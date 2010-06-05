@@ -137,6 +137,8 @@ class LTEXRecord : public Record
 
         void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
+            if(!IsLoaded())
+                return;
             for(unsigned int x = 0; x < GNAM.size(); x++)
                 FormIDs.push_back(GNAM[x]);
             }
@@ -154,7 +156,7 @@ class LTEXRecord : public Record
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue[], unsigned int nSize);
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize();
+        unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eLTEX;}
         char * GetStrType() {return "LTEX";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);

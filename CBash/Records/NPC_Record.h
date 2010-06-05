@@ -371,6 +371,8 @@ class NPC_Record : public Record
 
         void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
+            if(!IsLoaded())
+                return;
             for(unsigned int x = 0; x < SNAM.size(); x++)
                 FormIDs.push_back(&SNAM[x]->value.faction);
             if(INAM.IsLoaded())
@@ -424,7 +426,7 @@ class NPC_Record : public Record
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char **FieldValue, unsigned int nSize);
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize();
+        unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eNPC_;}
         char * GetStrType() {return "NPC_";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);

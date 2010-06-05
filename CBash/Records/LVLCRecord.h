@@ -153,6 +153,8 @@ class LVLCRecord : public Record
 
         void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
+            if(!IsLoaded())
+                return;
             if(SCRI.IsLoaded())
                 FormIDs.push_back(&SCRI->fid);
             if(TNAM.IsLoaded())
@@ -182,7 +184,7 @@ class LVLCRecord : public Record
         void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue);
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize();
+        unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eLVLC;}
         char * GetStrType() {return "LVLC";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);

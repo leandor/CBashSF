@@ -583,6 +583,8 @@ class RACERecord : public Record
 
         void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
+            if(!IsLoaded())
+                return;
             for(unsigned int x = 0; x < SPLO.size(); x++)
                 FormIDs.push_back(SPLO[x]);
             for(unsigned int x = 0; x < XNAM.size(); x++)
@@ -622,7 +624,7 @@ class RACERecord : public Record
 
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize();
+        unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eRACE;}
         char * GetStrType() {return "RACE";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
