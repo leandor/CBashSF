@@ -112,9 +112,9 @@ int ALCHRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
     return 0;
     }
 
-unsigned int ALCHRecord::GetSize()
+unsigned int ALCHRecord::GetSize(bool forceCalc)
     {
-    if(recData != NULL)
+    if(!forceCalc && recData != NULL)
         return *(unsigned int*)&recData[-16];
     unsigned int cSize = 0;
     unsigned int TotSize = 0;

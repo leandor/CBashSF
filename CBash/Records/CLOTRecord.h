@@ -150,6 +150,8 @@ class CLOTRecord : public Record
 
         void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
+            if(!IsLoaded())
+                return;
             if(SCRI.IsLoaded())
                 FormIDs.push_back(&SCRI->fid);
             if(ENAM.IsLoaded())
@@ -171,7 +173,7 @@ class CLOTRecord : public Record
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize();
+        unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eCLOT;}
         char * GetStrType() {return "CLOT";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);

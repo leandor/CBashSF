@@ -93,20 +93,13 @@ void _FormIDHandler::UpdateFormIDLookup()
     //and for when collapsed back into a writable format
     //This function populates that table, and allows much, much faster formID resolution
     //which occurs on every formID that is read, set, and written...
+    
+    //The Collapsed lookup table has to be updated anytime the mod's masters change.
     unsigned char numMods = (unsigned char)LoadOrder.size();
     char *curMaster = NULL;
     CollapsedIndex = (unsigned char)MAST.size();
-    for(unsigned int y = 0; y < numMods; ++y)
-        if(_stricmp(LoadOrder[y], FileName) == 0)
-            {
-            ExpandedIndex = y;
-            break;
-            }
     for(unsigned char p = 0; p < 255; ++p)
-        {
         CollapseIndex[p] = CollapsedIndex;
-        ExpandIndex[p] = ExpandedIndex;
-        }
 
     for(unsigned char p = 0; p < CollapsedIndex; ++p)
         {
@@ -114,7 +107,6 @@ void _FormIDHandler::UpdateFormIDLookup()
         for(unsigned char y = 0; y < numMods; ++y)
             if(_stricmp(LoadOrder[y], curMaster) == 0)
                 {
-                ExpandIndex[p] = y;
                 CollapseIndex[y] = p;
                 break;
                 }
@@ -122,13 +114,18 @@ void _FormIDHandler::UpdateFormIDLookup()
     return;
     }
 
-void _FormIDHandler::UpdateFormIDLookup(const unsigned char &expandedIndex)
+void _FormIDHandler::CreateFormIDLookup(const unsigned char &expandedIndex)
     {
     //Each ModFile maintains a formID resolution lookup table of valid modIndexs
     //both when expanded into a load order corrected format
     //and for when collapsed back into a writable format
     //This function populates that table, and allows much, much faster formID resolution
     //which occurs on every formID that is read, set, and written...
+    
+    //The Expanded lookup table is only created once when the mod is first loaded.
+    //This allows records to be read even after a master has been added, and have the formID
+    //be set to the proper load order corrected value.
+    //This can only be done because the load order is finalized once the mods are loaded.
     unsigned char numMods = (unsigned char)LoadOrder.size();
     char *curMaster = NULL;
     CollapsedIndex = (unsigned char)MAST.size();
@@ -161,7 +158,6 @@ void _FormIDHandler::AddMaster(unsigned int &recordFID)
     if((recordFID == 0) || (modIndex == ExpandedIndex) || (CollapseIndex[modIndex] != CollapsedIndex))
         return;
     //If the modIndex doesn't match to a loaded mod, it gets assigned to the mod that it is in.
-    //if(modIndex >= LoadOrder.size())
     if(modIndex >= LoadOrder.size())
         {
         #ifdef _DEBUG
@@ -175,6 +171,7 @@ void _FormIDHandler::AddMaster(unsigned int &recordFID)
     //destMod->TES4.MAST.push_back(STRING(*curName));
     curName = LoadOrder[modIndex];
     MAST.push_back(STRING(curName));
+    bMastersChanged = true;
     //Update the formID resolution lookup table
     UpdateFormIDLookup();
     return;
@@ -188,7 +185,6 @@ void _FormIDHandler::AddMaster(unsigned int *&recordFID)
     if((*recordFID == 0) || (modIndex == ExpandedIndex) || (CollapseIndex[modIndex] != CollapsedIndex))
         return;
     //If the modIndex doesn't match to a loaded mod, it gets assigned to the mod that it is in.
-    //if(modIndex >= LoadOrder.size())
     if(modIndex >= LoadOrder.size())
         {
         #ifdef _DEBUG
@@ -202,9 +198,25 @@ void _FormIDHandler::AddMaster(unsigned int *&recordFID)
     //destMod->TES4.MAST.push_back(STRING(*curName));
     curName = LoadOrder[modIndex];
     MAST.push_back(STRING(curName));
+    bMastersChanged = true;
     //Update the formID resolution lookup table
     UpdateFormIDLookup();
     return;
+    }
+
+bool _FormIDHandler::MastersChanged()
+    {
+    return bMastersChanged;
+    }
+
+bool _FormIDHandler::UsesMaster(const unsigned int *&recordFID, const unsigned char &MASTIndex)
+    {
+    return (ExpandIndex[MASTIndex] == *recordFID >> 24);
+    }
+
+bool _FormIDHandler::UsesMaster(const unsigned int &recordFID, const unsigned char &MASTIndex)
+    {
+    return (ExpandIndex[MASTIndex] == recordFID >> 24);
     }
 
 bool FileExists(const char *FileName)
@@ -212,21 +224,6 @@ bool FileExists(const char *FileName)
     struct stat statBuffer;
     return (stat(FileName, &statBuffer) >= 0 && statBuffer.st_mode & S_IFREG);
     }
-
-//bool sortLoad(const char *l, const char *r)
-//    {
-//    struct stat lbuf, rbuf;
-//    if(stat(l, &lbuf) < 0)
-//        return false;
-//    if(stat(r, &rbuf) < 0)
-//        return true;
-//    return lbuf.st_mtime < rbuf.st_mtime;
-//    }
-
-//bool sameFile(const char *l, const char *r)
-//    {
-//    return ( _stricmp(l,r) == 0 );
-//    }
 
 void _writeBuffer(void *_DstBuf, const void *_SrcBuf, unsigned int _MaxCharCount, unsigned int &_BufPos)
     {

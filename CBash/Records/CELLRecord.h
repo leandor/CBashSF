@@ -209,6 +209,8 @@ class CELLRecord : public Record
 
         void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
+            if(!IsLoaded())
+                return;
             if(Ownership.IsLoaded())
                 {
                 if(Ownership->XOWN.IsLoaded())
@@ -239,7 +241,7 @@ class CELLRecord : public Record
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue[], unsigned int nSize);
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize();
+        unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eCELL;}
         char * GetStrType() {return "CELL";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);

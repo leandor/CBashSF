@@ -23,2235 +23,1169 @@ GPL License and Copyright Notice ============================================
 
 unsigned int Collection::GetNumGMSTRecords(char *ModName)
     {
-    if(ModName == NULL)
-        return (unsigned int)GMST_ModFile_Record.size();
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->GMST.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->GMST.Records.size();
     }
 
 unsigned int Collection::GetNumGLOBRecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->GLOB.Records.size();
-        return cSize;
-        }
-
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->GLOB.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->GLOB.Records.size();
     }
 
 unsigned int Collection::GetNumCLASRecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->CLAS.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->CLAS.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->CLAS.Records.size();
     }
 
 unsigned int Collection::GetNumFACTRecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->FACT.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->FACT.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->FACT.Records.size();
     }
 
 unsigned int Collection::GetNumHAIRRecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->HAIR.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->HAIR.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->HAIR.Records.size();
     }
 
 unsigned int Collection::GetNumEYESRecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->EYES.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->EYES.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->EYES.Records.size();
     }
 
 unsigned int Collection::GetNumRACERecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->RACE.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->RACE.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->RACE.Records.size();
     }
 
 unsigned int Collection::GetNumSOUNRecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->SOUN.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->SOUN.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->SOUN.Records.size();
     }
 
 unsigned int Collection::GetNumSKILRecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->SKIL.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->SKIL.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->SKIL.Records.size();
     }
 
 unsigned int Collection::GetNumMGEFRecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->MGEF.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->MGEF.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->MGEF.Records.size();
     }
 
 unsigned int Collection::GetNumSCPTRecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->SCPT.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->SCPT.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->SCPT.Records.size();
     }
 
 unsigned int Collection::GetNumLTEXRecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->LTEX.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->LTEX.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->LTEX.Records.size();
     }
 
 unsigned int Collection::GetNumENCHRecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->ENCH.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->ENCH.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->ENCH.Records.size();
     }
 
 unsigned int Collection::GetNumSPELRecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->SPEL.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->SPEL.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->SPEL.Records.size();
     }
 
 unsigned int Collection::GetNumBSGNRecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->BSGN.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->BSGN.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->BSGN.Records.size();
     }
 
 unsigned int Collection::GetNumACTIRecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->ACTI.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->ACTI.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->ACTI.Records.size();
     }
 
 unsigned int Collection::GetNumAPPARecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->APPA.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->APPA.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->APPA.Records.size();
     }
 
 unsigned int Collection::GetNumARMORecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->ARMO.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->ARMO.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->ARMO.Records.size();
     }
 
 unsigned int Collection::GetNumBOOKRecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->BOOK.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->BOOK.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->BOOK.Records.size();
     }
 
 unsigned int Collection::GetNumCLOTRecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->CLOT.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->CLOT.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->CLOT.Records.size();
     }
 
 unsigned int Collection::GetNumCONTRecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->CONT.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->CONT.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->CONT.Records.size();
     }
 
 unsigned int Collection::GetNumDOORRecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->DOOR.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->DOOR.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->DOOR.Records.size();
     }
 
 unsigned int Collection::GetNumINGRRecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->INGR.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->INGR.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->INGR.Records.size();
     }
 
 unsigned int Collection::GetNumLIGHRecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->LIGH.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->LIGH.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->LIGH.Records.size();
     }
 
 unsigned int Collection::GetNumMISCRecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->MISC.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->MISC.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->MISC.Records.size();
     }
 
 unsigned int Collection::GetNumSTATRecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->STAT.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->STAT.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->STAT.Records.size();
     }
 
 unsigned int Collection::GetNumGRASRecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->GRAS.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->GRAS.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->GRAS.Records.size();
     }
 
 unsigned int Collection::GetNumTREERecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->TREE.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->TREE.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->TREE.Records.size();
     }
 
 unsigned int Collection::GetNumFLORRecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->FLOR.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->FLOR.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->FLOR.Records.size();
     }
 
 unsigned int Collection::GetNumFURNRecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->FURN.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->FURN.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->FURN.Records.size();
     }
 
 unsigned int Collection::GetNumWEAPRecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->WEAP.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->WEAP.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->WEAP.Records.size();
     }
 
 unsigned int Collection::GetNumAMMORecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->AMMO.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->AMMO.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->AMMO.Records.size();
     }
 
 unsigned int Collection::GetNumNPC_Records(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->NPC_.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->NPC_.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->NPC_.Records.size();
     }
 
 unsigned int Collection::GetNumCREARecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->CREA.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->CREA.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->CREA.Records.size();
     }
 
 unsigned int Collection::GetNumLVLCRecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->LVLC.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->LVLC.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->LVLC.Records.size();
     }
 
 unsigned int Collection::GetNumSLGMRecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->SLGM.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->SLGM.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->SLGM.Records.size();
     }
 
 unsigned int Collection::GetNumKEYMRecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->KEYM.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->KEYM.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->KEYM.Records.size();
     }
 
 unsigned int Collection::GetNumALCHRecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->ALCH.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->ALCH.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->ALCH.Records.size();
     }
 
 unsigned int Collection::GetNumSBSPRecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->SBSP.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->SBSP.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->SBSP.Records.size();
     }
 
 unsigned int Collection::GetNumSGSTRecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->SGST.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->SGST.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->SGST.Records.size();
     }
 
 unsigned int Collection::GetNumLVLIRecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->LVLI.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->LVLI.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->LVLI.Records.size();
     }
 
 unsigned int Collection::GetNumWTHRRecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->WTHR.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->WTHR.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->WTHR.Records.size();
     }
 
 unsigned int Collection::GetNumCLMTRecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->CLMT.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->CLMT.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->CLMT.Records.size();
     }
 
 unsigned int Collection::GetNumREGNRecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->REGN.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->REGN.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->REGN.Records.size();
     }
 
 unsigned int Collection::GetNumCELLRecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->CELL.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->CELL.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->CELL.Records.size();
     }
 
 unsigned int Collection::GetNumACHRRecords(char *ModName, unsigned int parentFID)
     {
-    if(ModName == NULL)
-        return 0;
-
     unsigned int cSize = 0;
     ModFile *curModFile = NULL;
-    CELLRecord *dummyParentRecord = NULL;
+    CELLRecord *worldCELLRecord = NULL;
     CELLRecord *parentRecord = NULL;
+    ACHRRecord *curRecord = NULL;
     int gridX = 0, gridY = 0;
-    curModFile = LookupModFile(ModName);
+
     LookupRecord(ModName, parentFID, curModFile, parentRecord);
-    if(parentRecord == NULL || curModFile == NULL)
+    if(curModFile == NULL || parentRecord == NULL)
         return 0;
-    dummyParentRecord = LookupWorldCELL(curModFile, parentRecord);
+    worldCELLRecord = LookupWorldCELL(curModFile, parentRecord);
 
     cSize += (unsigned int)parentRecord->ACHR.size();
-    if(dummyParentRecord != NULL)
+    //There might be ACHR records in the World CELL if it exists
+    if(worldCELLRecord != NULL)
         {
-        for(unsigned int x = 0; x < dummyParentRecord->ACHR.size();)
+        parentRecord->Read(curModFile->FormIDHandler);
+        for(unsigned int x = 0; x < worldCELLRecord->ACHR.size();)
             {
-            dummyParentRecord->ACHR[x]->Read(curModFile->FormIDHandler);
-            ResolveGrid(dummyParentRecord->ACHR[x]->DATA.value.posX, dummyParentRecord->ACHR[x]->DATA.value.posY, gridX, gridY);
+            curRecord = worldCELLRecord->ACHR[x];
+            //Have to test each ACHR to see if it belongs to the cell. This is determined by its positioning.
+            curRecord->Read(curModFile->FormIDHandler);
+            ResolveGrid(curRecord->DATA.value.posX, curRecord->DATA.value.posY, gridX, gridY);
+            curRecord->Unload();
             if(gridX == parentRecord->XCLC.value.posX && gridY == parentRecord->XCLC.value.posY)
                 {
-                parentRecord->ACHR.push_back(dummyParentRecord->ACHR[x]);
-                dummyParentRecord->ACHR.erase(dummyParentRecord->ACHR.begin() + x);
+                //For easier use later on, go ahead and move it to the parent cell.
+                //It will get moved back later during the save process if need be.
+                parentRecord->ACHR.push_back(curRecord);
+                worldCELLRecord->ACHR.erase(worldCELLRecord->ACHR.begin() + x);
                 ++cSize;
                 }
             else ++x;
             }
+        parentRecord->Unload();
         }
     return cSize;
     }
 
 unsigned int Collection::GetNumACRERecords(char *ModName, unsigned int parentFID)
     {
-    if(ModName == NULL)
-        return 0;
-
     unsigned int cSize = 0;
     ModFile *curModFile = NULL;
-    CELLRecord *dummyParentRecord = NULL;
+    CELLRecord *worldCELLRecord = NULL;
     CELLRecord *parentRecord = NULL;
+    ACRERecord *curRecord = NULL;
     int gridX = 0, gridY = 0;
-    curModFile = LookupModFile(ModName);
+
     LookupRecord(ModName, parentFID, curModFile, parentRecord);
-    if(parentRecord == NULL || curModFile == NULL)
+    if(curModFile == NULL ||parentRecord == NULL)
         return 0;
-    dummyParentRecord = LookupWorldCELL(curModFile, parentRecord);
+    worldCELLRecord = LookupWorldCELL(curModFile, parentRecord);
 
     cSize += (unsigned int)parentRecord->ACRE.size();
-    if(dummyParentRecord != NULL)
+    //There might be ACRE records in the World CELL if it exists
+    if(worldCELLRecord != NULL)
         {
-        for(unsigned int x = 0; x < dummyParentRecord->ACRE.size();)
+        parentRecord->Read(curModFile->FormIDHandler);
+        for(unsigned int x = 0; x < worldCELLRecord->ACRE.size();)
             {
-            dummyParentRecord->ACRE[x]->Read(curModFile->FormIDHandler);
-            ResolveGrid(dummyParentRecord->ACRE[x]->DATA.value.posX, dummyParentRecord->ACRE[x]->DATA.value.posY, gridX, gridY);
+            curRecord = worldCELLRecord->ACRE[x];
+            //Have to test each ACRE to see if it belongs to the cell. This is determined by its positioning.
+            curRecord->Read(curModFile->FormIDHandler);
+            ResolveGrid(curRecord->DATA.value.posX, curRecord->DATA.value.posY, gridX, gridY);
+            curRecord->Unload();
             if(gridX == parentRecord->XCLC.value.posX && gridY == parentRecord->XCLC.value.posY)
                 {
-                parentRecord->ACRE.push_back(dummyParentRecord->ACRE[x]);
-                dummyParentRecord->ACRE.erase(dummyParentRecord->ACRE.begin() + x);
+                //For easier use later on, go ahead and move it to the parent cell.
+                //It will get moved back later during the save process if need be.
+                parentRecord->ACRE.push_back(curRecord);
+                worldCELLRecord->ACRE.erase(worldCELLRecord->ACRE.begin() + x);
                 ++cSize;
                 }
             else ++x;
             }
+        parentRecord->Unload();
         }
     return cSize;
     }
 
 unsigned int Collection::GetNumREFRRecords(char *ModName, unsigned int parentFID)
     {
-    if(ModName == NULL)
-        return 0;
-
     unsigned int cSize = 0;
     ModFile *curModFile = NULL;
-    CELLRecord *dummyParentRecord = NULL;
+    CELLRecord *worldCELLRecord = NULL;
     CELLRecord *parentRecord = NULL;
+    REFRRecord *curRecord = NULL;
     int gridX = 0, gridY = 0;
-    curModFile = LookupModFile(ModName);
+    
     LookupRecord(ModName, parentFID, curModFile, parentRecord);
-    if(parentRecord == NULL || curModFile == NULL)
+    if(curModFile == NULL ||parentRecord == NULL)
         return 0;
-    dummyParentRecord = LookupWorldCELL(curModFile, parentRecord);
+    worldCELLRecord = LookupWorldCELL(curModFile, parentRecord);
 
     cSize += (unsigned int)parentRecord->REFR.size();
-    if(dummyParentRecord != NULL)
+    //There might be REFR records in the World CELL if it exists
+    if(worldCELLRecord != NULL)
         {
-        for(unsigned int x = 0; x < dummyParentRecord->REFR.size();)
+        parentRecord->Read(curModFile->FormIDHandler);
+        for(unsigned int x = 0; x < worldCELLRecord->REFR.size();)
             {
-            dummyParentRecord->REFR[x]->Read(curModFile->FormIDHandler);
-            ResolveGrid(dummyParentRecord->REFR[x]->DATA.value.posX, dummyParentRecord->REFR[x]->DATA.value.posY, gridX, gridY);
+            curRecord = worldCELLRecord->REFR[x];
+            //Have to test each REFR to see if it belongs to the cell. This is determined by its positioning.
+            curRecord->Read(curModFile->FormIDHandler);
+            ResolveGrid(curRecord->DATA.value.posX, curRecord->DATA.value.posY, gridX, gridY);
+            curRecord->Unload();
             if(gridX == parentRecord->XCLC.value.posX && gridY == parentRecord->XCLC.value.posY)
                 {
-                parentRecord->REFR.push_back(dummyParentRecord->REFR[x]);
-                dummyParentRecord->REFR.erase(dummyParentRecord->REFR.begin() + x);
+                //For easier use later on, go ahead and move it to the parent cell.
+                //It will get moved back later during the save process if need be.
+                parentRecord->REFR.push_back(curRecord);
+                worldCELLRecord->REFR.erase(worldCELLRecord->REFR.begin() + x);
                 ++cSize;
                 }
             else ++x;
             }
+        parentRecord->Unload();
         }
     return cSize;
     }
 
 unsigned int Collection::GetNumWRLDRecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->WRLD.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->WRLD.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->WRLD.Records.size();
     }
 
 unsigned int Collection::GetNumDIALRecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->DIAL.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->DIAL.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->DIAL.Records.size();
     }
 
 unsigned int Collection::GetNumQUSTRecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->QUST.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->QUST.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->QUST.Records.size();
     }
 
 unsigned int Collection::GetNumIDLERecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->IDLE.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->IDLE.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->IDLE.Records.size();
     }
 
 unsigned int Collection::GetNumPACKRecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->PACK.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->PACK.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->PACK.Records.size();
     }
 
 unsigned int Collection::GetNumCSTYRecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->CSTY.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->CSTY.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->CSTY.Records.size();
     }
 
 unsigned int Collection::GetNumLSCRRecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->LSCR.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->LSCR.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->LSCR.Records.size();
     }
 
 unsigned int Collection::GetNumLVSPRecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->LVSP.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->LVSP.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->LVSP.Records.size();
     }
 
 unsigned int Collection::GetNumANIORecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->ANIO.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->ANIO.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->ANIO.Records.size();
     }
 
 unsigned int Collection::GetNumWATRRecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->WATR.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->WATR.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->WATR.Records.size();
     }
 
 unsigned int Collection::GetNumEFSHRecords(char *ModName)
     {
-    unsigned int cSize = 0;
-    if(ModName == NULL)
-        {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
-            cSize += (unsigned int)ModFiles[p]->EFSH.Records.size();
-        return cSize;
-        }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return (unsigned int)ModFiles[p]->EFSH.Records.size();
-    return 0;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->EFSH.Records.size();
     }
 //ADD DEFINITIONS HERE
 
 void Collection::GetGMSTRecords(char *ModName, char **RecordEIDs)
     {
-    unsigned int p = 0;
-    if(ModName == NULL)
-        for(std::multimap<char*,std::pair<ModFile *, Record *>, sameStr>::iterator curGMST = GMST_ModFile_Record.begin();curGMST!=GMST_ModFile_Record.end();curGMST++, p++)
-            RecordEIDs[p] = curGMST->first;
-    else
-        {
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                for(unsigned int x = 0; x < ModFiles[p]->GMST.Records.size(); x++)
-                    RecordEIDs[x] = ModFiles[p]->GMST.Records[x]->EDID.value;
-                return;
-                }
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->GMST.Records.size(); x++)
+        RecordEIDs[x] = curModFile->GMST.Records[x]->EDID.value;
     return;
     }
 
 void Collection::GetGLOBRecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->GLOB.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->GLOB.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->GLOB.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->GLOB.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->GLOB.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->GLOB.Records[x]->formID;
     return;
     }
 
 void Collection::GetCLASRecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->CLAS.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->CLAS.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->CLAS.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->CLAS.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->CLAS.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->CLAS.Records[x]->formID;
     return;
     }
 
 void Collection::GetFACTRecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->FACT.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->FACT.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->FACT.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->FACT.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->FACT.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->FACT.Records[x]->formID;
     return;
     }
 
 void Collection::GetHAIRRecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->HAIR.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->HAIR.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->HAIR.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->HAIR.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->HAIR.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->HAIR.Records[x]->formID;
     return;
     }
 
 void Collection::GetEYESRecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->EYES.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->EYES.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->EYES.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->EYES.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->EYES.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->EYES.Records[x]->formID;
     return;
     }
 
 void Collection::GetRACERecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->RACE.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->RACE.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->RACE.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->RACE.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->RACE.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->RACE.Records[x]->formID;
     return;
     }
 
 void Collection::GetSOUNRecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->SOUN.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->SOUN.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->SOUN.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->SOUN.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->SOUN.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->SOUN.Records[x]->formID;
     return;
     }
 
 void Collection::GetSKILRecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->SKIL.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->SKIL.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->SKIL.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->SKIL.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->SKIL.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->SKIL.Records[x]->formID;
     return;
     }
 
 void Collection::GetMGEFRecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->MGEF.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->MGEF.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->MGEF.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->MGEF.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->MGEF.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->MGEF.Records[x]->formID;
     return;
     }
 
 void Collection::GetSCPTRecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->SCPT.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->SCPT.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->SCPT.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->SCPT.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->SCPT.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->SCPT.Records[x]->formID;
     return;
     }
 
 void Collection::GetLTEXRecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->LTEX.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->LTEX.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->LTEX.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->LTEX.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->LTEX.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->LTEX.Records[x]->formID;
     return;
     }
 
 void Collection::GetENCHRecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->ENCH.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->ENCH.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->ENCH.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->ENCH.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->ENCH.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->ENCH.Records[x]->formID;
     return;
     }
 
 void Collection::GetSPELRecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->SPEL.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->SPEL.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->SPEL.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->SPEL.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->SPEL.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->SPEL.Records[x]->formID;
     return;
     }
 
 void Collection::GetBSGNRecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->BSGN.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->BSGN.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->BSGN.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->BSGN.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->BSGN.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->BSGN.Records[x]->formID;
     return;
     }
 
 void Collection::GetACTIRecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->ACTI.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->ACTI.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->ACTI.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->ACTI.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->ACTI.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->ACTI.Records[x]->formID;
     return;
     }
 
 void Collection::GetAPPARecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->APPA.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->APPA.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->APPA.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->APPA.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->APPA.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->APPA.Records[x]->formID;
     return;
     }
 
 void Collection::GetARMORecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->ARMO.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->ARMO.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->ARMO.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->ARMO.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->ARMO.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->ARMO.Records[x]->formID;
     return;
     }
 
 void Collection::GetBOOKRecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->BOOK.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->BOOK.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->BOOK.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->BOOK.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->BOOK.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->BOOK.Records[x]->formID;
     return;
     }
 
 void Collection::GetCLOTRecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->CLOT.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->CLOT.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->CLOT.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->CLOT.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->CLOT.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->CLOT.Records[x]->formID;
     return;
     }
 
 void Collection::GetCONTRecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->CONT.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->CONT.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->CONT.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->CONT.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->CONT.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->CONT.Records[x]->formID;
     return;
     }
 
 void Collection::GetDOORRecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->DOOR.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->DOOR.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->DOOR.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->DOOR.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->DOOR.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->DOOR.Records[x]->formID;
     return;
     }
 
 void Collection::GetINGRRecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->INGR.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->INGR.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->INGR.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->INGR.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->INGR.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->INGR.Records[x]->formID;
     return;
     }
 
 void Collection::GetLIGHRecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->LIGH.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->LIGH.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->LIGH.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->LIGH.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->LIGH.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->LIGH.Records[x]->formID;
     return;
     }
 
 void Collection::GetMISCRecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->MISC.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->MISC.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->MISC.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->MISC.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->MISC.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->MISC.Records[x]->formID;
     return;
     }
 
 void Collection::GetSTATRecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->STAT.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->STAT.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->STAT.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->STAT.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->STAT.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->STAT.Records[x]->formID;
     return;
     }
 
 void Collection::GetGRASRecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->GRAS.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->GRAS.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->GRAS.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->GRAS.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->GRAS.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->GRAS.Records[x]->formID;
     return;
     }
 
 void Collection::GetTREERecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->TREE.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->TREE.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->TREE.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->TREE.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->TREE.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->TREE.Records[x]->formID;
     return;
     }
 
 void Collection::GetFLORRecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->FLOR.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->FLOR.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->FLOR.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->FLOR.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->FLOR.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->FLOR.Records[x]->formID;
     return;
     }
 
 void Collection::GetFURNRecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->FURN.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->FURN.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->FURN.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->FURN.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->FURN.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->FURN.Records[x]->formID;
     return;
     }
 
 void Collection::GetWEAPRecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->WEAP.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->WEAP.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->WEAP.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->WEAP.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->WEAP.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->WEAP.Records[x]->formID;
     return;
     }
 
 void Collection::GetAMMORecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->AMMO.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->AMMO.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->AMMO.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->AMMO.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->AMMO.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->AMMO.Records[x]->formID;
     return;
     }
 
 void Collection::GetNPC_Records(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->NPC_.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->NPC_.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->NPC_.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->NPC_.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->NPC_.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->NPC_.Records[x]->formID;
     return;
     }
 
 void Collection::GetCREARecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->CREA.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->CREA.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->CREA.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->CREA.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->CREA.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->CREA.Records[x]->formID;
     return;
     }
 
 void Collection::GetLVLCRecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->LVLC.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->LVLC.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->LVLC.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->LVLC.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->LVLC.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->LVLC.Records[x]->formID;
     return;
     }
 
 void Collection::GetSLGMRecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->SLGM.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->SLGM.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->SLGM.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->SLGM.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->SLGM.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->SLGM.Records[x]->formID;
     return;
     }
 
 void Collection::GetKEYMRecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->KEYM.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->KEYM.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->KEYM.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->KEYM.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->KEYM.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->KEYM.Records[x]->formID;
     return;
     }
 
 void Collection::GetALCHRecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->ALCH.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->ALCH.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->ALCH.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->ALCH.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->ALCH.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->ALCH.Records[x]->formID;
     return;
     }
 
 void Collection::GetSBSPRecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->SBSP.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->SBSP.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->SBSP.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->SBSP.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->SBSP.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->SBSP.Records[x]->formID;
     return;
     }
 
 void Collection::GetSGSTRecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->SGST.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->SGST.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->SGST.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->SGST.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->SGST.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->SGST.Records[x]->formID;
     return;
     }
 
 void Collection::GetLVLIRecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->LVLI.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->LVLI.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->LVLI.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->LVLI.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->LVLI.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->LVLI.Records[x]->formID;
     return;
     }
 
 void Collection::GetWTHRRecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->WTHR.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->WTHR.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->WTHR.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->WTHR.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->WTHR.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->WTHR.Records[x]->formID;
     return;
     }
 
 void Collection::GetCLMTRecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->CLMT.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->CLMT.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->CLMT.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->CLMT.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->CLMT.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->CLMT.Records[x]->formID;
     return;
     }
 
 void Collection::GetREGNRecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->REGN.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->REGN.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->REGN.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->REGN.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->REGN.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->REGN.Records[x]->formID;
     return;
     }
 
 void Collection::GetCELLRecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->CELL.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->CELL.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->CELL.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->CELL.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->CELL.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->CELL.Records[x]->formID;
     return;
     }
 
 void Collection::GetACHRRecords(char *ModName, unsigned int parentFID, unsigned int **RecordFIDs)
     {
-    if(ModName == NULL)
-        return;
-
-    ModFile *curModFile = LookupModFile(ModName);
+    ModFile *curModFile = NULL;
     CELLRecord *parentRecord = NULL;
-
-    unsigned int numRecords = 0;
-
     LookupRecord(ModName, parentFID, curModFile, parentRecord);
-    if(parentRecord == NULL || curModFile == NULL)
+    if(curModFile == NULL || parentRecord == NULL)
         return;
-
-    numRecords = (unsigned int)parentRecord->ACHR.size();
-    for(unsigned int x = 0; x < numRecords; x++)
+    for(unsigned int x = 0; x < parentRecord->ACHR.size(); x++)
         RecordFIDs[x] = &parentRecord->ACHR[x]->formID;
-
     return;
     }
 
 void Collection::GetACRERecords(char *ModName, unsigned int parentFID, unsigned int **RecordFIDs)
     {
-    if(ModName == NULL)
-        return;
-
-    ModFile *curModFile = LookupModFile(ModName);
+    ModFile *curModFile = NULL;
     CELLRecord *parentRecord = NULL;
-
-    unsigned int numRecords = 0;
-
     LookupRecord(ModName, parentFID, curModFile, parentRecord);
-    if(parentRecord == NULL || curModFile == NULL)
+    if(curModFile == NULL || parentRecord == NULL)
         return;
-
-    numRecords = (unsigned int)parentRecord->ACRE.size();
-    for(unsigned int x = 0; x < numRecords; x++)
+    for(unsigned int x = 0; x < parentRecord->ACRE.size(); x++)
         RecordFIDs[x] = &parentRecord->ACRE[x]->formID;
-
     return;
     }
 
 void Collection::GetREFRRecords(char *ModName, unsigned int parentFID, unsigned int **RecordFIDs)
     {
-    if(ModName == NULL)
-        return;
-
-    ModFile *curModFile = LookupModFile(ModName);
+    ModFile *curModFile = NULL;
     CELLRecord *parentRecord = NULL;
-
-    unsigned int numRecords = 0;
-
     LookupRecord(ModName, parentFID, curModFile, parentRecord);
-    if(parentRecord == NULL || curModFile == NULL)
+    if(curModFile == NULL || parentRecord == NULL)
         return;
-
-    numRecords = (unsigned int)parentRecord->REFR.size();
-    for(unsigned int x = 0; x < numRecords; x++)
+    for(unsigned int x = 0; x < parentRecord->REFR.size(); x++)
         RecordFIDs[x] = &parentRecord->REFR[x]->formID;
-
     return;
     }
 
 void Collection::GetWRLDRecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->WRLD.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->WRLD.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->WRLD.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->WRLD.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->WRLD.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->WRLD.Records[x]->formID;
     return;
     }
 
 void Collection::GetDIALRecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->DIAL.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->DIAL.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->DIAL.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->DIAL.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->DIAL.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->DIAL.Records[x]->formID;
     return;
     }
 
 void Collection::GetQUSTRecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->QUST.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->QUST.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->QUST.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->QUST.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->QUST.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->QUST.Records[x]->formID;
     return;
     }
 
 void Collection::GetIDLERecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->IDLE.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->IDLE.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->IDLE.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->IDLE.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->IDLE.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->IDLE.Records[x]->formID;
     return;
     }
 
 void Collection::GetPACKRecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->PACK.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->PACK.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->PACK.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->PACK.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->PACK.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->PACK.Records[x]->formID;
     return;
     }
 
 void Collection::GetCSTYRecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->CSTY.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->CSTY.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->CSTY.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->CSTY.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->CSTY.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->CSTY.Records[x]->formID;
     return;
     }
 
 void Collection::GetLSCRRecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->LSCR.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->LSCR.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->LSCR.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->LSCR.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->LSCR.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->LSCR.Records[x]->formID;
     return;
     }
 
 void Collection::GetLVSPRecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->LVSP.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->LVSP.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->LVSP.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->LVSP.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->LVSP.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->LVSP.Records[x]->formID;
     return;
     }
 
 void Collection::GetANIORecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->ANIO.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->ANIO.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->ANIO.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->ANIO.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->ANIO.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->ANIO.Records[x]->formID;
     return;
     }
 
 void Collection::GetWATRRecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->WATR.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->WATR.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->WATR.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->WATR.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->WATR.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->WATR.Records[x]->formID;
     return;
     }
 
 void Collection::GetEFSHRecords(char *ModName, unsigned int **RecordFIDs)
     {
-    unsigned int p = 0, numRecords = 0;
-    if(ModName == NULL)
-        for(;p < ModFiles.size();p++)
-            {
-            numRecords = (unsigned int)ModFiles[p]->EFSH.Records.size();
-            for(unsigned int x = 0; x < numRecords; x++)
-                RecordFIDs[(p*numRecords)+x] = &ModFiles[p]->EFSH.Records[x]->formID;
-            }
-    else
-        for(;p < ModFiles.size();p++)
-            if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                {
-                numRecords = (unsigned int)ModFiles[p]->EFSH.Records.size();
-                for(unsigned int x = 0; x < numRecords; x++)
-                    RecordFIDs[x] = &ModFiles[p]->EFSH.Records[x]->formID;
-                return;
-                }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    for(unsigned int x = 0; x < curModFile->EFSH.Records.size(); ++x)
+        RecordFIDs[x] = &curModFile->EFSH.Records[x]->formID;
     return;
     }
 //ADD DEFINITIONS HERE
@@ -2259,15 +1193,19 @@ unsigned int Collection::CreateGMSTRecord(char *ModName, char *recordEDID)
     {
     ModFile *curModFile = NULL;
     GMSTRecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
+    //Check and see if the GMST already exists
+    LookupGMSTRecord(ModName, recordEDID, curModFile, curRecord);
+    if(curModFile != NULL || curRecord != NULL)
+        return 0;
+
     curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new GMSTRecord(newRecordFID, recordEDID);
-        curModFile->GMST.Records.push_back(curRecord);
-        GMST_ModFile_Record.insert(std::make_pair(curRecord->EDID.value,std::make_pair(curModFile,curRecord)));
-        }
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    curRecord = new GMSTRecord(newRecordFID, recordEDID);
+    curModFile->GMST.Records.push_back(curRecord);
+    GMST_ModFile_Record.insert(std::make_pair(curRecord->EDID.value,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
@@ -2278,28 +1216,25 @@ unsigned int Collection::CopyGMSTRecord(char *ModName, char *srcRecordEDID, char
     GMSTRecord *srcRecord = NULL;
     GMSTRecord *copyRecord = NULL;
 
-    LookupGMSTRecord(ModName, srcRecordEDID, srcMod, srcRecord);
-
+    //Check and see if the GMST already exists
     LookupGMSTRecord(destModName, srcRecordEDID, destMod, copyRecord);
-    if(copyRecord != NULL)
+    if(destMod != NULL || copyRecord != NULL)
         return 0;
 
     destMod = LookupModFile(destModName);
+    if(destMod == NULL)
+        return 0;
 
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    LookupGMSTRecord(ModName, srcRecordEDID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL || srcMod == destMod)
         return 0;
 
     //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new GMSTRecord(srcRecord);
-
     destMod->GMST.Records.push_back(copyRecord);
-
     //Add any master as necessary, and register the formID
-    destMod->FormIDHandler.AddMaster(srcRecord->formID);
-
+    copyRecord->AddMasters(destMod->FormIDHandler);
     GMST_ModFile_Record.insert(std::make_pair(copyRecord->EDID.value, std::make_pair(destMod, copyRecord)));
     return 1;
     }
@@ -2307,724 +1242,595 @@ unsigned int Collection::CopyGMSTRecord(char *ModName, char *srcRecordEDID, char
 //ADD
 unsigned int Collection::CreateGLOBRecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    GLOBRecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new GLOBRecord(newRecordFID);
-        curModFile->GLOB.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    GLOBRecord *curRecord = new GLOBRecord(newRecordFID);
+    curModFile->GLOB.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateCLASRecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    CLASRecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new CLASRecord(newRecordFID);
-        curModFile->CLAS.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    CLASRecord *curRecord = new CLASRecord(newRecordFID);
+    curModFile->CLAS.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateFACTRecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    FACTRecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new FACTRecord(newRecordFID);
-        curModFile->FACT.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    FACTRecord *curRecord = new FACTRecord(newRecordFID);
+    curModFile->FACT.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateHAIRRecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    HAIRRecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new HAIRRecord(newRecordFID);
-        curModFile->HAIR.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    HAIRRecord *curRecord = new HAIRRecord(newRecordFID);
+    curModFile->HAIR.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateEYESRecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    EYESRecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new EYESRecord(newRecordFID);
-        curModFile->EYES.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    EYESRecord *curRecord = new EYESRecord(newRecordFID);
+    curModFile->EYES.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateRACERecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    RACERecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new RACERecord(newRecordFID);
-        curModFile->RACE.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    RACERecord *curRecord = new RACERecord(newRecordFID);
+    curModFile->RACE.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateSOUNRecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    SOUNRecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new SOUNRecord(newRecordFID);
-        curModFile->SOUN.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    SOUNRecord *curRecord = new SOUNRecord(newRecordFID);
+    curModFile->SOUN.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateSKILRecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    SKILRecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new SKILRecord(newRecordFID);
-        curModFile->SKIL.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    SKILRecord *curRecord = new SKILRecord(newRecordFID);
+    curModFile->SKIL.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateMGEFRecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    MGEFRecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new MGEFRecord(newRecordFID);
-        curModFile->MGEF.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    MGEFRecord *curRecord = new MGEFRecord(newRecordFID);
+    curModFile->MGEF.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateSCPTRecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    SCPTRecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new SCPTRecord(newRecordFID);
-        curModFile->SCPT.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    SCPTRecord *curRecord = new SCPTRecord(newRecordFID);
+    curModFile->SCPT.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateLTEXRecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    LTEXRecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new LTEXRecord(newRecordFID);
-        curModFile->LTEX.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    LTEXRecord *curRecord = new LTEXRecord(newRecordFID);
+    curModFile->LTEX.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateENCHRecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    ENCHRecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new ENCHRecord(newRecordFID);
-        curModFile->ENCH.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    ENCHRecord *curRecord = new ENCHRecord(newRecordFID);
+    curModFile->ENCH.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateSPELRecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    SPELRecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new SPELRecord(newRecordFID);
-        curModFile->SPEL.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    SPELRecord *curRecord = new SPELRecord(newRecordFID);
+    curModFile->SPEL.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateBSGNRecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    BSGNRecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new BSGNRecord(newRecordFID);
-        curModFile->BSGN.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    BSGNRecord *curRecord = new BSGNRecord(newRecordFID);
+    curModFile->BSGN.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateACTIRecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    ACTIRecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new ACTIRecord(newRecordFID);
-        curModFile->ACTI.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    ACTIRecord *curRecord = new ACTIRecord(newRecordFID);
+    curModFile->ACTI.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateAPPARecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    APPARecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new APPARecord(newRecordFID);
-        curModFile->APPA.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    APPARecord *curRecord = new APPARecord(newRecordFID);
+    curModFile->APPA.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateARMORecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    ARMORecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new ARMORecord(newRecordFID);
-        curModFile->ARMO.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    ARMORecord *curRecord = new ARMORecord(newRecordFID);
+    curModFile->ARMO.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateBOOKRecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    BOOKRecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new BOOKRecord(newRecordFID);
-        curModFile->BOOK.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    BOOKRecord *curRecord = new BOOKRecord(newRecordFID);
+    curModFile->BOOK.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateCLOTRecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    CLOTRecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new CLOTRecord(newRecordFID);
-        curModFile->CLOT.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    CLOTRecord *curRecord = new CLOTRecord(newRecordFID);
+    curModFile->CLOT.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateCONTRecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    CONTRecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new CONTRecord(newRecordFID);
-        curModFile->CONT.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    CONTRecord *curRecord = new CONTRecord(newRecordFID);
+    curModFile->CONT.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateDOORRecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    DOORRecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new DOORRecord(newRecordFID);
-        curModFile->DOOR.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    DOORRecord *curRecord = new DOORRecord(newRecordFID);
+    curModFile->DOOR.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateINGRRecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    INGRRecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new INGRRecord(newRecordFID);
-        curModFile->INGR.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    INGRRecord *curRecord = new INGRRecord(newRecordFID);
+    curModFile->INGR.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateLIGHRecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    LIGHRecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new LIGHRecord(newRecordFID);
-        curModFile->LIGH.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    LIGHRecord *curRecord = new LIGHRecord(newRecordFID);
+    curModFile->LIGH.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateMISCRecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    MISCRecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new MISCRecord(newRecordFID);
-        curModFile->MISC.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    MISCRecord *curRecord = new MISCRecord(newRecordFID);
+    curModFile->MISC.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateSTATRecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    STATRecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new STATRecord(newRecordFID);
-        curModFile->STAT.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    STATRecord *curRecord = new STATRecord(newRecordFID);
+    curModFile->STAT.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateGRASRecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    GRASRecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new GRASRecord(newRecordFID);
-        curModFile->GRAS.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    GRASRecord *curRecord = new GRASRecord(newRecordFID);
+    curModFile->GRAS.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateTREERecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    TREERecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new TREERecord(newRecordFID);
-        curModFile->TREE.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    TREERecord *curRecord = new TREERecord(newRecordFID);
+    curModFile->TREE.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateFLORRecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    FLORRecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new FLORRecord(newRecordFID);
-        curModFile->FLOR.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    FLORRecord *curRecord = new FLORRecord(newRecordFID);
+    curModFile->FLOR.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateFURNRecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    FURNRecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new FURNRecord(newRecordFID);
-        curModFile->FURN.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    FURNRecord *curRecord = new FURNRecord(newRecordFID);
+    curModFile->FURN.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateWEAPRecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    WEAPRecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new WEAPRecord(newRecordFID);
-        curModFile->WEAP.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    WEAPRecord *curRecord = new WEAPRecord(newRecordFID);
+    curModFile->WEAP.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateAMMORecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    AMMORecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new AMMORecord(newRecordFID);
-        curModFile->AMMO.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    AMMORecord *curRecord = new AMMORecord(newRecordFID);
+    curModFile->AMMO.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateNPC_Record(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    NPC_Record *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new NPC_Record(newRecordFID);
-        curModFile->NPC_.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    NPC_Record *curRecord = new NPC_Record(newRecordFID);
+    curModFile->NPC_.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateCREARecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    CREARecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new CREARecord(newRecordFID);
-        curModFile->CREA.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    CREARecord *curRecord = new CREARecord(newRecordFID);
+    curModFile->CREA.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateLVLCRecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    LVLCRecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new LVLCRecord(newRecordFID);
-        curModFile->LVLC.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    LVLCRecord *curRecord = new LVLCRecord(newRecordFID);
+    curModFile->LVLC.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateSLGMRecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    SLGMRecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new SLGMRecord(newRecordFID);
-        curModFile->SLGM.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    SLGMRecord *curRecord = new SLGMRecord(newRecordFID);
+    curModFile->SLGM.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateKEYMRecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    KEYMRecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new KEYMRecord(newRecordFID);
-        curModFile->KEYM.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    KEYMRecord *curRecord = new KEYMRecord(newRecordFID);
+    curModFile->KEYM.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateALCHRecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    ALCHRecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new ALCHRecord(newRecordFID);
-        curModFile->ALCH.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    ALCHRecord *curRecord = new ALCHRecord(newRecordFID);
+    curModFile->ALCH.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateSBSPRecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    SBSPRecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new SBSPRecord(newRecordFID);
-        curModFile->SBSP.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    SBSPRecord *curRecord = new SBSPRecord(newRecordFID);
+    curModFile->SBSP.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateSGSTRecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    SGSTRecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new SGSTRecord(newRecordFID);
-        curModFile->SGST.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    SGSTRecord *curRecord = new SGSTRecord(newRecordFID);
+    curModFile->SGST.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateLVLIRecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    LVLIRecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new LVLIRecord(newRecordFID);
-        curModFile->LVLI.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    LVLIRecord *curRecord = new LVLIRecord(newRecordFID);
+    curModFile->LVLI.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateWTHRRecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    WTHRRecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new WTHRRecord(newRecordFID);
-        curModFile->WTHR.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    WTHRRecord *curRecord = new WTHRRecord(newRecordFID);
+    curModFile->WTHR.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateCLMTRecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    CLMTRecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new CLMTRecord(newRecordFID);
-        curModFile->CLMT.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    CLMTRecord *curRecord = new CLMTRecord(newRecordFID);
+    curModFile->CLMT.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateREGNRecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    REGNRecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new REGNRecord(newRecordFID);
-        curModFile->REGN.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    REGNRecord *curRecord = new REGNRecord(newRecordFID);
+    curModFile->REGN.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateCELLRecord(char *ModName, unsigned int parentFID, bool isWorldCELL)
     {
     ModFile *curModFile = NULL;
-    CELLRecord *curRecord = NULL;
     WRLDRecord *parentRecord = NULL;
-    unsigned int newRecordFID = 0;
     bool hasParent = (parentFID != 0);
     if(hasParent)
         {
         LookupRecord(ModName, parentFID, curModFile, parentRecord);
-        if(isWorldCELL && parentRecord->CELL != NULL)
+        if(parentRecord == NULL || (isWorldCELL && parentRecord->CELL != NULL))
             return 0;
         }
     else
         curModFile = LookupModFile(ModName);
 
-    if(curModFile != NULL)
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+
+    CELLRecord *curRecord = new CELLRecord(newRecordFID);
+    curRecord->IsInterior(!hasParent);
+    if(hasParent)
         {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new CELLRecord(newRecordFID);
-        curRecord->IsInterior(!hasParent);
-        if(hasParent)
-            {
-            if(isWorldCELL)
-                parentRecord->CELL = curRecord;
-            else
-                parentRecord->CELLS.push_back(curRecord);
-            }
+        if(isWorldCELL)
+            parentRecord->CELL = curRecord;
         else
-            curModFile->CELL.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
+            parentRecord->CELLS.push_back(curRecord);
         }
+    else
+        curModFile->CELL.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
+
     return newRecordFID;
     }
 
@@ -3032,17 +1838,15 @@ unsigned int Collection::CreateACHRRecord(char *ModName, unsigned int parentFID)
     {
     ModFile *destMod = NULL;
     CELLRecord *destParentRecord = NULL;
-    ACHRRecord *destRecord = NULL;
-    unsigned int newRecordFID = 0;
 
     LookupRecord(ModName, parentFID, destMod, destParentRecord);
-    if(destMod != NULL && destParentRecord != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(destMod);
-        destRecord = new ACHRRecord(newRecordFID);
-        destParentRecord->ACHR.push_back(destRecord);
-        FID_ModFile_Record.insert(std::make_pair(&destRecord->formID,std::make_pair(destMod,destRecord)));
-        }
+    if(destMod == NULL || destParentRecord == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(destMod);
+    ACHRRecord *destRecord = new ACHRRecord(newRecordFID);
+    destParentRecord->ACHR.push_back(destRecord);
+    FID_ModFile_Record.insert(std::make_pair(destRecord->formID,std::make_pair(destMod,destRecord)));
     return newRecordFID;
     }
 
@@ -3050,17 +1854,15 @@ unsigned int Collection::CreateACRERecord(char *ModName, unsigned int parentFID)
     {
     ModFile *destMod = NULL;
     CELLRecord *destParentRecord = NULL;
-    ACRERecord *destRecord = NULL;
-    unsigned int newRecordFID = 0;
 
     LookupRecord(ModName, parentFID, destMod, destParentRecord);
-    if(destMod != NULL && destParentRecord != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(destMod);
-        destRecord = new ACRERecord(newRecordFID);
-        destParentRecord->ACRE.push_back(destRecord);
-        FID_ModFile_Record.insert(std::make_pair(&destRecord->formID,std::make_pair(destMod,destRecord)));
-        }
+    if(destMod == NULL || destParentRecord == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(destMod);
+    ACRERecord *destRecord = new ACRERecord(newRecordFID);
+    destParentRecord->ACRE.push_back(destRecord);
+    FID_ModFile_Record.insert(std::make_pair(destRecord->formID,std::make_pair(destMod,destRecord)));
     return newRecordFID;
     }
 
@@ -3068,17 +1870,15 @@ unsigned int Collection::CreateREFRRecord(char *ModName, unsigned int parentFID)
     {
     ModFile *destMod = NULL;
     CELLRecord *destParentRecord = NULL;
-    REFRRecord *destRecord = NULL;
-    unsigned int newRecordFID = 0;
 
     LookupRecord(ModName, parentFID, destMod, destParentRecord);
-    if(destMod != NULL && destParentRecord != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(destMod);
-        destRecord = new REFRRecord(newRecordFID);
-        destParentRecord->REFR.push_back(destRecord);
-        FID_ModFile_Record.insert(std::make_pair(&destRecord->formID,std::make_pair(destMod,destRecord)));
-        }
+    if(destMod == NULL || destParentRecord == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(destMod);
+    REFRRecord *destRecord = new REFRRecord(newRecordFID);
+    destParentRecord->REFR.push_back(destRecord);
+    FID_ModFile_Record.insert(std::make_pair(destRecord->formID,std::make_pair(destMod,destRecord)));
     return newRecordFID;
     }
 
@@ -3086,31 +1886,27 @@ unsigned int Collection::CreatePGRDRecord(char *ModName, unsigned int parentFID)
     {
     ModFile *destMod = NULL;
     CELLRecord *destParentRecord = NULL;
-    unsigned int newRecordFID = 0;
 
     LookupRecord(ModName, parentFID, destMod, destParentRecord);
-    if(destMod != NULL && destParentRecord != NULL && destParentRecord->PGRD == NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(destMod);
-        destParentRecord->PGRD = new PGRDRecord(newRecordFID);
-        FID_ModFile_Record.insert(std::make_pair(&destParentRecord->PGRD->formID,std::make_pair(destMod,destParentRecord->PGRD)));
-        }
+    if(destMod == NULL || destParentRecord == NULL || destParentRecord->PGRD != NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(destMod);
+    destParentRecord->PGRD = new PGRDRecord(newRecordFID);
+    FID_ModFile_Record.insert(std::make_pair(destParentRecord->PGRD->formID,std::make_pair(destMod,destParentRecord->PGRD)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateWRLDRecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    WRLDRecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new WRLDRecord(newRecordFID);
-        curModFile->WRLD.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    WRLDRecord *curRecord = new WRLDRecord(newRecordFID);
+    curModFile->WRLD.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
@@ -3118,15 +1914,14 @@ unsigned int Collection::CreateROADRecord(char *ModName, unsigned int parentFID)
     {
     ModFile *destMod = NULL;
     WRLDRecord *destParentRecord = NULL;
-    unsigned int newRecordFID = 0;
 
     LookupRecord(ModName, parentFID, destMod, destParentRecord);
-    if(destMod != NULL && destParentRecord != NULL && destParentRecord->ROAD == NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(destMod);
-        destParentRecord->ROAD = new ROADRecord(newRecordFID);
-        FID_ModFile_Record.insert(std::make_pair(&destParentRecord->ROAD->formID,std::make_pair(destMod,destParentRecord->ROAD)));
-        }
+    if(destMod == NULL || destParentRecord == NULL || destParentRecord->ROAD != NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(destMod);
+    destParentRecord->ROAD = new ROADRecord(newRecordFID);
+    FID_ModFile_Record.insert(std::make_pair(destParentRecord->ROAD->formID,std::make_pair(destMod,destParentRecord->ROAD)));
     return newRecordFID;
     }
 
@@ -3134,31 +1929,27 @@ unsigned int Collection::CreateLANDRecord(char *ModName, unsigned int parentFID)
     {
     ModFile *destMod = NULL;
     CELLRecord *destParentRecord = NULL;
-    unsigned int newRecordFID = 0;
 
     LookupRecord(ModName, parentFID, destMod, destParentRecord);
-    if(destMod != NULL && destParentRecord != NULL && destParentRecord->LAND == NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(destMod);
-        destParentRecord->LAND = new LANDRecord(newRecordFID);
-        FID_ModFile_Record.insert(std::make_pair(&destParentRecord->LAND->formID,std::make_pair(destMod,destParentRecord->LAND)));
-        }
+    if(destMod == NULL || destParentRecord == NULL || destParentRecord->LAND != NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(destMod);
+    destParentRecord->LAND = new LANDRecord(newRecordFID);
+    FID_ModFile_Record.insert(std::make_pair(destParentRecord->LAND->formID,std::make_pair(destMod,destParentRecord->LAND)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateDIALRecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    DIALRecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new DIALRecord(newRecordFID);
-        curModFile->DIAL.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    DIALRecord *curRecord = new DIALRecord(newRecordFID);
+    curModFile->DIAL.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
@@ -3166,173 +1957,145 @@ unsigned int Collection::CreateINFORecord(char *ModName, unsigned int parentFID)
     {
     ModFile *destMod = NULL;
     DIALRecord *destParentRecord = NULL;
-    INFORecord *destRecord = NULL;
-    unsigned int newRecordFID = 0;
 
     LookupRecord(ModName, parentFID, destMod, destParentRecord);
-    if(destMod != NULL && destParentRecord != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(destMod);
-        destRecord = new INFORecord(newRecordFID);
-        destParentRecord->INFO.push_back(destRecord);
-        FID_ModFile_Record.insert(std::make_pair(&destRecord->formID,std::make_pair(destMod,destRecord)));
-        }
+    if(destMod == NULL || destParentRecord == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(destMod);
+    INFORecord *destRecord = new INFORecord(newRecordFID);
+    destParentRecord->INFO.push_back(destRecord);
+    FID_ModFile_Record.insert(std::make_pair(destRecord->formID,std::make_pair(destMod,destRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateQUSTRecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    QUSTRecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new QUSTRecord(newRecordFID);
-        curModFile->QUST.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    QUSTRecord *curRecord = new QUSTRecord(newRecordFID);
+    curModFile->QUST.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateIDLERecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    IDLERecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new IDLERecord(newRecordFID);
-        curModFile->IDLE.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    IDLERecord *curRecord = new IDLERecord(newRecordFID);
+    curModFile->IDLE.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreatePACKRecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    PACKRecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new PACKRecord(newRecordFID);
-        curModFile->PACK.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    PACKRecord *curRecord = new PACKRecord(newRecordFID);
+    curModFile->PACK.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateCSTYRecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    CSTYRecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new CSTYRecord(newRecordFID);
-        curModFile->CSTY.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    CSTYRecord *curRecord = new CSTYRecord(newRecordFID);
+    curModFile->CSTY.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateLSCRRecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    LSCRRecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new LSCRRecord(newRecordFID);
-        curModFile->LSCR.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    LSCRRecord *curRecord = new LSCRRecord(newRecordFID);
+    curModFile->LSCR.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateLVSPRecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    LVSPRecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new LVSPRecord(newRecordFID);
-        curModFile->LVSP.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    LVSPRecord *curRecord = new LVSPRecord(newRecordFID);
+    curModFile->LVSP.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateANIORecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    ANIORecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new ANIORecord(newRecordFID);
-        curModFile->ANIO.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    ANIORecord *curRecord = new ANIORecord(newRecordFID);
+    curModFile->ANIO.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateWATRRecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    WATRRecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new WATRRecord(newRecordFID);
-        curModFile->WATR.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    WATRRecord *curRecord = new WATRRecord(newRecordFID);
+    curModFile->WATR.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
 unsigned int Collection::CreateEFSHRecord(char *ModName)
     {
-    ModFile *curModFile = NULL;
-    EFSHRecord *curRecord = NULL;
-    unsigned int newRecordFID = 0;
-    curModFile = LookupModFile(ModName);
-    if(curModFile != NULL)
-        {
-        newRecordFID = NextFreeExpandedFID(curModFile);
-        curRecord = new EFSHRecord(newRecordFID);
-        curModFile->EFSH.Records.push_back(curRecord);
-        FID_ModFile_Record.insert(std::make_pair(&curRecord->formID,std::make_pair(curModFile,curRecord)));
-        }
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+
+    unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
+    EFSHRecord *curRecord = new EFSHRecord(newRecordFID);
+    curModFile->EFSH.Records.push_back(curRecord);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
-        //ADD
+//ADD
 unsigned int Collection::CopyFIDRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
-    std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID>::iterator it;
-    it = FID_ModFile_Record.find(&srcRecordFID);
-    //Return if the srcRecordFID isn't found
-    if(it == FID_ModFile_Record.end())
-        return 0;
     return 0;
+    //std::multimap<unsigned int, std::pair<ModFile *, Record *> >::iterator it;
+    //it = FID_ModFile_Record.find(srcRecordFID);
+    //Return if the srcRecordFID isn't found
+    //if(it == FID_ModFile_Record.end())
+    //    return 0;
+    //return 0;
     ////switch(it->second.second->Header.Header.type)
     ////    {
     ////    case eGLOB:
@@ -3495,1699 +2258,1488 @@ unsigned int Collection::CopyFIDRecord(char *ModName, unsigned int srcRecordFID,
     ////        printf("CopyFIDRecord: Unknown recordType, %i\n", it->second.second->Header.Header.type);
     ////        return 0;
     ////    }
-    return 0;
+    //return 0;
     }
 unsigned int Collection::CopyGLOBRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     GLOBRecord *srcRecord = NULL;
-    GLOBRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    GLOBRecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new GLOBRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->GLOB.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyCLASRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     CLASRecord *srcRecord = NULL;
-    CLASRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    CLASRecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new CLASRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->CLAS.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyFACTRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     FACTRecord *srcRecord = NULL;
-    FACTRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    FACTRecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new FACTRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->FACT.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyHAIRRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     HAIRRecord *srcRecord = NULL;
-    HAIRRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    HAIRRecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new HAIRRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->HAIR.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyEYESRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     EYESRecord *srcRecord = NULL;
-    EYESRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    EYESRecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new EYESRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->EYES.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyRACERecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     RACERecord *srcRecord = NULL;
-    RACERecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    RACERecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new RACERecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->RACE.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopySOUNRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     SOUNRecord *srcRecord = NULL;
-    SOUNRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    SOUNRecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new SOUNRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->SOUN.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopySKILRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     SKILRecord *srcRecord = NULL;
-    SKILRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    SKILRecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new SKILRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->SKIL.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyMGEFRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     MGEFRecord *srcRecord = NULL;
-    MGEFRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    MGEFRecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new MGEFRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->MGEF.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopySCPTRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     SCPTRecord *srcRecord = NULL;
-    SCPTRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    SCPTRecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new SCPTRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->SCPT.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyLTEXRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     LTEXRecord *srcRecord = NULL;
-    LTEXRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    LTEXRecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new LTEXRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->LTEX.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyENCHRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     ENCHRecord *srcRecord = NULL;
-    ENCHRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    ENCHRecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new ENCHRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->ENCH.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopySPELRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     SPELRecord *srcRecord = NULL;
-    SPELRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    SPELRecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new SPELRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->SPEL.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyBSGNRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     BSGNRecord *srcRecord = NULL;
-    BSGNRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    BSGNRecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new BSGNRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->BSGN.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyACTIRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     ACTIRecord *srcRecord = NULL;
-    ACTIRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    ACTIRecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new ACTIRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->ACTI.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyAPPARecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     APPARecord *srcRecord = NULL;
-    APPARecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    APPARecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new APPARecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->APPA.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyARMORecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     ARMORecord *srcRecord = NULL;
-    ARMORecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    ARMORecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new ARMORecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->ARMO.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyBOOKRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     BOOKRecord *srcRecord = NULL;
-    BOOKRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    BOOKRecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new BOOKRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->BOOK.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyCLOTRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     CLOTRecord *srcRecord = NULL;
-    CLOTRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    CLOTRecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new CLOTRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->CLOT.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyCONTRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     CONTRecord *srcRecord = NULL;
-    CONTRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    CONTRecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new CONTRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->CONT.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyDOORRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     DOORRecord *srcRecord = NULL;
-    DOORRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    DOORRecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new DOORRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->DOOR.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyINGRRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     INGRRecord *srcRecord = NULL;
-    INGRRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    INGRRecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new INGRRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->INGR.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyLIGHRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     LIGHRecord *srcRecord = NULL;
-    LIGHRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    LIGHRecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new LIGHRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->LIGH.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyMISCRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     MISCRecord *srcRecord = NULL;
-    MISCRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    MISCRecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new MISCRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->MISC.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopySTATRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     STATRecord *srcRecord = NULL;
-    STATRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    STATRecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new STATRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->STAT.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyGRASRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     GRASRecord *srcRecord = NULL;
-    GRASRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    GRASRecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new GRASRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->GRAS.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyTREERecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     TREERecord *srcRecord = NULL;
-    TREERecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    TREERecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new TREERecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->TREE.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyFLORRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     FLORRecord *srcRecord = NULL;
-    FLORRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    FLORRecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new FLORRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->FLOR.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyFURNRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     FURNRecord *srcRecord = NULL;
-    FURNRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    FURNRecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new FURNRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->FURN.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyWEAPRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     WEAPRecord *srcRecord = NULL;
-    WEAPRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    WEAPRecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new WEAPRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->WEAP.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyAMMORecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     AMMORecord *srcRecord = NULL;
-    AMMORecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    AMMORecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new AMMORecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->AMMO.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyNPC_Record(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     NPC_Record *srcRecord = NULL;
-    NPC_Record *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    NPC_Record *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new NPC_Record(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->NPC_.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyCREARecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     CREARecord *srcRecord = NULL;
-    CREARecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    CREARecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new CREARecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->CREA.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyLVLCRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     LVLCRecord *srcRecord = NULL;
-    LVLCRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    LVLCRecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new LVLCRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->LVLC.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopySLGMRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     SLGMRecord *srcRecord = NULL;
-    SLGMRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    SLGMRecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new SLGMRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->SLGM.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyKEYMRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     KEYMRecord *srcRecord = NULL;
-    KEYMRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    KEYMRecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new KEYMRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->KEYM.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyALCHRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     ALCHRecord *srcRecord = NULL;
-    ALCHRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    ALCHRecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new ALCHRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->ALCH.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopySBSPRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     SBSPRecord *srcRecord = NULL;
-    SBSPRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    SBSPRecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new SBSPRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->SBSP.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopySGSTRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     SGSTRecord *srcRecord = NULL;
-    SGSTRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    SGSTRecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new SGSTRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->SGST.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyLVLIRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     LVLIRecord *srcRecord = NULL;
-    LVLIRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    LVLIRecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new LVLIRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->LVLI.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyWTHRRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     WTHRRecord *srcRecord = NULL;
-    WTHRRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    WTHRRecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new WTHRRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->WTHR.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyCLMTRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     CLMTRecord *srcRecord = NULL;
-    CLMTRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    CLMTRecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new CLMTRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->CLMT.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyREGNRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     REGNRecord *srcRecord = NULL;
-    REGNRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    REGNRecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new REGNRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->REGN.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyCELLRecord(char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride, bool isWorldCELL)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
-    WRLDRecord *destParentRecord = NULL;
     CELLRecord *srcRecord = NULL;
-    CELLRecord *copyRecord = NULL;
-    bool hasParent = (destParentFID != 0);
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;    
+    
+    ModFile *destMod = NULL;
+    WRLDRecord *destParentRecord = NULL;
+    CELLRecord *copyRecord = NULL;
+    
+    bool hasParent = (destParentFID != 0);
     if(hasParent)
         {
         LookupRecord(destModName, destParentFID, destMod, destParentRecord);
-        if(isWorldCELL && destParentRecord->CELL != NULL)
+        if(destParentRecord == NULL || (isWorldCELL && destParentRecord->CELL != NULL))
             return 0;
         }
     else
@@ -5195,21 +3747,20 @@ unsigned int Collection::CopyCELLRecord(char *ModName, unsigned int srcRecordFID
         if(asOverride)
             {
             LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-            if(copyRecord != NULL)
+            if(destMod != NULL || copyRecord != NULL)
                 return 0;
             }
         destMod = LookupModFile(destModName);
         }
 
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
-        {return 0;}
+    if(destMod == NULL || srcMod == destMod)
+        return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new CELLRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     copyRecord->IsInterior(!hasParent);
     if(hasParent)
@@ -5221,721 +3772,621 @@ unsigned int Collection::CopyCELLRecord(char *ModName, unsigned int srcRecordFID
         }
     else
         destMod->CELL.Records.push_back(copyRecord);
-
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyACHRRecord(char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
-    CELLRecord *destParentRecord = NULL;
     ACHRRecord *srcRecord = NULL;
-    ACHRRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
 
+    ModFile *destMod = NULL;
+    ACHRRecord *copyRecord = NULL;
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
+    CELLRecord *destParentRecord = NULL;
     LookupRecord(destModName, destParentFID, destMod, destParentRecord);
+    if(destMod == NULL || destParentRecord == NULL || srcMod == destMod)
+        return 0;
 
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || destParentRecord == NULL || srcMod == destMod)
-        {return 0;}
-
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new ACHRRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destParentRecord->ACHR.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyACRERecord(char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
-    CELLRecord *destParentRecord = NULL;
     ACRERecord *srcRecord = NULL;
-    ACRERecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
 
+    ModFile *destMod = NULL;
+    ACRERecord *copyRecord = NULL;
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
+    CELLRecord *destParentRecord = NULL;
     LookupRecord(destModName, destParentFID, destMod, destParentRecord);
+    if(destMod == NULL || destParentRecord == NULL || srcMod == destMod)
+        return 0;
 
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || destParentRecord == NULL || srcMod == destMod)
-        {return 0;}
-
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new ACRERecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destParentRecord->ACRE.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyREFRRecord(char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
-    CELLRecord *destParentRecord = NULL;
     REFRRecord *srcRecord = NULL;
-    REFRRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
 
+    ModFile *destMod = NULL;
+    REFRRecord *copyRecord = NULL;
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
+    CELLRecord *destParentRecord = NULL;
     LookupRecord(destModName, destParentFID, destMod, destParentRecord);
+    if(destMod == NULL || destParentRecord == NULL || srcMod == destMod)
+        return 0;
 
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || destParentRecord == NULL || srcMod == destMod)
-        {return 0;}
-
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new REFRRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destParentRecord->REFR.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyPGRDRecord(char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
-    CELLRecord *destParentRecord = NULL;
     PGRDRecord *srcRecord = NULL;
-    PGRDRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
 
+    ModFile *destMod = NULL;
+    PGRDRecord *copyRecord = NULL;
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
+    CELLRecord *destParentRecord = NULL;
     LookupRecord(destModName, destParentFID, destMod, destParentRecord);
+    if(destMod == NULL || destParentRecord == NULL || destParentRecord->PGRD != NULL || srcMod == destMod)
+        return 0;
 
-    if(destParentRecord == NULL || destParentRecord->PGRD != NULL || srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
-        {return 0;}
-
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new PGRDRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destParentRecord->PGRD = copyRecord;
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyWRLDRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     WRLDRecord *srcRecord = NULL;
-    WRLDRecord *copyRecord = NULL;
-    //CELLRecord *worldCellRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
 
+    ModFile *destMod = NULL;
+    WRLDRecord *copyRecord = NULL;
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new WRLDRecord(srcRecord);
-    //if(srcRecord->CELL != NULL)
-    //    {
-    //    srcRecord->CELL->Read(srcMod->FormIDHandler);
-    //    copyRecord->CELL = new CELLRecord(srcRecord->CELL);
-    //    }
     if(!asOverride)
-        {
         copyRecord->formID = NextFreeExpandedFID(destMod);
-        //if(copyRecord->CELL != NULL)
-        //    copyRecord->CELL->formID = NextFreeExpandedFID(destMod);
-        }
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->WRLD.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyROADRecord(char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
-    WRLDRecord *destParentRecord = NULL;
     ROADRecord *srcRecord = NULL;
-    ROADRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
 
+    ModFile *destMod = NULL;
+    ROADRecord *copyRecord = NULL;
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
+    WRLDRecord *destParentRecord = NULL;
     LookupRecord(destModName, destParentFID, destMod, destParentRecord);
 
-    if(destParentRecord == NULL || destParentRecord->ROAD != NULL || srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
-        {return 0;}
+    if(destMod == NULL || destParentRecord == NULL || destParentRecord->ROAD != NULL || srcMod == destMod)
+        return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new ROADRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destParentRecord->ROAD = copyRecord;
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyLANDRecord(char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
-    CELLRecord *destParentRecord = NULL;
     LANDRecord *srcRecord = NULL;
-    LANDRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    LANDRecord *copyRecord = NULL;
     
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
+    CELLRecord *destParentRecord = NULL;
     LookupRecord(destModName, destParentFID, destMod, destParentRecord);
 
-    if(destParentRecord == NULL || destParentRecord->LAND != NULL || srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
-        {return 0;}
+    if(destMod == NULL || destParentRecord == NULL || destParentRecord->LAND != NULL || srcMod == destMod)
+        return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new LANDRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destParentRecord->LAND = copyRecord;
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyDIALRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     DIALRecord *srcRecord = NULL;
-    DIALRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    DIALRecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new DIALRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->DIAL.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyINFORecord(char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
-    DIALRecord *destParentRecord = NULL;
     INFORecord *srcRecord = NULL;
-    INFORecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
 
+    ModFile *destMod = NULL;
+    INFORecord *copyRecord = NULL;
+    
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
+    DIALRecord *destParentRecord = NULL;
     LookupRecord(destModName, destParentFID, destMod, destParentRecord);
+    if(destMod == NULL || destParentRecord == NULL || srcMod == destMod)
+        return 0;
 
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || destParentRecord == NULL || srcMod == destMod)
-        {return 0;}
-
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new INFORecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destParentRecord->INFO.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyQUSTRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     QUSTRecord *srcRecord = NULL;
-    QUSTRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    QUSTRecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new QUSTRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->QUST.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyIDLERecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     IDLERecord *srcRecord = NULL;
-    IDLERecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    IDLERecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new IDLERecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->IDLE.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyPACKRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     PACKRecord *srcRecord = NULL;
-    PACKRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    PACKRecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new PACKRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->PACK.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyCSTYRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     CSTYRecord *srcRecord = NULL;
-    CSTYRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    CSTYRecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new CSTYRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->CSTY.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyLSCRRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     LSCRRecord *srcRecord = NULL;
-    LSCRRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    LSCRRecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new LSCRRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->LSCR.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyLVSPRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     LVSPRecord *srcRecord = NULL;
-    LVSPRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    LVSPRecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new LVSPRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->LVSP.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyANIORecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     ANIORecord *srcRecord = NULL;
-    ANIORecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    ANIORecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new ANIORecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->ANIO.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyWATRRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     WATRRecord *srcRecord = NULL;
-    WATRRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    WATRRecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new WATRRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->WATR.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }
 
 unsigned int Collection::CopyEFSHRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
     EFSHRecord *srcRecord = NULL;
-    EFSHRecord *copyRecord = NULL;
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL)
+        return 0;
+
+    ModFile *destMod = NULL;
+    EFSHRecord *copyRecord = NULL;
 
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
-        if(copyRecord != NULL)
+        if(destMod != NULL || copyRecord != NULL)
             return 0;
         }
 
     destMod = LookupModFile(destModName);
-
-    //Throw in the towel if either the source or destination mod doesn't exist, or if they're the same
-    if(srcMod == NULL || destMod == NULL || srcRecord == NULL || srcMod == destMod)
+    if(destMod == NULL || srcMod == destMod)
         return 0;
 
-    //Ensure the record has been fully read
     srcRecord->Read(srcMod->FormIDHandler);
-
     copyRecord = new EFSHRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
+    copyRecord->AddMasters(destMod->FormIDHandler);
 
     destMod->EFSH.Records.push_back(copyRecord);
-
-    //Add any master as necessary, and register the formID
-    if(asOverride)
-        destMod->FormIDHandler.AddMaster(srcRecordFID);
-
-    FID_ModFile_Record.insert(std::make_pair(&copyRecord->formID,std::make_pair(destMod,copyRecord)));
+    FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
     return copyRecord->formID;
     }

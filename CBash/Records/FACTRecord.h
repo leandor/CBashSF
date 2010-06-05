@@ -147,6 +147,8 @@ class FACTRecord : public Record
 
         void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
+            if(!IsLoaded())
+                return;
             for(unsigned int x = 0; x < XNAM.size(); x++)
                 FormIDs.push_back(&XNAM[x]->value.faction);
             }
@@ -170,7 +172,7 @@ class FACTRecord : public Record
         void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, char *FieldValue);
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize();
+        unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eFACT;}
         char * GetStrType() {return "FACT";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);

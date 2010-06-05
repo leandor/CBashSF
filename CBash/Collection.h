@@ -25,7 +25,6 @@ GPL License and Copyright Notice ============================================
 #include <vector>
 #include <list>
 #include <map>
-#include <boost/threadpool.hpp>
 
 #ifndef NUMTHREADS
 #define NUMTHREADS    boost::thread::hardware_concurrency()
@@ -40,7 +39,7 @@ class Collection
         bool isLoaded;
     public:
         std::multimap<char *, std::pair<ModFile *, Record *>, sameStr> GMST_ModFile_Record;
-        std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID> FID_ModFile_Record;
+        std::multimap<unsigned int, std::pair<ModFile *, Record *> > FID_ModFile_Record;
 
         Collection(const char *ModsPath):ModsDir(NULL), isLoaded(false)
             {
@@ -54,18 +53,14 @@ class Collection
                 delete ModFiles[p];
             }
 
-        int NewMod(const char *ModName);
         bool IsModAdded(const char *ModName);
         int AddMod(const char *ModName, bool CreateIfNotExist=false, bool DummyLoad=false);
+        int CleanMasters(char *ModName);
         int SafeSaveMod(char *ModName, bool CloseMod=false);
-        int SafeSaveAllChangedMods();
 
         void IndexRecords(ModFile *curModFile);
         int Load(const bool &LoadMasters, const bool &FullLoad);
         unsigned int NextFreeExpandedFID(ModFile *curModFile);
-        void CollapseFormIDs(char *ModName = NULL);
-        void ExpandFormIDs(char *ModName = NULL);
-        void ReindexFormIDs();
         int RemoveIndex(Record *curRecord, char *ModName);
         int LoadRecord(char *ModName, unsigned int recordFID);
         int UnloadRecord(char *ModName, unsigned int recordFID);
@@ -75,30 +70,24 @@ class Collection
         int Close();
 
         template <class T>
-        std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID>::iterator LookupRecord(char *ModName, unsigned int &recordFID, ModFile *&curModFile, T *&curRecord)
+        std::multimap<unsigned int, std::pair<ModFile *, Record *> >::iterator LookupRecord(char *ModName, unsigned int &recordFID, ModFile *&curModFile, T *&curRecord)
             {
-            std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID>::iterator it;
-
-            if(recordFID == 0)
+            if(ModName == NULL || recordFID == 0)
                 {curModFile = NULL; curRecord = NULL; return FID_ModFile_Record.end();}
-
-            it = FID_ModFile_Record.find(&recordFID);
+                
+            std::multimap<unsigned int, std::pair<ModFile *, Record *> >::iterator it = FID_ModFile_Record.find(recordFID);
+            
             if(it == FID_ModFile_Record.end())
                 {curModFile = NULL; curRecord = NULL; return FID_ModFile_Record.end();}
 
-            if(ModName == NULL)
-                curModFile = it->second.first;
-            else
-                //curModFile = LookupModFile(ModName);
-                {
-                unsigned int count = (unsigned int)FID_ModFile_Record.count(&recordFID);
-                for(unsigned int x = 0; x < count;++it, ++x)
-                    if(_stricmp(it->second.first->FileName, ModName) == 0 )
-                        {
-                        curModFile = it->second.first;
-                        break;
-                        }
-                }
+            unsigned int count = (unsigned int)FID_ModFile_Record.count(recordFID);
+            for(unsigned int x = 0; x < count;++it, ++x)
+                if(_stricmp(it->second.first->FileName, ModName) == 0 )
+                    {
+                    curModFile = it->second.first;
+                    break;
+                    }
+
             if(curModFile == NULL)
                 {curRecord = NULL; return FID_ModFile_Record.end();}
             curRecord = (T *)it->second.second;
@@ -110,9 +99,11 @@ class Collection
         void ResolveGrid(const float &posX, const float &posY, int &gridX, int &gridY);
 
         ModFile *LookupModFile(char *ModName);
+        unsigned int SetRecordFormID(char *ModName, unsigned int recordFID, unsigned int FieldValue);
         char * GetModName(const unsigned int iIndex);
         unsigned int GetCorrectedFID(char *ModName, unsigned int recordObjectID);
-        unsigned int UpdateReferencingRecords(char *ModName, unsigned int origFormID, unsigned int newFormID);
+        unsigned int UpdateReferences(char *ModName, unsigned int origFormID, unsigned int newFormID);
+        unsigned int UpdateReferences(char *ModName, unsigned int recordFID, unsigned int origFormID, unsigned int newFormID);
         int GetModIndex(const char *ModName);
 
 
@@ -240,7 +231,6 @@ class Collection
         void GetANIORecords(char *ModName, unsigned int **RecordFIDs);
         void GetWATRRecords(char *ModName, unsigned int **RecordFIDs);
         void GetEFSHRecords(char *ModName, unsigned int **RecordFIDs);
-        int GetChangedMods();
 
         int GetTES4FieldType(char *ModName, const unsigned int Field);
         int GetGMSTFieldType(char *ModName, char *recordEDID, const unsigned int Field);
@@ -416,16 +406,13 @@ class Collection
             {
             try
                 {
-                ModFile *curModFile = NULL;
-                Record *curRecord = NULL;
-                for(unsigned int p = 0;p < ModFiles.size();p++)
-                    if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                        {
-                        curModFile = ModFiles[p];
-                        curRecord = &curModFile->TES4;
-                        curRecord->SetField(curModFile->FormIDHandler, Field, FieldValue, nSize);
-                        return;
-                        }
+                ModFile *curModFile = LookupModFile(ModName);
+                if(curModFile == NULL)
+                    return;
+
+                curModFile->TES4.SetField(curModFile->FormIDHandler, Field, FieldValue, nSize);
+                curModFile->TES4.recData = NULL;
+                return;
                 }
             catch(...)
                 {
@@ -439,16 +426,13 @@ class Collection
             {
             try
                 {
-                ModFile *curModFile = NULL;
-                Record *curRecord = NULL;
-                for(unsigned int p = 0;p < ModFiles.size();p++)
-                    if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-                        {
-                        curModFile = ModFiles[p];
-                        curRecord = &curModFile->TES4;
-                        curRecord->SetField(curModFile->FormIDHandler, Field, FieldValue);
-                        return;
-                        }
+                ModFile *curModFile = LookupModFile(ModName);
+                if(curModFile == NULL)
+                    return;
+
+                ((Record *)&curModFile->TES4)->SetField(curModFile->FormIDHandler, Field, FieldValue);
+                curModFile->TES4.recData = NULL;
+                return;
                 }
             catch(...)
                 {
@@ -462,25 +446,14 @@ class Collection
             {
             try
                 {
-                std::multimap<char*,std::pair<ModFile *, Record *>, sameStr>::iterator it;
                 ModFile *curModFile = NULL;
-                Record *curRecord = NULL;
-                it = GMST_ModFile_Record.find(recordEDID);
-                //Updating whichever value is winning.
-                if(ModName == NULL)
-                    {
-                    if(it != GMST_ModFile_Record.end())
-                        it->second.second->SetField(curModFile->FormIDHandler, Field, FieldValue);
+                GMSTRecord *curRecord = NULL;
+                LookupGMSTRecord(ModName, recordEDID, curModFile, curRecord);
+                if(curModFile == NULL || curRecord == NULL)
                     return;
-                    }
-                //Else, update a specific mod's value.
-                unsigned int count = (unsigned int)GMST_ModFile_Record.count(recordEDID);
-                for(unsigned int x = 0; x < count;it++, x++)
-                    if(_stricmp(it->second.first->FileName, ModName) == 0 )
-                        {
-                        it->second.second->SetField(curModFile->FormIDHandler, Field, FieldValue);
-                        return;
-                        }
+                ((Record *)curRecord)->SetField(curModFile->FormIDHandler, Field, FieldValue);
+                curRecord->recData = NULL;
+                return;
                 }
             catch(...)
                 {
@@ -494,35 +467,15 @@ class Collection
             {
             try
                 {
-                std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID>::iterator it;
                 ModFile *curModFile = NULL;
                 Record *curRecord = NULL;
-                it = FID_ModFile_Record.find(&recordFID);
-                //Updating whichever value is winning.
-                if(ModName == NULL)
-                    {
-                    if(it != FID_ModFile_Record.end())
-                        {
-                        curModFile = it->second.first;
-                        curRecord = it->second.second;
-                        curRecord->Read(curModFile->FormIDHandler);
-                        curRecord->SetField(curModFile->FormIDHandler, Field, FieldValue, nSize);
-                        curRecord->recData = NULL;
-                        }
+                LookupRecord(ModName, recordFID, curModFile, curRecord);
+                if(curModFile == NULL || curRecord == NULL)
                     return;
-                    }
-                //Else, update a specific mod's value.
-                unsigned int count = (unsigned int)FID_ModFile_Record.count(&recordFID);
-                for(unsigned int x = 0; x < count;it++, x++)
-                    if(_stricmp(it->second.first->FileName, ModName) == 0 )
-                        {
-                        curModFile = it->second.first;
-                        curRecord = it->second.second;
-                        curRecord->Read(curModFile->FormIDHandler);
-                        curRecord->SetField(curModFile->FormIDHandler, Field, FieldValue, nSize);
-                        curRecord->recData = NULL;
-                        return;
-                        }
+                curRecord->Read(curModFile->FormIDHandler);
+                curRecord->SetField(curModFile->FormIDHandler, Field, FieldValue, nSize);
+                curRecord->recData = NULL;
+                return;
                 }
             catch(...)
                 {
@@ -536,35 +489,15 @@ class Collection
             {
             try
                 {
-                std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID>::iterator it;
                 ModFile *curModFile = NULL;
                 Record *curRecord = NULL;
-                it = FID_ModFile_Record.find(&recordFID);
-                //Updating whichever value is winning.
-                if(ModName == NULL)
-                    {
-                    if(it != FID_ModFile_Record.end())
-                        {
-                        curModFile = it->second.first;
-                        curRecord = it->second.second;
-                        curRecord->Read(curModFile->FormIDHandler);
-                        curRecord->SetField(curModFile->FormIDHandler, Field, FieldValue);
-                        curRecord->recData = NULL;
-                        }
+                LookupRecord(ModName, recordFID, curModFile, curRecord);
+                if(curModFile == NULL || curRecord == NULL)
                     return;
-                    }
-                //Else, update a specific mod's value.
-                unsigned int count = (unsigned int)FID_ModFile_Record.count(&recordFID);
-                for(unsigned int x = 0; x < count;it++, x++)
-                    if(_stricmp(it->second.first->FileName, ModName) == 0 )
-                        {
-                        curModFile = it->second.first;
-                        curRecord = it->second.second;
-                        curRecord->Read(curModFile->FormIDHandler);
-                        curRecord->SetField(curModFile->FormIDHandler, Field, FieldValue);
-                        curRecord->recData = NULL;
-                        return;
-                        }
+                curRecord->Read(curModFile->FormIDHandler);
+                curRecord->SetField(curModFile->FormIDHandler, Field, FieldValue);
+                curRecord->recData = NULL;
+                return;
                 }
             catch(...)
                 {
@@ -578,35 +511,15 @@ class Collection
             {
             try
                 {
-                std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID>::iterator it;
                 ModFile *curModFile = NULL;
                 Record *curRecord = NULL;
-                it = FID_ModFile_Record.find(&recordFID);
-                //Updating whichever value is winning.
-                if(ModName == NULL)
-                    {
-                    if(it != FID_ModFile_Record.end())
-                        {
-                        curModFile = it->second.first;
-                        curRecord = it->second.second;
-                        curRecord->Read(curModFile->FormIDHandler);
-                        curRecord->SetListField(curModFile->FormIDHandler, subField, listIndex, listField, FieldValue, nSize);
-                        curRecord->recData = NULL;
-                        }
+                LookupRecord(ModName, recordFID, curModFile, curRecord);
+                if(curModFile == NULL || curRecord == NULL)
                     return;
-                    }
-                //Else, update a specific mod's value.
-                unsigned int count = (unsigned int)FID_ModFile_Record.count(&recordFID);
-                for(unsigned int x = 0; x < count;it++, x++)
-                    if(_stricmp(it->second.first->FileName, ModName) == 0 )
-                        {
-                        curModFile = it->second.first;
-                        curRecord = it->second.second;
-                        curRecord->Read(curModFile->FormIDHandler);
-                        curRecord->SetListField(curModFile->FormIDHandler, subField, listIndex, listField, FieldValue, nSize);
-                        curRecord->recData = NULL;
-                        return;
-                        }
+                curRecord->Read(curModFile->FormIDHandler);
+                curRecord->SetListField(curModFile->FormIDHandler, subField, listIndex, listField, FieldValue, nSize);
+                curRecord->recData = NULL;
+                return;
                 }
             catch(...)
                 {
@@ -620,35 +533,15 @@ class Collection
             {
             try
                 {
-                std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID>::iterator it;
                 ModFile *curModFile = NULL;
                 Record *curRecord = NULL;
-                it = FID_ModFile_Record.find(&recordFID);
-                //Updating whichever value is winning.
-                if(ModName == NULL)
-                    {
-                    if(it != FID_ModFile_Record.end())
-                        {
-                        curModFile = it->second.first;
-                        curRecord = it->second.second;
-                        curRecord->Read(curModFile->FormIDHandler);
-                        curRecord->SetListField(curModFile->FormIDHandler, subField, listIndex, listField, FieldValue);
-                        curRecord->recData = NULL;
-                        }
+                LookupRecord(ModName, recordFID, curModFile, curRecord);
+                if(curModFile == NULL || curRecord == NULL)
                     return;
-                    }
-                //Else, update a specific mod's value.
-                unsigned int count = (unsigned int)FID_ModFile_Record.count(&recordFID);
-                for(unsigned int x = 0; x < count;it++, x++)
-                    if(_stricmp(it->second.first->FileName, ModName) == 0 )
-                        {
-                        curModFile = it->second.first;
-                        curRecord = it->second.second;
-                        curRecord->Read(curModFile->FormIDHandler);
-                        curRecord->SetListField(curModFile->FormIDHandler, subField, listIndex, listField, FieldValue);
-                        curRecord->recData = NULL;
-                        return;
-                        }
+                curRecord->Read(curModFile->FormIDHandler);
+                curRecord->SetListField(curModFile->FormIDHandler, subField, listIndex, listField, FieldValue);
+                curRecord->recData = NULL;
+                return;
                 }
             catch(...)
                 {
@@ -662,35 +555,15 @@ class Collection
             {
             try
                 {
-                std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID>::iterator it;
                 ModFile *curModFile = NULL;
                 Record *curRecord = NULL;
-                it = FID_ModFile_Record.find(&recordFID);
-                //Updating whichever value is winning.
-                if(ModName == NULL)
-                    {
-                    if(it != FID_ModFile_Record.end())
-                        {
-                        curModFile = it->second.first;
-                        curRecord = it->second.second;
-                        curRecord->Read(curModFile->FormIDHandler);
-                        curRecord->SetListX2Field(curModFile->FormIDHandler, subField, listIndex, listField, listX2Index, listX2Field, FieldValue, nSize);
-                        curRecord->recData = NULL;
-                        }
+                LookupRecord(ModName, recordFID, curModFile, curRecord);
+                if(curModFile == NULL || curRecord == NULL)
                     return;
-                    }
-                //Else, update a specific mod's value.
-                unsigned int count = (unsigned int)FID_ModFile_Record.count(&recordFID);
-                for(unsigned int x = 0; x < count;it++, x++)
-                    if(_stricmp(it->second.first->FileName, ModName) == 0 )
-                        {
-                        curModFile = it->second.first;
-                        curRecord = it->second.second;
-                        curRecord->Read(curModFile->FormIDHandler);
-                        curRecord->SetListX2Field(curModFile->FormIDHandler, subField, listIndex, listField, listX2Index, listX2Field, FieldValue, nSize);
-                        curRecord->recData = NULL;
-                        return;
-                        }
+                curRecord->Read(curModFile->FormIDHandler);
+                curRecord->SetListX2Field(curModFile->FormIDHandler, subField, listIndex, listField, listX2Index, listX2Field, FieldValue, nSize);
+                curRecord->recData = NULL;
+                return;
                 }
             catch(...)
                 {
@@ -704,35 +577,15 @@ class Collection
             {
             try
                 {
-                std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID>::iterator it;
                 ModFile *curModFile = NULL;
                 Record *curRecord = NULL;
-                it = FID_ModFile_Record.find(&recordFID);
-                //Updating whichever value is winning.
-                if(ModName == NULL)
-                    {
-                    if(it != FID_ModFile_Record.end())
-                        {
-                        curModFile = it->second.first;
-                        curRecord = it->second.second;
-                        curRecord->Read(curModFile->FormIDHandler);
-                        curRecord->SetListX2Field(curModFile->FormIDHandler, subField, listIndex, listField, listX2Index, listX2Field, FieldValue);
-                        curRecord->recData = NULL;
-                        }
+                LookupRecord(ModName, recordFID, curModFile, curRecord);
+                if(curModFile == NULL || curRecord == NULL)
                     return;
-                    }
-                //Else, update a specific mod's value.
-                unsigned int count = (unsigned int)FID_ModFile_Record.count(&recordFID);
-                for(unsigned int x = 0; x < count;it++, x++)
-                    if(_stricmp(it->second.first->FileName, ModName) == 0 )
-                        {
-                        curModFile = it->second.first;
-                        curRecord = it->second.second;
-                        curRecord->Read(curModFile->FormIDHandler);
-                        curRecord->SetListX2Field(curModFile->FormIDHandler, subField, listIndex, listField, listX2Index, listX2Field, FieldValue);
-                        curRecord->recData = NULL;
-                        return;
-                        }
+                curRecord->Read(curModFile->FormIDHandler);
+                curRecord->SetListX2Field(curModFile->FormIDHandler, subField, listIndex, listField, listX2Index, listX2Field, FieldValue);
+                curRecord->recData = NULL;
+                return;
                 }
             catch(...)
                 {
@@ -746,35 +599,15 @@ class Collection
             {
             try
                 {
-                std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID>::iterator it;
                 ModFile *curModFile = NULL;
                 Record *curRecord = NULL;
-                it = FID_ModFile_Record.find(&recordFID);
-                //Updating whichever value is winning.
-                if(ModName == NULL)
-                    {
-                    if(it != FID_ModFile_Record.end())
-                        {
-                        curModFile = it->second.first;
-                        curRecord = it->second.second;
-                        curRecord->Read(curModFile->FormIDHandler);
-                        curRecord->SetListX3Field(curModFile->FormIDHandler, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValue, nSize);
-                        curRecord->recData = NULL;
-                        }
+                LookupRecord(ModName, recordFID, curModFile, curRecord);
+                if(curModFile == NULL || curRecord == NULL)
                     return;
-                    }
-                //Else, update a specific mod's value.
-                unsigned int count = (unsigned int)FID_ModFile_Record.count(&recordFID);
-                for(unsigned int x = 0; x < count;it++, x++)
-                    if(_stricmp(it->second.first->FileName, ModName) == 0 )
-                        {
-                        curModFile = it->second.first;
-                        curRecord = it->second.second;
-                        curRecord->Read(curModFile->FormIDHandler);
-                        curRecord->SetListX3Field(curModFile->FormIDHandler, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValue, nSize);
-                        curRecord->recData = NULL;
-                        return;
-                        }
+                curRecord->Read(curModFile->FormIDHandler);
+                curRecord->SetListX3Field(curModFile->FormIDHandler, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValue, nSize);
+                curRecord->recData = NULL;
+                return;
                 }
             catch(...)
                 {
@@ -788,35 +621,15 @@ class Collection
             {
             try
                 {
-                std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID>::iterator it;
                 ModFile *curModFile = NULL;
                 Record *curRecord = NULL;
-                it = FID_ModFile_Record.find(&recordFID);
-                //Updating whichever value is winning.
-                if(ModName == NULL)
-                    {
-                    if(it != FID_ModFile_Record.end())
-                        {
-                        curModFile = it->second.first;
-                        curRecord = it->second.second;
-                        curRecord->Read(curModFile->FormIDHandler);
-                        curRecord->SetListX3Field(curModFile->FormIDHandler, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValue);
-                        curRecord->recData = NULL;
-                        }
+                LookupRecord(ModName, recordFID, curModFile, curRecord);
+                if(curModFile == NULL || curRecord == NULL)
                     return;
-                    }
-                //Else, update a specific mod's value.
-                unsigned int count = (unsigned int)FID_ModFile_Record.count(&recordFID);
-                for(unsigned int x = 0; x < count;it++, x++)
-                    if(_stricmp(it->second.first->FileName, ModName) == 0 )
-                        {
-                        curModFile = it->second.first;
-                        curRecord = it->second.second;
-                        curRecord->Read(curModFile->FormIDHandler);
-                        curRecord->SetListX3Field(curModFile->FormIDHandler, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValue);
-                        curRecord->recData = NULL;
-                        return;
-                        }
+                curRecord->Read(curModFile->FormIDHandler);
+                curRecord->SetListX3Field(curModFile->FormIDHandler, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValue);
+                curRecord->recData = NULL;
+                return;
                 }
             catch(...)
                 {
@@ -834,8 +647,8 @@ class Iterator
     {
     protected:
         unsigned int recordType;
-        std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID>::iterator it;
-        std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID>::iterator end;
+        std::multimap<unsigned int, std::pair<ModFile *, Record *> >::iterator it;
+        std::multimap<unsigned int, std::pair<ModFile *, Record *> >::iterator end;
     public:
         Iterator(Collection *nCollection, unsigned int recType):recordType(recType), it(nCollection->FID_ModFile_Record.begin()), end(nCollection->FID_ModFile_Record.end()) {}
         ~Iterator() {}

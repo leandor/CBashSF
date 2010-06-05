@@ -126,6 +126,8 @@ class ENCHRecord : public Record
 
         void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
+            if(!IsLoaded())
+                return;
             for(unsigned int x = 0; x < Effects.size(); x++)
                 if(Effects[x]->SCIT.IsLoaded())
                     FormIDs.push_back(&Effects[x]->SCIT->script);
@@ -157,7 +159,7 @@ class ENCHRecord : public Record
         void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, char *FieldValue);
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize();
+        unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eENCH;}
         char * GetStrType() {return "ENCH";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);

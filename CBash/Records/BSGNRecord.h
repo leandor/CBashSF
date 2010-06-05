@@ -77,6 +77,8 @@ class BSGNRecord : public Record
 
         void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
+            if(!IsLoaded())
+                return;
             for(unsigned int x = 0; x < SPLO.size(); x++)
                 FormIDs.push_back(SPLO[x]);
             }
@@ -93,7 +95,7 @@ class BSGNRecord : public Record
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue[], unsigned int nSize);
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize();
+        unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eBSGN;}
         char * GetStrType() {return "BSGN";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);

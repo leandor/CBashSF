@@ -96,6 +96,8 @@ class ACHRRecord : public Record
 
         void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
+            if(!IsLoaded())
+                return;
             FormIDs.push_back(&NAME.value.fid);
             if(XPCI.IsLoaded() && XPCI->XPCI.IsLoaded())
                 FormIDs.push_back(&XPCI->XPCI->fid);
@@ -121,7 +123,7 @@ class ACHRRecord : public Record
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize();
+        unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eACHR;}
         char * GetStrType() {return "ACHR";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);

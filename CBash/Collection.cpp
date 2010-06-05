@@ -23,6 +23,7 @@ GPL License and Copyright Notice ============================================
 #include "Collection.h"
 #include <direct.h>
 #include <sys/utime.h>
+#include <boost/threadpool.hpp>
 
 bool sortLoad(ModFile *lhs, ModFile *rhs)
     {
@@ -36,11 +37,6 @@ bool sortLoad(ModFile *lhs, ModFile *rhs)
     if(lhs->IsFake() || stat(rhs->FileName, &rbuf) < 0)
         return true;
     return lbuf.st_mtime < rbuf.st_mtime;
-    }
-
-int Collection::NewMod(const char *ModName)
-    {
-    return -1;
     }
 
 bool Collection::IsModAdded(const char *ModName)
@@ -78,6 +74,13 @@ int Collection::AddMod(const char *ModName, bool CreateIfNotExist, bool DummyLoa
     return -1;
     }
 
+int Collection::CleanMasters(char *ModName)
+    {
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return curModFile->CleanMasters();    
+    }
 int Collection::SafeSaveMod(char *ModName, bool CloseMod)
     {
     if(CloseMod)
@@ -116,18 +119,11 @@ int Collection::SafeSaveMod(char *ModName, bool CloseMod)
         if(buffer.open_write(tName) == -1)
             return -1;
 
-        //Return all FormIDs in the mod to a writable state
-        CollapseFormIDs(ModName);
         //Save the mod to temp file, using FileBuffer to write in chunks
         curModFile->Save(buffer, CloseMod);
-
         buffer.close();
 
-        //Return all FormIDs in the mod to an editable state
-        ExpandFormIDs(ModName);
-
         //Rename any existing files to a datestamped backup
-
         time(&ltime);
         if(ltime - lastSave < 60)
             ltime = lastSave + 60;
@@ -226,12 +222,6 @@ int Collection::SafeSaveMod(char *ModName, bool CloseMod)
     return 0;
     }
 
-int Collection::SafeSaveAllChangedMods()
-    {
-    _chdir(ModsDir);
-    return -1;
-    }
-
 void Collection::IndexRecords(ModFile *curModFile)
     {
     if(curModFile == NULL || curModFile->IsFake())
@@ -241,179 +231,179 @@ void Collection::IndexRecords(ModFile *curModFile)
     for(std::vector<GMSTRecord *>::iterator curGMST = curModFile->GMST.Records.begin();curGMST != curModFile->GMST.Records.end();curGMST++)
         GMST_ModFile_Record.insert(std::make_pair((*curGMST)->EDID.value,std::make_pair(curModFile,*curGMST)));
     for(std::vector<GMSTRecord *>::iterator curGMST = curModFile->GMST.Records.begin();curGMST != curModFile->GMST.Records.end();curGMST++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curGMST)->formID,std::make_pair(curModFile,*curGMST)));
+        FID_ModFile_Record.insert(std::make_pair((*curGMST)->formID,std::make_pair(curModFile,*curGMST)));
     for(std::vector<GLOBRecord *>::iterator curGLOB = curModFile->GLOB.Records.begin();curGLOB != curModFile->GLOB.Records.end();curGLOB++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curGLOB)->formID,std::make_pair(curModFile,*curGLOB)));
+        FID_ModFile_Record.insert(std::make_pair((*curGLOB)->formID,std::make_pair(curModFile,*curGLOB)));
     for(std::vector<CLASRecord *>::iterator curCLAS = curModFile->CLAS.Records.begin();curCLAS != curModFile->CLAS.Records.end();curCLAS++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curCLAS)->formID,std::make_pair(curModFile,*curCLAS)));
+        FID_ModFile_Record.insert(std::make_pair((*curCLAS)->formID,std::make_pair(curModFile,*curCLAS)));
     for(std::vector<FACTRecord *>::iterator curFACT = curModFile->FACT.Records.begin();curFACT != curModFile->FACT.Records.end();curFACT++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curFACT)->formID,std::make_pair(curModFile,*curFACT)));
+        FID_ModFile_Record.insert(std::make_pair((*curFACT)->formID,std::make_pair(curModFile,*curFACT)));
     for(std::vector<HAIRRecord *>::iterator curHAIR = curModFile->HAIR.Records.begin();curHAIR != curModFile->HAIR.Records.end();curHAIR++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curHAIR)->formID,std::make_pair(curModFile,*curHAIR)));
+        FID_ModFile_Record.insert(std::make_pair((*curHAIR)->formID,std::make_pair(curModFile,*curHAIR)));
     for(std::vector<EYESRecord *>::iterator curEYES = curModFile->EYES.Records.begin();curEYES != curModFile->EYES.Records.end();curEYES++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curEYES)->formID,std::make_pair(curModFile,*curEYES)));
+        FID_ModFile_Record.insert(std::make_pair((*curEYES)->formID,std::make_pair(curModFile,*curEYES)));
     for(std::vector<RACERecord *>::iterator curRACE = curModFile->RACE.Records.begin();curRACE != curModFile->RACE.Records.end();curRACE++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curRACE)->formID,std::make_pair(curModFile,*curRACE)));
+        FID_ModFile_Record.insert(std::make_pair((*curRACE)->formID,std::make_pair(curModFile,*curRACE)));
     for(std::vector<SOUNRecord *>::iterator curSOUN = curModFile->SOUN.Records.begin();curSOUN != curModFile->SOUN.Records.end();curSOUN++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curSOUN)->formID,std::make_pair(curModFile,*curSOUN)));
+        FID_ModFile_Record.insert(std::make_pair((*curSOUN)->formID,std::make_pair(curModFile,*curSOUN)));
     for(std::vector<SKILRecord *>::iterator curSKIL = curModFile->SKIL.Records.begin();curSKIL != curModFile->SKIL.Records.end();curSKIL++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curSKIL)->formID,std::make_pair(curModFile,*curSKIL)));
+        FID_ModFile_Record.insert(std::make_pair((*curSKIL)->formID,std::make_pair(curModFile,*curSKIL)));
     for(std::vector<MGEFRecord *>::iterator curMGEF = curModFile->MGEF.Records.begin();curMGEF != curModFile->MGEF.Records.end();curMGEF++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curMGEF)->formID,std::make_pair(curModFile,*curMGEF)));
+        FID_ModFile_Record.insert(std::make_pair((*curMGEF)->formID,std::make_pair(curModFile,*curMGEF)));
     for(std::vector<SCPTRecord *>::iterator curSCPT = curModFile->SCPT.Records.begin();curSCPT != curModFile->SCPT.Records.end();curSCPT++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curSCPT)->formID,std::make_pair(curModFile,*curSCPT)));
+        FID_ModFile_Record.insert(std::make_pair((*curSCPT)->formID,std::make_pair(curModFile,*curSCPT)));
     for(std::vector<LTEXRecord *>::iterator curLTEX = curModFile->LTEX.Records.begin();curLTEX != curModFile->LTEX.Records.end();curLTEX++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curLTEX)->formID,std::make_pair(curModFile,*curLTEX)));
+        FID_ModFile_Record.insert(std::make_pair((*curLTEX)->formID,std::make_pair(curModFile,*curLTEX)));
     for(std::vector<ENCHRecord *>::iterator curENCH = curModFile->ENCH.Records.begin();curENCH != curModFile->ENCH.Records.end();curENCH++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curENCH)->formID,std::make_pair(curModFile,*curENCH)));
+        FID_ModFile_Record.insert(std::make_pair((*curENCH)->formID,std::make_pair(curModFile,*curENCH)));
     for(std::vector<SPELRecord *>::iterator curSPEL = curModFile->SPEL.Records.begin();curSPEL != curModFile->SPEL.Records.end();curSPEL++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curSPEL)->formID,std::make_pair(curModFile,*curSPEL)));
+        FID_ModFile_Record.insert(std::make_pair((*curSPEL)->formID,std::make_pair(curModFile,*curSPEL)));
     for(std::vector<BSGNRecord *>::iterator curBSGN = curModFile->BSGN.Records.begin();curBSGN != curModFile->BSGN.Records.end();curBSGN++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curBSGN)->formID,std::make_pair(curModFile,*curBSGN)));
+        FID_ModFile_Record.insert(std::make_pair((*curBSGN)->formID,std::make_pair(curModFile,*curBSGN)));
     for(std::vector<ACTIRecord *>::iterator curACTI = curModFile->ACTI.Records.begin();curACTI != curModFile->ACTI.Records.end();curACTI++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curACTI)->formID,std::make_pair(curModFile,*curACTI)));
+        FID_ModFile_Record.insert(std::make_pair((*curACTI)->formID,std::make_pair(curModFile,*curACTI)));
     for(std::vector<APPARecord *>::iterator curAPPA = curModFile->APPA.Records.begin();curAPPA != curModFile->APPA.Records.end();curAPPA++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curAPPA)->formID,std::make_pair(curModFile,*curAPPA)));
+        FID_ModFile_Record.insert(std::make_pair((*curAPPA)->formID,std::make_pair(curModFile,*curAPPA)));
     for(std::vector<ARMORecord *>::iterator curARMO = curModFile->ARMO.Records.begin();curARMO != curModFile->ARMO.Records.end();curARMO++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curARMO)->formID,std::make_pair(curModFile,*curARMO)));
+        FID_ModFile_Record.insert(std::make_pair((*curARMO)->formID,std::make_pair(curModFile,*curARMO)));
     for(std::vector<BOOKRecord *>::iterator curBOOK = curModFile->BOOK.Records.begin();curBOOK != curModFile->BOOK.Records.end();curBOOK++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curBOOK)->formID,std::make_pair(curModFile,*curBOOK)));
+        FID_ModFile_Record.insert(std::make_pair((*curBOOK)->formID,std::make_pair(curModFile,*curBOOK)));
     for(std::vector<CLOTRecord *>::iterator curCLOT = curModFile->CLOT.Records.begin();curCLOT != curModFile->CLOT.Records.end();curCLOT++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curCLOT)->formID,std::make_pair(curModFile,*curCLOT)));
+        FID_ModFile_Record.insert(std::make_pair((*curCLOT)->formID,std::make_pair(curModFile,*curCLOT)));
     for(std::vector<CONTRecord *>::iterator curCONT = curModFile->CONT.Records.begin();curCONT != curModFile->CONT.Records.end();curCONT++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curCONT)->formID,std::make_pair(curModFile,*curCONT)));
+        FID_ModFile_Record.insert(std::make_pair((*curCONT)->formID,std::make_pair(curModFile,*curCONT)));
     for(std::vector<DOORRecord *>::iterator curDOOR = curModFile->DOOR.Records.begin();curDOOR != curModFile->DOOR.Records.end();curDOOR++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curDOOR)->formID,std::make_pair(curModFile,*curDOOR)));
+        FID_ModFile_Record.insert(std::make_pair((*curDOOR)->formID,std::make_pair(curModFile,*curDOOR)));
     for(std::vector<INGRRecord *>::iterator curINGR = curModFile->INGR.Records.begin();curINGR != curModFile->INGR.Records.end();curINGR++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curINGR)->formID,std::make_pair(curModFile,*curINGR)));
+        FID_ModFile_Record.insert(std::make_pair((*curINGR)->formID,std::make_pair(curModFile,*curINGR)));
     for(std::vector<LIGHRecord *>::iterator curLIGH = curModFile->LIGH.Records.begin();curLIGH != curModFile->LIGH.Records.end();curLIGH++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curLIGH)->formID,std::make_pair(curModFile,*curLIGH)));
+        FID_ModFile_Record.insert(std::make_pair((*curLIGH)->formID,std::make_pair(curModFile,*curLIGH)));
     for(std::vector<MISCRecord *>::iterator curMISC = curModFile->MISC.Records.begin();curMISC != curModFile->MISC.Records.end();curMISC++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curMISC)->formID,std::make_pair(curModFile,*curMISC)));
+        FID_ModFile_Record.insert(std::make_pair((*curMISC)->formID,std::make_pair(curModFile,*curMISC)));
     for(std::vector<STATRecord *>::iterator curSTAT = curModFile->STAT.Records.begin();curSTAT != curModFile->STAT.Records.end();curSTAT++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curSTAT)->formID,std::make_pair(curModFile,*curSTAT)));
+        FID_ModFile_Record.insert(std::make_pair((*curSTAT)->formID,std::make_pair(curModFile,*curSTAT)));
     for(std::vector<GRASRecord *>::iterator curGRAS = curModFile->GRAS.Records.begin();curGRAS != curModFile->GRAS.Records.end();curGRAS++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curGRAS)->formID,std::make_pair(curModFile,*curGRAS)));
+        FID_ModFile_Record.insert(std::make_pair((*curGRAS)->formID,std::make_pair(curModFile,*curGRAS)));
     for(std::vector<TREERecord *>::iterator curTREE = curModFile->TREE.Records.begin();curTREE != curModFile->TREE.Records.end();curTREE++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curTREE)->formID,std::make_pair(curModFile,*curTREE)));
+        FID_ModFile_Record.insert(std::make_pair((*curTREE)->formID,std::make_pair(curModFile,*curTREE)));
     for(std::vector<FLORRecord *>::iterator curFLOR = curModFile->FLOR.Records.begin();curFLOR != curModFile->FLOR.Records.end();curFLOR++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curFLOR)->formID,std::make_pair(curModFile,*curFLOR)));
+        FID_ModFile_Record.insert(std::make_pair((*curFLOR)->formID,std::make_pair(curModFile,*curFLOR)));
     for(std::vector<FURNRecord *>::iterator curFURN = curModFile->FURN.Records.begin();curFURN != curModFile->FURN.Records.end();curFURN++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curFURN)->formID,std::make_pair(curModFile,*curFURN)));
+        FID_ModFile_Record.insert(std::make_pair((*curFURN)->formID,std::make_pair(curModFile,*curFURN)));
     for(std::vector<WEAPRecord *>::iterator curWEAP = curModFile->WEAP.Records.begin();curWEAP != curModFile->WEAP.Records.end();curWEAP++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curWEAP)->formID,std::make_pair(curModFile,*curWEAP)));
+        FID_ModFile_Record.insert(std::make_pair((*curWEAP)->formID,std::make_pair(curModFile,*curWEAP)));
     for(std::vector<AMMORecord *>::iterator curAMMO = curModFile->AMMO.Records.begin();curAMMO != curModFile->AMMO.Records.end();curAMMO++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curAMMO)->formID,std::make_pair(curModFile,*curAMMO)));
+        FID_ModFile_Record.insert(std::make_pair((*curAMMO)->formID,std::make_pair(curModFile,*curAMMO)));
     for(std::vector<NPC_Record *>::iterator curNPC_ = curModFile->NPC_.Records.begin();curNPC_ != curModFile->NPC_.Records.end();curNPC_++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curNPC_)->formID,std::make_pair(curModFile,*curNPC_)));
+        FID_ModFile_Record.insert(std::make_pair((*curNPC_)->formID,std::make_pair(curModFile,*curNPC_)));
     for(std::vector<CREARecord *>::iterator curCREA = curModFile->CREA.Records.begin();curCREA != curModFile->CREA.Records.end();curCREA++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curCREA)->formID,std::make_pair(curModFile,*curCREA)));
+        FID_ModFile_Record.insert(std::make_pair((*curCREA)->formID,std::make_pair(curModFile,*curCREA)));
     for(std::vector<LVLCRecord *>::iterator curLVLC = curModFile->LVLC.Records.begin();curLVLC != curModFile->LVLC.Records.end();curLVLC++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curLVLC)->formID,std::make_pair(curModFile,*curLVLC)));
+        FID_ModFile_Record.insert(std::make_pair((*curLVLC)->formID,std::make_pair(curModFile,*curLVLC)));
     for(std::vector<SLGMRecord *>::iterator curSLGM = curModFile->SLGM.Records.begin();curSLGM != curModFile->SLGM.Records.end();curSLGM++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curSLGM)->formID,std::make_pair(curModFile,*curSLGM)));
+        FID_ModFile_Record.insert(std::make_pair((*curSLGM)->formID,std::make_pair(curModFile,*curSLGM)));
     for(std::vector<KEYMRecord *>::iterator curKEYM = curModFile->KEYM.Records.begin();curKEYM != curModFile->KEYM.Records.end();curKEYM++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curKEYM)->formID,std::make_pair(curModFile,*curKEYM)));
+        FID_ModFile_Record.insert(std::make_pair((*curKEYM)->formID,std::make_pair(curModFile,*curKEYM)));
     for(std::vector<ALCHRecord *>::iterator curALCH = curModFile->ALCH.Records.begin();curALCH != curModFile->ALCH.Records.end();curALCH++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curALCH)->formID,std::make_pair(curModFile,*curALCH)));
+        FID_ModFile_Record.insert(std::make_pair((*curALCH)->formID,std::make_pair(curModFile,*curALCH)));
     for(std::vector<SBSPRecord *>::iterator curSBSP = curModFile->SBSP.Records.begin();curSBSP != curModFile->SBSP.Records.end();curSBSP++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curSBSP)->formID,std::make_pair(curModFile,*curSBSP)));
+        FID_ModFile_Record.insert(std::make_pair((*curSBSP)->formID,std::make_pair(curModFile,*curSBSP)));
     for(std::vector<SGSTRecord *>::iterator curSGST = curModFile->SGST.Records.begin();curSGST != curModFile->SGST.Records.end();curSGST++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curSGST)->formID,std::make_pair(curModFile,*curSGST)));
+        FID_ModFile_Record.insert(std::make_pair((*curSGST)->formID,std::make_pair(curModFile,*curSGST)));
     for(std::vector<LVLIRecord *>::iterator curLVLI = curModFile->LVLI.Records.begin();curLVLI != curModFile->LVLI.Records.end();curLVLI++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curLVLI)->formID,std::make_pair(curModFile,*curLVLI)));
+        FID_ModFile_Record.insert(std::make_pair((*curLVLI)->formID,std::make_pair(curModFile,*curLVLI)));
     for(std::vector<WTHRRecord *>::iterator curWTHR = curModFile->WTHR.Records.begin();curWTHR != curModFile->WTHR.Records.end();curWTHR++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curWTHR)->formID,std::make_pair(curModFile,*curWTHR)));
+        FID_ModFile_Record.insert(std::make_pair((*curWTHR)->formID,std::make_pair(curModFile,*curWTHR)));
     for(std::vector<CLMTRecord *>::iterator curCLMT = curModFile->CLMT.Records.begin();curCLMT != curModFile->CLMT.Records.end();curCLMT++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curCLMT)->formID,std::make_pair(curModFile,*curCLMT)));
+        FID_ModFile_Record.insert(std::make_pair((*curCLMT)->formID,std::make_pair(curModFile,*curCLMT)));
     for(std::vector<REGNRecord *>::iterator curREGN = curModFile->REGN.Records.begin();curREGN != curModFile->REGN.Records.end();curREGN++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curREGN)->formID,std::make_pair(curModFile,*curREGN)));
+        FID_ModFile_Record.insert(std::make_pair((*curREGN)->formID,std::make_pair(curModFile,*curREGN)));
 
     for(std::vector<CELLRecord *>::iterator curCELL = curModFile->CELL.Records.begin();curCELL != curModFile->CELL.Records.end();curCELL++)
         {
-        FID_ModFile_Record.insert(std::make_pair(&(*curCELL)->formID,std::make_pair(curModFile,*curCELL)));
+        FID_ModFile_Record.insert(std::make_pair((*curCELL)->formID,std::make_pair(curModFile,*curCELL)));
         for(std::vector<ACHRRecord *>::iterator curACHR = (*curCELL)->ACHR.begin();curACHR != (*curCELL)->ACHR.end();curACHR++)
-            FID_ModFile_Record.insert(std::make_pair(&(*curACHR)->formID,std::make_pair(curModFile,*curACHR)));
+            FID_ModFile_Record.insert(std::make_pair((*curACHR)->formID,std::make_pair(curModFile,*curACHR)));
 
         for(std::vector<ACRERecord *>::iterator curACRE = (*curCELL)->ACRE.begin();curACRE != (*curCELL)->ACRE.end();curACRE++)
-            FID_ModFile_Record.insert(std::make_pair(&(*curACRE)->formID,std::make_pair(curModFile,*curACRE)));
+            FID_ModFile_Record.insert(std::make_pair((*curACRE)->formID,std::make_pair(curModFile,*curACRE)));
 
         for(std::vector<REFRRecord *>::iterator curREFR = (*curCELL)->REFR.begin();curREFR != (*curCELL)->REFR.end();curREFR++)
-            FID_ModFile_Record.insert(std::make_pair(&(*curREFR)->formID,std::make_pair(curModFile,*curREFR)));
+            FID_ModFile_Record.insert(std::make_pair((*curREFR)->formID,std::make_pair(curModFile,*curREFR)));
 
         if((*curCELL)->PGRD != NULL)
-            FID_ModFile_Record.insert(std::make_pair(&(*curCELL)->PGRD->formID,std::make_pair(curModFile,(*curCELL)->PGRD)));
+            FID_ModFile_Record.insert(std::make_pair((*curCELL)->PGRD->formID,std::make_pair(curModFile,(*curCELL)->PGRD)));
         }
 
     for(std::vector<WRLDRecord *>::iterator curWRLD = curModFile->WRLD.Records.begin();curWRLD != curModFile->WRLD.Records.end();curWRLD++)
         {
-        FID_ModFile_Record.insert(std::make_pair(&(*curWRLD)->formID,std::make_pair(curModFile,*curWRLD)));
+        FID_ModFile_Record.insert(std::make_pair((*curWRLD)->formID,std::make_pair(curModFile,*curWRLD)));
         if((*curWRLD)->CELL != NULL)
             {
-            FID_ModFile_Record.insert(std::make_pair(&(*curWRLD)->CELL->formID,std::make_pair(curModFile,(*curWRLD)->CELL)));
+            FID_ModFile_Record.insert(std::make_pair((*curWRLD)->CELL->formID,std::make_pair(curModFile,(*curWRLD)->CELL)));
             for(std::vector<ACHRRecord *>::iterator curACHR = (*curWRLD)->CELL->ACHR.begin();curACHR != (*curWRLD)->CELL->ACHR.end();curACHR++)
-                FID_ModFile_Record.insert(std::make_pair(&(*curACHR)->formID,std::make_pair(curModFile,*curACHR)));
+                FID_ModFile_Record.insert(std::make_pair((*curACHR)->formID,std::make_pair(curModFile,*curACHR)));
 
             for(std::vector<ACRERecord *>::iterator curACRE = (*curWRLD)->CELL->ACRE.begin();curACRE != (*curWRLD)->CELL->ACRE.end();curACRE++)
-                FID_ModFile_Record.insert(std::make_pair(&(*curACRE)->formID,std::make_pair(curModFile,*curACRE)));
+                FID_ModFile_Record.insert(std::make_pair((*curACRE)->formID,std::make_pair(curModFile,*curACRE)));
 
             for(std::vector<REFRRecord *>::iterator curREFR = (*curWRLD)->CELL->REFR.begin();curREFR != (*curWRLD)->CELL->REFR.end();curREFR++)
-                FID_ModFile_Record.insert(std::make_pair(&(*curREFR)->formID,std::make_pair(curModFile,*curREFR)));
+                FID_ModFile_Record.insert(std::make_pair((*curREFR)->formID,std::make_pair(curModFile,*curREFR)));
 
             if((*curWRLD)->CELL->PGRD != NULL)
-                FID_ModFile_Record.insert(std::make_pair(&(*curWRLD)->CELL->PGRD->formID,std::make_pair(curModFile,(*curWRLD)->CELL->PGRD)));
+                FID_ModFile_Record.insert(std::make_pair((*curWRLD)->CELL->PGRD->formID,std::make_pair(curModFile,(*curWRLD)->CELL->PGRD)));
             if((*curWRLD)->CELL->LAND != NULL)
-                FID_ModFile_Record.insert(std::make_pair(&(*curWRLD)->CELL->LAND->formID,std::make_pair(curModFile,(*curWRLD)->CELL->LAND)));
+                FID_ModFile_Record.insert(std::make_pair((*curWRLD)->CELL->LAND->formID,std::make_pair(curModFile,(*curWRLD)->CELL->LAND)));
             }
 
         if((*curWRLD)->ROAD != NULL)
-            FID_ModFile_Record.insert(std::make_pair(&(*curWRLD)->ROAD->formID,std::make_pair(curModFile,(*curWRLD)->ROAD)));
+            FID_ModFile_Record.insert(std::make_pair((*curWRLD)->ROAD->formID,std::make_pair(curModFile,(*curWRLD)->ROAD)));
 
 
         for(std::vector<CELLRecord *>::iterator curCELL = (*curWRLD)->CELLS.begin();curCELL != (*curWRLD)->CELLS.end();curCELL++)
             {
-            FID_ModFile_Record.insert(std::make_pair(&(*curCELL)->formID,std::make_pair(curModFile,*curCELL)));
+            FID_ModFile_Record.insert(std::make_pair((*curCELL)->formID,std::make_pair(curModFile,*curCELL)));
             for(std::vector<ACHRRecord *>::iterator curACHR = (*curCELL)->ACHR.begin();curACHR != (*curCELL)->ACHR.end();curACHR++)
-                FID_ModFile_Record.insert(std::make_pair(&(*curACHR)->formID,std::make_pair(curModFile,*curACHR)));
+                FID_ModFile_Record.insert(std::make_pair((*curACHR)->formID,std::make_pair(curModFile,*curACHR)));
 
             for(std::vector<ACRERecord *>::iterator curACRE = (*curCELL)->ACRE.begin();curACRE != (*curCELL)->ACRE.end();curACRE++)
-                FID_ModFile_Record.insert(std::make_pair(&(*curACRE)->formID,std::make_pair(curModFile,*curACRE)));
+                FID_ModFile_Record.insert(std::make_pair((*curACRE)->formID,std::make_pair(curModFile,*curACRE)));
 
             for(std::vector<REFRRecord *>::iterator curREFR = (*curCELL)->REFR.begin();curREFR != (*curCELL)->REFR.end();curREFR++)
-                FID_ModFile_Record.insert(std::make_pair(&(*curREFR)->formID,std::make_pair(curModFile,*curREFR)));
+                FID_ModFile_Record.insert(std::make_pair((*curREFR)->formID,std::make_pair(curModFile,*curREFR)));
 
             if((*curCELL)->PGRD != NULL)
-                FID_ModFile_Record.insert(std::make_pair(&(*curCELL)->PGRD->formID,std::make_pair(curModFile,(*curCELL)->PGRD)));
+                FID_ModFile_Record.insert(std::make_pair((*curCELL)->PGRD->formID,std::make_pair(curModFile,(*curCELL)->PGRD)));
             if((*curCELL)->LAND != NULL)
-                FID_ModFile_Record.insert(std::make_pair(&(*curCELL)->LAND->formID,std::make_pair(curModFile,(*curCELL)->LAND)));
+                FID_ModFile_Record.insert(std::make_pair((*curCELL)->LAND->formID,std::make_pair(curModFile,(*curCELL)->LAND)));
             }
         }
 
     for(std::vector<DIALRecord *>::iterator curDIAL = curModFile->DIAL.Records.begin();curDIAL != curModFile->DIAL.Records.end();curDIAL++)
         {
-        FID_ModFile_Record.insert(std::make_pair(&(*curDIAL)->formID,std::make_pair(curModFile,*curDIAL)));
+        FID_ModFile_Record.insert(std::make_pair((*curDIAL)->formID,std::make_pair(curModFile,*curDIAL)));
         for(std::vector<INFORecord *>::iterator curINFO = (*curDIAL)->INFO.begin();curINFO != (*curDIAL)->INFO.end();curINFO++)
-            FID_ModFile_Record.insert(std::make_pair(&(*curINFO)->formID,std::make_pair(curModFile,*curINFO)));
+            FID_ModFile_Record.insert(std::make_pair((*curINFO)->formID,std::make_pair(curModFile,*curINFO)));
         }
 
     for(std::vector<QUSTRecord *>::iterator curQUST = curModFile->QUST.Records.begin();curQUST != curModFile->QUST.Records.end();curQUST++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curQUST)->formID,std::make_pair(curModFile,*curQUST)));
+        FID_ModFile_Record.insert(std::make_pair((*curQUST)->formID,std::make_pair(curModFile,*curQUST)));
     for(std::vector<IDLERecord *>::iterator curIDLE = curModFile->IDLE.Records.begin();curIDLE != curModFile->IDLE.Records.end();curIDLE++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curIDLE)->formID,std::make_pair(curModFile,*curIDLE)));
+        FID_ModFile_Record.insert(std::make_pair((*curIDLE)->formID,std::make_pair(curModFile,*curIDLE)));
     for(std::vector<PACKRecord *>::iterator curPACK = curModFile->PACK.Records.begin();curPACK != curModFile->PACK.Records.end();curPACK++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curPACK)->formID,std::make_pair(curModFile,*curPACK)));
+        FID_ModFile_Record.insert(std::make_pair((*curPACK)->formID,std::make_pair(curModFile,*curPACK)));
     for(std::vector<CSTYRecord *>::iterator curCSTY = curModFile->CSTY.Records.begin();curCSTY != curModFile->CSTY.Records.end();curCSTY++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curCSTY)->formID,std::make_pair(curModFile,*curCSTY)));
+        FID_ModFile_Record.insert(std::make_pair((*curCSTY)->formID,std::make_pair(curModFile,*curCSTY)));
     for(std::vector<LSCRRecord *>::iterator curLSCR = curModFile->LSCR.Records.begin();curLSCR != curModFile->LSCR.Records.end();curLSCR++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curLSCR)->formID,std::make_pair(curModFile,*curLSCR)));
+        FID_ModFile_Record.insert(std::make_pair((*curLSCR)->formID,std::make_pair(curModFile,*curLSCR)));
     for(std::vector<LVSPRecord *>::iterator curLVSP = curModFile->LVSP.Records.begin();curLVSP != curModFile->LVSP.Records.end();curLVSP++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curLVSP)->formID,std::make_pair(curModFile,*curLVSP)));
+        FID_ModFile_Record.insert(std::make_pair((*curLVSP)->formID,std::make_pair(curModFile,*curLVSP)));
     for(std::vector<ANIORecord *>::iterator curANIO = curModFile->ANIO.Records.begin();curANIO != curModFile->ANIO.Records.end();curANIO++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curANIO)->formID,std::make_pair(curModFile,*curANIO)));
+        FID_ModFile_Record.insert(std::make_pair((*curANIO)->formID,std::make_pair(curModFile,*curANIO)));
     for(std::vector<WATRRecord *>::iterator curWATR = curModFile->WATR.Records.begin();curWATR != curModFile->WATR.Records.end();curWATR++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curWATR)->formID,std::make_pair(curModFile,*curWATR)));
+        FID_ModFile_Record.insert(std::make_pair((*curWATR)->formID,std::make_pair(curModFile,*curWATR)));
     for(std::vector<EFSHRecord *>::iterator curEFSH = curModFile->EFSH.Records.begin();curEFSH != curModFile->EFSH.Records.end();curEFSH++)
-        FID_ModFile_Record.insert(std::make_pair(&(*curEFSH)->formID,std::make_pair(curModFile,*curEFSH)));
+        FID_ModFile_Record.insert(std::make_pair((*curEFSH)->formID,std::make_pair(curModFile,*curEFSH)));
     }
 
 int Collection::Load(const bool &LoadMasters, const bool &FullLoad)
@@ -448,7 +438,7 @@ int Collection::Load(const bool &LoadMasters, const bool &FullLoad)
             curModFile = ModFiles[p];
             //Loads GRUP and Record Headers.  Fully loads GMST records.
             curModFile->FormIDHandler.SetLoadOrder(LoadOrder);
-            curModFile->FormIDHandler.UpdateFormIDLookup(p);
+            curModFile->FormIDHandler.CreateFormIDLookup(p);
             //curModFile->Load(true);
             curModFile->Load(ReadThreads, FullLoad);
             IndexRecords(curModFile);
@@ -477,59 +467,27 @@ unsigned int Collection::NextFreeExpandedFID(ModFile *curModFile)
     if(curModFile == NULL || curModFile->IsFake())
         return 0;
     unsigned int curFormID = curModFile->FormIDHandler.NextExpandedFID();
-    if(FID_ModFile_Record.find(&curFormID) == FID_ModFile_Record.end())
+    if(FID_ModFile_Record.find(curFormID) == FID_ModFile_Record.end())
         return curFormID;
     for(unsigned int x = 0;x < 0x00FFFFFF; ++x)
         {
         //Wrap around and recycle any freed ids.
         curFormID = curModFile->FormIDHandler.NextExpandedFID();
-        if(FID_ModFile_Record.find(&curFormID) == FID_ModFile_Record.end())
+        if(FID_ModFile_Record.find(curFormID) == FID_ModFile_Record.end())
             return curFormID;
         }
     //All formIDs are in use. Unlikely to ever occur.
     return 0;
     }
 
-void Collection::CollapseFormIDs(char *ModName)
-    {
-    for(unsigned int p = 0;p < ModFiles.size(); p++)
-        {
-        if(ModName == NULL || _stricmp(ModFiles[p]->FileName, ModName) == 0)
-            {
-            ModFiles[p]->CollapseFormIDs();
-            if(ModName != NULL)
-                break;
-            }
-        }
-    }
-
-void Collection::ExpandFormIDs(char *ModName)
-    {
-    for(unsigned int p = 0;p < ModFiles.size(); p++)
-        {
-        if(ModName == NULL || _stricmp(ModFiles[p]->FileName, ModName) == 0)
-            {
-            ModFiles[p]->ExpandFormIDs();
-            if(ModName != NULL)
-                break;
-            }
-        }
-    }
-
-void Collection::ReindexFormIDs()
-    {
-    CollapseFormIDs();
-    std::sort(ModFiles.begin(), ModFiles.end(), sortLoad);
-    ExpandFormIDs();
-    }
 
 int Collection::RemoveIndex(Record *curRecord, char *ModName)
     {
     if(curRecord == NULL || ModName == NULL)
         return -1;
-    std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID>::iterator it;
-    it = FID_ModFile_Record.find(&curRecord->formID);
-    unsigned int count = (unsigned int)FID_ModFile_Record.count(&curRecord->formID);
+    std::multimap<unsigned int, std::pair<ModFile *, Record *> >::iterator it;
+    it = FID_ModFile_Record.find(curRecord->formID);
+    unsigned int count = (unsigned int)FID_ModFile_Record.count(curRecord->formID);
     for(unsigned int x = 0; x < count;it++, x++)
         if(_stricmp(it->second.first->FileName, ModName) == 0 )
             {
@@ -573,7 +531,7 @@ int Collection::DeleteRecord(char *ModName, unsigned int recordFID, unsigned int
     ModFile *curParentModFile = NULL;
     Record *curChild = NULL;
     bool hasParent = (parentFID != 0);
-    std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID>::iterator it;
+    std::multimap<unsigned int, std::pair<ModFile *, Record *> >::iterator it;
 
     it = LookupRecord(ModName, recordFID, curModFile, curRecord);
 
@@ -929,28 +887,21 @@ int Collection::Close()
 
 std::multimap<char *, std::pair<ModFile *, Record *>, sameStr>::iterator Collection::LookupGMSTRecord(char *ModName, char *recordEDID, ModFile *&curModFile, GMSTRecord *&curRecord)
     {
-    std::multimap<char *, std::pair<ModFile *, Record *>, sameStr>::iterator it;
-
-    if(recordEDID == NULL)
+    if(ModName == NULL || recordEDID == NULL)
         {curModFile = NULL; curRecord = NULL; return GMST_ModFile_Record.end();}
+        
+    std::multimap<char *, std::pair<ModFile *, Record *>, sameStr>::iterator it = GMST_ModFile_Record.find(recordEDID);
 
-    it = GMST_ModFile_Record.find(recordEDID);
     if(it == GMST_ModFile_Record.end())
         {curModFile = NULL; curRecord = NULL; return GMST_ModFile_Record.end();}
 
-    if(ModName == NULL)
-        curModFile = it->second.first;
-    else
-        //curModFile = LookupModFile(ModName);
-        {
-        unsigned int count = (unsigned int)GMST_ModFile_Record.count(recordEDID);
-        for(unsigned int x = 0; x < count;++it, ++x)
-            if(_stricmp(it->second.first->FileName, ModName) == 0 )
-                {
-                curModFile = it->second.first;
-                break;
-                }
-        }
+    unsigned int count = (unsigned int)GMST_ModFile_Record.count(recordEDID);
+    for(unsigned int x = 0; x < count;++it, ++x)
+        if(_stricmp(it->second.first->FileName, ModName) == 0 )
+            {
+            curModFile = it->second.first;
+            break;
+            }
     if(curModFile == NULL)
         {curRecord = NULL; return GMST_ModFile_Record.end();}
     curRecord = (GMSTRecord *)it->second.second;
@@ -1009,6 +960,26 @@ void Collection::GetMods(char **ModNames)
     return;
     }
 
+unsigned int Collection::SetRecordFormID(char *ModName, unsigned int recordFID, unsigned int FieldValue)
+    {
+    ModFile *curModFile = NULL;
+    Record *curRecord = NULL;
+    Record *destRecord = NULL;
+    //If the recordFID is already in use, do nothing.
+    LookupRecord(ModName, FieldValue, curModFile, destRecord);
+    if(curModFile != NULL || destRecord != NULL)
+        return 0;
+
+    std::multimap<unsigned int, std::pair<ModFile *, Record *> >::iterator it = LookupRecord(ModName, recordFID, curModFile, curRecord);
+    if(curModFile == NULL || curRecord == NULL || it == FID_ModFile_Record.end())
+        return 0;
+    FID_ModFile_Record.erase(it);
+    curRecord->formID = FieldValue;
+    curModFile->FormIDHandler.AddMaster(curRecord->formID);
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
+    return FieldValue;
+    }
+
 char * Collection::GetModName(const unsigned int iIndex)
     {
     if(iIndex < ModFiles.size())
@@ -1024,12 +995,22 @@ unsigned int Collection::GetCorrectedFID(char *ModName, unsigned int recordObjec
     return curModFile->FormIDHandler.AssignToMod(recordObjectID);
     }
 
-unsigned int Collection::UpdateReferencingRecords(char *ModName, unsigned int origFormID, unsigned int newFormID)
+unsigned int Collection::UpdateReferences(char *ModName, unsigned int origFormID, unsigned int newFormID)
     {
     ModFile *curModFile = LookupModFile(ModName);
     if(curModFile == NULL)
         return 0;
-    return curModFile->UpdateReferencingRecords(origFormID, newFormID);
+    return curModFile->UpdateReferences(origFormID, newFormID);
+    }
+
+unsigned int Collection::UpdateReferences(char *ModName, unsigned int recordFID, unsigned int origFormID, unsigned int newFormID)
+    {
+    Record *curRecord = NULL;
+    ModFile *curModFile = NULL;
+    LookupRecord(ModName, recordFID, curModFile, curRecord);
+    if(curModFile == NULL || curRecord == NULL)
+        return 0;
+    return curRecord->UpdateReferences(origFormID, newFormID, curModFile->FormIDHandler);
     }
 
 int Collection::GetModIndex(const char *ModName)
@@ -1093,172 +1074,78 @@ ModFile *Collection::LookupModFile(char *ModName)
     return NULL;
     }
 
-int Collection::GetChangedMods()
-    {
-    return -1;
-    }
-
 int Collection::GetTES4FieldType(char *ModName, const unsigned int Field)
     {
-    if(ModName == NULL)
-        return -1;
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return ModFiles[p]->TES4.GetFieldType(Field);
-    return -1;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return UNKNOWN_FIELD;
+    return curModFile->TES4.GetFieldType(Field);
     }
 
 int Collection::GetGMSTFieldType(char *ModName, char *recordEDID, const unsigned int Field)
     {
-    std::multimap<char*,std::pair<ModFile *, Record *>, sameStr>::iterator it;
-    it = GMST_ModFile_Record.find(recordEDID);
-    if(ModName == NULL)
-        {
-        if(it != GMST_ModFile_Record.end())
-            return it->second.second->GetFieldType(Field);
-        return -1;
-        }
-    unsigned int count = (unsigned int)GMST_ModFile_Record.count(recordEDID);
-    for(unsigned int x = 0; x < count;it++, x++)
-        if(_stricmp(it->second.first->FileName, ModName) == 0 )
-            return it->second.second->GetFieldType(Field);
-    return -1;
+    ModFile *curModFile = NULL;
+    GMSTRecord *curRecord = NULL;
+    LookupGMSTRecord(ModName, recordEDID, curModFile, curRecord);
+    if(curModFile == NULL || curRecord == NULL)
+        return UNKNOWN_FIELD;
+    return curRecord->GetFieldType(Field);
     }
 
 int Collection::GetFIDFieldType(char *ModName, unsigned int recordFID, const unsigned int Field)
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
-    std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID>::iterator it;
-    it = FID_ModFile_Record.find(&recordFID);
-    if(ModName == NULL)
-        {
-        if(it != FID_ModFile_Record.end())
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            return curRecord->GetFieldType(Field);
-            }
-        return 0;
-        }
-    unsigned int count = (unsigned int)FID_ModFile_Record.count(&recordFID);
-    for(unsigned int x = 0; x < count;it++, x++)
-        if(_stricmp(it->second.first->FileName, ModName) == 0 )
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            return curRecord->GetFieldType(Field);
-            }
-    return 0;
+    LookupRecord(ModName, recordFID, curModFile, curRecord);
+    if(curModFile == NULL || curRecord == NULL)
+        return UNKNOWN_FIELD;
+    return curRecord->GetFieldType(Field);
     }
 
 int Collection::GetFIDListFieldType(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listField)
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
-    std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID>::iterator it;
-    it = FID_ModFile_Record.find(&recordFID);
-    if(ModName == NULL)
-        {
-        if(it != FID_ModFile_Record.end())
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            return curRecord->GetListFieldType(subField, listField);
-            }
-        return 0;
-        }
-    unsigned int count = (unsigned int)FID_ModFile_Record.count(&recordFID);
-    for(unsigned int x = 0; x < count;it++, x++)
-        if(_stricmp(it->second.first->FileName, ModName) == 0 )
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            return curRecord->GetListFieldType(subField, listField);
-            }
-    return 0;
+    LookupRecord(ModName, recordFID, curModFile, curRecord);
+    if(curModFile == NULL || curRecord == NULL)
+        return UNKNOWN_FIELD;
+    return curRecord->GetListFieldType(subField, listField);
     }
 
 int Collection::GetFIDListX2FieldType(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listField, const unsigned int listX2Field)
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
-    std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID>::iterator it;
-    it = FID_ModFile_Record.find(&recordFID);
-    if(ModName == NULL)
-        {
-        if(it != FID_ModFile_Record.end())
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            return curRecord->GetListX2FieldType(subField, listField, listX2Field);
-            }
-        return 0;
-        }
-    unsigned int count = (unsigned int)FID_ModFile_Record.count(&recordFID);
-    for(unsigned int x = 0; x < count;it++, x++)
-        if(_stricmp(it->second.first->FileName, ModName) == 0 )
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            return curRecord->GetListX2FieldType(subField, listField, listX2Field);
-            }
-    return 0;
+    LookupRecord(ModName, recordFID, curModFile, curRecord);
+    if(curModFile == NULL || curRecord == NULL)
+        return UNKNOWN_FIELD;
+    return curRecord->GetListX2FieldType(subField, listField, listX2Field);
     }
 
 int Collection::GetFIDListX3FieldType(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listField, const unsigned int listX2Field, const unsigned int listX3Field)
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
-    std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID>::iterator it;
-    it = FID_ModFile_Record.find(&recordFID);
-    if(ModName == NULL)
-        {
-        if(it != FID_ModFile_Record.end())
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            return curRecord->GetListX3FieldType(subField, listField, listX2Field, listX3Field);
-            }
-        return 0;
-        }
-    unsigned int count = (unsigned int)FID_ModFile_Record.count(&recordFID);
-    for(unsigned int x = 0; x < count;it++, x++)
-        if(_stricmp(it->second.first->FileName, ModName) == 0 )
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            return curRecord->GetListX3FieldType(subField, listField, listX2Field, listX3Field);
-            }
-    return 0;
+    LookupRecord(ModName, recordFID, curModFile, curRecord);
+    if(curModFile == NULL || curRecord == NULL)
+        return UNKNOWN_FIELD;
+    return curRecord->GetListX3FieldType(subField, listField, listX2Field, listX3Field);
     }
 
 unsigned int Collection::GetTES4FieldArraySize(char *ModName, const unsigned int Field)
     {
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return ModFiles[p]->TES4.GetFieldArraySize(Field);
-    return -1;
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return curModFile->TES4.GetFieldArraySize(Field);
     }
 
 void Collection::GetTES4FieldArray(char *ModName, const unsigned int Field, void **FieldValues)
     {
-    if(ModName == NULL)
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
         return;
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            {
-            ModFiles[p]->TES4.GetFieldArray(Field, FieldValues);
-            return;
-            }
+    curModFile->TES4.GetFieldArray(Field, FieldValues);
     return;
     }
 
@@ -1266,232 +1153,88 @@ unsigned int Collection::GetFIDFieldArraySize(char *ModName, unsigned int record
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
-    std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID>::iterator it;
-    it = FID_ModFile_Record.find(&recordFID);
-    if(ModName == NULL)
-        {
-        if(it != FID_ModFile_Record.end())
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            return curRecord->GetFieldArraySize(Field);
-            }
+    LookupRecord(ModName, recordFID, curModFile, curRecord);
+    if(curModFile == NULL || curRecord == NULL)
         return 0;
-        }
-    unsigned int count = (unsigned int)FID_ModFile_Record.count(&recordFID);
-    for(unsigned int x = 0; x < count;it++, x++)
-        if(_stricmp(it->second.first->FileName, ModName) == 0 )
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            return curRecord->GetFieldArraySize(Field);
-            }
-    return 0;
+    curRecord->Read(curModFile->FormIDHandler);
+    return curRecord->GetFieldArraySize(Field);
     }
 
 unsigned int Collection::GetFIDListSize(char *ModName, unsigned int recordFID, const unsigned int Field)
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
-    std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID>::iterator it;
-    it = FID_ModFile_Record.find(&recordFID);
-    if(ModName == NULL)
-        {
-        if(it != FID_ModFile_Record.end())
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            return curRecord->GetListSize(Field);
-            }
+    LookupRecord(ModName, recordFID, curModFile, curRecord);
+    if(curModFile == NULL || curRecord == NULL)
         return 0;
-        }
-    unsigned int count = (unsigned int)FID_ModFile_Record.count(&recordFID);
-    for(unsigned int x = 0; x < count;it++, x++)
-        if(_stricmp(it->second.first->FileName, ModName) == 0 )
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            return curRecord->GetListSize(Field);
-            }
-    return 0;
+    curRecord->Read(curModFile->FormIDHandler);
+    return curRecord->GetListSize(Field);
     }
 
 unsigned int Collection::GetFIDListX2Size(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField)
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
-    std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID>::iterator it;
-    it = FID_ModFile_Record.find(&recordFID);
-    if(ModName == NULL)
-        {
-        if(it != FID_ModFile_Record.end())
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            return curRecord->GetListX2Size(subField, listIndex, listField);
-            }
+    LookupRecord(ModName, recordFID, curModFile, curRecord);
+    if(curModFile == NULL || curRecord == NULL)
         return 0;
-        }
-    unsigned int count = (unsigned int)FID_ModFile_Record.count(&recordFID);
-    for(unsigned int x = 0; x < count;it++, x++)
-        if(_stricmp(it->second.first->FileName, ModName) == 0 )
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            return curRecord->GetListX2Size(subField, listIndex, listField);
-            }
-    return 0;
+    curRecord->Read(curModFile->FormIDHandler);
+    return curRecord->GetListX2Size(subField, listIndex, listField);
     }
 
 unsigned int Collection::GetFIDListX3Size(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field)
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
-    std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID>::iterator it;
-    it = FID_ModFile_Record.find(&recordFID);
-    if(ModName == NULL)
-        {
-        if(it != FID_ModFile_Record.end())
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            return curRecord->GetListX3Size(subField, listIndex, listField, listX2Index, listX2Field);
-            }
+    LookupRecord(ModName, recordFID, curModFile, curRecord);
+    if(curModFile == NULL || curRecord == NULL)
         return 0;
-        }
-    unsigned int count = (unsigned int)FID_ModFile_Record.count(&recordFID);
-    for(unsigned int x = 0; x < count;it++, x++)
-        if(_stricmp(it->second.first->FileName, ModName) == 0 )
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            return curRecord->GetListX3Size(subField, listIndex, listField, listX2Index, listX2Field);
-            }
-    return 0;
+    curRecord->Read(curModFile->FormIDHandler);
+    return curRecord->GetListX3Size(subField, listIndex, listField, listX2Index, listX2Field);
     }
 
 unsigned int Collection::GetFIDListArraySize(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField)
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
-    std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID>::iterator it;
-    it = FID_ModFile_Record.find(&recordFID);
-    if(ModName == NULL)
-        {
-        if(it != FID_ModFile_Record.end())
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            return curRecord->GetListArraySize(subField, listIndex, listField);
-            }
+    LookupRecord(ModName, recordFID, curModFile, curRecord);
+    if(curModFile == NULL || curRecord == NULL)
         return 0;
-        }
-    unsigned int count = (unsigned int)FID_ModFile_Record.count(&recordFID);
-    for(unsigned int x = 0; x < count;it++, x++)
-        if(_stricmp(it->second.first->FileName, ModName) == 0 )
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            return curRecord->GetListArraySize(subField, listIndex, listField);
-            }
-    return 0;
+    curRecord->Read(curModFile->FormIDHandler);
+    return curRecord->GetListArraySize(subField, listIndex, listField);
     }
 
 unsigned int Collection::GetFIDListX2ArraySize(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field)
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
-    std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID>::iterator it;
-    it = FID_ModFile_Record.find(&recordFID);
-    if(ModName == NULL)
-        {
-        if(it != FID_ModFile_Record.end())
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            return curRecord->GetListX2ArraySize(subField, listIndex, listField, listX2Index, listX2Field);
-            }
+    LookupRecord(ModName, recordFID, curModFile, curRecord);
+    if(curModFile == NULL || curRecord == NULL)
         return 0;
-        }
-    unsigned int count = (unsigned int)FID_ModFile_Record.count(&recordFID);
-    for(unsigned int x = 0; x < count;it++, x++)
-        if(_stricmp(it->second.first->FileName, ModName) == 0 )
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            return curRecord->GetListX2ArraySize(subField, listIndex, listField, listX2Index, listX2Field);
-            }
-    return 0;
+    curRecord->Read(curModFile->FormIDHandler);
+    return curRecord->GetListX2ArraySize(subField, listIndex, listField, listX2Index, listX2Field);
     }
 
 unsigned int Collection::GetFIDListX3ArraySize(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field)
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
-    std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID>::iterator it;
-    it = FID_ModFile_Record.find(&recordFID);
-    if(ModName == NULL)
-        {
-        if(it != FID_ModFile_Record.end())
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            return curRecord->GetListX3ArraySize(subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field);
-            }
+    LookupRecord(ModName, recordFID, curModFile, curRecord);
+    if(curModFile == NULL || curRecord == NULL)
         return 0;
-        }
-    unsigned int count = (unsigned int)FID_ModFile_Record.count(&recordFID);
-    for(unsigned int x = 0; x < count;it++, x++)
-        if(_stricmp(it->second.first->FileName, ModName) == 0 )
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            return curRecord->GetListX3ArraySize(subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field);
-            }
-    return 0;
+    curRecord->Read(curModFile->FormIDHandler);
+    return curRecord->GetListX3ArraySize(subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field);
     }
 
 void Collection::GetFIDFieldArray(char *ModName, unsigned int recordFID, const unsigned int Field, void **FieldValues)
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
-    std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID>::iterator it;
-    it = FID_ModFile_Record.find(&recordFID);
-    if(ModName == NULL)
-        {
-        if(it != FID_ModFile_Record.end())
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            curRecord->GetFieldArray(Field, FieldValues);
-            }
+    LookupRecord(ModName, recordFID, curModFile, curRecord);
+    if(curModFile == NULL || curRecord == NULL)
         return;
-        }
-    unsigned int count = (unsigned int)FID_ModFile_Record.count(&recordFID);
-    for(unsigned int x = 0; x < count;it++, x++)
-        if(_stricmp(it->second.first->FileName, ModName) == 0 )
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            curRecord->GetFieldArray(Field, FieldValues);
-            return;
-            }
+    curRecord->Read(curModFile->FormIDHandler);
+    curRecord->GetFieldArray(Field, FieldValues);
     return;
     }
 
@@ -1499,29 +1242,11 @@ void Collection::GetFIDListArray(char *ModName, unsigned int recordFID, const un
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
-    std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID>::iterator it;
-    it = FID_ModFile_Record.find(&recordFID);
-    if(ModName == NULL)
-        {
-        if(it != FID_ModFile_Record.end())
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            curRecord->GetListArray(subField, listIndex, listField, FieldValues);
-            }
+    LookupRecord(ModName, recordFID, curModFile, curRecord);
+    if(curModFile == NULL || curRecord == NULL)
         return;
-        }
-    unsigned int count = (unsigned int)FID_ModFile_Record.count(&recordFID);
-    for(unsigned int x = 0; x < count;it++, x++)
-        if(_stricmp(it->second.first->FileName, ModName) == 0 )
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            curRecord->GetListArray(subField, listIndex, listField, FieldValues);
-            return;
-            }
+    curRecord->Read(curModFile->FormIDHandler);
+    curRecord->GetListArray(subField, listIndex, listField, FieldValues);
     return;
     }
 
@@ -1529,29 +1254,11 @@ void Collection::GetFIDListX2Array(char *ModName, unsigned int recordFID, const 
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
-    std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID>::iterator it;
-    it = FID_ModFile_Record.find(&recordFID);
-    if(ModName == NULL)
-        {
-        if(it != FID_ModFile_Record.end())
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            curRecord->GetListX2Array(subField, listIndex, listField, listX2Index, listX2Field, FieldValues);
-            }
+    LookupRecord(ModName, recordFID, curModFile, curRecord);
+    if(curModFile == NULL || curRecord == NULL)
         return;
-        }
-    unsigned int count = (unsigned int)FID_ModFile_Record.count(&recordFID);
-    for(unsigned int x = 0; x < count;it++, x++)
-        if(_stricmp(it->second.first->FileName, ModName) == 0 )
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            curRecord->GetListX2Array(subField, listIndex, listField, listX2Index, listX2Field, FieldValues);
-            return;
-            }
+    curRecord->Read(curModFile->FormIDHandler);
+    curRecord->GetListX2Array(subField, listIndex, listField, listX2Index, listX2Field, FieldValues);
     return;
     }
 
@@ -1559,358 +1266,141 @@ void Collection::GetFIDListX3Array(char *ModName, unsigned int recordFID, const 
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
-    std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID>::iterator it;
-    it = FID_ModFile_Record.find(&recordFID);
-    if(ModName == NULL)
-        {
-        if(it != FID_ModFile_Record.end())
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            curRecord->GetListX3Array(subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValues);
-            }
+    LookupRecord(ModName, recordFID, curModFile, curRecord);
+    if(curModFile == NULL || curRecord == NULL)
         return;
-        }
-    unsigned int count = (unsigned int)FID_ModFile_Record.count(&recordFID);
-    for(unsigned int x = 0; x < count;it++, x++)
-        if(_stricmp(it->second.first->FileName, ModName) == 0 )
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            curRecord->GetListX3Array(subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValues);
-            return;
-            }
+    curRecord->Read(curModFile->FormIDHandler);
+    curRecord->GetListX3Array(subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValues);
     return;
     }
 
 void * Collection::ReadTES4Field(char *ModName, const unsigned int Field)
     {
-    if(ModName == NULL)
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
         return NULL;
-    for(unsigned int p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
-            return ModFiles[p]->TES4.GetField(Field);
-    return NULL;
+    return curModFile->TES4.GetField(Field);
     }
 
 void * Collection::ReadGMSTField(char *ModName, char *recordEDID, const unsigned int Field)
     {
-    std::multimap<char*,std::pair<ModFile *, Record *>, sameStr>::iterator it;
-    it = GMST_ModFile_Record.find(recordEDID);
-    if(ModName == NULL)
-        {
-        if(it != GMST_ModFile_Record.end())
-            return it->second.second->GetField(Field);
+    ModFile *curModFile = NULL;
+    GMSTRecord *curRecord = NULL;
+    LookupGMSTRecord(ModName, recordEDID, curModFile, curRecord);
+    if(curModFile == NULL || curRecord == NULL)
         return NULL;
-        }
-    unsigned int count = (unsigned int)GMST_ModFile_Record.count(recordEDID);
-    for(unsigned int x = 0; x < count;it++, x++)
-        if(_stricmp(it->second.first->FileName, ModName) == 0 )
-            return it->second.second->GetField(Field);
-    return NULL;
+    return curRecord->GetField(Field);
     }
 
 void * Collection::ReadFIDField(char *ModName, unsigned int recordFID, const unsigned int Field)
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
-    std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID>::iterator it;
-    it = FID_ModFile_Record.find(&recordFID);
-    if(ModName == NULL)
-        {
-        if(it != FID_ModFile_Record.end())
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            return curRecord->GetField(Field);
-            }
+    LookupRecord(ModName, recordFID, curModFile, curRecord);
+    if(curModFile == NULL || curRecord == NULL)
         return NULL;
-        }
-    unsigned int count = (unsigned int)FID_ModFile_Record.count(&recordFID);
-    for(unsigned int x = 0; x < count;it++, x++)
-        if(_stricmp(it->second.first->FileName, ModName) == 0 )
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            return curRecord->GetField(Field);
-            }
-    return NULL;
+    curRecord->Read(curModFile->FormIDHandler);
+    return curRecord->GetField(Field);
     }
 
 void * Collection::ReadFIDListField(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField)
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
-    std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID>::iterator it;
-    it = FID_ModFile_Record.find(&recordFID);
-    if(ModName == NULL)
-        {
-        if(it != FID_ModFile_Record.end())
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            return curRecord->GetListField(subField, listIndex, listField);
-            }
+    LookupRecord(ModName, recordFID, curModFile, curRecord);
+    if(curModFile == NULL || curRecord == NULL)
         return NULL;
-        }
-    unsigned int count = (unsigned int)FID_ModFile_Record.count(&recordFID);
-    for(unsigned int x = 0; x < count;it++, x++)
-        if(_stricmp(it->second.first->FileName, ModName) == 0 )
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            return curRecord->GetListField(subField, listIndex, listField);
-            }
-    return NULL;
+    curRecord->Read(curModFile->FormIDHandler);
+    return curRecord->GetListField(subField, listIndex, listField);
     }
+
 void * Collection::ReadFIDListX2Field(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field)
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
-    std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID>::iterator it;
-    it = FID_ModFile_Record.find(&recordFID);
-    if(ModName == NULL)
-        {
-        if(it != FID_ModFile_Record.end())
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            return curRecord->GetListX2Field(subField, listIndex, listField, listX2Index, listX2Field);
-            }
+    LookupRecord(ModName, recordFID, curModFile, curRecord);
+    if(curModFile == NULL || curRecord == NULL)
         return NULL;
-        }
-    unsigned int count = (unsigned int)FID_ModFile_Record.count(&recordFID);
-    for(unsigned int x = 0; x < count;it++, x++)
-        if(_stricmp(it->second.first->FileName, ModName) == 0 )
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            return curRecord->GetListX2Field(subField, listIndex, listField, listX2Index, listX2Field);
-            }
-    return NULL;
+    curRecord->Read(curModFile->FormIDHandler);
+    return curRecord->GetListX2Field(subField, listIndex, listField, listX2Index, listX2Field);
     }
+
 void * Collection::ReadFIDListX3Field(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field)
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
-    std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID>::iterator it;
-    it = FID_ModFile_Record.find(&recordFID);
-    if(ModName == NULL)
-        {
-        if(it != FID_ModFile_Record.end())
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            return curRecord->GetListX3Field(subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field);
-            }
+    LookupRecord(ModName, recordFID, curModFile, curRecord);
+    if(curModFile == NULL || curRecord == NULL)
         return NULL;
-        }
-    unsigned int count = (unsigned int)FID_ModFile_Record.count(&recordFID);
-    for(unsigned int x = 0; x < count;it++, x++)
-        if(_stricmp(it->second.first->FileName, ModName) == 0 )
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            return curRecord->GetListX3Field(subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field);
-            }
-    return NULL;
+    curRecord->Read(curModFile->FormIDHandler);
+    return curRecord->GetListX3Field(subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field);
     }
 
 
 int Collection::CreateFIDListElement(char *ModName, unsigned int recordFID, const unsigned int subField)
     {
-    Record *curRecord = NULL;
     ModFile *curModFile = NULL;
-    int listIndex = -1;
-    std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID>::iterator it;
-    it = FID_ModFile_Record.find(&recordFID);
-    if(ModName == NULL)
-        {
-        if(it != FID_ModFile_Record.end())
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            listIndex = curRecord->CreateListElement(subField);
-            }
-        return listIndex;
-        }
-    unsigned int count = (unsigned int)FID_ModFile_Record.count(&recordFID);
-    for(unsigned int x = 0; x < count;it++, x++)
-        if(_stricmp(it->second.first->FileName, ModName) == 0 )
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            listIndex = curRecord->CreateListElement(subField);
-            return listIndex;
-            }
-    return -1;
+    Record *curRecord = NULL;
+    LookupRecord(ModName, recordFID, curModFile, curRecord);
+    if(curModFile == NULL || curRecord == NULL)
+        return -1;
+    curRecord->Read(curModFile->FormIDHandler);
+    return curRecord->CreateListElement(subField);
     }
 
 int Collection::CreateFIDListX2Element(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField)
     {
-    Record *curRecord = NULL;
     ModFile *curModFile = NULL;
-    int rListIndex = -1;
-    std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID>::iterator it;
-    it = FID_ModFile_Record.find(&recordFID);
-    if(ModName == NULL)
-        {
-        if(it != FID_ModFile_Record.end())
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            rListIndex = curRecord->CreateListX2Element(subField, listIndex, listField);
-            }
-        return rListIndex;
-        }
-    unsigned int count = (unsigned int)FID_ModFile_Record.count(&recordFID);
-    for(unsigned int x = 0; x < count;it++, x++)
-        if(_stricmp(it->second.first->FileName, ModName) == 0 )
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            rListIndex = curRecord->CreateListX2Element(subField, listIndex, listField);
-            return rListIndex;
-            }
-    return -1;
+    Record *curRecord = NULL;
+    LookupRecord(ModName, recordFID, curModFile, curRecord);
+    if(curModFile == NULL || curRecord == NULL)
+        return -1;
+    curRecord->Read(curModFile->FormIDHandler);
+    return curRecord->CreateListX2Element(subField, listIndex, listField);
     }
 
 int Collection::CreateFIDListX3Element(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field)
     {
-    Record *curRecord = NULL;
     ModFile *curModFile = NULL;
-    int rListIndex = -1;
-    std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID>::iterator it;
-    it = FID_ModFile_Record.find(&recordFID);
-    if(ModName == NULL)
-        {
-        if(it != FID_ModFile_Record.end())
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            rListIndex = curRecord->CreateListX3Element(subField, listIndex, listField, listX2Index, listX2Field);
-            }
-        return rListIndex;
-        }
-    unsigned int count = (unsigned int)FID_ModFile_Record.count(&recordFID);
-    for(unsigned int x = 0; x < count;it++, x++)
-        if(_stricmp(it->second.first->FileName, ModName) == 0 )
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            rListIndex = curRecord->CreateListX3Element(subField, listIndex, listField, listX2Index, listX2Field);
-            return rListIndex;
-            }
-    return -1;
+    Record *curRecord = NULL;
+    LookupRecord(ModName, recordFID, curModFile, curRecord);
+    if(curModFile == NULL || curRecord == NULL)
+        return -1;
+    curRecord->Read(curModFile->FormIDHandler);
+    return curRecord->CreateListX3Element(subField, listIndex, listField, listX2Index, listX2Field);
     }
 
 int Collection::DeleteFIDListElement(char *ModName, unsigned int recordFID, const unsigned int subField)
     {
-    Record *curRecord = NULL;
     ModFile *curModFile = NULL;
-    int listIndex = -1;
-    std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID>::iterator it;
-    it = FID_ModFile_Record.find(&recordFID);
-    if(ModName == NULL)
-        {
-        if(it != FID_ModFile_Record.end())
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            listIndex = curRecord->DeleteListElement(subField);
-            }
-        return listIndex;
-        }
-    unsigned int count = (unsigned int)FID_ModFile_Record.count(&recordFID);
-    for(unsigned int x = 0; x < count;it++, x++)
-        if(_stricmp(it->second.first->FileName, ModName) == 0 )
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            listIndex = curRecord->DeleteListElement(subField);
-            return listIndex;
-            }
-    return -1;
+    Record *curRecord = NULL;
+    LookupRecord(ModName, recordFID, curModFile, curRecord);
+    if(curModFile == NULL || curRecord == NULL)
+        return -1;
+    curRecord->Read(curModFile->FormIDHandler);
+    return curRecord->DeleteListElement(subField);
     }
 
 int Collection::DeleteFIDListX2Element(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField)
     {
-    Record *curRecord = NULL;
     ModFile *curModFile = NULL;
-    int rListIndex = -1;
-    std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID>::iterator it;
-    it = FID_ModFile_Record.find(&recordFID);
-    if(ModName == NULL)
-        {
-        if(it != FID_ModFile_Record.end())
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            rListIndex = curRecord->DeleteListX2Element(subField, listIndex, listField);
-            }
-        return rListIndex;
-        }
-    unsigned int count = (unsigned int)FID_ModFile_Record.count(&recordFID);
-    for(unsigned int x = 0; x < count;it++, x++)
-        if(_stricmp(it->second.first->FileName, ModName) == 0 )
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            rListIndex = curRecord->DeleteListX2Element(subField, listIndex, listField);
-            return rListIndex;
-            }
-    return -1;
+    Record *curRecord = NULL;
+    LookupRecord(ModName, recordFID, curModFile, curRecord);
+    if(curModFile == NULL || curRecord == NULL)
+        return -1;
+    curRecord->Read(curModFile->FormIDHandler);
+    return curRecord->DeleteListX2Element(subField, listIndex, listField);
     }
 
 int Collection::DeleteFIDListX3Element(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field)
     {
-    Record *curRecord = NULL;
     ModFile *curModFile = NULL;
-    int rListIndex = -1;
-    std::multimap<FormID, std::pair<ModFile *, Record *>, sortFormID>::iterator it;
-    it = FID_ModFile_Record.find(&recordFID);
-    if(ModName == NULL)
-        {
-        if(it != FID_ModFile_Record.end())
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            rListIndex = curRecord->DeleteListX3Element(subField, listIndex, listField, listX2Index, listX2Field);
-            }
-        return rListIndex;
-        }
-    unsigned int count = (unsigned int)FID_ModFile_Record.count(&recordFID);
-    for(unsigned int x = 0; x < count;it++, x++)
-        if(_stricmp(it->second.first->FileName, ModName) == 0 )
-            {
-            curModFile = it->second.first;
-            curRecord = it->second.second;
-            curRecord->Read(curModFile->FormIDHandler);
-            rListIndex = curRecord->DeleteListX3Element(subField, listIndex, listField, listX2Index, listX2Field);
-            return rListIndex;
-            }
-    return -1;
+    Record *curRecord = NULL;
+    LookupRecord(ModName, recordFID, curModFile, curRecord);
+    if(curModFile == NULL || curRecord == NULL)
+        return -1;
+    curRecord->Read(curModFile->FormIDHandler);
+    return curRecord->DeleteListX3Element(subField, listIndex, listField, listX2Index, listX2Field);
     }
 
 #ifdef _DEBUG

@@ -472,6 +472,8 @@ class CREARecord : public Record
 
         void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
+            if(!IsLoaded())
+                return;
             for(unsigned int x = 0; x < SPLO.size(); x++)
                 FormIDs.push_back(SPLO[x]);
             for(unsigned int x = 0; x < SNAM.size(); x++)
@@ -524,7 +526,7 @@ class CREARecord : public Record
 
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize();
+        unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eCREA;}
         char * GetStrType() {return "CREA";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);

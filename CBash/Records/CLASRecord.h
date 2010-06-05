@@ -173,7 +173,7 @@ class CLASRecord : public Record
 
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize();
+        unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eCLAS;}
         char * GetStrType() {return "CLAS";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);

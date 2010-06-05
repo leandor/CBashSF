@@ -74,6 +74,8 @@ class ACTIRecord : public Record
 
         void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
+            if(!IsLoaded())
+                return;
             if(SCRI.IsLoaded())
                 FormIDs.push_back(&SCRI->fid);
             if(SNAM.IsLoaded())
@@ -95,7 +97,7 @@ class ACTIRecord : public Record
 
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize();
+        unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eACTI;}
         char * GetStrType() {return "ACTI";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);

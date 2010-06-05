@@ -174,10 +174,9 @@ class ModFile
         int Close();
         int LoadTES4();
         int Load(boost::threadpool::pool &Threads, const bool &FullLoad);
-        void CollapseFormIDs();
-        void ExpandFormIDs();
-        unsigned int UpdateReferencingRecords(unsigned int origFormID, unsigned int newFormID);
+        unsigned int UpdateReferences(unsigned int origFormID, unsigned int newFormID);
         bool IsFake() {return IsDummy;}
+        int CleanMasters();
         int Save(FileBuffer &buffer, bool CloseMod);
         #ifdef _DEBUG
         void Debug(int debugLevel);

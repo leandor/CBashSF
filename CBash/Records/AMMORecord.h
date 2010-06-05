@@ -130,6 +130,8 @@ class AMMORecord : public Record
 
         void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
+            if(!IsLoaded())
+                return;
             if(ENAM.IsLoaded())
                 FormIDs.push_back(&ENAM->fid);
             }
@@ -149,7 +151,7 @@ class AMMORecord : public Record
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned short FieldValue);
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize();
+        unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eAMMO;}
         char * GetStrType() {return "AMMO";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);

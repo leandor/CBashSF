@@ -28,14 +28,12 @@ extern "C" __declspec(dllexport) unsigned int GetRevision();
 extern "C" __declspec(dllexport) int NewCollection(const char *ModsPath);
 extern "C" __declspec(dllexport) int DeleteCollection(const unsigned int CollectionIndex);
 ////////////////////////////////////////////////////////////////////////
-extern "C" __declspec(dllexport) int NewMod(const unsigned int CollectionIndex, const char *ModName);
 extern "C" __declspec(dllexport) int AddMod(const unsigned int CollectionIndex, const char *ModName, bool CreateIfNotExist);
 extern "C" __declspec(dllexport) int MinimalLoad(const unsigned int CollectionIndex, const bool LoadMasters);
 extern "C" __declspec(dllexport) int FullLoad(const unsigned int CollectionIndex, const bool LoadMasters);
 ////////////////////////////////////////////////////////////////////////
-extern "C" __declspec(dllexport) int GetChangedMods(const unsigned int CollectionIndex);
+extern "C" __declspec(dllexport) int CleanMasters(const unsigned int CollectionIndex, char *ModName);
 extern "C" __declspec(dllexport) int SafeSaveMod(const unsigned int CollectionIndex, char *ModName, bool CloseMod);
-extern "C" __declspec(dllexport) int SafeSaveAllChangedMods(const unsigned int CollectionIndex);
 ////////////////////////////////////////////////////////////////////////
 extern "C" __declspec(dllexport) int LoadRecord(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID);
 extern "C" __declspec(dllexport) int UnloadRecord(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID);
@@ -46,9 +44,11 @@ extern "C" __declspec(dllexport) int Close(const unsigned int CollectionIndex);
 extern "C" __declspec(dllexport) unsigned int GetNumMods(const unsigned int CollectionIndex);
 extern "C" __declspec(dllexport) void GetMods(const unsigned int CollectionIndex, char **ModNames);
 ////////////////////////////////////////////////////////////////////////
+extern "C" __declspec(dllexport) unsigned int SetRecordFormID(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, unsigned int FieldValue);
 extern "C" __declspec(dllexport) char * GetModName(const unsigned int CollectionIndex, const unsigned int iIndex);
 extern "C" __declspec(dllexport) unsigned int GetCorrectedFID(const unsigned int CollectionIndex, char *ModName, unsigned int recordObjectID);
-extern "C" __declspec(dllexport) unsigned int UpdateReferencingRecords(const unsigned int CollectionIndex, char *ModName, unsigned int origFormID, unsigned int newFormID);
+extern "C" __declspec(dllexport) unsigned int UpdateAllReferences(const unsigned int CollectionIndex, char *ModName, unsigned int origFormID, unsigned int newFormID);
+extern "C" __declspec(dllexport) unsigned int UpdateReferences(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, unsigned int origFormID, unsigned int newFormID);
 ////////////////////////////////////////////////////////////////////////
 //ADD
 extern "C" __declspec(dllexport) unsigned int GetNumGMSTRecords(const unsigned int CollectionIndex, char *ModName);
@@ -124,7 +124,7 @@ extern "C" __declspec(dllexport) int SetTES4FieldF (const unsigned int Collectio
 extern "C" __declspec(dllexport) int SetTES4FieldR (const unsigned int CollectionIndex, char *ModName, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
-extern "C" __declspec(dllexport) void GetGMSTs(const unsigned int CollectionIndex, char *ModName, char **RecordEIDs);
+extern "C" __declspec(dllexport) void GetGMSTRecords(const unsigned int CollectionIndex, char *ModName, char **RecordEIDs);
 extern "C" __declspec(dllexport) int GetGMSTFieldType(const unsigned int CollectionIndex, char *ModName, char *recordEDID, const unsigned int Field);
 extern "C" __declspec(dllexport) void * ReadGMSTField(const unsigned int CollectionIndex, char *ModName, char *recordEDID, const unsigned int Field);
 ////////////////////////////////////////////////////////////////////////

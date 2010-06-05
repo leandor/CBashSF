@@ -163,9 +163,9 @@ unsigned int TES4Record::GetFieldArraySize(const unsigned int Field)
     switch(Field)
         {
         case 9: //ofst_p
-            return OFST.size;
+            return OFST.GetSize();
         case 10: //dele_p
-            return DELE.size;
+            return DELE.GetSize();
         case 13: //masters
             return (unsigned int)MAST.size();
         default:

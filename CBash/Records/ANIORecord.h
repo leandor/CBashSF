@@ -66,6 +66,8 @@ class ANIORecord : public Record
 
         void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
+            if(!IsLoaded())
+                return;
             FormIDs.push_back(&DATA.value.fid);
             }
 
@@ -84,7 +86,7 @@ class ANIORecord : public Record
 
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize();
+        unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eANIO;}
         char * GetStrType() {return "ANIO";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);

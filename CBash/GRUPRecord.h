@@ -98,30 +98,23 @@ class GRUPRecords
             delete curRecord;
             Records.erase(it);
             }
-        void CollapseFormIDs(_FormIDHandler &FormIDHandler)
-            {
-            for(unsigned int p = 0; p < Records.size(); p++)
-                {
-                Records[p]->CollapseFormIDs(FormIDHandler);
-                }
-            return;
-            }
-        void ExpandFormIDs(_FormIDHandler &FormIDHandler)
-            {
-            for(unsigned int p = 0; p < Records.size(); p++)
-                {
-                Records[p]->ExpandFormIDs(FormIDHandler);
-                }
-            return;
-            }
-        unsigned int UpdateReferencingRecords(unsigned int origFormID, unsigned int newFormID)
+        unsigned int UpdateReferences(unsigned int origFormID, unsigned int newFormID, _FormIDHandler &FormIDHandler)
             {
             unsigned int count = 0;
             for(unsigned int p = 0; p < Records.size(); p++)
                 {
-                count += Records[p]->UpdateReferences(origFormID, newFormID);
+                count += Records[p]->UpdateReferences(origFormID, newFormID, FormIDHandler);
                 }
             return count;
+            }
+        unsigned int CheckMasters(unsigned char MASTIndex, _FormIDHandler &FormIDHandler)
+            {
+            for(unsigned int p = 0; p < Records.size(); p++)
+                {
+                 if(FormIDHandler.UsesMaster(Records[p]->formID, MASTIndex))
+                    return true;                
+                }
+            return false;
             }
         unsigned int WriteGRUP(unsigned int TopLabel, FileBuffer &buffer, bool CloseMod, _FormIDHandler &FormIDHandler)
             {
@@ -290,42 +283,32 @@ class GRUPRecords<DIALRecord>
                 }
             return;
             }
-        void CollapseFormIDs(_FormIDHandler &FormIDHandler)
-            {
-            DIALRecord * curRecord = NULL;
-            for(unsigned int p = 0; p < Records.size(); p++)
-                {
-                curRecord = Records[p];
-                curRecord->CollapseFormIDs(FormIDHandler);
-                for(unsigned int x = 0; x < curRecord->INFO.size(); ++x)
-                    curRecord->INFO[x]->CollapseFormIDs(FormIDHandler);
-                }
-            return;
-            }
-        void ExpandFormIDs(_FormIDHandler &FormIDHandler)
-            {
-            DIALRecord * curRecord = NULL;
-            for(unsigned int p = 0; p < Records.size(); p++)
-                {
-                curRecord = Records[p];
-                curRecord->ExpandFormIDs(FormIDHandler);
-                for(unsigned int x = 0; x < curRecord->INFO.size(); ++x)
-                    curRecord->INFO[x]->ExpandFormIDs(FormIDHandler);
-                }
-            return;
-            }
-        unsigned int UpdateReferencingRecords(unsigned int origFormID, unsigned int newFormID)
+        unsigned int UpdateReferences(unsigned int origFormID, unsigned int newFormID, _FormIDHandler &FormIDHandler)
             {
             unsigned int count = 0;
             DIALRecord * curRecord = NULL;
             for(unsigned int p = 0; p < Records.size(); p++)
                 {
                 curRecord = Records[p];
-                count += curRecord->UpdateReferences(origFormID, newFormID);
+                count += curRecord->UpdateReferences(origFormID, newFormID, FormIDHandler);
                 for(unsigned int x = 0; x < curRecord->INFO.size(); ++x)
-                    count += curRecord->INFO[x]->UpdateReferences(origFormID, newFormID);
+                    count += curRecord->INFO[x]->UpdateReferences(origFormID, newFormID, FormIDHandler);
                 }
             return count;
+            }
+        unsigned int CheckMasters(unsigned char MASTIndex, _FormIDHandler &FormIDHandler)
+            {
+            DIALRecord * curRecord = NULL;
+            for(unsigned int p = 0; p < Records.size(); p++)
+                {
+                curRecord = Records[p];
+                if(FormIDHandler.UsesMaster(curRecord->formID, MASTIndex))
+                    return true;  
+                for(unsigned int x = 0; x < curRecord->INFO.size(); ++x)
+                    if(FormIDHandler.UsesMaster(curRecord->INFO[x]->formID, MASTIndex))
+                        return true;  
+                }
+            return false;
             }
         unsigned int WriteGRUP(FileBuffer &buffer, bool CloseMod, _FormIDHandler &FormIDHandler)
             {
@@ -616,60 +599,48 @@ class GRUPRecords<CELLRecord>
                 }
             return;
             }
-        void CollapseFormIDs(_FormIDHandler &FormIDHandler)
-            {
-            CELLRecord *curRecord = NULL;
-            for(unsigned int p = 0; p < Records.size(); p++)
-                {
-                curRecord = Records[p];
-                curRecord->CollapseFormIDs(FormIDHandler);
-                for(unsigned int x = 0; x < curRecord->ACHR.size(); ++x)
-                    curRecord->ACHR[x]->CollapseFormIDs(FormIDHandler);
-                for(unsigned int x = 0; x < curRecord->ACRE.size(); ++x)
-                    curRecord->ACRE[x]->CollapseFormIDs(FormIDHandler);
-                for(unsigned int x = 0; x < curRecord->REFR.size(); ++x)
-                    curRecord->REFR[x]->CollapseFormIDs(FormIDHandler);
-                if(curRecord->PGRD != NULL)
-                    curRecord->PGRD->CollapseFormIDs(FormIDHandler);
-                }
-            return;
-            }
-        void ExpandFormIDs(_FormIDHandler &FormIDHandler)
-            {
-            CELLRecord *curRecord = NULL;
-            for(unsigned int p = 0; p < Records.size(); p++)
-                {
-                curRecord = Records[p];
-                curRecord->ExpandFormIDs(FormIDHandler);
-                for(unsigned int x = 0; x < curRecord->ACHR.size(); ++x)
-                    curRecord->ACHR[x]->ExpandFormIDs(FormIDHandler);
-                for(unsigned int x = 0; x < curRecord->ACRE.size(); ++x)
-                    curRecord->ACRE[x]->ExpandFormIDs(FormIDHandler);
-                for(unsigned int x = 0; x < curRecord->REFR.size(); ++x)
-                    curRecord->REFR[x]->ExpandFormIDs(FormIDHandler);
-                if(curRecord->PGRD != NULL)
-                    curRecord->PGRD->ExpandFormIDs(FormIDHandler);
-                }
-            return;
-            }
-        unsigned int UpdateReferencingRecords(unsigned int origFormID, unsigned int newFormID)
+        unsigned int UpdateReferences(unsigned int origFormID, unsigned int newFormID, _FormIDHandler &FormIDHandler)
             {
             unsigned int count = 0;
             CELLRecord *curRecord = NULL;
             for(unsigned int p = 0; p < Records.size(); p++)
                 {
                 curRecord = Records[p];
-                count += curRecord->UpdateReferences(origFormID, newFormID);
+                count += curRecord->UpdateReferences(origFormID, newFormID, FormIDHandler);
                 for(unsigned int x = 0; x < curRecord->ACHR.size(); ++x)
-                    count += curRecord->ACHR[x]->UpdateReferences(origFormID, newFormID);
+                    count += curRecord->ACHR[x]->UpdateReferences(origFormID, newFormID, FormIDHandler);
                 for(unsigned int x = 0; x < curRecord->ACRE.size(); ++x)
-                    count += curRecord->ACRE[x]->UpdateReferences(origFormID, newFormID);
+                    count += curRecord->ACRE[x]->UpdateReferences(origFormID, newFormID, FormIDHandler);
                 for(unsigned int x = 0; x < curRecord->REFR.size(); ++x)
-                    count += curRecord->REFR[x]->UpdateReferences(origFormID, newFormID);
+                    count += curRecord->REFR[x]->UpdateReferences(origFormID, newFormID, FormIDHandler);
                 if(curRecord->PGRD != NULL)
-                    count += curRecord->PGRD->UpdateReferences(origFormID, newFormID);
+                    count += curRecord->PGRD->UpdateReferences(origFormID, newFormID, FormIDHandler);
                 }
             return count;
+            }
+
+        unsigned int CheckMasters(unsigned char MASTIndex, _FormIDHandler &FormIDHandler)
+            {
+            CELLRecord *curRecord = NULL;
+            for(unsigned int p = 0; p < Records.size(); p++)
+                {
+                curRecord = Records[p];
+                if(FormIDHandler.UsesMaster(curRecord->formID, MASTIndex))
+                    return true;  
+                for(unsigned int x = 0; x < curRecord->ACHR.size(); ++x)
+                    if(FormIDHandler.UsesMaster(curRecord->ACHR[x]->formID, MASTIndex))
+                        return true;  
+                for(unsigned int x = 0; x < curRecord->ACRE.size(); ++x)
+                    if(FormIDHandler.UsesMaster(curRecord->ACRE[x]->formID, MASTIndex))
+                        return true;  
+                for(unsigned int x = 0; x < curRecord->REFR.size(); ++x)
+                    if(FormIDHandler.UsesMaster(curRecord->REFR[x]->formID, MASTIndex))
+                        return true;  
+                if(curRecord->PGRD != NULL)
+                    if(FormIDHandler.UsesMaster(curRecord->PGRD->formID, MASTIndex))
+                        return true;  
+                }
+            return false;
             }
         unsigned int WriteGRUP(FileBuffer &buffer, bool CloseMod, _FormIDHandler &FormIDHandler)
             {
@@ -1319,94 +1290,7 @@ class GRUPRecords<WRLDRecord>
                 }
             return;
             }
-        void CollapseFormIDs(_FormIDHandler &FormIDHandler)
-            {
-            WRLDRecord *curWRLDRecord = NULL;
-            CELLRecord *curCELLRecord = NULL;
-            for(unsigned int p = 0; p < Records.size(); p++)
-                {
-                curWRLDRecord = Records[p];
-                curWRLDRecord->CollapseFormIDs(FormIDHandler);
-                if(curWRLDRecord->ROAD != NULL)
-                    curWRLDRecord->ROAD->CollapseFormIDs(FormIDHandler);
-                if(curWRLDRecord->CELL != NULL)
-                    {
-                    curCELLRecord = curWRLDRecord->CELL;
-                    curCELLRecord->CollapseFormIDs(FormIDHandler);
-                    for(unsigned int y = 0; y < curCELLRecord->ACHR.size(); ++y)
-                        curCELLRecord->ACHR[y]->CollapseFormIDs(FormIDHandler);
-                    for(unsigned int y = 0; y < curCELLRecord->ACRE.size(); ++y)
-                        curCELLRecord->ACRE[y]->CollapseFormIDs(FormIDHandler);
-                    for(unsigned int y = 0; y < curCELLRecord->REFR.size(); ++y)
-                        curCELLRecord->REFR[y]->CollapseFormIDs(FormIDHandler);
-                    if(curCELLRecord->PGRD != NULL)
-                        curCELLRecord->PGRD->CollapseFormIDs(FormIDHandler);
-                    if(curCELLRecord->LAND != NULL)
-                        curCELLRecord->LAND->CollapseFormIDs(FormIDHandler);
-                    }
-                for(unsigned int x = 0; x < curWRLDRecord->CELLS.size(); x++)
-                    {
-                    curCELLRecord = curWRLDRecord->CELLS[x];
-                    curCELLRecord->CollapseFormIDs(FormIDHandler);
-                    for(unsigned int y = 0; y < curCELLRecord->ACHR.size(); ++y)
-                        curCELLRecord->ACHR[y]->CollapseFormIDs(FormIDHandler);
-                    for(unsigned int y = 0; y < curCELLRecord->ACRE.size(); ++y)
-                        curCELLRecord->ACRE[y]->CollapseFormIDs(FormIDHandler);
-                    for(unsigned int y = 0; y < curCELLRecord->REFR.size(); ++y)
-                        curCELLRecord->REFR[y]->CollapseFormIDs(FormIDHandler);
-                    if(curCELLRecord->PGRD != NULL)
-                        curCELLRecord->PGRD->CollapseFormIDs(FormIDHandler);
-                    if(curCELLRecord->LAND != NULL)
-                        curCELLRecord->LAND->CollapseFormIDs(FormIDHandler);
-                    }
-                }
-            return;
-            }
-        void ExpandFormIDs(_FormIDHandler &FormIDHandler)
-            {
-            WRLDRecord *curWRLDRecord = NULL;
-            CELLRecord *curCELLRecord = NULL;
-            for(unsigned int p = 0; p < Records.size(); p++)
-                {
-                curWRLDRecord = Records[p];
-                curWRLDRecord->ExpandFormIDs(FormIDHandler);
-                if(curWRLDRecord->ROAD != NULL)
-                    curWRLDRecord->ROAD->ExpandFormIDs(FormIDHandler);
-                if(curWRLDRecord->CELL != NULL)
-                    {
-                    curCELLRecord = curWRLDRecord->CELL;
-                    curCELLRecord->ExpandFormIDs(FormIDHandler);
-                    for(unsigned int y = 0; y < curCELLRecord->ACHR.size(); ++y)
-                        curCELLRecord->ACHR[y]->ExpandFormIDs(FormIDHandler);
-                    for(unsigned int y = 0; y < curCELLRecord->ACRE.size(); ++y)
-                        curCELLRecord->ACRE[y]->ExpandFormIDs(FormIDHandler);
-                    for(unsigned int y = 0; y < curCELLRecord->REFR.size(); ++y)
-                        curCELLRecord->REFR[y]->ExpandFormIDs(FormIDHandler);
-                    if(curCELLRecord->PGRD != NULL)
-                        curCELLRecord->PGRD->ExpandFormIDs(FormIDHandler);
-                    if(curCELLRecord->LAND != NULL)
-                        curCELLRecord->LAND->ExpandFormIDs(FormIDHandler);
-                    }
-                for(unsigned int x = 0; x < curWRLDRecord->CELLS.size(); x++)
-                    {
-                    curCELLRecord = curWRLDRecord->CELLS[x];
-                    curCELLRecord->ExpandFormIDs(FormIDHandler);
-                    for(unsigned int y = 0; y < curCELLRecord->ACHR.size(); ++y)
-                        curCELLRecord->ACHR[y]->ExpandFormIDs(FormIDHandler);
-                    for(unsigned int y = 0; y < curCELLRecord->ACRE.size(); ++y)
-                        curCELLRecord->ACRE[y]->ExpandFormIDs(FormIDHandler);
-                    for(unsigned int y = 0; y < curCELLRecord->REFR.size(); ++y)
-                        curCELLRecord->REFR[y]->ExpandFormIDs(FormIDHandler);
-                    if(curCELLRecord->PGRD != NULL)
-                        curCELLRecord->PGRD->ExpandFormIDs(FormIDHandler);
-                    if(curCELLRecord->LAND != NULL)
-                        curCELLRecord->LAND->ExpandFormIDs(FormIDHandler);
-                    }
-                }
-            return;
-            }
-
-        unsigned int UpdateReferencingRecords(unsigned int origFormID, unsigned int newFormID)
+        unsigned int UpdateReferences(unsigned int origFormID, unsigned int newFormID, _FormIDHandler &FormIDHandler)
             {
             unsigned int count = 0;
             WRLDRecord *curWRLDRecord = NULL;
@@ -1414,43 +1298,83 @@ class GRUPRecords<WRLDRecord>
             for(unsigned int p = 0; p < Records.size(); p++)
                 {
                 curWRLDRecord = Records[p];
-                count += curWRLDRecord->UpdateReferences(origFormID, newFormID);
+                count += curWRLDRecord->UpdateReferences(origFormID, newFormID, FormIDHandler);
                 if(curWRLDRecord->ROAD != NULL)
-                    count += curWRLDRecord->ROAD->UpdateReferences(origFormID, newFormID);
+                    count += curWRLDRecord->ROAD->UpdateReferences(origFormID, newFormID, FormIDHandler);
                 if(curWRLDRecord->CELL != NULL)
                     {
                     curCELLRecord = curWRLDRecord->CELL;
-                    count += curCELLRecord->UpdateReferences(origFormID, newFormID);
+                    count += curCELLRecord->UpdateReferences(origFormID, newFormID, FormIDHandler);
                     for(unsigned int y = 0; y < curCELLRecord->ACHR.size(); ++y)
-                        count += curCELLRecord->ACHR[y]->UpdateReferences(origFormID, newFormID);
+                        count += curCELLRecord->ACHR[y]->UpdateReferences(origFormID, newFormID, FormIDHandler);
                     for(unsigned int y = 0; y < curCELLRecord->ACRE.size(); ++y)
-                        count += curCELLRecord->ACRE[y]->UpdateReferences(origFormID, newFormID);
+                        count += curCELLRecord->ACRE[y]->UpdateReferences(origFormID, newFormID, FormIDHandler);
                     for(unsigned int y = 0; y < curCELLRecord->REFR.size(); ++y)
-                        count += curCELLRecord->REFR[y]->UpdateReferences(origFormID, newFormID);
+                        count += curCELLRecord->REFR[y]->UpdateReferences(origFormID, newFormID, FormIDHandler);
                     if(curCELLRecord->PGRD != NULL)
-                        count += curCELLRecord->PGRD->UpdateReferences(origFormID, newFormID);
+                        count += curCELLRecord->PGRD->UpdateReferences(origFormID, newFormID, FormIDHandler);
                     if(curCELLRecord->LAND != NULL)
-                        count += curCELLRecord->LAND->UpdateReferences(origFormID, newFormID);
+                        count += curCELLRecord->LAND->UpdateReferences(origFormID, newFormID, FormIDHandler);
                     }
                 for(unsigned int x = 0; x < curWRLDRecord->CELLS.size(); x++)
                     {
                     curCELLRecord = curWRLDRecord->CELLS[x];
-                    count += curCELLRecord->UpdateReferences(origFormID, newFormID);
+                    count += curCELLRecord->UpdateReferences(origFormID, newFormID, FormIDHandler);
                     for(unsigned int y = 0; y < curCELLRecord->ACHR.size(); ++y)
-                        count += curCELLRecord->ACHR[y]->UpdateReferences(origFormID, newFormID);
+                        count += curCELLRecord->ACHR[y]->UpdateReferences(origFormID, newFormID, FormIDHandler);
                     for(unsigned int y = 0; y < curCELLRecord->ACRE.size(); ++y)
-                        count += curCELLRecord->ACRE[y]->UpdateReferences(origFormID, newFormID);
+                        count += curCELLRecord->ACRE[y]->UpdateReferences(origFormID, newFormID, FormIDHandler);
                     for(unsigned int y = 0; y < curCELLRecord->REFR.size(); ++y)
-                        count += curCELLRecord->REFR[y]->UpdateReferences(origFormID, newFormID);
+                        count += curCELLRecord->REFR[y]->UpdateReferences(origFormID, newFormID, FormIDHandler);
                     if(curCELLRecord->PGRD != NULL)
-                        count += curCELLRecord->PGRD->UpdateReferences(origFormID, newFormID);
+                        count += curCELLRecord->PGRD->UpdateReferences(origFormID, newFormID, FormIDHandler);
                     if(curCELLRecord->LAND != NULL)
-                        count += curCELLRecord->LAND->UpdateReferences(origFormID, newFormID);
+                        count += curCELLRecord->LAND->UpdateReferences(origFormID, newFormID, FormIDHandler);
                     }
                 }
             return count;
             }
 
+        unsigned int CheckMasters(unsigned char MASTIndex, _FormIDHandler &FormIDHandler)
+            {
+            WRLDRecord *curWRLDRecord = NULL;
+            CELLRecord *curCELLRecord = NULL;
+            for(unsigned int p = 0; p < Records.size(); p++)
+                {
+                curWRLDRecord = Records[p];
+                if(FormIDHandler.UsesMaster(curWRLDRecord->formID, MASTIndex))
+                    return true;  
+                if(curWRLDRecord->ROAD != NULL)
+                    if(FormIDHandler.UsesMaster(curWRLDRecord->ROAD->formID, MASTIndex))
+                        return true;  
+                if(curWRLDRecord->CELL != NULL)
+                    {
+                    curCELLRecord = curWRLDRecord->CELL;
+                    }
+                for(unsigned int x = 0; x < curWRLDRecord->CELLS.size(); x++)
+                    {
+                    curCELLRecord = curWRLDRecord->CELLS[x];
+                    if(FormIDHandler.UsesMaster(curCELLRecord->formID, MASTIndex))
+                        return true;  
+                    for(unsigned int y = 0; y < curCELLRecord->ACHR.size(); ++y)
+                        if(FormIDHandler.UsesMaster(curCELLRecord->ACHR[y]->formID, MASTIndex))
+                            return true;  
+                    for(unsigned int y = 0; y < curCELLRecord->ACRE.size(); ++y)
+                        if(FormIDHandler.UsesMaster(curCELLRecord->ACRE[y]->formID, MASTIndex))
+                            return true;  
+                    for(unsigned int y = 0; y < curCELLRecord->REFR.size(); ++y)
+                        if(FormIDHandler.UsesMaster(curCELLRecord->REFR[y]->formID, MASTIndex))
+                            return true;  
+                    if(curCELLRecord->PGRD != NULL)
+                        if(FormIDHandler.UsesMaster(curCELLRecord->PGRD->formID, MASTIndex))
+                            return true;  
+                    if(curCELLRecord->LAND != NULL)
+                        if(FormIDHandler.UsesMaster(curCELLRecord->LAND->formID, MASTIndex))
+                            return true;  
+                    }
+                }
+            return false;
+            }
         unsigned int WriteGRUP(FileBuffer &buffer, bool CloseMod, _FormIDHandler &FormIDHandler)
             {
             unsigned int numWrldRecords = (unsigned int)Records.size();

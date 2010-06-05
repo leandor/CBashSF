@@ -89,6 +89,8 @@ class DIALRecord : public Record
 
         void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
+            if(!IsLoaded())
+                return;
             for(unsigned int x = 0; x < QSTI.size(); x++)
                 FormIDs.push_back(QSTI[x]);
             }
@@ -106,7 +108,7 @@ class DIALRecord : public Record
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue);
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize();
+        unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eDIAL;}
         char * GetStrType() {return "DIAL";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);

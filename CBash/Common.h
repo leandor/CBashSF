@@ -62,6 +62,13 @@ GPL License and Copyright Notice ============================================
 #define REVISION_VERSION    2
 #endif
 
+class Ex_NULL : public std::exception
+    {
+    public:
+        const char * __CLR_OR_THIS_CALL what() const
+            {return "NULL Pointer";}
+    };
+    
 typedef unsigned int * FormID;
 
 extern time_t lastSave;
@@ -532,13 +539,14 @@ class _FormIDHandler
         unsigned char CollapseIndex[255];
         unsigned char ExpandedIndex;
         unsigned char CollapsedIndex;
+        bool bMastersChanged;
 
     public:
-        _FormIDHandler(char *cFileName, std::vector<STRING> &cMAST, unsigned int &cNextObject):FileName(cFileName), MAST(cMAST), nextObject(cNextObject), ExpandedIndex(0), CollapsedIndex(0) {}
+        _FormIDHandler(char *cFileName, std::vector<STRING> &cMAST, unsigned int &cNextObject):FileName(cFileName), MAST(cMAST), nextObject(cNextObject), ExpandedIndex(0), CollapsedIndex(0), bMastersChanged(false) {}
         void SetLoadOrder(std::vector<char *> &cLoadOrder);
         unsigned int NextExpandedFID();
+        void CreateFormIDLookup(const unsigned char &expandedIndex);
         void UpdateFormIDLookup();
-        void UpdateFormIDLookup(const unsigned char &expandedIndex);
         void CollapseFormID(unsigned int &curFormID);
         void CollapseFormID(unsigned int *&curFormID);
         void ExpandFormID(unsigned int &curFormID);
@@ -547,9 +555,12 @@ class _FormIDHandler
         unsigned int AssignToMod(unsigned int *curFormID);
         void AddMaster(unsigned int &curFormID);
         void AddMaster(unsigned int *&curFormID);
+        bool MastersChanged();
+        bool UsesMaster(const unsigned int *&recordFID, const unsigned char &MASTIndex);
+        bool UsesMaster(const unsigned int &recordFID, const unsigned char &MASTIndex);
     };
 
-extern _FormIDHandler *FormIDHandler;
+//extern _FormIDHandler *FormIDHandler;
 
 extern const std::map<unsigned int, std::pair<unsigned int,unsigned int>> Function_Arguments;
 extern const std::map<unsigned int, char *> Function_Name;
@@ -566,14 +577,6 @@ struct sameStr
 	    {
 		return _stricmp( s1, s2 ) < 0;
 	    }
-    };
-
-struct sortFormID
-    {
-     bool operator()(const FormID l, const FormID r) const
-        {
-        return *l < *r;
-        }
     };
 
 //bool sortLoad(const char *l, const char *r);

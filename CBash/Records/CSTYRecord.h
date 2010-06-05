@@ -315,7 +315,7 @@ class CSTYRecord : public Record
         void SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue);
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize();
+        unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eCSTY;}
         char * GetStrType() {return "CSTY";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);

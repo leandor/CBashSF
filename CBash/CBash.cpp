@@ -43,10 +43,13 @@ unsigned int GetRevision()
     return REVISION_VERSION;
     }
 ////////////////////////////////////////////////////////////////////////
+
 int NewCollection(const char *ModsPath)
     {
     try
         {
+        if(ModsPath == NULL)
+            throw Ex_NULL();
         for(unsigned int p = 0; p < Collections.size(); ++p)
             {
             if(Collections[p] == NULL)
@@ -57,6 +60,11 @@ int NewCollection(const char *ModsPath)
             }
 		Collections.push_back(new Collection(ModsPath));
 		}
+	catch(Ex_NULL &ex)
+	    {
+        printf("Error creating collection\n  %s", ex.what());
+        return -1;	    
+	    }
     catch(...)
         {
         printf("Error creating collection\n");
@@ -94,23 +102,6 @@ int DeleteCollection(const unsigned int CollectionIndex)
     }
 
 ////////////////////////////////////////////////////////////////////////
-int NewMod(const unsigned int CollectionIndex, const char *ModName)
-    {
-    try
-        {
-        if(CollectionIndex < Collections.size())
-            Collections[CollectionIndex]->NewMod(ModName);
-        else
-            throw 1;
-        }
-    catch(...)
-        {
-        printf("Error creating mod:%s\n", ModName);
-        return -1;
-        }
-    return 0;
-    }
-
 int AddMod(const unsigned int CollectionIndex, const char *ModName, bool CreateIfNotExist)
     {
     int status = 0;
@@ -164,19 +155,21 @@ int FullLoad(const unsigned int CollectionIndex, const bool LoadMasters)
     }
 
 ////////////////////////////////////////////////////////////////////////
-int GetChangedMods(const unsigned int CollectionIndex)
+int CleanMasters(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
+        if(ModName == NULL)
+            throw 1;
         if(CollectionIndex < Collections.size())
-            return Collections[CollectionIndex]->GetChangedMods();
+            return Collections[CollectionIndex]->CleanMasters(ModName);
         else
             throw 1;
         }
     catch(...)
         {
-        printf("GetChangedMods: Error\n");
-        return -1;
+        printf("CleanMasters: Error loading records\n");
+        return 0;
         }
     return 0;
     }
@@ -201,24 +194,6 @@ int SafeSaveMod(const unsigned int CollectionIndex, char *curFileName, bool Clos
         }
     return 0;
 	}
-
-int SafeSaveAllChangedMods(const unsigned int CollectionIndex)
-	{
-    try
-        {
-        if(CollectionIndex < Collections.size())
-            Collections[CollectionIndex]->SafeSaveAllChangedMods();
-        else
-            throw 1;
-        }
-    catch(...)
-        {
-        printf("Error safe saving all changed mods\n");
-        return -1;
-        }
-    return 0;
-	}
-
 ////////////////////////////////////////////////////////////////////////
 int LoadRecord(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID)
     {
@@ -338,6 +313,24 @@ void GetMods(const unsigned int CollectionIndex, char **ModNames)
     return;
     }
 ////////////////////////////////////////////////////////////////////////
+unsigned int SetRecordFormID(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, unsigned int FieldValue)
+    {
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->SetRecordFormID(ModName, recordFID, FieldValue);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("SetRecordFormID: Error\n");
+        return 0;
+        }
+    return 0;
+    }
+
+
 char * GetModName(const unsigned int CollectionIndex, const unsigned int iIndex)
     {
     try
@@ -372,18 +365,35 @@ unsigned int GetCorrectedFID(const unsigned int CollectionIndex, char *ModName, 
     return 0;
     }
 
-extern "C" __declspec(dllexport) unsigned int UpdateReferencingRecords(const unsigned int CollectionIndex, char *ModName, unsigned int origFormID, unsigned int newFormID)
+unsigned int UpdateAllReferences(const unsigned int CollectionIndex, char *ModName, unsigned int origFormID, unsigned int newFormID)
     {
     try
         {
         if(CollectionIndex < Collections.size())
-            return Collections[CollectionIndex]->UpdateReferencingRecords(ModName, origFormID, newFormID);
+            return Collections[CollectionIndex]->UpdateReferences(ModName, origFormID, newFormID);
         else
             throw 1;
         }
     catch(...)
         {
-        printf("UpdateReferencingRecords: Error\n");
+        printf("UpdateAllReferences: Error\n");
+        return 0;
+        }
+    return 0;
+    }
+
+unsigned int UpdateReferences(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, unsigned int origFormID, unsigned int newFormID)
+    {
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->UpdateReferences(ModName, recordFID, origFormID, newFormID);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("UpdateReferences: Error\n");
         return 0;
         }
     return 0;
@@ -1554,7 +1564,7 @@ int SetTES4FieldR(const unsigned int CollectionIndex, char *ModName, const unsig
     }
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
-void GetGMSTs(const unsigned int CollectionIndex, char *ModName, char **RecordEIDs)
+void GetGMSTRecords(const unsigned int CollectionIndex, char *ModName, char **RecordEIDs)
     {
     try
         {

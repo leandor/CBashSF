@@ -67,43 +67,60 @@ void Record::CollapseFormIDs(_FormIDHandler &FormIDHandler)
     return;
     }
 
-unsigned int Record::UpdateReferences(unsigned int origFormID, unsigned int newFormID)
+
+void Record::AddMasters(_FormIDHandler &FormIDHandler)
+    {
+    FormIDHandler.AddMaster(formID);
+    std::vector<FormID> FormIDs;
+    GetReferencedFormIDs(FormIDs);
+    for(unsigned int x = 0; x < FormIDs.size(); ++x)
+        FormIDHandler.AddMaster(FormIDs[x]);
+    return;
+    }
+
+unsigned int Record::UpdateReferences(unsigned int origFormID, unsigned int newFormID, _FormIDHandler &FormIDHandler)
     {
     unsigned int count = 0;
     std::vector<FormID> FormIDs;
+    Read(FormIDHandler);
     GetReferencedFormIDs(FormIDs);
     for(unsigned int x = 0; x < FormIDs.size(); ++x)
         if(*FormIDs[x] == origFormID)
             {
             *FormIDs[x] = newFormID;
+            FormIDHandler.AddMaster(newFormID);
             ++count;
             }
+    if(count)
+        recData = NULL;
+    if(recData != NULL)
+        Unload();
     return count;
     }
 
 int Record::Write(WritableRecord &writeRecord, _FormIDHandler &FormIDHandler)
     {
-    writeRecord.recSize = GetSize();
-    writeRecord.deleteBuffer = false;
-    if(recData != NULL)
+    //if masters have changed, all formIDs have to be updated...
+    //so the record can't just be written as is.
+    if(recData != NULL && !FormIDHandler.MastersChanged())
         {
+        writeRecord.recSize = GetSize();
+        writeRecord.deleteBuffer = false;
         writeRecord.recBuffer = &recData[-20];
         Unload();
         return 0;
         }
-    if(!IsLoaded())
-        {
-        writeRecord.recSize = 0;
-        writeRecord.recBuffer = NULL;
-        return -1;
-        }
+    Read(FormIDHandler);
+    writeRecord.recSize = GetSize(true);
+    FormIDHandler.CollapseFormID(formID);
+    CollapseFormIDs(FormIDHandler);
     writeRecord.deleteBuffer = true;
     unsigned int usedBuffer = 0;
     //Make the new buffer.
     writeRecord.recBuffer = new unsigned char[writeRecord.recSize + 20];
     //Write the record to the new buffer
     WriteRecord(&writeRecord.recBuffer[20], usedBuffer);
-    //IsCompressed(true);
+    //IsCompressed(true); //Test code
     if(IsCompressed())
         {
         unsigned long compSize = 0;
@@ -125,5 +142,9 @@ int Record::Write(WritableRecord &writeRecord, _FormIDHandler &FormIDHandler)
     memcpy(&writeRecord.recBuffer[12], &formID, 4);
     memcpy(&writeRecord.recBuffer[16], &flagsUnk, 4);
     IsLoaded(true);
+    if(recData != NULL)
+        Unload();
+    FormIDHandler.ExpandFormID(formID);
+    ExpandFormIDs(FormIDHandler);
     return 0;
     }

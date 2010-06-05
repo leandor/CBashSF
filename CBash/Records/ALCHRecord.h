@@ -112,6 +112,8 @@ class ALCHRecord : public Record
 
         void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
+            if(!IsLoaded())
+                return;
             if(SCRI.IsLoaded())
                 FormIDs.push_back(&SCRI->fid);
             for(unsigned int x = 0; x < Effects.size(); x++)
@@ -148,7 +150,7 @@ class ALCHRecord : public Record
 
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize();
+        unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eALCH;}
         char * GetStrType() {return "ALCH";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);

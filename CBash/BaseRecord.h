@@ -1096,10 +1096,10 @@ class Record
             {
             switch(Field)
                 {
-                case 0: //recType
-                    return UINT_FIELD;
-                case 1: //size
-                    return UINT_FIELD;
+                //case 0: //recType
+                //    return UINT_FIELD;
+                //case 1: //size
+                //    return UINT_FIELD;
                 case 2: //flags1
                     return UINT_FIELD;
                 case 3: //fid
@@ -1140,9 +1140,10 @@ class Record
                 case 2: //flags1
                     SetHeaderFlagMask(FieldValue);
                     return;
-                case 3: //fid
-                    formID = FieldValue;
-                    return;
+                //case 3: //fid
+                //    formID = FieldValue;
+                //    FormIDHandler.AddMaster(formID);
+                //    return;
                 case 4: //flags2
                     loaded = IsLoaded();
                     flagsUnk = FieldValue;
@@ -1233,7 +1234,7 @@ class Record
         virtual int DeleteListX3Element(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field) {return -1;}
 
         virtual void Unload() abstract {};
-        virtual unsigned int GetSize() abstract {};
+        virtual unsigned int GetSize(bool forceCalc=false) abstract {};
         virtual unsigned int GetType() {return eUnknown;}
         virtual char * GetStrType() abstract {}
         virtual void GetReferencedFormIDs(std::vector<FormID> &FormIDs) {};
@@ -1241,7 +1242,8 @@ class Record
         int Read(_FormIDHandler &FormIDHandler);
         void ExpandFormIDs(_FormIDHandler &FormIDHandler);
         void CollapseFormIDs(_FormIDHandler &FormIDHandler);
-        unsigned int UpdateReferences(unsigned int origFormID, unsigned int newFormID);
+        void AddMasters(_FormIDHandler &FormIDHandler);
+        unsigned int UpdateReferences(unsigned int origFormID, unsigned int newFormID, _FormIDHandler &FormIDHandler);
         
         virtual void CopyFrom(Record *temp) {return;}
         virtual int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer) abstract {};

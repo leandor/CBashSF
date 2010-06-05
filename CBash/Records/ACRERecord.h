@@ -91,6 +91,8 @@ class ACRERecord : public Record
 
         void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
+            if(!IsLoaded())
+                return;
             FormIDs.push_back(&NAME.value.fid);
             if(Ownership.IsLoaded())
                 {
@@ -119,7 +121,7 @@ class ACRERecord : public Record
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue);
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize();
+        unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eACRE;}
         char * GetStrType() {return "ACRE";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);

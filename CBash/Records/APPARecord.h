@@ -115,6 +115,8 @@ class APPARecord : public Record
 
         void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
+            if(!IsLoaded())
+                return;
             if(SCRI.IsLoaded())
                 FormIDs.push_back(&SCRI->fid);
             }
@@ -134,7 +136,7 @@ class APPARecord : public Record
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue);
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize();
+        unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eAPPA;}
         char * GetStrType() {return "APPA";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
