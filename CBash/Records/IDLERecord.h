@@ -145,6 +145,8 @@ class IDLERecord : public Record
 
         void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
+            if(!IsLoaded())
+                return;
             std::pair<unsigned int, unsigned int> CTDAFunction;
             std::map<unsigned int, std::pair<unsigned int,unsigned int>>::const_iterator curCTDAFunction;
             for(unsigned int x = 0; x < CTDA.size(); x++)
@@ -190,7 +192,7 @@ class IDLERecord : public Record
 
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize();
+        unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eIDLE;}
         char * GetStrType() {return "IDLE";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);

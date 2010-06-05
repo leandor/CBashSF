@@ -385,6 +385,8 @@ class LANDRecord : public Record
 
         void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
+            if(!IsLoaded())
+                return;
             for(unsigned int x = 0; x < BTXT.size(); ++x)
                 if(BTXT[x] != NULL)
                     FormIDs.push_back(&BTXT[x]->value.texture);
@@ -432,7 +434,7 @@ class LANDRecord : public Record
         float CalcHeight(const unsigned int &row, const unsigned int &column);
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize();
+        unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eLAND;}
         char * GetStrType() {return "LAND";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);

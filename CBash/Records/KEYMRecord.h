@@ -78,6 +78,8 @@ class KEYMRecord : public Record
 
         void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
+            if(!IsLoaded())
+                return;
             if(SCRI.IsLoaded())
                 FormIDs.push_back(&SCRI->fid);
             }
@@ -97,7 +99,7 @@ class KEYMRecord : public Record
 
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize();
+        unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eKEYM;}
         char * GetStrType() {return "KEYM";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);

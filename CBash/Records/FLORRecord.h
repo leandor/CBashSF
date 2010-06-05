@@ -102,6 +102,8 @@ class FLORRecord : public Record
 
         void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
+            if(!IsLoaded())
+                return;
             if(SCRI.IsLoaded())
                 FormIDs.push_back(&SCRI->fid);
             FormIDs.push_back(&PFIG.value.fid);
@@ -123,7 +125,7 @@ class FLORRecord : public Record
 
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize();
+        unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eFLOR;}
         char * GetStrType() {return "FLOR";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);

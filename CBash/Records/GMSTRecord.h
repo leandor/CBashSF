@@ -131,7 +131,7 @@ class GMSTRecord : public Record
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue);
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize();
+        unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eGMST;}
         char * GetStrType() {return "GMST";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);

@@ -110,6 +110,8 @@ class FURNRecord : public Record
 
         void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
+            if(!IsLoaded())
+                return;
             if(SCRI.IsLoaded())
                 FormIDs.push_back(&SCRI->fid);
             }
@@ -128,7 +130,7 @@ class FURNRecord : public Record
         void SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue);
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize();
+        unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eFURN;}
         char * GetStrType() {return "FURN";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
