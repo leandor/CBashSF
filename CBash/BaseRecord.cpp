@@ -49,6 +49,38 @@ int Record::Read(_FormIDHandler &FormIDHandler)
     return 0;
     }
 
+void Record::ExpandFormIDs(_FormIDHandler &FormIDHandler)
+    {
+    std::vector<FormID> FormIDs;
+    GetReferencedFormIDs(FormIDs);
+    for(unsigned int x = 0; x < FormIDs.size(); ++x)
+        FormIDHandler.ExpandFormID(FormIDs[x]);
+    return;
+    }
+
+void Record::CollapseFormIDs(_FormIDHandler &FormIDHandler)
+    {
+    std::vector<FormID> FormIDs;
+    GetReferencedFormIDs(FormIDs);
+    for(unsigned int x = 0; x < FormIDs.size(); ++x)
+        FormIDHandler.CollapseFormID(FormIDs[x]);
+    return;
+    }
+
+unsigned int Record::UpdateReferences(unsigned int origFormID, unsigned int newFormID)
+    {
+    unsigned int count = 0;
+    std::vector<FormID> FormIDs;
+    GetReferencedFormIDs(FormIDs);
+    for(unsigned int x = 0; x < FormIDs.size(); ++x)
+        if(*FormIDs[x] == origFormID)
+            {
+            *FormIDs[x] = newFormID;
+            ++count;
+            }
+    return count;
+    }
+
 int Record::Write(WritableRecord &writeRecord, _FormIDHandler &FormIDHandler)
     {
     writeRecord.recSize = GetSize();

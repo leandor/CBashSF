@@ -337,7 +337,7 @@ void GetMods(const unsigned int CollectionIndex, char **ModNames)
         }
     return;
     }
-
+////////////////////////////////////////////////////////////////////////
 char * GetModName(const unsigned int CollectionIndex, const unsigned int iIndex)
     {
     try
@@ -372,6 +372,22 @@ unsigned int GetCorrectedFID(const unsigned int CollectionIndex, char *ModName, 
     return 0;
     }
 
+extern "C" __declspec(dllexport) unsigned int UpdateReferencingRecords(const unsigned int CollectionIndex, char *ModName, unsigned int origFormID, unsigned int newFormID)
+    {
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->UpdateReferencingRecords(ModName, origFormID, newFormID);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("UpdateReferencingRecords: Error\n");
+        return 0;
+        }
+    return 0;
+    }
 ////////////////////////////////////////////////////////////////////////
 unsigned int GetNumGMSTRecords(const unsigned int CollectionIndex, char *ModName)
     {

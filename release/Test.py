@@ -1,5 +1,5 @@
 from cint import *
-
+   
 def TestLoadMasters():
     Current = Collection()
     Current.addMod("OOO Patch - Geomancy - Activator.esp")
@@ -5218,7 +5218,6 @@ def TestLVLI():
             print "  listId  :", PrintFormID(entry.listId)
             print "  count   :", entry.count
             print "  unused2 :", entry.unused2
-        print "data_p :", record.data_p
         break
 
     print "LVLI:Create Record Test"
@@ -5260,8 +5259,6 @@ def TestLVLI():
     entry.unused2 = [0x21, 0xFF]
     newRecord.entries = [newRecord.entries[3], newRecord.entries[2], newRecord.entries[0]]
 
-    newRecord.data_p = [0xFF] 
-
     print "LVLI:Set Test Results"
     print
     print "fid    :", PrintFormID(newRecord.fid)
@@ -5279,7 +5276,6 @@ def TestLVLI():
         print "  listId  :", PrintFormID(entry.listId)
         print "  count   :", entry.count
         print "  unused2 :", entry.unused2
-    print "data_p :", newRecord.data_p
     print "LVLI:CopyAsOverride Test"
     for record in Current[0].LVLI:
         record.CopyAsOverride(newMod)
@@ -10660,7 +10656,6 @@ from timeit import Timer
 ##del Current
 ##phonenumber = raw_input("!")
 
-
 ##TestFullLoad()
 ##TestMinimalLoad()
 ##TestLoadMasters()
@@ -10712,7 +10707,7 @@ from timeit import Timer
 ##TestCLMT()
 ##TestREGN()
 ##TestCELL()
-TestWRLD()
+##TestWRLD()
 ##TestDIAL()
 ##TestQUST()
 ##TestIDLE()

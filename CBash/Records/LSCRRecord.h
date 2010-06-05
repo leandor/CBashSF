@@ -103,21 +103,12 @@ class LSCRRecord : public Record
             LNAM.clear();
             }
 
-        void ExpandFormIDs(_FormIDHandler &FormIDHandler)
+        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
             for(unsigned int x = 0; x < LNAM.size(); x++)
                 {
-                FormIDHandler.ExpandFormID(LNAM[x]->value.direct);
-                FormIDHandler.ExpandFormID(LNAM[x]->value.indirect);
-                }
-            }
-
-        void CollapseFormIDs(_FormIDHandler &FormIDHandler)
-            {
-            for(unsigned int x = 0; x < LNAM.size(); x++)
-                {
-                FormIDHandler.CollapseFormID(LNAM[x]->value.direct);
-                FormIDHandler.CollapseFormID(LNAM[x]->value.indirect);
+                FormIDs.push_back(&LNAM[x]->value.direct);
+                FormIDs.push_back(&LNAM[x]->value.indirect);
                 }
             }
 

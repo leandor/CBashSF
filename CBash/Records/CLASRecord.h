@@ -156,9 +156,6 @@ class CLASRecord : public Record
             DATA.Unload();
             }
 
-        void ExpandFormIDs(_FormIDHandler &FormIDHandler) {}
-        void CollapseFormIDs(_FormIDHandler &FormIDHandler) {}
-
         #ifdef _DEBUG
         void Debug(int debugLevel);
         #endif

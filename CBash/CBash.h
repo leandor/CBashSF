@@ -45,8 +45,10 @@ extern "C" __declspec(dllexport) int Close(const unsigned int CollectionIndex);
 ////////////////////////////////////////////////////////////////////////
 extern "C" __declspec(dllexport) unsigned int GetNumMods(const unsigned int CollectionIndex);
 extern "C" __declspec(dllexport) void GetMods(const unsigned int CollectionIndex, char **ModNames);
+////////////////////////////////////////////////////////////////////////
 extern "C" __declspec(dllexport) char * GetModName(const unsigned int CollectionIndex, const unsigned int iIndex);
 extern "C" __declspec(dllexport) unsigned int GetCorrectedFID(const unsigned int CollectionIndex, char *ModName, unsigned int recordObjectID);
+extern "C" __declspec(dllexport) unsigned int UpdateReferencingRecords(const unsigned int CollectionIndex, char *ModName, unsigned int origFormID, unsigned int newFormID);
 ////////////////////////////////////////////////////////////////////////
 //ADD
 extern "C" __declspec(dllexport) unsigned int GetNumGMSTRecords(const unsigned int CollectionIndex, char *ModName);

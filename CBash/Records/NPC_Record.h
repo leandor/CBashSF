@@ -369,52 +369,28 @@ class NPC_Record : public Record
             FNAM.Unload();
             }
 
-        void ExpandFormIDs(_FormIDHandler &FormIDHandler)
+        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
             for(unsigned int x = 0; x < SNAM.size(); x++)
-                FormIDHandler.ExpandFormID(SNAM[x]->value.faction);
+                FormIDs.push_back(&SNAM[x]->value.faction);
             if(INAM.IsLoaded())
-                FormIDHandler.ExpandFormID(INAM->fid);
+                FormIDs.push_back(&INAM->fid);
             if(RNAM.IsLoaded())
-                FormIDHandler.ExpandFormID(RNAM->fid);
+                FormIDs.push_back(&RNAM->fid);
             for(unsigned int x = 0; x < SPLO.size(); x++)
-                FormIDHandler.ExpandFormID(SPLO[x]);
+                FormIDs.push_back(SPLO[x]);
             if(SCRI.IsLoaded())
-                FormIDHandler.ExpandFormID(SCRI->fid);
+                FormIDs.push_back(&SCRI->fid);
             for(unsigned int x = 0; x < CNTO.size(); x++)
-                FormIDHandler.ExpandFormID(CNTO[x]->value.item);
+                FormIDs.push_back(&CNTO[x]->value.item);
             for(unsigned int x = 0; x < PKID.size(); x++)
-                FormIDHandler.ExpandFormID(PKID[x]);
-            FormIDHandler.ExpandFormID(CNAM.value.fid);
-            FormIDHandler.ExpandFormID(HNAM.value.fid);
+                FormIDs.push_back(PKID[x]);
+            FormIDs.push_back(&CNAM.value.fid);
+            FormIDs.push_back(&HNAM.value.fid);
             if(ENAM.IsLoaded())
-                FormIDHandler.ExpandFormID(ENAM->fid);
+                FormIDs.push_back(&ENAM->fid);
             if(ZNAM.IsLoaded())
-                FormIDHandler.ExpandFormID(ZNAM->fid);
-            }
-
-        void CollapseFormIDs(_FormIDHandler &FormIDHandler)
-            {
-            for(unsigned int x = 0; x < SNAM.size(); x++)
-                FormIDHandler.CollapseFormID(SNAM[x]->value.faction);
-            if(INAM.IsLoaded())
-                FormIDHandler.CollapseFormID(INAM->fid);
-            if(RNAM.IsLoaded())
-                FormIDHandler.CollapseFormID(RNAM->fid);
-            for(unsigned int x = 0; x < SPLO.size(); x++)
-                FormIDHandler.CollapseFormID(SPLO[x]);
-            if(SCRI.IsLoaded())
-                FormIDHandler.CollapseFormID(SCRI->fid);
-            for(unsigned int x = 0; x < CNTO.size(); x++)
-                FormIDHandler.CollapseFormID(CNTO[x]->value.item);
-            for(unsigned int x = 0; x < PKID.size(); x++)
-                FormIDHandler.CollapseFormID(PKID[x]);
-            FormIDHandler.CollapseFormID(CNAM.value.fid);
-            FormIDHandler.CollapseFormID(HNAM.value.fid);
-            if(ENAM.IsLoaded())
-                FormIDHandler.CollapseFormID(ENAM->fid);
-            if(ZNAM.IsLoaded())
-                FormIDHandler.CollapseFormID(ZNAM->fid);
+                FormIDs.push_back(&ZNAM->fid);
             }
 
         #ifdef _DEBUG

@@ -219,29 +219,18 @@ class WATRRecord : public Record
             GNAM.Unload();
             }
 
-        void ExpandFormIDs(_FormIDHandler &FormIDHandler)
+        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
             if(SNAM.IsLoaded())
-                FormIDHandler.ExpandFormID(SNAM->fid);
+                FormIDs.push_back(&SNAM->fid);
             if(GNAM.IsLoaded())
                 {
-                FormIDHandler.ExpandFormID(GNAM->dayWater);
-                FormIDHandler.ExpandFormID(GNAM->nightWater);
-                FormIDHandler.ExpandFormID(GNAM->underWater);
+                FormIDs.push_back(&GNAM->dayWater);
+                FormIDs.push_back(&GNAM->nightWater);
+                FormIDs.push_back(&GNAM->underWater);
                 }
             }
 
-        void CollapseFormIDs(_FormIDHandler &FormIDHandler)
-            {
-            if(SNAM.IsLoaded())
-                FormIDHandler.CollapseFormID(SNAM->fid);
-            if(GNAM.IsLoaded())
-                {
-                FormIDHandler.CollapseFormID(GNAM->dayWater);
-                FormIDHandler.CollapseFormID(GNAM->nightWater);
-                FormIDHandler.CollapseFormID(GNAM->underWater);
-                }
-            }
         #ifdef _DEBUG
         void Debug(int debugLevel);
         #endif

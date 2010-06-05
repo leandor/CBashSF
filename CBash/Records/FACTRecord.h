@@ -145,16 +145,10 @@ class FACTRecord : public Record
             RNAM.clear();
             }
 
-        void ExpandFormIDs(_FormIDHandler &FormIDHandler)
+        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
             for(unsigned int x = 0; x < XNAM.size(); x++)
-                FormIDHandler.ExpandFormID(XNAM[x]->value.faction);
-            }
-
-        void CollapseFormIDs(_FormIDHandler &FormIDHandler)
-            {
-            for(unsigned int x = 0; x < XNAM.size(); x++)
-                FormIDHandler.CollapseFormID(XNAM[x]->value.faction);
+                FormIDs.push_back(&XNAM[x]->value.faction);
             }
 
         #ifdef _DEBUG

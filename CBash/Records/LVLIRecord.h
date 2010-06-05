@@ -108,7 +108,7 @@ class LVLIRecord : public Record
         RecordField<LVLLVLD> LVLD;
         RecordField<GENFLAG> LVLF;
         std::vector<ReqRecordField<LVLLVLO> *> Entries;
-        RAWBYTES DATA;
+        //RAWBYTES DATA; //Older version of LVLF. Auto-updated to newer format.
 
         LVLIRecord(bool newRecord=false):Record(newRecord) {}
         LVLIRecord(const unsigned int &newFormID):Record(newFormID) {}
@@ -127,7 +127,7 @@ class LVLIRecord : public Record
                 Entries[x] = new ReqRecordField<LVLLVLO>;
                 *Entries[x] = *srcRecord->Entries[x];
                 }
-            DATA = srcRecord->DATA;
+            //DATA = srcRecord->DATA;
             return;
             }
         ~LVLIRecord()
@@ -144,19 +144,13 @@ class LVLIRecord : public Record
             for(unsigned int x = 0; x < Entries.size(); x++)
                 delete Entries[x];
             Entries.clear();
-            DATA.Unload();
+            //DATA.Unload();
             }
 
-        void ExpandFormIDs(_FormIDHandler &FormIDHandler)
+        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
             for(unsigned int x = 0; x < Entries.size(); x++)
-                FormIDHandler.ExpandFormID(Entries[x]->value.listId);
-            }
-
-        void CollapseFormIDs(_FormIDHandler &FormIDHandler)
-            {
-            for(unsigned int x = 0; x < Entries.size(); x++)
-                FormIDHandler.CollapseFormID(Entries[x]->value.listId);
+                FormIDs.push_back(&Entries[x]->value.listId);
             }
 
         #ifdef _DEBUG
@@ -167,8 +161,8 @@ class LVLIRecord : public Record
         int DeleteListElement(const unsigned int subField);
         int GetOtherFieldType(const unsigned int Field);
         void * GetOtherField(const unsigned int Field);
-        unsigned int GetFieldArraySize(const unsigned int Field);
-        void GetFieldArray(const unsigned int Field, void **FieldValues);
+        //unsigned int GetFieldArraySize(const unsigned int Field);
+        //void GetFieldArray(const unsigned int Field, void **FieldValues);
         int GetListFieldType(const unsigned int subField, const unsigned int listField);
         unsigned int GetListSize(const unsigned int Field);
         unsigned int GetListArraySize(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
@@ -179,7 +173,7 @@ class LVLIRecord : public Record
         void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, short FieldValue);
         void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize);
         void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
+        //void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize();
@@ -189,51 +183,25 @@ class LVLIRecord : public Record
 
         bool IsCalcFromAllLevels()
             {
-            if(!LVLF.IsLoaded())
-                if(!LVLD.IsLoaded())
-                    return false;
-                else
-                    return (LVLD.value.chanceNone & fAltCalcFromAllLevels) != 0;
-            else
-                if(!LVLD.IsLoaded())
-                    return (LVLF.value.flags & fCalcFromAllLevels) != 0;
-                else
-                    return ((LVLF.value.flags & fCalcFromAllLevels) != 0) || ((LVLD.value.chanceNone & fAltCalcFromAllLevels) != 0);
+            if(!LVLF.IsLoaded()) return false;
+            return (LVLF.value.flags & fCalcFromAllLevels) != 0;
             }
         void IsCalcFromAllLevels(bool value)
             {
-            if(!LVLF.IsLoaded())
-                if(!LVLD.IsLoaded())
-                    return;
-                else
-                    if(value)
-                        LVLD.value.chanceNone |= fAltCalcFromAllLevels;
-                    else
-                        LVLD.value.chanceNone &= ~fAltCalcFromAllLevels;
+            if(!LVLF.IsLoaded()) return;
+            if(value)
+                LVLF.value.flags |= fCalcFromAllLevels;
             else
-                if(!LVLD.IsLoaded())
-                    if(value)
-                        LVLF.value.flags |= fCalcFromAllLevels;
-                    else
-                        LVLF.value.flags &= ~fCalcFromAllLevels;
-                else
-                    if(value)
-                        {
-                        LVLF.value.flags |= fCalcFromAllLevels;
-                        LVLD.value.chanceNone &= ~fAltCalcFromAllLevels;
-                        }
-                    else
-                        {
-                        LVLF.value.flags &= ~fCalcFromAllLevels;
-                        LVLD.value.chanceNone &= ~fAltCalcFromAllLevels;
-                        }
+                LVLF.value.flags &= ~fCalcFromAllLevels;
             }
         bool IsCalcForEachItem()
             {
+            if(!LVLF.IsLoaded()) return false;
             return (LVLF.value.flags & fCalcForEachItem) != 0;
             }
         void IsCalcForEachItem(bool value)
             {
+            if(!LVLF.IsLoaded()) return;
             if(value)
                 LVLF.value.flags |= fCalcForEachItem;
             else
@@ -241,10 +209,12 @@ class LVLIRecord : public Record
             }
         bool IsUseAllSpells()
             {
+            if(!LVLF.IsLoaded()) return false;
             return (LVLF.value.flags & fUseAllSpells) != 0;
             }
         void IsUseAllSpells(bool value)
             {
+            if(!LVLF.IsLoaded()) return;
             if(value)
                 LVLF.value.flags |= fUseAllSpells;
             else
@@ -252,6 +222,7 @@ class LVLIRecord : public Record
             }
         bool IsFlagMask(unsigned char Mask, bool Exact=false)
             {
+            if(!LVLF.IsLoaded()) return false;
             if(Exact)
                 return (LVLF.value.flags & Mask) == Mask;
             else
@@ -259,6 +230,7 @@ class LVLIRecord : public Record
             }
         void SetFlagMask(unsigned char Mask)
             {
+            LVLF.isLoaded = true;
             LVLF.value.flags = Mask;
             }
     };

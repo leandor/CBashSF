@@ -128,16 +128,10 @@ class CLMTRecord : public Record
             TNAM.Unload();
             }
 
-        void ExpandFormIDs(_FormIDHandler &FormIDHandler)
+        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
             for(unsigned int x = 0; x < Weathers.size(); x++)
-                FormIDHandler.ExpandFormID(Weathers[x].weather);
-            }
-
-        void CollapseFormIDs(_FormIDHandler &FormIDHandler)
-            {
-            for(unsigned int x = 0; x < Weathers.size(); x++)
-                FormIDHandler.CollapseFormID(Weathers[x].weather);
+                FormIDs.push_back(&Weathers[x].weather);
             }
 
         #ifdef _DEBUG

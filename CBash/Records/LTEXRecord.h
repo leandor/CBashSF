@@ -135,16 +135,10 @@ class LTEXRecord : public Record
             GNAM.clear();
             }
 
-        void ExpandFormIDs(_FormIDHandler &FormIDHandler)
+        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
             for(unsigned int x = 0; x < GNAM.size(); x++)
-                FormIDHandler.ExpandFormID(GNAM[x]);
-            }
-
-        void CollapseFormIDs(_FormIDHandler &FormIDHandler)
-            {
-            for(unsigned int x = 0; x < GNAM.size(); x++)
-                FormIDHandler.CollapseFormID(GNAM[x]);
+                FormIDs.push_back(GNAM[x]);
             }
 
         #ifdef _DEBUG

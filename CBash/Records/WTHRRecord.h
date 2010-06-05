@@ -406,17 +406,12 @@ class WTHRRecord : public Record
             Sounds.clear();
             }
 
-        void ExpandFormIDs(_FormIDHandler &FormIDHandler)
+        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
             for(unsigned int x = 0; x < Sounds.size(); x++)
-                FormIDHandler.ExpandFormID(Sounds[x]->value.sound);
+                FormIDs.push_back(&Sounds[x]->value.sound);
             }
 
-        void CollapseFormIDs(_FormIDHandler &FormIDHandler)
-            {
-            for(unsigned int x = 0; x < Sounds.size(); x++)
-                FormIDHandler.CollapseFormID(Sounds[x]->value.sound);
-            }
         #ifdef _DEBUG
         void Debug(int debugLevel);
         #endif

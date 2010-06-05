@@ -207,28 +207,19 @@ class CELLRecord : public Record
             XCWT.Unload();
             }
 
-        void ExpandFormIDs(_FormIDHandler &FormIDHandler)
+        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
-            if(Ownership.IsLoaded() && Ownership->XOWN.IsLoaded())
-                FormIDHandler.ExpandFormID(Ownership->XOWN.value.fid);
-            if(Ownership.IsLoaded() && Ownership->XGLB.IsLoaded())
-                FormIDHandler.CollapseFormID(Ownership->XGLB->fid);
-            FormIDHandler.ExpandFormID(XCCM.value.fid);
+            if(Ownership.IsLoaded())
+                {
+                if(Ownership->XOWN.IsLoaded())
+                    FormIDs.push_back(&Ownership->XOWN.value.fid);
+                if(Ownership->XGLB.IsLoaded())
+                    FormIDs.push_back(&Ownership->XGLB->fid);
+                }
+            FormIDs.push_back(&XCCM.value.fid);
             for(unsigned int x = 0; x < XCLR.size(); x++)
-                FormIDHandler.ExpandFormID(XCLR[x]);
-            FormIDHandler.ExpandFormID(XCWT.value.fid);
-            }
-
-        void CollapseFormIDs(_FormIDHandler &FormIDHandler)
-            {
-            if(Ownership.IsLoaded() && Ownership->XOWN.IsLoaded())
-                FormIDHandler.CollapseFormID(Ownership->XOWN.value.fid);
-            if(Ownership.IsLoaded() && Ownership->XGLB.IsLoaded())
-                FormIDHandler.CollapseFormID(Ownership->XGLB->fid);
-            FormIDHandler.CollapseFormID(XCCM.value.fid);
-            for(unsigned int x = 0; x < XCLR.size(); x++)
-                FormIDHandler.CollapseFormID(XCLR[x]);
-            FormIDHandler.CollapseFormID(XCWT.value.fid);
+                FormIDs.push_back(&XCLR[x]);
+            FormIDs.push_back(&XCWT.value.fid);
             }
 
         #ifdef _DEBUG

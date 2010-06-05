@@ -72,20 +72,12 @@ class ACTIRecord : public Record
             SNAM.Unload();
             }
 
-        void ExpandFormIDs(_FormIDHandler &FormIDHandler)
+        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
             if(SCRI.IsLoaded())
-                FormIDHandler.ExpandFormID(SCRI->fid);
+                FormIDs.push_back(&SCRI->fid);
             if(SNAM.IsLoaded())
-                FormIDHandler.ExpandFormID(SNAM->fid);
-            }
-
-        void CollapseFormIDs(_FormIDHandler &FormIDHandler)
-            {
-            if(SCRI.IsLoaded())
-                FormIDHandler.CollapseFormID(SCRI->fid);
-            if(SNAM.IsLoaded())
-                FormIDHandler.CollapseFormID(SNAM->fid);
+                FormIDs.push_back(&SNAM->fid);
             }
 
         #ifdef _DEBUG

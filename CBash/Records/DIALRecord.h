@@ -87,16 +87,12 @@ class DIALRecord : public Record
             DATA.Unload();
             }
 
-        void ExpandFormIDs(_FormIDHandler &FormIDHandler)
+        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
             for(unsigned int x = 0; x < QSTI.size(); x++)
-                FormIDHandler.ExpandFormID(QSTI[x]);
+                FormIDs.push_back(QSTI[x]);
             }
-        void CollapseFormIDs(_FormIDHandler &FormIDHandler)
-            {
-            for(unsigned int x = 0; x < QSTI.size(); x++)
-                FormIDHandler.CollapseFormID(QSTI[x]);
-            }
+
         #ifdef _DEBUG
         void Debug(int debugLevel);
         #endif

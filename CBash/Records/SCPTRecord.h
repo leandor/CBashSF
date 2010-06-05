@@ -170,18 +170,11 @@ class SCPTRecord : public Record
             SCR_.clear();
             }
 
-        void ExpandFormIDs(_FormIDHandler &FormIDHandler)
+        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
             for(unsigned int x = 0; x < SCR_.size(); x++)
                 if(SCR_[x]->value.isSCRO)
-                    FormIDHandler.ExpandFormID(SCR_[x]->value.reference);
-            }
-
-        void CollapseFormIDs(_FormIDHandler &FormIDHandler)
-            {
-            for(unsigned int x = 0; x < SCR_.size(); x++)
-                if(SCR_[x]->value.isSCRO)
-                    FormIDHandler.CollapseFormID(SCR_[x]->value.reference);
+                    FormIDs.push_back(&SCR_[x]->value.reference);
             }
 
         #ifdef _DEBUG

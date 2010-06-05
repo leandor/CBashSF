@@ -183,28 +183,16 @@ class MGEFRecord : public Record
             ESCE.clear();
             }
 
-        void ExpandFormIDs(_FormIDHandler &FormIDHandler)
+        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
-            FormIDHandler.ExpandFormID(DATA.value.associated);
-            FormIDHandler.ExpandFormID(DATA.value.light);
-            FormIDHandler.ExpandFormID(DATA.value.effectShader);
-            FormIDHandler.ExpandFormID(DATA.value.enchantEffect);
-            FormIDHandler.ExpandFormID(DATA.value.castingSound);
-            FormIDHandler.ExpandFormID(DATA.value.boltSound);
-            FormIDHandler.ExpandFormID(DATA.value.hitSound);
-            FormIDHandler.ExpandFormID(DATA.value.areaSound);
-            }
-
-        void CollapseFormIDs(_FormIDHandler &FormIDHandler)
-            {
-            FormIDHandler.CollapseFormID(DATA.value.associated);
-            FormIDHandler.CollapseFormID(DATA.value.light);
-            FormIDHandler.CollapseFormID(DATA.value.effectShader);
-            FormIDHandler.CollapseFormID(DATA.value.enchantEffect);
-            FormIDHandler.CollapseFormID(DATA.value.castingSound);
-            FormIDHandler.CollapseFormID(DATA.value.boltSound);
-            FormIDHandler.CollapseFormID(DATA.value.hitSound);
-            FormIDHandler.CollapseFormID(DATA.value.areaSound);
+            FormIDs.push_back(&DATA.value.associated);
+            FormIDs.push_back(&DATA.value.light);
+            FormIDs.push_back(&DATA.value.effectShader);
+            FormIDs.push_back(&DATA.value.enchantEffect);
+            FormIDs.push_back(&DATA.value.castingSound);
+            FormIDs.push_back(&DATA.value.boltSound);
+            FormIDs.push_back(&DATA.value.hitSound);
+            FormIDs.push_back(&DATA.value.areaSound);
             }
 
         #ifdef _DEBUG

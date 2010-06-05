@@ -407,12 +407,12 @@ class QUSTRecord : public Record
             Targets.clear();
             }
 
-        void ExpandFormIDs(_FormIDHandler &FormIDHandler)
+        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
             std::pair<unsigned int, unsigned int> CTDAFunction;
             std::map<unsigned int, std::pair<unsigned int,unsigned int>>::const_iterator curCTDAFunction;
             if(SCRI.IsLoaded())
-                FormIDHandler.ExpandFormID(SCRI->fid);
+                FormIDs.push_back(&SCRI->fid);
             for(unsigned int x = 0; x < CTDA.size(); x++)
                 {
                 curCTDAFunction = Function_Arguments.find(CTDA[x]->value.ifunc);
@@ -420,9 +420,9 @@ class QUSTRecord : public Record
                     {
                     CTDAFunction = curCTDAFunction->second;
                     if(CTDAFunction.first == eFID)
-                        FormIDHandler.ExpandFormID(CTDA[x]->value.param1);
+                        FormIDs.push_back(&CTDA[x]->value.param1);
                     if(CTDAFunction.second == eFID)
-                        FormIDHandler.ExpandFormID(CTDA[x]->value.param2);
+                        FormIDs.push_back(&CTDA[x]->value.param2);
                     }
                 }
             for(unsigned int x = 0; x < Stages.size(); x++)
@@ -433,19 +433,19 @@ class QUSTRecord : public Record
                         {
                         curCTDAFunction = Function_Arguments.find(Stages[x]->Entries[y]->CTDA[p]->value.ifunc);
                         if(CTDAFunction.first == eFID)
-                            FormIDHandler.ExpandFormID(Stages[x]->Entries[y]->CTDA[p]->value.param1);
+                            FormIDs.push_back(&Stages[x]->Entries[y]->CTDA[p]->value.param1);
                         if(CTDAFunction.second == eFID)
-                            FormIDHandler.ExpandFormID(Stages[x]->Entries[y]->CTDA[p]->value.param2);
+                            FormIDs.push_back(&Stages[x]->Entries[y]->CTDA[p]->value.param2);
                         }
                     for(unsigned int p = 0; p < Stages[x]->Entries[y]->SCR_.size(); p++)
                         if(Stages[x]->Entries[y]->SCR_[p]->value.isSCRO)
-                            FormIDHandler.ExpandFormID(Stages[x]->Entries[y]->SCR_[p]->value.reference);
+                            FormIDs.push_back(&Stages[x]->Entries[y]->SCR_[p]->value.reference);
                     }
                 }
 
             for(unsigned int x = 0; x < Targets.size(); x++)
                 {
-                FormIDHandler.ExpandFormID(Targets[x]->QSTA.value.targetId);
+                FormIDs.push_back(&Targets[x]->QSTA.value.targetId);
                 for(unsigned int y = 0; y < Targets[x]->CTDA.size(); y++)
                     {
                     curCTDAFunction = Function_Arguments.find(Targets[x]->CTDA[y]->value.ifunc);
@@ -453,63 +453,9 @@ class QUSTRecord : public Record
                         {
                         CTDAFunction = curCTDAFunction->second;
                         if(CTDAFunction.first == eFID)
-                            FormIDHandler.ExpandFormID(Targets[x]->CTDA[y]->value.param1);
+                            FormIDs.push_back(&Targets[x]->CTDA[y]->value.param1);
                         if(CTDAFunction.second == eFID)
-                            FormIDHandler.ExpandFormID(Targets[x]->CTDA[y]->value.param2);
-                        }
-                    }
-                }
-            }
-
-        void CollapseFormIDs(_FormIDHandler &FormIDHandler)
-            {
-            std::pair<unsigned int, unsigned int> CTDAFunction;
-            std::map<unsigned int, std::pair<unsigned int,unsigned int>>::const_iterator curCTDAFunction;
-            if(SCRI.IsLoaded())
-                FormIDHandler.CollapseFormID(SCRI->fid);
-            for(unsigned int x = 0; x < CTDA.size(); x++)
-                {
-                curCTDAFunction = Function_Arguments.find(CTDA[x]->value.ifunc);
-                if(curCTDAFunction != Function_Arguments.end())
-                    {
-                    CTDAFunction = curCTDAFunction->second;
-                    if(CTDAFunction.first == eFID)
-                        FormIDHandler.CollapseFormID(CTDA[x]->value.param1);
-                    if(CTDAFunction.second == eFID)
-                        FormIDHandler.CollapseFormID(CTDA[x]->value.param2);
-                    }
-                }
-            for(unsigned int x = 0; x < Stages.size(); x++)
-                {
-                for(unsigned int y = 0; y < Stages[x]->Entries.size(); y++)
-                    {
-                    for(unsigned int p = 0; p < Stages[x]->Entries[y]->CTDA.size(); p++)
-                        {
-                        curCTDAFunction = Function_Arguments.find(Stages[x]->Entries[y]->CTDA[p]->value.ifunc);
-                        if(CTDAFunction.first == eFID)
-                            FormIDHandler.CollapseFormID(Stages[x]->Entries[y]->CTDA[p]->value.param1);
-                        if(CTDAFunction.second == eFID)
-                            FormIDHandler.CollapseFormID(Stages[x]->Entries[y]->CTDA[p]->value.param2);
-                        }
-                    for(unsigned int p = 0; p < Stages[x]->Entries[y]->SCR_.size(); p++)
-                        if(Stages[x]->Entries[y]->SCR_[p]->value.isSCRO)
-                            FormIDHandler.CollapseFormID(Stages[x]->Entries[y]->SCR_[p]->value.reference);
-                    }
-                }
-
-            for(unsigned int x = 0; x < Targets.size(); x++)
-                {
-                FormIDHandler.CollapseFormID(Targets[x]->QSTA.value.targetId);
-                for(unsigned int y = 0; y < Targets[x]->CTDA.size(); y++)
-                    {
-                    curCTDAFunction = Function_Arguments.find(Targets[x]->CTDA[y]->value.ifunc);
-                    if(curCTDAFunction != Function_Arguments.end())
-                        {
-                        CTDAFunction = curCTDAFunction->second;
-                        if(CTDAFunction.first == eFID)
-                            FormIDHandler.CollapseFormID(Targets[x]->CTDA[y]->value.param1);
-                        if(CTDAFunction.second == eFID)
-                            FormIDHandler.CollapseFormID(Targets[x]->CTDA[y]->value.param2);
+                            FormIDs.push_back(&Targets[x]->CTDA[y]->value.param2);
                         }
                     }
                 }

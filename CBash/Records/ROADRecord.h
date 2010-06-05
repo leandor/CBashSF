@@ -74,9 +74,6 @@ class ROADRecord : public Record
             PGRR.clear();
             }
 
-        void ExpandFormIDs(_FormIDHandler &FormIDHandler) {}
-        void CollapseFormIDs(_FormIDHandler &FormIDHandler) {}
-
         #ifdef _DEBUG
         void Debug(int debugLevel);
         #endif

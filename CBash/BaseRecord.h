@@ -1232,13 +1232,17 @@ class Record
         virtual int DeleteListX2Element(const unsigned int subField, const unsigned int listIndex, const unsigned int listField) {return -1;}
         virtual int DeleteListX3Element(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field) {return -1;}
 
-        int Read(_FormIDHandler &FormIDHandler);
         virtual void Unload() abstract {};
         virtual unsigned int GetSize() abstract {};
         virtual unsigned int GetType() {return eUnknown;}
         virtual char * GetStrType() abstract {}
-        virtual void ExpandFormIDs(_FormIDHandler &FormIDHandler) abstract {};
-        virtual void CollapseFormIDs(_FormIDHandler &FormIDHandler) abstract {};
+        virtual void GetReferencedFormIDs(std::vector<FormID> &FormIDs) {};
+
+        int Read(_FormIDHandler &FormIDHandler);
+        void ExpandFormIDs(_FormIDHandler &FormIDHandler);
+        void CollapseFormIDs(_FormIDHandler &FormIDHandler);
+        unsigned int UpdateReferences(unsigned int origFormID, unsigned int newFormID);
+        
         virtual void CopyFrom(Record *temp) {return;}
         virtual int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer) abstract {};
         int Write(WritableRecord &writeRecord, _FormIDHandler &FormIDHandler);

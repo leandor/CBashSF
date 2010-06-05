@@ -75,16 +75,10 @@ class BSGNRecord : public Record
             SPLO.clear();
             }
 
-        void ExpandFormIDs(_FormIDHandler &FormIDHandler)
+        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
             for(unsigned int x = 0; x < SPLO.size(); x++)
-                FormIDHandler.ExpandFormID(SPLO[x]);
-            }
-
-        void CollapseFormIDs(_FormIDHandler &FormIDHandler)
-            {
-            for(unsigned int x = 0; x < SPLO.size(); x++)
-                FormIDHandler.CollapseFormID(SPLO[x]);
+                FormIDs.push_back(SPLO[x]);
             }
 
         #ifdef _DEBUG

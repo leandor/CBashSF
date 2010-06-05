@@ -112,6 +112,7 @@ class Collection
         ModFile *LookupModFile(char *ModName);
         char * GetModName(const unsigned int iIndex);
         unsigned int GetCorrectedFID(char *ModName, unsigned int recordObjectID);
+        unsigned int UpdateReferencingRecords(char *ModName, unsigned int origFormID, unsigned int newFormID);
         int GetModIndex(const char *ModName);
 
 

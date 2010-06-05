@@ -128,16 +128,10 @@ class AMMORecord : public Record
             DATA.Unload();
             }
 
-        void ExpandFormIDs(_FormIDHandler &FormIDHandler)
+        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
             if(ENAM.IsLoaded())
-                FormIDHandler.ExpandFormID(ENAM->fid);
-            }
-
-        void CollapseFormIDs(_FormIDHandler &FormIDHandler)
-            {
-            if(ENAM.IsLoaded())
-                FormIDHandler.CollapseFormID(ENAM->fid);
+                FormIDs.push_back(&ENAM->fid);
             }
 
         #ifdef _DEBUG

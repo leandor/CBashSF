@@ -182,15 +182,10 @@ class PGRDRecord : public Record
             PGRL.clear();
             }
 
-        void ExpandFormIDs(_FormIDHandler &FormIDHandler)
+        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
             for(unsigned int x = 0; x < PGRL.size(); x++)
-                FormIDHandler.ExpandFormID(PGRL[x]->points[0]);
-            }
-        void CollapseFormIDs(_FormIDHandler &FormIDHandler)
-            {
-            for(unsigned int x = 0; x < PGRL.size(); x++)
-                FormIDHandler.CollapseFormID(PGRL[x]->points[0]);
+                FormIDs.push_back(&PGRL[x]->points[0]);
             }
 
         #ifdef _DEBUG

@@ -577,6 +577,70 @@ void ModFile::ExpandFormIDs()
     EFSH.ExpandFormIDs(FormIDHandler);
     }
 
+unsigned int ModFile::UpdateReferencingRecords(unsigned int origFormID, unsigned int newFormID)
+    {
+    unsigned int count = 0;
+    if(IsDummy)
+        return count;
+    count += GMST.UpdateReferencingRecords(origFormID, newFormID);
+    count += GLOB.UpdateReferencingRecords(origFormID, newFormID);
+    count += CLAS.UpdateReferencingRecords(origFormID, newFormID);
+    count += FACT.UpdateReferencingRecords(origFormID, newFormID);
+    count += HAIR.UpdateReferencingRecords(origFormID, newFormID);
+    count += EYES.UpdateReferencingRecords(origFormID, newFormID);
+    count += RACE.UpdateReferencingRecords(origFormID, newFormID);
+    count += SOUN.UpdateReferencingRecords(origFormID, newFormID);
+    count += SKIL.UpdateReferencingRecords(origFormID, newFormID);
+    count += MGEF.UpdateReferencingRecords(origFormID, newFormID);
+    count += SCPT.UpdateReferencingRecords(origFormID, newFormID);
+    count += LTEX.UpdateReferencingRecords(origFormID, newFormID);
+    count += ENCH.UpdateReferencingRecords(origFormID, newFormID);
+    count += SPEL.UpdateReferencingRecords(origFormID, newFormID);
+    count += BSGN.UpdateReferencingRecords(origFormID, newFormID);
+    count += ACTI.UpdateReferencingRecords(origFormID, newFormID);
+    count += APPA.UpdateReferencingRecords(origFormID, newFormID);
+    count += ARMO.UpdateReferencingRecords(origFormID, newFormID);
+    count += BOOK.UpdateReferencingRecords(origFormID, newFormID);
+    count += CLOT.UpdateReferencingRecords(origFormID, newFormID);
+    count += CONT.UpdateReferencingRecords(origFormID, newFormID);
+    count += DOOR.UpdateReferencingRecords(origFormID, newFormID);
+    count += INGR.UpdateReferencingRecords(origFormID, newFormID);
+    count += LIGH.UpdateReferencingRecords(origFormID, newFormID);
+    count += MISC.UpdateReferencingRecords(origFormID, newFormID);
+    count += STAT.UpdateReferencingRecords(origFormID, newFormID);
+    count += GRAS.UpdateReferencingRecords(origFormID, newFormID);
+    count += TREE.UpdateReferencingRecords(origFormID, newFormID);
+    count += FLOR.UpdateReferencingRecords(origFormID, newFormID);
+    count += FURN.UpdateReferencingRecords(origFormID, newFormID);
+    count += WEAP.UpdateReferencingRecords(origFormID, newFormID);
+    count += AMMO.UpdateReferencingRecords(origFormID, newFormID);
+    count += NPC_.UpdateReferencingRecords(origFormID, newFormID);
+    count += CREA.UpdateReferencingRecords(origFormID, newFormID);
+    count += LVLC.UpdateReferencingRecords(origFormID, newFormID);
+    count += SLGM.UpdateReferencingRecords(origFormID, newFormID);
+    count += KEYM.UpdateReferencingRecords(origFormID, newFormID);
+    count += ALCH.UpdateReferencingRecords(origFormID, newFormID);
+    count += SBSP.UpdateReferencingRecords(origFormID, newFormID);
+    count += SGST.UpdateReferencingRecords(origFormID, newFormID);
+    count += LVLI.UpdateReferencingRecords(origFormID, newFormID);
+    count += WTHR.UpdateReferencingRecords(origFormID, newFormID);
+    count += CLMT.UpdateReferencingRecords(origFormID, newFormID);
+    count += REGN.UpdateReferencingRecords(origFormID, newFormID);
+    count += CELL.UpdateReferencingRecords(origFormID, newFormID);
+    count += WRLD.UpdateReferencingRecords(origFormID, newFormID);
+    count += DIAL.UpdateReferencingRecords(origFormID, newFormID);
+    count += QUST.UpdateReferencingRecords(origFormID, newFormID);
+    count += IDLE.UpdateReferencingRecords(origFormID, newFormID);
+    count += PACK.UpdateReferencingRecords(origFormID, newFormID);
+    count += CSTY.UpdateReferencingRecords(origFormID, newFormID);
+    count += LSCR.UpdateReferencingRecords(origFormID, newFormID);
+    count += LVSP.UpdateReferencingRecords(origFormID, newFormID);
+    count += ANIO.UpdateReferencingRecords(origFormID, newFormID);
+    count += WATR.UpdateReferencingRecords(origFormID, newFormID);
+    count += EFSH.UpdateReferencingRecords(origFormID, newFormID);
+    return count;
+    }
+
 int ModFile::Save(FileBuffer &buffer, bool CloseMod)
     {
     unsigned int formCount = 0;

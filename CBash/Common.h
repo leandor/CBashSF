@@ -94,7 +94,7 @@ struct RecordField
     {
     T value;
     bool isLoaded;
-    RecordField():isLoaded(false) {}
+    RecordField():isLoaded(false),value() {}
     unsigned int GetSize() const
         {return sizeof(T);}
     bool IsLoaded() const
@@ -141,7 +141,7 @@ template<class T>
 struct ReqRecordField
     {
     T value;
-    ReqRecordField() {}
+    ReqRecordField():value() {}
     unsigned int GetSize() const
         {return sizeof(T);}
     bool IsLoaded() const

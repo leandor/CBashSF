@@ -143,18 +143,11 @@ class SPELRecord : public Record
             Effects.clear();
             }
 
-        void ExpandFormIDs(_FormIDHandler &FormIDHandler)
+        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
             for(unsigned int x = 0; x < Effects.size(); x++)
                 if(Effects[x]->SCIT.IsLoaded())
-                    FormIDHandler.ExpandFormID(Effects[x]->SCIT->script);
-            }
-
-        void CollapseFormIDs(_FormIDHandler &FormIDHandler)
-            {
-            for(unsigned int x = 0; x < Effects.size(); x++)
-                if(Effects[x]->SCIT.IsLoaded())
-                    FormIDHandler.CollapseFormID(Effects[x]->SCIT->script);
+                    FormIDs.push_back(&Effects[x]->SCIT->script);
             }
 
         #ifdef _DEBUG

@@ -54,6 +54,12 @@ int LVSPRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 break;
             case eLVLD:
                 LVLD.Read(buffer, subSize, curPos);
+                if((LVLD.value.chanceNone & fAltCalcFromAllLevels) != 0)
+                    {
+                    LVLD.value.chanceNone &= ~fAltCalcFromAllLevels;
+                    LVLF.isLoaded = true;
+                    IsCalcFromAllLevels(true);
+                    }
                 break;
             case eLVLF:
                 LVLF.Read(buffer, subSize, curPos);

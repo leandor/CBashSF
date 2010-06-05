@@ -65,8 +65,8 @@ int LVLIRecord::GetOtherFieldType(const unsigned int Field)
             return UNKNOWN_FIELD;
         case 10: //entries
             return LIST_FIELD;
-        case 11: //data_p
-            return BYTES_FIELD;
+        //case 11: //data_p
+        //    return BYTES_FIELD;
         default:
             return UNKNOWN_FIELD;
         }
@@ -87,29 +87,29 @@ void * LVLIRecord::GetOtherField(const unsigned int Field)
         }
     }
 
-unsigned int LVLIRecord::GetFieldArraySize(const unsigned int Field)
-    {
-    switch(Field)
-        {
-        case 11: //data_p
-            return DATA.size;
-        default:
-            return 0;
-        }
-    }
+//unsigned int LVLIRecord::GetFieldArraySize(const unsigned int Field)
+//    {
+//    switch(Field)
+//        {
+//        case 11: //data_p
+//            return DATA.size;
+//        default:
+//            return 0;
+//        }
+//    }
 
-void LVLIRecord::GetFieldArray(const unsigned int Field, void **FieldValues)
-    {
-    switch(Field)
-        {
-        case 11: //data_p
-            *FieldValues = DATA.value;
-            return;
-        default:
-            *FieldValues = NULL;
-            return;
-        }
-    }
+//void LVLIRecord::GetFieldArray(const unsigned int Field, void **FieldValues)
+//    {
+//    switch(Field)
+//        {
+//        case 11: //data_p
+//            *FieldValues = DATA.value;
+//            return;
+//        default:
+//            *FieldValues = NULL;
+//            return;
+//        }
+//    }
 
 int LVLIRecord::GetListFieldType(const unsigned int subField, const unsigned int listField)
     {
@@ -237,6 +237,12 @@ void LVLIRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
         case 6: //chanceNone
             LVLD.value.chanceNone = FieldValue;
             LVLD.isLoaded = true;
+            if((LVLD.value.chanceNone & fAltCalcFromAllLevels) != 0)
+                {
+                LVLD.value.chanceNone &= ~fAltCalcFromAllLevels;
+                LVLF.isLoaded = true;
+                IsCalcFromAllLevels(true);
+                }
             break;
         case 7: //flags
             LVLF.value.flags = FieldValue;
@@ -327,16 +333,16 @@ void LVLIRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void LVLIRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
-    {
-    switch(Field)
-        {
-        case 11: //data_p
-            DATA.Copy(FieldValue, nSize);
-            break;
-        default:
-            return;
-        }
-    return;
-    }
+//void LVLIRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
+//    {
+//    switch(Field)
+//        {
+//        case 11: //data_p
+//            DATA.Copy(FieldValue, nSize);
+//            break;
+//        default:
+//            return;
+//        }
+//    return;
+//    }
 

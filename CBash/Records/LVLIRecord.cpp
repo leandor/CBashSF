@@ -32,6 +32,7 @@ int LVLIRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
     unsigned int subSize = 0;
     unsigned int curPos = 0;
     ReqRecordField<LVLLVLO> *newEntry = NULL;
+    ReqRecordField<unsigned char> DATA;
     while(curPos < recSize){
         _readBuffer(&subType,buffer,4,curPos);
         switch(subType)
@@ -54,6 +55,12 @@ int LVLIRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 break;
             case eLVLD:
                 LVLD.Read(buffer, subSize, curPos);
+                if((LVLD.value.chanceNone & fAltCalcFromAllLevels) != 0)
+                    {
+                    LVLD.value.chanceNone &= ~fAltCalcFromAllLevels;
+                    LVLF.isLoaded = true;
+                    IsCalcFromAllLevels(true);
+                    }
                 break;
             case eLVLF:
                 LVLF.Read(buffer, subSize, curPos);
@@ -65,6 +72,11 @@ int LVLIRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 break;
             case eDATA:
                 DATA.Read(buffer, subSize, curPos);
+                if(DATA.value != 0)
+                    {
+                    LVLF.isLoaded = true;
+                    IsCalcForEachItem(true);
+                    }
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
@@ -98,8 +110,8 @@ unsigned int LVLIRecord::GetSize()
         for(unsigned int p = 0; p < Entries.size(); p++)
             if(Entries[p]->IsLoaded())
                 TotSize += Entries[p]->GetSize() + 6;
-    if(DATA.IsLoaded())
-        TotSize += DATA.GetSize() + 6;
+    //if(DATA.IsLoaded())
+    //    TotSize += DATA.GetSize() + 6;
     return TotSize;
     }
 
@@ -116,8 +128,8 @@ int LVLIRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
             if(Entries[p]->IsLoaded())
                 _writeSubRecord(buffer, eLVLO, Entries[p]->GetSize(), &Entries[p]->value, usedBuffer);
 
-    if(DATA.IsLoaded())
-        _writeSubRecord(buffer, eDATA, DATA.GetSize(), DATA.value, usedBuffer);
+    //if(DATA.IsLoaded())
+    //    _writeSubRecord(buffer, eDATA, DATA.GetSize(), DATA.value, usedBuffer);
     return -1;
     }
 
@@ -156,6 +168,6 @@ void LVLIRecord::Debug(int debugLevel)
         indentation -= 2;
         }
 
-    DATA.Debug("DATA", debugLevel, indentation);
+    //DATA.Debug("DATA", debugLevel, indentation);
     }
 #endif

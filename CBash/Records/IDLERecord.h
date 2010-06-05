@@ -143,7 +143,7 @@ class IDLERecord : public Record
             DATA.Unload();
             }
 
-        void ExpandFormIDs(_FormIDHandler &FormIDHandler)
+        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
             std::pair<unsigned int, unsigned int> CTDAFunction;
             std::map<unsigned int, std::pair<unsigned int,unsigned int>>::const_iterator curCTDAFunction;
@@ -154,32 +154,13 @@ class IDLERecord : public Record
                     {
                     CTDAFunction = curCTDAFunction->second;
                     if(CTDAFunction.first == eFID)
-                        FormIDHandler.ExpandFormID(CTDA[x]->value.param1);
+                        FormIDs.push_back(&CTDA[x]->value.param1);
                     if(CTDAFunction.second == eFID)
-                        FormIDHandler.ExpandFormID(CTDA[x]->value.param2);
+                        FormIDs.push_back(&CTDA[x]->value.param2);
                     }
                 }
-            FormIDHandler.ExpandFormID(DATA.value.parent);
-            FormIDHandler.ExpandFormID(DATA.value.prevId);
-            }
-        void CollapseFormIDs(_FormIDHandler &FormIDHandler)
-            {
-            std::pair<unsigned int, unsigned int> CTDAFunction;
-            std::map<unsigned int, std::pair<unsigned int,unsigned int>>::const_iterator curCTDAFunction;
-            for(unsigned int x = 0; x < CTDA.size(); x++)
-                {
-                curCTDAFunction = Function_Arguments.find(CTDA[x]->value.ifunc);
-                if(curCTDAFunction != Function_Arguments.end())
-                    {
-                    CTDAFunction = curCTDAFunction->second;
-                    if(CTDAFunction.first == eFID)
-                        FormIDHandler.CollapseFormID(CTDA[x]->value.param1);
-                    if(CTDAFunction.second == eFID)
-                        FormIDHandler.CollapseFormID(CTDA[x]->value.param2);
-                    }
-                }
-            FormIDHandler.CollapseFormID(DATA.value.parent);
-            FormIDHandler.CollapseFormID(DATA.value.prevId);
+            FormIDs.push_back(&DATA.value.parent);
+            FormIDs.push_back(&DATA.value.prevId);
             }
 
         #ifdef _DEBUG

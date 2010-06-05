@@ -114,6 +114,15 @@ class GRUPRecords
                 }
             return;
             }
+        unsigned int UpdateReferencingRecords(unsigned int origFormID, unsigned int newFormID)
+            {
+            unsigned int count = 0;
+            for(unsigned int p = 0; p < Records.size(); p++)
+                {
+                count += Records[p]->UpdateReferences(origFormID, newFormID);
+                }
+            return count;
+            }
         unsigned int WriteGRUP(unsigned int TopLabel, FileBuffer &buffer, bool CloseMod, _FormIDHandler &FormIDHandler)
             {
             unsigned int numRecords = (unsigned int)Records.size();
@@ -304,6 +313,19 @@ class GRUPRecords<DIALRecord>
                     curRecord->INFO[x]->ExpandFormIDs(FormIDHandler);
                 }
             return;
+            }
+        unsigned int UpdateReferencingRecords(unsigned int origFormID, unsigned int newFormID)
+            {
+            unsigned int count = 0;
+            DIALRecord * curRecord = NULL;
+            for(unsigned int p = 0; p < Records.size(); p++)
+                {
+                curRecord = Records[p];
+                count += curRecord->UpdateReferences(origFormID, newFormID);
+                for(unsigned int x = 0; x < curRecord->INFO.size(); ++x)
+                    count += curRecord->INFO[x]->UpdateReferences(origFormID, newFormID);
+                }
+            return count;
             }
         unsigned int WriteGRUP(FileBuffer &buffer, bool CloseMod, _FormIDHandler &FormIDHandler)
             {
@@ -629,6 +651,25 @@ class GRUPRecords<CELLRecord>
                     curRecord->PGRD->ExpandFormIDs(FormIDHandler);
                 }
             return;
+            }
+        unsigned int UpdateReferencingRecords(unsigned int origFormID, unsigned int newFormID)
+            {
+            unsigned int count = 0;
+            CELLRecord *curRecord = NULL;
+            for(unsigned int p = 0; p < Records.size(); p++)
+                {
+                curRecord = Records[p];
+                count += curRecord->UpdateReferences(origFormID, newFormID);
+                for(unsigned int x = 0; x < curRecord->ACHR.size(); ++x)
+                    count += curRecord->ACHR[x]->UpdateReferences(origFormID, newFormID);
+                for(unsigned int x = 0; x < curRecord->ACRE.size(); ++x)
+                    count += curRecord->ACRE[x]->UpdateReferences(origFormID, newFormID);
+                for(unsigned int x = 0; x < curRecord->REFR.size(); ++x)
+                    count += curRecord->REFR[x]->UpdateReferences(origFormID, newFormID);
+                if(curRecord->PGRD != NULL)
+                    count += curRecord->PGRD->UpdateReferences(origFormID, newFormID);
+                }
+            return count;
             }
         unsigned int WriteGRUP(FileBuffer &buffer, bool CloseMod, _FormIDHandler &FormIDHandler)
             {
@@ -1363,6 +1404,51 @@ class GRUPRecords<WRLDRecord>
                     }
                 }
             return;
+            }
+
+        unsigned int UpdateReferencingRecords(unsigned int origFormID, unsigned int newFormID)
+            {
+            unsigned int count = 0;
+            WRLDRecord *curWRLDRecord = NULL;
+            CELLRecord *curCELLRecord = NULL;
+            for(unsigned int p = 0; p < Records.size(); p++)
+                {
+                curWRLDRecord = Records[p];
+                count += curWRLDRecord->UpdateReferences(origFormID, newFormID);
+                if(curWRLDRecord->ROAD != NULL)
+                    count += curWRLDRecord->ROAD->UpdateReferences(origFormID, newFormID);
+                if(curWRLDRecord->CELL != NULL)
+                    {
+                    curCELLRecord = curWRLDRecord->CELL;
+                    count += curCELLRecord->UpdateReferences(origFormID, newFormID);
+                    for(unsigned int y = 0; y < curCELLRecord->ACHR.size(); ++y)
+                        count += curCELLRecord->ACHR[y]->UpdateReferences(origFormID, newFormID);
+                    for(unsigned int y = 0; y < curCELLRecord->ACRE.size(); ++y)
+                        count += curCELLRecord->ACRE[y]->UpdateReferences(origFormID, newFormID);
+                    for(unsigned int y = 0; y < curCELLRecord->REFR.size(); ++y)
+                        count += curCELLRecord->REFR[y]->UpdateReferences(origFormID, newFormID);
+                    if(curCELLRecord->PGRD != NULL)
+                        count += curCELLRecord->PGRD->UpdateReferences(origFormID, newFormID);
+                    if(curCELLRecord->LAND != NULL)
+                        count += curCELLRecord->LAND->UpdateReferences(origFormID, newFormID);
+                    }
+                for(unsigned int x = 0; x < curWRLDRecord->CELLS.size(); x++)
+                    {
+                    curCELLRecord = curWRLDRecord->CELLS[x];
+                    count += curCELLRecord->UpdateReferences(origFormID, newFormID);
+                    for(unsigned int y = 0; y < curCELLRecord->ACHR.size(); ++y)
+                        count += curCELLRecord->ACHR[y]->UpdateReferences(origFormID, newFormID);
+                    for(unsigned int y = 0; y < curCELLRecord->ACRE.size(); ++y)
+                        count += curCELLRecord->ACRE[y]->UpdateReferences(origFormID, newFormID);
+                    for(unsigned int y = 0; y < curCELLRecord->REFR.size(); ++y)
+                        count += curCELLRecord->REFR[y]->UpdateReferences(origFormID, newFormID);
+                    if(curCELLRecord->PGRD != NULL)
+                        count += curCELLRecord->PGRD->UpdateReferences(origFormID, newFormID);
+                    if(curCELLRecord->LAND != NULL)
+                        count += curCELLRecord->LAND->UpdateReferences(origFormID, newFormID);
+                    }
+                }
+            return count;
             }
 
         unsigned int WriteGRUP(FileBuffer &buffer, bool CloseMod, _FormIDHandler &FormIDHandler)

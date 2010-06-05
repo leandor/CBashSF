@@ -106,32 +106,18 @@ class DOORRecord : public Record
             TNAM.clear();
             }
 
-        void ExpandFormIDs(_FormIDHandler &FormIDHandler)
+        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
             if(SCRI.IsLoaded())
-                FormIDHandler.ExpandFormID(SCRI->fid);
+                FormIDs.push_back(&SCRI->fid);
             if(SNAM.IsLoaded())
-                FormIDHandler.ExpandFormID(SNAM->fid);
+                FormIDs.push_back(&SNAM->fid);
             if(ANAM.IsLoaded())
-                FormIDHandler.ExpandFormID(ANAM->fid);
+                FormIDs.push_back(&ANAM->fid);
             if(BNAM.IsLoaded())
-                FormIDHandler.ExpandFormID(BNAM->fid);
+                FormIDs.push_back(&BNAM->fid);
             for(unsigned int x = 0; x < TNAM.size(); x++)
-                FormIDHandler.ExpandFormID(TNAM[x]);
-            }
-
-        void CollapseFormIDs(_FormIDHandler &FormIDHandler)
-            {
-            if(SCRI.IsLoaded())
-                FormIDHandler.CollapseFormID(SCRI->fid);
-            if(SNAM.IsLoaded())
-                FormIDHandler.CollapseFormID(SNAM->fid);
-            if(ANAM.IsLoaded())
-                FormIDHandler.CollapseFormID(ANAM->fid);
-            if(BNAM.IsLoaded())
-                FormIDHandler.CollapseFormID(BNAM->fid);
-            for(unsigned int x = 0; x < TNAM.size(); x++)
-                FormIDHandler.CollapseFormID(TNAM[x]);
+                FormIDs.push_back(TNAM[x]);
             }
 
         #ifdef _DEBUG

@@ -362,17 +362,17 @@ class INFORecord : public Record
             SCR_.clear();
             }
 
-        void ExpandFormIDs(_FormIDHandler &FormIDHandler)
+        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
             std::pair<unsigned int, unsigned int> CTDAFunction;
             std::map<unsigned int, std::pair<unsigned int,unsigned int>>::const_iterator curCTDAFunction;
-            FormIDHandler.ExpandFormID(QSTI.value.fid);
+            FormIDs.push_back(&QSTI.value.fid);
             if(TPIC.IsLoaded())
-                FormIDHandler.ExpandFormID(TPIC->fid);
+                FormIDs.push_back(&TPIC->fid);
             if(PNAM.IsLoaded())
-                FormIDHandler.ExpandFormID(PNAM->fid);
+                FormIDs.push_back(&PNAM->fid);
             for(unsigned int x = 0; x < NAME.size(); x++)
-                FormIDHandler.ExpandFormID(NAME[x]);
+                FormIDs.push_back(NAME[x]);
             for(unsigned int x = 0; x < CTDA.size(); x++)
                 {
                 curCTDAFunction = Function_Arguments.find(CTDA[x]->value.ifunc);
@@ -380,49 +380,18 @@ class INFORecord : public Record
                     {
                     CTDAFunction = curCTDAFunction->second;
                     if(CTDAFunction.first == eFID)
-                        FormIDHandler.ExpandFormID(CTDA[x]->value.param1);
+                        FormIDs.push_back(&CTDA[x]->value.param1);
                     if(CTDAFunction.second == eFID)
-                        FormIDHandler.ExpandFormID(CTDA[x]->value.param2);
+                        FormIDs.push_back(&CTDA[x]->value.param2);
                     }
                 }
             for(unsigned int x = 0; x < TCLT.size(); x++)
-                FormIDHandler.ExpandFormID(TCLT[x]);
+                FormIDs.push_back(TCLT[x]);
             for(unsigned int x = 0; x < TCLF.size(); x++)
-                FormIDHandler.ExpandFormID(TCLF[x]);
+                FormIDs.push_back(TCLF[x]);
             for(unsigned int x = 0; x < SCR_.size(); x++)
                 if(SCR_[x]->value.isSCRO)
-                    FormIDHandler.ExpandFormID(SCR_[x]->value.reference);
-            }
-        void CollapseFormIDs(_FormIDHandler &FormIDHandler)
-            {
-            std::pair<unsigned int, unsigned int> CTDAFunction;
-            std::map<unsigned int, std::pair<unsigned int,unsigned int>>::const_iterator curCTDAFunction;
-            FormIDHandler.CollapseFormID(QSTI.value.fid);
-            if(TPIC.IsLoaded())
-                FormIDHandler.CollapseFormID(TPIC->fid);
-            if(PNAM.IsLoaded())
-                FormIDHandler.CollapseFormID(PNAM->fid);
-            for(unsigned int x = 0; x < NAME.size(); x++)
-                FormIDHandler.CollapseFormID(NAME[x]);
-            for(unsigned int x = 0; x < CTDA.size(); x++)
-                {
-                curCTDAFunction = Function_Arguments.find(CTDA[x]->value.ifunc);
-                if(curCTDAFunction != Function_Arguments.end())
-                    {
-                    CTDAFunction = curCTDAFunction->second;
-                    if(CTDAFunction.first == eFID)
-                        FormIDHandler.CollapseFormID(CTDA[x]->value.param1);
-                    if(CTDAFunction.second == eFID)
-                        FormIDHandler.CollapseFormID(CTDA[x]->value.param2);
-                    }
-                }
-            for(unsigned int x = 0; x < TCLT.size(); x++)
-                FormIDHandler.CollapseFormID(TCLT[x]);
-            for(unsigned int x = 0; x < TCLF.size(); x++)
-                FormIDHandler.CollapseFormID(TCLF[x]);
-            for(unsigned int x = 0; x < SCR_.size(); x++)
-                if(SCR_[x]->value.isSCRO)
-                    FormIDHandler.CollapseFormID(SCR_[x]->value.reference);
+                    FormIDs.push_back(&SCR_[x]->value.reference);
             }
 
         #ifdef _DEBUG

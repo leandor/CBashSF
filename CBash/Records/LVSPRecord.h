@@ -143,16 +143,10 @@ class LVSPRecord : public Record
             Entries.clear();
             }
 
-        void ExpandFormIDs(_FormIDHandler &FormIDHandler)
+        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
             for(unsigned int x = 0; x < Entries.size(); x++)
-                FormIDHandler.ExpandFormID(Entries[x]->value.listId);
-            }
-
-        void CollapseFormIDs(_FormIDHandler &FormIDHandler)
-            {
-            for(unsigned int x = 0; x < Entries.size(); x++)
-                FormIDHandler.CollapseFormID(Entries[x]->value.listId);
+                FormIDs.push_back(&Entries[x]->value.listId);
             }
 
         #ifdef _DEBUG
@@ -182,51 +176,25 @@ class LVSPRecord : public Record
 
         bool IsCalcFromAllLevels()
             {
-            if(!LVLF.IsLoaded())
-                if(!LVLD.IsLoaded())
-                    return false;
-                else
-                    return (LVLD.value.chanceNone & fAltCalcFromAllLevels) != 0;
-            else
-                if(!LVLD.IsLoaded())
-                    return (LVLF.value.flags & fCalcFromAllLevels) != 0;
-                else
-                    return ((LVLF.value.flags & fCalcFromAllLevels) != 0) || ((LVLD.value.chanceNone & fAltCalcFromAllLevels) != 0);
+            if(!LVLF.IsLoaded()) return false;
+            return (LVLF.value.flags & fCalcFromAllLevels) != 0;
             }
         void IsCalcFromAllLevels(bool value)
             {
-            if(!LVLF.IsLoaded())
-                if(!LVLD.IsLoaded())
-                    return;
-                else
-                    if(value)
-                        LVLD.value.chanceNone |= fAltCalcFromAllLevels;
-                    else
-                        LVLD.value.chanceNone &= ~fAltCalcFromAllLevels;
+            if(!LVLF.IsLoaded()) return;
+            if(value)
+                LVLF.value.flags |= fCalcFromAllLevels;
             else
-                if(!LVLD.IsLoaded())
-                    if(value)
-                        LVLF.value.flags |= fCalcFromAllLevels;
-                    else
-                        LVLF.value.flags &= ~fCalcFromAllLevels;
-                else
-                    if(value)
-                        {
-                        LVLF.value.flags |= fCalcFromAllLevels;
-                        LVLD.value.chanceNone &= ~fAltCalcFromAllLevels;
-                        }
-                    else
-                        {
-                        LVLF.value.flags &= ~fCalcFromAllLevels;
-                        LVLD.value.chanceNone &= ~fAltCalcFromAllLevels;
-                        }
+                LVLF.value.flags &= ~fCalcFromAllLevels;
             }
         bool IsCalcForEachItem()
             {
+            if(!LVLF.IsLoaded()) return false;
             return (LVLF.value.flags & fCalcForEachItem) != 0;
             }
         void IsCalcForEachItem(bool value)
             {
+            if(!LVLF.IsLoaded()) return;
             if(value)
                 LVLF.value.flags |= fCalcForEachItem;
             else
@@ -234,10 +202,12 @@ class LVSPRecord : public Record
             }
         bool IsUseAllSpells()
             {
+            if(!LVLF.IsLoaded()) return false;
             return (LVLF.value.flags & fUseAllSpells) != 0;
             }
         void IsUseAllSpells(bool value)
             {
+            if(!LVLF.IsLoaded()) return;
             if(value)
                 LVLF.value.flags |= fUseAllSpells;
             else
@@ -245,6 +215,7 @@ class LVSPRecord : public Record
             }
         bool IsFlagMask(unsigned char Mask, bool Exact=false)
             {
+            if(!LVLF.IsLoaded()) return false;
             if(Exact)
                 return (LVLF.value.flags & Mask) == Mask;
             else
@@ -252,6 +223,7 @@ class LVSPRecord : public Record
             }
         void SetFlagMask(unsigned char Mask)
             {
+            LVLF.isLoaded = true;
             LVLF.value.flags = Mask;
             }
     };

@@ -61,11 +61,12 @@ int Collection::AddMod(const char *ModName, bool CreateIfNotExist, bool DummyLoa
     //Prevent loading mods more than once
     if(IsModAdded(ModName))
         return -1;
-    if(DummyLoad || CreateIfNotExist || FileExists(ModName))
+    bool exists = FileExists(ModName);
+    if(exists || DummyLoad || CreateIfNotExist)
         {
         char *FileName = new char[strlen(ModName)+1];
         strcpy_s(FileName, strlen(ModName)+1, ModName);
-        ModFiles.push_back(new ModFile(FileName, CreateIfNotExist, DummyLoad));
+        ModFiles.push_back(new ModFile(FileName, !exists, DummyLoad));
         return 0;
         }
     else
@@ -1021,6 +1022,14 @@ unsigned int Collection::GetCorrectedFID(char *ModName, unsigned int recordObjec
     if(curModFile == NULL)
         return 0;
     return curModFile->FormIDHandler.AssignToMod(recordObjectID);
+    }
+
+unsigned int Collection::UpdateReferencingRecords(char *ModName, unsigned int origFormID, unsigned int newFormID)
+    {
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return curModFile->UpdateReferencingRecords(origFormID, newFormID);
     }
 
 int Collection::GetModIndex(const char *ModName)

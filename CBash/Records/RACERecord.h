@@ -581,36 +581,20 @@ class RACERecord : public Record
             SNAM.Unload();
             }
 
-        void ExpandFormIDs(_FormIDHandler &FormIDHandler)
+        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
             for(unsigned int x = 0; x < SPLO.size(); x++)
-                FormIDHandler.ExpandFormID(SPLO[x]);
+                FormIDs.push_back(SPLO[x]);
             for(unsigned int x = 0; x < XNAM.size(); x++)
-                FormIDHandler.ExpandFormID(XNAM[x]->value.faction);
-            FormIDHandler.ExpandFormID(VNAM.value.femaleVoice);
-            FormIDHandler.ExpandFormID(VNAM.value.maleVoice);
-            FormIDHandler.ExpandFormID(DNAM.value.defaultHairFemale);
-            FormIDHandler.ExpandFormID(DNAM.value.defaultHairMale);
+                FormIDs.push_back(&XNAM[x]->value.faction);
+            FormIDs.push_back(&VNAM.value.femaleVoice);
+            FormIDs.push_back(&VNAM.value.maleVoice);
+            FormIDs.push_back(&DNAM.value.defaultHairFemale);
+            FormIDs.push_back(&DNAM.value.defaultHairMale);
             for(unsigned int x = 0; x < HNAM.size(); x++)
-                FormIDHandler.ExpandFormID(HNAM[x]);
+                FormIDs.push_back(&HNAM[x]);
             for(unsigned int x = 0; x < ENAM.size(); x++)
-                FormIDHandler.ExpandFormID(ENAM[x]);
-            }
-
-        void CollapseFormIDs(_FormIDHandler &FormIDHandler)
-            {
-            for(unsigned int x = 0; x < SPLO.size(); x++)
-                FormIDHandler.CollapseFormID(SPLO[x]);
-            for(unsigned int x = 0; x < XNAM.size(); x++)
-                FormIDHandler.CollapseFormID(XNAM[x]->value.faction);
-            FormIDHandler.CollapseFormID(VNAM.value.femaleVoice);
-            FormIDHandler.CollapseFormID(VNAM.value.maleVoice);
-            FormIDHandler.CollapseFormID(DNAM.value.defaultHairFemale);
-            FormIDHandler.CollapseFormID(DNAM.value.defaultHairMale);
-            for(unsigned int x = 0; x < HNAM.size(); x++)
-                FormIDHandler.CollapseFormID(HNAM[x]);
-            for(unsigned int x = 0; x < ENAM.size(); x++)
-                FormIDHandler.CollapseFormID(ENAM[x]);
+                FormIDs.push_back(&ENAM[x]);
             }
 
         #ifdef _DEBUG

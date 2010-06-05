@@ -132,28 +132,16 @@ class CONTRecord : public Record
             QNAM.Unload();
             }
 
-        void ExpandFormIDs(_FormIDHandler &FormIDHandler)
+        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
             if(SCRI.IsLoaded())
-                FormIDHandler.ExpandFormID(SCRI->fid);
+                FormIDs.push_back(&SCRI->fid);
             for(unsigned int x = 0; x < CNTO.size(); x++)
-                FormIDHandler.ExpandFormID(CNTO[x]->value.item);
+                FormIDs.push_back(&CNTO[x]->value.item);
             if(SNAM.IsLoaded())
-                FormIDHandler.ExpandFormID(SNAM->fid);
+                FormIDs.push_back(&SNAM->fid);
             if(QNAM.IsLoaded())
-                FormIDHandler.ExpandFormID(QNAM->fid);
-            }
-
-        void CollapseFormIDs(_FormIDHandler &FormIDHandler)
-            {
-            if(SCRI.IsLoaded())
-                FormIDHandler.CollapseFormID(SCRI->fid);
-            for(unsigned int x = 0; x < CNTO.size(); x++)
-                FormIDHandler.CollapseFormID(CNTO[x]->value.item);
-            if(SNAM.IsLoaded())
-                FormIDHandler.CollapseFormID(SNAM->fid);
-            if(QNAM.IsLoaded())
-                FormIDHandler.CollapseFormID(QNAM->fid);
+                FormIDs.push_back(&QNAM->fid);
             }
 
         #ifdef _DEBUG

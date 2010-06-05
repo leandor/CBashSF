@@ -300,9 +300,6 @@ class CSTYRecord : public Record
             CSAD.Unload();
             }
 
-        void ExpandFormIDs(_FormIDHandler &FormIDHandler) {}
-        void CollapseFormIDs(_FormIDHandler &FormIDHandler) {}
-
         #ifdef _DEBUG
         void Debug(int debugLevel);
         #endif

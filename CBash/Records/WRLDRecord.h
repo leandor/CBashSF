@@ -176,24 +176,16 @@ class WRLDRecord : public Record
             OFST.Unload();
             }
 
-        void ExpandFormIDs(_FormIDHandler &FormIDHandler)
+        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
             if(WNAM.IsLoaded())
-                FormIDHandler.ExpandFormID(WNAM->fid);
+                FormIDs.push_back(&WNAM->fid);
             if(CNAM.IsLoaded())
-                FormIDHandler.ExpandFormID(CNAM->fid);
+                FormIDs.push_back(&CNAM->fid);
             if(NAM2.IsLoaded())
-                FormIDHandler.ExpandFormID(NAM2->fid);
+                FormIDs.push_back(&NAM2->fid);
             }
-        void CollapseFormIDs(_FormIDHandler &FormIDHandler)
-            {
-            if(WNAM.IsLoaded())
-                FormIDHandler.CollapseFormID(WNAM->fid);
-            if(CNAM.IsLoaded())
-                FormIDHandler.CollapseFormID(CNAM->fid);
-            if(NAM2.IsLoaded())
-                FormIDHandler.CollapseFormID(NAM2->fid);
-            }
+
         #ifdef _DEBUG
         void Debug(int debugLevel);
         #endif

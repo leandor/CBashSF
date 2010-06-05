@@ -383,25 +383,15 @@ class LANDRecord : public Record
             VTEX.clear();
             }
 
-        void ExpandFormIDs(_FormIDHandler &FormIDHandler)
+        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
             for(unsigned int x = 0; x < BTXT.size(); ++x)
                 if(BTXT[x] != NULL)
-                    FormIDHandler.ExpandFormID(BTXT[x]->value.texture);
+                    FormIDs.push_back(&BTXT[x]->value.texture);
             for(unsigned int x = 0; x < Layers.size(); ++x)
-                FormIDHandler.ExpandFormID(Layers[x]->ATXT.value.texture);
+                FormIDs.push_back(&Layers[x]->ATXT.value.texture);
             for(unsigned int x = 0; x < VTEX.size(); x++)
-                FormIDHandler.ExpandFormID(VTEX[x]);
-            }
-        void CollapseFormIDs(_FormIDHandler &FormIDHandler)
-            {
-            for(unsigned int x = 0; x < BTXT.size(); ++x)
-                if(BTXT[x] != NULL)
-                    FormIDHandler.CollapseFormID(BTXT[x]->value.texture);
-            for(unsigned int x = 0; x < Layers.size(); ++x)
-                FormIDHandler.CollapseFormID(Layers[x]->ATXT.value.texture);
-            for(unsigned int x = 0; x < VTEX.size(); x++)
-                FormIDHandler.CollapseFormID(VTEX[x]);
+                FormIDs.push_back(&VTEX[x]);
             }
 
         #ifdef _DEBUG

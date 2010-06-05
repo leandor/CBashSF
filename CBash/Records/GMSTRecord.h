@@ -120,9 +120,6 @@ class GMSTRecord : public Record
         void Unload() //GMSTs should always be loaded, so do nothing.
             {return;}
 
-        void ExpandFormIDs(_FormIDHandler &FormIDHandler) {}
-        void CollapseFormIDs(_FormIDHandler &FormIDHandler) {}
-
         #ifdef _DEBUG
         void Debug(int debugLevel);
         #endif

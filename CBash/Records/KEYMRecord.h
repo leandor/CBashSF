@@ -76,17 +76,12 @@ class KEYMRecord : public Record
             DATA.Unload();
             }
 
-        void ExpandFormIDs(_FormIDHandler &FormIDHandler)
+        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
             if(SCRI.IsLoaded())
-                FormIDHandler.ExpandFormID(SCRI->fid);
+                FormIDs.push_back(&SCRI->fid);
             }
 
-        void CollapseFormIDs(_FormIDHandler &FormIDHandler)
-            {
-            if(SCRI.IsLoaded())
-                FormIDHandler.CollapseFormID(SCRI->fid);
-            }
         #ifdef _DEBUG
         void Debug(int debugLevel);
         #endif

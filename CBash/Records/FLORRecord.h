@@ -100,18 +100,11 @@ class FLORRecord : public Record
             PFPC.Unload();
             }
 
-        void ExpandFormIDs(_FormIDHandler &FormIDHandler)
+        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
             if(SCRI.IsLoaded())
-                FormIDHandler.ExpandFormID(SCRI->fid);
-            FormIDHandler.ExpandFormID(PFIG.value.fid);
-            }
-
-        void CollapseFormIDs(_FormIDHandler &FormIDHandler)
-            {
-            if(SCRI.IsLoaded())
-                FormIDHandler.CollapseFormID(SCRI->fid);
-            FormIDHandler.CollapseFormID(PFIG.value.fid);
+                FormIDs.push_back(&SCRI->fid);
+            FormIDs.push_back(&PFIG.value.fid);
             }
 
         #ifdef _DEBUG

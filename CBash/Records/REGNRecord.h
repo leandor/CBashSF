@@ -811,35 +811,19 @@ class REGNRecord : public Record
             Entries.clear();
             }
 
-        void ExpandFormIDs(_FormIDHandler &FormIDHandler)
+        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
-            FormIDHandler.ExpandFormID(WNAM.value.fid);
+            FormIDs.push_back(&WNAM.value.fid);
             for(unsigned int x = 0; x < Entries.size(); x++)
                 {
                 for(unsigned int y = 0; y < Entries[x]->RDOT.size(); y++)
-                    FormIDHandler.ExpandFormID(Entries[x]->RDOT[y].objectId);
+                    FormIDs.push_back(&Entries[x]->RDOT[y].objectId);
                 for(unsigned int y = 0; y < Entries[x]->RDGS.size(); y++)
-                    FormIDHandler.ExpandFormID(Entries[x]->RDGS[y].grass);
+                    FormIDs.push_back(&Entries[x]->RDGS[y].grass);
                 for(unsigned int y = 0; y < Entries[x]->RDSD.size(); y++)
-                    FormIDHandler.ExpandFormID(Entries[x]->RDSD[y].sound);
+                    FormIDs.push_back(&Entries[x]->RDSD[y].sound);
                 for(unsigned int y = 0; y < Entries[x]->RDWT.size(); y++)
-                    FormIDHandler.ExpandFormID(Entries[x]->RDWT[y].weather);
-                }
-            }
-
-        void CollapseFormIDs(_FormIDHandler &FormIDHandler)
-            {
-            FormIDHandler.CollapseFormID(WNAM.value.fid);
-            for(unsigned int x = 0; x < Entries.size(); x++)
-                {
-                for(unsigned int y = 0; y < Entries[x]->RDOT.size(); y++)
-                    FormIDHandler.CollapseFormID(Entries[x]->RDOT[y].objectId);
-                for(unsigned int y = 0; y < Entries[x]->RDGS.size(); y++)
-                    FormIDHandler.CollapseFormID(Entries[x]->RDGS[y].grass);
-                for(unsigned int y = 0; y < Entries[x]->RDSD.size(); y++)
-                    FormIDHandler.CollapseFormID(Entries[x]->RDSD[y].sound);
-                for(unsigned int y = 0; y < Entries[x]->RDWT.size(); y++)
-                    FormIDHandler.CollapseFormID(Entries[x]->RDWT[y].weather);
+                    FormIDs.push_back(&Entries[x]->RDWT[y].weather);
                 }
             }
 

@@ -93,7 +93,7 @@ class ModFile
     private:
         mapped_region *m_region;
         unsigned int fileEnd;
-        bool IsOpen, LoadedGRUPs, IsNew, IsDummy;
+        bool IsOpen, LoadedGRUPs, IsDummy;
     public:
         _FormIDHandler FormIDHandler;
         unsigned char *fileBuffer;
@@ -158,7 +158,7 @@ class ModFile
         GRUPRecords<EFSHRecord> EFSH;
 
         ModFile(char *ModName, bool newFile=false, bool DummyLoad=false):m_region(NULL), fileBuffer(NULL), fileEnd(0), IsOpen(newFile),
-                                                                         LoadedGRUPs(newFile), IsNew(newFile), IsDummy(DummyLoad), FileName(ModName), TES4(DummyLoad || newFile),
+                                                                         LoadedGRUPs(newFile), IsDummy(DummyLoad), FileName(ModName), TES4(DummyLoad || newFile),
                                                                          FormIDHandler(ModName, TES4.MAST, TES4.HEDR.value.nextObject)
             {
             if(newFile || IsDummy)
@@ -176,6 +176,7 @@ class ModFile
         int Load(boost::threadpool::pool &Threads, const bool &FullLoad);
         void CollapseFormIDs();
         void ExpandFormIDs();
+        unsigned int UpdateReferencingRecords(unsigned int origFormID, unsigned int newFormID);
         bool IsFake() {return IsDummy;}
         int Save(FileBuffer &buffer, bool CloseMod);
         #ifdef _DEBUG

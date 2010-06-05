@@ -64,14 +64,9 @@ class ANIORecord : public Record
             DATA.Unload();
             }
 
-        void ExpandFormIDs(_FormIDHandler &FormIDHandler)
+        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
-            FormIDHandler.ExpandFormID(DATA.value.fid);
-            }
-
-        void CollapseFormIDs(_FormIDHandler &FormIDHandler)
-            {
-            FormIDHandler.CollapseFormID(DATA.value.fid);
+            FormIDs.push_back(&DATA.value.fid);
             }
 
         #ifdef _DEBUG

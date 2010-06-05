@@ -8226,17 +8226,7 @@ class LVLIRecord(LVLRecord):
         FID = CBash.CopyLVLIRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
         if(FID): return LVLIRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
-    def get_data_p(self):
-        numRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 11)
-        if(numRecords > 0):
-            cRecords = POINTER(c_ubyte * numRecords)()
-            CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 11, byref(cRecords))
-            return [cRecords.contents[x] for x in range(0, numRecords)]
-        return []
-    def set_data_p(self, nValue):
-        length = len(nValue)
-        CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 11, struct.pack('B' * length, *nValue), length)
-    data_p = property(get_data_p, set_data_p)
+
 class WTHRRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyWTHRRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -15400,6 +15390,7 @@ class LVSPRecord(LVLRecord):
         FID = CBash.CopyLVSPRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
         if(FID): return LVSPRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
+
 class ANIORecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyANIORecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))

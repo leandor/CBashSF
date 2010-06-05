@@ -89,25 +89,18 @@ class ACRERecord : public Record
             DATA.Unload();
             }
 
-        void ExpandFormIDs(_FormIDHandler &FormIDHandler)
+        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
-            FormIDHandler.ExpandFormID(NAME.value.fid);
-            if(Ownership.IsLoaded() && Ownership->XOWN.IsLoaded())
-                FormIDHandler.ExpandFormID(Ownership->XOWN.value.fid);
-            if(Ownership.IsLoaded() && Ownership->XGLB.IsLoaded())
-                FormIDHandler.CollapseFormID(Ownership->XGLB->fid);
+            FormIDs.push_back(&NAME.value.fid);
+            if(Ownership.IsLoaded())
+                {
+                if(Ownership->XOWN.IsLoaded())
+                    FormIDs.push_back(&Ownership->XOWN.value.fid);
+                if(Ownership->XGLB.IsLoaded())
+                    FormIDs.push_back(&Ownership->XGLB->fid);
+                }
             if(XESP.IsLoaded())
-                FormIDHandler.ExpandFormID(XESP->parent);
-            }
-        void CollapseFormIDs(_FormIDHandler &FormIDHandler)
-            {
-            FormIDHandler.CollapseFormID(NAME.value.fid);
-            if(Ownership.IsLoaded() && Ownership->XOWN.IsLoaded())
-                FormIDHandler.CollapseFormID(Ownership->XOWN.value.fid);
-            if(Ownership.IsLoaded() && Ownership->XGLB.IsLoaded())
-                FormIDHandler.CollapseFormID(Ownership->XGLB->fid);
-            if(XESP.IsLoaded())
-                FormIDHandler.CollapseFormID(XESP->parent);
+                FormIDs.push_back(&XESP->parent);
             }
 
         #ifdef _DEBUG

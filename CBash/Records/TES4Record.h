@@ -90,9 +90,6 @@ class TES4Record : public Record
         void Unload() //TES4 should never be unloaded, so do nothing
             {return;}
 
-        void ExpandFormIDs(_FormIDHandler &FormIDHandler) {}
-        void CollapseFormIDs(_FormIDHandler &FormIDHandler) {}
-
         int GetOtherFieldType(const unsigned int Field);
         void * GetOtherField(const unsigned int Field);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char **FieldValue, unsigned int nSize);

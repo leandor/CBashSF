@@ -94,27 +94,16 @@ class ACHRRecord : public Record
             DATA.Unload();
             }
 
-        void ExpandFormIDs(_FormIDHandler &FormIDHandler)
+        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
-            FormIDHandler.ExpandFormID(NAME.value.fid);
+            FormIDs.push_back(&NAME.value.fid);
             if(XPCI.IsLoaded() && XPCI->XPCI.IsLoaded())
-                FormIDHandler.ExpandFormID(XPCI->XPCI->fid);
+                FormIDs.push_back(&XPCI->XPCI->fid);
             if(XESP.IsLoaded())
-                FormIDHandler.ExpandFormID(XESP->parent);
+                FormIDs.push_back(&XESP->parent);
             if(XMRC.IsLoaded())
-                FormIDHandler.ExpandFormID(XMRC->fid);
-            FormIDHandler.ExpandFormID(XHRS.value.fid);
-            }
-        void CollapseFormIDs(_FormIDHandler &FormIDHandler)
-            {
-            FormIDHandler.CollapseFormID(NAME.value.fid);
-            if(XPCI.IsLoaded() && XPCI->XPCI.IsLoaded())
-                FormIDHandler.CollapseFormID(XPCI->XPCI->fid);
-            if(XESP.IsLoaded())
-                FormIDHandler.CollapseFormID(XESP->parent);
-            if(XMRC.IsLoaded())
-                FormIDHandler.CollapseFormID(XMRC->fid);
-            FormIDHandler.CollapseFormID(XHRS.value.fid);
+                FormIDs.push_back(&XMRC->fid);
+            FormIDs.push_back(&XHRS.value.fid);
             }
 
         #ifdef _DEBUG
