@@ -178,6 +178,8 @@ class WRLDRecord : public Record
 
         void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
+            if(!IsLoaded())
+                return;
             if(WNAM.IsLoaded())
                 FormIDs.push_back(&WNAM->fid);
             if(CNAM.IsLoaded())
@@ -203,7 +205,7 @@ class WRLDRecord : public Record
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize();
+        unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eWRLD;}
         char * GetStrType() {return "WRLD";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);

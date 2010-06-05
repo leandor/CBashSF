@@ -221,6 +221,8 @@ class WATRRecord : public Record
 
         void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
+            if(!IsLoaded())
+                return;
             if(SNAM.IsLoaded())
                 FormIDs.push_back(&SNAM->fid);
             if(GNAM.IsLoaded())
@@ -247,7 +249,7 @@ class WATRRecord : public Record
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned short FieldValue);
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize();
+        unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eWATR;}
         char * GetStrType() {return "WATR";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);

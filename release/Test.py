@@ -1,5 +1,16 @@
 from cint import *
-   
+
+def TestCleanMasters():
+    Current = Collection()
+    Current.addMod("Oblivion.esm")
+    newMod = Current.addMod("TestCleanMasters.esp", True)
+    Current.minimalLoad(LoadMasters=False)
+    record = newMod.createMISCRecord()
+    record.fid = 0x01001555
+    record.fid = 0x00001452
+    print newMod.CleanMasters()
+    newMod.safeSave()
+
 def TestLoadMasters():
     Current = Collection()
     Current.addMod("OOO Patch - Geomancy - Activator.esp")
@@ -584,7 +595,8 @@ def TestTES4():
     newMod = Current.addMod("TestTES4.esp", True)
     Current.minimalLoad(LoadMasters=True)
     print "TES4:Read Test"
-    for record in Current.TES4:
+    for modFile in Current:
+        record = modFile.TES4
         print
         print "ModName    :", record._ModName
         print "flags1     :", record.flags1
@@ -639,14 +651,14 @@ def TestGMST():
     newMod = Current.addMod("TestGMST.esp", True)
     Current.minimalLoad(LoadMasters=True)
     print "GMST:Read Test"
-    for record in Current.GMST:
+    for record in Current[0].GMST:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
         print "value  :", record.value
-        break
+    return
     print "GMST:Create Record Test"
     newRecord = newMod.createGMSTRecord("sWarString")
     print "GMST:Set Test"
@@ -675,7 +687,7 @@ def TestGLOB():
     newMod = Current.addMod("TestGLOB.esp", True)
     Current.minimalLoad(LoadMasters=True)
     print "GLOB:Read Test"
-    for record in Current.GLOB:
+    for record in Current[0].GLOB:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -721,7 +733,7 @@ def TestCLAS():
     newMod = Current.addMod("TestCLAS.esp", True)
     Current.minimalLoad(LoadMasters=True)
     print "CLAS:Read Test"
-    for record in Current.CLAS:
+    for record in Current[0].CLAS:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -837,7 +849,7 @@ def TestFACT():
     newMod = Current.addMod("TestFACT.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.FACT:
+    for record in Current[0].FACT:
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
@@ -932,7 +944,7 @@ def TestHAIR():
     newMod = Current.addMod("TestHAIR.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.HAIR:
+    for record in Current[0].HAIR:
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
@@ -1008,7 +1020,7 @@ def TestEYES():
     newMod = Current.addMod("TestEYES.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.EYES:
+    for record in Current[0].EYES:
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
@@ -1065,7 +1077,7 @@ def TestRACE():
     Current.addMod("Oblivion.esm")
     newMod = Current.addMod("TestRACE.esp", True)
     Current.minimalLoad(LoadMasters=True)
-    for record in Current.RACE:
+    for record in Current[0].RACE:
         print
         print "fid    :", PrintFormID(record.fid)
         print "flags1 :", record.flags1
@@ -1520,7 +1532,7 @@ def TestSOUN():
     newMod = Current.addMod("TestSOUN.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.SOUN:
+    for record in Current[0].SOUN:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -1596,7 +1608,7 @@ def TestSKIL():
     newMod = Current.addMod("TestSKIL.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.SKIL:
+    for record in Current[0].SKIL:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -1676,7 +1688,7 @@ def TestMGEF():
     newMod = Current.addMod("TestMGEF.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.MGEF:
+    for record in Current[0].MGEF:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -1793,7 +1805,7 @@ def TestSCPT():
     newMod = Current.addMod("TestSCPT.esp", True)
     Current.minimalLoad(LoadMasters=True)
     x = 0
-    for record in Current.SCPT:
+    for record in Current[0].SCPT:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -1924,7 +1936,7 @@ def TestLTEX():
     newMod = Current.addMod("TestLTEX.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.LTEX:
+    for record in Current[0].LTEX:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -1994,7 +2006,7 @@ def TestENCH():
     newMod = Current.addMod("TestENCH.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.ENCH:
+    for record in Current[0].ENCH:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -2118,7 +2130,7 @@ def TestSPEL():
     newMod = Current.addMod("TestSPEL.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.SPEL:
+    for record in Current[0].SPEL:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -2241,7 +2253,7 @@ def TestBSGN():
     newMod = Current.addMod("TestBSGN.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.BSGN:
+    for record in Current[0].BSGN:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -2303,7 +2315,7 @@ def TestACTI():
     newMod = Current.addMod("TestACTI.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.ACTI:
+    for record in Current[0].ACTI:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -2373,7 +2385,7 @@ def TestAPPA():
     newMod = Current.addMod("TestAPPA.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.APPA:
+    for record in Current[0].APPA:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -2456,7 +2468,7 @@ def TestARMO():
     newMod = Current.addMod("TestARMO.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.ARMO:
+    for record in Current[0].ARMO:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -2572,7 +2584,7 @@ def TestBOOK():
     newMod = Current.addMod("TestBOOK.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.BOOK:
+    for record in Current[0].BOOK:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -2666,7 +2678,7 @@ def TestCLOT():
     newMod = Current.addMod("TestCLOT.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.CLOT:
+    for record in Current[0].CLOT:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -2774,7 +2786,7 @@ def TestCONT():
     newMod = Current.addMod("TestCONT.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.CONT:
+    for record in Current[0].CONT:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -2875,7 +2887,7 @@ def TestDOOR():
     newMod = Current.addMod("TestDOOR.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.DOOR:
+    for record in Current[0].DOOR:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -2965,7 +2977,7 @@ def TestINGR():
     newMod = Current.addMod("TestINGR.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.INGR:
+    for record in Current[0].INGR:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -3117,7 +3129,7 @@ def TestLIGH():
     newMod = Current.addMod("TestLIGH.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.LIGH:
+    for record in Current[0].LIGH:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -3235,7 +3247,7 @@ def TestMISC():
     newMod = Current.addMod("TestMISC.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.MISC:
+    for record in Current[0].MISC:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -3312,7 +3324,7 @@ def TestSTAT():
     newMod = Current.addMod("TestSTAT.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.STAT:
+    for record in Current[0].STAT:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -3370,7 +3382,7 @@ def TestGRAS():
     newMod = Current.addMod("TestGRAS.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.GRAS:
+    for record in Current[0].GRAS:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -3467,7 +3479,7 @@ def TestTREE():
     newMod = Current.addMod("TestTREE.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.TREE:
+    for record in Current[0].TREE:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -3564,7 +3576,7 @@ def TestFLOR():
     newMod = Current.addMod("TestFLOR.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.FLOR:
+    for record in Current[0].FLOR:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -3640,7 +3652,7 @@ def TestFURN():
     newMod = Current.addMod("TestFURN.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.FURN:
+    for record in Current[0].FURN:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -3712,7 +3724,7 @@ def TestWEAP():
     newMod = Current.addMod("TestWEAP.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.WEAP:
+    for record in Current[0].WEAP:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -3815,7 +3827,7 @@ def TestAMMO():
     newMod = Current.addMod("TestAMMO.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.AMMO:
+    for record in Current[0].AMMO:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -3908,7 +3920,7 @@ def TestNPC_():
     newMod = Current.addMod("TestNPC_.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.NPC_:
+    for record in Current[0].NPC_:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -4242,7 +4254,7 @@ def TestCREA():
     newMod = Current.addMod("TestCREA.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.CREA:
+    for record in Current[0].CREA:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -4567,7 +4579,7 @@ def TestLVLC():
     newMod = Current.addMod("TestLVLC.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.LVLC:
+    for record in Current[0].LVLC:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -4669,7 +4681,7 @@ def TestSLGM():
     newMod = Current.addMod("TestSLGM.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.SLGM:
+    for record in Current[0].SLGM:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -4757,7 +4769,7 @@ def TestKEYM():
     newMod = Current.addMod("TestKEYM.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.KEYM:
+    for record in Current[0].KEYM:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -4834,7 +4846,7 @@ def TestALCH():
     newMod = Current.addMod("TestALCH.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.ALCH:
+    for record in Current[0].ALCH:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -4985,7 +4997,7 @@ def TestSBSP():
     newMod = Current.addMod("TestSBSP.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.SBSP:
+    for record in Current[0].SBSP:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -5032,7 +5044,7 @@ def TestSGST():
     newMod = Current.addMod("TestSGST.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.SGST:
+    for record in Current[0].SGST:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -5201,7 +5213,7 @@ def TestLVLI():
     newMod = Current.addMod("TestLVLI.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.LVLI:
+    for record in Current[0].LVLI:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -5295,7 +5307,7 @@ def TestWTHR():
     newMod = Current.addMod("TestWTHR.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.WTHR:
+    for record in Current[0].WTHR:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -5993,7 +6005,7 @@ def TestCLMT():
     newMod = Current.addMod("TestCLMT.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.CLMT:
+    for record in Current[0].CLMT:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -6099,7 +6111,7 @@ def TestREGN():
     newMod = Current.addMod("TestREGN.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.REGN:
+    for record in Current[0].REGN:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -6491,7 +6503,7 @@ def TestCELL():
     newMod = Current.addMod("TestCELL.esp", True)
     Current.minimalLoad(LoadMasters=True)
     x = 0
-    for record in Current.CELL:
+    for record in Current[0].CELL:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -7905,7 +7917,7 @@ def TestDIAL():
     newMod = Current.addMod("TestDIAL.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.DIAL:
+    for record in Current[0].DIAL:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -8394,7 +8406,7 @@ def TestQUST():
     Current.minimalLoad(LoadMasters=True)
 
     x = 0
-    for record in Current.QUST:
+    for record in Current[0].QUST:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -9374,7 +9386,7 @@ def TestIDLE():
     newMod = Current.addMod("TestIDLE.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.IDLE:
+    for record in Current[0].IDLE:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -9506,7 +9518,7 @@ def TestPACK():
     newMod = Current.addMod("TestPACK.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.PACK:
+    for record in Current[0].PACK:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -9674,7 +9686,7 @@ def TestCSTY():
     newMod = Current.addMod("TestCSTY.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.CSTY:
+    for record in Current[0].CSTY:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -9913,7 +9925,7 @@ def TestLSCR():
     newMod = Current.addMod("TestLSCR.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.LSCR:
+    for record in Current[0].LSCR:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -10005,7 +10017,7 @@ def TestLVSP():
     newMod = Current.addMod("TestLVSP.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.LVSP:
+    for record in Current[0].LVSP:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -10100,7 +10112,7 @@ def TestANIO():
     newMod = Current.addMod("TestANIO.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.ANIO:
+    for record in Current[0].ANIO:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -10165,7 +10177,7 @@ def TestWATR():
     newMod = Current.addMod("TestWATR.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.WATR:
+    for record in Current[0].WATR:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -10344,7 +10356,7 @@ def TestEFSH():
     newMod = Current.addMod("TestEFSH.esp", True)
     Current.minimalLoad(LoadMasters=True)
 
-    for record in Current.EFSH:
+    for record in Current[0].EFSH:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -10656,6 +10668,7 @@ from timeit import Timer
 ##del Current
 ##phonenumber = raw_input("!")
 
+TestCleanMasters()
 ##TestFullLoad()
 ##TestMinimalLoad()
 ##TestLoadMasters()
