@@ -128,6 +128,8 @@ class SGSTRecord : public Record
 
         void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
+            if(!IsLoaded())
+                return;
             if(SCRI.IsLoaded())
                 FormIDs.push_back(&SCRI->fid);
             for(unsigned int x = 0; x < Effects.size(); x++)
@@ -164,7 +166,7 @@ class SGSTRecord : public Record
 
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize();
+        unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eSGST;}
         char * GetStrType() {return "SGST";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);

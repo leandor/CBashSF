@@ -172,6 +172,8 @@ class SCPTRecord : public Record
 
         void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
+            if(!IsLoaded())
+                return;
             for(unsigned int x = 0; x < SCR_.size(); x++)
                 if(SCR_[x]->value.isSCRO)
                     FormIDs.push_back(&SCR_[x]->value.reference);
@@ -202,7 +204,7 @@ class SCPTRecord : public Record
 
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize();
+        unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eSCPT;}
         char * GetStrType() {return "SCPT";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);

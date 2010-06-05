@@ -422,6 +422,8 @@ class REFRRecord : public Record
 
         void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
+            if(!IsLoaded())
+                return;
             FormIDs.push_back(&NAME.value.fid);
             if(XTEL.IsLoaded())
                 FormIDs.push_back(&XTEL->destinationFid);
@@ -460,7 +462,7 @@ class REFRRecord : public Record
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, int FieldValue);
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize();
+        unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eREFR;}
         char * GetStrType() {return "REFR";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);

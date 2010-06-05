@@ -101,7 +101,7 @@ class TES4Record : public Record
         void GetFieldArray(const unsigned int Field, void **FieldValues);
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize();
+        unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eTES4;}
         char * GetStrType() {return "TES4";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);

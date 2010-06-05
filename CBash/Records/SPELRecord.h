@@ -145,6 +145,8 @@ class SPELRecord : public Record
 
         void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
+            if(!IsLoaded())
+                return;
             for(unsigned int x = 0; x < Effects.size(); x++)
                 if(Effects[x]->SCIT.IsLoaded())
                     FormIDs.push_back(&Effects[x]->SCIT->script);
@@ -177,7 +179,7 @@ class SPELRecord : public Record
 
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize();
+        unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eSPEL;}
         char * GetStrType() {return "SPEL";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);

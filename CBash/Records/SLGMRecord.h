@@ -130,6 +130,8 @@ class SLGMRecord : public Record
 
         void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
             {
+            if(!IsLoaded())
+                return;
             if(SCRI.IsLoaded())
                 FormIDs.push_back(&SCRI->fid);
             }
@@ -150,7 +152,7 @@ class SLGMRecord : public Record
 
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize();
+        unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eSLGM;}
         char * GetStrType() {return "SLGM";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);

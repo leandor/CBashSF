@@ -142,7 +142,7 @@ class SKILRecord : public Record
 
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize();
+        unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eSKIL;}
         char * GetStrType() {return "SKIL";}
         int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
