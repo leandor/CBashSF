@@ -93,8 +93,8 @@ unsigned int Record::UpdateReferences(unsigned int origFormID, unsigned int newF
             }
     if(count)
         recData = NULL;
-    if(recData != NULL)
-        Unload();
+    //if(recData != NULL)
+    //    Unload();
     return count;
     }
 

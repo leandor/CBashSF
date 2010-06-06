@@ -177,6 +177,7 @@ class ModFile
         unsigned int UpdateReferences(unsigned int origFormID, unsigned int newFormID);
         bool IsFake() {return IsDummy;}
         int CleanMasters();
+        int Unload();
         int Save(FileBuffer &buffer, bool CloseMod);
         #ifdef _DEBUG
         void Debug(int debugLevel);

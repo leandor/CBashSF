@@ -70,6 +70,7 @@ class GLOBRecord : public Record
         STRING EDID;
         ReqRecordField<GLOBFNAM> FNAM;
         ReqRecordField<GLOBFLTV> FLTV;
+
         GLOBRecord(bool newRecord=false):Record(newRecord) {}
         GLOBRecord(const unsigned int &newFormID):Record(newFormID) {}
         GLOBRecord(GLOBRecord *srcRecord):Record(true)

@@ -64,6 +64,8 @@ class Collection
         int RemoveIndex(Record *curRecord, char *ModName);
         int LoadRecord(char *ModName, unsigned int recordFID);
         int UnloadRecord(char *ModName, unsigned int recordFID);
+        int UnloadModFile(char *ModName);
+        int UnloadAll();
         int DeleteRecord(char *ModName, unsigned int recordFID, unsigned int parentFID);
         int DeleteCELL(CELLRecord *curCell, char *ModName);
         int DeleteGMSTRecord(char *ModName, char *recordEDID);

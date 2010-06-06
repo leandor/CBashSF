@@ -229,6 +229,40 @@ int UnloadRecord(const unsigned int CollectionIndex, char *ModName, unsigned int
     return 0;
     }
 
+int UnloadModFile(const unsigned int CollectionIndex, char *ModName)
+    {
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->UnloadModFile(ModName);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("Error unloading records from mod:%s in collection: %i\n", ModName, CollectionIndex);
+        return -1;
+        }
+    return 0;
+    }
+
+int UnloadAll(const unsigned int CollectionIndex)
+    {
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->UnloadAll();
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("Error unloading all records from collection: %i\n", CollectionIndex);
+        return -1;
+        }
+    return 0;
+    }
+
 int DeleteRecord(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, unsigned int parentFID)
     {
     try

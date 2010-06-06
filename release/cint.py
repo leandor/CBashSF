@@ -6507,9 +6507,9 @@ class NPC_Record(BaseRecord):
     def get_spells(self):
         numRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 20)
         if(numRecords > 0):
-            cRecords = POINTER(c_uint * numRecords)()
+            cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 20, byref(cRecords))
-            return [cRecords.contents[x] for x in range(0, numRecords)]
+            return [cRecords[x].contents.value for x in range(0, numRecords)]
         return []
     def set_spells(self, nValue):
         if nValue is None: return
@@ -6618,9 +6618,9 @@ class NPC_Record(BaseRecord):
     def get_aiPackages(self):
         numRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 31)
         if(numRecords > 0):
-            cRecords = POINTER(c_uint * numRecords)()
+            cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 31, byref(cRecords))
-            return [cRecords.contents[x] for x in range(0, numRecords)]
+            return [cRecords[x].contents.value for x in range(0, numRecords)]
         return []
     def set_aiPackages(self, nValue):
         if nValue is None: return
@@ -18380,6 +18380,8 @@ class ModFile(object):
         return CBash.UpdateAllReferences(self._CollectionIndex, self._ModName, origFid, newFid)
     def CleanMasters(self):
         return CBash.CleanMasters(self._CollectionIndex, self._ModName)
+    def Unload(self):
+        CBash.UnloadModFile(self._CollectionIndex, self._ModName)
     def createGMSTRecord(self, recordID):
         if(CBash.CreateGMSTRecord(self._CollectionIndex, self._ModName, recordID)):
             return GMSTRecord(self._CollectionIndex, self._ModName, recordID)
@@ -19212,6 +19214,10 @@ class Collection:
         for modFile in self:
             count = count + modFile.UpdateReferences(origFid, newFid)
         return count
+
+    def Unload(self):
+        CBash.UnloadAll(self._CollectionIndex)
+
     def close(self):
         CBash.Close(self._CollectionIndex)
 

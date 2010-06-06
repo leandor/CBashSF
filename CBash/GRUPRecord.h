@@ -107,6 +107,13 @@ class GRUPRecords
                 }
             return count;
             }
+        int Unload()
+            {
+            for(unsigned int p = 0; p < Records.size(); p++)
+                if(Records[p]->recData != NULL)
+                    Records[p]->Unload();
+            return 0;
+            }
         unsigned int CheckMasters(unsigned char MASTIndex, _FormIDHandler &FormIDHandler)
             {
             for(unsigned int p = 0; p < Records.size(); p++)
@@ -295,6 +302,20 @@ class GRUPRecords<DIALRecord>
                     count += curRecord->INFO[x]->UpdateReferences(origFormID, newFormID, FormIDHandler);
                 }
             return count;
+            }
+        int Unload()
+            {
+            DIALRecord * curRecord = NULL;
+            for(unsigned int p = 0; p < Records.size(); p++)
+                {
+                curRecord = Records[p];
+                for(unsigned int x = 0; x < curRecord->INFO.size(); ++x)
+                    if(curRecord->INFO[x]->recData != NULL)
+                        curRecord->INFO[x]->Unload();
+                if(curRecord->recData != NULL)
+                    curRecord->Unload();
+                }
+            return 0;
             }
         unsigned int CheckMasters(unsigned char MASTIndex, _FormIDHandler &FormIDHandler)
             {
@@ -619,6 +640,28 @@ class GRUPRecords<CELLRecord>
             return count;
             }
 
+        int Unload()
+            {
+            CELLRecord *curRecord = NULL;
+            for(unsigned int p = 0; p < Records.size(); p++)
+                {
+                curRecord = Records[p];
+                for(unsigned int x = 0; x < curRecord->ACHR.size(); ++x)
+                    if(curRecord->ACHR[x]->recData != NULL)
+                        curRecord->ACHR[x]->Unload();
+                for(unsigned int x = 0; x < curRecord->ACRE.size(); ++x)
+                    if(curRecord->ACRE[x]->recData != NULL)
+                        curRecord->ACRE[x]->Unload();
+                for(unsigned int x = 0; x < curRecord->REFR.size(); ++x)
+                    if(curRecord->REFR[x]->recData != NULL)
+                        curRecord->REFR[x]->Unload();
+                if(curRecord->PGRD != NULL && curRecord->PGRD->recData != NULL)
+                    curRecord->PGRD->Unload();
+                if(curRecord->recData != NULL)
+                    curRecord->Unload();
+                }
+            return 0;
+            }
         unsigned int CheckMasters(unsigned char MASTIndex, _FormIDHandler &FormIDHandler)
             {
             CELLRecord *curRecord = NULL;
@@ -1335,6 +1378,58 @@ class GRUPRecords<WRLDRecord>
             return count;
             }
 
+        int Unload()
+            {
+            WRLDRecord *curWRLDRecord = NULL;
+            CELLRecord *curCELLRecord = NULL;
+            for(unsigned int p = 0; p < Records.size(); p++)
+                {
+                curWRLDRecord = Records[p];
+                if(curWRLDRecord->ROAD != NULL && curWRLDRecord->ROAD->recData != NULL)
+                    curWRLDRecord->ROAD->Unload();
+                if(curWRLDRecord->CELL != NULL)
+                    {
+                    curCELLRecord = curWRLDRecord->CELL;
+                    for(unsigned int y = 0; y < curCELLRecord->ACHR.size(); ++y)
+                        if(curCELLRecord->ACHR[y]->recData != NULL)
+                            curCELLRecord->ACHR[y]->Unload();
+                    for(unsigned int y = 0; y < curCELLRecord->ACRE.size(); ++y)
+                        if(curCELLRecord->ACRE[y]->recData != NULL)
+                            curCELLRecord->ACRE[y]->Unload();
+                    for(unsigned int y = 0; y < curCELLRecord->REFR.size(); ++y)
+                        if(curCELLRecord->REFR[y]->recData != NULL)
+                            curCELLRecord->REFR[y]->Unload();
+                    if(curCELLRecord->PGRD != NULL && curCELLRecord->PGRD->recData != NULL)
+                        curCELLRecord->PGRD->Unload();
+                    if(curCELLRecord->LAND != NULL && curCELLRecord->LAND->recData != NULL)
+                        curCELLRecord->LAND->Unload();
+                    if(curCELLRecord->recData != NULL)
+                        curCELLRecord->Unload();
+                    }
+                for(unsigned int x = 0; x < curWRLDRecord->CELLS.size(); x++)
+                    {
+                    curCELLRecord = curWRLDRecord->CELLS[x];
+                    for(unsigned int y = 0; y < curCELLRecord->ACHR.size(); ++y)
+                        if(curCELLRecord->ACHR[y]->recData != NULL)
+                            curCELLRecord->ACHR[y]->Unload();
+                    for(unsigned int y = 0; y < curCELLRecord->ACRE.size(); ++y)
+                        if(curCELLRecord->ACRE[y]->recData != NULL)
+                            curCELLRecord->ACRE[y]->Unload();
+                    for(unsigned int y = 0; y < curCELLRecord->REFR.size(); ++y)
+                        if(curCELLRecord->REFR[y]->recData != NULL)
+                            curCELLRecord->REFR[y]->Unload();
+                    if(curCELLRecord->PGRD != NULL && curCELLRecord->PGRD->recData != NULL)
+                        curCELLRecord->PGRD->Unload();
+                    if(curCELLRecord->LAND != NULL && curCELLRecord->LAND->recData != NULL)
+                        curCELLRecord->LAND->Unload();
+                    if(curCELLRecord->recData != NULL)
+                        curCELLRecord->Unload();
+                    }
+                if(curWRLDRecord->recData != NULL)
+                    curWRLDRecord->Unload();
+                }
+            return 0;
+            }
         unsigned int CheckMasters(unsigned char MASTIndex, _FormIDHandler &FormIDHandler)
             {
             WRLDRecord *curWRLDRecord = NULL;

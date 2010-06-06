@@ -1,5 +1,20 @@
 from cint import *
 
+def TestCopyAttrs():
+    Current = Collection()
+    srcFile = Current.addMod("Oblivion.esm")
+##    destFile = Current.addMod("Clothing.esp", True)
+    Current.minimalLoad(LoadMasters=True)
+    for armor in srcFile.ARMO:
+        clothing = srcFile.createCLOTRecord()
+        for attr in clothing.copyattrs:
+            setattr(clothing, attr, getattr(armor, attr))
+        origFid = armor.fid
+        newFid = clothing.fid
+        armor.DeleteRecord()
+        print srcFile.UpdateReferences(origFid, newFid)
+    srcFile.safeCloseSave()
+
 def TestCleanMasters():
     Current = Collection()
     Current.addMod("Oblivion.esm")
@@ -10668,6 +10683,7 @@ from timeit import Timer
 ##del Current
 ##phonenumber = raw_input("!")
 
+TestCopyAttrs()
 ##TestCleanMasters()
 ##TestFullLoad()
 ##TestMinimalLoad()

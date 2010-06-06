@@ -480,7 +480,6 @@ unsigned int Collection::NextFreeExpandedFID(ModFile *curModFile)
     return 0;
     }
 
-
 int Collection::RemoveIndex(Record *curRecord, char *ModName)
     {
     if(curRecord == NULL || ModName == NULL)
@@ -496,6 +495,7 @@ int Collection::RemoveIndex(Record *curRecord, char *ModName)
             }
     return -1;
     }
+
 int Collection::LoadRecord(char *ModName, unsigned int recordFID)
     {
     ModFile *curModFile = NULL;
@@ -520,6 +520,25 @@ int Collection::UnloadRecord(char *ModName, unsigned int recordFID)
         return -1;
 
     curRecord->Unload();
+    return 0;
+    }
+
+int Collection::UnloadModFile(char *ModName)
+    {
+    ModFile *curModFile = LookupModFile(ModName);
+    curModFile->Unload();
+    return 0;
+    }
+
+int Collection::UnloadAll()
+    {
+    Record *curRecord = NULL;
+    for(std::multimap<unsigned int, std::pair<ModFile *, Record *> >::iterator it = FID_ModFile_Record.begin(); it != FID_ModFile_Record.end(); ++it)
+        {
+        curRecord = it->second.second;
+        if(curRecord != NULL && curRecord->recData != NULL)
+            curRecord->Unload();
+        }
     return 0;
     }
 
@@ -962,6 +981,8 @@ void Collection::GetMods(char **ModNames)
 
 unsigned int Collection::SetRecordFormID(char *ModName, unsigned int recordFID, unsigned int FieldValue)
     {
+    if(recordFID == FieldValue)
+        return 0;
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
     Record *destRecord = NULL;
@@ -997,6 +1018,8 @@ unsigned int Collection::GetCorrectedFID(char *ModName, unsigned int recordObjec
 
 unsigned int Collection::UpdateReferences(char *ModName, unsigned int origFormID, unsigned int newFormID)
     {
+    if(origFormID == newFormID)
+        return 0;
     ModFile *curModFile = LookupModFile(ModName);
     if(curModFile == NULL)
         return 0;
@@ -1005,6 +1028,8 @@ unsigned int Collection::UpdateReferences(char *ModName, unsigned int origFormID
 
 unsigned int Collection::UpdateReferences(char *ModName, unsigned int recordFID, unsigned int origFormID, unsigned int newFormID)
     {
+    if(origFormID == newFormID)
+        return 0;
     Record *curRecord = NULL;
     ModFile *curModFile = NULL;
     LookupRecord(ModName, recordFID, curModFile, curRecord);

@@ -456,15 +456,16 @@ unsigned int ModFile::UpdateReferences(unsigned int origFormID, unsigned int new
     unsigned int count = 0;
     if(IsDummy)
         return count;
-    count += GMST.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += GLOB.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += CLAS.UpdateReferences(origFormID, newFormID, FormIDHandler);
+    //Commented out GRUPs don't contain any formIDs that could be updated.
+    //count += GMST.UpdateReferences(origFormID, newFormID, FormIDHandler);
+    //count += GLOB.UpdateReferences(origFormID, newFormID, FormIDHandler);
+    //count += CLAS.UpdateReferences(origFormID, newFormID, FormIDHandler);
     count += FACT.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += HAIR.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += EYES.UpdateReferences(origFormID, newFormID, FormIDHandler);
+    //count += HAIR.UpdateReferences(origFormID, newFormID, FormIDHandler);
+    //count += EYES.UpdateReferences(origFormID, newFormID, FormIDHandler);
     count += RACE.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += SOUN.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += SKIL.UpdateReferences(origFormID, newFormID, FormIDHandler);
+    //count += SOUN.UpdateReferences(origFormID, newFormID, FormIDHandler);
+    //count += SKIL.UpdateReferences(origFormID, newFormID, FormIDHandler);
     count += MGEF.UpdateReferences(origFormID, newFormID, FormIDHandler);
     count += SCPT.UpdateReferences(origFormID, newFormID, FormIDHandler);
     count += LTEX.UpdateReferences(origFormID, newFormID, FormIDHandler);
@@ -481,9 +482,9 @@ unsigned int ModFile::UpdateReferences(unsigned int origFormID, unsigned int new
     count += INGR.UpdateReferences(origFormID, newFormID, FormIDHandler);
     count += LIGH.UpdateReferences(origFormID, newFormID, FormIDHandler);
     count += MISC.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += STAT.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += GRAS.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += TREE.UpdateReferences(origFormID, newFormID, FormIDHandler);
+    //count += STAT.UpdateReferences(origFormID, newFormID, FormIDHandler);
+    //count += GRAS.UpdateReferences(origFormID, newFormID, FormIDHandler);
+    //count += TREE.UpdateReferences(origFormID, newFormID, FormIDHandler);
     count += FLOR.UpdateReferences(origFormID, newFormID, FormIDHandler);
     count += FURN.UpdateReferences(origFormID, newFormID, FormIDHandler);
     count += WEAP.UpdateReferences(origFormID, newFormID, FormIDHandler);
@@ -494,7 +495,7 @@ unsigned int ModFile::UpdateReferences(unsigned int origFormID, unsigned int new
     count += SLGM.UpdateReferences(origFormID, newFormID, FormIDHandler);
     count += KEYM.UpdateReferences(origFormID, newFormID, FormIDHandler);
     count += ALCH.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += SBSP.UpdateReferences(origFormID, newFormID, FormIDHandler);
+    //count += SBSP.UpdateReferences(origFormID, newFormID, FormIDHandler);
     count += SGST.UpdateReferences(origFormID, newFormID, FormIDHandler);
     count += LVLI.UpdateReferences(origFormID, newFormID, FormIDHandler);
     count += WTHR.UpdateReferences(origFormID, newFormID, FormIDHandler);
@@ -506,12 +507,12 @@ unsigned int ModFile::UpdateReferences(unsigned int origFormID, unsigned int new
     count += QUST.UpdateReferences(origFormID, newFormID, FormIDHandler);
     count += IDLE.UpdateReferences(origFormID, newFormID, FormIDHandler);
     count += PACK.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += CSTY.UpdateReferences(origFormID, newFormID, FormIDHandler);
+    //count += CSTY.UpdateReferences(origFormID, newFormID, FormIDHandler);
     count += LSCR.UpdateReferences(origFormID, newFormID, FormIDHandler);
     count += LVSP.UpdateReferences(origFormID, newFormID, FormIDHandler);
     count += ANIO.UpdateReferences(origFormID, newFormID, FormIDHandler);
     count += WATR.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += EFSH.UpdateReferences(origFormID, newFormID, FormIDHandler);
+    //count += EFSH.UpdateReferences(origFormID, newFormID, FormIDHandler);
     return count;
     }
 int ModFile::CleanMasters()
@@ -581,6 +582,68 @@ int ModFile::CleanMasters()
         ++cleaned;
         }
     return cleaned;
+    }
+
+int ModFile::Unload()
+    {
+    //GMSTs are always loaded.
+    //GMST.Unload();
+    GLOB.Unload();
+    CLAS.Unload();
+    FACT.Unload();
+    HAIR.Unload();
+    EYES.Unload();
+    RACE.Unload();
+    SOUN.Unload();
+    SKIL.Unload();
+    MGEF.Unload();
+    SCPT.Unload();
+    LTEX.Unload();
+    ENCH.Unload();
+    SPEL.Unload();
+    BSGN.Unload();
+    ACTI.Unload();
+    APPA.Unload();
+    ARMO.Unload();
+    BOOK.Unload();
+    CLOT.Unload();
+    CONT.Unload();
+    DOOR.Unload();
+    INGR.Unload();
+    LIGH.Unload();
+    MISC.Unload();
+    STAT.Unload();
+    GRAS.Unload();
+    TREE.Unload();
+    FLOR.Unload();
+    FURN.Unload();
+    WEAP.Unload();
+    AMMO.Unload();
+    NPC_.Unload();
+    CREA.Unload();
+    LVLC.Unload();
+    SLGM.Unload();
+    KEYM.Unload();
+    ALCH.Unload();
+    SBSP.Unload();
+    SGST.Unload();
+    LVLI.Unload();
+    WTHR.Unload();
+    CLMT.Unload();
+    REGN.Unload();
+    CELL.Unload();
+    WRLD.Unload();
+    DIAL.Unload();
+    QUST.Unload();
+    IDLE.Unload();
+    PACK.Unload();
+    CSTY.Unload();
+    LSCR.Unload();
+    LVSP.Unload();
+    ANIO.Unload();
+    WATR.Unload();
+    EFSH.Unload();
+    return 0;
     }
 
 int ModFile::Save(FileBuffer &buffer, bool CloseMod)
