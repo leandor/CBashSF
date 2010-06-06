@@ -74,9 +74,9 @@ class Collection
             {
             if(ModName == NULL || recordFID == 0)
                 {curModFile = NULL; curRecord = NULL; return FID_ModFile_Record.end();}
-                
+
             std::multimap<unsigned int, std::pair<ModFile *, Record *> >::iterator it = FID_ModFile_Record.find(recordFID);
-            
+
             if(it == FID_ModFile_Record.end())
                 {curModFile = NULL; curRecord = NULL; return FID_ModFile_Record.end();}
 

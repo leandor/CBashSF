@@ -112,7 +112,7 @@ class GRUPRecords
             for(unsigned int p = 0; p < Records.size(); p++)
                 {
                  if(FormIDHandler.UsesMaster(Records[p]->formID, MASTIndex))
-                    return true;                
+                    return true;
                 }
             return false;
             }
@@ -303,10 +303,10 @@ class GRUPRecords<DIALRecord>
                 {
                 curRecord = Records[p];
                 if(FormIDHandler.UsesMaster(curRecord->formID, MASTIndex))
-                    return true;  
+                    return true;
                 for(unsigned int x = 0; x < curRecord->INFO.size(); ++x)
                     if(FormIDHandler.UsesMaster(curRecord->INFO[x]->formID, MASTIndex))
-                        return true;  
+                        return true;
                 }
             return false;
             }
@@ -626,19 +626,19 @@ class GRUPRecords<CELLRecord>
                 {
                 curRecord = Records[p];
                 if(FormIDHandler.UsesMaster(curRecord->formID, MASTIndex))
-                    return true;  
+                    return true;
                 for(unsigned int x = 0; x < curRecord->ACHR.size(); ++x)
                     if(FormIDHandler.UsesMaster(curRecord->ACHR[x]->formID, MASTIndex))
-                        return true;  
+                        return true;
                 for(unsigned int x = 0; x < curRecord->ACRE.size(); ++x)
                     if(FormIDHandler.UsesMaster(curRecord->ACRE[x]->formID, MASTIndex))
-                        return true;  
+                        return true;
                 for(unsigned int x = 0; x < curRecord->REFR.size(); ++x)
                     if(FormIDHandler.UsesMaster(curRecord->REFR[x]->formID, MASTIndex))
-                        return true;  
+                        return true;
                 if(curRecord->PGRD != NULL)
                     if(FormIDHandler.UsesMaster(curRecord->PGRD->formID, MASTIndex))
-                        return true;  
+                        return true;
                 }
             return false;
             }
@@ -800,7 +800,7 @@ class GRUPRecords<CELLRecord>
                     }
                 curRecord->Write(curICELL, FormIDHandler);
                 TopSize += curICELL.recSize;
-                
+
                 BlockHeaders[BlockIndex] += 20; //Cell Record Header
                 SubBlockHeaders[BlockIndex][SubBlockIndex] += 20; //Cell Record Header
                 BlockHeaders[BlockIndex] += curICELL.recSize;
@@ -1343,10 +1343,10 @@ class GRUPRecords<WRLDRecord>
                 {
                 curWRLDRecord = Records[p];
                 if(FormIDHandler.UsesMaster(curWRLDRecord->formID, MASTIndex))
-                    return true;  
+                    return true;
                 if(curWRLDRecord->ROAD != NULL)
                     if(FormIDHandler.UsesMaster(curWRLDRecord->ROAD->formID, MASTIndex))
-                        return true;  
+                        return true;
                 if(curWRLDRecord->CELL != NULL)
                     {
                     curCELLRecord = curWRLDRecord->CELL;
@@ -1355,22 +1355,22 @@ class GRUPRecords<WRLDRecord>
                     {
                     curCELLRecord = curWRLDRecord->CELLS[x];
                     if(FormIDHandler.UsesMaster(curCELLRecord->formID, MASTIndex))
-                        return true;  
+                        return true;
                     for(unsigned int y = 0; y < curCELLRecord->ACHR.size(); ++y)
                         if(FormIDHandler.UsesMaster(curCELLRecord->ACHR[y]->formID, MASTIndex))
-                            return true;  
+                            return true;
                     for(unsigned int y = 0; y < curCELLRecord->ACRE.size(); ++y)
                         if(FormIDHandler.UsesMaster(curCELLRecord->ACRE[y]->formID, MASTIndex))
-                            return true;  
+                            return true;
                     for(unsigned int y = 0; y < curCELLRecord->REFR.size(); ++y)
                         if(FormIDHandler.UsesMaster(curCELLRecord->REFR[y]->formID, MASTIndex))
-                            return true;  
+                            return true;
                     if(curCELLRecord->PGRD != NULL)
                         if(FormIDHandler.UsesMaster(curCELLRecord->PGRD->formID, MASTIndex))
-                            return true;  
+                            return true;
                     if(curCELLRecord->LAND != NULL)
                         if(FormIDHandler.UsesMaster(curCELLRecord->LAND->formID, MASTIndex))
-                            return true;  
+                            return true;
                     }
                 }
             return false;
@@ -1574,7 +1574,7 @@ class GRUPRecords<WRLDRecord>
 
                     curCell->Write(curWriteCell, FormIDHandler);
                     curWriteWorld.WorldGRUPSize += curWriteCell.recSize;
-                    
+
                     curWriteWorld.Block[BlockIndex].size += 20; //Cell Record Header
                     curWriteWorld.Block[BlockIndex].SubBlock[SubBlockIndex].size += 20; //Cell Record Header
                     curWriteWorld.Block[BlockIndex].size += curWriteCell.recSize;
@@ -1663,7 +1663,7 @@ class GRUPRecords<WRLDRecord>
                         curCell->REFR.clear();
 
                     curCell->Write(curWriteWorld.CELL, FormIDHandler);
-                    
+
                     //Account for GRUPs
                     if(curWriteWorld.CELL.PersistentSize)
                         {

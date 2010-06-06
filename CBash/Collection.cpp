@@ -79,7 +79,7 @@ int Collection::CleanMasters(char *ModName)
     ModFile *curModFile = LookupModFile(ModName);
     if(curModFile == NULL)
         return 0;
-    return curModFile->CleanMasters();    
+    return curModFile->CleanMasters();
     }
 int Collection::SafeSaveMod(char *ModName, bool CloseMod)
     {
@@ -217,7 +217,7 @@ int Collection::SafeSaveMod(char *ModName, bool CloseMod)
             remove(tName);
         printf("Error saving: %s\n  Temp file %s removed.\n", ModName, tName);
         throw 1;
-        return -1;        
+        return -1;
         }
     return 0;
     }
@@ -889,7 +889,7 @@ std::multimap<char *, std::pair<ModFile *, Record *>, sameStr>::iterator Collect
     {
     if(ModName == NULL || recordEDID == NULL)
         {curModFile = NULL; curRecord = NULL; return GMST_ModFile_Record.end();}
-        
+
     std::multimap<char *, std::pair<ModFile *, Record *>, sameStr>::iterator it = GMST_ModFile_Record.find(recordEDID);
 
     if(it == GMST_ModFile_Record.end())

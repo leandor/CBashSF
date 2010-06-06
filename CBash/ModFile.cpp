@@ -582,6 +582,7 @@ int ModFile::CleanMasters()
         }
     return cleaned;
     }
+
 int ModFile::Save(FileBuffer &buffer, bool CloseMod)
     {
     unsigned int formCount = 0;

@@ -63,7 +63,7 @@ int NewCollection(const char *ModsPath)
 	catch(Ex_NULL &ex)
 	    {
         printf("Error creating collection\n  %s", ex.what());
-        return -1;	    
+        return -1;
 	    }
     catch(...)
         {

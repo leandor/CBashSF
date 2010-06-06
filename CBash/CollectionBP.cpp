@@ -471,7 +471,7 @@ unsigned int Collection::GetNumREFRRecords(char *ModName, unsigned int parentFID
     CELLRecord *parentRecord = NULL;
     REFRRecord *curRecord = NULL;
     int gridX = 0, gridY = 0;
-    
+
     LookupRecord(ModName, parentFID, curModFile, parentRecord);
     if(curModFile == NULL ||parentRecord == NULL)
         return 0;
@@ -3729,12 +3729,12 @@ unsigned int Collection::CopyCELLRecord(char *ModName, unsigned int srcRecordFID
 
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
     if(srcMod == NULL || srcRecord == NULL)
-        return 0;    
-    
+        return 0;
+
     ModFile *destMod = NULL;
     WRLDRecord *destParentRecord = NULL;
     CELLRecord *copyRecord = NULL;
-    
+
     bool hasParent = (destParentFID != 0);
     if(hasParent)
         {
@@ -3991,7 +3991,7 @@ unsigned int Collection::CopyLANDRecord(char *ModName, unsigned int srcRecordFID
 
     ModFile *destMod = NULL;
     LANDRecord *copyRecord = NULL;
-    
+
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
@@ -4061,7 +4061,7 @@ unsigned int Collection::CopyINFORecord(char *ModName, unsigned int srcRecordFID
 
     ModFile *destMod = NULL;
     INFORecord *copyRecord = NULL;
-    
+
     if(asOverride)
         {
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);

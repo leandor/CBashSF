@@ -15,7 +15,7 @@ def TestLoadMasters():
     Current = Collection()
     Current.addMod("OOO Patch - Geomancy - Activator.esp")
     Current.minimalLoad(LoadMasters=False)
-    
+
 def TestDeleteRecord():
     Current = Collection()
     Current.addMod("Oblivion.esm")
@@ -219,7 +219,7 @@ def TestDeleteRecord():
                 newRecord.DeleteRecord(trgCellOver)
             trgCellOver.DeleteRecord(trgWrldOver)
         trgWrldOver.DeleteRecord()
-        
+
     for record in Current[0].DIAL:
         newOver = record.CopyAsOverride(newMod)
         for info in record.INFO:
@@ -256,19 +256,19 @@ def TestDeleteRecord():
 
     print "Delete:Save Test - TestDelete.esp"
     newMod.safeCloseSave()
-    
+
 def TestMinimalLoad():
     Current = Collection()
     newMod = Current.addMod("Oblivion.esm")
     Current.minimalLoad(LoadMasters=True)
     newMod.safeSave()
-    
+
 def TestFullLoad():
     Current = Collection()
     newMod = Current.addMod("Oblivion.esm")
     Current.fullLoad(LoadMasters=False)
     newMod.safeSave()
-    
+
 def TestReadWriteAll():
     Current = Collection()
     Current.addMod("Oblivion.esm")
@@ -536,7 +536,7 @@ def TestReadWriteAll():
                 Pgrd.DeleteRecord(wrldCell)
             wrldCell.DeleteRecord(record)
         record.DeleteRecord()
-        
+
     for record in Current[0].DIAL:
         newOver = record.CopyAsOverride(newMod)
         newNew = record.CopyAsNew(newMod)
@@ -583,7 +583,7 @@ def TestReadWriteAll():
         record.DeleteRecord()
 
     print "ALL:Save Test - TestALL.esp"
-    
+
     phonenumber = raw_input(">")
     newMod.safeCloseSave()
     phonenumber = raw_input("!")
@@ -639,7 +639,7 @@ def TestTES4():
     print "dele_p     :", newMod.TES4.dele_p
     print "author     :", newMod.TES4.author
     print "description:", newMod.TES4.description
-    print "masters    :", newMod.TES4.masters    
+    print "masters    :", newMod.TES4.masters
 
     print "TES4:Save Test - TestTES4.esp"
     newMod.safeSave()
@@ -739,7 +739,7 @@ def TestCLAS():
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
-        
+
         print "full          :", record.full
         print "description   :", record.description
         print "iconPath      :", record.iconPath
@@ -769,7 +769,7 @@ def TestCLAS():
     newRecord.flags2 = 0x0201
     print "eid..."
     newRecord.eid = "WarCLASTest"
-    
+
     print "full..."
     newRecord.full = "Waruddar! RARGH!"
     print "description..."
@@ -806,14 +806,14 @@ def TestCLAS():
     newRecord.trainLevel = 60
     print "unused1..."
     newRecord.unused1 = [0x01, 0xFF]
-        
+
     print "CLAS:Set Test Results"
     print
     print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
-    
+
     print "full          :", newRecord.full
     print "description   :", newRecord.description
     print "iconPath      :", newRecord.iconPath
@@ -854,7 +854,7 @@ def TestFACT():
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
-        
+
         print "full                :", record.full
         print "relations           :"
         for relation in record.relations:
@@ -915,12 +915,12 @@ def TestFACT():
     print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
-    print "eid    :", newRecord.eid    
-    print "full               :", newRecord.full    
+    print "eid    :", newRecord.eid
+    print "full               :", newRecord.full
     print "relations          :"
     for relation in newRecord.relations:
         print "  %i: Faction: %s, Mod: %i" % (relation._listIndex, PrintFormID(relation.faction), relation.mod)
-    print "flags              :", newRecord.flags    
+    print "flags              :", newRecord.flags
     print "crimeGoldMultiplier:", newRecord.crimeGoldMultiplier
     print "ranks              :"
     for rank in newRecord.ranks:
@@ -949,7 +949,7 @@ def TestHAIR():
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
-        
+
         print "full    :", record.full
         print "modPath :", record.modPath
         print "modb    :", record.modb
@@ -980,10 +980,10 @@ def TestHAIR():
     newRecord.modb = 2.56
     print "modt_p..."
     newRecord.modt_p = [0x00, 0xFF, 0xFF]
-    
+
     print "iconPath..."
     newRecord.iconPath = r"hair\path\test.dds"
-    
+
     print "flags..."
     newRecord.flags = 15
 
@@ -993,7 +993,7 @@ def TestHAIR():
     print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
-    print "eid    :", newRecord.eid    
+    print "eid    :", newRecord.eid
     print "full    :", newRecord.full
     print "modPath :", newRecord.modPath
     print "modb    :", newRecord.modb
@@ -1025,7 +1025,7 @@ def TestEYES():
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
-        
+
         print "full    :", record.full
         print "iconPath:", record.iconPath
         print "flags   :", record.flags
@@ -1044,9 +1044,9 @@ def TestEYES():
     print "eid..."
     newRecord.eid = "EYESWarTest"
     print "full..."
-    newRecord.full = "Fancy EYES"    
+    newRecord.full = "Fancy EYES"
     print "iconPath..."
-    newRecord.iconPath = r"EYES\p\nath\test.dds"    
+    newRecord.iconPath = r"EYES\p\nath\test.dds"
     print "flags..."
     newRecord.flags = 15
 
@@ -1055,7 +1055,7 @@ def TestEYES():
     print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
-    print "eid    :", newRecord.eid    
+    print "eid    :", newRecord.eid
     print "full    :", newRecord.full
     print "iconPath:", newRecord.iconPath
     print "flags   :", newRecord.flags
@@ -1083,17 +1083,17 @@ def TestRACE():
         print "flags1 :", record.flags1
         print "flags2 :", record.flags2
         print "eid    :", record.eid
-        
+
         print "full      :", record.full
         print "text      :", record.text
         print "spells    :"
         for spell in record.spells:
             print "  ", PrintFormID(spell)
-            
+
         print "relations :"
         for relation in record.relations:
             print "  %i: Faction: %s, Mod: %i" % (relation._listIndex, PrintFormID(relation.faction), relation.mod)
-        
+
         print "  skill1:", record.skill1, ", boost:", record.skill1Boost
         print "  skill2:", record.skill2, ", boost:", record.skill2Boost
         print "  skill3:", record.skill3, ", boost:", record.skill3Boost
@@ -1103,16 +1103,16 @@ def TestRACE():
         print "  skill7:", record.skill7, ", boost:", record.skill7Boost
 
         print "unused1          :", record.unused1
-        
+
         print "maleHeight       :", record.maleHeight
         print "femaleHeight     :", record.femaleHeight
         print "maleWeight       :", record.maleWeight
         print "femaleWeight     :", record.femaleWeight
         print "flags            :", record.flags
-        
+
         print "maleVoice        :", record.maleVoice
         print "femaleVoice      :", record.femaleVoice
-        
+
         print "defaultHairMale  :", record.defaultHairMale
         print "defaultHairFemale:", record.defaultHairFemale
         print "defaultHairColor :", record.defaultHairColor
@@ -1185,14 +1185,14 @@ def TestRACE():
 
         print "maleTailModel.modPath :", record.maleTailModel.modPath
         print "maleTailModel.modb    :", record.maleTailModel.modb
-        print "maleTailModel.modt_p  :", record.maleTailModel.modt_p        
+        print "maleTailModel.modt_p  :", record.maleTailModel.modt_p
 
         print "maleUpperBodyPath     :", record.maleUpperBodyPath
         print "maleLowerBodyPath     :", record.maleLowerBodyPath
         print "maleHandPath          :", record.maleHandPath
         print "maleFootPath          :", record.maleFootPath
         print "maleTailPath          :", record.maleTailPath
-        
+
         print "femaleTailModel.modPath :", record.femaleTailModel.modPath
         print "femaleTailModel.modb    :", record.femaleTailModel.modb
         print "femaleTailModel.modt_p  :", record.femaleTailModel.modt_p
@@ -1211,13 +1211,13 @@ def TestRACE():
         for eye in record.eyes:
             print "  ", PrintFormID(eye)
 
-        print "fggs_p:", record.fggs_p   
-        print "fgga_p:", record.fgga_p 
+        print "fggs_p:", record.fggs_p
+        print "fgga_p:", record.fgga_p
         print "fgts_p:", record.fgts_p
-        
+
         print "snam:", record.snam
         break
-        
+
     print "RACE:Create Record Test"
     newRecord = newMod.createRACERecord()
     print "RACE:Set Test"
@@ -1236,13 +1236,13 @@ def TestRACE():
     newRelation.faction = 0x00000800
     newRelation.mod = 100
     newRelation = newRecord.newRelationsElement()
-    newRelation.faction = 0x00000801    
+    newRelation.faction = 0x00000801
     newRelation.mod = 50
     newRelation = newRecord.newRelationsElement()
-    newRelation.faction = 0x00000802    
+    newRelation.faction = 0x00000802
     newRelation.mod = 60
     newRelation = newRecord.newRelationsElement()
-    newRelation.faction = 0x00000803    
+    newRelation.faction = 0x00000803
     newRelation.mod = 70
     nRelations = newRecord.relations
     newRecord.relations = [nRelations[1],nRelations[0],nRelations[2],nRelations[3]]
@@ -1347,7 +1347,7 @@ def TestRACE():
 
     newRecord.maleTailModel.modPath = "maleTailModel"
     newRecord.maleTailModel.modb = 2.2
-    newRecord.maleTailModel.modt_p = [0x01, 0x20]     
+    newRecord.maleTailModel.modt_p = [0x01, 0x20]
 
     newRecord.maleUpperBodyPath = "maleUpperBodyPath"
     newRecord.maleLowerBodyPath = "maleLowerBodyPath"
@@ -1367,29 +1367,29 @@ def TestRACE():
     newRecord.hairs = [0x00000001, 0x01000002]
     newRecord.eyes = [0x00000003, 0x01000004]
 
-    newRecord.fggs_p = [0x01, 0x20] 
+    newRecord.fggs_p = [0x01, 0x20]
     newRecord.fgga_p = [0x01, 0x20]
     newRecord.fgts_p = [0x01, 0x20]
-    
+
     newRecord.snam = [0x01, 0x20]
-    
+
     print "RACE:Set Test Results"
     print
     print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
-    
+
     print "full      :", newRecord.full
     print "text      :", newRecord.text
     print "spells    :"
     for spell in newRecord.spells:
         print "  ", PrintFormID(spell)
-        
+
     print "relations :"
     for relation in newRecord.relations:
         print "  %i: Faction: %s, Mod: %i" % (relation._listIndex, PrintFormID(relation.faction), relation.mod)
-    
+
     print "  skill1:", newRecord.skill1, ", boost:", newRecord.skill1Boost
     print "  skill2:", newRecord.skill2, ", boost:", newRecord.skill2Boost
     print "  skill3:", newRecord.skill3, ", boost:", newRecord.skill3Boost
@@ -1399,16 +1399,16 @@ def TestRACE():
     print "  skill7:", newRecord.skill7, ", boost:", newRecord.skill7Boost
 
     print "unused1          :", newRecord.unused1
-    
+
     print "maleHeight       :", newRecord.maleHeight
     print "femaleHeight     :", newRecord.femaleHeight
     print "maleWeight       :", newRecord.maleWeight
     print "femaleWeight     :", newRecord.femaleWeight
     print "flags            :", newRecord.flags
-    
+
     print "maleVoice        :", newRecord.maleVoice
     print "femaleVoice      :", newRecord.femaleVoice
-    
+
     print "defaultHairMale  :", newRecord.defaultHairMale
     print "defaultHairFemale:", newRecord.defaultHairFemale
     print "defaultHairColor :", newRecord.defaultHairColor
@@ -1481,14 +1481,14 @@ def TestRACE():
 
     print "maleTailModel.modPath :", newRecord.maleTailModel.modPath
     print "maleTailModel.modb    :", newRecord.maleTailModel.modb
-    print "maleTailModel.modt_p  :", newRecord.maleTailModel.modt_p        
+    print "maleTailModel.modt_p  :", newRecord.maleTailModel.modt_p
 
     print "maleUpperBodyPath     :", newRecord.maleUpperBodyPath
     print "maleLowerBodyPath     :", newRecord.maleLowerBodyPath
     print "maleHandPath          :", newRecord.maleHandPath
     print "maleFootPath          :", newRecord.maleFootPath
     print "maleTailPath          :", newRecord.maleTailPath
-    
+
     print "femaleTailModel.modPath :", newRecord.femaleTailModel.modPath
     print "femaleTailModel.modb    :", newRecord.femaleTailModel.modb
     print "femaleTailModel.modt_p  :", newRecord.femaleTailModel.modt_p
@@ -1507,10 +1507,10 @@ def TestRACE():
     for eye in newRecord.eyes:
         print "  ", PrintFormID(eye)
 
-    print "fggs_p:", newRecord.fggs_p   
-    print "fgga_p:", newRecord.fgga_p 
+    print "fggs_p:", newRecord.fggs_p
+    print "fgga_p:", newRecord.fgga_p
     print "fgts_p:", newRecord.fgts_p
-    
+
     print "snam:", newRecord.snam
 
     print "RACE:CopyAsOverride Test"
@@ -1538,7 +1538,7 @@ def TestSOUN():
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
-        
+
         print "soundFile      :", record.soundFile
         print "minDistance    :", record.minDistance
         print "maxDistance    :", record.maxDistance
@@ -1571,14 +1571,14 @@ def TestSOUN():
     newRecord.staticAtten = 5
     newRecord.stopTime = 12
     newRecord.startTime = 24
-    
+
     print "SOUN:Set Test Results"
     print
     print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
-    
+
     print "soundFile      :", newRecord.soundFile
     print "minDistance    :", newRecord.minDistance
     print "maxDistance    :", newRecord.maxDistance
@@ -1614,7 +1614,7 @@ def TestSKIL():
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
-        
+
         print "skill          :", record.skill
         print "description    :", record.description
         print "iconPath       :", record.iconPath
@@ -1650,14 +1650,14 @@ def TestSKIL():
     newRecord.journeyman = "Little bit"
     newRecord.expert = "Jack of none"
     newRecord.master = "Master of all"
-    
+
     print "SKIL:Set Test Results"
     print
     print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
-    
+
     print "skill          :", newRecord.skill
     print "description    :", newRecord.description
     print "iconPath       :", newRecord.iconPath
@@ -1694,7 +1694,7 @@ def TestMGEF():
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
-        
+
         print "full            :", record.full
         print "text            :", record.text
         print "iconPath        :", record.iconPath
@@ -1753,14 +1753,14 @@ def TestMGEF():
     newRecord.cefEnchantment = 16.0
     newRecord.cefBarter = 17.2
     newRecord.counterEffects = [1280332612]
-    
+
     print "MGEF:Set Test Results"
     print
     print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
-    
+
     print "full            :", newRecord.full
     print "text            :", newRecord.text
     print "iconPath        :", newRecord.iconPath
@@ -1811,7 +1811,7 @@ def TestSCPT():
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
-        
+
         print "unused1      :", record.unused1
         print "numRefs      :", record.numRefs
         print "compiledSize :", record.compiledSize
@@ -1866,14 +1866,14 @@ def TestSCPT():
     newRelation.flags = 2
     newRelation.unused2 = [0,1,2,3,4,5,6]
     newRelation.name = "Did1it"
-    
+
     newRelation = newRecord.newVarsElement()
     newRelation.index = 3
     newRelation.unused1 = [0,1,2,3,4,5,6,7,8,9,10,11]
     newRelation.flags = 2
     newRelation.unused2 = [0,1,2,3,4,5,6]
     newRelation.name = "Did2it"
-        
+
     newReference = newRecord.newReferencesElement()
     newReference.reference = 7
     newReference.IsSCRO = True
@@ -1894,7 +1894,7 @@ def TestSCPT():
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
-    
+
     print "unused1      :", newRecord.unused1
     print "numRefs      :", newRecord.numRefs
     print "compiledSize :", newRecord.compiledSize
@@ -1971,7 +1971,7 @@ def TestLTEX():
 
     newRecord.grass = [0xFF000121, 0xFE000222]
 
-    
+
     print "LTEX:Set Test Results"
     print
     print "fid    :", PrintFormID(newRecord.fid)
@@ -1986,7 +1986,7 @@ def TestLTEX():
     print "grass    :"
     for grass in newRecord.grass:
         print "  ", PrintFormID(grass)
-            
+
     print "LTEX:CopyAsOverride Test"
     for record in Current[0].LTEX:
         record.CopyAsOverride(newMod)
@@ -2288,7 +2288,7 @@ def TestBSGN():
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
-    
+
     print "full      :", newRecord.full
     print "iconPath  :", newRecord.iconPath
     print "text      :", newRecord.text
@@ -2349,10 +2349,10 @@ def TestACTI():
     newRecord.modb = 2.56
     print "modt_p..."
     newRecord.modt_p = [0x00, 0xFF, 0xFF]
-    
+
     newRecord.script = 7
     newRecord.sound = 0x0000000A
-    
+
     print "ACTI:Set Test Results"
     print
     print "fid    :", PrintFormID(newRecord.fid)
@@ -2365,7 +2365,7 @@ def TestACTI():
     print "modt_p  :", newRecord.modt_p
     print "script  :", newRecord.script
     print "sound   :", newRecord.sound
-    
+
     print "ACTI:CopyAsOverride Test"
     for record in Current[0].ACTI:
         record.CopyAsOverride(newMod)
@@ -2423,7 +2423,7 @@ def TestAPPA():
     newRecord.modb = 2.56
     print "modt_p..."
     newRecord.modt_p = [0x00, 0xFF, 0xFF]
-    
+
     print "iconPath..."
     newRecord.iconPath = r"APPA\path\test.dds"
     newRecord.script = 7
@@ -2448,7 +2448,7 @@ def TestAPPA():
     print "value     :", newRecord.value
     print "weight    :", newRecord.weight
     print "quality   :", newRecord.quality
-    
+
     print "APPA:CopyAsOverride Test"
     for record in Current[0].APPA:
         record.CopyAsOverride(newMod)
@@ -2535,7 +2535,7 @@ def TestARMO():
     newRecord.health = 155
     newRecord.weight = 5
 
-        
+
     print "ARMO:Set Test Results"
     print
     print "fid    :", PrintFormID(newRecord.fid)
@@ -2625,7 +2625,7 @@ def TestBOOK():
     newRecord.modb = 2.56
     print "modt_p..."
     newRecord.modt_p = [0x00, 0xFF, 0xFF]
-    
+
     print "iconPath..."
     newRecord.iconPath = r"BOOK\path\test.dds"
     newRecord.text = "Now this is a story about...something. And an interesting thing happened to...something. But, unknown to...something..., there was opposition from...something else....\n<br>Hey!</br><herlmf></herlmf>\nJust a test\n"
@@ -2637,7 +2637,7 @@ def TestBOOK():
     newRecord.value = 152
     newRecord.weight = 3.56
 
-    
+
     print "BOOK:Set Test Results"
     print
     print "fid    :", PrintFormID(newRecord.fid)
@@ -2827,7 +2827,7 @@ def TestCONT():
     newRecord.modb = 2.56
     print "modt_p..."
     newRecord.modt_p = [0x00, 0xFF, 0xFF]
-    
+
     newRecord.script = 7
     item = newRecord.newItemsElement()
     item.item = 0x0100000A
@@ -2867,7 +2867,7 @@ def TestCONT():
     print "weight     :", newRecord.weight
     print "soundOpen  :", PrintFormID(newRecord.soundOpen)
     print "soundClose :", PrintFormID(newRecord.soundClose)
-        
+
     print "CONT:CopyAsOverride Test"
     for record in Current[0].CONT:
         record.CopyAsOverride(newMod)
@@ -2893,7 +2893,7 @@ def TestDOOR():
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
-        
+
         print "full    :", record.full
         print "modPath :", record.modPath
         print "modb    :", record.modb
@@ -2928,7 +2928,7 @@ def TestDOOR():
     newRecord.modb = 2.1
     print "modt_p..."
     newRecord.modt_p = [0x00, 0xFF, 0xFF]
-    
+
     newRecord.script = 8
     newRecord.soundOpen  = 0x00000007
     newRecord.soundClose = 0x00000008
@@ -2994,9 +2994,9 @@ def TestINGR():
         print "weight  :", record.weight
         print "value   :", record.value
         print "flags   :", record.flags
-        
+
         print "unused1 :", record.unused1
-        
+
         print "effects :"
         for effect in record.effects:
             print "  name0      :", effect.name0
@@ -3033,7 +3033,7 @@ def TestINGR():
     newRecord.modb = 2.56
     print "modt_p..."
     newRecord.modt_p = [0x00, 0xFF, 0xFF]
-    
+
     print "iconPath..."
     newRecord.iconPath = r"INGR\path\test.dds"
     newRecord.script = 7
@@ -3041,7 +3041,7 @@ def TestINGR():
     newRecord.value = 150
 
     newRecord.flags = 1
-    
+
     newRecord.unused1 = [0x00, 0xFE, 0xFD]
 
     newEffect = newRecord.newEffectsElement()
@@ -3073,7 +3073,7 @@ def TestINGR():
     newEffect.flags = 13
     newEffect.unused1 = [6,7,8]
     newEffect.full = "INGR??"
-    
+
     print "INGR:Set Test Results"
     print
     print "fid    :", PrintFormID(newRecord.fid)
@@ -3091,9 +3091,9 @@ def TestINGR():
     print "weight  :", newRecord.weight
     print "value   :", newRecord.value
     print "flags   :", newRecord.flags
-    
+
     print "unused1 :", newRecord.unused1
-    
+
     print "effects :"
     for effect in newRecord.effects:
         print "  name0      :", effect.name0
@@ -3109,7 +3109,7 @@ def TestINGR():
         print "  flags      :", effect.flags
         print "  unused1    :", effect.unused1
         print "  full       :", effect.full
-        print    
+        print
     print "INGR:CopyAsOverride Test"
     for record in Current[0].INGR:
         record.CopyAsOverride(newMod)
@@ -3149,7 +3149,7 @@ def TestLIGH():
         print "green   :", record.green
         print "blue    :", record.blue
         print "unused1 :", record.unused1
-        
+
         print "flags   :", record.flags
         print "falloff :", record.falloff
         print "fov     :", record.fov
@@ -3175,22 +3175,22 @@ def TestLIGH():
     newRecord.modb = 2.26
     print "modt_p..."
     newRecord.modt_p = [0x00, 0xFF, 0xFF]
-    
+
     newRecord.script = 7
 
     print "full..."
     newRecord.full = "Fancy LIGH"
     print "iconPath..."
     newRecord.iconPath = r"LIGH\path\test.dds"
-    
+
     newRecord.duration = -1
     newRecord.radius = 256
-    
+
     newRecord.red = 70
     newRecord.green = 71
     newRecord.blue = 72
     newRecord.unused1 = [12]
-    
+
     newRecord.flags = 1
     newRecord.falloff = 12.6
     newRecord.fov = 35.1
@@ -3219,7 +3219,7 @@ def TestLIGH():
     print "green   :", newRecord.green
     print "blue    :", newRecord.blue
     print "unused1 :", newRecord.unused1
-    
+
     print "flags   :", newRecord.flags
     print "falloff :", newRecord.falloff
     print "fov     :", newRecord.fov
@@ -3227,7 +3227,7 @@ def TestLIGH():
     print "weight  :", newRecord.weight
     print "fade    :", newRecord.fade
     print "sound   :", PrintFormID(newRecord.sound)
-        
+
     print "LIGH:CopyAsOverride Test"
     for record in Current[0].LIGH:
         record.CopyAsOverride(newMod)
@@ -3283,7 +3283,7 @@ def TestMISC():
     newRecord.modb = 2.56
     print "modt_p..."
     newRecord.modt_p = [0x00, 0xFF, 0xFF]
-    
+
     print "iconPath..."
     newRecord.iconPath = r"MISC\path\test.dds"
     newRecord.script = 7
@@ -3296,7 +3296,7 @@ def TestMISC():
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
-    
+
     print "full    :", newRecord.full
     print "modPath :", newRecord.modPath
     print "modb    :", newRecord.modb
@@ -3305,7 +3305,7 @@ def TestMISC():
     print "script  :", newRecord.script
     print "value   :", newRecord.value
     print "weight  :", newRecord.weight
-    
+
     print "MISC:CopyAsOverride Test"
     for record in Current[0].MISC:
         record.CopyAsOverride(newMod)
@@ -3352,18 +3352,18 @@ def TestSTAT():
     newRecord.modb = 2.16
     print "modt_p..."
     newRecord.modt_p = [0x00, 0xFF, 0xFF]
-    
+
     print "STAT:Set Test Results"
     print
     print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
-    
+
     print "modPath :", newRecord.modPath
     print "modb    :", newRecord.modb
     print "modt_p  :", newRecord.modt_p
-    
+
     print "STAT:CopyAsOverride Test"
     for record in Current[0].STAT:
         record.CopyAsOverride(newMod)
@@ -3392,7 +3392,7 @@ def TestGRAS():
         print "modPath :", record.modPath
         print "modb    :", record.modb
         print "modt_p  :", record.modt_p
-        
+
         print "density       :", record.density
         print "minSlope      :", record.minSlope
         print "maxSlope      :", record.maxSlope
@@ -3417,7 +3417,7 @@ def TestGRAS():
     newRecord.flags2 = 0x0201
     print "eid..."
     newRecord.eid = "GRASWarTest"
-    
+
     newRecord.modPath = r"GRAS\path\test.nif"
     newRecord.modb = 1.5
     newRecord.modt_p = [0xFF, 0x00, 0xFE]
@@ -3434,7 +3434,7 @@ def TestGRAS():
     newRecord.wavePeriod = 1.5
     newRecord.flags = 1
     newRecord.unused3 = [0xFF, 0x00, 0xFE]
-    
+
     print "GRAS:Set Test Results"
     print
     print "fid    :", PrintFormID(newRecord.fid)
@@ -3445,7 +3445,7 @@ def TestGRAS():
     print "modPath :", newRecord.modPath
     print "modb    :", newRecord.modb
     print "modt_p  :", newRecord.modt_p
-        
+
     print "density       :", newRecord.density
     print "minSlope      :", newRecord.minSlope
     print "maxSlope      :", newRecord.maxSlope
@@ -3459,7 +3459,7 @@ def TestGRAS():
     print "wavePeriod    :", newRecord.wavePeriod
     print "flags         :", newRecord.flags
     print "unused3       :", newRecord.unused3
-        
+
     print "GRAS:CopyAsOverride Test"
     for record in Current[0].GRAS:
         record.CopyAsOverride(newMod)
@@ -3498,7 +3498,7 @@ def TestTREE():
         print "leafDim      :", record.leafDim
         print "shadowRadius :", record.shadowRadius
         print "rockSpeed    :", record.rockSpeed
-        print "rustleSpeed  :", record.rustleSpeed  
+        print "rustleSpeed  :", record.rustleSpeed
         print "widthBill    :", record.widthBill
         print "heightBill   :", record.heightBill
         print
@@ -3540,7 +3540,7 @@ def TestTREE():
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
-    
+
     print "modPath      :", newRecord.modPath
     print "modb         :", newRecord.modb
     print "modt_p       :", newRecord.modt_p
@@ -3553,10 +3553,10 @@ def TestTREE():
     print "leafDim      :", newRecord.leafDim
     print "shadowRadius :", newRecord.shadowRadius
     print "rockSpeed    :", newRecord.rockSpeed
-    print "rustleSpeed  :", newRecord.rustleSpeed  
+    print "rustleSpeed  :", newRecord.rustleSpeed
     print "widthBill    :", newRecord.widthBill
     print "heightBill   :", newRecord.heightBill
-    
+
     print "TREE:CopyAsOverride Test"
     for record in Current[0].TREE:
         record.CopyAsOverride(newMod)
@@ -3622,7 +3622,7 @@ def TestFLOR():
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
-    
+
     print "full       :", newRecord.full
     print "modPath    :", newRecord.modPath
     print "modb       :", newRecord.modb
@@ -3686,17 +3686,17 @@ def TestFURN():
     newRecord.modb = 2.26
     print "modt_p..."
     newRecord.modt_p = [0x00, 0xFF, 0xFF]
-    
+
     newRecord.script = 7
     newRecord.flags = 1
-    
+
     print "FURN:Set Test Results"
     print
     print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
-    
+
     print "full    :", newRecord.full
     print "modPath :", newRecord.modPath
     print "modb    :", newRecord.modb
@@ -3704,7 +3704,7 @@ def TestFURN():
 
     print "script  :", newRecord.script
     print "flags   :", newRecord.flags
-    
+
     print "FURN:CopyAsOverride Test"
     for record in Current[0].FURN:
         record.CopyAsOverride(newMod)
@@ -3738,7 +3738,7 @@ def TestWEAP():
         print "iconPath      :", record.iconPath
         print "script        :", PrintFormID(record.script)
         print "enchantment   :", PrintFormID(record.enchantment)
-        print "enchantPoints :", record.enchantPoints                    
+        print "enchantPoints :", record.enchantPoints
         print "weaponType    :", record.weaponType
         print "speed         :", record.speed
         print "reach         :", record.reach
@@ -3747,7 +3747,7 @@ def TestWEAP():
         print "health        :", record.health
         print "weight        :", record.weight
         print "damage        :", record.damage
-        
+
         break
 
     print "WEAP:Create Record Test"
@@ -3768,13 +3768,13 @@ def TestWEAP():
     newRecord.modb = 2.46
     print "modt_p..."
     newRecord.modt_p = [0x00, 0xFF, 0xFF]
-    
+
     print "iconPath..."
     newRecord.iconPath = r"WEAP\path\test.dds"
     newRecord.script = 7
-    
+
     newRecord.enchantment = 15
-    newRecord.enchantPoints = 255                    
+    newRecord.enchantPoints = 255
     newRecord.weaponType = 1
     newRecord.speed = 1.2
     newRecord.reach = 1.3
@@ -3798,7 +3798,7 @@ def TestWEAP():
     print "iconPath      :", newRecord.iconPath
     print "script        :", PrintFormID(newRecord.script)
     print "enchantment   :", PrintFormID(newRecord.enchantment)
-    print "enchantPoints :", newRecord.enchantPoints                    
+    print "enchantPoints :", newRecord.enchantPoints
     print "weaponType    :", newRecord.weaponType
     print "speed         :", newRecord.speed
     print "reach         :", newRecord.reach
@@ -3807,7 +3807,7 @@ def TestWEAP():
     print "health        :", newRecord.health
     print "weight        :", newRecord.weight
     print "damage        :", newRecord.damage
-    
+
     print "WEAP:CopyAsOverride Test"
     for record in Current[0].WEAP:
         record.CopyAsOverride(newMod)
@@ -3840,8 +3840,8 @@ def TestAMMO():
         print "modt_p        :", record.modt_p
         print "iconPath      :", record.iconPath
         print "enchantment   :", PrintFormID(record.enchantment)
-        print "enchantPoints :", record.enchantPoints     
-        print "speed         :", record.speed  
+        print "enchantPoints :", record.enchantPoints
+        print "speed         :", record.speed
         print "flags         :", record.flags
         print "unused1       :", record.unused1
         print "value         :", record.value
@@ -3867,19 +3867,19 @@ def TestAMMO():
     newRecord.modb = 2.46
     print "modt_p..."
     newRecord.modt_p = [0x00, 0xFF, 0xFF]
-    
+
     print "iconPath..."
     newRecord.iconPath = r"AMMO\path\test.dds"
-    
+
     newRecord.enchantment = 15
-    newRecord.enchantPoints = 255                    
+    newRecord.enchantPoints = 255
     newRecord.speed = 1.2
     newRecord.flags = 1
     newRecord.unused1 = [0x08, 0x25, 0xFF]
     newRecord.value = 151
     newRecord.weight = 32.5
     newRecord.damage = 15
-    
+
     print "AMMO:Set Test Results"
     print
     print "fid    :", PrintFormID(newRecord.fid)
@@ -3893,14 +3893,14 @@ def TestAMMO():
     print "modt_p        :", newRecord.modt_p
     print "iconPath      :", newRecord.iconPath
     print "enchantment   :", PrintFormID(newRecord.enchantment)
-    print "enchantPoints :", newRecord.enchantPoints     
-    print "speed         :", newRecord.speed  
+    print "enchantPoints :", newRecord.enchantPoints
+    print "speed         :", newRecord.speed
     print "flags         :", newRecord.flags
     print "unused1       :", newRecord.unused1
     print "value         :", newRecord.value
     print "weight        :", newRecord.weight
     print "damage        :", newRecord.damage
-    
+
     print "AMMO:CopyAsOverride Test"
     for record in Current[0].AMMO:
         record.CopyAsOverride(newMod)
@@ -3943,11 +3943,11 @@ def TestNPC_():
              print "  %i: Faction: %s, Rank: %i, Unused1:" % (faction._listIndex, PrintFormID(faction.faction), faction.rank), faction.unused1
         print "deathItem :", PrintFormID(record.deathItem)
         print "race      :", PrintFormID(record.race)
-        
+
         print "spells    :"
         for spell in record.spells:
             print "  ", PrintFormID(spell)
-            
+
         print "script    :", PrintFormID(record.script)
         print "items     :"
         for item in record.items:
@@ -3968,7 +3968,7 @@ def TestNPC_():
         print "animations     :"
         for animation in record.animations:
             print "  ", animation
-        
+
         print "iclass         :", PrintFormID(record.iclass)
         print "armorer      :", record.armorer
         print "athletics    :", record.athletics
@@ -4034,7 +4034,7 @@ def TestNPC_():
     newRecord.modb = 2.76
     print "modt_p..."
     newRecord.modt_p = [0x00, 0xFF, 0xFF]
-    
+
     newRecord.flags = 1
     newRecord.baseSpell = 10
     newRecord.fatigue = 20
@@ -4048,17 +4048,17 @@ def TestNPC_():
     newFaction.faction = 1
     newFaction.rank = 2
     newFaction.unused1 = [1,2,3]
-    
+
     newFaction = newRecord.newFactionsElement()
     newFaction.faction = 3
     newFaction.rank = 4
     newFaction.unused1 = [4,5,6]
-    
+
     newFaction = newRecord.newFactionsElement()
     newFaction.faction = 5
     newFaction.rank = 6
     newFaction.unused1 = [7,8,9]
-    
+
     newFaction = newRecord.newFactionsElement()
     newFaction.faction = 7
     newFaction.rank = 8
@@ -4069,7 +4069,7 @@ def TestNPC_():
     newRecord.race = 15
     newRecord.spells = [0xFF000121, 0xFE000222]
     newRecord.script = 7
-    
+
     item = newRecord.newItemsElement()
     item.item = 0x0100000A
     item.count = 50
@@ -4092,11 +4092,11 @@ def TestNPC_():
     newRecord.trainSkill = 5
     newRecord.trainLevel = 6
     newRecord.unused1 = [1,2]
-    
+
     newRecord.aiPackages = [0xFF000223, 0xFE000324]
-    
+
     newRecord.animations = [r"NPC_\hay2\anim1.nif", r"NPC_\hay2\anim2.nif", r"NPC_\hay2\anim3.nif", r"NPC_\hay2\anim4.nif"]
-    
+
     newRecord.iclass = 16
     newRecord.armorer = 7
     newRecord.athletics = 8
@@ -4165,11 +4165,11 @@ def TestNPC_():
          print "  %i: Faction: %s, Rank: %i, Unused1:" % (faction._listIndex, PrintFormID(faction.faction), faction.rank), faction.unused1
     print "deathItem :", PrintFormID(newRecord.deathItem)
     print "race      :", PrintFormID(newRecord.race)
-    
+
     print "spells    :"
     for spell in newRecord.spells:
         print "  ", PrintFormID(spell)
-        
+
     print "script    :", PrintFormID(newRecord.script)
     print "items     :"
     for item in newRecord.items:
@@ -4190,7 +4190,7 @@ def TestNPC_():
     print "animations     :"
     for animation in newRecord.animations:
         print "  ", animation
-    
+
     print "iclass         :", PrintFormID(newRecord.iclass)
     print "armorer      :", newRecord.armorer
     print "athletics    :", newRecord.athletics
@@ -4234,7 +4234,7 @@ def TestNPC_():
     print "fggs_p :", newRecord.fggs_p
     print "fgga_p :", newRecord.fgga_p
     print "fgts_p :", newRecord.fgts_p
-    print "fnam :", newRecord.fnam    
+    print "fnam :", newRecord.fnam
     print "NPC_:CopyAsOverride Test"
     for record in Current[0].NPC_:
         record.CopyAsOverride(newMod)
@@ -4260,7 +4260,7 @@ def TestCREA():
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
-            
+
         print "full       :", record.full
         print "modPath    :", record.modPath
         print "modb       :", record.modb
@@ -4269,13 +4269,13 @@ def TestCREA():
         print "spells"
         for spell in record.spells:
             print "  ", PrintFormID(spell)
-            
+
         print "bodyParts"
         for bodyPart in record.bodyParts:
             print "  ", bodyPart
 
         print "nift_p     :", record.nift_p
-            
+
         print "flags      :", record.flags
         print "baseSpell  :", record.baseSpell
         print "fatigue    :", record.fatigue
@@ -4283,7 +4283,7 @@ def TestCREA():
         print "level      :", record.level
         print "calcMin    :", record.calcMin
         print "calcMax    :", record.calcMax
-        
+
         print "factions"
         for faction in record.factions:
              print "  %i: Faction: %s, Rank: %i, Unused1:" % (faction._listIndex, PrintFormID(faction.faction), faction.rank), faction.unused1
@@ -4311,7 +4311,7 @@ def TestCREA():
         print "animations     :"
         for animation in record.animations:
             print "  ", animation
-            
+
         print "creatureType :", record.creatureType
         print "combat       :", record.combat
         print "magic        :", record.magic
@@ -4329,7 +4329,7 @@ def TestCREA():
         print "endurance    :", record.endurance
         print "personality  :", record.personality
         print "luck         :", record.luck
-        
+
         print "attackReach  :", record.attackReach
         print "combatStyle  :", PrintFormID(record.combatStyle)
         print "turningSpeed :", record.turningSpeed
@@ -4338,7 +4338,7 @@ def TestCREA():
         print "inheritsSoundsFrom  :", PrintFormID(record.inheritsSoundsFrom)
         print "bloodSprayPath      :", record.bloodSprayPath
         print "bloodDecalPath      :", record.bloodDecalPath
-        
+
         print "sounds"
         for sound in record.sounds:
             print "  %i: type: %u, sound: %s, chance:%i" % (sound._listIndex, sound.type, PrintFormID(sound.sound), sound.chance)
@@ -4365,9 +4365,9 @@ def TestCREA():
 
     newRecord.spells = [0xFF000121, 0xFE000222]
     newRecord.bodyParts = [r"CREA\hay2\body1.nif", r"CREA\hay2\body2.nif", r"CREA\hay2\body3.nif", r"CREA\hay2\body4.nif"]
-    
+
     newRecord.nift_p = [0x00, 0xFE, 0xFE]
-    
+
     newRecord.flags = 1
     newRecord.baseSpell = 10
     newRecord.fatigue = 20
@@ -4381,17 +4381,17 @@ def TestCREA():
     newFaction.faction = 1
     newFaction.rank = 2
     newFaction.unused1 = [1,2,3]
-    
+
     newFaction = newRecord.newFactionsElement()
     newFaction.faction = 3
     newFaction.rank = 4
     newFaction.unused1 = [4,5,6]
-    
+
     newFaction = newRecord.newFactionsElement()
     newFaction.faction = 5
     newFaction.rank = 6
     newFaction.unused1 = [7,8,9]
-    
+
     newFaction = newRecord.newFactionsElement()
     newFaction.faction = 7
     newFaction.rank = 8
@@ -4400,7 +4400,7 @@ def TestCREA():
 
     newRecord.deathItem = 14
     newRecord.script = 7
-    
+
     item = newRecord.newItemsElement()
     item.item = 0x0100000A
     item.count = 50
@@ -4423,11 +4423,11 @@ def TestCREA():
     newRecord.trainSkill = 5
     newRecord.trainLevel = 6
     newRecord.unused1 = [1,2]
-    
+
     newRecord.aiPackages = [0xFF000223, 0xFE000324]
-    
+
     newRecord.animations = [r"CREA\hay2\anim1.nif", r"CREA\hay2\anim2.nif", r"CREA\hay2\anim3.nif", r"CREA\hay2\anim4.nif"]
-    
+
     newRecord.creatureType = 1
     newRecord.combat = 7
     newRecord.magic = 8
@@ -4471,7 +4471,7 @@ def TestCREA():
     sound.sound = 0x0000000D
     sound.chance = 3
     newRecord.sounds = [newRecord.sounds[3], newRecord.sounds[2], newRecord.sounds[0]]
-    
+
     print "CREA:Set Test Results"
     print
     print "fid    :", PrintFormID(newRecord.fid)
@@ -4487,13 +4487,13 @@ def TestCREA():
     print "spells"
     for spell in newRecord.spells:
         print "  ", PrintFormID(spell)
-        
+
     print "bodyParts"
     for bodyPart in newRecord.bodyParts:
         print "  ", bodyPart
 
     print "nift_p     :", newRecord.nift_p
-        
+
     print "flags      :", newRecord.flags
     print "baseSpell  :", newRecord.baseSpell
     print "fatigue    :", newRecord.fatigue
@@ -4501,7 +4501,7 @@ def TestCREA():
     print "level      :", newRecord.level
     print "calcMin    :", newRecord.calcMin
     print "calcMax    :", newRecord.calcMax
-    
+
     print "factions"
     for faction in newRecord.factions:
          print "  %i: Faction: %s, Rank: %i, Unused1:" % (faction._listIndex, PrintFormID(faction.faction), faction.rank), faction.unused1
@@ -4529,7 +4529,7 @@ def TestCREA():
     print "animations     :"
     for animation in newRecord.animations:
         print "  ", animation
-        
+
     print "creatureType :", newRecord.creatureType
     print "combat       :", newRecord.combat
     print "magic        :", newRecord.magic
@@ -4547,7 +4547,7 @@ def TestCREA():
     print "endurance    :", newRecord.endurance
     print "personality  :", newRecord.personality
     print "luck         :", newRecord.luck
-    
+
     print "attackReach  :", newRecord.attackReach
     print "combatStyle  :", PrintFormID(newRecord.combatStyle)
     print "turningSpeed :", newRecord.turningSpeed
@@ -4556,7 +4556,7 @@ def TestCREA():
     print "inheritsSoundsFrom  :", PrintFormID(newRecord.inheritsSoundsFrom)
     print "bloodSprayPath      :", newRecord.bloodSprayPath
     print "bloodDecalPath      :", newRecord.bloodDecalPath
-    
+
     print "sounds"
     for sound in newRecord.sounds:
         print "  %i: type: %u, sound: %s, chance:%i" % (sound._listIndex, sound.type, PrintFormID(sound.sound), sound.chance)
@@ -4661,7 +4661,7 @@ def TestLVLC():
         print "  listId  :", PrintFormID(entry.listId)
         print "  count   :", entry.count
         print "  unused2 :", entry.unused2
-            
+
     print "LVLC:CopyAsOverride Test"
     for record in Current[0].LVLC:
         record.CopyAsOverride(newMod)
@@ -4720,7 +4720,7 @@ def TestSLGM():
     newRecord.modb = 2.56
     print "modt_p..."
     newRecord.modt_p = [0x00, 0xFF, 0xFF]
-    
+
     print "iconPath..."
     newRecord.iconPath = r"SLGM\path\test.dds"
     newRecord.script = 7
@@ -4729,7 +4729,7 @@ def TestSLGM():
 
     newRecord.soul = 1
     newRecord.capacity = 50
-    
+
     print "SLGM:Set Test Results"
     print
     print "fid    :", PrintFormID(newRecord.fid)
@@ -4749,7 +4749,7 @@ def TestSLGM():
 
     print "soul     :", newRecord.soul
     print "capacity :", newRecord.capacity
-    
+
     print "SLGM:CopyAsOverride Test"
     for record in Current[0].SLGM:
         record.CopyAsOverride(newMod)
@@ -4805,7 +4805,7 @@ def TestKEYM():
     newRecord.modb = 2.56
     print "modt_p..."
     newRecord.modt_p = [0x00, 0xFF, 0xFF]
-    
+
     print "iconPath..."
     newRecord.iconPath = r"KEYM\path\test.dds"
     newRecord.script = 7
@@ -4818,7 +4818,7 @@ def TestKEYM():
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
-    
+
     print "full    :", newRecord.full
     print "modPath :", newRecord.modPath
     print "modb    :", newRecord.modb
@@ -4827,7 +4827,7 @@ def TestKEYM():
     print "script  :", newRecord.script
     print "value   :", newRecord.value
     print "weight  :", newRecord.weight
-    
+
     print "KEYM:CopyAsOverride Test"
     for record in Current[0].KEYM:
         record.CopyAsOverride(newMod)
@@ -4863,9 +4863,9 @@ def TestALCH():
         print "weight  :", record.weight
         print "value   :", record.value
         print "flags   :", record.flags
-        
+
         print "unused1 :", record.unused1
-        
+
         print "effects :"
         for effect in record.effects:
             print "  name0      :", effect.name0
@@ -4902,7 +4902,7 @@ def TestALCH():
     newRecord.modb = 2.56
     print "modt_p..."
     newRecord.modt_p = [0x00, 0xFF, 0xFF]
-    
+
     print "iconPath..."
     newRecord.iconPath = r"ALCH\path\test.dds"
     newRecord.script = 7
@@ -4910,7 +4910,7 @@ def TestALCH():
     newRecord.value = 150
 
     newRecord.flags = 1
-    
+
     newRecord.unused1 = [0x00, 0xFE, 0xFD]
 
     newEffect = newRecord.newEffectsElement()
@@ -4942,7 +4942,7 @@ def TestALCH():
     newEffect.flags = 13
     newEffect.unused1 = [6,7,8]
     newEffect.full = "ALCH??"
-    
+
     print "ALCH:Set Test Results"
     print
     print "fid    :", PrintFormID(newRecord.fid)
@@ -4960,9 +4960,9 @@ def TestALCH():
     print "weight  :", newRecord.weight
     print "value   :", newRecord.value
     print "flags   :", newRecord.flags
-    
+
     print "unused1 :", newRecord.unused1
-    
+
     print "effects :"
     for effect in newRecord.effects:
         print "  name0      :", effect.name0
@@ -4978,7 +4978,7 @@ def TestALCH():
         print "  flags      :", effect.flags
         print "  unused1    :", effect.unused1
         print "  full       :", effect.full
-        print    
+        print
     print "ALCH:CopyAsOverride Test"
     for record in Current[0].ALCH:
         record.CopyAsOverride(newMod)
@@ -5024,7 +5024,7 @@ def TestSBSP():
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
 
-    
+
     print "SBSP:CopyAsOverride Test"
     for record in Current[0].SBSP:
         record.CopyAsOverride(newMod)
@@ -5075,11 +5075,11 @@ def TestSGST():
             print "  unused1    :", effect.unused1
             print "  full       :", effect.full
             print
-            
+
         print "uses   :", record.uses
         print "value   :", record.value
         print "weight  :", record.weight
-        
+
 
         break
 
@@ -5101,7 +5101,7 @@ def TestSGST():
     newRecord.modb = 2.56
     print "modt_p..."
     newRecord.modt_p = [0x00, 0xFF, 0xFF]
-    
+
     print "iconPath..."
     newRecord.iconPath = r"SGST\path\test.dds"
     newRecord.script = 7
@@ -5151,9 +5151,9 @@ def TestSGST():
     newEffect.flags = 13
     newEffect.unused1 = [6,7,8]
     newEffect.full = "SGST???"
-    
+
     newRecord.effects = [newRecord.effects[0], newRecord.effects[2]]
-    
+
     newRecord.uses = 16
     newRecord.value = 150
     newRecord.weight = 3.56
@@ -5189,11 +5189,11 @@ def TestSGST():
         print "  unused1    :", effect.unused1
         print "  full       :", effect.full
         print
-        
+
     print "uses   :", newRecord.uses
     print "value   :", newRecord.value
     print "weight  :", newRecord.weight
-    
+
     print "SGST:CopyAsOverride Test"
     for record in Current[0].SGST:
         record.CopyAsOverride(newMod)
@@ -5316,7 +5316,7 @@ def TestWTHR():
 
         print "lowerLayer :", record.lowerLayer
         print "upperLayer :", record.upperLayer
-        
+
         print "modPath :", record.modPath
         print "modb    :", record.modb
         print "modt_p  :", record.modt_p
@@ -5337,7 +5337,7 @@ def TestWTHR():
         print "upperSky.nightGreen :", record.upperSky.nightGreen
         print "upperSky.nightBlue  :", record.upperSky.nightBlue
         print "upperSky.unused4    :", record.upperSky.unused4
-        
+
         print "fog.riseRed    :", record.fog.riseRed
         print "fog.riseGreen  :", record.fog.riseGreen
         print "fog.riseBlue   :", record.fog.riseBlue
@@ -5371,7 +5371,7 @@ def TestWTHR():
         print "lowerClouds.nightGreen :", record.lowerClouds.nightGreen
         print "lowerClouds.nightBlue  :", record.lowerClouds.nightBlue
         print "lowerClouds.unused4    :", record.lowerClouds.unused4
-        
+
         print "ambient.riseRed    :", record.ambient.riseRed
         print "ambient.riseGreen  :", record.ambient.riseGreen
         print "ambient.riseBlue   :", record.ambient.riseBlue
@@ -5490,7 +5490,7 @@ def TestWTHR():
         print "upperClouds.nightGreen :", record.upperClouds.nightGreen
         print "upperClouds.nightBlue  :", record.upperClouds.nightBlue
         print "upperClouds.unused4    :", record.upperClouds.unused4
-        
+
         print "fogDayNear   :", record.fogDayNear
         print "fogDayFar    :", record.fogDayFar
         print "fogNightNear :", record.fogNightNear
@@ -5510,7 +5510,7 @@ def TestWTHR():
         print "sunlightDimmer :", record.sunlightDimmer
         print "grassDimmer    :", record.grassDimmer
         print "treeDimmer     :", record.treeDimmer
-                                        
+
         print "windSpeed       :", record.windSpeed
         print "lowerCloudSpeed :", record.lowerCloudSpeed
         print "upperCloudSpeed :", record.upperCloudSpeed
@@ -5563,7 +5563,7 @@ def TestWTHR():
     newRecord.upperSky.nightRed = 10
     newRecord.upperSky.nightGreen = 11
     newRecord.upperSky.nightBlue = 12
-    newRecord.upperSky.unused4 = [4]               
+    newRecord.upperSky.unused4 = [4]
     newRecord.fog.riseRed = 13
     newRecord.fog.riseGreen = 14
     newRecord.fog.riseBlue = 15
@@ -5579,7 +5579,7 @@ def TestWTHR():
     newRecord.fog.nightRed = 22
     newRecord.fog.nightGreen = 23
     newRecord.fog.nightBlue = 24
-    newRecord.fog.unused4 = [4]                 
+    newRecord.fog.unused4 = [4]
     newRecord.lowerClouds.riseRed = 25
     newRecord.lowerClouds.riseGreen = 26
     newRecord.lowerClouds.riseBlue = 27
@@ -5595,7 +5595,7 @@ def TestWTHR():
     newRecord.lowerClouds.nightRed = 34
     newRecord.lowerClouds.nightGreen = 35
     newRecord.lowerClouds.nightBlue = 36
-    newRecord.lowerClouds.unused4 = [4]                    
+    newRecord.lowerClouds.unused4 = [4]
     newRecord.ambient.riseRed = 37
     newRecord.ambient.riseGreen = 38
     newRecord.ambient.riseBlue = 39
@@ -5611,7 +5611,7 @@ def TestWTHR():
     newRecord.ambient.nightRed = 46
     newRecord.ambient.nightGreen = 47
     newRecord.ambient.nightBlue = 48
-    newRecord.ambient.unused4 = [4]                    
+    newRecord.ambient.unused4 = [4]
     newRecord.sunlight.riseRed = 49
     newRecord.sunlight.riseGreen = 50
     newRecord.sunlight.riseBlue = 51
@@ -5627,7 +5627,7 @@ def TestWTHR():
     newRecord.sunlight.nightRed = 58
     newRecord.sunlight.nightGreen = 59
     newRecord.sunlight.nightBlue = 60
-    newRecord.sunlight.unused4 = [4]                  
+    newRecord.sunlight.unused4 = [4]
     newRecord.sun.riseRed = 61
     newRecord.sun.riseGreen = 62
     newRecord.sun.riseBlue = 63
@@ -5643,7 +5643,7 @@ def TestWTHR():
     newRecord.sun.nightRed = 70
     newRecord.sun.nightGreen = 71
     newRecord.sun.nightBlue = 72
-    newRecord.sun.unused4 = [4]                    
+    newRecord.sun.unused4 = [4]
     newRecord.stars.riseRed = 73
     newRecord.stars.riseGreen = 74
     newRecord.stars.riseBlue = 75
@@ -5659,7 +5659,7 @@ def TestWTHR():
     newRecord.stars.nightRed = 82
     newRecord.stars.nightGreen = 83
     newRecord.stars.nightBlue = 84
-    newRecord.stars.unused4 = [4]                    
+    newRecord.stars.unused4 = [4]
     newRecord.lowerSky.riseRed = 85
     newRecord.lowerSky.riseGreen = 86
     newRecord.lowerSky.riseBlue = 87
@@ -5675,7 +5675,7 @@ def TestWTHR():
     newRecord.lowerSky.nightRed = 94
     newRecord.lowerSky.nightGreen = 95
     newRecord.lowerSky.nightBlue = 96
-    newRecord.lowerSky.unused4 = [4]                    
+    newRecord.lowerSky.unused4 = [4]
     newRecord.horizon.riseRed = 97
     newRecord.horizon.riseGreen = 98
     newRecord.horizon.riseBlue = 99
@@ -5691,7 +5691,7 @@ def TestWTHR():
     newRecord.horizon.nightRed = 106
     newRecord.horizon.nightGreen = 107
     newRecord.horizon.nightBlue = 108
-    newRecord.horizon.unused4 = [4]                    
+    newRecord.horizon.unused4 = [4]
     newRecord.upperClouds.riseRed = 109
     newRecord.upperClouds.riseGreen = 110
     newRecord.upperClouds.riseBlue = 111
@@ -5713,7 +5713,7 @@ def TestWTHR():
     newRecord.fogDayFar = 1.2
     newRecord.fogNightNear = 1.3
     newRecord.fogNightFar = 1.4
-                                        
+
     newRecord.eyeAdaptSpeed = 1.5
     newRecord.blurRadius = 1.6
     newRecord.blurPasses = 1.7
@@ -5728,7 +5728,7 @@ def TestWTHR():
     newRecord.sunlightDimmer = 2.6
     newRecord.grassDimmer = 2.7
     newRecord.treeDimmer = 2.8
-                                        
+
     newRecord.windSpeed = 1
     newRecord.lowerCloudSpeed = 2
     newRecord.upperCloudSpeed = 3
@@ -5752,17 +5752,17 @@ def TestWTHR():
     newSound = newRecord.newSoundsElement()
     newSound.sound = 8
     newSound.type = 1
-    
+
     newSound = newRecord.newSoundsElement()
     newSound.sound = 9
     newSound.type = 2
-    
+
     newSound = newRecord.newSoundsElement()
     newSound.sound = 10
     newSound.type = 3
-    
+
     newRecord.sounds = [newRecord.sounds[0], newRecord.sounds[3], newRecord.sounds[2]]
-    
+
     print "WTHR:Set Test Results"
     print
     print "fid    :", PrintFormID(newRecord.fid)
@@ -5772,7 +5772,7 @@ def TestWTHR():
 
     print "lowerLayer :", newRecord.lowerLayer
     print "upperLayer :", newRecord.upperLayer
-    
+
     print "modPath :", newRecord.modPath
     print "modb    :", newRecord.modb
     print "modt_p  :", newRecord.modt_p
@@ -5793,7 +5793,7 @@ def TestWTHR():
     print "upperSky.nightGreen :", newRecord.upperSky.nightGreen
     print "upperSky.nightBlue  :", newRecord.upperSky.nightBlue
     print "upperSky.unused4    :", newRecord.upperSky.unused4
-    
+
     print "fog.riseRed    :", newRecord.fog.riseRed
     print "fog.riseGreen  :", newRecord.fog.riseGreen
     print "fog.riseBlue   :", newRecord.fog.riseBlue
@@ -5827,7 +5827,7 @@ def TestWTHR():
     print "lowerClouds.nightGreen :", newRecord.lowerClouds.nightGreen
     print "lowerClouds.nightBlue  :", newRecord.lowerClouds.nightBlue
     print "lowerClouds.unused4    :", newRecord.lowerClouds.unused4
-    
+
     print "ambient.riseRed    :", newRecord.ambient.riseRed
     print "ambient.riseGreen  :", newRecord.ambient.riseGreen
     print "ambient.riseBlue   :", newRecord.ambient.riseBlue
@@ -5946,7 +5946,7 @@ def TestWTHR():
     print "upperClouds.nightGreen :", newRecord.upperClouds.nightGreen
     print "upperClouds.nightBlue  :", newRecord.upperClouds.nightBlue
     print "upperClouds.unused4    :", newRecord.upperClouds.unused4
-    
+
     print "fogDayNear   :", newRecord.fogDayNear
     print "fogDayFar    :", newRecord.fogDayFar
     print "fogNightNear :", newRecord.fogNightNear
@@ -5966,7 +5966,7 @@ def TestWTHR():
     print "sunlightDimmer :", newRecord.sunlightDimmer
     print "grassDimmer    :", newRecord.grassDimmer
     print "treeDimmer     :", newRecord.treeDimmer
-                                    
+
     print "windSpeed       :", newRecord.windSpeed
     print "lowerCloudSpeed :", newRecord.lowerCloudSpeed
     print "upperCloudSpeed :", newRecord.upperCloudSpeed
@@ -5985,7 +5985,7 @@ def TestWTHR():
     print "sounds"
     for sound in newRecord.sounds:
         print "  sound: %s, type: %u" % (PrintFormID(sound.sound), sound.type)
-        
+
     print "WTHR:CopyAsOverride Test"
     for record in Current[0].WTHR:
         record.CopyAsOverride(newMod)
@@ -6042,7 +6042,7 @@ def TestCLMT():
     newWeather = newRecord.newWeathersElement()
     newWeather.weather = 7
     newWeather.chance = 31
-    
+
     newWeather = newRecord.newWeathersElement()
     newWeather.weather = 8
     newWeather.chance = 32
@@ -6050,11 +6050,11 @@ def TestCLMT():
     newWeather = newRecord.newWeathersElement()
     newWeather.weather = 9
     newWeather.chance = 33
-    
+
     newWeather = newRecord.newWeathersElement()
     newWeather.weather = 10
     newWeather.chance = 34
-    
+
     newRecord.weathers = [newRecord.weathers[3], newRecord.weathers[2], newRecord.weathers[0]]
     newRecord.sunPath = r"CLMT\sunPath\1.nif"
     newRecord.glarePath = r"CLMT\glarePath\1.nif"
@@ -6091,7 +6091,7 @@ def TestCLMT():
     print "setBegin    :", newRecord.setBegin
     print "setEnd      :", newRecord.setEnd
     print "volatility  :", newRecord.volatility
-    print "phaseLength :", newRecord.phaseLength    
+    print "phaseLength :", newRecord.phaseLength
     print "CLMT:CopyAsOverride Test"
     for record in Current[0].CLMT:
         record.CopyAsOverride(newMod)
@@ -6230,7 +6230,7 @@ def TestREGN():
     newPoint.posY = 18.0
 
     newArea.points = [newArea.points[0], newArea.points[2], newArea.points[4], newArea.points[6], newArea.points[8]]
-    
+
     newArea = newRecord.newAreasElement()
     newArea.edgeFalloff = 1025
     newPoint = newArea.newPointsElement()
@@ -6291,7 +6291,7 @@ def TestREGN():
     newPoint.posX = 17.2
     newPoint.posY = 18.2
 
-    newRecord.areas = [newRecord.areas[2], newRecord.areas[0]]    
+    newRecord.areas = [newRecord.areas[2], newRecord.areas[0]]
 
     newEntry = newRecord.newEntriesElement()
     newEntry.entryType = 2 ##Objects
@@ -6323,7 +6323,7 @@ def TestREGN():
     newObject.angleVarZ = 14
     newObject.unused2 = [3,4]
     newObject.unk2 = [1,2,3,4]
-    
+
     newObject = newEntry.newObjectsElement()
     newObject.objectId = 8
     newObject.unused1 = [1,2]
@@ -6364,7 +6364,7 @@ def TestREGN():
     newObject.unused2 = [3,4]
     newObject.unk2 = [1,2,3,4]
 
-    newEntry.objects = [newEntry.objects[2], newEntry.objects[0]]    
+    newEntry.objects = [newEntry.objects[2], newEntry.objects[0]]
 
 ##    newWeather = newEntry.newWeathersElement()
 ##    newWeather.weather = 7
@@ -6382,7 +6382,7 @@ def TestREGN():
 ##    newWeather.weather = 11
 ##    newWeather.chance = 14
 ##    newEntry.weathers = [newEntry.weathers[3], newEntry.weathers[0], newEntry.weathers[4]]
-    
+
 ##    newEntry.mapName = r"Durgh"
 ##    newEntry.iconPath = r"OBSOLETE\Test\ICON.dds"
 
@@ -6398,7 +6398,7 @@ def TestREGN():
 ##    newGrass = newEntry.newGrassesElement()
 ##    newGrass.grass = 10
 ##    newGrass.unk1 = [4,2,3,4]
-##    newEntry.grasses = [newEntry.grasses[2], newEntry.grasses[0]]  
+##    newEntry.grasses = [newEntry.grasses[2], newEntry.grasses[0]]
 
 ##    newSound = newEntry.newSoundsElement()
 ##    newSound.sound = 7
@@ -6417,14 +6417,14 @@ def TestREGN():
 ##    newSound.flags = 4
 ##    newSound.chance = 13
 ##    newEntry.sounds = [newEntry.sounds[2], newEntry.sounds[0]]
-    
+
     print "REGN:Set Test Results"
     print
     print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
-    
+
     print "iconPath   :", newRecord.iconPath
     print "mapRed     :", newRecord.mapRed
     print "mapGreen   :", newRecord.mapGreen
@@ -6532,9 +6532,9 @@ def TestCELL():
         print "fogClip          :", record.fogClip
         print "music            :", record.music
         print "owner            :", PrintFormID(record.owner)
-            
+
         print "rank             :", record.rank
-        print "globalVariable   :", PrintFormID(record.globalVariable)        
+        print "globalVariable   :", PrintFormID(record.globalVariable)
         print "climate          :", PrintFormID(record.climate)
         print "waterHeight      :", record.waterHeight
         print "regions          :", record.regions
@@ -6549,7 +6549,7 @@ def TestCELL():
             print "  flags1 :", achr.flags1
             print "  flags2 :", achr.flags2
             print "  eid    :", achr.eid
-            
+
             print "  base              :", PrintFormID(achr.base)
             print "  unknownXPCIFormID :", PrintFormID(achr.unknownXPCIFormID)
             print "  unknownXPCIString :", achr.unknownXPCIString
@@ -6581,7 +6581,7 @@ def TestCELL():
 
             print "  base           :", PrintFormID(acre.base)
             print "  owner          :", PrintFormID(acre.owner)
-                
+
             print "  rank           :", acre.rank
             print "  globalVariable :", PrintFormID(acre.globalVariable)
             print "  parent         :", PrintFormID(acre.parent)
@@ -6622,7 +6622,7 @@ def TestCELL():
             print "  lockFlags         :", refr.lockFlags
             print "  unused3           :", refr.unused3
             print "  owner             :", PrintFormID(refr.owner)
-                
+
             print "  rank              :", refr.rank
             print "  globalVariable    :", PrintFormID(refr.globalVariable)
             print "  parent            :", PrintFormID(refr.parent)
@@ -6778,7 +6778,7 @@ def TestCELL():
 
     newObjRef = newRecord.createREFRRecord()
 
-    newObjRef.eid = "WarREFRTest"    
+    newObjRef.eid = "WarREFRTest"
     newObjRef.base = 7
     newObjRef.destinationFormID = 8
     newObjRef.destinationPosX = 1
@@ -6820,11 +6820,11 @@ def TestCELL():
     newObjRef.soul = 6
     newObjRef.posX = 5
     newObjRef.posY = 4
-    newObjRef.posZ = 3 
+    newObjRef.posZ = 3
     newObjRef.rotX = 2
     newObjRef.rotY = 1
     newObjRef.rotZ = 11.2
-    
+
     print "pathgrid..."
     newPgrd = newRecord.createPGRDRecord()
     newPgrd.count = 5
@@ -6861,9 +6861,9 @@ def TestCELL():
     newPgrd.PGRP = [newPgrp6, newPgrp1, newPgrp2, newPgrp3, newPgrp4]
 ##
 ####    newPgrd.PGAG = [0x22, 0x23, 0x01]
-####    
+####
 ####    newPgrd.PGRR = [0x00, 0xFF, 0x00]
-##        
+##
     newPgri1 = newPgrd.newPGRIElement()
     newPgri1.point = 1
     newPgri1.unused1 = [1,2]
@@ -6967,7 +6967,7 @@ def TestCELL():
         print "  flags1 :", achr.flags1
         print "  flags2 :", achr.flags2
         print "  eid    :", achr.eid
-        
+
         print "  base              :", PrintFormID(achr.base)
         print "  unknownXPCIFormID :", PrintFormID(achr.unknownXPCIFormID)
         print "  unknownXPCIString :", achr.unknownXPCIString
@@ -6998,7 +6998,7 @@ def TestCELL():
 
         print "  base           :", PrintFormID(acre.base)
         print "  owner          :", PrintFormID(acre.owner)
-            
+
         print "  rank           :", acre.rank
         print "  globalVariable :", PrintFormID(acre.globalVariable)
         print "  parent         :", PrintFormID(acre.parent)
@@ -7038,7 +7038,7 @@ def TestCELL():
         print "  lockFlags         :", refr.lockFlags
         print "  unused3           :", refr.unused3
         print "  owner             :", PrintFormID(refr.owner)
-            
+
         print "  rank              :", refr.rank
         print "  globalVariable    :", PrintFormID(refr.globalVariable)
         print "  parent            :", PrintFormID(refr.parent)
@@ -7133,7 +7133,7 @@ def TestCELL():
     print "CELL:Save Test - TestCELL.esp"
     newMod.safeSave()
     print "CELL:Finished testing"
-    
+
 def TestWRLD():
     Current = Collection()
     Current.addMod("Oblivion.esm")
@@ -7196,9 +7196,9 @@ def TestWRLD():
             print "fogClip          :", wrldCell.fogClip
             print "music            :", wrldCell.music
             print "owner            :", PrintFormID(wrldCell.owner)
-                
+
             print "rank             :", wrldCell.rank
-            print "globalVariable   :", PrintFormID(wrldCell.globalVariable)        
+            print "globalVariable   :", PrintFormID(wrldCell.globalVariable)
             print "climate          :", PrintFormID(wrldCell.climate)
             print "waterHeight      :", wrldCell.waterHeight
             print "regions          :", wrldCell.regions
@@ -7213,7 +7213,7 @@ def TestWRLD():
                 print "  flags1 :", achr.flags1
                 print "  flags2 :", achr.flags2
                 print "  eid    :", achr.eid
-                
+
                 print "  base              :", PrintFormID(achr.base)
                 print "  unknownXPCIFormID :", PrintFormID(achr.unknownXPCIFormID)
                 print "  unknownXPCIString :", achr.unknownXPCIString
@@ -7245,7 +7245,7 @@ def TestWRLD():
 
                 print "  base           :", PrintFormID(acre.base)
                 print "  owner          :", PrintFormID(acre.owner)
-                    
+
                 print "  rank           :", acre.rank
                 print "  globalVariable :", PrintFormID(acre.globalVariable)
                 print "  parent         :", PrintFormID(acre.parent)
@@ -7286,7 +7286,7 @@ def TestWRLD():
                 print "  lockFlags         :", refr.lockFlags
                 print "  unused3           :", refr.unused3
                 print "  owner             :", PrintFormID(refr.owner)
-                    
+
                 print "  rank              :", refr.rank
                 print "  globalVariable    :", PrintFormID(refr.globalVariable)
                 print "  parent            :", PrintFormID(refr.parent)
@@ -7426,33 +7426,33 @@ def TestWRLD():
                         print "        green         :", cColumn.green
                         print "        blue          :", cColumn.blue
                         print "        baseTexture   :", PrintFormID(cColumn.baseTexture)
-                            
+
                         print "        layer1Texture :", PrintFormID(cColumn.layer1Texture)
                         print "        layer1Opacity :", cColumn.layer1Opacity
-                        
+
                         print "        layer2Texture :", PrintFormID(cColumn.layer2Texture)
                         print "        layer2Opacity :", cColumn.layer2Opacity
-                       
+
                         print "        layer3Texture :", PrintFormID(cColumn.layer3Texture)
                         print "        layer3Opacity :", cColumn.layer3Opacity
-                        
+
                         print "        layer4Texture :", PrintFormID(cColumn.layer4Texture)
                         print "        layer4Opacity :", cColumn.layer4Opacity
-                        
+
                         print "        layer5Texture :", PrintFormID(cColumn.layer5Texture)
                         print "        layer5Opacity :", cColumn.layer5Opacity
-                        
+
                         print "        layer6Texture :", PrintFormID(cColumn.layer6Texture)
                         print "        layer6Opacity :", cColumn.layer6Opacity
-                        
+
                         print "        layer7Texture :", PrintFormID(cColumn.layer7Texture)
                         print "        layer7Opacity :", cColumn.layer7Opacity
-                        
+
                         print "        layer8Texture :", PrintFormID(cColumn.layer8Texture)
                         print "        layer8Opacity :", cColumn.layer8Opacity
                         print
-                        
-            
+
+
         for wrldCell in record.CELLS:
             print
             print "fid     :", PrintFormID(wrldCell.fid)
@@ -7482,9 +7482,9 @@ def TestWRLD():
             print "fogClip          :", wrldCell.fogClip
             print "music            :", wrldCell.music
             print "owner            :", PrintFormID(wrldCell.owner)
-                
+
             print "rank             :", wrldCell.rank
-            print "globalVariable   :", PrintFormID(wrldCell.globalVariable)        
+            print "globalVariable   :", PrintFormID(wrldCell.globalVariable)
             print "climate          :", PrintFormID(wrldCell.climate)
             print "waterHeight      :", wrldCell.waterHeight
             print "regions          :", wrldCell.regions
@@ -7499,7 +7499,7 @@ def TestWRLD():
                 print "  flags1 :", achr.flags1
                 print "  flags2 :", achr.flags2
                 print "  eid    :", achr.eid
-                
+
                 print "  base              :", PrintFormID(achr.base)
                 print "  unknownXPCIFormID :", PrintFormID(achr.unknownXPCIFormID)
                 print "  unknownXPCIString :", achr.unknownXPCIString
@@ -7531,7 +7531,7 @@ def TestWRLD():
 
                 print "  base           :", PrintFormID(acre.base)
                 print "  owner          :", PrintFormID(acre.owner)
-                    
+
                 print "  rank           :", acre.rank
                 print "  globalVariable :", PrintFormID(acre.globalVariable)
                 print "  parent         :", PrintFormID(acre.parent)
@@ -7572,7 +7572,7 @@ def TestWRLD():
                 print "  lockFlags         :", refr.lockFlags
                 print "  unused3           :", refr.unused3
                 print "  owner             :", PrintFormID(refr.owner)
-                    
+
                 print "  rank              :", refr.rank
                 print "  globalVariable    :", PrintFormID(refr.globalVariable)
                 print "  parent            :", PrintFormID(refr.parent)
@@ -7722,28 +7722,28 @@ def TestWRLD():
                         print "        green         :", cColumn.green
                         print "        blue          :", cColumn.blue
                         print "        baseTexture   :", PrintFormID(cColumn.baseTexture)
-                            
+
                         print "        layer1Texture :", PrintFormID(cColumn.layer1Texture)
                         print "        layer1Opacity :", cColumn.layer1Opacity
-                        
+
                         print "        layer2Texture :", PrintFormID(cColumn.layer2Texture)
                         print "        layer2Opacity :", cColumn.layer2Opacity
-                       
+
                         print "        layer3Texture :", PrintFormID(cColumn.layer3Texture)
                         print "        layer3Opacity :", cColumn.layer3Opacity
-                        
+
                         print "        layer4Texture :", PrintFormID(cColumn.layer4Texture)
                         print "        layer4Opacity :", cColumn.layer4Opacity
-                        
+
                         print "        layer5Texture :", PrintFormID(cColumn.layer5Texture)
                         print "        layer5Opacity :", cColumn.layer5Opacity
-                        
+
                         print "        layer6Texture :", PrintFormID(cColumn.layer6Texture)
                         print "        layer6Opacity :", cColumn.layer6Opacity
-                        
+
                         print "        layer7Texture :", PrintFormID(cColumn.layer7Texture)
                         print "        layer7Opacity :", cColumn.layer7Opacity
-                        
+
                         print "        layer8Texture :", PrintFormID(cColumn.layer8Texture)
                         print "        layer8Opacity :", cColumn.layer8Opacity
                         print
@@ -7779,7 +7779,7 @@ def TestWRLD():
     newRecord.unknown90 = 18
     newRecord.unknown91 = 19
     newRecord.sound = 20
-    newRecord.ofst_p = [1,2,3,4,5,6,7,8,9,10] 
+    newRecord.ofst_p = [1,2,3,4,5,6,7,8,9,10]
 
     print "WRLD:Set Test Results"
     print
@@ -7805,7 +7805,7 @@ def TestWRLD():
     print "unknown90 :", newRecord.unknown90
     print "unknown91 :", newRecord.unknown91
     print "sound     :", newRecord.sound
-    print "ofst_p    :", newRecord.ofst_p    
+    print "ofst_p    :", newRecord.ofst_p
 
     print "WRLD:CopyAsOverride Test"
     for record in Current[0].WRLD:
@@ -7906,11 +7906,11 @@ def TestWRLD():
                 Pgrd.UnloadRecord()
             wrldCell.UnloadRecord()
         record.UnloadRecord()
-            
+
     print "WRLD:Save Test - TestWRLD.esp"
     newMod.safeCloseSave()
     print "WRLD:Finished testing"
-    
+
 def TestDIAL():
     Current = Collection()
     Current.addMod("Oblivion.esm")
@@ -7935,7 +7935,7 @@ def TestDIAL():
             print
             print "  fid    :", PrintFormID(info.fid)
             print "  flags1 :", info.flags1
-            print "  flags2 :", info.flags2            
+            print "  flags2 :", info.flags2
             print "  dialType     :", info.dialType
             print "  flags        :", info.flags
             print "  unused1      :", info.unused1
@@ -7945,7 +7945,7 @@ def TestDIAL():
             print "  addTopics"
             for topic in info.addTopics:
                 print "    ", PrintFormID(topic)
-            
+
             print "  responses"
             for response in info.responses:
                 print "    emotionType  :", response.emotionType
@@ -7956,7 +7956,7 @@ def TestDIAL():
                 print "    responseText :", response.responseText
                 print "    actorNotes   :", response.actorNotes
                 print
-                
+
             print "  conditions"
             for condition in info.conditions:
                 print "    operType  :", condition.operType
@@ -7967,15 +7967,15 @@ def TestDIAL():
                 print "    param2    :", condition.param2
                 print "    unused2   :", condition.unused2
                 print
-            
+
             print "  choices"
             for choice in info.choices:
                 print "    ", PrintFormID(choice)
-                
+
             print "  linksFrom"
             for linksFrom in info.linksFrom:
                 print "    ", PrintFormID(linksFrom)
-                
+
             print "  unused2      :", info.unused2
             print "  numRefs      :", info.numRefs
             print "  compiledSize :", info.compiledSize
@@ -7983,7 +7983,7 @@ def TestDIAL():
             print "  scriptType   :", info.scriptType
             print "  compiled_p   :", info.compiled_p
             print "  scriptText   :", info.scriptText
-            
+
             print "  references"
             for reference in info.references:
                 if(reference.IsSCRO):
@@ -7991,7 +7991,7 @@ def TestDIAL():
                 else:
                     print "    SCRV:", reference.reference
         break
-    
+
     print "DIAL:Create Record Test"
     newRecord = newMod.createDIALRecord()
     print "DIAL:Set Test"
@@ -8001,8 +8001,8 @@ def TestDIAL():
     newRecord.flags2 = 0x0201
     print "eid..."
     newRecord.eid = "DIALWarTest"
-    
-    newRecord.quests = [0xFF000121, 0xFE000222]    
+
+    newRecord.quests = [0xFF000121, 0xFE000222]
     print "full..."
     newRecord.full = "Fancy DIAL"
     newRecord.dialType = 1
@@ -8028,7 +8028,7 @@ def TestDIAL():
     newResponse.unused2 = [5,6,7]
     newResponse.responseText = "RARGH!...1..oops"
     newResponse.actorNotes = "Say it with all your might!"
-    
+
     newResponse = newInfo.newResponsesElement()
     newResponse.emotionType = 4
     newResponse.emotionValue = 5
@@ -8037,8 +8037,8 @@ def TestDIAL():
     newResponse.unused2 = [5,6,7]
     newResponse.responseText = "RARGH!...2..oops"
     newResponse.actorNotes = "Say it with all your might!"
-    
-    newResponse = newInfo.newResponsesElement()    
+
+    newResponse = newInfo.newResponsesElement()
     newResponse.emotionType = 7
     newResponse.emotionValue = 8
     newResponse.unused1 = [1,2,3,4]
@@ -8047,8 +8047,8 @@ def TestDIAL():
     newResponse.responseText = "RARGH!...3..oops"
     newResponse.actorNotes = "Say it with all your might!"
 
-    newInfo.responses = [newInfo.responses[2], newInfo.responses[0], newInfo.responses[0], newInfo.responses[2]]    
-    
+    newInfo.responses = [newInfo.responses[2], newInfo.responses[0], newInfo.responses[0], newInfo.responses[2]]
+
     newCondition = newInfo.newConditionsElement()
     newCondition.operType = 1
     newCondition.unused1 = [1,2,3]
@@ -8057,7 +8057,7 @@ def TestDIAL():
     newCondition.param1 = 4
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newInfo.newConditionsElement()
     newCondition.operType = 2
     newCondition.unused1 = [1,2,3]
@@ -8066,7 +8066,7 @@ def TestDIAL():
     newCondition.param1 = 5
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newInfo.newConditionsElement()
     newCondition.operType = 3
     newCondition.unused1 = [1,2,3]
@@ -8075,7 +8075,7 @@ def TestDIAL():
     newCondition.param1 = 6
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newInfo.newConditionsElement()
     newCondition.operType = 4
     newCondition.unused1 = [1,2,3]
@@ -8087,11 +8087,11 @@ def TestDIAL():
 
     newInfo.conditions = [newInfo.conditions[3], newInfo.conditions[1], newInfo.conditions[0]]
 
-    newInfo.choices = [0x0A, 0x0B, 0x0C]    
-    
-    newInfo.linksFrom = [0x0D, 0x0E, 0x0F]    
+    newInfo.choices = [0x0A, 0x0B, 0x0C]
 
-        
+    newInfo.linksFrom = [0x0D, 0x0E, 0x0F]
+
+
     newInfo.unused2 = [2,3,4,5]
     newInfo.numRefs = 15
     newInfo.compiledSize = 3
@@ -8136,7 +8136,7 @@ def TestDIAL():
     newResponse.unused2 = [5,6,7]
     newResponse.responseText = "1RARGH!...1..oops"
     newResponse.actorNotes = "Say it with all your might!"
-    
+
     newResponse = newInfo.newResponsesElement()
     newResponse.emotionType = 4
     newResponse.emotionValue = 5
@@ -8145,8 +8145,8 @@ def TestDIAL():
     newResponse.unused2 = [5,6,7]
     newResponse.responseText = "1RARGH!...2..oops"
     newResponse.actorNotes = "Say it with all your might!"
-    
-    newResponse = newInfo.newResponsesElement()    
+
+    newResponse = newInfo.newResponsesElement()
     newResponse.emotionType = 7
     newResponse.emotionValue = 8
     newResponse.unused1 = [1,2,3,4]
@@ -8155,8 +8155,8 @@ def TestDIAL():
     newResponse.responseText = "1RARGH!...3..oops"
     newResponse.actorNotes = "Say it with all your might!"
 
-    newInfo.responses = [newInfo.responses[2], newInfo.responses[0], newInfo.responses[0], newInfo.responses[2]]   
-    
+    newInfo.responses = [newInfo.responses[2], newInfo.responses[0], newInfo.responses[0], newInfo.responses[2]]
+
     newCondition = newInfo.newConditionsElement()
     newCondition.operType = 1
     newCondition.unused1 = [1,2,3]
@@ -8165,7 +8165,7 @@ def TestDIAL():
     newCondition.param1 = 4
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newInfo.newConditionsElement()
     newCondition.operType = 2
     newCondition.unused1 = [1,2,3]
@@ -8174,7 +8174,7 @@ def TestDIAL():
     newCondition.param1 = 5
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newInfo.newConditionsElement()
     newCondition.operType = 3
     newCondition.unused1 = [1,2,3]
@@ -8183,7 +8183,7 @@ def TestDIAL():
     newCondition.param1 = 6
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newInfo.newConditionsElement()
     newCondition.operType = 4
     newCondition.unused1 = [1,2,3]
@@ -8195,8 +8195,8 @@ def TestDIAL():
 
     newInfo.conditions = [newInfo.conditions[3], newInfo.conditions[1], newInfo.conditions[0]]
 
-    newInfo.choices = [0x0A, 0x0B, 0x0C]    
-    
+    newInfo.choices = [0x0A, 0x0B, 0x0C]
+
     newInfo.linksFrom = [0x0D, 0x0E, 0x0F]
 
     print "INFO:Set Test"
@@ -8220,7 +8220,7 @@ def TestDIAL():
     newResponse.unused2 = [5,6,7]
     newResponse.responseText = "2RARGH!...1..oops"
     newResponse.actorNotes = "Say it with all your might!"
-    
+
     newResponse = newInfo.newResponsesElement()
     newResponse.emotionType = 4
     newResponse.emotionValue = 5
@@ -8229,8 +8229,8 @@ def TestDIAL():
     newResponse.unused2 = [5,6,7]
     newResponse.responseText = "2RARGH!...2..oops"
     newResponse.actorNotes = "Say it with all your might!"
-    
-    newResponse = newInfo.newResponsesElement()    
+
+    newResponse = newInfo.newResponsesElement()
     newResponse.emotionType = 7
     newResponse.emotionValue = 8
     newResponse.unused1 = [1,2,3,4]
@@ -8239,8 +8239,8 @@ def TestDIAL():
     newResponse.responseText = "2RARGH!...3..oops"
     newResponse.actorNotes = "Say it with all your might!"
 
-    newInfo.responses = [newInfo.responses[2], newInfo.responses[0], newInfo.responses[0], newInfo.responses[2]]  
-    
+    newInfo.responses = [newInfo.responses[2], newInfo.responses[0], newInfo.responses[0], newInfo.responses[2]]
+
     newCondition = newInfo.newConditionsElement()
     newCondition.operType = 1
     newCondition.unused1 = [1,2,3]
@@ -8249,7 +8249,7 @@ def TestDIAL():
     newCondition.param1 = 4
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newInfo.newConditionsElement()
     newCondition.operType = 2
     newCondition.unused1 = [1,2,3]
@@ -8258,7 +8258,7 @@ def TestDIAL():
     newCondition.param1 = 5
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newInfo.newConditionsElement()
     newCondition.operType = 3
     newCondition.unused1 = [1,2,3]
@@ -8267,7 +8267,7 @@ def TestDIAL():
     newCondition.param1 = 6
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newInfo.newConditionsElement()
     newCondition.operType = 4
     newCondition.unused1 = [1,2,3]
@@ -8279,11 +8279,11 @@ def TestDIAL():
 
     newInfo.conditions = [newInfo.conditions[3], newInfo.conditions[1], newInfo.conditions[0]]
 
-    newInfo.choices = [0x0A, 0x0B, 0x0C]    
-    
-    newInfo.linksFrom = [0x0D, 0x0E, 0x0F]    
+    newInfo.choices = [0x0A, 0x0B, 0x0C]
 
-        
+    newInfo.linksFrom = [0x0D, 0x0E, 0x0F]
+
+
     newInfo.unused2 = [2,3,4,5]
     newInfo.numRefs = 15
     newInfo.compiledSize = 3
@@ -8305,15 +8305,15 @@ def TestDIAL():
     newReference.reference = 10
     newReference.IsSCRO =0
 
-    newInfo.references = [newInfo.references[3], newInfo.references[1], newInfo.references[0]]    
-        
+    newInfo.references = [newInfo.references[3], newInfo.references[1], newInfo.references[0]]
+
     print "DIAL:Set Test Results"
     print
     print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
-    
+
     print "quests"
     for quest in newRecord.quests:
         print "  ", PrintFormID(quest)
@@ -8326,7 +8326,7 @@ def TestDIAL():
         print "  fid    :", PrintFormID(info.fid)
         print "  flags1 :", info.flags1
         print "  flags2 :", info.flags2
-        
+
         print "  dialType     :", info.dialType
         print "  flags        :", info.flags
         print "  unused1      :", info.unused1
@@ -8336,7 +8336,7 @@ def TestDIAL():
         print "  addTopics"
         for topic in info.addTopics:
             print "    ", PrintFormID(topic)
-        
+
         print "  responses"
         for response in info.responses:
             print "    emotionType  :", response.emotionType
@@ -8347,7 +8347,7 @@ def TestDIAL():
             print "    responseText :", response.responseText
             print "    actorNotes   :", response.actorNotes
             print
-            
+
         print "  conditions"
         for condition in info.conditions:
             print "    operType  :", condition.operType
@@ -8358,15 +8358,15 @@ def TestDIAL():
             print "    param2    :", condition.param2
             print "    unused2   :", condition.unused2
             print
-        
+
         print "  choices"
         for choice in info.choices:
             print "    ", PrintFormID(choice)
-            
+
         print "  linksFrom"
         for linksFrom in info.linksFrom:
             print "    ", PrintFormID(linksFrom)
-            
+
         print "  unused2      :", info.unused2
         print "  numRefs      :", info.numRefs
         print "  compiledSize :", info.compiledSize
@@ -8374,14 +8374,14 @@ def TestDIAL():
         print "  scriptType   :", info.scriptType
         print "  compiled_p   :", info.compiled_p
         print "  scriptText   :", info.scriptText
-        
+
         print "  references"
         for reference in info.references:
             if(reference.IsSCRO):
                 print "    SCRO:", PrintFormID(reference.reference)
             else:
                 print "    SCRV:", reference.reference
-    
+
     print "DIAL:CopyAsOverride Test"
     for record in Current[0].DIAL:
         newRecord = record.CopyAsOverride(newMod)
@@ -8418,7 +8418,7 @@ def TestQUST():
         print "iconPath   :", record.iconPath
         print "flags      :", record.flags
         print "priority   :", record.priority
-        
+
         print "conditions"
         for condition in record.conditions:
             print "  operType  :", condition.operType
@@ -8518,7 +8518,7 @@ def TestQUST():
     newCondition.param1 = 4
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newRecord.newConditionsElement()
     newCondition.operType = 2
     newCondition.unused1 = [1,2,3]
@@ -8527,7 +8527,7 @@ def TestQUST():
     newCondition.param1 = 5
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newRecord.newConditionsElement()
     newCondition.operType = 3
     newCondition.unused1 = [1,2,3]
@@ -8536,7 +8536,7 @@ def TestQUST():
     newCondition.param1 = 6
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newRecord.newConditionsElement()
     newCondition.operType = 4
     newCondition.unused1 = [1,2,3]
@@ -8552,7 +8552,7 @@ def TestQUST():
     newStage.stage = 10
     newEntry = newStage.newEntriesElement()
     newEntry.flags = 1
-    
+
     newCondition = newEntry.newConditionsElement()
     newCondition.operType = 5
     newCondition.unused1 = [1,2,3]
@@ -8561,7 +8561,7 @@ def TestQUST():
     newCondition.param1 = 7
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newEntry.newConditionsElement()
     newCondition.operType = 6
     newCondition.unused1 = [1,2,3]
@@ -8570,7 +8570,7 @@ def TestQUST():
     newCondition.param1 = 8
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newEntry.newConditionsElement()
     newCondition.operType = 7
     newCondition.unused1 = [1,2,3]
@@ -8579,7 +8579,7 @@ def TestQUST():
     newCondition.param1 = 9
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newEntry.newConditionsElement()
     newCondition.operType = 8
     newCondition.unused1 = [1,2,3]
@@ -8602,24 +8602,24 @@ def TestQUST():
     newReference = newEntry.newReferencesElement()
     newReference.reference = 7
     newReference.IsSCRO = True
-    
+
     newReference = newEntry.newReferencesElement()
     newReference.reference = 8
     newReference.IsSCRO = False
-    
+
     newReference = newEntry.newReferencesElement()
     newReference.reference = 9
     newReference.IsSCRO = False
-    
+
     newReference = newEntry.newReferencesElement()
     newReference.reference = 10
     newReference.IsSCRO = True
 
-    newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]    
+    newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]
 
     newEntry = newStage.newEntriesElement()
     newEntry.flags = 1
-    
+
     newCondition = newEntry.newConditionsElement()
     newCondition.operType = 5
     newCondition.unused1 = [1,2,3]
@@ -8628,7 +8628,7 @@ def TestQUST():
     newCondition.param1 = 7
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newEntry.newConditionsElement()
     newCondition.operType = 6
     newCondition.unused1 = [1,2,3]
@@ -8637,7 +8637,7 @@ def TestQUST():
     newCondition.param1 = 7
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newEntry.newConditionsElement()
     newCondition.operType = 7
     newCondition.unused1 = [1,2,3]
@@ -8646,7 +8646,7 @@ def TestQUST():
     newCondition.param1 = 7
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newEntry.newConditionsElement()
     newCondition.operType = 8
     newCondition.unused1 = [1,2,3]
@@ -8669,15 +8669,15 @@ def TestQUST():
     newReference = newEntry.newReferencesElement()
     newReference.reference = 7
     newReference.IsSCRO = True
-    
+
     newReference = newEntry.newReferencesElement()
     newReference.reference = 8
     newReference.IsSCRO = False
-    
+
     newReference = newEntry.newReferencesElement()
     newReference.reference = 9
     newReference.IsSCRO = False
-    
+
     newReference = newEntry.newReferencesElement()
     newReference.reference = 10
     newReference.IsSCRO = True
@@ -8686,7 +8686,7 @@ def TestQUST():
 
     newEntry = newStage.newEntriesElement()
     newEntry.flags = 1
-    
+
     newCondition = newEntry.newConditionsElement()
     newCondition.operType = 5
     newCondition.unused1 = [1,2,3]
@@ -8695,7 +8695,7 @@ def TestQUST():
     newCondition.param1 = 7
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newEntry.newConditionsElement()
     newCondition.operType = 6
     newCondition.unused1 = [1,2,3]
@@ -8704,7 +8704,7 @@ def TestQUST():
     newCondition.param1 = 7
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newEntry.newConditionsElement()
     newCondition.operType = 7
     newCondition.unused1 = [1,2,3]
@@ -8713,7 +8713,7 @@ def TestQUST():
     newCondition.param1 = 7
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newEntry.newConditionsElement()
     newCondition.operType = 8
     newCondition.unused1 = [1,2,3]
@@ -8736,20 +8736,20 @@ def TestQUST():
     newReference = newEntry.newReferencesElement()
     newReference.reference = 7
     newReference.IsSCRO = True
-    
+
     newReference = newEntry.newReferencesElement()
     newReference.reference = 8
     newReference.IsSCRO = False
-    
+
     newReference = newEntry.newReferencesElement()
     newReference.reference = 9
     newReference.IsSCRO = False
-    
+
     newReference = newEntry.newReferencesElement()
     newReference.reference = 10
     newReference.IsSCRO = True
 
-    newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]  
+    newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]
 
     newStage.entries = [newStage.entries[2], newStage.entries[0]]
 
@@ -8757,7 +8757,7 @@ def TestQUST():
     newStage.stage = 20
     newEntry = newStage.newEntriesElement()
     newEntry.flags = 1
-    
+
     newCondition = newEntry.newConditionsElement()
     newCondition.operType = 5
     newCondition.unused1 = [1,2,3]
@@ -8766,7 +8766,7 @@ def TestQUST():
     newCondition.param1 = 7
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newEntry.newConditionsElement()
     newCondition.operType = 6
     newCondition.unused1 = [1,2,3]
@@ -8775,7 +8775,7 @@ def TestQUST():
     newCondition.param1 = 7
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newEntry.newConditionsElement()
     newCondition.operType = 7
     newCondition.unused1 = [1,2,3]
@@ -8784,7 +8784,7 @@ def TestQUST():
     newCondition.param1 = 7
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newEntry.newConditionsElement()
     newCondition.operType = 8
     newCondition.unused1 = [1,2,3]
@@ -8807,24 +8807,24 @@ def TestQUST():
     newReference = newEntry.newReferencesElement()
     newReference.reference = 7
     newReference.IsSCRO = True
-    
+
     newReference = newEntry.newReferencesElement()
     newReference.reference = 8
     newReference.IsSCRO = False
-    
+
     newReference = newEntry.newReferencesElement()
     newReference.reference = 9
     newReference.IsSCRO = False
-    
+
     newReference = newEntry.newReferencesElement()
     newReference.reference = 10
     newReference.IsSCRO = True
 
-    newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]    
+    newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]
 
     newEntry = newStage.newEntriesElement()
     newEntry.flags = 1
-    
+
     newCondition = newEntry.newConditionsElement()
     newCondition.operType = 5
     newCondition.unused1 = [1,2,3]
@@ -8833,7 +8833,7 @@ def TestQUST():
     newCondition.param1 = 7
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newEntry.newConditionsElement()
     newCondition.operType = 6
     newCondition.unused1 = [1,2,3]
@@ -8842,7 +8842,7 @@ def TestQUST():
     newCondition.param1 = 7
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newEntry.newConditionsElement()
     newCondition.operType = 7
     newCondition.unused1 = [1,2,3]
@@ -8851,7 +8851,7 @@ def TestQUST():
     newCondition.param1 = 7
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newEntry.newConditionsElement()
     newCondition.operType = 8
     newCondition.unused1 = [1,2,3]
@@ -8874,15 +8874,15 @@ def TestQUST():
     newReference = newEntry.newReferencesElement()
     newReference.reference = 7
     newReference.IsSCRO = True
-    
+
     newReference = newEntry.newReferencesElement()
     newReference.reference = 8
     newReference.IsSCRO = False
-    
+
     newReference = newEntry.newReferencesElement()
     newReference.reference = 9
     newReference.IsSCRO = False
-    
+
     newReference = newEntry.newReferencesElement()
     newReference.reference = 10
     newReference.IsSCRO = True
@@ -8891,7 +8891,7 @@ def TestQUST():
 
     newEntry = newStage.newEntriesElement()
     newEntry.flags = 1
-    
+
     newCondition = newEntry.newConditionsElement()
     newCondition.operType = 5
     newCondition.unused1 = [1,2,3]
@@ -8900,7 +8900,7 @@ def TestQUST():
     newCondition.param1 = 7
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newEntry.newConditionsElement()
     newCondition.operType = 6
     newCondition.unused1 = [1,2,3]
@@ -8909,7 +8909,7 @@ def TestQUST():
     newCondition.param1 = 7
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newEntry.newConditionsElement()
     newCondition.operType = 7
     newCondition.unused1 = [1,2,3]
@@ -8918,7 +8918,7 @@ def TestQUST():
     newCondition.param1 = 7
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newEntry.newConditionsElement()
     newCondition.operType = 8
     newCondition.unused1 = [1,2,3]
@@ -8941,28 +8941,28 @@ def TestQUST():
     newReference = newEntry.newReferencesElement()
     newReference.reference = 7
     newReference.IsSCRO = True
-    
+
     newReference = newEntry.newReferencesElement()
     newReference.reference = 8
     newReference.IsSCRO = False
-    
+
     newReference = newEntry.newReferencesElement()
     newReference.reference = 9
     newReference.IsSCRO = False
-    
+
     newReference = newEntry.newReferencesElement()
     newReference.reference = 10
     newReference.IsSCRO = True
 
-    newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]  
+    newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]
 
-    newStage.entries = [newStage.entries[2], newStage.entries[0]]    
+    newStage.entries = [newStage.entries[2], newStage.entries[0]]
 
     newStage = newRecord.newStagesElement()
     newStage.stage = 30
     newEntry = newStage.newEntriesElement()
     newEntry.flags = 1
-    
+
     newCondition = newEntry.newConditionsElement()
     newCondition.operType = 5
     newCondition.unused1 = [1,2,3]
@@ -8971,7 +8971,7 @@ def TestQUST():
     newCondition.param1 = 7
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newEntry.newConditionsElement()
     newCondition.operType = 6
     newCondition.unused1 = [1,2,3]
@@ -8980,7 +8980,7 @@ def TestQUST():
     newCondition.param1 = 7
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newEntry.newConditionsElement()
     newCondition.operType = 7
     newCondition.unused1 = [1,2,3]
@@ -8989,7 +8989,7 @@ def TestQUST():
     newCondition.param1 = 7
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newEntry.newConditionsElement()
     newCondition.operType = 8
     newCondition.unused1 = [1,2,3]
@@ -9012,24 +9012,24 @@ def TestQUST():
     newReference = newEntry.newReferencesElement()
     newReference.reference = 7
     newReference.IsSCRO = True
-    
+
     newReference = newEntry.newReferencesElement()
     newReference.reference = 8
     newReference.IsSCRO = False
-    
+
     newReference = newEntry.newReferencesElement()
     newReference.reference = 9
     newReference.IsSCRO = False
-    
+
     newReference = newEntry.newReferencesElement()
     newReference.reference = 10
     newReference.IsSCRO = True
 
-    newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]    
+    newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]
 
     newEntry = newStage.newEntriesElement()
     newEntry.flags = 1
-    
+
     newCondition = newEntry.newConditionsElement()
     newCondition.operType = 5
     newCondition.unused1 = [1,2,3]
@@ -9038,7 +9038,7 @@ def TestQUST():
     newCondition.param1 = 7
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newEntry.newConditionsElement()
     newCondition.operType = 6
     newCondition.unused1 = [1,2,3]
@@ -9047,7 +9047,7 @@ def TestQUST():
     newCondition.param1 = 7
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newEntry.newConditionsElement()
     newCondition.operType = 7
     newCondition.unused1 = [1,2,3]
@@ -9056,7 +9056,7 @@ def TestQUST():
     newCondition.param1 = 7
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newEntry.newConditionsElement()
     newCondition.operType = 8
     newCondition.unused1 = [1,2,3]
@@ -9079,15 +9079,15 @@ def TestQUST():
     newReference = newEntry.newReferencesElement()
     newReference.reference = 7
     newReference.IsSCRO = True
-    
+
     newReference = newEntry.newReferencesElement()
     newReference.reference = 8
     newReference.IsSCRO = False
-    
+
     newReference = newEntry.newReferencesElement()
     newReference.reference = 9
     newReference.IsSCRO = False
-    
+
     newReference = newEntry.newReferencesElement()
     newReference.reference = 10
     newReference.IsSCRO = True
@@ -9096,7 +9096,7 @@ def TestQUST():
 
     newEntry = newStage.newEntriesElement()
     newEntry.flags = 1
-    
+
     newCondition = newEntry.newConditionsElement()
     newCondition.operType = 5
     newCondition.unused1 = [1,2,3]
@@ -9105,7 +9105,7 @@ def TestQUST():
     newCondition.param1 = 7
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newEntry.newConditionsElement()
     newCondition.operType = 6
     newCondition.unused1 = [1,2,3]
@@ -9114,7 +9114,7 @@ def TestQUST():
     newCondition.param1 = 7
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newEntry.newConditionsElement()
     newCondition.operType = 7
     newCondition.unused1 = [1,2,3]
@@ -9123,7 +9123,7 @@ def TestQUST():
     newCondition.param1 = 7
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newEntry.newConditionsElement()
     newCondition.operType = 8
     newCondition.unused1 = [1,2,3]
@@ -9146,20 +9146,20 @@ def TestQUST():
     newReference = newEntry.newReferencesElement()
     newReference.reference = 7
     newReference.IsSCRO = True
-    
+
     newReference = newEntry.newReferencesElement()
     newReference.reference = 8
     newReference.IsSCRO = False
-    
+
     newReference = newEntry.newReferencesElement()
     newReference.reference = 9
     newReference.IsSCRO = False
-    
+
     newReference = newEntry.newReferencesElement()
     newReference.reference = 10
     newReference.IsSCRO = True
 
-    newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]  
+    newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]
 
     newStage.entries = [newStage.entries[2], newStage.entries[0]]
 
@@ -9169,7 +9169,7 @@ def TestQUST():
     newTarget.targetId = 7
     newTarget.flags = 1
     newTarget.unused1 = [1,2,3]
-    
+
     newCondition = newTarget.newConditionsElement()
     newCondition.operType = 5
     newCondition.unused1 = [1,2,3]
@@ -9178,7 +9178,7 @@ def TestQUST():
     newCondition.param1 = 7
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newTarget.newConditionsElement()
     newCondition.operType = 6
     newCondition.unused1 = [1,2,3]
@@ -9187,7 +9187,7 @@ def TestQUST():
     newCondition.param1 = 7
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newTarget.newConditionsElement()
     newCondition.operType = 7
     newCondition.unused1 = [1,2,3]
@@ -9196,7 +9196,7 @@ def TestQUST():
     newCondition.param1 = 7
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newTarget.newConditionsElement()
     newCondition.operType = 8
     newCondition.unused1 = [1,2,3]
@@ -9212,7 +9212,7 @@ def TestQUST():
     newTarget.targetId = 8
     newTarget.flags = 2
     newTarget.unused1 = [1,2,3]
-    
+
     newCondition = newTarget.newConditionsElement()
     newCondition.operType = 5
     newCondition.unused1 = [1,2,3]
@@ -9221,7 +9221,7 @@ def TestQUST():
     newCondition.param1 = 7
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newTarget.newConditionsElement()
     newCondition.operType = 6
     newCondition.unused1 = [1,2,3]
@@ -9230,7 +9230,7 @@ def TestQUST():
     newCondition.param1 = 7
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newTarget.newConditionsElement()
     newCondition.operType = 7
     newCondition.unused1 = [1,2,3]
@@ -9239,7 +9239,7 @@ def TestQUST():
     newCondition.param1 = 7
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newTarget.newConditionsElement()
     newCondition.operType = 8
     newCondition.unused1 = [1,2,3]
@@ -9255,7 +9255,7 @@ def TestQUST():
     newTarget.targetId = 9
     newTarget.flags = 3
     newTarget.unused1 = [1,2,3]
-    
+
     newCondition = newTarget.newConditionsElement()
     newCondition.operType = 5
     newCondition.unused1 = [1,2,3]
@@ -9264,7 +9264,7 @@ def TestQUST():
     newCondition.param1 = 7
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newTarget.newConditionsElement()
     newCondition.operType = 6
     newCondition.unused1 = [1,2,3]
@@ -9273,7 +9273,7 @@ def TestQUST():
     newCondition.param1 = 7
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newTarget.newConditionsElement()
     newCondition.operType = 7
     newCondition.unused1 = [1,2,3]
@@ -9282,7 +9282,7 @@ def TestQUST():
     newCondition.param1 = 7
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newTarget.newConditionsElement()
     newCondition.operType = 8
     newCondition.unused1 = [1,2,3]
@@ -9295,7 +9295,7 @@ def TestQUST():
     newTarget.conditions = [newTarget.conditions[3], newTarget.conditions[1], newTarget.conditions[0]]
 
     newRecord.targets = [newRecord.targets[2], newRecord.targets[0]]
-    
+
     print "QUST:Set Test Results"
     print
     print "fid    :", PrintFormID(newRecord.fid)
@@ -9308,7 +9308,7 @@ def TestQUST():
     print "iconPath   :", newRecord.iconPath
     print "flags      :", newRecord.flags
     print "priority   :", newRecord.priority
-    
+
     print "conditions"
     for condition in newRecord.conditions:
         print "  operType  :", condition.operType
@@ -9396,7 +9396,7 @@ def TestIDLE():
         print "modPath :", record.modPath
         print "modb    :", record.modb
         print "modt_p  :", record.modt_p
-        
+
         print "conditions"
         for condition in record.conditions:
             print "  operType  :", condition.operType
@@ -9411,7 +9411,7 @@ def TestIDLE():
         print "group  :", record.group
         print "parent :", PrintFormID(record.parent)
         print "prevId :", PrintFormID(record.prevId)
-        
+
         break
 
     print "IDLE:Create Record Test"
@@ -9439,7 +9439,7 @@ def TestIDLE():
     newCondition.param1 = 4
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newRecord.newConditionsElement()
     newCondition.operType = 2
     newCondition.unused1 = [1,2,3]
@@ -9448,7 +9448,7 @@ def TestIDLE():
     newCondition.param1 = 5
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newRecord.newConditionsElement()
     newCondition.operType = 3
     newCondition.unused1 = [1,2,3]
@@ -9457,7 +9457,7 @@ def TestIDLE():
     newCondition.param1 = 6
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newRecord.newConditionsElement()
     newCondition.operType = 4
     newCondition.unused1 = [1,2,3]
@@ -9483,7 +9483,7 @@ def TestIDLE():
     print "modPath :", newRecord.modPath
     print "modb    :", newRecord.modb
     print "modt_p  :", newRecord.modt_p
-    
+
     print "conditions"
     for condition in newRecord.conditions:
         print "  operType  :", condition.operType
@@ -9498,7 +9498,7 @@ def TestIDLE():
     print "group  :", newRecord.group
     print "parent :", PrintFormID(newRecord.parent)
     print "prevId :", PrintFormID(newRecord.prevId)
-    
+
     print "IDLE:CopyAsOverride Test"
     for record in Current[0].IDLE:
         record.CopyAsOverride(newMod)
@@ -9528,20 +9528,20 @@ def TestPACK():
         print "flags   :", record.flags
         print "aiType  :", record.aiType
         print "unused1 :", record.unused1
-        
+
         print "locType   :", record.locType
         if(record.locType != 5):
             print "locId     :", PrintFormID(record.locId)
         else:
             print "locId     :", record.locId
         print "locRadius :", record.locRadius
-        
+
         print "month    :", record.month
         print "day      :", record.day
         print "date     :", record.date
         print "time     :", record.time
         print "duration :", record.duration
-        
+
         print "targetType  :", record.targetType
         if(record.targetType != 2):
             print "targetId    :", PrintFormID(record.targetId)
@@ -9559,7 +9559,7 @@ def TestPACK():
             print "  param2    :", condition.param2
             print "  unused2   :", condition.unused2
             print
-        
+
         break
 
     print "PACK:Create Record Test"
@@ -9595,7 +9595,7 @@ def TestPACK():
     newCondition.param1 = 4
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newRecord.newConditionsElement()
     newCondition.operType = 2
     newCondition.unused1 = [1,2,3]
@@ -9604,7 +9604,7 @@ def TestPACK():
     newCondition.param1 = 5
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newRecord.newConditionsElement()
     newCondition.operType = 3
     newCondition.unused1 = [1,2,3]
@@ -9613,7 +9613,7 @@ def TestPACK():
     newCondition.param1 = 6
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
-    
+
     newCondition = newRecord.newConditionsElement()
     newCondition.operType = 4
     newCondition.unused1 = [1,2,3]
@@ -9635,20 +9635,20 @@ def TestPACK():
     print "flags   :", newRecord.flags
     print "aiType  :", newRecord.aiType
     print "unused1 :", newRecord.unused1
-    
+
     print "locType   :", newRecord.locType
     if(newRecord.locType != 5):
         print "locId     :", PrintFormID(newRecord.locId)
     else:
         print "locId     :", newRecord.locId
     print "locRadius :", newRecord.locRadius
-    
+
     print "month    :", newRecord.month
     print "day      :", newRecord.day
     print "date     :", newRecord.date
     print "time     :", newRecord.time
     print "duration :", newRecord.duration
-    
+
     print "targetType  :", newRecord.targetType
     if(newRecord.targetType != 2):
         print "targetId    :", PrintFormID(newRecord.targetId)
@@ -9666,7 +9666,7 @@ def TestPACK():
         print "  param2    :", condition.param2
         print "  unused2   :", condition.unused2
         print
-    
+
     print "PACK:CopyAsOverride Test"
     for record in Current[0].PACK:
         record.CopyAsOverride(newMod)
@@ -9719,7 +9719,7 @@ def TestCSTY():
         print "pAtkBack     :", record.pAtkBack
         print "pAtkL        :", record.pAtkL
         print "pAtkR        :", record.pAtkR
-        print "unused4      :", record.unused4                    
+        print "unused4      :", record.unused4
         print "holdTimerMin :", record.holdTimerMin
         print "holdTimerMax :", record.holdTimerMax
         print "flagsA       :", record.flagsA
@@ -9867,7 +9867,7 @@ def TestCSTY():
     print "pAtkBack     :", newRecord.pAtkBack
     print "pAtkL        :", newRecord.pAtkL
     print "pAtkR        :", newRecord.pAtkR
-    print "unused4      :", newRecord.unused4                    
+    print "unused4      :", newRecord.unused4
     print "holdTimerMin :", newRecord.holdTimerMin
     print "holdTimerMax :", newRecord.holdTimerMax
     print "flagsA       :", newRecord.flagsA
@@ -9905,7 +9905,7 @@ def TestCSTY():
     print "atkBlockMult   :", newRecord.atkBlockMult
     print "pAtkFBase      :", newRecord.pAtkFBase
     print "pAtkFMult      :", newRecord.pAtkFMult
-    
+
     print "CSTY:CopyAsOverride Test"
     for record in Current[0].CSTY:
         record.CopyAsOverride(newMod)
@@ -9961,19 +9961,19 @@ def TestLSCR():
     newLocation.indirect = 10
     newLocation.gridY = 0
     newLocation.gridX = 1
-    
+
     newLocation = newRecord.newLocationsElement()
     newLocation.direct = 8
     newLocation.indirect = 11
     newLocation.gridY = 2
     newLocation.gridX = 3
-    
+
     newLocation = newRecord.newLocationsElement()
     newLocation.direct = 9
     newLocation.indirect = 12
     newLocation.gridY = 4
     newLocation.gridX = 5
-    
+
     newLocation = newRecord.newLocationsElement()
     newLocation.direct = 10
     newLocation.indirect = 13
@@ -9981,7 +9981,7 @@ def TestLSCR():
     newLocation.gridX = 7
 
     newRecord.locations = [newRecord.locations[3], newRecord.locations[0], newRecord.locations[2]]
-    
+
     print "LSCR:Set Test Results"
     print
     print "fid    :", PrintFormID(newRecord.fid)
@@ -9997,7 +9997,7 @@ def TestLSCR():
         print "  indirect :", PrintFormID(location.indirect)
         print "  gridY    :", location.gridY
         print "  gridX    :", location.gridX
-        
+
     print "LSCR:CopyAsOverride Test"
     for record in Current[0].LSCR:
         record.CopyAsOverride(newMod)
@@ -10157,7 +10157,7 @@ def TestANIO():
     print "modt_p  :", newRecord.modt_p
 
     print "animationId :", PrintFormID(newRecord.animationId     )
-    
+
     print "ANIO:CopyAsOverride Test"
     for record in Current[0].ANIO:
         record.CopyAsOverride(newMod)
@@ -10186,8 +10186,8 @@ def TestWATR():
 
         print "texture       :", record.texture
         print "opacity       :", record.opacity
-        print "flags         :", record.flags                    
-        print "material      :", record.material                    
+        print "flags         :", record.flags
+        print "material      :", record.material
         print "sound         :", PrintFormID(record.sound                    )
         print "windVelocity  :", record.windVelocity
         print "windDirection :", record.windDirection
@@ -10210,7 +10210,7 @@ def TestWATR():
         print "unused2       :", record.unused2
         print "reflRed       :", record.reflRed
         print "reflGreen     :", record.reflGreen
-        print "reflBlue      :", record.reflBlue                    
+        print "reflBlue      :", record.reflBlue
         print "unused3       :", record.unused3
         print "blend         :", record.blend
         print "unused4       :", record.unused4
@@ -10224,7 +10224,7 @@ def TestWATR():
         print "dispFalloff   :", record.dispFalloff
         print "dispDampner   :", record.dispDampner
         print "dispSize      :", record.dispSize
-        print "damage        :", record.damage                    
+        print "damage        :", record.damage
         print "dayWater      :", PrintFormID(record.dayWater)
         print "nightWater    :", PrintFormID(record.nightWater)
         print "underWater    :", PrintFormID(record.underWater    )
@@ -10242,9 +10242,9 @@ def TestWATR():
 
     newRecord.texture = r"WATR\Texture\Path\Test\1.dds"
     newRecord.opacity = 1
-    newRecord.flags = 2             
-    newRecord.material = r"WATR\Material\Path\Test\2.dds"                
-    newRecord.sound = 7                    
+    newRecord.flags = 2
+    newRecord.material = r"WATR\Material\Path\Test\2.dds"
+    newRecord.sound = 7
     newRecord.windVelocity = 3
     newRecord.windDirection = 4
     newRecord.waveAmp = 5
@@ -10280,10 +10280,10 @@ def TestWATR():
     newRecord.dispFalloff = 31
     newRecord.dispDampner = 32
     newRecord.dispSize = 33
-    newRecord.damage = 34                   
+    newRecord.damage = 34
     newRecord.dayWater = 10
     newRecord.nightWater = 14
-    newRecord.underWater = 35    
+    newRecord.underWater = 35
 
     print "WATR:Set Test Results"
     print
@@ -10294,8 +10294,8 @@ def TestWATR():
 
     print "texture       :", newRecord.texture
     print "opacity       :", newRecord.opacity
-    print "flags         :", newRecord.flags                    
-    print "material      :", newRecord.material                    
+    print "flags         :", newRecord.flags
+    print "material      :", newRecord.material
     print "sound         :", PrintFormID(newRecord.sound                    )
     print "windVelocity  :", newRecord.windVelocity
     print "windDirection :", newRecord.windDirection
@@ -10318,7 +10318,7 @@ def TestWATR():
     print "unused2       :", newRecord.unused2
     print "reflRed       :", newRecord.reflRed
     print "reflGreen     :", newRecord.reflGreen
-    print "reflBlue      :", newRecord.reflBlue                    
+    print "reflBlue      :", newRecord.reflBlue
     print "unused3       :", newRecord.unused3
     print "blend         :", newRecord.blend
     print "unused4       :", newRecord.unused4
@@ -10332,11 +10332,11 @@ def TestWATR():
     print "dispFalloff   :", newRecord.dispFalloff
     print "dispDampner   :", newRecord.dispDampner
     print "dispSize      :", newRecord.dispSize
-    print "damage        :", newRecord.damage                    
+    print "damage        :", newRecord.damage
     print "dayWater      :", PrintFormID(newRecord.dayWater)
     print "nightWater    :", PrintFormID(newRecord.nightWater)
     print "underWater    :", PrintFormID(newRecord.underWater    )
-    
+
     print "WATR:CopyAsOverride Test"
     for record in Current[0].WATR:
         record.CopyAsOverride(newMod)
@@ -10606,7 +10606,7 @@ def TestEFSH():
     print "key1Time        :", newRecord.key1Time
     print "key2Time        :", newRecord.key2Time
     print "key3Time        :", newRecord.key3Time
-    
+
     print "EFSH:CopyAsOverride Test"
     for record in Current[0].EFSH:
         record.CopyAsOverride(newMod)
@@ -10634,7 +10634,7 @@ from timeit import Timer
 ##avgi = sum(test) / len(test)
 ##maxi = max(test)
 ##print "Min:%.15f, Avg:%.15f, Max:%.15f" % (mini, avgi, maxi)
-    
+
 ##print "1TestFullLoad"
 ##test = [Timer('TestFullLoad()', 'from __main__ import TestFullLoad').timeit(1) for x in range(0, 1)]
 ##mini = min(test)
@@ -10668,7 +10668,7 @@ from timeit import Timer
 ##del Current
 ##phonenumber = raw_input("!")
 
-TestCleanMasters()
+##TestCleanMasters()
 ##TestFullLoad()
 ##TestMinimalLoad()
 ##TestLoadMasters()

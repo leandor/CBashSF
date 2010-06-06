@@ -93,7 +93,7 @@ void _FormIDHandler::UpdateFormIDLookup()
     //and for when collapsed back into a writable format
     //This function populates that table, and allows much, much faster formID resolution
     //which occurs on every formID that is read, set, and written...
-    
+
     //The Collapsed lookup table has to be updated anytime the mod's masters change.
     unsigned char numMods = (unsigned char)LoadOrder.size();
     char *curMaster = NULL;
@@ -121,7 +121,7 @@ void _FormIDHandler::CreateFormIDLookup(const unsigned char &expandedIndex)
     //and for when collapsed back into a writable format
     //This function populates that table, and allows much, much faster formID resolution
     //which occurs on every formID that is read, set, and written...
-    
+
     //The Expanded lookup table is only created once when the mod is first loaded.
     //This allows records to be read even after a master has been added, and have the formID
     //be set to the proper load order corrected value.

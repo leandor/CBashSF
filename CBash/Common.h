@@ -68,7 +68,7 @@ class Ex_NULL : public std::exception
         const char * __CLR_OR_THIS_CALL what() const
             {return "NULL Pointer";}
     };
-    
+
 typedef unsigned int * FormID;
 
 extern time_t lastSave;

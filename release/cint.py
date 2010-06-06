@@ -158,7 +158,7 @@ class BaseRecord(object):
         if (nValue == True): self.flags1 |= 0x00080000
         else: self.flags1 &= ~0x00080000
     IsCantWait = property(get_IsCantWait, set_IsCantWait)
-    baseattrs = ['flags1', 'flags2', 'eid']
+    baseattrs = ['flags1','flags2','eid']
 
 class TES4Record(object):
     def __init__(self, CollectionIndex, ModName):
@@ -259,8 +259,8 @@ class TES4Record(object):
         if (nValue == True): self.flags1 |= 0x00000001
         else: self.flags1 &= ~0x00000001
     IsESM = property(get_IsESM, set_IsESM)
-    attrs = ['flags1', 'flags2', 'version', 'numRecords', 'nextObject', 'author', 'description', 'masters']
-    
+    copyattrs = ['flags1','flags2','version','numRecords','nextObject','author','description','masters']
+
 class GMSTRecord(object):
     def __init__(self, CollectionIndex, ModName, recordID):
         self._CollectionIndex = CollectionIndex
@@ -345,7 +345,7 @@ class GMSTRecord(object):
         elif(rFormat == 3 and type(nValue) is str):
             CBash.SetGMSTFieldStr(self._CollectionIndex, self._ModName, self._recordID, 6, nValue)
     value = property(get_value, set_value)
-    attrs = ['flags1', 'flags2', 'eid', 'value']
+    copyattrs = ['flags1','flags2','eid','value']
 
 class GLOBRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
@@ -372,8 +372,8 @@ class GLOBRecord(BaseRecord):
     def set_value(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 7, c_float(nValue))
     value = property(get_value, set_value)
-    attrs = baseattrs + ['format', 'value']
-    
+    copyattrs = BaseRecord.baseattrs + ['format','value']
+
 class CLASRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyCLASRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -416,7 +416,7 @@ class CLASRecord(BaseRecord):
         return None
     def set_primary2(self, nValue):
         CBash.SetFIDFieldI(self._CollectionIndex, self._ModName, self._recordID, 10, nValue)
-        
+
     primary2 = property(get_primary2, set_primary2)
     def get_specialization(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
@@ -425,7 +425,7 @@ class CLASRecord(BaseRecord):
         return None
     def set_specialization(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 11, nValue)
-        
+
     specialization = property(get_specialization, set_specialization)
     def get_major1(self):
         CBash.ReadFIDField.restype = POINTER(c_int)
@@ -434,7 +434,7 @@ class CLASRecord(BaseRecord):
         return None
     def set_major1(self, nValue):
         CBash.SetFIDFieldI(self._CollectionIndex, self._ModName, self._recordID, 12, nValue)
-        
+
     major1 = property(get_major1, set_major1)
     def get_major2(self):
         CBash.ReadFIDField.restype = POINTER(c_int)
@@ -443,7 +443,7 @@ class CLASRecord(BaseRecord):
         return None
     def set_major2(self, nValue):
         CBash.SetFIDFieldI(self._CollectionIndex, self._ModName, self._recordID, 13, nValue)
-        
+
     major2 = property(get_major2, set_major2)
     def get_major3(self):
         CBash.ReadFIDField.restype = POINTER(c_int)
@@ -452,7 +452,7 @@ class CLASRecord(BaseRecord):
         return None
     def set_major3(self, nValue):
         CBash.SetFIDFieldI(self._CollectionIndex, self._ModName, self._recordID, 14, nValue)
-        
+
     major3 = property(get_major3, set_major3)
     def get_major4(self):
         CBash.ReadFIDField.restype = POINTER(c_int)
@@ -461,7 +461,7 @@ class CLASRecord(BaseRecord):
         return None
     def set_major4(self, nValue):
         CBash.SetFIDFieldI(self._CollectionIndex, self._ModName, self._recordID, 15, nValue)
-        
+
     major4 = property(get_major4, set_major4)
     def get_major5(self):
         CBash.ReadFIDField.restype = POINTER(c_int)
@@ -470,7 +470,7 @@ class CLASRecord(BaseRecord):
         return None
     def set_major5(self, nValue):
         CBash.SetFIDFieldI(self._CollectionIndex, self._ModName, self._recordID, 16, nValue)
-        
+
     major5 = property(get_major5, set_major5)
     def get_major6(self):
         CBash.ReadFIDField.restype = POINTER(c_int)
@@ -479,7 +479,7 @@ class CLASRecord(BaseRecord):
         return None
     def set_major6(self, nValue):
         CBash.SetFIDFieldI(self._CollectionIndex, self._ModName, self._recordID, 17, nValue)
-        
+
     major6 = property(get_major6, set_major6)
     def get_major7(self):
         CBash.ReadFIDField.restype = POINTER(c_int)
@@ -488,7 +488,7 @@ class CLASRecord(BaseRecord):
         return None
     def set_major7(self, nValue):
         CBash.SetFIDFieldI(self._CollectionIndex, self._ModName, self._recordID, 18, nValue)
-        
+
     major7 = property(get_major7, set_major7)
     def get_flags(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
@@ -497,7 +497,7 @@ class CLASRecord(BaseRecord):
         return None
     def set_flags(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 19, nValue)
-        
+
     flags = property(get_flags, set_flags)
     def get_services(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
@@ -629,9 +629,9 @@ class CLASRecord(BaseRecord):
         if (nValue == True): self.services |= 0x00020000
         else: self.services &= ~0x00020000
     IsServicesRepair = property(get_IsServicesRepair, set_IsServicesRepair)
-    attrs = baseattrs + ['full', 'description', 'iconPath', 'primary1', 'primary2', 'specialization',
-                         'major1', 'major2', 'major3', 'major4', 'major5', 'major6', 'major7',
-                         'flags', 'services', 'trainSkill', 'trainLevel']
+    copyattrs = BaseRecord.baseattrs + ['full','description','iconPath','primary1','primary2','specialization',
+                         'major1','major2','major3','major4','major5','major6','major7',
+                         'flags','services','trainSkill','trainLevel']
 
 class FACTRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
@@ -707,7 +707,7 @@ class FACTRecord(BaseRecord):
         listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 10)
         if(listIndex == -1): return None
         return self.Rank(self._CollectionIndex, self._ModName, self._recordID, listIndex)
-    
+
     def get_full(self):
         CBash.ReadFIDField.restype = c_char_p
         return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 6)
@@ -745,7 +745,7 @@ class FACTRecord(BaseRecord):
         if(retValue): return retValue.contents.value
         return None
     def set_crimeGoldMultiplier(self, nValue):
-        CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 9, c_float(nValue))       
+        CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 9, c_float(nValue))
     crimeGoldMultiplier = property(get_crimeGoldMultiplier, set_crimeGoldMultiplier)
     def get_ranks(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 10)
@@ -781,8 +781,8 @@ class FACTRecord(BaseRecord):
         if (nValue == True): self.flags |= 0x00000004
         else: self.flags &= ~0x00000004
     IsSpecialCombat = property(get_IsSpecialCombat, set_IsSpecialCombat)
-    attrs = baseattrs + ['full', 'relations', 'flags', 'crimeGoldMultiplier', 'ranks']
-    
+    copyattrs = BaseRecord.baseattrs + ['full','relations','flags','crimeGoldMultiplier','ranks']
+
 class HAIRRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyHAIRRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -871,8 +871,8 @@ class HAIRRecord(BaseRecord):
         if (nValue == True): self.flags |= 0x00000008
         else: self.flags &= ~0x00000008
     IsFixedColor = property(get_IsFixedColor, set_IsFixedColor)
-    attrs = baseattrs + ['full', 'modPath', 'modb', 'modt_p', 'iconPath', 'flags']
-    
+    copyattrs = BaseRecord.baseattrs + ['full','modPath','modb','modt_p','iconPath','flags']
+
 class EYESRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyEYESRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -908,7 +908,7 @@ class EYESRecord(BaseRecord):
         if (nValue == True): self.flags |= 0x00000001
         else: self.flags &= ~0x00000001
     IsPlayable = property(get_IsPlayable, set_IsPlayable)
-    attrs = baseattrs + ['full', 'iconPath', 'flags']
+    copyattrs = BaseRecord.baseattrs + ['full','iconPath','flags']
 
 class RACERecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
@@ -979,7 +979,7 @@ class RACERecord(BaseRecord):
             length = len(nValue)
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 3, struct.pack('B' * length, *nValue), length)
         modt_p = property(get_modt_p, set_modt_p)
-       
+
     class Model(object):
         def __init__(self, CollectionIndex, ModName, recordID, listIndex):
             self._CollectionIndex = CollectionIndex
@@ -1010,7 +1010,7 @@ class RACERecord(BaseRecord):
         def set_modt_p(self, nValue):
             length = len(nValue)
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 2, struct.pack('B' * length, *nValue), length)
-        modt_p = property(get_modt_p, set_modt_p)    
+        modt_p = property(get_modt_p, set_modt_p)
     def newRelationsElement(self):
         listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 9)
         if(listIndex == -1): return None
@@ -1191,7 +1191,7 @@ class RACERecord(BaseRecord):
         if(retValue): return retValue.contents.value
         return None
     def set_femaleHeight(self, nValue):
-        CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 26, c_float(nValue))   
+        CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 26, c_float(nValue))
     femaleHeight = property(get_femaleHeight, set_femaleHeight)
     def get_maleWeight(self):
         CBash.ReadFIDField.restype = POINTER(c_float)
@@ -1199,7 +1199,7 @@ class RACERecord(BaseRecord):
         if(retValue): return retValue.contents.value
         return None
     def set_maleWeight(self, nValue):
-        CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 27, c_float(nValue))   
+        CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 27, c_float(nValue))
     maleWeight = property(get_maleWeight, set_maleWeight)
     def get_femaleWeight(self):
         CBash.ReadFIDField.restype = POINTER(c_float)
@@ -1207,7 +1207,7 @@ class RACERecord(BaseRecord):
         if(retValue): return retValue.contents.value
         return None
     def set_femaleWeight(self, nValue):
-        CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 28, c_float(nValue))          
+        CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 28, c_float(nValue))
     femaleWeight = property(get_femaleWeight, set_femaleWeight)
     def get_flags(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
@@ -1643,26 +1643,26 @@ class RACERecord(BaseRecord):
         if (nValue == True): self.flags |= 0x00000001
         else: self.flags &= ~0x00000001
     IsPlayable = property(get_IsPlayable, set_IsPlayable)
-    attrs = baseattrs + ['full', 'text', 'spells', 'relations', 
-                         'skill1', 'skill1Boost', 'skill2', 'skill2Boost',
-                         'skill3', 'skill3Boost', 'skill4', 'skill4Boost',
-                         'skill5', 'skill5Boost', 'skill6', 'skill6Boost',
-                         'skill7', 'skill7Boost', 'maleHeight', 'femaleHeight',
-                         'maleWeight', 'femaleWeight', 'flags', 'maleVoice',
-                         'femaleVoice', 'defaultHairMale', 'defaultHairFemale',
-                         'defaultHairColor', 'mainClamp', 'faceClamp', 'maleStrength',
-                         'maleIntelligence', 'maleAgility', 'maleSpeed',
-                         'maleEndurance', 'malePersonality', 'maleLuck',
-                         'femaleStrength', 'femaleIntelligence', 'femaleWillpower',
-                         'femaleAgility', 'femaleSpeed', 'femaleEndurance',
-                         'femalePersonality', 'femaleLuck', 'head', 'maleEars',
-                         'femaleEars', 'mouth', 'teethLower', 'teethUpper',
-                         'tongue', 'leftEye', 'rightEye', 'maleTailModel',
-                         'maleUpperBodyPath', 'maleLowerBodyPath', 'maleHandPath',
-                         'maleFootPath', 'maleTailPath', 'femaleTailModel',
-                         'femaleUpperBodyPath', 'femaleLowerBodyPath',
-                         'femaleHandPath', 'femaleFootPath', 'femaleTailPath',
-                         'hairs', 'eyes', 'fggs_p', 'fgga_p', 'fgts_p', 'snam']
+    copyattrs = BaseRecord.baseattrs + ['full','text','spells','relations',
+                         'skill1','skill1Boost','skill2','skill2Boost',
+                         'skill3','skill3Boost','skill4','skill4Boost',
+                         'skill5','skill5Boost','skill6','skill6Boost',
+                         'skill7','skill7Boost','maleHeight','femaleHeight',
+                         'maleWeight','femaleWeight','flags','maleVoice',
+                         'femaleVoice','defaultHairMale','defaultHairFemale',
+                         'defaultHairColor','mainClamp','faceClamp','maleStrength',
+                         'maleIntelligence','maleAgility','maleSpeed',
+                         'maleEndurance','malePersonality','maleLuck',
+                         'femaleStrength','femaleIntelligence','femaleWillpower',
+                         'femaleAgility','femaleSpeed','femaleEndurance',
+                         'femalePersonality','femaleLuck','head','maleEars',
+                         'femaleEars','mouth','teethLower','teethUpper',
+                         'tongue','leftEye','rightEye','maleTailModel',
+                         'maleUpperBodyPath','maleLowerBodyPath','maleHandPath',
+                         'maleFootPath','maleTailPath','femaleTailModel',
+                         'femaleUpperBodyPath','femaleLowerBodyPath',
+                         'femaleHandPath','femaleFootPath','femaleTailPath',
+                         'hairs','eyes','fggs_p','fgga_p','fgts_p','snam']
 
 class SOUNRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
@@ -1693,7 +1693,7 @@ class SOUNRecord(BaseRecord):
         if(retValue): return retValue.contents.value
         return None
     def set_maxDistance(self, nValue):
-        CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 8, c_ubyte(nValue))        
+        CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 8, c_ubyte(nValue))
     maxDistance = property(get_maxDistance, set_maxDistance)
     def get_freqAdjustment(self):
         CBash.ReadFIDField.restype = POINTER(c_byte)
@@ -1701,7 +1701,7 @@ class SOUNRecord(BaseRecord):
         if(retValue): return retValue.contents.value
         return None
     def set_freqAdjustment(self, nValue):
-        CBash.SetFIDFieldC(self._CollectionIndex, self._ModName, self._recordID, 9, c_byte(nValue))        
+        CBash.SetFIDFieldC(self._CollectionIndex, self._ModName, self._recordID, 9, c_byte(nValue))
     freqAdjustment = property(get_freqAdjustment, set_freqAdjustment)
     def get_unused1(self):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
@@ -1709,7 +1709,7 @@ class SOUNRecord(BaseRecord):
         if(retValue): return retValue.contents.value
         return None
     def set_unused1(self, nValue):
-        CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 10, c_ubyte(nValue))        
+        CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 10, c_ubyte(nValue))
     unused1 = property(get_unused1, set_unused1)
     def get_flags(self):
         CBash.ReadFIDField.restype = POINTER(c_ushort)
@@ -1801,7 +1801,10 @@ class SOUNRecord(BaseRecord):
         if (nValue == True): self.flags |= 0x00000080
         else: self.flags &= ~0x00000080
     Is360LFE = property(get_Is360LFE, set_Is360LFE)
-    
+    copyattrs = BaseRecord.baseattrs + ['soundFile','minDistance','maxDistance',
+                                        'freqAdjustment','flags','staticAtten',
+                                        'stopTime','startTime']
+
 class SKILRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopySKILRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -1895,6 +1898,11 @@ class SKILRecord(BaseRecord):
     def set_master(self, nValue):
         CBash.SetFIDFieldStr(self._CollectionIndex, self._ModName, self._recordID, 17, nValue)
     master = property(get_master, set_master)
+    copyattrs = BaseRecord.baseattrs + ['skill','description','iconPath',
+                                        'action','attribute','specialization',
+                                        'use0','use1','apprentice',
+                                        'journeyman','expert','master']
+
 class MGEFRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyMGEFRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -2255,6 +2263,12 @@ class MGEFRecord(BaseRecord):
         if (nValue == True): self.flags |= 0x08000000
         else: self.flags &= ~0x08000000
     IsNoHitEffect = property(get_IsNoHitEffect, set_IsNoHitEffect)
+    copyattrs = BaseRecord.baseattrs + ['school','associated','baseCost','flags',
+                                        'modt_p','modb','modPath','iconPath','text',
+                                        'full' 'resistValue','unk1','light',
+                                        'projectileSpeed','effectShader','enchantEffect',
+                                        'castingSound','boltSound','hitSound','areaSound',
+                                        'cefEnchantment','cefBarter','counterEffects']
 
 class SCPTRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
@@ -2347,11 +2361,11 @@ class SCPTRecord(BaseRecord):
     def newVarsElement(self):
         listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 13)
         if(listIndex == -1): return None
-        return self.Var(self._CollectionIndex, self._ModName, self._recordID, listIndex)    
+        return self.Var(self._CollectionIndex, self._ModName, self._recordID, listIndex)
     def newReferencesElement(self):
         listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 14)
         if(listIndex == -1): return None
-        return self.Reference(self._CollectionIndex, self._ModName, self._recordID, listIndex)    
+        return self.Reference(self._CollectionIndex, self._ModName, self._recordID, listIndex)
     def get_unused1(self):
         numRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 6)
         if(numRecords > 0):
@@ -2440,9 +2454,10 @@ class SCPTRecord(BaseRecord):
             CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 14)
             diffLength -= 1
         for oReference, nValue in zip(self.references, nValues):
-            oReference.reference, oReference.IsSCRO = nValue  
+            oReference.reference, oReference.IsSCRO = nValue
     references = property(get_references, set_references)
-    
+    copyattrs = BaseRecord.baseattrs + ['numRefs','compiledSize','lastIndex','scriptType','compiled_p','scriptText','vars','references']
+
 class LTEXRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyLTEXRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -2592,7 +2607,7 @@ class LTEXRecord(BaseRecord):
         if (nValue == True): self.flags |= 0x00004000
         else: self.flags &= ~0x00004000
     IsSnow = property(get_IsSnow, set_IsSnow)
-
+    copyattrs = BaseRecord.baseattrs + ['iconPath','flags','friction','restitution','specular','grass']
 class ENCHRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyENCHRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -2725,7 +2740,7 @@ class ENCHRecord(BaseRecord):
         listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 12)
         if(listIndex == -1): return None
         return self.Effect(self._CollectionIndex, self._ModName, self._recordID, 12, listIndex)
-    
+
     def get_full(self):
         CBash.ReadFIDField.restype = c_char_p
         return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 6)
@@ -2820,7 +2835,8 @@ class ENCHRecord(BaseRecord):
         if (nValue == True): self.itemType = 3
         else: self.IsScroll = True
     IsApparel = property(get_IsApparel, set_IsApparel)
-    
+    copyattrs = BaseRecord.baseattrs + ['full','itemType','chargeAmount','enchantCost','flags','effects']
+
 class SPELRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopySPELRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -2952,7 +2968,7 @@ class SPELRecord(BaseRecord):
         listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 12)
         if(listIndex == -1): return None
         return self.Effect(self._CollectionIndex, self._ModName, self._recordID, 12, listIndex)
-    
+
     def get_full(self):
         CBash.ReadFIDField.restype = c_char_p
         return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 6)
@@ -3125,7 +3141,8 @@ class SPELRecord(BaseRecord):
         if (nValue == True): self.level = 4
         else: self.IsNovice = True
     IsMaster = property(get_IsMaster, set_IsMaster)
-    
+    copyattrs = BaseRecord.baseattrs + ['full','spellType','cost','level','flags','effects']
+
 class BSGNRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyBSGNRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -3165,6 +3182,7 @@ class BSGNRecord(BaseRecord):
         cRecords = (c_uint * length)(*nValue)
         CBash.SetFIDFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 9, cRecords, length)
     spells = property(get_spells, set_spells)
+    copyattrs = BaseRecord.baseattrs + ['full','iconPath','text','spells']
 
 class ACTIRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
@@ -3222,6 +3240,7 @@ class ACTIRecord(BaseRecord):
     def set_sound(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 11, c_uint(nValue))
     sound = property(get_sound, set_sound)
+    copyattrs = BaseRecord.baseattrs + ['full','modPath','modb','modt_p','script','sound']
 
 class APPARecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
@@ -3333,6 +3352,9 @@ class APPARecord(BaseRecord):
         if (nValue == True): self.apparatus = 3
         else: self.IsMortarPestle = True
     IsRetort = property(get_IsRetort, set_IsRetort)
+    copyattrs = BaseRecord.baseattrs + ['full','modPath','modb','modt_p',
+                                        'iconPath','script','apparatus',
+                                        'value','weight','quality']
 
 class ARMORecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
@@ -3373,7 +3395,7 @@ class ARMORecord(BaseRecord):
         def set_modt_p(self, nValue):
             length = len(nValue)
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 2, struct.pack('B' * length, *nValue), length)
-        modt_p = property(get_modt_p, set_modt_p)   
+        modt_p = property(get_modt_p, set_modt_p)
     def get_full(self):
         CBash.ReadFIDField.restype = c_char_p
         return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 6)
@@ -3412,24 +3434,48 @@ class ARMORecord(BaseRecord):
     def set_flags(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 10, c_uint(nValue))
     flags = property(get_flags, set_flags)
-    @property
-    def maleBody(self):
+    def get_maleBody(self):
         return self.Model(self._CollectionIndex, self._ModName, self._recordID, 11)
-    @property
-    def maleWorld(self):
+    def set_maleBody(self, nValue):
+        if not isinstance(nValue, self.Model): return
+        thisModel = self.maleBody
+        thisModel.modPath = nValue.modPath
+        thisModel.modb = nValue.modb
+        thisModel.modt_p = nValue.modt_p
+    maleBody = property(get_maleBody, set_maleBody)
+    def get_maleWorld(self):
         return self.Model(self._CollectionIndex, self._ModName, self._recordID, 14)
+    def set_maleWorld(self, nValue):
+        if not isinstance(nValue, self.Model): return
+        thisModel = self.maleWorld
+        thisModel.modPath = nValue.modPath
+        thisModel.modb = nValue.modb
+        thisModel.modt_p = nValue.modt_p
+    maleWorld = property(get_maleWorld, set_maleWorld)
     def get_maleIconPath(self):
         CBash.ReadFIDField.restype = c_char_p
         return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 17)
     def set_maleIconPath(self, nValue):
         CBash.SetFIDFieldStr(self._CollectionIndex, self._ModName, self._recordID, 17, nValue)
     maleIconPath = property(get_maleIconPath, set_maleIconPath)
-    @property
-    def femaleBody(self):
+    def get_femaleBody(self):
         return self.Model(self._CollectionIndex, self._ModName, self._recordID, 18)
-    @property
-    def femaleWorld(self):
+    def set_femaleBody(self, nValue):
+        if not isinstance(nValue, self.Model): return
+        thisModel = self.femaleBody
+        thisModel.modPath = nValue.modPath
+        thisModel.modb = nValue.modb
+        thisModel.modt_p = nValue.modt_p
+    femaleBody = property(get_femaleBody, set_femaleBody)
+    def get_femaleWorld(self):
         return self.Model(self._CollectionIndex, self._ModName, self._recordID, 21)
+    def set_femaleWorld(self, nValue):
+        if not isinstance(nValue, self.Model): return
+        thisModel = self.femaleWorld
+        thisModel.modPath = nValue.modPath
+        thisModel.modb = nValue.modb
+        thisModel.modt_p = nValue.modt_p
+    femaleWorld = property(get_femaleWorld, set_femaleWorld)
     def get_femaleIconPath(self):
         CBash.ReadFIDField.restype = c_char_p
         return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 24)
@@ -3588,6 +3634,10 @@ class ARMORecord(BaseRecord):
         if (nValue == True): self.flags |= 0x00080000
         else: self.flags &= ~0x00080000
     IsHeavyArmor = property(get_IsHeavyArmor, set_IsHeavyArmor)
+    copyattrs = BaseRecord.baseattrs + ['full','script','enchantment','enchantPoints',
+                                        'flags','maleBody','maleWorld','maleIconPath',
+                                        'femaleBody','femaleWorld','femaleIconPath',
+                                        'strength','value','health','weight']
 
 class BOOKRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
@@ -3709,6 +3759,10 @@ class BOOKRecord(BaseRecord):
         if (nValue == True): self.flags |= 0x00000002
         else: self.flags &= ~0x00000002
     IsFixed = property(get_IsFixed, set_IsFixed)
+    copyattrs = BaseRecord.baseattrs + ['full','modPath','modb','modt_p',
+                                        'iconPath','text','script',
+                                        'enchantment','enchantPoints',
+                                        'flags','teaches','value','weight']
 
 class CLOTRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
@@ -3749,7 +3803,7 @@ class CLOTRecord(BaseRecord):
         def set_modt_p(self, nValue):
             length = len(nValue)
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 2, struct.pack('B' * length, *nValue), length)
-        modt_p = property(get_modt_p, set_modt_p)   
+        modt_p = property(get_modt_p, set_modt_p)
     def get_full(self):
         CBash.ReadFIDField.restype = c_char_p
         return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 6)
@@ -3788,24 +3842,48 @@ class CLOTRecord(BaseRecord):
     def set_flags(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 10, c_uint(nValue))
     flags = property(get_flags, set_flags)
-    @property
-    def maleBody(self):
+    def get_maleBody(self):
         return self.Model(self._CollectionIndex, self._ModName, self._recordID, 11)
-    @property
-    def maleWorld(self):
+    def set_maleBody(self, nValue):
+        if not isinstance(nValue, self.Model): return
+        thisModel = self.maleBody
+        thisModel.modPath = nValue.modPath
+        thisModel.modb = nValue.modb
+        thisModel.modt_p = nValue.modt_p
+    maleBody = property(get_maleBody, set_maleBody)
+    def get_maleWorld(self):
         return self.Model(self._CollectionIndex, self._ModName, self._recordID, 14)
+    def set_maleWorld(self, nValue):
+        if not isinstance(nValue, self.Model): return
+        thisModel = self.maleWorld
+        thisModel.modPath = nValue.modPath
+        thisModel.modb = nValue.modb
+        thisModel.modt_p = nValue.modt_p
+    maleWorld = property(get_maleWorld, set_maleWorld)
     def get_maleIconPath(self):
         CBash.ReadFIDField.restype = c_char_p
         return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 17)
     def set_maleIconPath(self, nValue):
         CBash.SetFIDFieldStr(self._CollectionIndex, self._ModName, self._recordID, 17, nValue)
     maleIconPath = property(get_maleIconPath, set_maleIconPath)
-    @property
-    def femaleBody(self):
+    def get_femaleBody(self):
         return self.Model(self._CollectionIndex, self._ModName, self._recordID, 18)
-    @property
-    def femaleWorld(self):
+    def set_femaleBody(self, nValue):
+        if not isinstance(nValue, self.Model): return
+        thisModel = self.femaleBody
+        thisModel.modPath = nValue.modPath
+        thisModel.modb = nValue.modb
+        thisModel.modt_p = nValue.modt_p
+    femaleBody = property(get_femaleBody, set_femaleBody)
+    def get_femaleWorld(self):
         return self.Model(self._CollectionIndex, self._ModName, self._recordID, 21)
+    def set_femaleWorld(self, nValue):
+        if not isinstance(nValue, self.Model): return
+        thisModel = self.femaleWorld
+        thisModel.modPath = nValue.modPath
+        thisModel.modb = nValue.modb
+        thisModel.modt_p = nValue.modt_p
+    femaleWorld = property(get_femaleWorld, set_femaleWorld)
     def get_femaleIconPath(self):
         CBash.ReadFIDField.restype = c_char_p
         return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 24)
@@ -3942,6 +4020,10 @@ class CLOTRecord(BaseRecord):
         if (nValue == True): self.flags |= 0x00040000
         else: self.flags &= ~0x00040000
     IsNonPlayable = property(get_IsNonPlayable, set_IsNonPlayable)
+    copyattrs = BaseRecord.baseattrs + ['full','script','enchantment','enchantPoints',
+                                        'flags','maleBody','maleWorld','maleIconPath',
+                                        'femaleBody','femaleWorld','femaleIconPath',
+                                        'value','weight']
 
 class CONTRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
@@ -4072,7 +4154,10 @@ class CONTRecord(BaseRecord):
         if (nValue == True): self.flags |= 0x00000001
         else: self.flags &= ~0x00000001
     IsRespawn = property(get_IsRespawn, set_IsRespawn)
-    
+    copyattrs = BaseRecord.baseattrs + ['full','modPath','modb','modt_p',
+                                        'script','items','flags','weight',
+                                        'soundOpen','soundClose']
+
 class DOORRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyDOORRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -4189,7 +4274,8 @@ class DOORRecord(BaseRecord):
         if (nValue == True): self.flags |= 0x00000008
         else: self.flags &= ~0x00000008
     IsMinimalUse = property(get_IsMinimalUse, set_IsMinimalUse)
-    
+    copyattrs = BaseRecord.baseattrs + ['full','modPath','modb','modt_p','script','soundOpen','soundClose','soundLoop','flags','destinations']
+
 class INGRRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyINGRRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -4428,6 +4514,9 @@ class INGRRecord(BaseRecord):
         if (nValue == True): self.flags |= 0x00000002
         else: self.flags &= ~0x00000002
     IsFood = property(get_IsFood, set_IsFood)
+    copyattrs = BaseRecord.baseattrs + ['full','modPath','modb','modt_p',
+                                        'iconPath','script','weight',
+                                        'value','flags','effects']
 
 class LIGHRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
@@ -4649,6 +4738,11 @@ class LIGHRecord(BaseRecord):
         if (nValue == True): self.flags |= 0x00000400
         else: self.flags &= ~0x00000400
     IsSpotShadow = property(get_IsSpotShadow, set_IsSpotShadow)
+    copyattrs = BaseRecord.baseattrs + ['modPath','modb','modt_p','script',
+                                        'full','iconPath','duration','radius',
+                                        'red','green','blue','flags',
+                                        'falloff','fov','value','weight',
+                                        'fade','sound']
 
 class MISCRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
@@ -4720,6 +4814,8 @@ class MISCRecord(BaseRecord):
     def set_weight(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 13, c_float(nValue))
     weight = property(get_weight, set_weight)
+    copyattrs = BaseRecord.baseattrs + ['full','modPath','modb','modt_p',
+                                        'iconPath','script','value','weight']
 
 class STATRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
@@ -4755,6 +4851,8 @@ class STATRecord(BaseRecord):
         length = len(nValue)
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 8, struct.pack('B' * length, *nValue), length)
     modt_p = property(get_modt_p, set_modt_p)
+    copyattrs = BaseRecord.baseattrs + ['modPath','modb','modt_p']
+
 class GRASRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyGRASRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -4917,6 +5015,10 @@ class GRASRecord(BaseRecord):
         if (nValue == True): self.flags |= 0x00000004
         else: self.flags &= ~0x00000004
     IsFitSlope = property(get_IsFitSlope, set_IsFitSlope)
+    copyattrs = BaseRecord.baseattrs + ['modPath','modb','modt_p','density',
+                                        'minSlope','maxSlope','waterDistance',
+                                        'waterOp','posRange','heightRange',
+                                        'colorRange','wavePeriod','flags']
 
 class TREERecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
@@ -5016,22 +5118,22 @@ class TREERecord(BaseRecord):
     def set_shadowRadius(self, nValue):
         CBash.SetFIDFieldI(self._CollectionIndex, self._ModName, self._recordID, 16, nValue)
     shadowRadius = property(get_shadowRadius, set_shadowRadius)
-    def get_rockSpeed         (self):
+    def get_rockSpeed(self):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 17)
         if(retValue): return retValue.contents.value
         return None
-    def set_rockSpeed         (self, nValue):
+    def set_rockSpeed(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 17, c_float(nValue))
-    rockSpeed          = property(get_rockSpeed         , set_rockSpeed         )
-    def get_rustleSpeed  (self):
+    rockSpeed = property(get_rockSpeed, set_rockSpeed)
+    def get_rustleSpeed(self):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 18)
         if(retValue): return retValue.contents.value
         return None
-    def set_rustleSpeed  (self, nValue):
+    def set_rustleSpeed(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 18, c_float(nValue))
-    rustleSpeed   = property(get_rustleSpeed  , set_rustleSpeed  )
+    rustleSpeed = property(get_rustleSpeed, set_rustleSpeed)
     def get_widthBill(self):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 19)
@@ -5048,6 +5150,12 @@ class TREERecord(BaseRecord):
     def set_heightBill(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 20, c_float(nValue))
     heightBill = property(get_heightBill, set_heightBill)
+    copyattrs = BaseRecord.baseattrs + ['modPath','modb','modt_p','iconPath',
+                                        'speedTree','curvature','minAngle',
+                                        'maxAngle','branchDim','leafDim',
+                                        'shadowRadius','rockSpeed',
+                                        'rustleSpeed','widthBill','heightBill']
+
 class FLORRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyFLORRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -5136,6 +5244,10 @@ class FLORRecord(BaseRecord):
     def set_winter(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 15, c_ubyte(nValue))
     winter = property(get_winter, set_winter)
+    copyattrs = BaseRecord.baseattrs + ['full','modPath','modb','modt_p',
+                                        'script','ingredient','spring',
+                                        'summer','fall','winter']
+
 class FURNRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyFURNRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -5392,7 +5504,8 @@ class FURNRecord(BaseRecord):
             self.flags |= 0x40000000
             self.flags &= ~0x80000000
     IsSleepAnim = property(get_IsSleepAnim, set_IsSleepAnim)
-    
+    copyattrs = BaseRecord.baseattrs + ['full','modPath','modb','modt_p','script','flags']
+
 class WEAPRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyWEAPRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -5462,7 +5575,7 @@ class WEAPRecord(BaseRecord):
         return None
     def set_enchantPoints(self, nValue):
         CBash.SetFIDFieldUS(self._CollectionIndex, self._ModName, self._recordID, 13, c_ushort(nValue))
-    enchantPoints = property(get_enchantPoints, set_enchantPoints)                    
+    enchantPoints = property(get_enchantPoints, set_enchantPoints)
     def get_weaponType(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 14)
@@ -5575,7 +5688,12 @@ class WEAPRecord(BaseRecord):
         if (nValue == True): self.weaponType = 5
         else: self.IsBlade1Hand = True
     IsBow = property(get_IsBow, set_IsBow)
-    
+    copyattrs = BaseRecord.baseattrs + ['full','modPath','modb','modt_p',
+                                        'iconPath','script','enchantment',
+                                        'enchantPoints','weaponType',
+                                        'speed','reach','flags','value',
+                                        'health','weight','damage']
+
 class AMMORecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyAMMORecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -5637,7 +5755,7 @@ class AMMORecord(BaseRecord):
         return None
     def set_enchantPoints(self, nValue):
         CBash.SetFIDFieldUS(self._CollectionIndex, self._ModName, self._recordID, 12, c_ushort(nValue))
-    enchantPoints = property(get_enchantPoints, set_enchantPoints)     
+    enchantPoints = property(get_enchantPoints, set_enchantPoints)
     def get_speed(self):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
@@ -5645,7 +5763,7 @@ class AMMORecord(BaseRecord):
         return None
     def set_speed(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 13, c_float(nValue))
-    speed = property(get_speed, set_speed)  
+    speed = property(get_speed, set_speed)
     def get_flags(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 14)
@@ -5700,7 +5818,11 @@ class AMMORecord(BaseRecord):
         if (nValue == True): self.flags &= ~0x00000001
         else: self.flags |= 0x00000001
     IsNormal = IsNormalWeapon = property(get_IsNormalWeapon, set_IsNormalWeapon)
-    
+    copyattrs = BaseRecord.baseattrs + ['full','modPath','modb','modt_p',
+                                        'iconPath','enchantment',
+                                        'enchantPoints','speed','flags',
+                                        'value','weight','damage']
+
 class NPC_Record(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyNPC_Record(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -5766,7 +5888,7 @@ class NPC_Record(BaseRecord):
         def set_count(self, nValue):
             CBash.SetFIDListFieldI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2, nValue)
         count = property(get_count, set_count)
-        
+
     def newFactionsElement(self):
         listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 17)
         if(listIndex == -1): return None
@@ -6546,7 +6668,29 @@ class NPC_Record(BaseRecord):
         if (nValue == True): self.services |= 0x00020000
         else: self.services &= ~0x00020000
     IsServicesRepair = property(get_IsServicesRepair, set_IsServicesRepair)
-    
+    copyattrs = BaseRecord.baseattrs + ['full','modPath','modb','modt_p',
+                                        'flags','baseSpell','fatigue',
+                                        'barterGold','level','calcMin',
+                                        'calcMax','factions','deathItem',
+                                        'race','spells','script','items',
+                                        'aggression','confidence',
+                                        'energyLevel','responsibility',
+                                        'services','trainSkill','trainLevel',
+                                        'aiPackages','animations','iclass',
+                                        'armorer','athletics','blade',
+                                        'block','blunt','h2h','heavyArmor',
+                                        'alchemy','alteration','conjuration',
+                                        'destruction','illusion','mysticism',
+                                        'restoration','acrobatics','lightArmor',
+                                        'marksman','mercantile','security',
+                                        'sneak','speechcraft','health',
+                                        'strength','intelligence','willpower',
+                                        'agility','speed','endurance',
+                                        'personality','luck','hair',
+                                        'hairLength','eye','hairRed',
+                                        'hairGreen','hairBlue','combatStyle',
+                                        'fggs_p','fgga_p','fgts_p','fnam']
+
 class CREARecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyCREARecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -7439,6 +7583,25 @@ class CREARecord(BaseRecord):
         if (nValue == True): self.soul = 5
         elif(self.get_IsGrandSoul()): self.IsNoSoul = True
     IsGrandSoul = property(get_IsGrandSoul, set_IsGrandSoul)
+    copyattrs = BaseRecord.baseattrs + ['full','modPath','modb','modt_p',
+                                        'spells','bodyParts','nift_p',
+                                        'flags','baseSpell','fatigue',
+                                        'barterGold','level','calcMin',
+                                        'calcMax','factions','deathItem',
+                                        'script','items','aggression',
+                                        'confidence','energyLevel',
+                                        'responsibility','services',
+                                        'trainSkill','trainLevel',
+                                        'aiPackages','animations',
+                                        'creatureType','combat','magic',
+                                        'stealth','soul','health',
+                                        'attackDamage','strength',
+                                        'intelligence','willpower','agility',
+                                        'speed','endurance','personality',
+                                        'luck','attackReach','combatStyle',
+                                        'turningSpeed','baseScale',
+                                        'footWeight','inheritsSoundsFrom',
+                                        'bloodSprayPath','bloodDecalPath','sounds']
 
 class LVLRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
@@ -7558,6 +7721,7 @@ class LVLRecord(BaseRecord):
         if (nValue == True): self.flags |= 0x00000004
         else: self.flags &= ~0x00000004
     IsUseAllSpells = property(get_IsUseAllSpells, set_IsUseAllSpells)
+    copyattrs = BaseRecord.baseattrs + ['chanceNone','flags','entries']
 
 class LVLCRecord(LVLRecord):
     def CopyAsOverride(self, targetMod):
@@ -7584,6 +7748,8 @@ class LVLCRecord(LVLRecord):
     def set_template(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 9, nValue)
     template = property(get_template, set_template)
+    copyattrs = LVLRecord.copyattrs + ['script','template']
+
 class SLGMRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopySLGMRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -7742,7 +7908,10 @@ class SLGMRecord(BaseRecord):
         if (nValue == True): self.capacity = 5
         elif(self.get_IsGrandCapacity()): self.IsNoCapacity = True
     IsGrandCapacity = property(get_IsGrandCapacity, set_IsGrandCapacity)
-    
+    copyattrs = BaseRecord.baseattrs + ['full','modPath','modb','modt_p',
+                                        'iconPath','script','value',
+                                        'weight','soul','capacity']
+
 class KEYMRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyKEYMRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -7813,6 +7982,9 @@ class KEYMRecord(BaseRecord):
     def set_weight(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 13, c_float(nValue))
     weight = property(get_weight, set_weight)
+    copyattrs = BaseRecord.baseattrs + ['full','modPath','modb','modt_p',
+                                        'iconPath','script','value','weight']
+
 class ALCHRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyALCHRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -8051,7 +8223,10 @@ class ALCHRecord(BaseRecord):
         if (nValue == True): self.flags |= 0x00000002
         else: self.flags &= ~0x00000002
     IsFood = property(get_IsFood, set_IsFood)
-    
+    copyattrs = BaseRecord.baseattrs + ['full','modPath','modb','modt_p',
+                                        'iconPath','script','weight',
+                                        'value','flags','effects']
+
 class SBSPRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopySBSPRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -8085,6 +8260,8 @@ class SBSPRecord(BaseRecord):
     def set_sizeZ(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 8, c_float(nValue))
     sizeZ = property(get_sizeZ, set_sizeZ)
+    copyattrs = BaseRecord.baseattrs + ['sizeX','sizeY','sizeZ']
+
 class SGSTRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopySGSTRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -8301,6 +8478,10 @@ class SGSTRecord(BaseRecord):
     def set_weight(self, nValue):
         CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 15, c_float(nValue))
     weight = property(get_weight, set_weight)
+    copyattrs = BaseRecord.baseattrs + ['full','modPath','modb','modt_p',
+                                        'iconPath','script','effects',
+                                        'uses','value','weight']
+
 class LVLIRecord(LVLRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyLVLIRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -8310,6 +8491,7 @@ class LVLIRecord(LVLRecord):
         FID = CBash.CopyLVLIRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
         if(FID): return LVLIRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
+    copyattrs = LVLRecord.copyattrs
 
 class WTHRRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
@@ -8461,7 +8643,7 @@ class WTHRRecord(BaseRecord):
             return []
         def set_unused4(self, nValue):
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 15, struct.pack('B', *nValue), 1)
-        unused4 = property(get_unused4, set_unused4)  
+        unused4 = property(get_unused4, set_unused4)
     class Sound(object):
         def __init__(self, CollectionIndex, ModName, recordID, listIndex):
             self._CollectionIndex = CollectionIndex
@@ -8549,36 +8731,226 @@ class WTHRRecord(BaseRecord):
         length = len(nValue)
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 10, struct.pack('B' * length, *nValue), length)
     modt_p = property(get_modt_p, set_modt_p)
-    @property
-    def upperSky(self):
+    def get_upperSky(self):
         return self.WTHRColor(self._CollectionIndex, self._ModName, self._recordID, 11)
-    @property
-    def fog(self):
+    def set_upperSky(self, nValue):
+        if not (isinstance(nValue, self.WTHRColor)): return
+        thisColor = self.upperSky
+        thisModel.riseRed = nValue.riseRed
+        thisModel.riseGreen = nValue.riseGreen
+        thisModel.riseBlue = nValue.riseBlue
+        thisModel.unused1 = nValue.unused1
+        thisModel.dayRed = nValue.dayRed
+        thisModel.dayGreen = nValue.dayGreen
+        thisModel.dayBlue = nValue.dayBlue
+        thisModel.unused2 = nValue.unused2
+        thisModel.setRed = nValue.setRed
+        thisModel.setGreen = nValue.setGreen
+        thisModel.setBlue = nValue.setBlue
+        thisModel.unused3 = nValue.unused3
+        thisModel.nightRed = nValue.nightRed
+        thisModel.nightGreen = nValue.nightGreen
+        thisModel.nightBlue = nValue.nightBlue
+        thisModel.unused4 = nValue.unused4
+    upperSky = property(get_upperSky, set_upperSky)
+    def get_fog(self):
         return self.WTHRColor(self._CollectionIndex, self._ModName, self._recordID, 27)
-    @property
-    def lowerClouds(self):
+    def set_fog(self, nValue):
+        if not (isinstance(nValue, self.WTHRColor)): return
+        thisColor = self.fog
+        thisModel.riseRed = nValue.riseRed
+        thisModel.riseGreen = nValue.riseGreen
+        thisModel.riseBlue = nValue.riseBlue
+        thisModel.unused1 = nValue.unused1
+        thisModel.dayRed = nValue.dayRed
+        thisModel.dayGreen = nValue.dayGreen
+        thisModel.dayBlue = nValue.dayBlue
+        thisModel.unused2 = nValue.unused2
+        thisModel.setRed = nValue.setRed
+        thisModel.setGreen = nValue.setGreen
+        thisModel.setBlue = nValue.setBlue
+        thisModel.unused3 = nValue.unused3
+        thisModel.nightRed = nValue.nightRed
+        thisModel.nightGreen = nValue.nightGreen
+        thisModel.nightBlue = nValue.nightBlue
+        thisModel.unused4 = nValue.unused4
+    fog = property(get_fog, set_fog)
+    def get_lowerClouds(self):
         return self.WTHRColor(self._CollectionIndex, self._ModName, self._recordID, 43)
-    @property
-    def ambient(self):
+    def set_lowerClouds(self, nValue):
+        if not (isinstance(nValue, self.WTHRColor)): return
+        thisColor = self.lowerClouds
+        thisModel.riseRed = nValue.riseRed
+        thisModel.riseGreen = nValue.riseGreen
+        thisModel.riseBlue = nValue.riseBlue
+        thisModel.unused1 = nValue.unused1
+        thisModel.dayRed = nValue.dayRed
+        thisModel.dayGreen = nValue.dayGreen
+        thisModel.dayBlue = nValue.dayBlue
+        thisModel.unused2 = nValue.unused2
+        thisModel.setRed = nValue.setRed
+        thisModel.setGreen = nValue.setGreen
+        thisModel.setBlue = nValue.setBlue
+        thisModel.unused3 = nValue.unused3
+        thisModel.nightRed = nValue.nightRed
+        thisModel.nightGreen = nValue.nightGreen
+        thisModel.nightBlue = nValue.nightBlue
+        thisModel.unused4 = nValue.unused4
+    lowerClouds = property(get_lowerClouds, set_lowerClouds)
+    def get_ambient(self):
         return self.WTHRColor(self._CollectionIndex, self._ModName, self._recordID, 59)
-    @property
-    def sunlight(self):
+    def set_ambient(self, nValue):
+        if not (isinstance(nValue, self.WTHRColor)): return
+        thisColor = self.ambient
+        thisModel.riseRed = nValue.riseRed
+        thisModel.riseGreen = nValue.riseGreen
+        thisModel.riseBlue = nValue.riseBlue
+        thisModel.unused1 = nValue.unused1
+        thisModel.dayRed = nValue.dayRed
+        thisModel.dayGreen = nValue.dayGreen
+        thisModel.dayBlue = nValue.dayBlue
+        thisModel.unused2 = nValue.unused2
+        thisModel.setRed = nValue.setRed
+        thisModel.setGreen = nValue.setGreen
+        thisModel.setBlue = nValue.setBlue
+        thisModel.unused3 = nValue.unused3
+        thisModel.nightRed = nValue.nightRed
+        thisModel.nightGreen = nValue.nightGreen
+        thisModel.nightBlue = nValue.nightBlue
+        thisModel.unused4 = nValue.unused4
+    ambient = property(get_ambient, set_ambient)
+    def get_sunlight(self):
         return self.WTHRColor(self._CollectionIndex, self._ModName, self._recordID, 75)
-    @property
-    def sun(self):
+    def set_sunlight(self, nValue):
+        if not (isinstance(nValue, self.WTHRColor)): return
+        thisColor = self.sunlight
+        thisModel.riseRed = nValue.riseRed
+        thisModel.riseGreen = nValue.riseGreen
+        thisModel.riseBlue = nValue.riseBlue
+        thisModel.unused1 = nValue.unused1
+        thisModel.dayRed = nValue.dayRed
+        thisModel.dayGreen = nValue.dayGreen
+        thisModel.dayBlue = nValue.dayBlue
+        thisModel.unused2 = nValue.unused2
+        thisModel.setRed = nValue.setRed
+        thisModel.setGreen = nValue.setGreen
+        thisModel.setBlue = nValue.setBlue
+        thisModel.unused3 = nValue.unused3
+        thisModel.nightRed = nValue.nightRed
+        thisModel.nightGreen = nValue.nightGreen
+        thisModel.nightBlue = nValue.nightBlue
+        thisModel.unused4 = nValue.unused4
+    sunlight = property(get_sunlight, set_sunlight)
+    def get_sun(self):
         return self.WTHRColor(self._CollectionIndex, self._ModName, self._recordID, 91)
-    @property
-    def stars(self):
+    def set_sun(self, nValue):
+        if not (isinstance(nValue, self.WTHRColor)): return
+        thisColor = self.sun
+        thisModel.riseRed = nValue.riseRed
+        thisModel.riseGreen = nValue.riseGreen
+        thisModel.riseBlue = nValue.riseBlue
+        thisModel.unused1 = nValue.unused1
+        thisModel.dayRed = nValue.dayRed
+        thisModel.dayGreen = nValue.dayGreen
+        thisModel.dayBlue = nValue.dayBlue
+        thisModel.unused2 = nValue.unused2
+        thisModel.setRed = nValue.setRed
+        thisModel.setGreen = nValue.setGreen
+        thisModel.setBlue = nValue.setBlue
+        thisModel.unused3 = nValue.unused3
+        thisModel.nightRed = nValue.nightRed
+        thisModel.nightGreen = nValue.nightGreen
+        thisModel.nightBlue = nValue.nightBlue
+        thisModel.unused4 = nValue.unused4
+    sun = property(get_sun, set_sun)
+    def get_stars(self):
         return self.WTHRColor(self._CollectionIndex, self._ModName, self._recordID, 107)
-    @property
-    def lowerSky(self):
+    def set_stars(self, nValue):
+        if not (isinstance(nValue, self.WTHRColor)): return
+        thisColor = self.stars
+        thisModel.riseRed = nValue.riseRed
+        thisModel.riseGreen = nValue.riseGreen
+        thisModel.riseBlue = nValue.riseBlue
+        thisModel.unused1 = nValue.unused1
+        thisModel.dayRed = nValue.dayRed
+        thisModel.dayGreen = nValue.dayGreen
+        thisModel.dayBlue = nValue.dayBlue
+        thisModel.unused2 = nValue.unused2
+        thisModel.setRed = nValue.setRed
+        thisModel.setGreen = nValue.setGreen
+        thisModel.setBlue = nValue.setBlue
+        thisModel.unused3 = nValue.unused3
+        thisModel.nightRed = nValue.nightRed
+        thisModel.nightGreen = nValue.nightGreen
+        thisModel.nightBlue = nValue.nightBlue
+        thisModel.unused4 = nValue.unused4
+    stars = property(get_stars, set_stars)
+    def get_lowerSky(self):
         return self.WTHRColor(self._CollectionIndex, self._ModName, self._recordID, 123)
-    @property
-    def horizon(self):
+    def set_lowerSky(self, nValue):
+        if not (isinstance(nValue, self.WTHRColor)): return
+        thisColor = self.lowerSky
+        thisModel.riseRed = nValue.riseRed
+        thisModel.riseGreen = nValue.riseGreen
+        thisModel.riseBlue = nValue.riseBlue
+        thisModel.unused1 = nValue.unused1
+        thisModel.dayRed = nValue.dayRed
+        thisModel.dayGreen = nValue.dayGreen
+        thisModel.dayBlue = nValue.dayBlue
+        thisModel.unused2 = nValue.unused2
+        thisModel.setRed = nValue.setRed
+        thisModel.setGreen = nValue.setGreen
+        thisModel.setBlue = nValue.setBlue
+        thisModel.unused3 = nValue.unused3
+        thisModel.nightRed = nValue.nightRed
+        thisModel.nightGreen = nValue.nightGreen
+        thisModel.nightBlue = nValue.nightBlue
+        thisModel.unused4 = nValue.unused4
+    lowerSky = property(get_lowerSky, set_lowerSky)
+    def get_horizon(self):
         return self.WTHRColor(self._CollectionIndex, self._ModName, self._recordID, 139)
-    @property
-    def upperClouds(self):
+    def set_horizon(self, nValue):
+        if not (isinstance(nValue, self.WTHRColor)): return
+        thisColor = self.horizon
+        thisModel.riseRed = nValue.riseRed
+        thisModel.riseGreen = nValue.riseGreen
+        thisModel.riseBlue = nValue.riseBlue
+        thisModel.unused1 = nValue.unused1
+        thisModel.dayRed = nValue.dayRed
+        thisModel.dayGreen = nValue.dayGreen
+        thisModel.dayBlue = nValue.dayBlue
+        thisModel.unused2 = nValue.unused2
+        thisModel.setRed = nValue.setRed
+        thisModel.setGreen = nValue.setGreen
+        thisModel.setBlue = nValue.setBlue
+        thisModel.unused3 = nValue.unused3
+        thisModel.nightRed = nValue.nightRed
+        thisModel.nightGreen = nValue.nightGreen
+        thisModel.nightBlue = nValue.nightBlue
+        thisModel.unused4 = nValue.unused4
+    horizon = property(get_horizon, set_horizon)
+    def get_upperClouds(self):
         return self.WTHRColor(self._CollectionIndex, self._ModName, self._recordID, 155)
+    def set_upperClouds(self, nValue):
+        if not (isinstance(nValue, self.WTHRColor)): return
+        thisColor = self.upperClouds
+        thisModel.riseRed = nValue.riseRed
+        thisModel.riseGreen = nValue.riseGreen
+        thisModel.riseBlue = nValue.riseBlue
+        thisModel.unused1 = nValue.unused1
+        thisModel.dayRed = nValue.dayRed
+        thisModel.dayGreen = nValue.dayGreen
+        thisModel.dayBlue = nValue.dayBlue
+        thisModel.unused2 = nValue.unused2
+        thisModel.setRed = nValue.setRed
+        thisModel.setGreen = nValue.setGreen
+        thisModel.setBlue = nValue.setBlue
+        thisModel.unused3 = nValue.unused3
+        thisModel.nightRed = nValue.nightRed
+        thisModel.nightGreen = nValue.nightGreen
+        thisModel.nightBlue = nValue.nightBlue
+        thisModel.unused4 = nValue.unused4
+    upperClouds = property(get_upperClouds, set_upperClouds)
     def get_fogDayNear(self):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 171)
@@ -8941,7 +9313,22 @@ class WTHRRecord(BaseRecord):
         if (nValue == True): self.weatherType |= 0x10000000
         else: self.weatherType &= ~0x10000000
     IsUnk2 = property(get_IsUnk2, set_IsUnk2)
-    
+    copyattrs = BaseRecord.baseattrs + ['lowerLayer','upperLayer','modPath',
+                                        'modb','modt_p','upperSky','fog',
+                                        'lowerClouds','ambient','sunlight',
+                                        'sun','stars','lowerSky','horizon',
+                                        'upperClouds','fogDayNear','fogDayFar',
+                                        'fogNightNear','fogNightFar','eyeAdaptSpeed',
+                                        'blurRadius','blurPasses','emissiveMult',
+                                        'targetLum','upperLumClamp','brightScale',
+                                        'brightClamp','lumRampNoTex','lumRampMin',
+                                        'lumRampMax','sunlightDimmer','grassDimmer',
+                                        'treeDimmer','windSpeed','lowerCloudSpeed',
+                                        'upperCloudSpeed','transDelta','sunGlare',
+                                        'sunDamage','rainFadeIn','rainFadeOut',
+                                        'boltFadeIn','boltFadeOut','boltFrequency',
+                                        'weatherType','boltRed','boltGreen','boltBlue','sounds']
+
 class CLMTRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyCLMTRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -9079,7 +9466,10 @@ class CLMTRecord(BaseRecord):
     def set_phaseLength(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 17, c_ubyte(nValue))
     phaseLength = property(get_phaseLength, set_phaseLength)
-    
+    copyattrs = BaseRecord.baseattrs + ['weathers','sunPath','glarePath','modPath',
+                                        'modb','modt_p','riseBegin','riseEnd',
+                                        'setBegin','setEnd','volatility','phaseLength']
+
 class REGNRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyREGNRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -9113,7 +9503,7 @@ class REGNRecord(BaseRecord):
             def set_posY(self, nValue):
                 CBash.SetFIDListX2FieldF(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 2, c_float(nValue))
             posY = property(get_posY, set_posY)
-            
+
         def __init__(self, CollectionIndex, ModName, recordID, listIndex):
             self._CollectionIndex = CollectionIndex
             self._ModName = ModName
@@ -9371,7 +9761,7 @@ class REGNRecord(BaseRecord):
                 if (nValue == True): self.flags |= 0x00000080
                 else: self.flags &= ~0x00000080
             IsHugeRock = property(get_IsHugeRock, set_IsHugeRock)
-            
+
         class Grass(object):
             def __init__(self, CollectionIndex, ModName, recordID, listIndex, listX2Index):
                 self._CollectionIndex = CollectionIndex
@@ -9539,9 +9929,9 @@ class REGNRecord(BaseRecord):
             return []
         def set_objects(self, nObjects):
             diffLength = len(nObjects) - CBash.GetFIDListX2Size(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5)
-            nValues = [(nObject.objectId, nObject.parentIndex, nObject.unused1, nObject.density, nObject.clustering, 
-                        nObject.minSlope, nObject.maxSlope, nObject.flags, nObject.radiusWRTParent, nObject.radius, 
-                        nObject.unk1, nObject.maxHeight, nObject.sink, nObject.sinkVar, nObject.sizeVar, 
+            nValues = [(nObject.objectId, nObject.parentIndex, nObject.unused1, nObject.density, nObject.clustering,
+                        nObject.minSlope, nObject.maxSlope, nObject.flags, nObject.radiusWRTParent, nObject.radius,
+                        nObject.unk1, nObject.maxHeight, nObject.sink, nObject.sinkVar, nObject.sizeVar,
                         nObject.angleVarX, nObject.angleVarY, nObject.angleVarZ, nObject.unused2, nObject.unk2) for nObject in nObjects]
             while(diffLength < 0):
                 CBash.DeleteFIDListX2Element(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5)
@@ -9769,10 +10159,10 @@ class REGNRecord(BaseRecord):
     def set_entries(self, nEntries):
         diffLength = len(nEntries) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 13)
         nValues = [(nEntry.entryType, nEntry.flags, nEntry.priority, nEntry.unused1,
-                    [(nObject.objectId, nObject.subField, nObject.unused1, nObject.density, 
-                      nObject.clustering, nObject.minSlope, nObject.maxSlope, nObject.flags, 
-                      nObject.radiusWRTParent, nObject.radius, nObject.unk1, nObject.maxHeight,  
-                      nObject.sink, nObject.sinkVar, nObject.sizeVar, nObject.angleVarX, 
+                    [(nObject.objectId, nObject.subField, nObject.unused1, nObject.density,
+                      nObject.clustering, nObject.minSlope, nObject.maxSlope, nObject.flags,
+                      nObject.radiusWRTParent, nObject.radius, nObject.unk1, nObject.maxHeight,
+                      nObject.sink, nObject.sinkVar, nObject.sizeVar, nObject.angleVarX,
                       nObject.angleVarY, nObject.angleVarZ, nObject.unused2, nObject.unk2) for nObject in nEntry.objects],
                     nEntry.mapName, nEntry.iconPath,
                     [(nGrass.grass, nGrass.unk1) for nGrass in nEntry.grasses],
@@ -9798,10 +10188,10 @@ class REGNRecord(BaseRecord):
                 CBash.CreateFIDListX2Element(self._CollectionIndex, self._ModName, self._recordID, 13, oEntry._listIndex, 5)
                 diffLength -= 1
             for oObject, objValue in zip(oEntry.objects, nValue[4]):
-                oObject.objectId, oObject.subField, oObject.unused1, oObject.density, 
-                oObject.clustering, oObject.minSlope, oObject.maxSlope, oObject.flags, 
-                oObject.radiusWRTParent, oObject.radius, oObject.unk1, oObject.maxHeight,  
-                oObject.sink, oObject.sinkVar, oObject.sizeVar, oObject.angleVarX, 
+                oObject.objectId, oObject.subField, oObject.unused1, oObject.density,
+                oObject.clustering, oObject.minSlope, oObject.maxSlope, oObject.flags,
+                oObject.radiusWRTParent, oObject.radius, oObject.unk1, oObject.maxHeight,
+                oObject.sink, oObject.sinkVar, oObject.sizeVar, oObject.angleVarX,
                 oObject.angleVarY, oObject.angleVarZ, oObject.unused2, oObject.unk2 = objValue
             nEntry.mapName = nValue[5]
             nEntry.iconPath = nValue[6]
@@ -9832,9 +10222,10 @@ class REGNRecord(BaseRecord):
                 CBash.CreateFIDListX2Element(self._CollectionIndex, self._ModName, self._recordID, 13, oEntry._listIndex, 11)
                 diffLength -= 1
             for oWeather, weatherValue in zip(oEntry.weathers, nValue[10]):
-                oWeather.weather, oWeather.chance = weatherValue                  
+                oWeather.weather, oWeather.chance = weatherValue
     entries = property(get_entries, set_entries)
-    
+    copyattrs = BaseRecord.baseattrs + ['iconPath','mapRed','mapGreen','mapBlue','worldspace','areas','entries']
+
 class CELLRecord(BaseRecord):
     def CopyAsOverride(self, target, isWorldCell=False):
         if isinstance(target, ModFile):
@@ -10247,7 +10638,13 @@ class CELLRecord(BaseRecord):
         if (nValue == True): self.music = 2
         elif(self.get_IsDungeon()): self.IsDefault = True
     IsDungeon = property(get_IsDungeon, set_IsDungeon)
-    
+    copyattrs = BaseRecord.baseattrs + ['full','flags','ambientRed','ambientGreen','ambientBlue',
+                                        'directionalRed','directionalGreen','directionalBlue',
+                                        'fogRed','fogGreen','fogBlue','fogNear','fogFar',
+                                        'directionalXY','directionalZ','directionalFade',
+                                        'fogClip','music','owner','rank','globalVariable',
+                                        'climate','waterHeight','regions','posX','posY','water']
+
 class ACHRRecord(BaseRecord):
     def CopyAsOverride(self, targetCELL):
         FID = CBash.CopyACHRRecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetCELL._recordID, c_bool(True))
@@ -10421,7 +10818,11 @@ class ACHRRecord(BaseRecord):
         if (nValue == True): self.parentFlags |= 0x00000001
         else: self.parentFlags &= ~0x00000001
     IsOppositeParent = property(get_IsOppositeParent, set_IsOppositeParent)
-    
+    copyattrs = BaseRecord.baseattrs + ['base','unknownXPCIFormID','unknownXPCIString',
+                                        'lod1','lod2','lod3','parent','parentFlags',
+                                        'merchantContainer','horse','xrgd_p','scale',
+                                        'posX','posY','posZ','rotX','rotY','rotZ']
+
 class ACRERecord(BaseRecord):
     def CopyAsOverride(self, targetCELL):
         FID = CBash.CopyACRERecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetCELL._recordID, c_bool(True))
@@ -10565,7 +10966,10 @@ class ACRERecord(BaseRecord):
         if (nValue == True): self.parentFlags |= 0x00000001
         else: self.parentFlags &= ~0x00000001
     IsOppositeParent = property(get_IsOppositeParent, set_IsOppositeParent)
-    
+    copyattrs = BaseRecord.baseattrs + ['base','owner','rank','globalVariable','parent',
+                                        'parentFlags','xrgd_p','scale',
+                                        'posX','posY','posZ','rotX','rotY','rotZ']
+
 class REFRRecord(BaseRecord):
     def CopyAsOverride(self, targetCELL):
         FID = CBash.CopyREFRRecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetCELL._recordID, c_bool(True))
@@ -11127,7 +11531,17 @@ class REFRRecord(BaseRecord):
         if (nValue == True): self.soul = 5
         elif(self.get_IsGrandSoul()): IsNoSoul = True
     IsGrandSoul = property(get_IsGrandSoul, set_IsGrandSoul)
-    
+    copyattrs = BaseRecord.baseattrs + ['base','destinationFormID','destinationPosX',
+                                        'destinationPosY','destinationPosZ','destinationRotX',
+                                        'destinationRotY','destinationRotZ','lockLevel',
+                                        'lockKey','lockFlags','owner','rank','globalVariable',
+                                        'parent','parentFlags','targetFormID','seed','seedOffset',
+                                        'lod1','lod2','lod3','charge','health',
+                                        'unknownXPCIFormID','unknownXPCIString','levelMod',
+                                        'unknownXRTMFormID','actionFlags','count','markerFlags',
+                                        'markerName','markerType','markerUnused','scale','soul',
+                                        'posX','posY','posZ','rotX','rotY','rotZ']
+
 class PGRDRecord(BaseRecord):
     def CopyAsOverride(self, targetCELL):
         FID = CBash.CopyPGRDRecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetCELL._recordID, c_bool(True))
@@ -11252,7 +11666,7 @@ class PGRDRecord(BaseRecord):
         reference = property(get_reference, set_reference)
         def get_points(self):
             numRecords = CBash.GetFIDListArraySize(self._CollectionIndex, self._ModName, self._recordID, 11, self._listIndex, 2)
-            if(numRecords > 0):                
+            if(numRecords > 0):
                 cRecords = POINTER(c_uint * numRecords)()
                 CBash.GetFIDListArray(self._CollectionIndex, self._ModName, self._recordID, 11, self._listIndex, 2, byref(cRecords))
                 return [cRecords.contents[x] for x in range(0, numRecords)]
@@ -11274,7 +11688,7 @@ class PGRDRecord(BaseRecord):
         listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 11)
         if(listIndex == -1): return None
         return self.PGRLRecord(self._CollectionIndex, self._ModName, self._recordID, listIndex)
-    
+
     def get_count(self):
         CBash.ReadFIDField.restype = POINTER(c_ushort)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 6)
@@ -11282,7 +11696,7 @@ class PGRDRecord(BaseRecord):
         return None
     def set_count(self, nValue):
         CBash.SetFIDFieldUS(self._CollectionIndex, self._ModName, self._recordID, 6, c_ushort(nValue))
-    count = property(get_count, set_count)    
+    count = property(get_count, set_count)
     def get_PGRP(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 7)
         if(numRecords > 0): return [self.PGRPRecord(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
@@ -11298,7 +11712,7 @@ class PGRDRecord(BaseRecord):
             diffLength -= 1
         for oPGRPRecord, nValue in zip(self.PGRP, nValues):
             oPGRPRecord.x, oPGRPRecord.y, oPGRPRecord.z, oPGRPRecord.connections, oPGRPRecord.unused1 = nValue
-    PGRP = property(get_PGRP, set_PGRP)    
+    PGRP = property(get_PGRP, set_PGRP)
     def get_PGAG(self):
         numRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 8)
         if(numRecords > 0):
@@ -11336,7 +11750,7 @@ class PGRDRecord(BaseRecord):
             diffLength -= 1
         for oPGRIRecord, nValue in zip(self.PGRI, nValues):
             oPGRIRecord.point, oPGRIRecord.unused1, oPGRIRecord.x, oPGRIRecord.y, oPGRIRecord.z = nValue
-    PGRI = property(get_PGRI, set_PGRI) 
+    PGRI = property(get_PGRI, set_PGRI)
     def get_PGRL(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 11)
         if(numRecords > 0): return [self.PGRLRecord(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
@@ -11353,6 +11767,7 @@ class PGRDRecord(BaseRecord):
         for oPGRLRecord, nValue in zip(self.PGRL, nValues):
             oPGRLRecord.reference, oPGRLRecord.points = nValue
     PGRL = property(get_PGRL, set_PGRL)
+    copyattrs = BaseRecord.baseattrs + ['count','PGRP','PGAG','PGRR','PGRI','PGRL']
 
 class WRLDRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
@@ -11644,7 +12059,11 @@ class WRLDRecord(BaseRecord):
         if (nValue == True): self.sound = 2
         elif(self.get_IsDungeon()): self.IsDefault = True
     IsDungeon = property(get_IsDungeon, set_IsDungeon)
-    
+    copyattrs = BaseRecord.baseattrs + ['full','parent','climate','water','mapPath',
+                                        'dimX','dimY','NWCellX','NWCellY','SECellX',
+                                        'SECellY','flags','unknown00','unknown01',
+                                        'unknown90','unknown91','sound','ofst_p','ROAD','CELL']
+
 class ROADRecord(BaseRecord):
     def CopyAsOverride(self, targetWRLD):
         FID = CBash.CopyROADRecord(self._CollectionIndex, self._ModName, self._recordID, targetWRLD._ModName, targetWRLD._recordID, c_bool(True))
@@ -11775,6 +12194,7 @@ class ROADRecord(BaseRecord):
         for oPGRRRecord, nValue in zip(self.PGRR, nValues):
             oPGRRRecord.x, oPGRRRecord.y, oPGRRRecord.z = nValue
     PGRR = property(get_PGRR, set_PGRR)
+    copyattrs = BaseRecord.baseattrs + ['PGRP','PGRR']
 
 class LANDRecord(BaseRecord):
     def CopyAsOverride(self, targetCELL):
@@ -12359,6 +12779,8 @@ class LANDRecord(BaseRecord):
             oPosition.layer3Texture, oPosition.layer3Opacity, oPosition.layer4Texture, oPosition.layer4Opacity, oPosition.layer5Texture, oPosition.layer5Opacity,
             oPosition.layer6Texture, oPosition.layer6Opacity, oPosition.layer7Texture, oPosition.layer7Opacity, oPosition.layer8Texture, oPosition.layer8Opacity = nValue
     Position = property(get_positions, set_positions)
+    copyattrs = BaseRecord.baseattrs + ['data','normals','heights','heightOffset',
+                                        'colors','baseTextures','alphaLayers','vertexTextures']
 
 class DIALRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
@@ -12447,7 +12869,8 @@ class DIALRecord(BaseRecord):
         if (nValue == True): self.dialType = 6
         elif(self.get_IsMisc()): self.IsTopic = True
     IsMisc = property(get_IsMisc, set_IsMisc)
-    
+    copyattrs = BaseRecord.baseattrs + ['quests','full','dialType']
+
 class INFORecord(BaseRecord):
     def CopyAsOverride(self, targetDIAL):
         FID = CBash.CopyINFORecord(self._CollectionIndex, self._ModName, self._recordID, targetDIAL._ModName, targetDIAL._recordID, c_bool(True))
@@ -12678,7 +13101,7 @@ class INFORecord(BaseRecord):
                 self.operType &= 0x0F
                 self.operType |= 0x000000A0
             elif(self.get_IsLessOrEqual()): self.IsEqual = True
-        IsLessOrEqual = property(get_IsLessOrEqual, set_IsLessOrEqual)        
+        IsLessOrEqual = property(get_IsLessOrEqual, set_IsLessOrEqual)
         def IsType(self, nValue):
             return ((self.operType & 0xF0) == (nValue & 0xF0))
         def SetType(self, nValue):
@@ -12715,7 +13138,7 @@ class INFORecord(BaseRecord):
             nValue &= 0x0F
             self.operType &= 0xF0
             self.operType |= nValue
-        
+
     class Reference(object):
         def __init__(self, CollectionIndex, ModName, recordID, listIndex):
             self._CollectionIndex = CollectionIndex
@@ -12752,7 +13175,7 @@ class INFORecord(BaseRecord):
     def newReferencesElement(self):
         listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 24)
         if(listIndex == -1): return None
-        return self.Reference(self._CollectionIndex, self._ModName, self._recordID, listIndex) 
+        return self.Reference(self._CollectionIndex, self._ModName, self._recordID, listIndex)
     def get_dialType(self):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 6)
@@ -12828,7 +13251,7 @@ class INFORecord(BaseRecord):
             diffLength -= 1
         for oResponse, nValue in zip(self.responses, nValues):
             oResponse.emotionType, oResponse.emotionValue, oResponse.unused1, oResponse.responseNum, oResponse.unused2, oResponse.responseText, oResponse.actorNotes = nValue
-    responses = property(get_responses, set_responses)    
+    responses = property(get_responses, set_responses)
     def get_conditions(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 14)
         if(numRecords > 0): return [self.Condition(self._CollectionIndex, self._ModName, self._recordID, 14, x) for x in range(0, numRecords)]
@@ -12938,7 +13361,7 @@ class INFORecord(BaseRecord):
             CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 24)
             diffLength -= 1
         for oReference, nValue in zip(self.references, nValues):
-            oReference.reference, oReference.IsSCRO = nValue  
+            oReference.reference, oReference.IsSCRO = nValue
     references = property(get_references, set_references)
     def get_IsTopic(self):
         return (self.dialType == 0)
@@ -13018,7 +13441,12 @@ class INFORecord(BaseRecord):
         if (nValue == True): self.flags |= 0x00000040
         else: self.flags &= ~0x00000040
     IsRunForRumors = property(get_IsRunForRumors, set_IsRunForRumors)
-    
+    copyattrs = BaseRecord.baseattrs + ['dialType','flags','quest','topic',
+                                        'prevInfo','addTopics','responses',
+                                        'conditions','choices','linksFrom',
+                                        'numRefs','compiledSize','lastIndex',
+                                        'scriptType','compiled_p','scriptText','references']
+
 class QUSTRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyQUSTRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -13142,7 +13570,7 @@ class QUSTRecord(BaseRecord):
                 self.operType &= 0x0F
                 self.operType |= 0x000000A0
             elif(self.get_IsLessOrEqual()): self.IsEqual = True
-        IsLessOrEqual = property(get_IsLessOrEqual, set_IsLessOrEqual)        
+        IsLessOrEqual = property(get_IsLessOrEqual, set_IsLessOrEqual)
         def IsType(self, nValue):
             return ((self.operType & 0xF0) == (nValue & 0xF0))
         def SetType(self, nValue):
@@ -13298,7 +13726,7 @@ class QUSTRecord(BaseRecord):
                         self.operType &= 0x0F
                         self.operType |= 0x000000A0
                     elif(self.get_IsLessOrEqual()): self.IsEqual = True
-                IsLessOrEqual = property(get_IsLessOrEqual, set_IsLessOrEqual)        
+                IsLessOrEqual = property(get_IsLessOrEqual, set_IsLessOrEqual)
                 def IsType(self, nValue):
                     return ((self.operType & 0xF0) == (nValue & 0xF0))
                 def SetType(self, nValue):
@@ -13382,7 +13810,7 @@ class QUSTRecord(BaseRecord):
                 if(listX3Index == -1):
                     return None
                 return self.Reference(self._CollectionIndex, self._ModName, self._recordID, self._listIndex, self._listX2Index, listX3Index)
-                
+
             def get_flags(self):
                 CBash.ReadFIDListX2Field.restype = POINTER(c_ubyte)
                 retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 1)
@@ -13488,7 +13916,7 @@ class QUSTRecord(BaseRecord):
                     CBash.CreateFIDListX3Element(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 11)
                     diffLength -= 1
                 for oReference, nValue in zip(self.references, nValues):
-                    oReference.reference, oReference.IsSCRO = nValue  
+                    oReference.reference, oReference.IsSCRO = nValue
             references = property(get_references, set_references)
             def get_IsCompletes(self):
                 return (self.flags & 0x00000001) != 0
@@ -13520,7 +13948,7 @@ class QUSTRecord(BaseRecord):
         def set_entries(self, nEntries):
             diffLength = len(nEntries) - CBash.GetFIDListX2Size(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2)
             nValues = [(nEntry.flags,
-                        [(nCondition.operType, nCondition.unused1, nCondition.compValue, nCondition.ifunc, 
+                        [(nCondition.operType, nCondition.unused1, nCondition.compValue, nCondition.ifunc,
                           nCondition.param1, nCondition.param2, nCondition.unused2) for nCondition in nEntry.conditions],
                         nEntry.text, nEntry.unused1, nEntry.numRefs, nEntry.compiledSize, nEntry.lastIndex, nEntry.scriptType, nEntry.compiled_p, nEntry.scriptText,
                         [(nReference.reference, nReference.IsSCRO) for nReference in nEntry.references]) for nEntry in nEntries]
@@ -13557,7 +13985,7 @@ class QUSTRecord(BaseRecord):
                     CBash.CreateFIDListX3Element(self._CollectionIndex, self._ModName, self._recordID, 12, oEntry._listIndex, 2, oEntry.listX2Index, 11)
                     diffLength -= 1
                 for oReference, refValue in zip(oEntry.references, nValue[10]):
-                    oReference.reference, oReference.IsSCRO = refValue   
+                    oReference.reference, oReference.IsSCRO = refValue
         entries = property(get_entries, set_entries)
     class Target(object):
         class Condition(object):
@@ -13674,7 +14102,7 @@ class QUSTRecord(BaseRecord):
                     self.operType &= 0x0F
                     self.operType |= 0x000000A0
                 elif(self.get_IsLessOrEqual()): self.IsEqual = True
-            IsLessOrEqual = property(get_IsLessOrEqual, set_IsLessOrEqual)        
+            IsLessOrEqual = property(get_IsLessOrEqual, set_IsLessOrEqual)
             def IsType(self, nValue):
                 return ((self.operType & 0xF0) == (nValue & 0xF0))
             def SetType(self, nValue):
@@ -13841,7 +14269,7 @@ class QUSTRecord(BaseRecord):
         diffLength = len(nStages) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 12)
         nValues = [(nStage.stage,
                   [(nEntry.flags,
-                  [(nCondition.operType, nCondition.unused1, nCondition.compValue, nCondition.ifunc, 
+                  [(nCondition.operType, nCondition.unused1, nCondition.compValue, nCondition.ifunc,
                   nCondition.param1, nCondition.param2, nCondition.unused2) for nCondition in nEntry.conditions],
                   nEntry.text, nEntry.unused1, nEntry.numRefs, nEntry.compiledSize, nEntry.lastIndex, nEntry.scriptType, nEntry.compiled_p, nEntry.scriptText,
                   [(nReference.reference, nReference.IsSCRO) for nReference in nEntry.references]) for nEntry in nStage.entries]) for nStage in nStages]
@@ -13880,7 +14308,7 @@ class QUSTRecord(BaseRecord):
                     CBash.CreateFIDListX3Element(self._CollectionIndex, self._ModName, self._recordID, 12, oEntry._listIndex, 2, oEntry._listX2Index, 11)
                     diffLength -= 1
                 for oReference, refValue in zip(oEntry.references, eValue[10]):
-                    oReference.reference, oReference.IsSCRO = refValue  
+                    oReference.reference, oReference.IsSCRO = refValue
     stages = property(get_stages, set_stages)
     def get_targets(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 13)
@@ -13928,7 +14356,9 @@ class QUSTRecord(BaseRecord):
         if (nValue == True): self.flags |= 0x00000008
         else: self.flags &= ~0x00000008
     IsRepeatedStages = property(get_IsRepeatedStages, set_IsRepeatedStages)
-    
+    copyattrs = BaseRecord.baseattrs + ['script','full','iconPath','flags',
+                                        'priority','conditions','stages','targets']
+
 class IDLERecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyIDLERecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -14052,7 +14482,7 @@ class IDLERecord(BaseRecord):
                 self.operType &= 0x0F
                 self.operType |= 0x000000A0
             elif(self.get_IsLessOrEqual()): self.IsEqual = True
-        IsLessOrEqual = property(get_IsLessOrEqual, set_IsLessOrEqual)        
+        IsLessOrEqual = property(get_IsLessOrEqual, set_IsLessOrEqual)
         def IsType(self, nValue):
             return ((self.operType & 0xF0) == (nValue & 0xF0))
         def SetType(self, nValue):
@@ -14240,7 +14670,9 @@ class IDLERecord(BaseRecord):
         nValue &= 0xF0
         self.group &= 0x0F
         self.group |= nValue
-        
+    copyattrs = BaseRecord.baseattrs + ['modPath','modb','modt_p',
+                                        'conditions','group','parent','prevId']
+
 class PACKRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyPACKRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -14364,7 +14796,7 @@ class PACKRecord(BaseRecord):
                 self.operType &= 0x0F
                 self.operType |= 0x000000A0
             elif(self.get_IsLessOrEqual()): self.IsEqual = True
-        IsLessOrEqual = property(get_IsLessOrEqual, set_IsLessOrEqual)        
+        IsLessOrEqual = property(get_IsLessOrEqual, set_IsLessOrEqual)
         def IsType(self, nValue):
             return ((self.operType & 0xF0) == (nValue & 0xF0))
         def SetType(self, nValue):
@@ -14796,7 +15228,11 @@ class PACKRecord(BaseRecord):
         if (nValue == True): self.targetType = 2
         elif(self.get_TargetObjectType()): self.targetType = 0
     IsTargetObjectType = property(get_IsTargetObjectType, set_IsTargetObjectType)
-    
+    copyattrs = BaseRecord.baseattrs + ['flags','aiType','locType','locId',
+                                        'locRadius','month','day','date',
+                                        'time','duration','targetType',
+                                        'targetId','targetCount','conditions']
+
 class CSTYRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyCSTYRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -15029,7 +15465,7 @@ class CSTYRecord(BaseRecord):
         return []
     def set_unused4(self, nValue):
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 32, struct.pack('3B', *nValue), 3)
-    unused4 = property(get_unused4, set_unused4)                    
+    unused4 = property(get_unused4, set_unused4)
     def get_holdTimerMin(self):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 33)
@@ -15384,7 +15820,22 @@ class CSTYRecord(BaseRecord):
         if (nValue == True): self.flagsB |= 0x00000001
         else: self.flagsB &= ~0x00000001
     IsDoNotAcquire = property(get_IsDoNotAcquire, set_IsDoNotAcquire)
-    
+    copyattrs = BaseRecord.baseattrs + ['dodgeChance','lrChance','lrTimerMin','lrTimerMax',
+                                        'forTimerMin','forTimerMax','backTimerMin',
+                                        'backTimerMax','idleTimerMin','idleTimerMax',
+                                        'blkChance','atkChance','atkBRecoil','atkBUnc',
+                                        'atkBh2h','pAtkChance','pAtkBRecoil','pAtkBUnc',
+                                        'pAtkNormal','pAtkFor','pAtkBack','pAtkL','pAtkR',
+                                        'holdTimerMin','holdTimerMax','flagsA','acroDodge',
+                                        'rMultOpt','rMultMax','mDistance','rDistance',
+                                        'buffStand','rStand','groupStand','rushChance',
+                                        'rushMult','flagsB','dodgeFMult','dodgeFBase',
+                                        'encSBase','encSMult','dodgeAtkMult','dodgeNAtkMult',
+                                        'dodgeBAtkMult','dodgeBNAtkMult','dodgeFAtkMult',
+                                        'dodgeFNAtkMult','blockMult','blockBase',
+                                        'blockAtkMult','blockNAtkMult','atkMult','atkBase',
+                                        'atkAtkMult','atkNAtkMult','atkBlockMult','pAtkFBase','pAtkFMult']
+
 class LSCRRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyLSCRRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -15464,6 +15915,7 @@ class LSCRRecord(BaseRecord):
         for oLocation, nValue in zip(self.locations, nValues):
             oLocation.direct, oLocation.indirect, oLocation.gridY, oLocation.gridX = nValue
     locations = property(get_locations, set_locations)
+    copyattrs = BaseRecord.baseattrs + ['iconPath','text','locations']
 
 class LVSPRecord(LVLRecord):
     def CopyAsOverride(self, targetMod):
@@ -15474,6 +15926,7 @@ class LVSPRecord(LVLRecord):
         FID = CBash.CopyLVSPRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
         if(FID): return LVSPRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
+    copyattrs = LVLRecord.copyattrs
 
 class ANIORecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
@@ -15517,6 +15970,8 @@ class ANIORecord(BaseRecord):
     def set_animationId(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 9, nValue)
     animationId = property(get_animationId, set_animationId)
+    copyattrs = BaseRecord.baseattrs + ['modPath','modb','modt_p','animationId']
+
 class WATRRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyWATRRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -15547,13 +16002,13 @@ class WATRRecord(BaseRecord):
         return None
     def set_flags(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 8, c_ubyte(nValue))
-    flags = property(get_flags, set_flags)                    
+    flags = property(get_flags, set_flags)
     def get_material(self):
         CBash.ReadFIDField.restype = c_char_p
         return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
     def set_material(self, nValue):
         CBash.SetFIDFieldStr(self._CollectionIndex, self._ModName, self._recordID, 9, nValue)
-    material = property(get_material, set_material)                    
+    material = property(get_material, set_material)
     def get_sound(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
@@ -15561,7 +16016,7 @@ class WATRRecord(BaseRecord):
         return None
     def set_sound(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 10, nValue)
-    sound = property(get_sound, set_sound)                    
+    sound = property(get_sound, set_sound)
     def get_windVelocity(self):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
@@ -15741,7 +16196,7 @@ class WATRRecord(BaseRecord):
         return None
     def set_reflBlue(self, nValue):
         CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 32, c_ubyte(nValue))
-    reflBlue = property(get_reflBlue, set_reflBlue)                    
+    reflBlue = property(get_reflBlue, set_reflBlue)
     def get_unused3(self):
         numRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 33)
         if(numRecords > 0):
@@ -15857,7 +16312,7 @@ class WATRRecord(BaseRecord):
         return None
     def set_damage(self, nValue):
         CBash.SetFIDFieldUS(self._CollectionIndex, self._ModName, self._recordID, 46, c_ushort(nValue))
-    damage = property(get_damage, set_damage)                    
+    damage = property(get_damage, set_damage)
     def get_dayWater(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 47)
@@ -15881,7 +16336,7 @@ class WATRRecord(BaseRecord):
         return None
     def set_underWater(self, nValue):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 49, nValue)
-    underWater = property(get_underWater, set_underWater)   
+    underWater = property(get_underWater, set_underWater)
     def get_IsCausesDamage(self):
         return (self.flags & 0x00000001) != 0
     def set_IsCausesDamage(self, nValue):
@@ -15894,7 +16349,18 @@ class WATRRecord(BaseRecord):
         if (nValue == True): self.flags |= 0x00000002
         else: self.flags &= ~0x00000002
     IsReflective = property(get_IsReflective, set_IsReflective)
-    
+    copyattrs = BaseRecord.baseattrs + ['texture','opacity','flags','material','sound',
+                                        'windVelocity','windDirection','waveAmp','waveFreq',
+                                        'sunPower','reflectAmt','fresnelAmt','xSpeed',
+                                        'ySpeed','fogNear','fogFar',
+                                        'shallowRed','shallowGreen','shallowBlue',
+                                        'deepRed','deepGreen','deepBlue',
+                                        'reflRed','reflGreen','reflBlue',
+                                        'blend','rainForce','rainVelocity','rainFalloff',
+                                        'rainDampner','rainSize','dispForce','dispVelocity',
+                                        'dispFalloff','dispDampner','dispSize','damage',
+                                        'dayWater','nightWater','underWater']
+
 class EFSHRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
         FID = CBash.CopyEFSHRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
@@ -16528,6 +16994,19 @@ class EFSHRecord(BaseRecord):
         if (nValue == True): self.flags |= 0x00000020
         else: self.flags &= ~0x00000020
     IsMemSkinOnly = IsMembraneShaderSkinOnly= property(get_IsMembraneShaderSkinOnly, set_IsMembraneShaderSkinOnly)
+    copyattrs = BaseRecord.baseattrs + ['fillTexture','particleTexture','flags','memSBlend','memBlendOp',
+                                        'memZFunc','fillRed','fillGreen','fillBlue','fillAIn','fillAFull',
+                                        'fillAOut','fillAPRatio','fillAAmp','fillAFreq','fillAnimSpdU',
+                                        'fillAnimSpdV','edgeOff','edgeRed','edgeGreen','edgeBlue','edgeAIn',
+                                        'edgeAFull','edgeAOut','edgeAPRatio','edgeAAmp','edgeAFreq',
+                                        'fillAFRatio','edgeAFRatio','memDBlend','partSBlend','partBlendOp',
+                                        'partZFunc','partDBlend','partBUp','partBFull','partBDown',
+                                        'partBFRatio','partBPRatio','partLTime','partLDelta','partNSpd',
+                                        'partNAcc','partVel1','partVel2','partVel3','partAcc1','partAcc2',
+                                        'partAcc3','partKey1','partKey2','partKey1Time','partKey2Time',
+                                        'key1Red','key1Green','key1Blue','key2Red','key2Green','key2Blue',
+                                        'key3Red','key3Green','key3Blue','key1A','key2A','key3A',
+                                        'key1Time','key2Time','key3Time']
 
 class ModFile(object):
     def __init__(self, CollectionIndex, ModName=None):
@@ -17355,7 +17834,7 @@ class ModFile(object):
                      ("ANIO", self.ANIO),("WATR", self.WATR),("EFSH", self.EFSH)))
 
 
- 
+
 class Collection:
     """Collection of esm/esp's."""
 
@@ -17374,7 +17853,7 @@ class Collection:
 
     def minimalLoad(self, LoadMasters=False):
         CBash.MinimalLoad(self._CollectionIndex, LoadMasters)
-        
+
     def fullLoad(self, LoadMasters=False):
         CBash.FullLoad(self._CollectionIndex, LoadMasters)
 
@@ -17417,4 +17896,4 @@ class Collection:
         return CBash.SafeSaveMod(self._CollectionIndex, ModName)
 
     def safeSaveAllChangedMods(self):
-        return CBash.SafeSaveAllChangedMods(self._recordID)    
+        return CBash.SafeSaveAllChangedMods(self._recordID)
