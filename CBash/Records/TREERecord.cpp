@@ -140,26 +140,26 @@ unsigned int TREERecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int TREERecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
+int TREERecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
-        _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);
+        SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
     if(MODL.MODL.IsLoaded())
-        _writeSubRecord(buffer, eMODL, MODL.MODL.GetSize(), MODL.MODL.value, usedBuffer);
+        SaveHandler.writeSubRecord(eMODL, MODL.MODL.value, MODL.MODL.GetSize());
     if(MODL.MODB.IsLoaded())
-        _writeSubRecord(buffer, eMODB, MODL.MODB.GetSize(), &MODL.MODB.value, usedBuffer);
+        SaveHandler.writeSubRecord(eMODB, &MODL.MODB.value, MODL.MODB.GetSize());
     if(MODL.MODT.IsLoaded())
-        _writeSubRecord(buffer, eMODT, MODL.MODT.GetSize(), MODL.MODT.value, usedBuffer);
+        SaveHandler.writeSubRecord(eMODT, MODL.MODT.value, MODL.MODT.GetSize());
     if(ICON.IsLoaded())
-        _writeSubRecord(buffer, eICON, ICON.GetSize(), ICON.value, usedBuffer);
+        SaveHandler.writeSubRecord(eICON, ICON.value, ICON.GetSize());
     if(SNAM.size())
-        _writeSubRecord(buffer, eSNAM, (unsigned int)SNAM.size() * sizeof(unsigned int), &SNAM[0], usedBuffer);
+        SaveHandler.writeSubRecord(eSNAM, &SNAM[0], (unsigned int)SNAM.size() * sizeof(unsigned int));
     //else
-    //    _writeSubRecord(buffer, eSNAM, 0, NULL, usedBuffer);
+    //    SaveHandler.writeSubRecord(eSNAM, NULL, 0);
     if(CNAM.IsLoaded())
-        _writeSubRecord(buffer, eCNAM, CNAM.GetSize(), &CNAM.value, usedBuffer);
+        SaveHandler.writeSubRecord(eCNAM, &CNAM.value, CNAM.GetSize());
     if(BNAM.IsLoaded())
-        _writeSubRecord(buffer, eBNAM, BNAM.GetSize(), &BNAM.value, usedBuffer);
+        SaveHandler.writeSubRecord(eBNAM, &BNAM.value, BNAM.GetSize());
     return -1;
     }
 

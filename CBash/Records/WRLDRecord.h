@@ -208,7 +208,7 @@ class WRLDRecord : public Record
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eWRLD;}
         char * GetStrType() {return "WRLD";}
-        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(_FileHandler &SaveHandler);
 
         bool IsSmallWorld()
             {

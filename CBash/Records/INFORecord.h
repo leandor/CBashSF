@@ -427,7 +427,7 @@ class INFORecord : public Record
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eINFO;}
         char * GetStrType() {return "INFO";}
-        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(_FileHandler &SaveHandler);
 
         bool IsTopic()
             {

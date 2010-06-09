@@ -94,5 +94,5 @@ class ROADRecord : public Record
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eROAD;}
         char * GetStrType() {return "ROAD";}
-        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(_FileHandler &SaveHandler);
     };

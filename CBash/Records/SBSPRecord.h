@@ -89,5 +89,5 @@ class SBSPRecord : public Record
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eSBSP;}
         char * GetStrType() {return "SBSP";}
-        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(_FileHandler &SaveHandler);
     };

@@ -134,5 +134,5 @@ class LSCRRecord : public Record
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eLSCR;}
         char * GetStrType() {return "LSCR";}
-        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(_FileHandler &SaveHandler);
     };

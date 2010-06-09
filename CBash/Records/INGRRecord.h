@@ -152,7 +152,7 @@ class INGRRecord : public Record
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eINGR;}
         char * GetStrType() {return "INGR";}
-        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(_FileHandler &SaveHandler);
         bool IsNoAutoCalc()
             {
             return (ENIT.value.flags & fIsNoAutoCalc) != 0;

@@ -143,7 +143,7 @@ class SOUNRecord : public Record
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eSOUN;}
         char * GetStrType() {return "SOUN";}
-        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(_FileHandler &SaveHandler);
         bool IsRandomFrequencyShift()
             {
             return (SNDX.value.flags & fIsRandomFrequencyShift) != 0;

@@ -159,7 +159,7 @@ class LTEXRecord : public Record
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eLTEX;}
         char * GetStrType() {return "LTEX";}
-        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(_FileHandler &SaveHandler);
         bool IsStone()
             {
             return (HNAM.value.flags & fIsStone) != 0;

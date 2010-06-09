@@ -299,66 +299,66 @@ unsigned int REGNRecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int REGNRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
+int REGNRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
-        _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);
+        SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
     if(ICON.IsLoaded())
-        _writeSubRecord(buffer, eICON, ICON.GetSize(), ICON.value, usedBuffer);
+        SaveHandler.writeSubRecord(eICON, ICON.value, ICON.GetSize());
     if(RCLR.IsLoaded())
-        _writeSubRecord(buffer, eRCLR, RCLR.GetSize(), &RCLR.value, usedBuffer);
+        SaveHandler.writeSubRecord(eRCLR, &RCLR.value, RCLR.GetSize());
     if(WNAM.IsLoaded())
-        _writeSubRecord(buffer, eWNAM, WNAM.GetSize(), &WNAM.value, usedBuffer);
+        SaveHandler.writeSubRecord(eWNAM, &WNAM.value, WNAM.GetSize());
     if(Areas.size())
         for(unsigned int p = 0; p < Areas.size(); p++)
             {
             if(Areas[p]->RPLI.IsLoaded())
-                _writeSubRecord(buffer, eRPLI, Areas[p]->RPLI.GetSize(), &Areas[p]->RPLI.value, usedBuffer);
+                SaveHandler.writeSubRecord(eRPLI, &Areas[p]->RPLI.value, Areas[p]->RPLI.GetSize());
             if(Areas[p]->RPLD.size())
-                _writeSubRecord(buffer, eRPLD, (unsigned int)Areas[p]->RPLD.size() * sizeof(REGNRPLD), &Areas[p]->RPLD[0], usedBuffer);
+                SaveHandler.writeSubRecord(eRPLD, &Areas[p]->RPLD[0], (unsigned int)Areas[p]->RPLD.size() * sizeof(REGNRPLD));
             //else
-            //    _writeSubRecord(buffer, eRPLD, 0, NULL, usedBuffer);
+            //    SaveHandler.writeSubRecord(eRPLD, NULL, 0);
             }
     if(Entries.size())
         for(unsigned int p = 0; p < Entries.size(); p++)
             {
             if(Entries[p]->RDAT.IsLoaded())
-                _writeSubRecord(buffer, eRDAT, Entries[p]->RDAT.GetSize(), &Entries[p]->RDAT.value, usedBuffer);
+                SaveHandler.writeSubRecord(eRDAT, &Entries[p]->RDAT.value, Entries[p]->RDAT.GetSize());
             switch(Entries[p]->RDAT.value.entryType)
                 {
                 case eREGNObjects:
                     if(Entries[p]->RDOT.size())
-                        _writeSubRecord(buffer, eRDOT, (unsigned int)Entries[p]->RDOT.size() * sizeof(REGNRDOT), &Entries[p]->RDOT[0], usedBuffer);
+                        SaveHandler.writeSubRecord(eRDOT, &Entries[p]->RDOT[0], (unsigned int)Entries[p]->RDOT.size() * sizeof(REGNRDOT));
                     else
-                        _writeSubRecord(buffer, eRDOT, 0, NULL, usedBuffer);
+                        SaveHandler.writeSubRecord(eRDOT, NULL, 0);
                     break;
                 case eREGNWeathers:
                     if(Entries[p]->RDWT.size())
-                        _writeSubRecord(buffer, eRDWT, (unsigned int)Entries[p]->RDWT.size() * sizeof(REGNRDWT), &Entries[p]->RDWT[0], usedBuffer);
+                        SaveHandler.writeSubRecord(eRDWT, &Entries[p]->RDWT[0], (unsigned int)Entries[p]->RDWT.size() * sizeof(REGNRDWT));
                     //else
-                    //    _writeSubRecord(buffer, eRDWT, 0, NULL, usedBuffer);
+                    //    SaveHandler.writeSubRecord(eRDWT, NULL, 0);
                     break;
                 case eREGNMap:
                     if(Entries[p]->RDMP.IsLoaded())
-                        _writeSubRecord(buffer, eRDMP, Entries[p]->RDMP.GetSize(), Entries[p]->RDMP.value, usedBuffer);
+                        SaveHandler.writeSubRecord(eRDMP, Entries[p]->RDMP.value, Entries[p]->RDMP.GetSize());
                     break;
                 case eREGNIcon:
                     if(Entries[p]->ICON.IsLoaded())
-                        _writeSubRecord(buffer, eICON, Entries[p]->ICON.GetSize(), Entries[p]->ICON.value, usedBuffer);
+                        SaveHandler.writeSubRecord(eICON, Entries[p]->ICON.value, Entries[p]->ICON.GetSize());
                     break;
                 case eREGNGrasses:
                     if(Entries[p]->RDGS.size())
-                        _writeSubRecord(buffer, eRDGS, (unsigned int)Entries[p]->RDGS.size() * sizeof(REGNRDGS), &Entries[p]->RDGS[0], usedBuffer);
+                        SaveHandler.writeSubRecord(eRDGS, &Entries[p]->RDGS[0], (unsigned int)Entries[p]->RDGS.size() * sizeof(REGNRDGS));
                     //else
-                    //    _writeSubRecord(buffer, eRDGS, 0, NULL, usedBuffer);
+                    //    SaveHandler.writeSubRecord(eRDGS, NULL, 0);
                     break;
                 case eREGNSounds:
                     if(Entries[p]->RDMD.IsLoaded())
-                        _writeSubRecord(buffer, eRDMD, Entries[p]->RDMD.GetSize(), Entries[p]->RDMD.value, usedBuffer);
+                        SaveHandler.writeSubRecord(eRDMD, Entries[p]->RDMD.value, Entries[p]->RDMD.GetSize());
                     if(Entries[p]->RDSD.size())
-                        _writeSubRecord(buffer, eRDSD, (unsigned int)Entries[p]->RDSD.size() * sizeof(REGNRDSD), &Entries[p]->RDSD[0], usedBuffer);
+                        SaveHandler.writeSubRecord(eRDSD, &Entries[p]->RDSD[0], (unsigned int)Entries[p]->RDSD.size() * sizeof(REGNRDSD));
                     else
-                        _writeSubRecord(buffer, eRDSD, 0, NULL, usedBuffer);
+                        SaveHandler.writeSubRecord(eRDSD, NULL, 0);
                     break;
                 default:
                     printf("!!!%08X: Unknown REGN Entry type: %i, Index:%i!!!\n", formID, Entries[p]->RDAT.value.entryType, p);

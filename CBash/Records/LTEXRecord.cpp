@@ -105,18 +105,18 @@ unsigned int LTEXRecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int LTEXRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
+int LTEXRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
-        _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);
+        SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
     if(ICON.IsLoaded())
-        _writeSubRecord(buffer, eICON, ICON.GetSize(), ICON.value, usedBuffer);
+        SaveHandler.writeSubRecord(eICON, ICON.value, ICON.GetSize());
     if(HNAM.IsLoaded())
-        _writeSubRecord(buffer, eHNAM, HNAM.GetSize(), &HNAM.value, usedBuffer);
+        SaveHandler.writeSubRecord(eHNAM, &HNAM.value, HNAM.GetSize());
     if(SNAM.IsLoaded())
-        _writeSubRecord(buffer, eSNAM, SNAM.GetSize(), &SNAM.value, usedBuffer);
+        SaveHandler.writeSubRecord(eSNAM, &SNAM.value, SNAM.GetSize());
     for(unsigned int p = 0; p < GNAM.size(); p++)
-        _writeSubRecord(buffer, eGNAM, sizeof(unsigned int), GNAM[p], usedBuffer);
+        SaveHandler.writeSubRecord(eGNAM, GNAM[p], sizeof(unsigned int));
     return -1;
     }
 

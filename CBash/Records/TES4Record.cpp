@@ -124,23 +124,23 @@ unsigned int TES4Record::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int TES4Record::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
+int TES4Record::WriteRecord(_FileHandler &SaveHandler)
     {
     TES4DATA DATA;
 
-    _writeSubRecord(buffer, eHEDR, sizeof(TES4HEDR), &HEDR.value, usedBuffer);
+    SaveHandler.writeSubRecord(eHEDR, &HEDR.value, sizeof(TES4HEDR));
     if(OFST.IsLoaded())
-        _writeSubRecord(buffer, eOFST, OFST.GetSize(), OFST.value, usedBuffer);
+        SaveHandler.writeSubRecord(eOFST, OFST.value, OFST.GetSize());
     if(DELE.IsLoaded())
-        _writeSubRecord(buffer, eDELE, DELE.GetSize(), DELE.value, usedBuffer);
+        SaveHandler.writeSubRecord(eDELE, DELE.value, DELE.GetSize());
     if(CNAM.IsLoaded())
-        _writeSubRecord(buffer, eCNAM, CNAM.GetSize(), CNAM.value, usedBuffer);
+        SaveHandler.writeSubRecord(eCNAM, CNAM.value, CNAM.GetSize());
     if(SNAM.IsLoaded())
-        _writeSubRecord(buffer, eSNAM, SNAM.GetSize(), SNAM.value, usedBuffer);
+        SaveHandler.writeSubRecord(eSNAM, SNAM.value, SNAM.GetSize());
     for(unsigned int p = 0; p < MAST.size(); p++)
         {
-        _writeSubRecord(buffer, eMAST, MAST[p].GetSize(), MAST[p].value, usedBuffer);
-        _writeSubRecord(buffer, eDATA, sizeof(TES4DATA), &DATA, usedBuffer);
+        SaveHandler.writeSubRecord(eMAST, MAST[p].value, MAST[p].GetSize());
+        SaveHandler.writeSubRecord(eDATA, &DATA, sizeof(TES4DATA));
         }
     return -1;
     }

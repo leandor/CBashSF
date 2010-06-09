@@ -94,17 +94,17 @@ unsigned int SOUNRecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int SOUNRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
+int SOUNRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
-        _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);
+        SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
     if(FNAM.IsLoaded())
-        _writeSubRecord(buffer, eFNAM, FNAM.GetSize(), FNAM.value, usedBuffer);
+        SaveHandler.writeSubRecord(eFNAM, FNAM.value, FNAM.GetSize());
     if(SNDX.IsLoaded())
         if(SNDX.GetSize() == 8)
-            _writeSubRecord(buffer, eSNDD, SNDX.GetSize(), &SNDX.value, usedBuffer);
+            SaveHandler.writeSubRecord(eSNDD, &SNDX.value, SNDX.GetSize());
         else
-            _writeSubRecord(buffer, eSNDX, SNDX.GetSize(), &SNDX.value, usedBuffer);
+            SaveHandler.writeSubRecord(eSNDX, &SNDX.value, SNDX.GetSize());
     return -1;
     }
 

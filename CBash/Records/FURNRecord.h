@@ -133,7 +133,7 @@ class FURNRecord : public Record
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eFURN;}
         char * GetStrType() {return "FURN";}
-        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(_FileHandler &SaveHandler);
         bool IsAnim01()
             {
             return (MNAM.value.flags & fIsAnim01) != 0;

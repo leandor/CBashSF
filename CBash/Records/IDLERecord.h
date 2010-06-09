@@ -195,7 +195,7 @@ class IDLERecord : public Record
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eIDLE;}
         char * GetStrType() {return "IDLE";}
-        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(_FileHandler &SaveHandler);
         bool IsLowerBody()
             {
             return ((ANAM.value.group & 0x0F) == eLowerBody);

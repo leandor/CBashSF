@@ -207,5 +207,5 @@ class SCPTRecord : public Record
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eSCPT;}
         char * GetStrType() {return "SCPT";}
-        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(_FileHandler &SaveHandler);
     };

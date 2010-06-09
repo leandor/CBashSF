@@ -303,62 +303,62 @@ unsigned int QUSTRecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int QUSTRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
+int QUSTRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
-        _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);
+        SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
     if(SCRI.IsLoaded())
-        _writeSubRecord(buffer, eSCRI, SCRI.GetSize(), SCRI.value, usedBuffer);
+        SaveHandler.writeSubRecord(eSCRI, SCRI.value, SCRI.GetSize());
     if(FULL.IsLoaded())
-        _writeSubRecord(buffer, eFULL, FULL.GetSize(), FULL.value, usedBuffer);
+        SaveHandler.writeSubRecord(eFULL, FULL.value, FULL.GetSize());
     if(ICON.IsLoaded())
-        _writeSubRecord(buffer, eICON, ICON.GetSize(), ICON.value, usedBuffer);
+        SaveHandler.writeSubRecord(eICON, ICON.value, ICON.GetSize());
     if(DATA.IsLoaded())
-        _writeSubRecord(buffer, eDATA, DATA.GetSize(), &DATA.value, usedBuffer);
+        SaveHandler.writeSubRecord(eDATA, &DATA.value, DATA.GetSize());
     if(CTDA.size())
         for(unsigned int p = 0; p < CTDA.size(); p++)
             if(CTDA[p]->IsLoaded())
-                _writeSubRecord(buffer, eCTDA, CTDA[p]->GetSize(), &CTDA[p]->value, usedBuffer);
+                SaveHandler.writeSubRecord(eCTDA, &CTDA[p]->value, CTDA[p]->GetSize());
     if(Stages.size())
         for(unsigned int p = 0; p < Stages.size(); p++)
             {
             if(Stages[p]->INDX.IsLoaded())
-                _writeSubRecord(buffer, eINDX, Stages[p]->INDX.GetSize(), &Stages[p]->INDX.value, usedBuffer);
+                SaveHandler.writeSubRecord(eINDX, &Stages[p]->INDX.value, Stages[p]->INDX.GetSize());
             if(Stages[p]->Entries.size())
                 for(unsigned int x = 0; x < Stages[p]->Entries.size(); x++)
                     {
                     if(Stages[p]->Entries[x]->QSDT.IsLoaded())
-                        _writeSubRecord(buffer, eQSDT, Stages[p]->Entries[x]->QSDT.GetSize(), &Stages[p]->Entries[x]->QSDT.value, usedBuffer);
+                        SaveHandler.writeSubRecord(eQSDT, &Stages[p]->Entries[x]->QSDT.value, Stages[p]->Entries[x]->QSDT.GetSize());
                     if(Stages[p]->Entries[x]->CTDA.size())
                         for(unsigned int y = 0; y < Stages[p]->Entries[x]->CTDA.size(); y++)
                             if(Stages[p]->Entries[x]->CTDA[y]->IsLoaded())
-                                _writeSubRecord(buffer, eCTDA, Stages[p]->Entries[x]->CTDA[y]->GetSize(), &Stages[p]->Entries[x]->CTDA[y]->value, usedBuffer);
+                                SaveHandler.writeSubRecord(eCTDA, &Stages[p]->Entries[x]->CTDA[y]->value, Stages[p]->Entries[x]->CTDA[y]->GetSize());
                     if(Stages[p]->Entries[x]->CNAM.IsLoaded())
-                        _writeSubRecord(buffer, eCNAM, Stages[p]->Entries[x]->CNAM.GetSize(), Stages[p]->Entries[x]->CNAM.value, usedBuffer);
+                        SaveHandler.writeSubRecord(eCNAM, Stages[p]->Entries[x]->CNAM.value, Stages[p]->Entries[x]->CNAM.GetSize());
                     if(Stages[p]->Entries[x]->SCHR.IsLoaded())
-                        _writeSubRecord(buffer, eSCHR, Stages[p]->Entries[x]->SCHR.GetSize(), &Stages[p]->Entries[x]->SCHR.value, usedBuffer);
+                        SaveHandler.writeSubRecord(eSCHR, &Stages[p]->Entries[x]->SCHR.value, Stages[p]->Entries[x]->SCHR.GetSize());
                     if(Stages[p]->Entries[x]->SCDA.IsLoaded())
-                        _writeSubRecord(buffer, eSCDA, Stages[p]->Entries[x]->SCDA.GetSize(), Stages[p]->Entries[x]->SCDA.value, usedBuffer);
+                        SaveHandler.writeSubRecord(eSCDA, Stages[p]->Entries[x]->SCDA.value, Stages[p]->Entries[x]->SCDA.GetSize());
                     if(Stages[p]->Entries[x]->SCTX.IsLoaded())
-                        _writeSubRecord(buffer, eSCTX, Stages[p]->Entries[x]->SCTX.GetSize(), Stages[p]->Entries[x]->SCTX.value, usedBuffer);
+                        SaveHandler.writeSubRecord(eSCTX, Stages[p]->Entries[x]->SCTX.value, Stages[p]->Entries[x]->SCTX.GetSize());
                     if(Stages[p]->Entries[x]->SCR_.size())
                         for(unsigned int y = 0; y < Stages[p]->Entries[x]->SCR_.size(); y++)
                             if(Stages[p]->Entries[x]->SCR_[y]->IsLoaded())
                                 if(Stages[p]->Entries[x]->SCR_[y]->value.isSCRO)
-                                    _writeSubRecord(buffer, eSCRO, sizeof(unsigned int), &Stages[p]->Entries[x]->SCR_[y]->value.reference, usedBuffer);
+                                    SaveHandler.writeSubRecord(eSCRO, &Stages[p]->Entries[x]->SCR_[y]->value.reference, sizeof(unsigned int));
                                 else
-                                    _writeSubRecord(buffer, eSCRV, sizeof(unsigned int), &Stages[p]->Entries[x]->SCR_[y]->value.reference, usedBuffer);
+                                    SaveHandler.writeSubRecord(eSCRV, &Stages[p]->Entries[x]->SCR_[y]->value.reference, sizeof(unsigned int));
                     }
             }
     if(Targets.size())
         for(unsigned int p = 0; p < Targets.size(); p++)
             {
             if(Targets[p]->QSTA.IsLoaded())
-                _writeSubRecord(buffer, eQSTA, Targets[p]->QSTA.GetSize(), &Targets[p]->QSTA.value, usedBuffer);
+                SaveHandler.writeSubRecord(eQSTA, &Targets[p]->QSTA.value, Targets[p]->QSTA.GetSize());
             if(Targets[p]->CTDA.size())
                 for(unsigned int y = 0; y < Targets[p]->CTDA.size(); y++)
                     if(Targets[p]->CTDA[y]->IsLoaded())
-                        _writeSubRecord(buffer, eCTDA, Targets[p]->CTDA[y]->GetSize(), &Targets[p]->CTDA[y]->value, usedBuffer);
+                        SaveHandler.writeSubRecord(eCTDA, &Targets[p]->CTDA[y]->value, Targets[p]->CTDA[y]->GetSize());
             }
     return -1;
     }

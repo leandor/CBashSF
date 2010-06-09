@@ -134,5 +134,5 @@ class GMSTRecord : public Record
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eGMST;}
         char * GetStrType() {return "GMST";}
-        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(_FileHandler &SaveHandler);
     };

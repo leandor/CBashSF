@@ -150,38 +150,38 @@ unsigned int WRLDRecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int WRLDRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
+int WRLDRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
-        _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);
+        SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
 
     if(FULL.IsLoaded())
-        _writeSubRecord(buffer, eFULL, FULL.GetSize(), FULL.value, usedBuffer);
+        SaveHandler.writeSubRecord(eFULL, FULL.value, FULL.GetSize());
 
     if(WNAM.IsLoaded())
-        _writeSubRecord(buffer, eWNAM, WNAM.GetSize(), WNAM.value, usedBuffer);
+        SaveHandler.writeSubRecord(eWNAM, WNAM.value, WNAM.GetSize());
     if(CNAM.IsLoaded())
-        _writeSubRecord(buffer, eCNAM, CNAM.GetSize(), CNAM.value, usedBuffer);
+        SaveHandler.writeSubRecord(eCNAM, CNAM.value, CNAM.GetSize());
     if(NAM2.IsLoaded())
-        _writeSubRecord(buffer, eNAM2, NAM2.GetSize(), NAM2.value, usedBuffer);
+        SaveHandler.writeSubRecord(eNAM2, NAM2.value, NAM2.GetSize());
 
     if(ICON.IsLoaded())
-        _writeSubRecord(buffer, eICON, ICON.GetSize(), ICON.value, usedBuffer);
+        SaveHandler.writeSubRecord(eICON, ICON.value, ICON.GetSize());
 
     if(MNAM.IsLoaded())
-        _writeSubRecord(buffer, eMNAM, MNAM.GetSize(), MNAM.value, usedBuffer);
+        SaveHandler.writeSubRecord(eMNAM, MNAM.value, MNAM.GetSize());
     if(DATA.IsLoaded())
-        _writeSubRecord(buffer, eDATA, DATA.GetSize(), &DATA.value, usedBuffer);
+        SaveHandler.writeSubRecord(eDATA, &DATA.value, DATA.GetSize());
 
     if(NAM0.IsLoaded())
-        _writeSubRecord(buffer, eNAM0, NAM0.GetSize(), &NAM0.value, usedBuffer);
+        SaveHandler.writeSubRecord(eNAM0, &NAM0.value, NAM0.GetSize());
     if(NAM9.IsLoaded())
-        _writeSubRecord(buffer, eNAM9, NAM9.GetSize(), &NAM9.value, usedBuffer);
+        SaveHandler.writeSubRecord(eNAM9, &NAM9.value, NAM9.GetSize());
 
     if(SNAM.IsLoaded())
-        _writeSubRecord(buffer, eSNAM, SNAM.GetSize(), SNAM.value, usedBuffer);
+        SaveHandler.writeSubRecord(eSNAM, SNAM.value, SNAM.GetSize());
     if(OFST.IsLoaded())
-        _writeSubRecord(buffer, eOFST, OFST.GetSize(), OFST.value, usedBuffer);
+        SaveHandler.writeSubRecord(eOFST, OFST.value, OFST.GetSize());
 
     return -1;
     }

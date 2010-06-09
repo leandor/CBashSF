@@ -148,31 +148,31 @@ unsigned int WTHRRecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int WTHRRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
+int WTHRRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
-        _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);
+        SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
     if(CNAM.IsLoaded())
-        _writeSubRecord(buffer, eCNAM, CNAM.GetSize(), CNAM.value, usedBuffer);
+        SaveHandler.writeSubRecord(eCNAM, CNAM.value, CNAM.GetSize());
     if(DNAM.IsLoaded())
-        _writeSubRecord(buffer, eDNAM, DNAM.GetSize(), DNAM.value, usedBuffer);
+        SaveHandler.writeSubRecord(eDNAM, DNAM.value, DNAM.GetSize());
     if(MODL.MODL.IsLoaded())
-        _writeSubRecord(buffer, eMODL, MODL.MODL.GetSize(), MODL.MODL.value, usedBuffer);
+        SaveHandler.writeSubRecord(eMODL, MODL.MODL.value, MODL.MODL.GetSize());
     if(MODL.MODB.IsLoaded())
-        _writeSubRecord(buffer, eMODB, MODL.MODB.GetSize(), &MODL.MODB.value, usedBuffer);
+        SaveHandler.writeSubRecord(eMODB, &MODL.MODB.value, MODL.MODB.GetSize());
     if(MODL.MODT.IsLoaded())
-        _writeSubRecord(buffer, eMODT, MODL.MODT.GetSize(), MODL.MODT.value, usedBuffer);
+        SaveHandler.writeSubRecord(eMODT, MODL.MODT.value, MODL.MODT.GetSize());
     if(NAM0.IsLoaded())
-        _writeSubRecord(buffer, eNAM0, NAM0.GetSize(), &NAM0.value, usedBuffer);
+        SaveHandler.writeSubRecord(eNAM0, &NAM0.value, NAM0.GetSize());
     if(FNAM.IsLoaded())
-        _writeSubRecord(buffer, eFNAM, FNAM.GetSize(), &FNAM.value, usedBuffer);
+        SaveHandler.writeSubRecord(eFNAM, &FNAM.value, FNAM.GetSize());
     if(HNAM.IsLoaded())
-        _writeSubRecord(buffer, eHNAM, HNAM.GetSize(), &HNAM.value, usedBuffer);
+        SaveHandler.writeSubRecord(eHNAM, &HNAM.value, HNAM.GetSize());
     if(DATA.IsLoaded())
-        _writeSubRecord(buffer, eDATA, DATA.GetSize(), &DATA.value, usedBuffer);
+        SaveHandler.writeSubRecord(eDATA, &DATA.value, DATA.GetSize());
     if(Sounds.size())
         for(unsigned int p = 0; p < Sounds.size(); p++)
-            _writeSubRecord(buffer, eSNAM, Sounds[p]->GetSize(), &Sounds[p]->value, usedBuffer);
+            SaveHandler.writeSubRecord(eSNAM, &Sounds[p]->value, Sounds[p]->GetSize());
     return -1;
     }
 

@@ -104,7 +104,7 @@ class TES4Record : public Record
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eTES4;}
         char * GetStrType() {return "TES4";}
-        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(_FileHandler &SaveHandler);
         #ifdef _DEBUG
         void Debug(int debugLevel);
         #endif

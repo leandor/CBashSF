@@ -140,30 +140,30 @@ unsigned int SCPTRecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int SCPTRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
+int SCPTRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
-        _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);
+        SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
     if(SCHR.IsLoaded())
-        _writeSubRecord(buffer, eSCHR, SCHR.GetSize(), &SCHR.value, usedBuffer);
+        SaveHandler.writeSubRecord(eSCHR, &SCHR.value, SCHR.GetSize());
     if(SCDA.IsLoaded())
-        _writeSubRecord(buffer, eSCDA, SCDA.GetSize(), SCDA.value, usedBuffer);
+        SaveHandler.writeSubRecord(eSCDA, SCDA.value, SCDA.GetSize());
     if(SCTX.IsLoaded())
-        _writeSubRecord(buffer, eSCTX, SCTX.GetSize(), SCTX.value, usedBuffer);
+        SaveHandler.writeSubRecord(eSCTX, SCTX.value, SCTX.GetSize());
     for(unsigned int p = 0; p < VARS.size(); p++)
         {
         if(VARS[p]->SLSD.IsLoaded())
-            _writeSubRecord(buffer, eSLSD, VARS[p]->SLSD.GetSize(), &VARS[p]->SLSD.value, usedBuffer);
+            SaveHandler.writeSubRecord(eSLSD, &VARS[p]->SLSD.value, VARS[p]->SLSD.GetSize());
         if(VARS[p]->SCVR.IsLoaded())
-            _writeSubRecord(buffer, eSCVR, VARS[p]->SCVR.GetSize(), VARS[p]->SCVR.value, usedBuffer);
+            SaveHandler.writeSubRecord(eSCVR, VARS[p]->SCVR.value, VARS[p]->SCVR.GetSize());
         }
 
     for(unsigned int p = 0; p < SCR_.size(); p++)
         if(SCR_[p]->IsLoaded())
             if(SCR_[p]->value.isSCRO)
-                _writeSubRecord(buffer, eSCRO, sizeof(unsigned int), &SCR_[p]->value.reference, usedBuffer);
+                SaveHandler.writeSubRecord(eSCRO, &SCR_[p]->value.reference, sizeof(unsigned int));
             else
-                _writeSubRecord(buffer, eSCRV, sizeof(unsigned int), &SCR_[p]->value.reference, usedBuffer);
+                SaveHandler.writeSubRecord(eSCRV, &SCR_[p]->value.reference, sizeof(unsigned int));
     return -1;
     }
 

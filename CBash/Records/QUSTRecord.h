@@ -512,7 +512,7 @@ class QUSTRecord : public Record
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eQUST;}
         char * GetStrType() {return "QUST";}
-        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(_FileHandler &SaveHandler);
 
         bool IsStartEnabled()
             {

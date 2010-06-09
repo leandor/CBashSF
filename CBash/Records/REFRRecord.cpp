@@ -303,95 +303,95 @@ unsigned int REFRRecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int REFRRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
+int REFRRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     char null = 0;
 
     if(EDID.IsLoaded())
-        _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);
+        SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
 
     if(NAME.IsLoaded())
-        _writeSubRecord(buffer, eNAME, NAME.GetSize(), &NAME.value, usedBuffer);
+        SaveHandler.writeSubRecord(eNAME, &NAME.value, NAME.GetSize());
 
     if(XTEL.IsLoaded())
-        _writeSubRecord(buffer, eXTEL, XTEL.GetSize(), XTEL.value, usedBuffer);
+        SaveHandler.writeSubRecord(eXTEL, XTEL.value, XTEL.GetSize());
 
     if(XLOC.IsLoaded())
-        _writeSubRecord(buffer, eXLOC, XLOC.GetSize(), XLOC.value, usedBuffer);
+        SaveHandler.writeSubRecord(eXLOC, XLOC.value, XLOC.GetSize());
 
     if(Ownership.IsLoaded() && Ownership->XOWN.IsLoaded())
         {
-        _writeSubRecord(buffer, eXOWN, Ownership->XOWN.GetSize(), &Ownership->XOWN.value, usedBuffer);
+        SaveHandler.writeSubRecord(eXOWN, &Ownership->XOWN.value, Ownership->XOWN.GetSize());
         if(Ownership->XRNK.IsLoaded())
-            _writeSubRecord(buffer, eXRNK, Ownership->XRNK.GetSize(), Ownership->XRNK.value, usedBuffer);
+            SaveHandler.writeSubRecord(eXRNK, Ownership->XRNK.value, Ownership->XRNK.GetSize());
         if(Ownership->XGLB.IsLoaded())
-            _writeSubRecord(buffer, eXGLB, Ownership->XGLB.GetSize(), Ownership->XGLB.value, usedBuffer);
+            SaveHandler.writeSubRecord(eXGLB, Ownership->XGLB.value, Ownership->XGLB.GetSize());
         }
 
     if(XESP.IsLoaded())
-        _writeSubRecord(buffer, eXESP, XESP.GetSize(), XESP.value, usedBuffer);
+        SaveHandler.writeSubRecord(eXESP, XESP.value, XESP.GetSize());
 
     if(XTRG.IsLoaded())
-        _writeSubRecord(buffer, eXTRG, XTRG.GetSize(), XTRG.value, usedBuffer);
+        SaveHandler.writeSubRecord(eXTRG, XTRG.value, XTRG.GetSize());
 
     if(XSED.IsLoaded())
         if(XSED->isOffset)
-            _writeSubRecord(buffer, eXSED, 1, &XSED->offset, usedBuffer);
+            SaveHandler.writeSubRecord(eXSED, &XSED->offset, 1);
         else
-            _writeSubRecord(buffer, eXSED, 4, &XSED->seed, usedBuffer);
+            SaveHandler.writeSubRecord(eXSED, &XSED->seed, 4);
 
     if(XLOD.IsLoaded())
-        _writeSubRecord(buffer, eXLOD, XLOD.GetSize(), XLOD.value, usedBuffer);
+        SaveHandler.writeSubRecord(eXLOD, XLOD.value, XLOD.GetSize());
 
     if(XCHG.IsLoaded())
-        _writeSubRecord(buffer, eXCHG, XCHG.GetSize(), XCHG.value, usedBuffer);
+        SaveHandler.writeSubRecord(eXCHG, XCHG.value, XCHG.GetSize());
 
     if(XHLT.IsLoaded())
-        _writeSubRecord(buffer, eXHLT, XHLT.GetSize(), XHLT.value, usedBuffer);
+        SaveHandler.writeSubRecord(eXHLT, XHLT.value, XHLT.GetSize());
 
     if(XPCI.IsLoaded() && XPCI->XPCI.IsLoaded())
         {
-        _writeSubRecord(buffer, eXPCI, XPCI->XPCI.GetSize(), XPCI->XPCI.value, usedBuffer);
+        SaveHandler.writeSubRecord(eXPCI, XPCI->XPCI.value, XPCI->XPCI.GetSize());
         if(XPCI->FULL.IsLoaded())
-            _writeSubRecord(buffer, eFULL, XPCI->FULL.GetSize(), XPCI->FULL.value, usedBuffer);
+            SaveHandler.writeSubRecord(eFULL, XPCI->FULL.value, XPCI->FULL.GetSize());
         else
-            _writeSubRecord(buffer, eFULL, 1, &null, usedBuffer);
+            SaveHandler.writeSubRecord(eFULL, &null, 1);
         }
 
     if(XLCM.IsLoaded())
-        _writeSubRecord(buffer, eXLCM, XLCM.GetSize(), XLCM.value, usedBuffer);
+        SaveHandler.writeSubRecord(eXLCM, XLCM.value, XLCM.GetSize());
 
     if(XRTM.IsLoaded())
-        _writeSubRecord(buffer, eXRTM, XRTM.GetSize(), XRTM.value, usedBuffer);
+        SaveHandler.writeSubRecord(eXRTM, XRTM.value, XRTM.GetSize());
 
     if(XACT.IsLoaded())
-        _writeSubRecord(buffer, eXACT, XACT.GetSize(), XACT.value, usedBuffer);
+        SaveHandler.writeSubRecord(eXACT, XACT.value, XACT.GetSize());
 
     if(XCNT.IsLoaded())
-        _writeSubRecord(buffer, eXCNT, XCNT.GetSize(), XCNT.value, usedBuffer);
+        SaveHandler.writeSubRecord(eXCNT, XCNT.value, XCNT.GetSize());
 
     if(Marker.IsLoaded())
         {
-        _writeSubRecord(buffer, eXMRK, 0, NULL, usedBuffer);
+        SaveHandler.writeSubRecord(eXMRK, NULL, 0);
         if(Marker->FNAM.IsLoaded())
-            _writeSubRecord(buffer, eFNAM, Marker->FNAM.GetSize(), &Marker->FNAM.value, usedBuffer);
+            SaveHandler.writeSubRecord(eFNAM, &Marker->FNAM.value, Marker->FNAM.GetSize());
         if(Marker->FULL.IsLoaded())
-            _writeSubRecord(buffer, eFULL, Marker->FULL.GetSize(), Marker->FULL.value, usedBuffer);
+            SaveHandler.writeSubRecord(eFULL, Marker->FULL.value, Marker->FULL.GetSize());
         if(Marker->TNAM.IsLoaded())
-            _writeSubRecord(buffer, eTNAM, Marker->TNAM.GetSize(), &Marker->TNAM.value, usedBuffer);
+            SaveHandler.writeSubRecord(eTNAM, &Marker->TNAM.value, Marker->TNAM.GetSize());
         }
 
     if(IsOpenByDefault()) //ONAM
-        _writeSubRecord(buffer, eONAM, 0, NULL, usedBuffer);
+        SaveHandler.writeSubRecord(eONAM, NULL, 0);
 
     if(XSCL.IsLoaded())
-        _writeSubRecord(buffer, eXSCL, XSCL.GetSize(), XSCL.value, usedBuffer);
+        SaveHandler.writeSubRecord(eXSCL, XSCL.value, XSCL.GetSize());
 
     if(XSOL.IsLoaded())
-        _writeSubRecord(buffer, eXSOL, XSOL.GetSize(), XSOL.value, usedBuffer);
+        SaveHandler.writeSubRecord(eXSOL, XSOL.value, XSOL.GetSize());
 
     if(DATA.IsLoaded())
-        _writeSubRecord(buffer, eDATA, DATA.GetSize(), &DATA.value, usedBuffer);
+        SaveHandler.writeSubRecord(eDATA, &DATA.value, DATA.GetSize());
 
     return -1;
     }

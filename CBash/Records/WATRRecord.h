@@ -252,7 +252,7 @@ class WATRRecord : public Record
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eWATR;}
         char * GetStrType() {return "WATR";}
-        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(_FileHandler &SaveHandler);
         bool IsCausesDmg()
             {
             return (FNAM.value.flags & fIsCausesDmg) != 0;

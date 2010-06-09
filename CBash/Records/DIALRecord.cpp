@@ -100,17 +100,17 @@ unsigned int DIALRecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int DIALRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
+int DIALRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
-        _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);
+        SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
     if(QSTI.size())
         for(unsigned int p = 0; p < QSTI.size(); p++)
-            _writeSubRecord(buffer, eQSTI, sizeof(unsigned int), QSTI[p], usedBuffer);
+            SaveHandler.writeSubRecord(eQSTI, QSTI[p], sizeof(unsigned int));
     if(FULL.IsLoaded())
-        _writeSubRecord(buffer, eFULL, FULL.GetSize(), FULL.value, usedBuffer);
+        SaveHandler.writeSubRecord(eFULL, FULL.value, FULL.GetSize());
     if(DATA.IsLoaded())
-        _writeSubRecord(buffer, eDATA, DATA.GetSize(), &DATA.value, usedBuffer);
+        SaveHandler.writeSubRecord(eDATA, &DATA.value, DATA.GetSize());
     return -1;
     }
 

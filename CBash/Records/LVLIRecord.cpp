@@ -115,21 +115,21 @@ unsigned int LVLIRecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int LVLIRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
+int LVLIRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
-        _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);
+        SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
     if(LVLD.IsLoaded())
-        _writeSubRecord(buffer, eLVLD, LVLD.GetSize(), &LVLD.value, usedBuffer);
+        SaveHandler.writeSubRecord(eLVLD, &LVLD.value, LVLD.GetSize());
     if(LVLF.IsLoaded())
-        _writeSubRecord(buffer, eLVLF, LVLF.GetSize(), &LVLF.value, usedBuffer);
+        SaveHandler.writeSubRecord(eLVLF, &LVLF.value, LVLF.GetSize());
     if(Entries.size())
         for(unsigned int p = 0; p < Entries.size(); p++)
             if(Entries[p]->IsLoaded())
-                _writeSubRecord(buffer, eLVLO, Entries[p]->GetSize(), &Entries[p]->value, usedBuffer);
+                SaveHandler.writeSubRecord(eLVLO, &Entries[p]->value, Entries[p]->GetSize());
 
     //if(DATA.IsLoaded())
-    //    _writeSubRecord(buffer, eDATA, DATA.GetSize(), DATA.value, usedBuffer);
+    //    SaveHandler.writeSubRecord(eDATA, DATA.value, DATA.GetSize());
     return -1;
     }
 

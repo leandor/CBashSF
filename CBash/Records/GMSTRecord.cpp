@@ -123,23 +123,23 @@ unsigned int GMSTRecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int GMSTRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
+int GMSTRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
-        _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);
+        SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
     switch(DATA.format)
         {
         case 'i':
-            _writeSubRecord(buffer, eDATA, 4, &DATA.i, usedBuffer);
+            SaveHandler.writeSubRecord(eDATA, &DATA.i, 4);
             break;
         case 'f':
-            _writeSubRecord(buffer, eDATA, 4, &DATA.f, usedBuffer);
+            SaveHandler.writeSubRecord(eDATA, &DATA.f, 4);
             break;
         case 's':
             if(DATA.s != NULL)
-                _writeSubRecord(buffer, eDATA, (unsigned int)strlen(DATA.s) + 1, DATA.s, usedBuffer);
+                SaveHandler.writeSubRecord(eDATA, DATA.s, (unsigned int)strlen(DATA.s) + 1);
             else
-                _writeSubRecord(buffer, eDATA, 0, DATA.s, usedBuffer);
+                SaveHandler.writeSubRecord(eDATA, DATA.s, 0);
             break;
         default:
             printf("Unknown GMST format when writing: %s\n", EDID.value);

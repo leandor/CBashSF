@@ -180,31 +180,31 @@ unsigned int LANDRecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int LANDRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
+int LANDRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(DATA.IsLoaded())
-        _writeSubRecord(buffer, eDATA, DATA.GetSize(), DATA.value, usedBuffer);
+        SaveHandler.writeSubRecord(eDATA, DATA.value, DATA.GetSize());
     if(VNML.IsLoaded())
-        _writeSubRecord(buffer, eVNML, VNML.GetSize(), VNML.value, usedBuffer);
+        SaveHandler.writeSubRecord(eVNML, VNML.value, VNML.GetSize());
     if(VHGT.IsLoaded())
-        _writeSubRecord(buffer, eVHGT, VHGT.GetSize(), VHGT.value, usedBuffer);
+        SaveHandler.writeSubRecord(eVHGT, VHGT.value, VHGT.GetSize());
     if(VCLR.IsLoaded())
-        _writeSubRecord(buffer, eVCLR, VCLR.GetSize(), VCLR.value, usedBuffer);
+        SaveHandler.writeSubRecord(eVCLR, VCLR.value, VCLR.GetSize());
     if(BTXT.size())
         for(unsigned int p = 0; p < BTXT.size(); p++)
             if(BTXT[p]->IsLoaded())
-                _writeSubRecord(buffer, eBTXT, BTXT[p]->GetSize(), &BTXT[p]->value, usedBuffer);
+                SaveHandler.writeSubRecord(eBTXT, &BTXT[p]->value, BTXT[p]->GetSize());
 
     if(Layers.size())
         for(unsigned int p = 0; p < Layers.size(); p++)
             {
             if(Layers[p]->ATXT.IsLoaded())
-                _writeSubRecord(buffer, eATXT, Layers[p]->ATXT.GetSize(), &Layers[p]->ATXT.value, usedBuffer);
+                SaveHandler.writeSubRecord(eATXT, &Layers[p]->ATXT.value, Layers[p]->ATXT.GetSize());
             if(Layers[p]->VTXT.size())
-                _writeSubRecord(buffer, eVTXT, (unsigned int)Layers[p]->VTXT.size() * sizeof(LANDVTXT), &Layers[p]->VTXT[0], usedBuffer);
+                SaveHandler.writeSubRecord(eVTXT, &Layers[p]->VTXT[0], (unsigned int)Layers[p]->VTXT.size() * sizeof(LANDVTXT));
             }
     if(VTEX.size())
-        _writeSubRecord(buffer, eVTEX, (unsigned int)VTEX.size() * sizeof(unsigned int), &VTEX[0], usedBuffer);
+        SaveHandler.writeSubRecord(eVTEX, &VTEX[0], (unsigned int)VTEX.size() * sizeof(unsigned int));
 
     return -1;
     }

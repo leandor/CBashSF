@@ -103,5 +103,5 @@ class MISCRecord : public Record
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eMISC;}
         char * GetStrType() {return "MISC";}
-        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(_FileHandler &SaveHandler);
     };

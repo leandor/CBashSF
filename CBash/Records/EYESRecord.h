@@ -78,7 +78,7 @@ class EYESRecord : public Record
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eEYES;}
         char * GetStrType() {return "EYES";}
-        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(_FileHandler &SaveHandler);
         bool IsPlayable()
             {
             return (DATA.value.flags & fIsPlayable) != 0;

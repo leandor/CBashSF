@@ -111,7 +111,7 @@ class DIALRecord : public Record
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eDIAL;}
         char * GetStrType() {return "DIAL";}
-        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(_FileHandler &SaveHandler);
 
         bool IsTopic()
             {

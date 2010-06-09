@@ -182,7 +182,7 @@ class SPELRecord : public Record
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eSPEL;}
         char * GetStrType() {return "SPEL";}
-        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(_FileHandler &SaveHandler);
         bool IsManualCost()
             {
             return (SPIT.value.flags & fIsManualCost) != 0;

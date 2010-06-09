@@ -106,5 +106,5 @@ class GLOBRecord : public Record
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eGLOB;}
         char * GetStrType() {return "GLOB";}
-        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(_FileHandler &SaveHandler);
     };

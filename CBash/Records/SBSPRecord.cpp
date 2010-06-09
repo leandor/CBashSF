@@ -82,12 +82,12 @@ unsigned int SBSPRecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int SBSPRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
+int SBSPRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
-        _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);
+        SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
     if(DNAM.IsLoaded())
-        _writeSubRecord(buffer, eDNAM, DNAM.GetSize(), &DNAM.value, usedBuffer);
+        SaveHandler.writeSubRecord(eDNAM, &DNAM.value, DNAM.GetSize());
     return -1;
     }
 

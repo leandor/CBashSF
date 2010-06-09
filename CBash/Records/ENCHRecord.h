@@ -162,7 +162,7 @@ class ENCHRecord : public Record
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eENCH;}
         char * GetStrType() {return "ENCH";}
-        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(_FileHandler &SaveHandler);
         bool IsNoAutoCalc()
             {
             return (ENIT.value.flags & fIsNoAutoCalc) != 0;

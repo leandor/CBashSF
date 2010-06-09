@@ -87,16 +87,16 @@ unsigned int GLOBRecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int GLOBRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
+int GLOBRecord::WriteRecord(_FileHandler &SaveHandler)
     {
 
     if(EDID.IsLoaded())
-        _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);
+        SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
 
     if(FNAM.IsLoaded())
-        _writeSubRecord(buffer, eFNAM, FNAM.GetSize(), &FNAM.value, usedBuffer);
+        SaveHandler.writeSubRecord(eFNAM, &FNAM.value, FNAM.GetSize());
     if(FLTV.IsLoaded())
-        _writeSubRecord(buffer, eFLTV, FLTV.GetSize(), &FLTV.value, usedBuffer);
+        SaveHandler.writeSubRecord(eFLTV, &FLTV.value, FLTV.GetSize());
 
     return -1;
     }

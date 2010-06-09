@@ -429,7 +429,7 @@ class NPC_Record : public Record
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eNPC_;}
         char * GetStrType() {return "NPC_";}
-        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(_FileHandler &SaveHandler);
 
         bool IsFemale()
             {

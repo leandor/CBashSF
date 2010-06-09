@@ -169,22 +169,22 @@ unsigned int PGRDRecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int PGRDRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
+int PGRDRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(DATA.IsLoaded())
-        _writeSubRecord(buffer, eDATA, DATA.GetSize(), &DATA.value, usedBuffer);
+        SaveHandler.writeSubRecord(eDATA, &DATA.value, DATA.GetSize());
     if(PGRP.size())
-        _writeSubRecord(buffer, ePGRP, sizeof(GENPGRP) * (unsigned int)PGRP.size(), &PGRP[0], usedBuffer);
+        SaveHandler.writeSubRecord(ePGRP, &PGRP[0], sizeof(GENPGRP) * (unsigned int)PGRP.size());
     if(PGAG.IsLoaded())
-        _writeSubRecord(buffer, ePGAG, PGAG.GetSize(), PGAG.value, usedBuffer);
+        SaveHandler.writeSubRecord(ePGAG, PGAG.value, PGAG.GetSize());
     if(PGRR.IsLoaded())
-        _writeSubRecord(buffer, ePGRR, PGRR.GetSize(), PGRR.value, usedBuffer);
+        SaveHandler.writeSubRecord(ePGRR, PGRR.value, PGRR.GetSize());
     //if(PGRR.size())
-    //    _writeSubRecord(buffer, ePGRR, sizeof(PGRDPGRR) * (unsigned int)PGRR.size(), &PGRR[0], usedBuffer);
+    //    SaveHandler.writeSubRecord(ePGRR, &PGRR[0], sizeof(PGRDPGRR) * (unsigned int)PGRR.size());
     if(PGRI.size())
-        _writeSubRecord(buffer, ePGRI, sizeof(PGRDPGRI) * (unsigned int)PGRI.size(), &PGRI[0], usedBuffer);
+        SaveHandler.writeSubRecord(ePGRI, &PGRI[0], sizeof(PGRDPGRI) * (unsigned int)PGRI.size());
     for(unsigned int x = 0; x < PGRL.size(); ++x)
-        _writeSubRecord(buffer, ePGRL, (sizeof(unsigned int) * (unsigned int)PGRL[x]->points.size()), &PGRL[x]->points[0], usedBuffer);
+        SaveHandler.writeSubRecord(ePGRL, &PGRL[x]->points[0], (sizeof(unsigned int) * (unsigned int)PGRL[x]->points.size()));
     return -1;
     }
 

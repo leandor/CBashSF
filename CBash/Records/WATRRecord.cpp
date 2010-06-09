@@ -120,24 +120,24 @@ unsigned int WATRRecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int WATRRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
+int WATRRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
-        _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);
+        SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
     if(TNAM.IsLoaded())
-        _writeSubRecord(buffer, eTNAM, TNAM.GetSize(), TNAM.value, usedBuffer);
+        SaveHandler.writeSubRecord(eTNAM, TNAM.value, TNAM.GetSize());
     if(ANAM.IsLoaded())
-        _writeSubRecord(buffer, eANAM, ANAM.GetSize(), &ANAM.value, usedBuffer);
+        SaveHandler.writeSubRecord(eANAM, &ANAM.value, ANAM.GetSize());
     if(FNAM.IsLoaded())
-        _writeSubRecord(buffer, eFNAM, FNAM.GetSize(), &FNAM.value, usedBuffer);
+        SaveHandler.writeSubRecord(eFNAM, &FNAM.value, FNAM.GetSize());
     if(MNAM.IsLoaded())
-        _writeSubRecord(buffer, eMNAM, MNAM.GetSize(), MNAM.value, usedBuffer);
+        SaveHandler.writeSubRecord(eMNAM, MNAM.value, MNAM.GetSize());
     if(SNAM.IsLoaded())
-        _writeSubRecord(buffer, eSNAM, SNAM.GetSize(), SNAM.value, usedBuffer);
+        SaveHandler.writeSubRecord(eSNAM, SNAM.value, SNAM.GetSize());
     if(DATA.IsLoaded())
-        _writeSubRecord(buffer, eDATA, DATA.GetSize(), DATA.value, usedBuffer);
+        SaveHandler.writeSubRecord(eDATA, DATA.value, DATA.GetSize());
     if(GNAM.IsLoaded())
-        _writeSubRecord(buffer, eGNAM, GNAM.GetSize(), GNAM.value, usedBuffer);
+        SaveHandler.writeSubRecord(eGNAM, GNAM.value, GNAM.GetSize());
     return -1;
     }
 

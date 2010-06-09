@@ -108,12 +108,12 @@ unsigned int ROADRecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int ROADRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
+int ROADRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(PGRP.size())
-        _writeSubRecord(buffer, ePGRP, sizeof(GENPGRP) * (unsigned int)PGRP.size(), &PGRP[0], usedBuffer);
+        SaveHandler.writeSubRecord(ePGRP, &PGRP[0], sizeof(GENPGRP) * (unsigned int)PGRP.size());
     if(PGRR.size())
-        _writeSubRecord(buffer, ePGRR, sizeof(ROADPGRR) * (unsigned int)PGRR.size(), &PGRR[0], usedBuffer);
+        SaveHandler.writeSubRecord(ePGRR, &PGRR[0], sizeof(ROADPGRR) * (unsigned int)PGRR.size());
     return -1;
     }
 

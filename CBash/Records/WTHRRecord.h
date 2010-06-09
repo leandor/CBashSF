@@ -437,7 +437,7 @@ class WTHRRecord : public Record
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eWTHR;}
         char * GetStrType() {return "WTHR";}
-        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(_FileHandler &SaveHandler);
 
         bool IsPleasant()
             {

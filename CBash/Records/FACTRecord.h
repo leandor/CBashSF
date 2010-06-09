@@ -175,7 +175,7 @@ class FACTRecord : public Record
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eFACT;}
         char * GetStrType() {return "FACT";}
-        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(_FileHandler &SaveHandler);
 
         bool IsHiddenFromPC()
             {

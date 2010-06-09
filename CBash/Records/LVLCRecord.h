@@ -187,7 +187,7 @@ class LVLCRecord : public Record
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eLVLC;}
         char * GetStrType() {return "LVLC";}
-        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(_FileHandler &SaveHandler);
 
         bool IsCalcFromAllLevels()
             {

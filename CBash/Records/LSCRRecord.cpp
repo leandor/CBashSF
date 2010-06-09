@@ -105,17 +105,17 @@ unsigned int LSCRRecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int LSCRRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
+int LSCRRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
-        _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);
+        SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
     if(ICON.IsLoaded())
-        _writeSubRecord(buffer, eICON, ICON.GetSize(), ICON.value, usedBuffer);
+        SaveHandler.writeSubRecord(eICON, ICON.value, ICON.GetSize());
     if(DESC.IsLoaded())
-        _writeSubRecord(buffer, eDESC, DESC.GetSize(), DESC.value, usedBuffer);
+        SaveHandler.writeSubRecord(eDESC, DESC.value, DESC.GetSize());
     for(unsigned int p = 0; p < LNAM.size(); p++)
         if(LNAM[p]->IsLoaded())
-            _writeSubRecord(buffer, eLNAM, LNAM[p]->GetSize(), &LNAM[p]->value, usedBuffer);
+            SaveHandler.writeSubRecord(eLNAM, &LNAM[p]->value, LNAM[p]->GetSize());
     return -1;
     }
 

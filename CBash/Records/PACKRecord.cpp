@@ -123,22 +123,22 @@ unsigned int PACKRecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int PACKRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
+int PACKRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
-        _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);
+        SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
     if(PKDT.IsLoaded())
-        _writeSubRecord(buffer, ePKDT, PKDT.GetSize(), &PKDT.value, usedBuffer);
+        SaveHandler.writeSubRecord(ePKDT, &PKDT.value, PKDT.GetSize());
     if(PLDT.IsLoaded())
-        _writeSubRecord(buffer, ePLDT, PLDT.GetSize(), PLDT.value, usedBuffer);
+        SaveHandler.writeSubRecord(ePLDT, PLDT.value, PLDT.GetSize());
     if(PSDT.IsLoaded())
-        _writeSubRecord(buffer, ePSDT, PSDT.GetSize(), &PSDT.value, usedBuffer);
+        SaveHandler.writeSubRecord(ePSDT, &PSDT.value, PSDT.GetSize());
     if(PTDT.IsLoaded())
-        _writeSubRecord(buffer, ePTDT, PTDT.GetSize(), PTDT.value, usedBuffer);
+        SaveHandler.writeSubRecord(ePTDT, PTDT.value, PTDT.GetSize());
     if(CTDA.size())
         for(unsigned int p = 0; p < CTDA.size(); p++)
             if(CTDA[p]->IsLoaded())
-                _writeSubRecord(buffer, eCTDA, CTDA[p]->GetSize(), &CTDA[p]->value, usedBuffer);
+                SaveHandler.writeSubRecord(eCTDA, &CTDA[p]->value, CTDA[p]->GetSize());
     return -1;
     }
 

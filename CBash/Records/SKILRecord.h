@@ -145,5 +145,5 @@ class SKILRecord : public Record
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eSKIL;}
         char * GetStrType() {return "SKIL";}
-        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(_FileHandler &SaveHandler);
     };

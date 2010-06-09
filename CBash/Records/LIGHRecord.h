@@ -188,7 +188,7 @@ class LIGHRecord : public Record
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eLIGH;}
         char * GetStrType() {return "LIGH";}
-        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(_FileHandler &SaveHandler);
         bool IsDynamic()
             {
             return (DATA.value.flags & fIsDynamic) != 0;

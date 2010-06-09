@@ -263,7 +263,7 @@ class EFSHRecord : public Record
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eEFSH;}
         char * GetStrType() {return "EFSH";}
-        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(_FileHandler &SaveHandler);
         bool IsNoMemShader()
             {
             return (DATA.value.flags & fIsNoMemShader) != 0;

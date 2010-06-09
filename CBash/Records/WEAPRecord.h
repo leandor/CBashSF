@@ -169,7 +169,7 @@ class WEAPRecord : public Record
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eWEAP;}
         char * GetStrType() {return "WEAP";}
-        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(_FileHandler &SaveHandler);
         bool IsNotNormalWeapon()
             {
             return (DATA.value.flags & fIsNotNormalWeapon) != 0;

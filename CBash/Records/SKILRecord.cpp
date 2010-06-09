@@ -137,26 +137,26 @@ unsigned int SKILRecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int SKILRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
+int SKILRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
-        _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);
+        SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
     if(INDX.IsLoaded())
-        _writeSubRecord(buffer, eINDX, INDX.GetSize(), &INDX.value, usedBuffer);
+        SaveHandler.writeSubRecord(eINDX, &INDX.value, INDX.GetSize());
     if(DESC.IsLoaded())
-        _writeSubRecord(buffer, eDESC, DESC.GetSize(), DESC.value, usedBuffer);
+        SaveHandler.writeSubRecord(eDESC, DESC.value, DESC.GetSize());
     if(ICON.IsLoaded())
-        _writeSubRecord(buffer, eICON, ICON.GetSize(), ICON.value, usedBuffer);
+        SaveHandler.writeSubRecord(eICON, ICON.value, ICON.GetSize());
     if(DATA.IsLoaded())
-        _writeSubRecord(buffer, eDATA, DATA.GetSize(), &DATA.value, usedBuffer);
+        SaveHandler.writeSubRecord(eDATA, &DATA.value, DATA.GetSize());
     if(ANAM.IsLoaded())
-        _writeSubRecord(buffer, eANAM, ANAM.GetSize(), ANAM.value, usedBuffer);
+        SaveHandler.writeSubRecord(eANAM, ANAM.value, ANAM.GetSize());
     if(JNAM.IsLoaded())
-        _writeSubRecord(buffer, eJNAM, JNAM.GetSize(), JNAM.value, usedBuffer);
+        SaveHandler.writeSubRecord(eJNAM, JNAM.value, JNAM.GetSize());
     if(ENAM.IsLoaded())
-        _writeSubRecord(buffer, eENAM, ENAM.GetSize(), ENAM.value, usedBuffer);
+        SaveHandler.writeSubRecord(eENAM, ENAM.value, ENAM.GetSize());
     if(MNAM.IsLoaded())
-        _writeSubRecord(buffer, eMNAM, MNAM.GetSize(), MNAM.value, usedBuffer);
+        SaveHandler.writeSubRecord(eMNAM, MNAM.value, MNAM.GetSize());
     return -1;
     }
 

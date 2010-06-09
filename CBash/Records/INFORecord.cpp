@@ -209,55 +209,55 @@ unsigned int INFORecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int INFORecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
+int INFORecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(DATA.IsLoaded())
-        _writeSubRecord(buffer, eDATA, DATA.GetSize(), &DATA.value, usedBuffer);
+        SaveHandler.writeSubRecord(eDATA, &DATA.value, DATA.GetSize());
     if(QSTI.IsLoaded())
-        _writeSubRecord(buffer, eQSTI, QSTI.GetSize(), &QSTI.value, usedBuffer);
+        SaveHandler.writeSubRecord(eQSTI, &QSTI.value, QSTI.GetSize());
     if(TPIC.IsLoaded())
-        _writeSubRecord(buffer, eTPIC, TPIC.GetSize(), TPIC.value, usedBuffer);
+        SaveHandler.writeSubRecord(eTPIC, TPIC.value, TPIC.GetSize());
     if(PNAM.IsLoaded())
-        _writeSubRecord(buffer, ePNAM, PNAM.GetSize(), PNAM.value, usedBuffer);
+        SaveHandler.writeSubRecord(ePNAM, PNAM.value, PNAM.GetSize());
     if(NAME.size())
         for(unsigned int p = 0; p < NAME.size(); p++)
-            _writeSubRecord(buffer, eNAME, sizeof(unsigned int), NAME[p], usedBuffer);
+            SaveHandler.writeSubRecord(eNAME, NAME[p], sizeof(unsigned int));
     if(Responses.size())
         {
         for(unsigned int p = 0; p < Responses.size(); p++)
             {
             if(Responses[p]->TRDT.IsLoaded())
-                _writeSubRecord(buffer, eTRDT, Responses[p]->TRDT.GetSize(), &Responses[p]->TRDT.value, usedBuffer);
+                SaveHandler.writeSubRecord(eTRDT, &Responses[p]->TRDT.value, Responses[p]->TRDT.GetSize());
             if(Responses[p]->NAM1.IsLoaded())
-                _writeSubRecord(buffer, eNAM1, Responses[p]->NAM1.GetSize(), Responses[p]->NAM1.value, usedBuffer);
+                SaveHandler.writeSubRecord(eNAM1, Responses[p]->NAM1.value, Responses[p]->NAM1.GetSize());
             if(Responses[p]->NAM2.IsLoaded())
-                _writeSubRecord(buffer, eNAM2, Responses[p]->NAM2.GetSize(), Responses[p]->NAM2.value, usedBuffer);
+                SaveHandler.writeSubRecord(eNAM2, Responses[p]->NAM2.value, Responses[p]->NAM2.GetSize());
             }
         }
     if(CTDA.size())
         for(unsigned int p = 0; p < CTDA.size(); p++)
             if(CTDA[p]->IsLoaded())
-                _writeSubRecord(buffer, eCTDA, CTDA[p]->GetSize(), &CTDA[p]->value, usedBuffer);
+                SaveHandler.writeSubRecord(eCTDA, &CTDA[p]->value, CTDA[p]->GetSize());
     if(TCLT.size())
         for(unsigned int p = 0; p < TCLT.size(); p++)
-            _writeSubRecord(buffer, eTCLT, sizeof(unsigned int), TCLT[p], usedBuffer);
+            SaveHandler.writeSubRecord(eTCLT, TCLT[p], sizeof(unsigned int));
     if(TCLF.size())
         for(unsigned int p = 0; p < TCLF.size(); p++)
-            _writeSubRecord(buffer, eTCLF, sizeof(unsigned int), TCLF[p], usedBuffer);
+            SaveHandler.writeSubRecord(eTCLF, TCLF[p], sizeof(unsigned int));
     //if(SCHD.IsLoaded())
-    //    _writeSubRecord(buffer, eSCHD, SCHD.GetSize(), SCHD.value, usedBuffer);
+    //    SaveHandler.writeSubRecord(eSCHD, SCHD.value, SCHD.GetSize());
     if(SCHR.IsLoaded())
-        _writeSubRecord(buffer, eSCHR, SCHR.GetSize(), &SCHR.value, usedBuffer);
+        SaveHandler.writeSubRecord(eSCHR, &SCHR.value, SCHR.GetSize());
     if(SCDA.IsLoaded())
-        _writeSubRecord(buffer, eSCDA, SCDA.GetSize(), SCDA.value, usedBuffer);
+        SaveHandler.writeSubRecord(eSCDA, SCDA.value, SCDA.GetSize());
     if(SCTX.IsLoaded())
-        _writeSubRecord(buffer, eSCTX, SCTX.GetSize(), SCTX.value, usedBuffer);
+        SaveHandler.writeSubRecord(eSCTX, SCTX.value, SCTX.GetSize());
     for(unsigned int p = 0; p < SCR_.size(); p++)
         if(SCR_[p]->IsLoaded())
             if(SCR_[p]->value.isSCRO)
-                _writeSubRecord(buffer, eSCRO, sizeof(unsigned int), &SCR_[p]->value.reference, usedBuffer);
+                SaveHandler.writeSubRecord(eSCRO, &SCR_[p]->value.reference, sizeof(unsigned int));
             else
-                _writeSubRecord(buffer, eSCRV, sizeof(unsigned int), &SCR_[p]->value.reference, usedBuffer);
+                SaveHandler.writeSubRecord(eSCRV, &SCR_[p]->value.reference, sizeof(unsigned int));
     return -1;
     }
 

@@ -156,7 +156,7 @@ class GRASRecord : public Record
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eGRAS;}
         char * GetStrType() {return "GRAS";}
-        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(_FileHandler &SaveHandler);
         bool IsVLighting()
             {
             return (DATA.value.flags & fIsVLighting) != 0;

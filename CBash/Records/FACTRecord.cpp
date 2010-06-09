@@ -156,31 +156,31 @@ unsigned int FACTRecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int FACTRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
+int FACTRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
-        _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);
+        SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
     if(FULL.IsLoaded())
-        _writeSubRecord(buffer, eFULL, FULL.GetSize(), FULL.value, usedBuffer);
+        SaveHandler.writeSubRecord(eFULL, FULL.value, FULL.GetSize());
     for(unsigned int p = 0; p < XNAM.size(); p++)
         if(XNAM[p]->IsLoaded())
-            _writeSubRecord(buffer, eXNAM, XNAM[p]->GetSize(), &XNAM[p]->value, usedBuffer);
+            SaveHandler.writeSubRecord(eXNAM, &XNAM[p]->value, XNAM[p]->GetSize());
 
     if(DATA.IsLoaded())
-        _writeSubRecord(buffer, eDATA, DATA.GetSize(), &DATA.value, usedBuffer);
+        SaveHandler.writeSubRecord(eDATA, &DATA.value, DATA.GetSize());
     if(CNAM.IsLoaded())
-        _writeSubRecord(buffer, eCNAM, CNAM.GetSize(), &CNAM.value, usedBuffer);
+        SaveHandler.writeSubRecord(eCNAM, &CNAM.value, CNAM.GetSize());
 
     for(unsigned int p = 0; p < RNAM.size(); p++)
         {
         if(RNAM[p]->IsLoaded())
-            _writeSubRecord(buffer, eRNAM, sizeof(RNAM[p]->value.RNAM), &RNAM[p]->value.RNAM, usedBuffer);
+            SaveHandler.writeSubRecord(eRNAM, &RNAM[p]->value.RNAM, sizeof(RNAM[p]->value.RNAM));
         if(RNAM[p]->value.MNAM.IsLoaded())
-            _writeSubRecord(buffer, eMNAM, RNAM[p]->value.MNAM.GetSize(), RNAM[p]->value.MNAM.value, usedBuffer);
+            SaveHandler.writeSubRecord(eMNAM, RNAM[p]->value.MNAM.value, RNAM[p]->value.MNAM.GetSize());
         if(RNAM[p]->value.FNAM.IsLoaded())
-            _writeSubRecord(buffer, eFNAM, RNAM[p]->value.FNAM.GetSize(), RNAM[p]->value.FNAM.value, usedBuffer);
+            SaveHandler.writeSubRecord(eFNAM, RNAM[p]->value.FNAM.value, RNAM[p]->value.FNAM.GetSize());
         if(RNAM[p]->value.INAM.IsLoaded())
-            _writeSubRecord(buffer, eINAM, RNAM[p]->value.INAM.GetSize(), RNAM[p]->value.INAM.value, usedBuffer);
+            SaveHandler.writeSubRecord(eINAM, RNAM[p]->value.INAM.value, RNAM[p]->value.INAM.GetSize());
         }
     return -1;
     }

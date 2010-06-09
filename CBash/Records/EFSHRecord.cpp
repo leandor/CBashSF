@@ -100,16 +100,16 @@ unsigned int EFSHRecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int EFSHRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
+int EFSHRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
-        _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);
+        SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
     if(ICON.IsLoaded())
-        _writeSubRecord(buffer, eICON, ICON.GetSize(), ICON.value, usedBuffer);
+        SaveHandler.writeSubRecord(eICON, ICON.value, ICON.GetSize());
     if(ICO2.IsLoaded())
-        _writeSubRecord(buffer, eICO2, ICO2.GetSize(), ICO2.value, usedBuffer);
+        SaveHandler.writeSubRecord(eICO2, ICO2.value, ICO2.GetSize());
     if(DATA.IsLoaded())
-        _writeSubRecord(buffer, eDATA, DATA.GetSize(), &DATA.value, usedBuffer);
+        SaveHandler.writeSubRecord(eDATA, &DATA.value, DATA.GetSize());
     return -1;
     }
 

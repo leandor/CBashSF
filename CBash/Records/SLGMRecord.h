@@ -155,7 +155,7 @@ class SLGMRecord : public Record
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eSLGM;}
         char * GetStrType() {return "SLGM";}
-        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(_FileHandler &SaveHandler);
         bool IsNoSoul()
             {
             return (SOUL.value.soul == eNone);

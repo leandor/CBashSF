@@ -217,7 +217,7 @@ class MGEFRecord : public Record
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eMGEF;}
         char * GetStrType() {return "MGEF";}
-        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(_FileHandler &SaveHandler);
         bool IsHostile()
             {
             return (DATA.value.flags & fIsHostile) != 0;

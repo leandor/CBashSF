@@ -114,22 +114,22 @@ unsigned int LVLCRecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int LVLCRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
+int LVLCRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
-        _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);
+        SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
     if(LVLD.IsLoaded())
-        _writeSubRecord(buffer, eLVLD, LVLD.GetSize(), &LVLD.value, usedBuffer);
+        SaveHandler.writeSubRecord(eLVLD, &LVLD.value, LVLD.GetSize());
     if(LVLF.IsLoaded())
-        _writeSubRecord(buffer, eLVLF, LVLF.GetSize(), &LVLF.value, usedBuffer);
+        SaveHandler.writeSubRecord(eLVLF, &LVLF.value, LVLF.GetSize());
     if(SCRI.IsLoaded())
-        _writeSubRecord(buffer, eSCRI, SCRI.GetSize(), SCRI.value, usedBuffer);
+        SaveHandler.writeSubRecord(eSCRI, SCRI.value, SCRI.GetSize());
     if(TNAM.IsLoaded())
-        _writeSubRecord(buffer, eTNAM, TNAM.GetSize(), TNAM.value, usedBuffer);
+        SaveHandler.writeSubRecord(eTNAM, TNAM.value, TNAM.GetSize());
     if(Entries.size())
         for(unsigned int p = 0; p < Entries.size(); p++)
             if(Entries[p]->IsLoaded())
-                _writeSubRecord(buffer, eLVLO, Entries[p]->GetSize(), &Entries[p]->value, usedBuffer);
+                SaveHandler.writeSubRecord(eLVLO, &Entries[p]->value, Entries[p]->GetSize());
     return -1;
     }
 
