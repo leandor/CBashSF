@@ -244,7 +244,7 @@ class CELLRecord : public Record
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eCELL;}
         char * GetStrType() {return "CELL";}
-        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(_FileHandler &SaveHandler);
 
         bool IsInterior()
             {

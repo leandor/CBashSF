@@ -36,51 +36,44 @@ class GRUPRecords
     {
     public:
         unsigned int stamp;
-        bool SkimmedGRUP, LoadedGRUP;
+        bool SkimmedGRUP;
         std::vector<T *> Records;
-        GRUPRecords():stamp(134671), SkimmedGRUP(false), LoadedGRUP(false) {}
+        GRUPRecords():stamp(134671), SkimmedGRUP(false) {}
         ~GRUPRecords()
             {
             for(unsigned int p = 0;p < Records.size(); p++)
                 delete Records[p];
             }
-        bool Skim(boost::threadpool::pool &Threads, unsigned char *fileBuffer, _FormIDHandler &FormIDHandler, const bool &FullLoad, unsigned int &gSize, unsigned int curPos)
+        bool Skim(boost::threadpool::pool &Threads, _FileHandler &ReadHandler, _FormIDHandler &FormIDHandler, const bool &FullLoad, const unsigned long &gSize)
             {
             if(SkimmedGRUP || gSize == 0)
                 return false;
             SkimmedGRUP = true;
-            //LoadedGRUP = FullLoad;
             T * curRecord = NULL;
-            unsigned int gEnd = curPos + gSize - 20;
-            unsigned int recordSize = 0;
-            //boost::threadpool::pool Threads(NUMTHREADS);
-            while(curPos < gEnd){
+            unsigned long gEnd = ReadHandler.tell() + gSize - 20;
+            unsigned long recordSize = 0;
+            while(ReadHandler.tell() < gEnd){
                 curRecord = new T();
-                curPos += 4; //Skip type field
-                recordSize = *(unsigned int*)&fileBuffer[curPos];
-                curPos += 4; //size of recordSize
-                _readBuffer(&curRecord->flags, fileBuffer, 4, curPos);
-                _readBuffer(&curRecord->formID, fileBuffer, 4, curPos);
-                _readBuffer(&curRecord->flagsUnk, fileBuffer, 4, curPos);
+                ReadHandler.set_used(4); //Skip type field
+                ReadHandler.read(&recordSize, 4);
+                ReadHandler.read(&curRecord->flags, 4);
+                ReadHandler.read(&curRecord->formID, 4);
+                ReadHandler.read(&curRecord->flagsUnk, 4);
                 if(curRecord->IsLoaded())
                     printf("Flag used!!!!\n");
-                curRecord->recData = fileBuffer + curPos;
+                curRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
                 FormIDHandler.ExpandFormID(curRecord->formID);
-                curPos += recordSize;
+                ReadHandler.set_used(recordSize);
                 if(FullLoad)
-                    {
                     Threads.schedule(boost::bind(&Record::Read, curRecord, boost::ref(FormIDHandler)));
-                    //curRecord->Read(fileBuffer, FormIDHandler);
-                    }
                 Records.push_back(curRecord);
                 };
             return true;
             }
         bool Read(_FormIDHandler &FormIDHandler)
             {
-            if(LoadedGRUP || !SkimmedGRUP)
+            if(!SkimmedGRUP)
                 return false;
-            LoadedGRUP = true;
             for(unsigned int p = 0; p < Records.size(); p++)
                 Records[p]->Read(FormIDHandler);
             return true;
@@ -123,34 +116,38 @@ class GRUPRecords
                 }
             return false;
             }
-        unsigned int WriteGRUP(unsigned int TopLabel, FileBuffer &buffer, bool CloseMod, _FormIDHandler &FormIDHandler)
+        unsigned int WriteGRUP(unsigned int TopLabel, _FileHandler &SaveHandler, _FormIDHandler &FormIDHandler, bool CloseMod)
             {
             unsigned int numRecords = (unsigned int)Records.size();
             if(numRecords == 0)
                 return 0;
             unsigned int type = eGRUP;
             unsigned int gType = eTop;
-            unsigned int TopSize = (numRecords * 20) + 20; //Accounts for all record headers and Top GRUP
-            std::vector<WritableRecord> WritableRecords;
-            WritableRecords.resize(numRecords);
+            unsigned int TopSize = 0;
+            unsigned int formCount = 0;
+
+            //Top GRUP Header
+            SaveHandler.write(&type, 4);
+            unsigned int TopSizePos = SaveHandler.tell();
+            SaveHandler.set_used(4); //Placeholder: will be overwritten with correct value later.
+            //SaveHandler.write(&TopSize, 4);
+            SaveHandler.write(&TopLabel, 4);
+            SaveHandler.write(&gType, 4);
+            SaveHandler.write(&stamp, 4);
+            ++formCount;
+            TopSize = 20;
+
+            formCount += numRecords;
             for(unsigned int p = 0; p < numRecords; p++)
                 {
-                Records[p]->Write(WritableRecords[p], FormIDHandler);
-                TopSize += WritableRecords[p].recSize;
+                TopSize += Records[p]->Write(SaveHandler, FormIDHandler);
                 if(CloseMod)
                     delete Records[p];
                 }
+            SaveHandler.writeAt(TopSizePos, &TopSize, 4);
             if(CloseMod)
                 Records.clear();
-            buffer.write(&type, 4);
-            buffer.write(&TopSize, 4);
-            buffer.write(&TopLabel, 4);
-            buffer.write(&gType, 4);
-            buffer.write(&stamp, 4);
-            for(unsigned int p = 0; p < numRecords; p++)
-                buffer.write(WritableRecords[p]);
-            WritableRecords.clear();
-            return numRecords + 1;
+            return formCount;
             }
         #ifdef _DEBUG
         void Debug(int debugLevel)
@@ -170,15 +167,15 @@ class GRUPRecords<DIALRecord>
             eINFO = 0x4F464E49
             };
         unsigned int stamp;
-        bool SkimmedGRUP, LoadedGRUP;
+        bool SkimmedGRUP;
         std::vector<DIALRecord *> Records;
-        GRUPRecords():stamp(134671), SkimmedGRUP(false), LoadedGRUP(false) {}
+        GRUPRecords():stamp(134671), SkimmedGRUP(false) {}
         ~GRUPRecords()
             {
             for(unsigned int p = 0;p < Records.size(); p++)
                 delete Records[p];
             }
-        bool Skim(boost::threadpool::pool &Threads, unsigned char *fileBuffer, _FormIDHandler &FormIDHandler, const bool &FullLoad, unsigned int &gSize, unsigned int curPos)
+        bool Skim(boost::threadpool::pool &Threads, _FileHandler &ReadHandler, _FormIDHandler &FormIDHandler, const bool &FullLoad, const unsigned long &gSize)
             {
             if(SkimmedGRUP || gSize == 0)
                 return false;
@@ -186,58 +183,49 @@ class GRUPRecords<DIALRecord>
             DIALRecord * curDIALRecord = NULL;
             INFORecord * curINFORecord = NULL;
             unsigned int recordType = 0;
-            unsigned int gEnd = curPos + gSize - 20;
-            unsigned int recordSize = 0;
-            //boost::threadpool::pool Threads(NUMTHREADS);
+            unsigned long gEnd = ReadHandler.tell() + gSize - 20;
+            unsigned long recordSize = 0;
 
-            while(curPos < gEnd){
-                _readBuffer(&recordType, fileBuffer, 4, curPos);
-                _readBuffer(&recordSize, fileBuffer, 4, curPos);
+            while(ReadHandler.tell() < gEnd){
+                ReadHandler.read(&recordType, 4);
+                ReadHandler.read(&recordSize, 4);
                 switch(recordType)
                     {
                     case eDIAL:
                         curDIALRecord = new DIALRecord();
-                        _readBuffer(&curDIALRecord->flags, fileBuffer, 4, curPos);
-                        _readBuffer(&curDIALRecord->formID, fileBuffer, 4, curPos);
-                        _readBuffer(&curDIALRecord->flagsUnk, fileBuffer, 4, curPos);
+                        ReadHandler.read(&curDIALRecord->flags, 4);
+                        ReadHandler.read(&curDIALRecord->formID, 4);
+                        ReadHandler.read(&curDIALRecord->flagsUnk, 4);
                         if(curDIALRecord->IsLoaded())
                             printf("Flag used!!!!\n");
-                        curDIALRecord->recData = fileBuffer + curPos;
+                        curDIALRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
                         FormIDHandler.ExpandFormID(curDIALRecord->formID);
-                        curPos += recordSize;
+                        ReadHandler.set_used(recordSize);
                         if(FullLoad)
-                            {
                             Threads.schedule(boost::bind(&Record::Read, curDIALRecord, boost::ref(FormIDHandler)));
-                            //curDIALRecord->Read(fileBuffer, FormIDHandler);
-                            }
                         Records.push_back(curDIALRecord);
                         break;
                     case eGRUP: //All GRUPs will be recreated from scratch on write (saves memory)
-                        curPos += 8;
-                        _readBuffer(&stamp, fileBuffer, 4, curPos);
+                        ReadHandler.set_used(8); //Skip label and type fields
+                        ReadHandler.read(&stamp, 4);
                         break;
                     case eINFO:
                         curINFORecord = new INFORecord();
-                        _readBuffer(&curINFORecord->flags, fileBuffer, 4, curPos);
-                        _readBuffer(&curINFORecord->formID, fileBuffer, 4, curPos);
-                        _readBuffer(&curINFORecord->flagsUnk, fileBuffer, 4, curPos);
+                        ReadHandler.read(&curINFORecord->flags, 4);
+                        ReadHandler.read(&curINFORecord->formID, 4);
+                        ReadHandler.read(&curINFORecord->flagsUnk, 4);
                         if(curINFORecord->IsLoaded())
                             printf("Flag used!!!!\n");
-                        curINFORecord->recData = fileBuffer + curPos;
+                        curINFORecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
                         FormIDHandler.ExpandFormID(curINFORecord->formID);
-                        curPos += recordSize;
+                        ReadHandler.set_used(recordSize);
                         if(FullLoad)
-                            {
                             Threads.schedule(boost::bind(&Record::Read, curINFORecord, boost::ref(FormIDHandler)));
-                            //curINFORecord->Read(fileBuffer, FormIDHandler);
-                            }
                         curDIALRecord->INFO.push_back(curINFORecord);
                         break;
                     default:
                         printf("  DIAL: Unexpected Field = %04x\n", recordType);
-                        printf("  Size = %u\n", recordSize);
-                        printf("  CurPos = %04x\n\n", curPos - 20);
-                        curPos += recordSize;
+                        ReadHandler.set_used(recordSize);
                         break;
                     }
                 };
@@ -245,9 +233,8 @@ class GRUPRecords<DIALRecord>
             }
         bool Read(_FormIDHandler &FormIDHandler)
             {
-            if(LoadedGRUP || !SkimmedGRUP)
+            if(!SkimmedGRUP)
                 return false;
-            LoadedGRUP = true;
             DIALRecord * curRecord = NULL;
             for(unsigned int p = 0; p < Records.size(); p++)
                 {
@@ -331,72 +318,71 @@ class GRUPRecords<DIALRecord>
                 }
             return false;
             }
-        unsigned int WriteGRUP(FileBuffer &buffer, bool CloseMod, _FormIDHandler &FormIDHandler)
+        unsigned int WriteGRUP(_FileHandler &SaveHandler, _FormIDHandler &FormIDHandler, bool CloseMod)
             {
             unsigned int numDIALRecords = (unsigned int)Records.size(); //Parent Records
             if(numDIALRecords == 0)
                 return 0;
-            unsigned int formCount = numDIALRecords + 1; //includes top GRUP
             unsigned int type = eGRUP;
-            unsigned int TopLabel = eDIAL;
             unsigned int gType = eTop;
-            std::vector<WritableDialogue> WriteDial;
-            unsigned int numINFORecords;
-            unsigned int TopSize = formCount * 20; //Top GRUP & accounts for all DIAL record headers
-            WriteDial.resize(numDIALRecords);
+            unsigned int TopSize =0;
+            unsigned int ChildrenSize =0;
+            unsigned int formCount = 0;
+            unsigned int TopLabel = eDIAL;
+            unsigned int numINFORecords = 0;
+            unsigned int parentFormID = 0;
+            DIALRecord *curRecord = NULL;
+
+            //Top GRUP Header
+            SaveHandler.write(&type, 4);
+            unsigned int TopSizePos = SaveHandler.tell();
+            SaveHandler.set_used(4); //Placeholder: will be overwritten with correct value later.
+            //SaveHandler.write(&TopSize, 4);
+            SaveHandler.write(&TopLabel, 4);
+            SaveHandler.write(&gType, 4);
+            SaveHandler.write(&stamp, 4);
+            ++formCount;
+            TopSize = 20;
+
+            gType = eTopicChildren;
+            formCount += numDIALRecords;
             for(unsigned int p = 0; p < numDIALRecords; ++p)
                 {
-                WriteDial[p].formID = Records[p]->formID;
-                numINFORecords = (unsigned int)Records[p]->INFO.size(); //Children Records
+                curRecord = Records[p];
+                parentFormID = curRecord->formID;
+                FormIDHandler.CollapseFormID(parentFormID);
+                TopSize += curRecord->Write(SaveHandler, FormIDHandler);
+
+                numINFORecords = (unsigned int)curRecord->INFO.size();
                 if(numINFORecords)
                     {
-                    formCount += numINFORecords + 1;
-                    WriteDial[p].ChildrenSize = (numINFORecords * 20) + 20; //Children GRUP & accounts for all INFO record headers
-                    WriteDial[p].Children.resize(numINFORecords);
-                    for(unsigned int y = 0; y < numINFORecords; ++y)
-                        {
-                        Records[p]->INFO[y]->Write(WriteDial[p].Children[y], FormIDHandler);
-                        WriteDial[p].ChildrenSize += WriteDial[p].Children[y].recSize;
-                        if(CloseMod)
-                            delete Records[p]->INFO[y];
-                        }
-                    TopSize += WriteDial[p].ChildrenSize;
-                    }
-                Records[p]->Write(WriteDial[p], FormIDHandler);
-                TopSize += WriteDial[p].recSize;
+                    SaveHandler.write(&type, 4);
+                    unsigned int ChildrenSizePos = SaveHandler.tell();
+                    SaveHandler.set_used(4); //Placeholder: will be overwritten with correct value later.
+                    SaveHandler.write(&parentFormID, 4);
+                    SaveHandler.write(&gType, 4);
+                    SaveHandler.write(&stamp, 4);
+                    ++formCount;
+                    ChildrenSize = 20;
 
-                if(CloseMod)
-                    {
-                    Records[p]->INFO.clear();
-                    delete Records[p];
+                    formCount += numINFORecords;
+                    for(unsigned int y = 0; y < curRecord->INFO.size(); ++y)
+                        {
+                        ChildrenSize += curRecord->INFO[y]->Write(SaveHandler, FormIDHandler);
+                        if(CloseMod)
+                            delete curRecord->INFO[y];
+                        }
+                    SaveHandler.writeAt(ChildrenSizePos, &ChildrenSize, 4);
+                    TopSize += ChildrenSize;
+                    if(CloseMod)
+                        curRecord->INFO.clear();
                     }
+                if(CloseMod)
+                    delete curRecord;
                 }
+            SaveHandler.writeAt(TopSizePos, &TopSize, 4);
             if(CloseMod)
                 Records.clear();
-
-            buffer.write(&type, 4);
-            buffer.write(&TopSize, 4);
-            buffer.write(&TopLabel, 4);
-            buffer.write(&gType, 4);
-            buffer.write(&stamp, 4);
-            gType = eTopicChildren;
-            for(unsigned int p = 0; p < numDIALRecords; ++p)
-                {
-                buffer.write(WriteDial[p]);
-
-                if(WriteDial[p].Children.size())
-                    {
-                    buffer.write(&type, 4);
-                    buffer.write(&WriteDial[p].ChildrenSize, 4);
-                    buffer.write(&WriteDial[p].formID, 4);
-                    buffer.write(&gType, 4);
-                    buffer.write(&stamp, 4);
-                    for(unsigned int y = 0; y < WriteDial[p].Children.size(); ++y)
-                        buffer.write(WriteDial[p].Children[y]);
-                    WriteDial[p].Children.clear();
-                    }
-                }
-            WriteDial.clear();
             return formCount;
             }
         #ifdef _DEBUG
@@ -420,15 +406,15 @@ class GRUPRecords<CELLRecord>
             ePGRD = 0x44524750
             };
         unsigned int stamp;
-        bool SkimmedGRUP, LoadedGRUP;
+        bool SkimmedGRUP;
         std::vector<CELLRecord *> Records;
-        GRUPRecords():stamp(134671), SkimmedGRUP(false), LoadedGRUP(false) {}
+        GRUPRecords():stamp(134671), SkimmedGRUP(false) {}
         ~GRUPRecords()
             {
             for(unsigned int p = 0;p < Records.size(); p++)
                 delete Records[p];
             }
-        bool Skim(boost::threadpool::pool &Threads, unsigned char *fileBuffer, _FormIDHandler &FormIDHandler, const bool &FullLoad, unsigned int &gSize, unsigned int curPos)
+        bool Skim(boost::threadpool::pool &Threads, _FileHandler &ReadHandler, _FormIDHandler &FormIDHandler, const bool &FullLoad, const unsigned long &gSize)
             {
             if(SkimmedGRUP || gSize == 0)
                 return false;
@@ -438,108 +424,90 @@ class GRUPRecords<CELLRecord>
             ACRERecord *curACRERecord = NULL;
             REFRRecord *curREFRRecord = NULL;
             unsigned int recordType = 0;
-            unsigned int gEnd = curPos + gSize - 20;
-            unsigned int recordSize = 0;
-            //boost::threadpool::pool Threads(NUMTHREADS);
+            unsigned long gEnd = ReadHandler.tell() + gSize - 20;
+            unsigned long recordSize = 0;
 
-            while(curPos < gEnd){
-                _readBuffer(&recordType, fileBuffer, 4, curPos);
-                _readBuffer(&recordSize, fileBuffer, 4, curPos);
+            while(ReadHandler.tell() < gEnd){
+                ReadHandler.read(&recordType, 4);
+                ReadHandler.read(&recordSize, 4);
                 switch(recordType)
                     {
                     case eCELL:
                         curCELLRecord = new CELLRecord();
-                        _readBuffer(&curCELLRecord->flags, fileBuffer, 4, curPos);
-                        _readBuffer(&curCELLRecord->formID, fileBuffer, 4, curPos);
-                        _readBuffer(&curCELLRecord->flagsUnk, fileBuffer, 4, curPos);
+                        ReadHandler.read(&curCELLRecord->flags, 4);
+                        ReadHandler.read(&curCELLRecord->formID, 4);
+                        ReadHandler.read(&curCELLRecord->flagsUnk, 4);
                         if(curCELLRecord->IsLoaded())
                             printf("Flag used!!!!\n");
-                        curCELLRecord->recData = fileBuffer + curPos;
+                        curCELLRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
                         FormIDHandler.ExpandFormID(curCELLRecord->formID);
-                        curPos += recordSize;
+                        ReadHandler.set_used(recordSize);
                         if(FullLoad)
-                            {
                             Threads.schedule(boost::bind(&Record::Read, curCELLRecord, boost::ref(FormIDHandler)));
-                            //curCELLRecord->Read(fileBuffer, FormIDHandler);
-                            }
                         Records.push_back(curCELLRecord);
                         break;
                     case eGRUP: //All GRUPs will be recreated from scratch on write (saves memory)
-                        curPos += 12;
+                        ReadHandler.set_used(12); //skip the rest of the header
                         break;
                     case eACHR:
                         curACHRRecord = new ACHRRecord();
-                        _readBuffer(&curACHRRecord->flags, fileBuffer, 4, curPos);
-                        _readBuffer(&curACHRRecord->formID, fileBuffer, 4, curPos);
-                        _readBuffer(&curACHRRecord->flagsUnk, fileBuffer, 4, curPos);
+                        ReadHandler.read(&curACHRRecord->flags, 4);
+                        ReadHandler.read(&curACHRRecord->formID, 4);
+                        ReadHandler.read(&curACHRRecord->flagsUnk, 4);
                         if(curACHRRecord->IsLoaded())
                             printf("Flag used!!!!\n");
-                        curACHRRecord->recData = fileBuffer + curPos;
+                        curACHRRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
                         FormIDHandler.ExpandFormID(curACHRRecord->formID);
-                        curPos += recordSize;
+                        ReadHandler.set_used(recordSize);
                         if(FullLoad)
-                            {
                             Threads.schedule(boost::bind(&Record::Read, curACHRRecord, boost::ref(FormIDHandler)));
-                            //curACHRRecord->Read(fileBuffer, FormIDHandler);
-                            }
                         curCELLRecord->ACHR.push_back(curACHRRecord);
                         break;
                     case eACRE:
                         curACRERecord = new ACRERecord();
-                        _readBuffer(&curACRERecord->flags, fileBuffer, 4, curPos);
-                        _readBuffer(&curACRERecord->formID, fileBuffer, 4, curPos);
-                        _readBuffer(&curACRERecord->flagsUnk, fileBuffer, 4, curPos);
+                        ReadHandler.read(&curACRERecord->flags, 4);
+                        ReadHandler.read(&curACRERecord->formID, 4);
+                        ReadHandler.read(&curACRERecord->flagsUnk, 4);
                         if(curACRERecord->IsLoaded())
                             printf("Flag used!!!!\n");
-                        curACRERecord->recData = fileBuffer + curPos;
+                        curACRERecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
                         FormIDHandler.ExpandFormID(curACRERecord->formID);
-                        curPos += recordSize;
+                        ReadHandler.set_used(recordSize);
                         if(FullLoad)
-                            {
                             Threads.schedule(boost::bind(&Record::Read, curACRERecord, boost::ref(FormIDHandler)));
-                            //curACRERecord->Read(fileBuffer, FormIDHandler);
-                            }
                         curCELLRecord->ACRE.push_back(curACRERecord);
                         break;
                     case eREFR:
                         curREFRRecord = new REFRRecord();
-                        _readBuffer(&curREFRRecord->flags, fileBuffer, 4, curPos);
-                        _readBuffer(&curREFRRecord->formID, fileBuffer, 4, curPos);
-                        _readBuffer(&curREFRRecord->flagsUnk, fileBuffer, 4, curPos);
+                        ReadHandler.read(&curREFRRecord->flags, 4);
+                        ReadHandler.read(&curREFRRecord->formID, 4);
+                        ReadHandler.read(&curREFRRecord->flagsUnk, 4);
                         if(curREFRRecord->IsLoaded())
                             printf("Flag used!!!!\n");
-                        curREFRRecord->recData = fileBuffer + curPos;
+                        curREFRRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
                         FormIDHandler.ExpandFormID(curREFRRecord->formID);
-                        curPos += recordSize;
+                        ReadHandler.set_used(recordSize);
                         if(FullLoad)
-                            {
                             Threads.schedule(boost::bind(&Record::Read, curREFRRecord, boost::ref(FormIDHandler)));
-                            //curREFRRecord->Read(fileBuffer, FormIDHandler);
-                            }
                         curCELLRecord->REFR.push_back(curREFRRecord);
                         break;
                     case ePGRD:
                         delete curCELLRecord->PGRD;
                         curCELLRecord->PGRD = new PGRDRecord();
-                        _readBuffer(&curCELLRecord->PGRD->flags, fileBuffer, 4, curPos);
-                        _readBuffer(&curCELLRecord->PGRD->formID, fileBuffer, 4, curPos);
-                        _readBuffer(&curCELLRecord->PGRD->flagsUnk, fileBuffer, 4, curPos);
+                        ReadHandler.read(&curCELLRecord->PGRD->flags, 4);
+                        ReadHandler.read(&curCELLRecord->PGRD->formID, 4);
+                        ReadHandler.read(&curCELLRecord->PGRD->flagsUnk, 4);
                         if(curCELLRecord->PGRD->IsLoaded())
                             printf("Flag used!!!!\n");
-                        curCELLRecord->PGRD->recData = fileBuffer + curPos;
+                        curCELLRecord->PGRD->recData = ReadHandler.getBuffer(ReadHandler.tell());
                         FormIDHandler.ExpandFormID(curCELLRecord->PGRD->formID);
-                        curPos += recordSize;
+                        ReadHandler.set_used(recordSize);
                         if(FullLoad)
-                            {
                             Threads.schedule(boost::bind(&Record::Read, curCELLRecord->PGRD, boost::ref(FormIDHandler)));
-                            //curCELLRecord->PGRD->Read(fileBuffer, FormIDHandler);
-                            }
                         break;
                     default:
                         printf("  CELL: Unexpected Record = %04x\n", recordType);
-                        printf("  Size = %u\n", recordSize);
-                        printf("  CurPos = %04x\n\n", curPos - 20);
-                        curPos += recordSize;
+                        ReadHandler.set_used(recordSize);
                         break;
                     }
                 };
@@ -547,9 +515,8 @@ class GRUPRecords<CELLRecord>
             }
         bool Read(_FormIDHandler &FormIDHandler)
             {
-            if(LoadedGRUP || !SkimmedGRUP)
+            if(!SkimmedGRUP)
                 return false;
-            LoadedGRUP = true;
             CELLRecord *curRecord = NULL;
             for(unsigned int p = 0; p < Records.size(); p++)
                 {
@@ -685,272 +652,249 @@ class GRUPRecords<CELLRecord>
                 }
             return false;
             }
-        unsigned int WriteGRUP(FileBuffer &buffer, bool CloseMod, _FormIDHandler &FormIDHandler)
+        unsigned int WriteGRUP(_FileHandler &SaveHandler, _FormIDHandler &FormIDHandler, bool CloseMod)
             {
             unsigned int numCELLRecords = (unsigned int)Records.size();
             if(numCELLRecords == 0)
                 return 0;
-            unsigned int formCount = numCELLRecords + 1; //includes top GRUP
-            unsigned int TopSize = formCount * 20; //Accounts for all Cell record headers and itself
-            std::vector< std::vector< std::vector<WritableCell> > > BlockedRecords(10, std::vector< std::vector<WritableCell> > (10, std::vector<WritableCell>()));
-            std::vector<unsigned int> BlockHeaders(10, 0);
-            std::vector< std::vector<unsigned int> > SubBlockHeaders(10, std::vector<unsigned int>(10, 0));
+            unsigned int type = eGRUP;
+            unsigned int gType = eTop;
+            unsigned int TopSize = 0;
+            unsigned int TopSizePos = 0;
+            unsigned int blockSize = 0;
+            unsigned int blockSizePos = 0;
+            unsigned int subBlockSize = 0;
+            unsigned int subBlockSizePos = 0;
+            unsigned int childrenSize = 0;
+            unsigned int childrenSizePos = 0;
+            unsigned int childSize = 0;
+            unsigned int childSizePos = 0;
 
-            int ObjectID, BlockIndex, SubBlockIndex;
+            unsigned int formCount = 0;
+
+            unsigned int gLabel = eCELL;
+            unsigned int numSubBlocks = 0;
+            unsigned int numChildren = 0;
+            unsigned int numChild = 0;
+
+            unsigned int parentFormID = 0;
             CELLRecord *curRecord = NULL;
-            WritableCell curICELL;
-            WritableRecord curWriteRecord;
+            int ObjectID, BlockIndex, SubBlockIndex;
+
+            std::vector< std::vector< std::vector<CELLRecord *> > > BlockedRecords(10, std::vector< std::vector<CELLRecord *> > (10, std::vector<CELLRecord *>()));
+            std::vector<Record *> Persistent;
+            std::vector<Record *> Temporary;
+            std::vector<Record *> VWD;
             BlockedRecords.reserve(numCELLRecords);
             for(unsigned int p = 0; p < numCELLRecords; ++p)
                 {
                 curRecord = Records[p];
 
-                curICELL.formID = curRecord->formID;
-                curICELL.ChildrenSize = 0;
-                curICELL.PersistentSize = 0;
-                curICELL.Persistent.clear();
-                curICELL.VWDSize = 0;
-                curICELL.VWD.clear();
-                curICELL.TemporarySize = 0;
-                curICELL.Temporary.clear();
-
-                if(curRecord->PGRD != NULL)
-                    {
-                    curRecord->PGRD->Write(curWriteRecord, FormIDHandler);
-                    curICELL.TemporarySize += curWriteRecord.recSize + 20; //Record Header
-                    curICELL.Temporary.push_back(curWriteRecord);
-                    if(CloseMod)
-                        {
-                        delete curRecord->PGRD;
-                        curRecord->PGRD = NULL;
-                        }
-                    }
-
-                for(unsigned int y = 0; y < curRecord->ACHR.size(); ++y)
-                    {
-                    curRecord->ACHR[y]->Write(curWriteRecord, FormIDHandler);
-                    if(curRecord->ACHR[y]->IsPersistent())
-                        {
-                        curICELL.PersistentSize += curWriteRecord.recSize + 20; //Record Header
-                        curICELL.Persistent.push_back(curWriteRecord);
-                        }
-                    else if(curRecord->ACHR[y]->IsVWD())
-                        {
-                        curICELL.VWDSize += curWriteRecord.recSize + 20; //Record Header
-                        curICELL.VWD.push_back(curWriteRecord);
-                        }
-                    else
-                        {
-                        curICELL.TemporarySize += curWriteRecord.recSize + 20; //Record Header
-                        curICELL.Temporary.push_back(curWriteRecord);
-                        }
-                    if(CloseMod)
-                        delete curRecord->ACHR[y];
-                    }
-                if(CloseMod)
-                    curRecord->ACHR.clear();
-
-                for(unsigned int y = 0; y < curRecord->ACRE.size(); ++y)
-                    {
-                    curRecord->ACRE[y]->Write(curWriteRecord, FormIDHandler);
-                    if(curRecord->ACRE[y]->IsPersistent())
-                        {
-                        curICELL.PersistentSize += curWriteRecord.recSize + 20; //Record Header
-                        curICELL.Persistent.push_back(curWriteRecord);
-                        }
-                    else if(curRecord->ACRE[y]->IsVWD())
-                        {
-                        curICELL.VWDSize += curWriteRecord.recSize + 20; //Record Header
-                        curICELL.VWD.push_back(curWriteRecord);
-                        }
-                    else
-                        {
-                        curICELL.TemporarySize += curWriteRecord.recSize + 20; //Record Header
-                        curICELL.Temporary.push_back(curWriteRecord);
-                        }
-                    if(CloseMod)
-                        delete curRecord->ACRE[y];
-                    }
-                if(CloseMod)
-                    curRecord->ACRE.clear();
-
-                for(unsigned int y = 0; y < curRecord->REFR.size(); ++y)
-                    {
-                    curRecord->REFR[y]->Write(curWriteRecord, FormIDHandler);
-                    if(curRecord->REFR[y]->IsPersistent())
-                        {
-                        curICELL.PersistentSize += curWriteRecord.recSize + 20; //Record Header
-                        curICELL.Persistent.push_back(curWriteRecord);
-                        }
-                    else if(curRecord->REFR[y]->IsVWD())
-                        {
-                        curICELL.VWDSize += curWriteRecord.recSize + 20; //Record Header
-                        curICELL.VWD.push_back(curWriteRecord);
-                        }
-                    else
-                        {
-                        curICELL.TemporarySize += curWriteRecord.recSize + 20; //Record Header
-                        curICELL.Temporary.push_back(curWriteRecord);
-                        }
-                    if(CloseMod)
-                        delete curRecord->REFR[y];
-                    }
-                if(CloseMod)
-                    curRecord->REFR.clear();
-
-                //Account for GRUPs
-                if(curICELL.PersistentSize)
-                    {
-                    curICELL.PersistentSize += 20;
-                    ++formCount += (unsigned int)curICELL.Persistent.size();
-                    }
-                if(curICELL.VWDSize)
-                    {
-                    curICELL.VWDSize += 20;
-                    ++formCount += (unsigned int)curICELL.VWD.size();
-                    }
-                if(curICELL.TemporarySize)
-                    {
-                    curICELL.TemporarySize += 20;
-                    ++formCount += (unsigned int)curICELL.Temporary.size();
-                    }
-
-                curICELL.ChildrenSize += curICELL.PersistentSize + curICELL.VWDSize + curICELL.TemporarySize;
-
-                if(curICELL.ChildrenSize)
-                    {
-                    curICELL.ChildrenSize += 20;
-                    ++formCount;
-                    }
-
-                TopSize += curICELL.ChildrenSize;
-
                 ObjectID = curRecord->formID & 0x00FFFFFF;
                 BlockIndex = ObjectID % 10;
                 SubBlockIndex = (ObjectID / 10) % 10;
-                if(BlockHeaders[BlockIndex] == 0)
-                    {
-                    TopSize += 20;
-                    BlockHeaders[BlockIndex] = 20;
-                    ++formCount;
-                    }
-                if(SubBlockHeaders[BlockIndex][SubBlockIndex] == 0)
-                    {
-                    TopSize += 20;
-                    BlockHeaders[BlockIndex] += 20;
-                    SubBlockHeaders[BlockIndex][SubBlockIndex] = 20;
-                    ++formCount;
-                    }
-                curRecord->Write(curICELL, FormIDHandler);
-                TopSize += curICELL.recSize;
 
-                BlockHeaders[BlockIndex] += 20; //Cell Record Header
-                SubBlockHeaders[BlockIndex][SubBlockIndex] += 20; //Cell Record Header
-                BlockHeaders[BlockIndex] += curICELL.recSize;
-                BlockHeaders[BlockIndex] += curICELL.ChildrenSize;
-                SubBlockHeaders[BlockIndex][SubBlockIndex] += curICELL.recSize;
-                SubBlockHeaders[BlockIndex][SubBlockIndex] += curICELL.ChildrenSize;
-
-                BlockedRecords[BlockIndex][SubBlockIndex].push_back(curICELL);
-                if(CloseMod)
-                    delete curRecord;
+                BlockedRecords[BlockIndex][SubBlockIndex].push_back(curRecord);
                 }
-            if(CloseMod)
-                Records.clear();;
 
-            unsigned int type = eGRUP;
-            unsigned int gLabel = eCELL;
-            unsigned int gType = eTop;
-            unsigned int gSize = 0;
-            buffer.write(&type, 4);
-            buffer.write(&TopSize, 4);
-            buffer.write(&gLabel, 4);
-            buffer.write(&gType, 4);
-            buffer.write(&stamp, 4);
+            //Top GRUP Header
+            SaveHandler.write(&type, 4);
+            TopSizePos = SaveHandler.tell();
+            SaveHandler.set_used(4); //Placeholder: will be overwritten with correct value later.
+            //SaveHandler.write(&TopSize, 4);
+            SaveHandler.write(&gLabel, 4);
+            SaveHandler.write(&gType, 4);
+            SaveHandler.write(&stamp, 4);
+            ++formCount;
+            TopSize = 20;
 
+            formCount += numCELLRecords;
             for(unsigned int curBlock = 0; curBlock < 10; ++curBlock)
                 {
                 gType = eInteriorBlock;
                 for(unsigned int curSubBlock = 0; curSubBlock < 10; ++curSubBlock)
                     {
-                    gSize = (unsigned int)BlockedRecords[curBlock][curSubBlock].size();
-                    if(gSize != 0)
+                    numSubBlocks = (unsigned int)BlockedRecords[curBlock][curSubBlock].size();
+                    if(numSubBlocks != 0)
                         {
                         if(gType == eInteriorBlock)
                             {
-                            buffer.write(&type, 4);
-                            buffer.write(&BlockHeaders[curBlock], 4);
-                            buffer.write(&curBlock, 4);
-                            buffer.write(&gType, 4);
-                            buffer.write(&stamp, 4);
+                            SaveHandler.write(&type, 4);
+                            blockSizePos = SaveHandler.tell();
+                            SaveHandler.set_used(4); //Placeholder: will be overwritten with correct value later.
+                            SaveHandler.write(&curBlock, 4);
+                            SaveHandler.write(&gType, 4);
+                            SaveHandler.write(&stamp, 4);
+                            ++formCount;
+                            blockSize = 20;
                             }
                         gType = eInteriorSubBlock;
-                        buffer.write(&type, 4);
-                        buffer.write(&SubBlockHeaders[curBlock][curSubBlock], 4);
-                        buffer.write(&curSubBlock, 4);
-                        buffer.write(&gType, 4);
-                        buffer.write(&stamp, 4);
-                        for(unsigned int p = 0; p < gSize; ++p)
+                        SaveHandler.write(&type, 4);
+                        subBlockSizePos = SaveHandler.tell();
+                        SaveHandler.set_used(4); //Placeholder: will be overwritten with correct value later.
+                        SaveHandler.write(&curSubBlock, 4);
+                        SaveHandler.write(&gType, 4);
+                        SaveHandler.write(&stamp, 4);
+                        ++formCount;
+                        subBlockSize = 20;
+                        for(unsigned int p = 0; p < numSubBlocks; ++p)
                             {
-                            curICELL = BlockedRecords[curBlock][curSubBlock][p];
-                            buffer.write(curICELL);
-                            if(curICELL.ChildrenSize)
+                            curRecord = BlockedRecords[curBlock][curSubBlock][p];
+                            parentFormID = curRecord->formID;
+                            FormIDHandler.CollapseFormID(parentFormID);
+                            subBlockSize += curRecord->Write(SaveHandler, FormIDHandler);
+                            //Place the PGRD, ACHR, ACRE, and REFR records into their proper GRUP
+                            if(curRecord->PGRD != NULL)
+                                Temporary.push_back(curRecord->PGRD);
+                            if(CloseMod)
+                                curRecord->PGRD = NULL;
+
+                            for(unsigned int y = 0; y < curRecord->ACHR.size(); ++y)
                                 {
+                                if(curRecord->ACHR[y]->IsPersistent())
+                                    Persistent.push_back(curRecord->ACHR[y]);
+                                else if(curRecord->ACHR[y]->IsVWD())
+                                    VWD.push_back(curRecord->ACHR[y]);
+                                else
+                                    Temporary.push_back(curRecord->ACHR[y]);
+                                }
+                            if(CloseMod)
+                                curRecord->ACHR.clear();
+
+                            for(unsigned int y = 0; y < curRecord->ACRE.size(); ++y)
+                                {
+                                if(curRecord->ACRE[y]->IsPersistent())
+                                    Persistent.push_back(curRecord->ACRE[y]);
+                                else if(curRecord->ACRE[y]->IsVWD())
+                                    VWD.push_back(curRecord->ACRE[y]);
+                                else
+                                    Temporary.push_back(curRecord->ACRE[y]);
+                                }
+                            if(CloseMod)
+                                curRecord->ACRE.clear();
+
+                            for(unsigned int y = 0; y < curRecord->REFR.size(); ++y)
+                                {
+                                if(curRecord->REFR[y]->IsPersistent())
+                                    Persistent.push_back(curRecord->REFR[y]);
+                                else if(curRecord->REFR[y]->IsVWD())
+                                    VWD.push_back(curRecord->REFR[y]);
+                                else
+                                    Temporary.push_back(curRecord->REFR[y]);
+                                }
+                            if(CloseMod)
+                                curRecord->REFR.clear();
+
+                            numChildren = (unsigned int)Persistent.size() + (unsigned int)VWD.size() + (unsigned int)Temporary.size();
+                            if(numChildren)
+                                {
+                                formCount += numChildren;
                                 gType = eCellChildren;
-                                buffer.write(&type, 4);
-                                buffer.write(&curICELL.ChildrenSize, 4);
-                                buffer.write(&curICELL.formID, 4);
-                                buffer.write(&gType, 4);
-                                buffer.write(&stamp, 4);
-                                if(curICELL.PersistentSize)
+                                SaveHandler.write(&type, 4);
+                                childrenSizePos = SaveHandler.tell();
+                                SaveHandler.set_used(4); //Placeholder: will be overwritten with correct value later.
+                                SaveHandler.write(&parentFormID, 4);
+                                SaveHandler.write(&gType, 4);
+                                SaveHandler.write(&stamp, 4);
+                                ++formCount;
+                                childrenSize = 20;
+
+                                numChild = (unsigned int)Persistent.size();
+                                if(numChild)
                                     {
                                     gType = eCellPersistent;
-                                    buffer.write(&type, 4);
-                                    buffer.write(&curICELL.PersistentSize, 4);
-                                    buffer.write(&curICELL.formID, 4);
-                                    buffer.write(&gType, 4);
-                                    buffer.write(&stamp, 4);
-                                    for(unsigned int x = 0; x < curICELL.Persistent.size(); ++x)
-                                        buffer.write(curICELL.Persistent[x]);
-                                    curICELL.Persistent.clear();
+                                    SaveHandler.write(&type, 4);
+                                    childSizePos = SaveHandler.tell();
+                                    SaveHandler.set_used(4); //Placeholder: will be overwritten with correct value later.
+                                    SaveHandler.write(&parentFormID, 4);
+                                    SaveHandler.write(&gType, 4);
+                                    SaveHandler.write(&stamp, 4);
+                                    ++formCount;
+                                    childSize = 20;
+
+                                    for(unsigned int x = 0; x < numChild; ++x)
+                                        {
+                                        childSize += Persistent[x]->Write(SaveHandler, FormIDHandler);
+                                        if(CloseMod)
+                                            delete Persistent[x];
+                                        }
+                                    childrenSize += childSize;
+                                    SaveHandler.writeAt(childSizePos, &childSize, 4);
+                                    Persistent.clear();
                                     }
 
-                                if(curICELL.VWDSize)
+                                numChild = (unsigned int)VWD.size();
+                                if(numChild)
                                     {
                                     gType = eCellVWD;
-                                    buffer.write(&type, 4);
-                                    buffer.write(&curICELL.VWDSize, 4);
-                                    buffer.write(&curICELL.formID, 4);
-                                    buffer.write(&gType, 4);
-                                    buffer.write(&stamp, 4);
-                                    for(unsigned int x = 0; x < curICELL.VWD.size(); ++x)
-                                        buffer.write(curICELL.VWD[x]);
-                                    curICELL.VWD.clear();
+                                    SaveHandler.write(&type, 4);
+                                    childSizePos = SaveHandler.tell();
+                                    SaveHandler.set_used(4); //Placeholder: will be overwritten with correct value later.
+                                    SaveHandler.write(&parentFormID, 4);
+                                    SaveHandler.write(&gType, 4);
+                                    SaveHandler.write(&stamp, 4);
+                                    ++formCount;
+                                    childSize = 20;
+
+                                    for(unsigned int x = 0; x < numChild; ++x)
+                                        {
+                                        childSize += VWD[x]->Write(SaveHandler, FormIDHandler);
+                                        if(CloseMod)
+                                            delete VWD[x];
+                                        }
+                                    childrenSize += childSize;
+                                    SaveHandler.writeAt(childSizePos, &childSize, 4);
+                                    VWD.clear();
                                     }
 
-                                if(curICELL.TemporarySize)
+                                numChild = (unsigned int)Temporary.size();
+                                if(numChild)
                                     {
                                     gType = eCellTemporary;
-                                    buffer.write(&type, 4);
-                                    buffer.write(&curICELL.TemporarySize, 4);
-                                    buffer.write(&curICELL.formID, 4);
-                                    buffer.write(&gType, 4);
-                                    buffer.write(&stamp, 4);
-                                    for(unsigned int x = 0; x < curICELL.Temporary.size(); ++x)
-                                        buffer.write(curICELL.Temporary[x]);
-                                    curICELL.Temporary.clear();
+                                    SaveHandler.write(&type, 4);
+                                    childSizePos = SaveHandler.tell();
+                                    SaveHandler.set_used(4); //Placeholder: will be overwritten with correct value later.
+                                    SaveHandler.write(&parentFormID, 4);
+                                    SaveHandler.write(&gType, 4);
+                                    SaveHandler.write(&stamp, 4);
+                                    ++formCount;
+                                    childSize = 20;
+
+                                    for(unsigned int x = 0; x < numChild; ++x)
+                                        {
+                                        childSize += Temporary[x]->Write(SaveHandler, FormIDHandler);
+                                        if(CloseMod)
+                                            delete Temporary[x];
+                                        }
+                                    childrenSize += childSize;
+                                    SaveHandler.writeAt(childSizePos, &childSize, 4);
+                                    Temporary.clear();
                                     }
+                                subBlockSize += childrenSize;
+                                SaveHandler.writeAt(childrenSizePos, &childrenSize, 4);
                                 }
+                            if(CloseMod)
+                                delete curRecord;
                             }
+                        blockSize += subBlockSize;
+                        SaveHandler.writeAt(subBlockSizePos, &subBlockSize, 4);
                         BlockedRecords[curBlock][curSubBlock].clear();
                         }
                     }
+                if(gType != eInteriorBlock)
+                    {
+                    TopSize += blockSize;
+                    SaveHandler.writeAt(blockSizePos, &blockSize, 4);
+                    }
+                BlockedRecords[curBlock].clear();
                 }
+            if(CloseMod)
+                Records.clear();
+            SaveHandler.writeAt(TopSizePos, &TopSize, 4);
             BlockedRecords.clear();
-            BlockHeaders.clear();
-            SubBlockHeaders.clear();
             return formCount;
             }
+
         #ifdef _DEBUG
         void Debug(int debugLevel)
             {
@@ -977,15 +921,15 @@ class GRUPRecords<WRLDRecord>
             ePGRD = 0x44524750
             };
         unsigned int stamp;
-        bool SkimmedGRUP, LoadedGRUP;
+        bool SkimmedGRUP;
         std::vector<WRLDRecord *> Records;
-        GRUPRecords():stamp(134671), SkimmedGRUP(false), LoadedGRUP(false) {}
+        GRUPRecords():stamp(134671), SkimmedGRUP(false) {}
         ~GRUPRecords()
             {
             for(unsigned int p = 0;p < Records.size(); p++)
                 delete Records[p];
             }
-        bool Skim(boost::threadpool::pool &Threads, unsigned char *fileBuffer, _FormIDHandler &FormIDHandler, const bool &FullLoad, unsigned int &gSize, unsigned int curPos)
+        bool Skim(boost::threadpool::pool &Threads, _FileHandler &ReadHandler, _FormIDHandler &FormIDHandler, const bool &FullLoad, const unsigned long &gSize)
             {
             if(SkimmedGRUP || gSize == 0)
                 return false;
@@ -996,34 +940,29 @@ class GRUPRecords<WRLDRecord>
             ACHRRecord *curACHRRecord = NULL;
             ACRERecord *curACRERecord = NULL;
             REFRRecord *curREFRRecord = NULL;
-            //std::vector< std::vector<LANDRecord *> > GridXY_LAND1;
             std::map<int, std::map<int, LANDRecord *> > GridXY_LAND;
             unsigned int lastGRUP = 0;
             unsigned int recordType = 0;
-            unsigned int gEnd = curPos + gSize - 20;
-            unsigned int recordSize = 0;
-            //boost::threadpool::pool Threads(NUMTHREADS);
+            unsigned long gEnd = ReadHandler.tell() + gSize - 20;
+            unsigned long recordSize = 0;
 
-            while(curPos < gEnd){
-                _readBuffer(&recordType, fileBuffer, 4, curPos);
-                _readBuffer(&recordSize, fileBuffer, 4, curPos);
+            while(ReadHandler.tell() < gEnd){
+                ReadHandler.read(&recordType, 4);
+                ReadHandler.read(&recordSize, 4);
                 switch(recordType)
                     {
                     case eWRLD:
                         curWRLDRecord = new WRLDRecord();
-                        _readBuffer(&curWRLDRecord->flags, fileBuffer, 4, curPos);
-                        _readBuffer(&curWRLDRecord->formID, fileBuffer, 4, curPos);
-                        _readBuffer(&curWRLDRecord->flagsUnk, fileBuffer, 4, curPos);
+                        ReadHandler.read(&curWRLDRecord->flags, 4);
+                        ReadHandler.read(&curWRLDRecord->formID, 4);
+                        ReadHandler.read(&curWRLDRecord->flagsUnk, 4);
                         if(curWRLDRecord->IsLoaded())
                             printf("Flag used!!!!\n");
-                        curWRLDRecord->recData = fileBuffer + curPos;
+                        curWRLDRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
                         FormIDHandler.ExpandFormID(curWRLDRecord->formID);
-                        curPos += recordSize;
+                        ReadHandler.set_used(recordSize);
                         if(FullLoad)
-                            {
                             Threads.schedule(boost::bind(&Record::Read, curWRLDRecord, boost::ref(FormIDHandler)));
-                            //curWRLDRecord->Read(fileBuffer, FormIDHandler);
-                            }
                         Records.push_back(curWRLDRecord);
                         break;
                     case eCELL:
@@ -1038,145 +977,119 @@ class GRUPRecords<WRLDRecord>
                                 curWRLDRecord->CELLS.push_back(curCELLRecord);
                                 break;
                             }
-                        _readBuffer(&curCELLRecord->flags, fileBuffer, 4, curPos);
-                        _readBuffer(&curCELLRecord->formID, fileBuffer, 4, curPos);
-                        _readBuffer(&curCELLRecord->flagsUnk, fileBuffer, 4, curPos);
+                        ReadHandler.read(&curCELLRecord->flags, 4);
+                        ReadHandler.read(&curCELLRecord->formID, 4);
+                        ReadHandler.read(&curCELLRecord->flagsUnk, 4);
                         if(curCELLRecord->IsLoaded())
                             printf("Flag used!!!!\n");
-                        curCELLRecord->recData = fileBuffer + curPos;
+                        curCELLRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
                         FormIDHandler.ExpandFormID(curCELLRecord->formID);
-                        curPos += recordSize;
+                        ReadHandler.set_used(recordSize);
                         if(FullLoad)
-                            {
                             Threads.schedule(boost::bind(&Record::Read, curCELLRecord, boost::ref(FormIDHandler)));
-                            //curCELLRecord->Read(fileBuffer, FormIDHandler);
-                            }
                         break;
                     case eGRUP: //All GRUPs will be recreated from scratch on write (saves memory)
-                        curPos += 4;
-                        _readBuffer(&lastGRUP, fileBuffer, 4, curPos);
-                        curPos += 4;
+                        ReadHandler.set_used(4);
+                        ReadHandler.read(&lastGRUP, 4);
+                        ReadHandler.set_used(4);
                         break;
                     case eROAD:
                         delete curWRLDRecord->ROAD;
                         curWRLDRecord->ROAD = new ROADRecord();
-                        _readBuffer(&curWRLDRecord->ROAD->flags, fileBuffer, 4, curPos);
-                        _readBuffer(&curWRLDRecord->ROAD->formID, fileBuffer, 4, curPos);
-                        _readBuffer(&curWRLDRecord->ROAD->flagsUnk, fileBuffer, 4, curPos);
+                        ReadHandler.read(&curWRLDRecord->ROAD->flags, 4);
+                        ReadHandler.read(&curWRLDRecord->ROAD->formID, 4);
+                        ReadHandler.read(&curWRLDRecord->ROAD->flagsUnk, 4);
                         if(curWRLDRecord->ROAD->IsLoaded())
                             printf("Flag used!!!!\n");
-                        curWRLDRecord->ROAD->recData = fileBuffer + curPos;
+                        curWRLDRecord->ROAD->recData = ReadHandler.getBuffer(ReadHandler.tell());
                         FormIDHandler.ExpandFormID(curWRLDRecord->ROAD->formID);
-                        curPos += recordSize;
+                        ReadHandler.set_used(recordSize);
                         if(FullLoad)
-                            {
                             Threads.schedule(boost::bind(&Record::Read, curWRLDRecord->ROAD, boost::ref(FormIDHandler)));
-                            //curWRLDRecord->ROAD->Read(fileBuffer, FormIDHandler);
-                            }
                         break;
                     case eLAND:
                         delete curCELLRecord->LAND;
                         curCELLRecord->LAND = new LANDRecord();
-                        _readBuffer(&curCELLRecord->LAND->flags, fileBuffer, 4, curPos);
-                        _readBuffer(&curCELLRecord->LAND->formID, fileBuffer, 4, curPos);
-                        _readBuffer(&curCELLRecord->LAND->flagsUnk, fileBuffer, 4, curPos);
+                        ReadHandler.read(&curCELLRecord->LAND->flags, 4);
+                        ReadHandler.read(&curCELLRecord->LAND->formID, 4);
+                        ReadHandler.read(&curCELLRecord->LAND->flagsUnk, 4);
                         if(curCELLRecord->LAND->IsLoaded())
                             printf("Flag used!!!!\n");
-                        curCELLRecord->LAND->recData = fileBuffer + curPos;
+                        curCELLRecord->LAND->recData = ReadHandler.getBuffer(ReadHandler.tell());
                         FormIDHandler.ExpandFormID(curCELLRecord->LAND->formID);
-                        curPos += recordSize;
+                        ReadHandler.set_used(recordSize);
                         if(FullLoad)
                             {
                             Threads.schedule(boost::bind(&Record::Read, curCELLRecord->LAND, boost::ref(FormIDHandler)));
                             GridXY_LAND[curCELLRecord->XCLC.value.posX][curCELLRecord->XCLC.value.posY] = curCELLRecord->LAND;
                             //curCELLRecord->LAND->Read(fileBuffer, FormIDHandler);
                             }
-                        else //Parent CELL is not loaded, so load a temp record for indexing
+                        else //Parent CELL is not loaded, so load temporarily for indexing
                             {
-                            tempCELLRecord = new CELLRecord();
-                            tempCELLRecord->recData = curCELLRecord->recData;
-                            tempCELLRecord->flags = curCELLRecord->flags;
-                            tempCELLRecord->formID = curCELLRecord->formID;
-                            tempCELLRecord->flagsUnk = curCELLRecord->flagsUnk;
-                            tempCELLRecord->Read(FormIDHandler);
-                            GridXY_LAND[tempCELLRecord->XCLC.value.posX][tempCELLRecord->XCLC.value.posY] = curCELLRecord->LAND;
-                            delete tempCELLRecord;
-                            tempCELLRecord = NULL;
+                            curCELLRecord->Read(FormIDHandler);
+                            GridXY_LAND[curCELLRecord->XCLC.value.posX][curCELLRecord->XCLC.value.posY] = curCELLRecord->LAND;
+                            curCELLRecord->Unload();
                             }
                         break;
                     case ePGRD:
                         delete curCELLRecord->PGRD;
                         curCELLRecord->PGRD = new PGRDRecord();
-                        _readBuffer(&curCELLRecord->PGRD->flags, fileBuffer, 4, curPos);
-                        _readBuffer(&curCELLRecord->PGRD->formID, fileBuffer, 4, curPos);
-                        _readBuffer(&curCELLRecord->PGRD->flagsUnk, fileBuffer, 4, curPos);
+                        ReadHandler.read(&curCELLRecord->PGRD->flags, 4);
+                        ReadHandler.read(&curCELLRecord->PGRD->formID, 4);
+                        ReadHandler.read(&curCELLRecord->PGRD->flagsUnk, 4);
                         if(curCELLRecord->PGRD->IsLoaded())
                             printf("Flag used!!!!\n");
-                        curCELLRecord->PGRD->recData = fileBuffer + curPos;
+                        curCELLRecord->PGRD->recData = ReadHandler.getBuffer(ReadHandler.tell());
                         FormIDHandler.ExpandFormID(curCELLRecord->PGRD->formID);
-                        curPos += recordSize;
+                        ReadHandler.set_used(recordSize);
                         if(FullLoad)
-                            {
                             Threads.schedule(boost::bind(&Record::Read, curCELLRecord->PGRD, boost::ref(FormIDHandler)));
-                            //curCELLRecord->PGRD->Read(fileBuffer, FormIDHandler);
-                            }
                         break;
                     case eACHR:
                         curACHRRecord = new ACHRRecord();
-                        _readBuffer(&curACHRRecord->flags, fileBuffer, 4, curPos);
-                        _readBuffer(&curACHRRecord->formID, fileBuffer, 4, curPos);
-                        _readBuffer(&curACHRRecord->flagsUnk, fileBuffer, 4, curPos);
+                        ReadHandler.read(&curACHRRecord->flags, 4);
+                        ReadHandler.read(&curACHRRecord->formID, 4);
+                        ReadHandler.read(&curACHRRecord->flagsUnk, 4);
                         if(curACHRRecord->IsLoaded())
                             printf("Flag used!!!!\n");
-                        curACHRRecord->recData = fileBuffer + curPos;
+                        curACHRRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
                         FormIDHandler.ExpandFormID(curACHRRecord->formID);
-                        curPos += recordSize;
+                        ReadHandler.set_used(recordSize);
                         if(FullLoad)
-                            {
                             Threads.schedule(boost::bind(&Record::Read, curACHRRecord, boost::ref(FormIDHandler)));
-                            //curACHRRecord->Read(fileBuffer, FormIDHandler);
-                            }
                         curCELLRecord->ACHR.push_back(curACHRRecord);
                         break;
                     case eACRE:
                         curACRERecord = new ACRERecord();
-                        _readBuffer(&curACRERecord->flags, fileBuffer, 4, curPos);
-                        _readBuffer(&curACRERecord->formID, fileBuffer, 4, curPos);
-                        _readBuffer(&curACRERecord->flagsUnk, fileBuffer, 4, curPos);
+                        ReadHandler.read(&curACRERecord->flags, 4);
+                        ReadHandler.read(&curACRERecord->formID, 4);
+                        ReadHandler.read(&curACRERecord->flagsUnk, 4);
                         if(curACRERecord->IsLoaded())
                             printf("Flag used!!!!\n");
-                        curACRERecord->recData = fileBuffer + curPos;
+                        curACRERecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
                         FormIDHandler.ExpandFormID(curACRERecord->formID);
-                        curPos += recordSize;
+                        ReadHandler.set_used(recordSize);
                         if(FullLoad)
-                            {
                             Threads.schedule(boost::bind(&Record::Read, curACRERecord, boost::ref(FormIDHandler)));
-                            //curACRERecord->Read(fileBuffer, FormIDHandler);
-                            }
                         curCELLRecord->ACRE.push_back(curACRERecord);
                         break;
                     case eREFR:
                         curREFRRecord = new REFRRecord();
-                        _readBuffer(&curREFRRecord->flags, fileBuffer, 4, curPos);
-                        _readBuffer(&curREFRRecord->formID, fileBuffer, 4, curPos);
-                        _readBuffer(&curREFRRecord->flagsUnk, fileBuffer, 4, curPos);
+                        ReadHandler.read(&curREFRRecord->flags, 4);
+                        ReadHandler.read(&curREFRRecord->formID, 4);
+                        ReadHandler.read(&curREFRRecord->flagsUnk, 4);
                         if(curREFRRecord->IsLoaded())
                             printf("Flag used!!!!\n");
-                        curREFRRecord->recData = fileBuffer + curPos;
+                        curREFRRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
                         FormIDHandler.ExpandFormID(curREFRRecord->formID);
-                        curPos += recordSize;
+                        ReadHandler.set_used(recordSize);
                         if(FullLoad)
-                            {
                             Threads.schedule(boost::bind(&Record::Read, curREFRRecord, boost::ref(FormIDHandler)));
-                            //curREFRRecord->Read(fileBuffer, FormIDHandler);
-                            }
                         curCELLRecord->REFR.push_back(curREFRRecord);
                         break;
                     default:
                         printf("  WRLD: Unexpected Field = %04x\n", recordType);
-                        printf("  Size = %u\n", recordSize);
-                        printf("  CurPos = %04x\n\n", curPos - 20);
-                        curPos = gSize;
+                        ReadHandler.set_used(gEnd - ReadHandler.tell());
                         break;
                     }
                 };
@@ -1194,9 +1107,8 @@ class GRUPRecords<WRLDRecord>
             }
         bool Read(_FormIDHandler &FormIDHandler)
             {
-            if(LoadedGRUP || !SkimmedGRUP)
+            if(!SkimmedGRUP)
                 return false;
-            LoadedGRUP = true;
             WRLDRecord *curWRLDRecord = NULL;
             CELLRecord *curCELLRecord = NULL;
             for(unsigned int p = 0; p < Records.size(); p++)
@@ -1470,444 +1382,438 @@ class GRUPRecords<WRLDRecord>
                 }
             return false;
             }
-        unsigned int WriteGRUP(FileBuffer &buffer, bool CloseMod, _FormIDHandler &FormIDHandler)
+        unsigned int WriteGRUP(_FileHandler &SaveHandler, _FormIDHandler &FormIDHandler, bool CloseMod)
             {
             unsigned int numWrldRecords = (unsigned int)Records.size();
             if(numWrldRecords == 0)
                 return 0;
-            unsigned int formCount = numWrldRecords + 1; //includes top GRUP
+            unsigned int type = eGRUP;
+            unsigned int gType = eTop;
+            unsigned int gLabel = eWRLD;
+            unsigned int TopSize;
+            unsigned int TopSizePos;
+            unsigned int worldSize;
+            unsigned int worldSizePos;
+            unsigned int blockSize;
+            unsigned int blockSizePos;
+            unsigned int subBlockSize;
+            unsigned int subBlockSizePos;
+            unsigned int childrenSize;
+            unsigned int childrenSizePos;
+            unsigned int childSize;
+            unsigned int childSizePos;
+
+            unsigned int formCount = 0;
+
             unsigned int numCellRecords;
-            int gridX, gridY;
-            unsigned int BlockIndex, SubBlockIndex;
+            unsigned int numSubBlocks;
+            unsigned int numChildren;
+            unsigned int numChild;
+
             WRLDRecord *curWorld;
             CELLRecord *curCell;
-            WritableRecord curWriteRecord;
-            WritableCell curWriteCell;
-            WritableWorld curWriteWorld;
-            std::vector<WritableWorld> WritableWorlds;
-            WritableWorlds.reserve(numWrldRecords);
-            unsigned int TopSize = formCount * 20; //Accounts for all World record headers and itself
+            unsigned int worldFormID;
+            unsigned int cellFormID;
+            int gridX, gridY;
+            unsigned int BlockIndex, SubBlockIndex;
 
+        //struct sortBlocks
+        //    {
+        //     bool operator()(const unsigned int &l, const unsigned int &r) const
+        //        {
+        //        return l < r;
+        //        }
+        //    };
+
+            std::map<unsigned int, std::map<unsigned int, std::vector<CELLRecord *> > > BlockedRecords;
+            std::vector<Record *> Persistent;
+            std::vector<Record *> FixedPersistent;
+            std::vector<Record *> Temporary;
+            std::vector<Record *> VWD;
+
+            //Top GRUP Header
+            SaveHandler.write(&type, 4);
+            TopSizePos = SaveHandler.tell();
+            SaveHandler.set_used(4); //Placeholder: will be overwritten with correct value later.
+            //SaveHandler.write(&TopSize, 4);
+            SaveHandler.write(&gLabel, 4);
+            SaveHandler.write(&gType, 4);
+            SaveHandler.write(&stamp, 4);
+            ++formCount;
+            TopSize = 20;
+
+            formCount += numWrldRecords;
             for(unsigned int x = 0; x < numWrldRecords; ++x)
                 {
                 curWorld = Records[x];
-                curWriteWorld.WorldGRUPSize = 0;
-                curWriteWorld.formID = curWorld->formID;
-                curWriteWorld.ROAD.recBuffer = NULL;
-                curWriteWorld.ROAD.recSize = 0;
-                curWriteWorld.CELL.recBuffer = NULL;
-                curWriteWorld.CELL.recSize = 0;
-                curWriteWorld.CELL.ChildrenSize = 0;
-                curWriteWorld.CELL.PersistentSize = 0;
-                curWriteWorld.CELL.Persistent.clear();
-                curWriteWorld.Block.clear();
+                worldFormID = curWorld->formID;
+                FormIDHandler.CollapseFormID(worldFormID);
+                TopSize += curWorld->Write(SaveHandler, FormIDHandler);
 
-                if(curWorld->ROAD != NULL)
-                    {
-                    ++formCount;
-                    curWorld->ROAD->Write(curWriteWorld.ROAD, FormIDHandler);
-                    curWriteWorld.WorldGRUPSize += curWriteWorld.ROAD.recSize + 20; //Record Header
-                    if(CloseMod)
-                        {
-                        delete curWorld->ROAD;
-                        curWorld->ROAD = NULL;
-                        }
-                    }
-
-                formCount += numCellRecords = (unsigned int)curWorld->CELLS.size();
-                curWriteWorld.WorldGRUPSize += (numCellRecords * 20); //All cell record headers
+                numCellRecords = (unsigned int)curWorld->CELLS.size();
                 for(unsigned int p = 0; p < numCellRecords; ++p)
                     {
                     curCell = curWorld->CELLS[p];
 
-                    curWriteCell.formID = curCell->formID;
-                    curWriteCell.ChildrenSize = 0;
-                    curWriteCell.PersistentSize = 0;
-                    curWriteCell.Persistent.clear();
-                    curWriteCell.VWDSize = 0;
-                    curWriteCell.VWD.clear();
-                    curWriteCell.TemporarySize = 0;
-                    curWriteCell.Temporary.clear();
-
-                    if(curCell->LAND != NULL)
-                        {
-                        curCell->LAND->Write(curWriteRecord, FormIDHandler);
-                        curWriteCell.TemporarySize += curWriteRecord.recSize + 20; //Record Header
-                        curWriteCell.Temporary.push_back(curWriteRecord);
-                        if(CloseMod)
-                            {
-                            delete curCell->LAND;
-                            curCell->LAND = NULL;
-                            }
-                        }
-
-                    if(curCell->PGRD != NULL)
-                        {
-                        curCell->PGRD->Write(curWriteRecord, FormIDHandler);
-                        curWriteCell.TemporarySize += curWriteRecord.recSize + 20; //Record Header
-                        curWriteCell.Temporary.push_back(curWriteRecord);
-                        if(CloseMod)
-                            {
-                            delete curCell->PGRD;
-                            curCell->PGRD = NULL;
-                            }
-                        }
+                    //All persistent references must be moved to the world cell
+                    for(unsigned int y = 0; y < curCell->ACRE.size(); ++y)
+                        if(curCell->ACRE[y]->IsPersistent())
+                            FixedPersistent.push_back(curCell->ACRE[y]);
 
                     for(unsigned int y = 0; y < curCell->ACHR.size(); ++y)
-                        {
-                        curCell->ACHR[y]->Write(curWriteRecord, FormIDHandler);
                         if(curCell->ACHR[y]->IsPersistent())
-                            {
-                            curWriteWorld.CELL.PersistentSize += curWriteRecord.recSize + 20; //Record Header
-                            curWriteWorld.CELL.Persistent.push_back(curWriteRecord);
-                            }
-                        else if(curCell->ACHR[y]->IsVWD())
-                            {
-                            curWriteCell.VWDSize += curWriteRecord.recSize + 20; //Record Header
-                            curWriteCell.VWD.push_back(curWriteRecord);
-                            }
-                        else
-                            {
-                            curWriteCell.TemporarySize += curWriteRecord.recSize + 20; //Record Header
-                            curWriteCell.Temporary.push_back(curWriteRecord);
-                            }
-                        if(CloseMod)
-                            delete curCell->ACHR[y];
-                        }
-                    if(CloseMod)
-                        curCell->ACHR.clear();
-
-                    for(unsigned int y = 0; y < curCell->ACRE.size(); ++y)
-                        {
-                        curCell->ACRE[y]->Write(curWriteRecord, FormIDHandler);
-                        if(curCell->ACRE[y]->IsPersistent())
-                            {
-                            curWriteWorld.CELL.PersistentSize += curWriteRecord.recSize + 20; //Record Header
-                            curWriteWorld.CELL.Persistent.push_back(curWriteRecord);
-                            }
-                        else if(curCell->ACRE[y]->IsVWD())
-                            {
-                            curWriteCell.VWDSize += curWriteRecord.recSize + 20; //Record Header
-                            curWriteCell.VWD.push_back(curWriteRecord);
-                            }
-                        else
-                            {
-                            curWriteCell.TemporarySize += curWriteRecord.recSize + 20; //Record Header
-                            curWriteCell.Temporary.push_back(curWriteRecord);
-                            }
-                        if(CloseMod)
-                            delete curCell->ACRE[y];
-                        }
-                    if(CloseMod)
-                        curCell->ACRE.clear();
+                            FixedPersistent.push_back(curCell->ACHR[y]);
 
                     for(unsigned int y = 0; y < curCell->REFR.size(); ++y)
-                        {
-                        curCell->REFR[y]->Write(curWriteRecord, FormIDHandler);
                         if(curCell->REFR[y]->IsPersistent())
-                            {
-                            curWriteWorld.CELL.PersistentSize += curWriteRecord.recSize + 20; //Record Header
-                            curWriteWorld.CELL.Persistent.push_back(curWriteRecord);
-                            }
-                        else if(curCell->REFR[y]->IsVWD())
-                            {
-                            curWriteCell.VWDSize += curWriteRecord.recSize + 20; //Record Header
-                            curWriteCell.VWD.push_back(curWriteRecord);
-                            }
-                        else
-                            {
-                            curWriteCell.TemporarySize += curWriteRecord.recSize + 20; //Record Header
-                            curWriteCell.Temporary.push_back(curWriteRecord);
-                            }
-                        if(CloseMod)
-                            delete curCell->REFR[y];
-                        }
-                    if(CloseMod)
-                        curCell->REFR.clear();
-                    //Account for GRUPs
-                    //if(curWriteCell.PersistentSize) curWriteCell.PersistentSize += 20;
-                    if(curWriteCell.VWDSize)
-                        {
-                        curWriteCell.VWDSize += 20;
-                        ++formCount += (unsigned int)curWriteCell.VWD.size();
-                        }
-                    if(curWriteCell.TemporarySize)
-                        {
-                        curWriteCell.TemporarySize += 20;
-                        ++formCount += (unsigned int)curWriteCell.Temporary.size();
-                        }
+                            FixedPersistent.push_back(curCell->REFR[y]);
 
-                    curWriteCell.ChildrenSize += curWriteCell.VWDSize + curWriteCell.TemporarySize;
-
-                    if(curWriteCell.ChildrenSize)
-                        {
-                        curWriteCell.ChildrenSize += 20;
-                        ++formCount;
-                        }
-
-                    curWriteWorld.WorldGRUPSize += curWriteCell.ChildrenSize;
                     curCell->Read(FormIDHandler);
                     gridX = (int)floor(curCell->XCLC.value.posX / 8.0);
                     gridY = (int)floor(curCell->XCLC.value.posY / 8.0);
+                    if(curCell->recData != NULL)
+                        curCell->Unload();
                     SubBlockIndex = (gridX << 16 & 0xFFFF0000) | (gridY & 0x0000FFFF);
                     gridX = (int)floor(gridX / 4.0);
                     gridY = (int)floor(gridY / 4.0);
                     BlockIndex = (gridX << 16 & 0xFFFF0000) | (gridY & 0x0000FFFF);
-                    if(curWriteWorld.Block[BlockIndex].SubBlock.size() == 0)
-                        {
-                        curWriteWorld.WorldGRUPSize += 20;
-                        curWriteWorld.Block[BlockIndex].size = 20;
-                        ++formCount;
-                        }
-                    if(curWriteWorld.Block[BlockIndex].SubBlock[SubBlockIndex].CELLS.size() == 0)
-                        {
-                        curWriteWorld.WorldGRUPSize += 20;
-                        curWriteWorld.Block[BlockIndex].size += 20;
-                        curWriteWorld.Block[BlockIndex].SubBlock[SubBlockIndex].size = 20;
-                        ++formCount;
-                        }
 
-                    curCell->Write(curWriteCell, FormIDHandler);
-                    curWriteWorld.WorldGRUPSize += curWriteCell.recSize;
-
-                    curWriteWorld.Block[BlockIndex].size += 20; //Cell Record Header
-                    curWriteWorld.Block[BlockIndex].SubBlock[SubBlockIndex].size += 20; //Cell Record Header
-                    curWriteWorld.Block[BlockIndex].size += curWriteCell.recSize;
-                    curWriteWorld.Block[BlockIndex].size += curWriteCell.ChildrenSize;
-                    curWriteWorld.Block[BlockIndex].SubBlock[SubBlockIndex].size += curWriteCell.recSize;
-                    curWriteWorld.Block[BlockIndex].SubBlock[SubBlockIndex].size += curWriteCell.ChildrenSize;
-
-                    curWriteWorld.Block[BlockIndex].SubBlock[SubBlockIndex].CELLS.push_back(curWriteCell);
-
-                    if(CloseMod)
-                        delete curCell;
+                    BlockedRecords[BlockIndex][SubBlockIndex].push_back(curCell);
                     }
-                if(CloseMod)
-                    curWorld->CELLS.clear();
 
-                if(curWriteWorld.CELL.PersistentSize != 0)
+                if(curWorld->CELL == NULL && FixedPersistent.size()) //create a default dummy cell for persistents
                     {
-                    if(curWorld->CELL == NULL) //create a default dummy cell for persistents
-                        {
-                        curWorld->CELL = new CELLRecord(FormIDHandler.NextExpandedFID());
-                        curWorld->CELL->IsHasWater(true);
-                        curWorld->CELL->IsPersistent(true);
-                        curWorld->CELL->XCLC.value.posX = 0;
-                        curWorld->CELL->XCLC.value.posY = 0;
-                        curWorld->CELL->XCLC.isLoaded = true;
-                        }
+                    curWorld->CELL = new CELLRecord(FormIDHandler.NextExpandedFID());
+                    curWorld->CELL->IsHasWater(true);
+                    curWorld->CELL->IsPersistent(true);
+                    curWorld->CELL->XCLC.value.posX = 0;
+                    curWorld->CELL->XCLC.value.posY = 0;
+                    curWorld->CELL->XCLC.isLoaded = true;
                     }
 
-                if(curWorld->CELL != NULL)
-                    {
-                    ++formCount;
-                    curCell = curWorld->CELL;
-                    curWriteWorld.CELL.formID = curCell->formID;
-                    curWriteWorld.CELL.ChildrenSize = 0;
-                    curWriteWorld.CELL.PersistentSize = 0;
-                    curWriteWorld.CELL.Persistent.clear();
-                    curWriteWorld.CELL.VWDSize = 0;
-                    curWriteWorld.CELL.VWD.clear();
-                    curWriteWorld.CELL.TemporarySize = 0;
-                    curWriteWorld.CELL.Temporary.clear();
-
-                    curWriteWorld.WorldGRUPSize += 20; //Record Header
-                    //Only persistent references will be saved in the dummy cell.
-                    //Others will be silently discarded.  Could resolve them to their proper cell...
-                    //But, it'd add another order of complexity. This's good enough, for now.
-                    for(unsigned int z = 0; z < curCell->ACHR.size(); ++z)
-                        {
-                        if(curCell->ACHR[z]->IsPersistent())
-                            {
-                            curCell->ACHR[z]->Write(curWriteRecord, FormIDHandler);
-                            curWriteWorld.CELL.PersistentSize += curWriteRecord.recSize + 20; //Record Header
-                            curWriteWorld.CELL.Persistent.push_back(curWriteRecord);
-                            }
-                        if(CloseMod)
-                            delete curCell->ACHR[z];
-                        }
-                    if(CloseMod)
-                        curCell->ACHR.clear();
-
-                    for(unsigned int z = 0; z < curCell->ACRE.size(); ++z)
-                        {
-                        if(curCell->ACRE[z]->IsPersistent())
-                            {
-                            curCell->ACRE[z]->Write(curWriteRecord, FormIDHandler);
-                            curWriteWorld.CELL.PersistentSize += curWriteRecord.recSize + 20; //Record Header
-                            curWriteWorld.CELL.Persistent.push_back(curWriteRecord);
-                            }
-                        if(CloseMod)
-                            delete curCell->ACRE[z];
-                        }
-                    if(CloseMod)
-                        curCell->ACRE.clear();
-
-                    for(unsigned int z = 0; z < curCell->REFR.size(); ++z)
-                        {
-                        if(curCell->REFR[z]->IsPersistent())
-                            {
-                            curCell->REFR[z]->Write(curWriteRecord, FormIDHandler);
-                            curWriteWorld.CELL.PersistentSize += curWriteRecord.recSize + 20; //Record Header
-                            curWriteWorld.CELL.Persistent.push_back(curWriteRecord);
-                            }
-                        if(CloseMod)
-                            delete curCell->REFR[z];
-                        }
-                    if(CloseMod)
-                        curCell->REFR.clear();
-
-                    curCell->Write(curWriteWorld.CELL, FormIDHandler);
-
-                    //Account for GRUPs
-                    if(curWriteWorld.CELL.PersistentSize)
-                        {
-                        curWriteWorld.CELL.PersistentSize += 20;
-                        ++formCount += (unsigned int)curWriteWorld.CELL.Persistent.size();
-                        }
-                    curWriteWorld.CELL.ChildrenSize += curWriteWorld.CELL.PersistentSize;
-                    if(curWriteWorld.CELL.ChildrenSize)
-                        {
-                        curWriteWorld.CELL.ChildrenSize += 20;
-                        ++formCount;
-                        }
-                    curWriteWorld.WorldGRUPSize += curWriteWorld.CELL.ChildrenSize;
-                    curWriteWorld.WorldGRUPSize += curWriteWorld.CELL.recSize;
-
-                    if(CloseMod)
-                        {
-                        delete curCell;
-                        curWorld->CELL = NULL;
-                        }
-                    }
-
-                curWorld->Write(curWriteWorld, FormIDHandler);
-                TopSize += curWriteWorld.recSize;
-
-                if(curWriteWorld.WorldGRUPSize != 0)
-                    {
-                    curWriteWorld.WorldGRUPSize += 20;
-                    ++formCount;
-                    }
-                TopSize += curWriteWorld.WorldGRUPSize;
-                WritableWorlds.push_back(curWriteWorld);
-
-                if(CloseMod)
-                    delete curWorld;
-                }
-
-            if(CloseMod)
-                Records.clear();
-
-            unsigned int type = eGRUP;
-            unsigned int gLabel = eWRLD;
-            unsigned int gType = eTop;
-            unsigned int gSize = 0;
-
-            buffer.write(&type, 4);
-            buffer.write(&TopSize, 4);
-            buffer.write(&gLabel, 4);
-            buffer.write(&gType, 4);
-            buffer.write(&stamp, 4);
-            for(unsigned int z = 0; z < numWrldRecords; ++z)
-                {
-                buffer.flush();
-                buffer.write(WritableWorlds[z]);
-
-                if(WritableWorlds[z].WorldGRUPSize != 0)
+                if(curWorld->ROAD != NULL || curWorld->CELL != NULL || curWorld->CELLS.size() > 0)
                     {
                     gType = eWorld;
-                    buffer.write(&type, 4);
-                    buffer.write(&WritableWorlds[z].WorldGRUPSize, 4);
-                    buffer.write(&WritableWorlds[z].formID, 4);
-                    buffer.write(&gType, 4);
-                    buffer.write(&stamp, 4);
-                    buffer.write(WritableWorlds[z].ROAD);
-                    buffer.write(WritableWorlds[z].CELL);
-                    if(WritableWorlds[z].CELL.ChildrenSize != 0)
+                    SaveHandler.write(&type, 4);
+                    worldSizePos = SaveHandler.tell();
+                    SaveHandler.set_used(4); //Placeholder: will be overwritten with correct value later.
+                    SaveHandler.write(&worldFormID, 4);
+                    SaveHandler.write(&gType, 4);
+                    SaveHandler.write(&stamp, 4);
+                    ++formCount;
+                    worldSize = 20;
+                    
+                    if(curWorld->ROAD != NULL)
                         {
-                        gType = eCellChildren;
-                        buffer.write(&type, 4);
-                        buffer.write(&WritableWorlds[z].CELL.ChildrenSize, 4);
-                        buffer.write(&WritableWorlds[z].CELL.formID, 4);
-                        buffer.write(&gType, 4);
-                        buffer.write(&stamp, 4);
-                        if(WritableWorlds[z].CELL.PersistentSize != 0)
+                        worldSize += curWorld->ROAD->Write(SaveHandler, FormIDHandler);
+                        ++formCount;
+                        if(CloseMod)
                             {
-                            gType = eCellPersistent;
-                            buffer.write(&type, 4);
-                            buffer.write(&WritableWorlds[z].CELL.PersistentSize, 4);
-                            buffer.write(&WritableWorlds[z].CELL.formID, 4);
-                            buffer.write(&gType, 4);
-                            buffer.write(&stamp, 4);
-                            for(unsigned int x = 0; x < WritableWorlds[z].CELL.Persistent.size(); ++x)
-                                buffer.write(WritableWorlds[z].CELL.Persistent[x]);
-                            WritableWorlds[z].CELL.Persistent.clear();
+                            delete curWorld->ROAD;
+                            curWorld->ROAD = NULL;
                             }
                         }
 
-                    for(std::map<unsigned int, WritableWorld::WritableBlock, WritableWorld::sortBlocks>::iterator curBlock = WritableWorlds[z].Block.begin(); curBlock != WritableWorlds[z].Block.end(); ++curBlock)
+                    if(curWorld->CELL != NULL)
+                        {
+                        curCell = curWorld->CELL;
+                        cellFormID = curCell->formID;
+                        FormIDHandler.CollapseFormID(cellFormID);
+                        worldSize += curCell->Write(SaveHandler, FormIDHandler);
+                        ++formCount;
+
+                        if(curCell->LAND != NULL)
+                            Temporary.push_back(curCell->LAND);
+                        if(CloseMod)
+                            curCell->LAND = NULL;
+
+                        if(curCell->PGRD != NULL)
+                            Temporary.push_back(curCell->PGRD);
+                        if(CloseMod)
+                            curCell->PGRD = NULL;
+
+                        for(unsigned int y = 0; y < curCell->ACHR.size(); ++y)
+                            {
+                            if(curCell->ACHR[y]->IsPersistent())
+                                Persistent.push_back(curCell->ACHR[y]);
+                            else if(curCell->ACHR[y]->IsVWD())
+                                {
+                                VWD.push_back(curCell->ACHR[y]);
+                                delete curCell->ACHR[y];
+                                }
+                            else
+                                {
+                                Temporary.push_back(curCell->ACHR[y]);
+                                delete curCell->ACHR[y];
+                                }
+                            }
+                        if(CloseMod)
+                            curCell->ACHR.clear();
+
+                        for(unsigned int y = 0; y < curCell->ACRE.size(); ++y)
+                            {
+                            if(curCell->ACRE[y]->IsPersistent())
+                                Persistent.push_back(curCell->ACRE[y]);
+                            else if(curCell->ACRE[y]->IsVWD())
+                                {
+                                VWD.push_back(curCell->ACRE[y]);
+                                delete curCell->ACRE[y];
+                                }
+                            else
+                                {
+                                Temporary.push_back(curCell->ACRE[y]);
+                                delete curCell->ACRE[y];
+                                }
+                            }
+                        if(CloseMod)
+                            curCell->ACRE.clear();
+
+                        for(unsigned int y = 0; y < curCell->REFR.size(); ++y)
+                            {
+                            if(curCell->REFR[y]->IsPersistent())
+                                Persistent.push_back(curCell->REFR[y]);
+                            else if(curCell->REFR[y]->IsVWD())
+                                {
+                                VWD.push_back(curCell->REFR[y]);
+                                delete curCell->REFR[y];
+                                }
+                            else
+                                {
+                                Temporary.push_back(curCell->REFR[y]);
+                                delete curCell->REFR[y];
+                                }
+                            }
+                        if(CloseMod)
+                            curCell->REFR.clear();
+
+                        if(VWD.size() || Temporary.size())
+                            printf("Ignored %u VWD or Temporary records in the world cell: %08X", VWD.size() + Temporary.size(), worldFormID);
+                            
+                        VWD.clear();
+                        Temporary.clear();
+
+                        numChildren = (unsigned int)Persistent.size() + (unsigned int)FixedPersistent.size();
+                        if(numChildren)
+                            {
+                            formCount += numChildren;
+                            gType = eCellChildren;
+                            SaveHandler.write(&type, 4);
+                            childrenSizePos = SaveHandler.tell();
+                            SaveHandler.set_used(4); //Placeholder: will be overwritten with correct value later.
+                            SaveHandler.write(&cellFormID, 4);
+                            SaveHandler.write(&gType, 4);
+                            SaveHandler.write(&stamp, 4);
+                            ++formCount;
+                            childrenSize = 20;
+
+                            //World CELL should only have persistent objects in it
+                            gType = eCellPersistent;
+                            SaveHandler.write(&type, 4);
+                            childSizePos = SaveHandler.tell();
+                            SaveHandler.set_used(4); //Placeholder: will be overwritten with correct value later.
+                            SaveHandler.write(&cellFormID, 4);
+                            SaveHandler.write(&gType, 4);
+                            SaveHandler.write(&stamp, 4);
+                            ++formCount;
+                            childSize = 20;
+                            
+                            numChild = (unsigned int)Persistent.size();
+                            for(unsigned int y = 0; y < numChild; ++y)
+                                {
+                                childSize += Persistent[y]->Write(SaveHandler, FormIDHandler);
+                                if(CloseMod)
+                                    delete Persistent[y];
+                                }
+
+                            //The moved persistents will be deleted by their owning cell when its indexed
+                            numChild = (unsigned int)FixedPersistent.size();
+                            for(unsigned int y = 0; y < numChild; ++y)
+                                childSize += FixedPersistent[y]->Write(SaveHandler, FormIDHandler);
+
+                            childrenSize += childSize;
+                            SaveHandler.writeAt(childSizePos, &childSize, 4);
+                            Persistent.clear();
+                            FixedPersistent.clear();
+                            worldSize += childrenSize;
+                            SaveHandler.writeAt(childrenSizePos, &childrenSize, 4);
+                            }
+                        if(CloseMod)
+                            delete curCell;
+                        }
+
+                    formCount += (unsigned int)curWorld->CELLS.size();
+                    for(std::map<unsigned int, std::map<unsigned int, std::vector<CELLRecord *> > >::iterator curBlock = BlockedRecords.begin(); curBlock != BlockedRecords.end(); ++curBlock)
                         {
                         gType = eExteriorBlock;
-                        buffer.write(&type, 4);
-                        buffer.write(&curBlock->second.size, 4);
-                        buffer.write(&curBlock->first, 4);
-                        buffer.write(&gType, 4);
-                        buffer.write(&stamp, 4);
-                        for(std::map<unsigned int, WritableWorld::WritableBlock::WritableSubBlock, WritableWorld::sortBlocks>::iterator curSubBlock = curBlock->second.SubBlock.begin(); curSubBlock != curBlock->second.SubBlock.end(); ++curSubBlock)
+                        SaveHandler.write(&type, 4);
+                        blockSizePos = SaveHandler.tell();
+                        SaveHandler.set_used(4); //Placeholder: will be overwritten with correct value later.
+                        SaveHandler.write(&curBlock->first, 4);
+                        SaveHandler.write(&gType, 4);
+                        SaveHandler.write(&stamp, 4);
+                        ++formCount;
+                        blockSize = 20;
+                        
+                        for(std::map<unsigned int, std::vector<CELLRecord *> >::iterator curSubBlock = curBlock->second.begin(); curSubBlock != curBlock->second.end(); ++curSubBlock)
                             {
-                            gSize = (unsigned int)curSubBlock->second.CELLS.size();
                             gType = eExteriorSubBlock;
-                            buffer.write(&type, 4);
-                            buffer.write(&curSubBlock->second.size, 4);
-                            buffer.write(&curSubBlock->first, 4);
-                            buffer.write(&gType, 4);
-                            buffer.write(&stamp, 4);
-                            for(unsigned int p = 0; p < gSize; ++p)
+                            SaveHandler.write(&type, 4);
+                            subBlockSizePos = SaveHandler.tell();
+                            SaveHandler.set_used(4); //Placeholder: will be overwritten with correct value later.
+                            SaveHandler.write(&curSubBlock->first, 4);
+                            SaveHandler.write(&gType, 4);
+                            SaveHandler.write(&stamp, 4);
+                            ++formCount;
+                            subBlockSize = 20;
+
+                            numSubBlocks = (unsigned int)curSubBlock->second.size();
+                            for(unsigned int p = 0; p < numSubBlocks; ++p)
                                 {
-                                buffer.write(curSubBlock->second.CELLS[p]);
-                                if(curSubBlock->second.CELLS[p].ChildrenSize)
+                                curCell = curSubBlock->second[p];
+                                cellFormID = curCell->formID;
+                                FormIDHandler.CollapseFormID(cellFormID);
+                                subBlockSize += curCell->Write(SaveHandler, FormIDHandler);
+                                //Place the PGRD, ACHR, ACRE, and REFR records into their proper GRUP
+
+                                if(curCell->LAND != NULL)
+                                    Temporary.push_back(curCell->LAND);
+                                if(CloseMod)
+                                    curCell->LAND = NULL;
+
+                                if(curCell->PGRD != NULL)
+                                    Temporary.push_back(curCell->PGRD);
+                                if(CloseMod)
+                                    curCell->PGRD = NULL;
+
+                                for(unsigned int y = 0; y < curCell->ACHR.size(); ++y)
                                     {
+                                    if(curCell->ACHR[y]->IsPersistent())
+                                        {
+                                        if(CloseMod)
+                                            delete curCell->ACHR[y];
+                                        }
+                                    else if(curCell->ACHR[y]->IsVWD())
+                                        VWD.push_back(curCell->ACHR[y]);
+                                    else
+                                        Temporary.push_back(curCell->ACHR[y]);
+                                    }
+                                if(CloseMod)
+                                    curCell->ACHR.clear();
+
+                                for(unsigned int y = 0; y < curCell->ACRE.size(); ++y)
+                                    {
+                                    if(curCell->ACRE[y]->IsPersistent())
+                                        {
+                                        if(CloseMod)
+                                            delete curCell->ACRE[y];
+                                        }
+                                    else if(curCell->ACRE[y]->IsVWD())
+                                        VWD.push_back(curCell->ACRE[y]);
+                                    else
+                                        Temporary.push_back(curCell->ACRE[y]);
+                                    }
+                                if(CloseMod)
+                                    curCell->ACRE.clear();
+
+                                for(unsigned int y = 0; y < curCell->REFR.size(); ++y)
+                                    {
+                                    if(curCell->REFR[y]->IsPersistent())
+                                        {
+                                        if(CloseMod)
+                                            delete curCell->REFR[y];
+                                        }
+                                    else if(curCell->REFR[y]->IsVWD())
+                                        VWD.push_back(curCell->REFR[y]);
+                                    else
+                                        Temporary.push_back(curCell->REFR[y]);
+                                    }
+                                if(CloseMod)
+                                    curCell->REFR.clear();
+
+                                numChildren = (unsigned int)VWD.size() + (unsigned int)Temporary.size();
+                                if(numChildren)
+                                    {
+                                    formCount += numChildren;
                                     gType = eCellChildren;
-                                    buffer.write(&type, 4);
-                                    buffer.write(&curSubBlock->second.CELLS[p].ChildrenSize, 4);
-                                    buffer.write(&curSubBlock->second.CELLS[p].formID, 4);
-                                    buffer.write(&gType, 4);
-                                    buffer.write(&stamp, 4);
-                                    if(curSubBlock->second.CELLS[p].VWDSize)
+                                    SaveHandler.write(&type, 4);
+                                    childrenSizePos = SaveHandler.tell();
+                                    SaveHandler.set_used(4); //Placeholder: will be overwritten with correct value later.
+                                    SaveHandler.write(&cellFormID, 4);
+                                    SaveHandler.write(&gType, 4);
+                                    SaveHandler.write(&stamp, 4);
+                                    ++formCount;
+                                    childrenSize = 20;
+
+                                    numChild = (unsigned int)VWD.size();
+                                    if(numChild)
                                         {
                                         gType = eCellVWD;
-                                        buffer.write(&type, 4);
-                                        buffer.write(&curSubBlock->second.CELLS[p].VWDSize, 4);
-                                        buffer.write(&curSubBlock->second.CELLS[p].formID, 4);
-                                        buffer.write(&gType, 4);
-                                        buffer.write(&stamp, 4);
-                                        for(unsigned int x = 0; x < curSubBlock->second.CELLS[p].VWD.size(); ++x)
-                                            buffer.write(curSubBlock->second.CELLS[p].VWD[x]);
-                                        curSubBlock->second.CELLS[p].VWD.clear();
+                                        SaveHandler.write(&type, 4);
+                                        childSizePos = SaveHandler.tell();
+                                        SaveHandler.set_used(4); //Placeholder: will be overwritten with correct value later.
+                                        SaveHandler.write(&cellFormID, 4);
+                                        SaveHandler.write(&gType, 4);
+                                        SaveHandler.write(&stamp, 4);
+                                        ++formCount;
+                                        childSize = 20;
+
+                                        for(unsigned int x = 0; x < numChild; ++x)
+                                            {
+                                            childSize += VWD[x]->Write(SaveHandler, FormIDHandler);
+                                            if(CloseMod)
+                                                delete VWD[x];
+                                            }
+                                        childrenSize += childSize;
+                                        SaveHandler.writeAt(childSizePos, &childSize, 4);
+                                        VWD.clear();
                                         }
-                                    if(curSubBlock->second.CELLS[p].TemporarySize)
+
+                                    numChild = (unsigned int)Temporary.size();
+                                    if(numChild)
                                         {
                                         gType = eCellTemporary;
-                                        buffer.write(&type, 4);
-                                        buffer.write(&curSubBlock->second.CELLS[p].TemporarySize, 4);
-                                        buffer.write(&curSubBlock->second.CELLS[p].formID, 4);
-                                        buffer.write(&gType, 4);
-                                        buffer.write(&stamp, 4);
-                                        for(unsigned int x = 0; x < curSubBlock->second.CELLS[p].Temporary.size(); ++x)
-                                            buffer.write(curSubBlock->second.CELLS[p].Temporary[x]);
-                                        curSubBlock->second.CELLS[p].Temporary.clear();
+                                        SaveHandler.write(&type, 4);
+                                        childSizePos = SaveHandler.tell();
+                                        SaveHandler.set_used(4); //Placeholder: will be overwritten with correct value later.
+                                        SaveHandler.write(&cellFormID, 4);
+                                        SaveHandler.write(&gType, 4);
+                                        SaveHandler.write(&stamp, 4);
+                                        ++formCount;
+                                        childSize = 20;
+
+                                        for(unsigned int x = 0; x < numChild; ++x)
+                                            {
+                                            childSize += Temporary[x]->Write(SaveHandler, FormIDHandler);
+                                            if(CloseMod)
+                                                delete Temporary[x];
+                                            }
+                                        childrenSize += childSize;
+                                        SaveHandler.writeAt(childSizePos, &childSize, 4);
+                                        Temporary.clear();
                                         }
+                                    subBlockSize += childrenSize;
+                                    SaveHandler.writeAt(childrenSizePos, &childrenSize, 4);
                                     }
+                                if(CloseMod)
+                                    delete curCell;
                                 }
-                            curSubBlock->second.CELLS.clear();
+                            blockSize += subBlockSize;
+                            SaveHandler.writeAt(subBlockSizePos, &subBlockSize, 4);
+                            curSubBlock->second.clear();
                             }
-                        curBlock->second.SubBlock.clear();
+                        worldSize += blockSize;
+                        SaveHandler.writeAt(blockSizePos, &blockSize, 4);
+                        curBlock->second.clear();
                         }
+                    TopSize += worldSize;
+                    SaveHandler.writeAt(worldSizePos, &worldSize, 4);
                     }
-                WritableWorlds[z].Block.clear();
+                BlockedRecords.clear();
                 }
-            WritableWorlds.clear();
+            if(CloseMod)
+                Records.clear();
+            SaveHandler.writeAt(TopSizePos, &TopSize, 4);
+                
             return formCount;
             }
 

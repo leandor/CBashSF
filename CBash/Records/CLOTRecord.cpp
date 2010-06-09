@@ -227,55 +227,55 @@ unsigned int CLOTRecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int CLOTRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
+int CLOTRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
-        _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);
+        SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
     if(FULL.IsLoaded())
-        _writeSubRecord(buffer, eFULL, FULL.GetSize(), FULL.value, usedBuffer);
+        SaveHandler.writeSubRecord(eFULL, FULL.value, FULL.GetSize());
     if(SCRI.IsLoaded())
-        _writeSubRecord(buffer, eSCRI, SCRI.GetSize(), SCRI.value, usedBuffer);
+        SaveHandler.writeSubRecord(eSCRI, SCRI.value, SCRI.GetSize());
     if(ENAM.IsLoaded())
-        _writeSubRecord(buffer, eENAM, ENAM.GetSize(), ENAM.value, usedBuffer);
+        SaveHandler.writeSubRecord(eENAM, ENAM.value, ENAM.GetSize());
     if(ANAM.IsLoaded())
-        _writeSubRecord(buffer, eANAM, ANAM.GetSize(), ANAM.value, usedBuffer);
+        SaveHandler.writeSubRecord(eANAM, ANAM.value, ANAM.GetSize());
     if(BMDT.IsLoaded())
-        _writeSubRecord(buffer, eBMDT, BMDT.GetSize(), &BMDT.value, usedBuffer);
+        SaveHandler.writeSubRecord(eBMDT, &BMDT.value, BMDT.GetSize());
 
     if(MODL.MODL.IsLoaded())
-        _writeSubRecord(buffer, eMODL, MODL.MODL.GetSize(), MODL.MODL.value, usedBuffer);
+        SaveHandler.writeSubRecord(eMODL, MODL.MODL.value, MODL.MODL.GetSize());
     if(MODL.MODB.IsLoaded())
-        _writeSubRecord(buffer, eMODB, MODL.MODB.GetSize(), &MODL.MODB.value, usedBuffer);
+        SaveHandler.writeSubRecord(eMODB, &MODL.MODB.value, MODL.MODB.GetSize());
     if(MODL.MODT.IsLoaded())
-        _writeSubRecord(buffer, eMODT, MODL.MODT.GetSize(), MODL.MODT.value, usedBuffer);
+        SaveHandler.writeSubRecord(eMODT, MODL.MODT.value, MODL.MODT.GetSize());
 
     if(MOD2.MODL.IsLoaded())
-        _writeSubRecord(buffer, eMOD2, MOD2.MODL.GetSize(), MOD2.MODL.value, usedBuffer);
+        SaveHandler.writeSubRecord(eMOD2, MOD2.MODL.value, MOD2.MODL.GetSize());
     if(MOD2.MODB.IsLoaded())
-        _writeSubRecord(buffer, eMO2B, MOD2.MODB.GetSize(), &MOD2.MODB.value, usedBuffer);
+        SaveHandler.writeSubRecord(eMO2B, &MOD2.MODB.value, MOD2.MODB.GetSize());
     if(MOD2.MODT.IsLoaded())
-        _writeSubRecord(buffer, eMO2T, MOD2.MODT.GetSize(), MOD2.MODT.value, usedBuffer);
+        SaveHandler.writeSubRecord(eMO2T, MOD2.MODT.value, MOD2.MODT.GetSize());
     if(ICON.IsLoaded())
-        _writeSubRecord(buffer, eICON, ICON.GetSize(), ICON.value, usedBuffer);
+        SaveHandler.writeSubRecord(eICON, ICON.value, ICON.GetSize());
 
     if(MOD3.MODL.IsLoaded())
-        _writeSubRecord(buffer, eMOD3, MOD3.MODL.GetSize(), MOD3.MODL.value, usedBuffer);
+        SaveHandler.writeSubRecord(eMOD3, MOD3.MODL.value, MOD3.MODL.GetSize());
     if(MOD3.MODB.IsLoaded())
-        _writeSubRecord(buffer, eMO3B, MOD3.MODB.GetSize(), &MOD3.MODB.value, usedBuffer);
+        SaveHandler.writeSubRecord(eMO3B, &MOD3.MODB.value, MOD3.MODB.GetSize());
     if(MOD3.MODT.IsLoaded())
-        _writeSubRecord(buffer, eMO3T, MOD3.MODT.GetSize(), MOD3.MODT.value, usedBuffer);
+        SaveHandler.writeSubRecord(eMO3T, MOD3.MODT.value, MOD3.MODT.GetSize());
 
     if(MOD4.MODL.IsLoaded())
-        _writeSubRecord(buffer, eMOD4, MOD4.MODL.GetSize(), MOD4.MODL.value, usedBuffer);
+        SaveHandler.writeSubRecord(eMOD4, MOD4.MODL.value, MOD4.MODL.GetSize());
     if(MOD4.MODB.IsLoaded())
-        _writeSubRecord(buffer, eMO4B, MOD4.MODB.GetSize(), &MOD4.MODB.value, usedBuffer);
+        SaveHandler.writeSubRecord(eMO4B, &MOD4.MODB.value, MOD4.MODB.GetSize());
     if(MOD4.MODT.IsLoaded())
-        _writeSubRecord(buffer, eMO4T, MOD4.MODT.GetSize(), MOD4.MODT.value, usedBuffer);
+        SaveHandler.writeSubRecord(eMO4T, MOD4.MODT.value, MOD4.MODT.GetSize());
     if(ICO2.IsLoaded())
-        _writeSubRecord(buffer, eICO2, ICO2.GetSize(), ICO2.value, usedBuffer);
+        SaveHandler.writeSubRecord(eICO2, ICO2.value, ICO2.GetSize());
 
     if(DATA.IsLoaded())
-        _writeSubRecord(buffer, eDATA, DATA.GetSize(), &DATA.value, usedBuffer);
+        SaveHandler.writeSubRecord(eDATA, &DATA.value, DATA.GetSize());
     return -1;
     }
 

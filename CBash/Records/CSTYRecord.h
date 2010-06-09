@@ -318,7 +318,7 @@ class CSTYRecord : public Record
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eCSTY;}
         char * GetStrType() {return "CSTY";}
-        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(_FileHandler &SaveHandler);
         bool IsUseAdvanced()
             {
             return (CSTD.value.flagsA & fIsUseAdvanced) != 0;

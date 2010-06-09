@@ -30,6 +30,14 @@ GPL License and Copyright Notice ============================================
 #define NUMTHREADS    boost::thread::hardware_concurrency()
 #endif
 
+struct sameStr
+    {
+	bool operator()( const char* s1, const char* s2 ) const
+	    {
+		return _stricmp( s1, s2 ) < 0;
+	    }
+    };
+
 class Collection
     {
     private:

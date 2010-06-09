@@ -58,10 +58,9 @@ void _FormIDHandler::ExpandFormID(unsigned int *&curFormID)
 
 unsigned int _FormIDHandler::AssignToMod(unsigned int curFormID)
     {
-    unsigned int newFormID = 0;
-    if(curFormID != 0)
-        newFormID = (ExpandedIndex << 24 ) | (curFormID & 0x00FFFFFF);
-    return newFormID;
+    if(curFormID == 0)
+        return 0;
+    return (ExpandedIndex << 24 ) | (curFormID & 0x00FFFFFF);
     }
 
 unsigned int _FormIDHandler::AssignToMod(unsigned int *curFormID)
@@ -80,10 +79,11 @@ void _FormIDHandler::SetLoadOrder(std::vector<char *> &cLoadOrder)
 
 unsigned int _FormIDHandler::NextExpandedFID()
     {
-    //Minor bug: As set, 0x00FFFFFF will never be used, even if available.
-    if(nextObject >= 0x00FFFFFF)
+    //0x00FFFFFF is the highest formID that can be used.
+    //Bug: Doesn't check if formID is already used. Shouldn't be a problem except when it rolls over
+    if(nextObject >= 0x01000000)
         nextObject = OBJECT_ID_START;
-    return (ExpandedIndex << 24) | nextObject++;
+    return (ExpandedIndex << 24) | ++nextObject;
     }
 
 void _FormIDHandler::UpdateFormIDLookup()
@@ -153,7 +153,6 @@ void _FormIDHandler::CreateFormIDLookup(const unsigned char &expandedIndex)
 void _FormIDHandler::AddMaster(unsigned int &recordFID)
     {
     unsigned int modIndex = recordFID >> 24;
-    char *curName = NULL;
     //If formID is not set, or the formID belongs to the mod, or if the master is already present, do nothing
     if((recordFID == 0) || (modIndex == ExpandedIndex) || (CollapseIndex[modIndex] != CollapsedIndex))
         return;
@@ -169,8 +168,7 @@ void _FormIDHandler::AddMaster(unsigned int &recordFID)
         }
     //Add the master to the end, and update header size
     //destMod->TES4.MAST.push_back(STRING(*curName));
-    curName = LoadOrder[modIndex];
-    MAST.push_back(STRING(curName));
+    MAST.push_back(STRING(LoadOrder[modIndex]));
     bMastersChanged = true;
     //Update the formID resolution lookup table
     UpdateFormIDLookup();
@@ -180,7 +178,6 @@ void _FormIDHandler::AddMaster(unsigned int &recordFID)
 void _FormIDHandler::AddMaster(unsigned int *&recordFID)
     {
     unsigned int modIndex = *recordFID >> 24;
-    char *curName = NULL;
     //If formID is not set, or the formID belongs to the mod, or if the master is already present, do nothing
     if((*recordFID == 0) || (modIndex == ExpandedIndex) || (CollapseIndex[modIndex] != CollapsedIndex))
         return;
@@ -196,8 +193,7 @@ void _FormIDHandler::AddMaster(unsigned int *&recordFID)
         }
     //Add the master to the end, and update header size
     //destMod->TES4.MAST.push_back(STRING(*curName));
-    curName = LoadOrder[modIndex];
-    MAST.push_back(STRING(curName));
+    MAST.push_back(STRING(LoadOrder[modIndex]));
     bMastersChanged = true;
     //Update the formID resolution lookup table
     UpdateFormIDLookup();
@@ -211,12 +207,12 @@ bool _FormIDHandler::MastersChanged()
 
 bool _FormIDHandler::UsesMaster(const unsigned int *&recordFID, const unsigned char &MASTIndex)
     {
-    return (ExpandIndex[MASTIndex] == *recordFID >> 24);
+    return (ExpandIndex[MASTIndex] == (*recordFID >> 24));
     }
 
 bool _FormIDHandler::UsesMaster(const unsigned int &recordFID, const unsigned char &MASTIndex)
     {
-    return (ExpandIndex[MASTIndex] == recordFID >> 24);
+    return (ExpandIndex[MASTIndex] == (recordFID >> 24));
     }
 
 bool FileExists(const char *FileName)
@@ -225,42 +221,37 @@ bool FileExists(const char *FileName)
     return (stat(FileName, &statBuffer) >= 0 && statBuffer.st_mode & S_IFREG);
     }
 
-void _writeBuffer(void *_DstBuf, const void *_SrcBuf, unsigned int _MaxCharCount, unsigned int &_BufPos)
+int _FileHandler::open_ReadOnly(const char *FileName)
     {
-    if(_SrcBuf == NULL || _MaxCharCount == 0)
-        return;
-    memcpy((unsigned char*)_DstBuf + _BufPos, _SrcBuf, _MaxCharCount);
-    _BufPos += _MaxCharCount;
-    }
-
-void _writeSubRecord(void *_DstBuf, unsigned int _Type, unsigned int _MaxCharCount, const void *_SrcBuf, unsigned int &_BufPos)
-    {
-    unsigned int _Temp = 0;
-    if(_Type != 0)
-        if(_MaxCharCount <= 65535)
-            {
-            _writeBuffer(_DstBuf, &_Type, sizeof(_Type), _BufPos);
-            _writeBuffer(_DstBuf, &_MaxCharCount, 2, _BufPos);
-            }
-        else //Requires XXXX RecordField
-            {
-            _Temp = 4;
-            _writeBuffer(_DstBuf, "XXXX", 4, _BufPos);
-            _writeBuffer(_DstBuf, &_Temp, 2, _BufPos);
-            _writeBuffer(_DstBuf, &_MaxCharCount, 4, _BufPos);
-            _writeBuffer(_DstBuf, &_Type, sizeof(_Type), _BufPos);
-            _Temp = 0;
-            _writeBuffer(_DstBuf, &_Temp, 2, _BufPos);
-            }
-    _writeBuffer(_DstBuf, _SrcBuf, _MaxCharCount, _BufPos);
-    return;
-    }
-
-int FileBuffer::open_write(const char *FileName)
-    {
-    if(fh != -1)
+    if(fh != -1 || f_map != NULL || m_region != NULL)
         return -1;
-    errno_t err = _sopen_s(&fh, FileName, _O_CREAT | _O_WRONLY | _O_BINARY, _SH_DENYWR, _S_IREAD | _S_IWRITE );
+    try
+        {
+        f_map = new boost::interprocess::file_mapping(FileName, boost::interprocess::read_only);
+        m_region = new boost::interprocess::mapped_region(*f_map, boost::interprocess::read_only);
+        }
+    catch(boost::interprocess::interprocess_exception &ex)
+        {
+        printf("Exception raised: %s\nUnable to memory map '%s' for read only.\n", ex.what(), FileName);
+        throw;
+        return -1;
+        }
+    catch(...)
+        {
+        printf("Read Only - Open Error\n");
+        throw;
+        return -1;
+        }
+    _Buffer = (unsigned char*)m_region->get_address();
+    _BufEnd = (unsigned int)m_region->get_size();
+    return 0;
+    }
+
+int _FileHandler::open_ReadWrite(const char *FileName)
+    {
+    if(fh != -1 || f_map != NULL || m_region != NULL)
+        return -1;
+    errno_t err = _sopen_s(&fh, FileName, _O_CREAT | _O_RDWR | _O_BINARY, _SH_DENYWR, _S_IREAD | _S_IWRITE );
     if( err != 0 )
         {
         switch(err)
@@ -290,71 +281,178 @@ int FileBuffer::open_write(const char *FileName)
     return 0;
     }
 
-void FileBuffer::close()
+unsigned long _FileHandler::tell()
     {
-    if(fh == -1 || _Buffer == NULL)
-        return;
-    flush();
-    _close(fh);
-    return;
+    return _BufPos + _TotalWritten;
     }
 
-void FileBuffer::resize(unsigned int nSize)
+unsigned long _FileHandler::set_used(long _Used)
     {
-    flush();
-    delete []_Buffer;
-    _BufSize = nSize;
-    _Buffer = new unsigned char[_BufSize];
-    return;
-    }
-
-void FileBuffer::seek(long _Offset, int _Origin)
-    {
+    if(_Used == 0)
+        return _BufPos;
+    else if(_Used < 0)
+        {
+        if(abs(_Used) > _BufPos)
+            _BufPos = 0;
+        else
+            _BufPos += _Used;
+        return _BufPos;
+        }
+    //If in read mode, simply move the position
     if(fh == -1)
-        return;
-    flush();
-    _lseek(fh, _Offset, _Origin);
+        {
+        _BufPos += _Used;
+        return _BufPos;
+        }
+    //Flush the buffer if it is getting full
+    if((_BufPos + _Used) >= _BufSize)
+        flush();
+    if(_Used < _BufSize)
+        _BufPos += _Used;
+    else
+        {
+        flush();
+        printf("Exceeded capacity: Tried to set %u as used in a buffer with a size of %u.\n", _Used, _BufSize);
+        }
+    return _BufPos;
     }
 
-void FileBuffer::write(const void *_SrcBuf, unsigned int _SrcSize)
+void _FileHandler::read(void *_DstBuf, unsigned int _MaxCharCount)
     {
-    if(fh == -1 || _SrcBuf == NULL || _SrcSize == 0)
+    if(_DstBuf == NULL || _Buffer == NULL)
         return;
+    memcpy(_DstBuf, _Buffer + _BufPos, _MaxCharCount);
+    _BufPos += _MaxCharCount;
+    }
+
+unsigned char *_FileHandler::getBuffer(unsigned long _Offset)
+    {
+    if(IsCached(_Offset))
+        return _Buffer + _Offset - _TotalWritten;
+    return NULL;
+    }
+
+unsigned long _FileHandler::write(const void *_SrcBuf, unsigned int _MaxCharCount)
+    {
+    if(fh == -1 || _SrcBuf == NULL || _Buffer == NULL || _MaxCharCount == 0)
+        return _BufPos;
     //Flush the buffer if it is getting full
-    if((_BufPos + _SrcSize ) >= _BufSize)
+    if((_BufPos + _MaxCharCount) >= _BufSize)
         flush();
     //Use the buffer if there's room
-    if(_SrcSize < _BufSize)
+    if(_MaxCharCount < _BufSize)
         {
-        memcpy(_Buffer + _BufPos, _SrcBuf, _SrcSize);
-        _BufPos += _SrcSize;
+        memcpy(_Buffer + _BufPos, _SrcBuf, _MaxCharCount);
+        _BufPos += _MaxCharCount;
         }
     else
         {
         //Otherwise, flush the buffer and write directly to disk.
         flush();
-        _write(fh, _SrcBuf, _SrcSize);
+        _write(fh, _SrcBuf, _MaxCharCount);
+        _TotalWritten += _MaxCharCount;
         }
-    return;
+    return _BufPos;
     }
 
-void FileBuffer::write(WritableRecord &writeRecord)
+void _FileHandler::writeSubRecord(unsigned int _Type, const void *_SrcBuf, unsigned int _MaxCharCount)
     {
-    write(writeRecord.recBuffer, writeRecord.recSize + 20);
-    if(writeRecord.deleteBuffer)
-        delete []writeRecord.recBuffer;
+    unsigned int _Temp = 0;
+    if(_MaxCharCount <= 65535)
+        {
+        write(&_Type, 4);
+        write(&_MaxCharCount, 2);
+        }
+    else //Requires XXXX RecordField
+        {
+        _Temp = 4;
+        write("XXXX", 4);
+        write(&_Temp, 2);
+        write(&_MaxCharCount, 4);
+        write(&_Type, 4);
+        _Temp = 0;
+        write(&_Temp, 2);
+        }
+    write(_SrcBuf, _MaxCharCount);
     return;
     }
 
-void FileBuffer::flush()
+unsigned long _FileHandler::writeAt(unsigned long _Offset, const void *_SrcBuf, unsigned int _MaxCharCount)
+    {
+    if(fh == -1 || _SrcBuf == NULL || _Buffer == NULL || _MaxCharCount == 0 || _Offset > tell())
+        return _Offset;
+    //See if the address is still in buffer
+    if(IsCached(_Offset))
+        {
+        memcpy(_Buffer + _Offset - _TotalWritten, _SrcBuf, _MaxCharCount);
+        }
+    else
+        {
+        //It has already been written to disk.
+        long curPos = _tell(fh);
+        _lseek(fh, _Offset, SEEK_SET);
+        _write(fh, _SrcBuf, _MaxCharCount);
+        _lseek(fh, curPos, SEEK_SET);
+        }
+    return _Offset + _MaxCharCount;
+    }
+
+void _FileHandler::flush()
     {
     if(fh == -1 || _Buffer == NULL || _BufPos == 0)
         return;
     _write(fh, _Buffer, _BufPos);
+    _TotalWritten += _BufPos;
     _BufPos = 0;
     return;
     }
 
+unsigned long _FileHandler::UnusedCache()
+    {
+    return _BufSize - _BufPos;
+    }
+
+bool _FileHandler::IsCached(unsigned long _Offset)
+    {
+    return (_Offset >= _TotalWritten && _Offset <= tell());
+    }
+
+bool _FileHandler::eof()
+    {
+    return (_BufPos >= _BufEnd);
+    }
+
+int _FileHandler::close()
+    {
+    flush();
+    if(fh != -1)
+        _close(fh);
+    delete m_region;
+    delete f_map;
+    m_region = NULL;
+    f_map = NULL;
+    fh = -1;
+    _Buffer = NULL;
+    _BufEnd = 0;
+    _BufPos = 0;
+    return 0;
+    }
+
+void _FileHandler::reserveBuffer(unsigned int nSize)
+    {
+    if(fh == -1 || f_map != NULL || m_region != NULL || nSize <= UnusedCache())
+        return;
+    flush();
+    //There's room in the current buffer if flushed.
+    if(nSize < _BufSize)
+        return;
+    //Otherwise, resize the buffer to fit
+    printf("Resizing buffer from: %u to %u\n", _BufSize, nSize);
+    delete []_Buffer;
+    _BufSize = nSize;
+    _Buffer = new unsigned char[_BufSize];
+    return;
+    }
 
 #ifdef _DEBUG
 void PrintIndent(const unsigned int &indentation)

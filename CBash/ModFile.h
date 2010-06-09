@@ -82,21 +82,15 @@ GPL License and Copyright Notice ============================================
 #include "Records/ANIORecord.h"
 #include "Records/WATRRecord.h"
 #include "Records/EFSHRecord.h"
-#include <boost/interprocess/file_mapping.hpp>
-#include <boost/interprocess/mapped_region.hpp>
 #include <boost/threadpool.hpp>
-
-using namespace boost::interprocess;
 
 class ModFile
     {
     private:
-        mapped_region *m_region;
-        unsigned int fileEnd;
+        _FileHandler ReadHandler;
         bool IsOpen, LoadedGRUPs, IsDummy;
     public:
         _FormIDHandler FormIDHandler;
-        unsigned char *fileBuffer;
         char *FileName;
         TES4Record TES4;
         //ADD DEFINITIONS HERE
@@ -157,8 +151,8 @@ class ModFile
         GRUPRecords<WATRRecord> WATR;
         GRUPRecords<EFSHRecord> EFSH;
 
-        ModFile(char *ModName, bool newFile=false, bool DummyLoad=false):m_region(NULL), fileBuffer(NULL), fileEnd(0), IsOpen(newFile),
-                                                                         LoadedGRUPs(newFile), IsDummy(DummyLoad), FileName(ModName), TES4(DummyLoad || newFile),
+        ModFile(char *ModName, bool newFile=false, bool DummyLoad=false):IsOpen(newFile), LoadedGRUPs(newFile), IsDummy(DummyLoad),
+                                                                         FileName(ModName), TES4(DummyLoad || newFile),
                                                                          FormIDHandler(ModName, TES4.MAST, TES4.HEDR.value.nextObject)
             {
             if(newFile || IsDummy)
@@ -166,7 +160,6 @@ class ModFile
             }
         ~ModFile()
             {
-            delete m_region;
             delete []FileName;
             }
 
@@ -178,7 +171,7 @@ class ModFile
         bool IsFake() {return IsDummy;}
         int CleanMasters();
         int Unload();
-        int Save(FileBuffer &buffer, bool CloseMod);
+        int Save(_FileHandler &SaveHandler, bool CloseMod);
         #ifdef _DEBUG
         void Debug(int debugLevel);
         #endif

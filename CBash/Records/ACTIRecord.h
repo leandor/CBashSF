@@ -100,5 +100,5 @@ class ACTIRecord : public Record
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eACTI;}
         char * GetStrType() {return "ACTI";}
-        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(_FileHandler &SaveHandler);
     };

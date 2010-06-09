@@ -23,31 +23,12 @@ GPL License and Copyright Notice ============================================
 #include "ModFile.h"
 #include "Common.h"
 #include "BaseRecord.h"
-#include <boost/interprocess/file_mapping.hpp>
-#include <boost/interprocess/mapped_region.hpp>
 
 int ModFile::Open()
     {
     if(IsOpen || IsDummy)
         return 0;
-    try
-        {
-        m_region = new mapped_region(file_mapping(FileName, read_only), read_only);
-        }
-    catch(interprocess_exception &ex)
-        {
-        printf("Exception raised: %s\nUnable to memory map '%s'.\n", ex.what(), FileName);
-        throw;
-        return -1;
-        }
-    catch(...)
-        {
-        printf("Open Error\n");
-        throw;
-        return -1;
-        }
-    fileBuffer = (unsigned char*)m_region->get_address();
-    fileEnd = (unsigned int)m_region->get_size();
+    ReadHandler.open_ReadOnly(FileName);
     IsOpen = true;
     return 0;
     }
@@ -56,25 +37,25 @@ int ModFile::Close()
     {
     if(!IsOpen || IsDummy)
         return 0;
-    delete m_region;
-    m_region = NULL;
+    ReadHandler.close();
     IsOpen = false;
     return 0;
     }
 
 int ModFile::LoadTES4()
     {
-    unsigned int curPos = 8;
     if(IsDummy || TES4.IsLoaded())
         return 0;
     Open();
-    _readBuffer(&TES4.flags, fileBuffer, 4, curPos);
-    _readBuffer(&TES4.formID, fileBuffer, 4, curPos);
-    _readBuffer(&TES4.flagsUnk, fileBuffer, 4, curPos);
+    ReadHandler.set_used(8);
+    ReadHandler.read(&TES4.flags, 4);
+    ReadHandler.read(&TES4.formID, 4);
+    ReadHandler.read(&TES4.flagsUnk, 4);
     if(TES4.IsLoaded())
         printf("Flag used!!!!: %08X\n", TES4.flagsUnk);
-    TES4.recData = &fileBuffer[20];
+    TES4.recData = ReadHandler.getBuffer(20);
     TES4.Read(FormIDHandler);
+    ReadHandler.set_used(TES4.GetSize());
     return 1;
     }
 
@@ -142,311 +123,304 @@ int ModFile::Load(boost::threadpool::pool &Threads, const bool &FullLoad)
         return 0;
     Open();
     LoadedGRUPs = true;
-    unsigned int GRUPSize;
-    unsigned int GRUPLabel;
-    unsigned int curPos = TES4.GetSize() + 20;
-    curPos += 4;
-    while(curPos < fileEnd){
-        _readBuffer(&GRUPSize, fileBuffer, 4, curPos);
-        _readBuffer(&GRUPLabel, fileBuffer, 4, curPos);
-        curPos += 4;
+    unsigned long GRUPSize;
+    unsigned long GRUPLabel;
+    while(!ReadHandler.eof()){
+        ReadHandler.set_used(4); //Skip "GRUP"
+        ReadHandler.read(&GRUPSize, 4);
+        ReadHandler.read(&GRUPLabel, 4);
+        ReadHandler.set_used(4); //Skip type (tops will all == 0)
         switch(GRUPLabel)
             {
             //ADD DEFINITIONS HERE
             case eIgGMST:
             case eGMST:
-                _readBuffer(&GMST.stamp, fileBuffer, 4, curPos);
-                //Threads.schedule(boost::bind(&GRUPRecords<GMSTRecord>::Skim, GMST, boost::ref(Threads), fileBuffer, boost::ref(FormIDHandler), true, GRUPSize, curPos));
-                GMST.Skim(Threads, fileBuffer, FormIDHandler, true, GRUPSize, curPos);
+                ReadHandler.read(&GMST.stamp, 4);
+                GMST.Skim(Threads, ReadHandler, FormIDHandler, true, GRUPSize);
                 break;
             case eIgGLOB:
             case eGLOB:
-                _readBuffer(&GLOB.stamp, fileBuffer, 4, curPos);
-                GLOB.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&GLOB.stamp, 4);
+                GLOB.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgCLAS:
             case eCLAS:
-                _readBuffer(&CLAS.stamp, fileBuffer, 4, curPos);
-                CLAS.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&CLAS.stamp, 4);
+                CLAS.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgFACT:
             case eFACT:
-                _readBuffer(&FACT.stamp, fileBuffer, 4, curPos);
-                FACT.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&FACT.stamp, 4);
+                FACT.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgHAIR:
             case eHAIR:
-                _readBuffer(&HAIR.stamp, fileBuffer, 4, curPos);
-                HAIR.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&HAIR.stamp, 4);
+                HAIR.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgEYES:
             case eEYES:
-                _readBuffer(&EYES.stamp, fileBuffer, 4, curPos);
-                EYES.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&EYES.stamp, 4);
+                EYES.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgRACE:
             case eRACE:
-                _readBuffer(&RACE.stamp, fileBuffer, 4, curPos);
-                RACE.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&RACE.stamp, 4);
+                RACE.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgSOUN:
             case eSOUN:
-                _readBuffer(&SOUN.stamp, fileBuffer, 4, curPos);
-                SOUN.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&SOUN.stamp, 4);
+                SOUN.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgSKIL:
             case eSKIL:
-                _readBuffer(&SKIL.stamp, fileBuffer, 4, curPos);
-                SKIL.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&SKIL.stamp, 4);
+                SKIL.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgMGEF:
             case eMGEF:
-                _readBuffer(&MGEF.stamp, fileBuffer, 4, curPos);
-                MGEF.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&MGEF.stamp, 4);
+                MGEF.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgSCPT:
             case eSCPT:
-                _readBuffer(&SCPT.stamp, fileBuffer, 4, curPos);
-                SCPT.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&SCPT.stamp, 4);
+                SCPT.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgLTEX:
             case eLTEX:
-                _readBuffer(&LTEX.stamp, fileBuffer, 4, curPos);
-                LTEX.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&LTEX.stamp, 4);
+                LTEX.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgENCH:
             case eENCH:
-                _readBuffer(&ENCH.stamp, fileBuffer, 4, curPos);
-                ENCH.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&ENCH.stamp, 4);
+                ENCH.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgSPEL:
             case eSPEL:
-                _readBuffer(&SPEL.stamp, fileBuffer, 4, curPos);
-                SPEL.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&SPEL.stamp, 4);
+                SPEL.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgBSGN:
             case eBSGN:
-                _readBuffer(&BSGN.stamp, fileBuffer, 4, curPos);
-                BSGN.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&BSGN.stamp, 4);
+                BSGN.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgACTI:
             case eACTI:
-                _readBuffer(&ACTI.stamp, fileBuffer, 4, curPos);
-                ACTI.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&ACTI.stamp, 4);
+                ACTI.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgAPPA:
             case eAPPA:
-                _readBuffer(&APPA.stamp, fileBuffer, 4, curPos);
-                APPA.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&APPA.stamp, 4);
+                APPA.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgARMO:
             case eARMO:
-                _readBuffer(&ARMO.stamp, fileBuffer, 4, curPos);
-                ARMO.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&ARMO.stamp, 4);
+                ARMO.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgBOOK:
             case eBOOK:
-                _readBuffer(&BOOK.stamp, fileBuffer, 4, curPos);
-                BOOK.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&BOOK.stamp, 4);
+                BOOK.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgCLOT:
             case eCLOT:
-                _readBuffer(&CLOT.stamp, fileBuffer, 4, curPos);
-                CLOT.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&CLOT.stamp, 4);
+                CLOT.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgCONT:
             case eCONT:
-                _readBuffer(&CONT.stamp, fileBuffer, 4, curPos);
-                CONT.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&CONT.stamp, 4);
+                CONT.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgDOOR:
             case eDOOR:
-                _readBuffer(&DOOR.stamp, fileBuffer, 4, curPos);
-                DOOR.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&DOOR.stamp, 4);
+                DOOR.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgINGR:
             case eINGR:
-                _readBuffer(&INGR.stamp, fileBuffer, 4, curPos);
-                INGR.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&INGR.stamp, 4);
+                INGR.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgLIGH:
             case eLIGH:
-                _readBuffer(&LIGH.stamp, fileBuffer, 4, curPos);
-                LIGH.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&LIGH.stamp, 4);
+                LIGH.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgMISC:
             case eMISC:
-                _readBuffer(&MISC.stamp, fileBuffer, 4, curPos);
-                MISC.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&MISC.stamp, 4);
+                MISC.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgSTAT:
             case eSTAT:
-                _readBuffer(&STAT.stamp, fileBuffer, 4, curPos);
-                STAT.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&STAT.stamp, 4);
+                STAT.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgGRAS:
             case eGRAS:
-                _readBuffer(&GRAS.stamp, fileBuffer, 4, curPos);
-                GRAS.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&GRAS.stamp, 4);
+                GRAS.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgTREE:
             case eTREE:
-                _readBuffer(&TREE.stamp, fileBuffer, 4, curPos);
-                TREE.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&TREE.stamp, 4);
+                TREE.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgFLOR:
             case eFLOR:
-                _readBuffer(&FLOR.stamp, fileBuffer, 4, curPos);
-                FLOR.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&FLOR.stamp, 4);
+                FLOR.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgFURN:
             case eFURN:
-                _readBuffer(&FURN.stamp, fileBuffer, 4, curPos);
-                FURN.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&FURN.stamp, 4);
+                FURN.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgWEAP:
             case eWEAP:
-                _readBuffer(&WEAP.stamp, fileBuffer, 4, curPos);
-                WEAP.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&WEAP.stamp, 4);
+                WEAP.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgAMMO:
             case eAMMO:
-                _readBuffer(&AMMO.stamp, fileBuffer, 4, curPos);
-                AMMO.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&AMMO.stamp, 4);
+                AMMO.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgNPC_:
             case eNPC_:
-                _readBuffer(&NPC_.stamp, fileBuffer, 4, curPos);
-                NPC_.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&NPC_.stamp, 4);
+                NPC_.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgCREA:
             case eCREA:
-                _readBuffer(&CREA.stamp, fileBuffer, 4, curPos);
-                CREA.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&CREA.stamp, 4);
+                CREA.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgLVLC:
             case eLVLC:
-                _readBuffer(&LVLC.stamp, fileBuffer, 4, curPos);
-                LVLC.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&LVLC.stamp, 4);
+                LVLC.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgSLGM:
             case eSLGM:
-                _readBuffer(&SLGM.stamp, fileBuffer, 4, curPos);
-                SLGM.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&SLGM.stamp, 4);
+                SLGM.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgKEYM:
             case eKEYM:
-                _readBuffer(&KEYM.stamp, fileBuffer, 4, curPos);
-                KEYM.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&KEYM.stamp, 4);
+                KEYM.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgALCH:
             case eALCH:
-                _readBuffer(&ALCH.stamp, fileBuffer, 4, curPos);
-                ALCH.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&ALCH.stamp, 4);
+                ALCH.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgSBSP:
             case eSBSP:
-                _readBuffer(&SBSP.stamp, fileBuffer, 4, curPos);
-                SBSP.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&SBSP.stamp, 4);
+                SBSP.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgSGST:
             case eSGST:
-                _readBuffer(&SGST.stamp, fileBuffer, 4, curPos);
-                SGST.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&SGST.stamp, 4);
+                SGST.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgLVLI:
             case eLVLI:
-                _readBuffer(&LVLI.stamp, fileBuffer, 4, curPos);
-                LVLI.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&LVLI.stamp, 4);
+                LVLI.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgWTHR:
             case eWTHR:
-                _readBuffer(&WTHR.stamp, fileBuffer, 4, curPos);
-                WTHR.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&WTHR.stamp, 4);
+                WTHR.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgCLMT:
             case eCLMT:
-                _readBuffer(&CLMT.stamp, fileBuffer, 4, curPos);
-                CLMT.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&CLMT.stamp, 4);
+                CLMT.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgREGN:
             case eREGN:
-                _readBuffer(&REGN.stamp, fileBuffer, 4, curPos);
-                REGN.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&REGN.stamp, 4);
+                REGN.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgCELL:
             case eCELL:
-                _readBuffer(&CELL.stamp, fileBuffer, 4, curPos);
-                CELL.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&CELL.stamp, 4);
+                CELL.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgWRLD:
             case eWRLD:
-                _readBuffer(&WRLD.stamp, fileBuffer, 4, curPos);
-                WRLD.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&WRLD.stamp, 4);
+                WRLD.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgDIAL:
             case eDIAL:
-                _readBuffer(&DIAL.stamp, fileBuffer, 4, curPos);
-                DIAL.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&DIAL.stamp, 4);
+                DIAL.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgQUST:
             case eQUST:
-                _readBuffer(&QUST.stamp, fileBuffer, 4, curPos);
-                QUST.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&QUST.stamp, 4);
+                QUST.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgIDLE:
             case eIDLE:
-                _readBuffer(&IDLE.stamp, fileBuffer, 4, curPos);
-                IDLE.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&IDLE.stamp, 4);
+                IDLE.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgPACK:
             case ePACK:
-                _readBuffer(&PACK.stamp, fileBuffer, 4, curPos);
-                PACK.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&PACK.stamp, 4);
+                PACK.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgCSTY:
             case eCSTY:
-                _readBuffer(&CSTY.stamp, fileBuffer, 4, curPos);
-                CSTY.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&CSTY.stamp, 4);
+                CSTY.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgLSCR:
             case eLSCR:
-                _readBuffer(&LSCR.stamp, fileBuffer, 4, curPos);
-                LSCR.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&LSCR.stamp, 4);
+                LSCR.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgLVSP:
             case eLVSP:
-                _readBuffer(&LVSP.stamp, fileBuffer, 4, curPos);
-                LVSP.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&LVSP.stamp, 4);
+                LVSP.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgANIO:
             case eANIO:
-                _readBuffer(&ANIO.stamp, fileBuffer, 4, curPos);
-                ANIO.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&ANIO.stamp, 4);
+                ANIO.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgWATR:
             case eWATR:
-                _readBuffer(&WATR.stamp, fileBuffer, 4, curPos);
-                WATR.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&WATR.stamp, 4);
+                WATR.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             case eIgEFSH:
             case eEFSH:
-                _readBuffer(&EFSH.stamp, fileBuffer, 4, curPos);
-                EFSH.Skim(Threads, fileBuffer, FormIDHandler, FullLoad, GRUPSize, curPos);
+                ReadHandler.read(&EFSH.stamp, 4);
+                EFSH.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
                 break;
             default:
-                curPos += 4;
                 printf("FileName = %s\n", FileName);
                 printf("  Unimplemented GRUP = ");
                 for(int x = 0;x < 4;x++)
                     printf("%c", ((char*)&GRUPLabel)[x]);
-                printf("\n  size  = %i\n", GRUPSize);
-                printf("  gStart = %i\n", curPos - 20);
-                printf("  gEnd   = %i\n", curPos - 20 + GRUPSize);
-                printf("  CurPos = %04x\n\n", curPos);
-                break;
+                printf("\n");
+                return 0;
             }
-        curPos += GRUPSize - 16;
         };
     return 1;
     }
@@ -646,82 +620,75 @@ int ModFile::Unload()
     return 0;
     }
 
-int ModFile::Save(FileBuffer &buffer, bool CloseMod)
+int ModFile::Save(_FileHandler &SaveHandler, bool CloseMod)
     {
     unsigned int formCount = 0;
     if(IsDummy)
         return -1;
 
-    {
-    WritableRecord WriteTES4;
-    TES4.Write(WriteTES4, FormIDHandler);
-    buffer.write(WriteTES4);
-    }
+    TES4.Write(SaveHandler, FormIDHandler);
 
     //ADD DEFINITIONS HERE
-    formCount += GMST.WriteGRUP(eGMST, buffer, CloseMod, FormIDHandler);
-    formCount += GLOB.WriteGRUP(eGLOB, buffer, CloseMod, FormIDHandler);
-    formCount += CLAS.WriteGRUP(eCLAS, buffer, CloseMod, FormIDHandler);
-    formCount += FACT.WriteGRUP(eFACT, buffer, CloseMod, FormIDHandler);
-    formCount += HAIR.WriteGRUP(eHAIR, buffer, CloseMod, FormIDHandler);
-    formCount += EYES.WriteGRUP(eEYES, buffer, CloseMod, FormIDHandler);
-    formCount += RACE.WriteGRUP(eRACE, buffer, CloseMod, FormIDHandler);
-    formCount += SOUN.WriteGRUP(eSOUN, buffer, CloseMod, FormIDHandler);
-    formCount += SKIL.WriteGRUP(eSKIL, buffer, CloseMod, FormIDHandler);
-    formCount += MGEF.WriteGRUP(eMGEF, buffer, CloseMod, FormIDHandler);
-    formCount += SCPT.WriteGRUP(eSCPT, buffer, CloseMod, FormIDHandler);
-    formCount += LTEX.WriteGRUP(eLTEX, buffer, CloseMod, FormIDHandler);
-    formCount += ENCH.WriteGRUP(eENCH, buffer, CloseMod, FormIDHandler);
-    formCount += SPEL.WriteGRUP(eSPEL, buffer, CloseMod, FormIDHandler);
-    formCount += BSGN.WriteGRUP(eBSGN, buffer, CloseMod, FormIDHandler);
-    formCount += ACTI.WriteGRUP(eACTI, buffer, CloseMod, FormIDHandler);
-    formCount += APPA.WriteGRUP(eAPPA, buffer, CloseMod, FormIDHandler);
-    formCount += ARMO.WriteGRUP(eARMO, buffer, CloseMod, FormIDHandler);
-    formCount += BOOK.WriteGRUP(eBOOK, buffer, CloseMod, FormIDHandler);
-    formCount += CLOT.WriteGRUP(eCLOT, buffer, CloseMod, FormIDHandler);
-    formCount += CONT.WriteGRUP(eCONT, buffer, CloseMod, FormIDHandler);
-    formCount += DOOR.WriteGRUP(eDOOR, buffer, CloseMod, FormIDHandler);
-    formCount += INGR.WriteGRUP(eINGR, buffer, CloseMod, FormIDHandler);
-    formCount += LIGH.WriteGRUP(eLIGH, buffer, CloseMod, FormIDHandler);
-    formCount += MISC.WriteGRUP(eMISC, buffer, CloseMod, FormIDHandler);
-    formCount += STAT.WriteGRUP(eSTAT, buffer, CloseMod, FormIDHandler);
-    formCount += GRAS.WriteGRUP(eGRAS, buffer, CloseMod, FormIDHandler);
-    formCount += TREE.WriteGRUP(eTREE, buffer, CloseMod, FormIDHandler);
-    formCount += FLOR.WriteGRUP(eFLOR, buffer, CloseMod, FormIDHandler);
-    formCount += FURN.WriteGRUP(eFURN, buffer, CloseMod, FormIDHandler);
-    formCount += WEAP.WriteGRUP(eWEAP, buffer, CloseMod, FormIDHandler);
-    formCount += AMMO.WriteGRUP(eAMMO, buffer, CloseMod, FormIDHandler);
-    formCount += NPC_.WriteGRUP(eNPC_, buffer, CloseMod, FormIDHandler);
-    formCount += CREA.WriteGRUP(eCREA, buffer, CloseMod, FormIDHandler);
-    formCount += LVLC.WriteGRUP(eLVLC, buffer, CloseMod, FormIDHandler);
-    formCount += SLGM.WriteGRUP(eSLGM, buffer, CloseMod, FormIDHandler);
-    formCount += KEYM.WriteGRUP(eKEYM, buffer, CloseMod, FormIDHandler);
-    formCount += ALCH.WriteGRUP(eALCH, buffer, CloseMod, FormIDHandler);
-    formCount += SBSP.WriteGRUP(eSBSP, buffer, CloseMod, FormIDHandler);
-    formCount += SGST.WriteGRUP(eSGST, buffer, CloseMod, FormIDHandler);
-    formCount += LVLI.WriteGRUP(eLVLI, buffer, CloseMod, FormIDHandler);
-    formCount += WTHR.WriteGRUP(eWTHR, buffer, CloseMod, FormIDHandler);
-    formCount += CLMT.WriteGRUP(eCLMT, buffer, CloseMod, FormIDHandler);
-    formCount += REGN.WriteGRUP(eREGN, buffer, CloseMod, FormIDHandler);
-    formCount += CELL.WriteGRUP(buffer, CloseMod, FormIDHandler);
-    formCount += WRLD.WriteGRUP(buffer, CloseMod, FormIDHandler);
-    formCount += DIAL.WriteGRUP(buffer, CloseMod, FormIDHandler);
-    formCount += QUST.WriteGRUP(eQUST, buffer, CloseMod, FormIDHandler);
-    formCount += IDLE.WriteGRUP(eIDLE, buffer, CloseMod, FormIDHandler);
-    formCount += PACK.WriteGRUP(ePACK, buffer, CloseMod, FormIDHandler);
-    formCount += CSTY.WriteGRUP(eCSTY, buffer, CloseMod, FormIDHandler);
-    formCount += LSCR.WriteGRUP(eLSCR, buffer, CloseMod, FormIDHandler);
-    formCount += LVSP.WriteGRUP(eLVSP, buffer, CloseMod, FormIDHandler);
-    formCount += ANIO.WriteGRUP(eANIO, buffer, CloseMod, FormIDHandler);
-    formCount += WATR.WriteGRUP(eWATR, buffer, CloseMod, FormIDHandler);
-    formCount += EFSH.WriteGRUP(eEFSH, buffer, CloseMod, FormIDHandler);
+    formCount += GMST.WriteGRUP(eGMST, SaveHandler, FormIDHandler, CloseMod);
+    formCount += GLOB.WriteGRUP(eGLOB, SaveHandler, FormIDHandler, CloseMod);
+    formCount += CLAS.WriteGRUP(eCLAS, SaveHandler, FormIDHandler, CloseMod);
+    formCount += FACT.WriteGRUP(eFACT, SaveHandler, FormIDHandler, CloseMod);
+    formCount += HAIR.WriteGRUP(eHAIR, SaveHandler, FormIDHandler, CloseMod);
+    formCount += EYES.WriteGRUP(eEYES, SaveHandler, FormIDHandler, CloseMod);
+    formCount += RACE.WriteGRUP(eRACE, SaveHandler, FormIDHandler, CloseMod);
+    formCount += SOUN.WriteGRUP(eSOUN, SaveHandler, FormIDHandler, CloseMod);
+    formCount += SKIL.WriteGRUP(eSKIL, SaveHandler, FormIDHandler, CloseMod);
+    formCount += MGEF.WriteGRUP(eMGEF, SaveHandler, FormIDHandler, CloseMod);
+    formCount += SCPT.WriteGRUP(eSCPT, SaveHandler, FormIDHandler, CloseMod);
+    formCount += LTEX.WriteGRUP(eLTEX, SaveHandler, FormIDHandler, CloseMod);
+    formCount += ENCH.WriteGRUP(eENCH, SaveHandler, FormIDHandler, CloseMod);
+    formCount += SPEL.WriteGRUP(eSPEL, SaveHandler, FormIDHandler, CloseMod);
+    formCount += BSGN.WriteGRUP(eBSGN, SaveHandler, FormIDHandler, CloseMod);
+    formCount += ACTI.WriteGRUP(eACTI, SaveHandler, FormIDHandler, CloseMod);
+    formCount += APPA.WriteGRUP(eAPPA, SaveHandler, FormIDHandler, CloseMod);
+    formCount += ARMO.WriteGRUP(eARMO, SaveHandler, FormIDHandler, CloseMod);
+    formCount += BOOK.WriteGRUP(eBOOK, SaveHandler, FormIDHandler, CloseMod);
+    formCount += CLOT.WriteGRUP(eCLOT, SaveHandler, FormIDHandler, CloseMod);
+    formCount += CONT.WriteGRUP(eCONT, SaveHandler, FormIDHandler, CloseMod);
+    formCount += DOOR.WriteGRUP(eDOOR, SaveHandler, FormIDHandler, CloseMod);
+    formCount += INGR.WriteGRUP(eINGR, SaveHandler, FormIDHandler, CloseMod);
+    formCount += LIGH.WriteGRUP(eLIGH, SaveHandler, FormIDHandler, CloseMod);
+    formCount += MISC.WriteGRUP(eMISC, SaveHandler, FormIDHandler, CloseMod);
+    formCount += STAT.WriteGRUP(eSTAT, SaveHandler, FormIDHandler, CloseMod);
+    formCount += GRAS.WriteGRUP(eGRAS, SaveHandler, FormIDHandler, CloseMod);
+    formCount += TREE.WriteGRUP(eTREE, SaveHandler, FormIDHandler, CloseMod);
+    formCount += FLOR.WriteGRUP(eFLOR, SaveHandler, FormIDHandler, CloseMod);
+    formCount += FURN.WriteGRUP(eFURN, SaveHandler, FormIDHandler, CloseMod);
+    formCount += WEAP.WriteGRUP(eWEAP, SaveHandler, FormIDHandler, CloseMod);
+    formCount += AMMO.WriteGRUP(eAMMO, SaveHandler, FormIDHandler, CloseMod);
+    formCount += NPC_.WriteGRUP(eNPC_, SaveHandler, FormIDHandler, CloseMod);
+    formCount += CREA.WriteGRUP(eCREA, SaveHandler, FormIDHandler, CloseMod);
+    formCount += LVLC.WriteGRUP(eLVLC, SaveHandler, FormIDHandler, CloseMod);
+    formCount += SLGM.WriteGRUP(eSLGM, SaveHandler, FormIDHandler, CloseMod);
+    formCount += KEYM.WriteGRUP(eKEYM, SaveHandler, FormIDHandler, CloseMod);
+    formCount += ALCH.WriteGRUP(eALCH, SaveHandler, FormIDHandler, CloseMod);
+    formCount += SBSP.WriteGRUP(eSBSP, SaveHandler, FormIDHandler, CloseMod);
+    formCount += SGST.WriteGRUP(eSGST, SaveHandler, FormIDHandler, CloseMod);
+    formCount += LVLI.WriteGRUP(eLVLI, SaveHandler, FormIDHandler, CloseMod);
+    formCount += WTHR.WriteGRUP(eWTHR, SaveHandler, FormIDHandler, CloseMod);
+    formCount += CLMT.WriteGRUP(eCLMT, SaveHandler, FormIDHandler, CloseMod);
+    formCount += REGN.WriteGRUP(eREGN, SaveHandler, FormIDHandler, CloseMod);
+    formCount += CELL.WriteGRUP(SaveHandler, FormIDHandler, CloseMod);
+    formCount += WRLD.WriteGRUP(SaveHandler, FormIDHandler, CloseMod);
+    formCount += DIAL.WriteGRUP(SaveHandler, FormIDHandler, CloseMod);
+    formCount += QUST.WriteGRUP(eQUST, SaveHandler, FormIDHandler, CloseMod);
+    formCount += IDLE.WriteGRUP(eIDLE, SaveHandler, FormIDHandler, CloseMod);
+    formCount += PACK.WriteGRUP(ePACK, SaveHandler, FormIDHandler, CloseMod);
+    formCount += CSTY.WriteGRUP(eCSTY, SaveHandler, FormIDHandler, CloseMod);
+    formCount += LSCR.WriteGRUP(eLSCR, SaveHandler, FormIDHandler, CloseMod);
+    formCount += LVSP.WriteGRUP(eLVSP, SaveHandler, FormIDHandler, CloseMod);
+    formCount += ANIO.WriteGRUP(eANIO, SaveHandler, FormIDHandler, CloseMod);
+    formCount += WATR.WriteGRUP(eWATR, SaveHandler, FormIDHandler, CloseMod);
+    formCount += EFSH.WriteGRUP(eEFSH, SaveHandler, FormIDHandler, CloseMod);
 
     //update formCount. Cheaper to go back and write it at the end than to calculate it before any writing.
-    buffer.seek(30 , SEEK_SET);
-    buffer.write(&formCount, 4);
-    buffer.flush();
+    SaveHandler.writeAt(30, &formCount, 4);
     if(CloseMod)
         Close();
-
     return 0;
     }

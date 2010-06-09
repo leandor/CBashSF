@@ -66,14 +66,14 @@ unsigned int CSTYRecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int CSTYRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
+int CSTYRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
-        _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);
+        SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
     if(CSTD.IsLoaded())
-        _writeSubRecord(buffer, eCSTD, CSTD.GetSize(), &CSTD.value, usedBuffer);
+        SaveHandler.writeSubRecord(eCSTD, &CSTD.value, CSTD.GetSize());
     if(CSAD.IsLoaded())
-        _writeSubRecord(buffer, eCSAD, CSAD.GetSize(), CSAD.value, usedBuffer);
+        SaveHandler.writeSubRecord(eCSAD, CSAD.value, CSAD.GetSize());
     return -1;
     }
 

@@ -529,7 +529,7 @@ class CREARecord : public Record
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eCREA;}
         char * GetStrType() {return "CREA";}
-        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(_FileHandler &SaveHandler);
         bool IsBiped()
             {
             return (ACBS.value.flags & fIsBiped) != 0;

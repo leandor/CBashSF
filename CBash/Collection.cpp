@@ -89,7 +89,7 @@ int Collection::SafeSaveMod(char *ModName, bool CloseMod)
         FID_ModFile_Record.clear();
         }
     _chdir(ModsDir);
-    FileBuffer buffer(BUFFERSIZE);
+    _FileHandler SaveHandler(BUFFERSIZE);
     //Saves to a temp file, then if successful, renames any existing files, and then renames temp file to ModName
     ModFile *curModFile = NULL;
     char tName[L_tmpnam_s];
@@ -116,12 +116,12 @@ int Collection::SafeSaveMod(char *ModName, bool CloseMod)
     tName[0] = 'x';
     try
         {
-        if(buffer.open_write(tName) == -1)
+        if(SaveHandler.open_ReadWrite(tName) == -1)
             return -1;
 
         //Save the mod to temp file, using FileBuffer to write in chunks
-        curModFile->Save(buffer, CloseMod);
-        buffer.close();
+        curModFile->Save(SaveHandler, CloseMod);
+        SaveHandler.close();
 
         //Rename any existing files to a datestamped backup
         time(&ltime);
@@ -212,10 +212,13 @@ int Collection::SafeSaveMod(char *ModName, bool CloseMod)
         }
     catch(...)
         {
-        buffer.close();
+        SaveHandler.close();
+        printf("Error saving: %s\n", ModName);
         if(FileExists(tName))
+            {
             remove(tName);
-        printf("Error saving: %s\n  Temp file %s removed.\n", ModName, tName);
+            printf("  Temp file %s removed.\n", tName);
+            }
         throw 1;
         return -1;
         }

@@ -673,7 +673,8 @@ def TestGMST():
         print "flags2  :", record.flags2
         print "eid     :", record.eid
         print "value  :", record.value
-    return
+        break
+
     print "GMST:Create Record Test"
     newRecord = newMod.createGMSTRecord("sWarString")
     print "GMST:Set Test"
@@ -7767,60 +7768,60 @@ def TestWRLD():
             break
         break
 
-    print "WRLD:Create Record Test"
-    newRecord = newMod.createWRLDRecord()
-    print "WRLD:Set Test"
-    print "flags1..."
-    newRecord.flags1 = 0x0102
-    print "flags2..."
-    newRecord.flags2 = 0x0201
-    print "eid..."
-    newRecord.eid = "WRLDWarTest"
-
-    newRecord.full =  "TestWarWorld"
-    newRecord.parent = 7
-    newRecord.climate = 8
-    newRecord.water = 9
-    newRecord.mapPath = r"MapTest\Path\Destination\test.dds"
-    newRecord.dimX = 10
-    newRecord.dimY = 11
-    newRecord.NWCellX = 12
-    newRecord.NWCellY = 13
-    newRecord.SECellX = 14
-    newRecord.SECellY = 15
-    newRecord.flags = 1
-    newRecord.unknown00 = 16
-    newRecord.unknown01 = 17
-    newRecord.unknown90 = 18
-    newRecord.unknown91 = 19
-    newRecord.sound = 20
-    newRecord.ofst_p = [1,2,3,4,5,6,7,8,9,10]
-
-    print "WRLD:Set Test Results"
-    print
-    print "fid    :", PrintFormID(newRecord.fid)
-    print "flags1 :", newRecord.flags1
-    print "flags2 :", newRecord.flags2
-    print "eid    :", newRecord.eid
-
-    print "full      :", newRecord.full
-    print "parent    :", PrintFormID(newRecord.parent)
-    print "climate   :", PrintFormID(newRecord.climate)
-    print "water     :", PrintFormID(newRecord.water)
-    print "mapPath   :", newRecord.mapPath
-    print "dimX      :", newRecord.dimX
-    print "dimY      :", newRecord.dimY
-    print "NWCellX   :", newRecord.NWCellX
-    print "NWCellY   :", newRecord.NWCellY
-    print "SECellX   :", newRecord.SECellX
-    print "SECellY   :", newRecord.SECellY
-    print "flags     :", newRecord.flags
-    print "unknown00 :", newRecord.unknown00
-    print "unknown01 :", newRecord.unknown01
-    print "unknown90 :", newRecord.unknown90
-    print "unknown91 :", newRecord.unknown91
-    print "sound     :", newRecord.sound
-    print "ofst_p    :", newRecord.ofst_p
+##    print "WRLD:Create Record Test"
+##    newRecord = newMod.createWRLDRecord()
+##    print "WRLD:Set Test"
+##    print "flags1..."
+##    newRecord.flags1 = 0x0102
+##    print "flags2..."
+##    newRecord.flags2 = 0x0201
+##    print "eid..."
+##    newRecord.eid = "WRLDWarTest"
+##
+##    newRecord.full =  "TestWarWorld"
+##    newRecord.parent = 7
+##    newRecord.climate = 8
+##    newRecord.water = 9
+##    newRecord.mapPath = r"MapTest\Path\Destination\test.dds"
+##    newRecord.dimX = 10
+##    newRecord.dimY = 11
+##    newRecord.NWCellX = 12
+##    newRecord.NWCellY = 13
+##    newRecord.SECellX = 14
+##    newRecord.SECellY = 15
+##    newRecord.flags = 1
+##    newRecord.unknown00 = 16
+##    newRecord.unknown01 = 17
+##    newRecord.unknown90 = 18
+##    newRecord.unknown91 = 19
+##    newRecord.sound = 20
+##    newRecord.ofst_p = [1,2,3,4,5,6,7,8,9,10]
+##
+##    print "WRLD:Set Test Results"
+##    print
+##    print "fid    :", PrintFormID(newRecord.fid)
+##    print "flags1 :", newRecord.flags1
+##    print "flags2 :", newRecord.flags2
+##    print "eid    :", newRecord.eid
+##
+##    print "full      :", newRecord.full
+##    print "parent    :", PrintFormID(newRecord.parent)
+##    print "climate   :", PrintFormID(newRecord.climate)
+##    print "water     :", PrintFormID(newRecord.water)
+##    print "mapPath   :", newRecord.mapPath
+##    print "dimX      :", newRecord.dimX
+##    print "dimY      :", newRecord.dimY
+##    print "NWCellX   :", newRecord.NWCellX
+##    print "NWCellY   :", newRecord.NWCellY
+##    print "SECellX   :", newRecord.SECellX
+##    print "SECellY   :", newRecord.SECellY
+##    print "flags     :", newRecord.flags
+##    print "unknown00 :", newRecord.unknown00
+##    print "unknown01 :", newRecord.unknown01
+##    print "unknown90 :", newRecord.unknown90
+##    print "unknown91 :", newRecord.unknown91
+##    print "sound     :", newRecord.sound
+##    print "ofst_p    :", newRecord.ofst_p
 
     print "WRLD:CopyAsOverride Test"
     for record in Current[0].WRLD:
@@ -7922,6 +7923,7 @@ def TestWRLD():
             wrldCell.UnloadRecord()
         record.UnloadRecord()
 
+    phonenumber = raw_input(">")
     print "WRLD:Save Test - TestWRLD.esp"
     newMod.safeCloseSave()
     print "WRLD:Finished testing"
@@ -10683,13 +10685,13 @@ from timeit import Timer
 ##del Current
 ##phonenumber = raw_input("!")
 
-TestCopyAttrs()
+##TestCopyAttrs()
 ##TestCleanMasters()
 ##TestFullLoad()
 ##TestMinimalLoad()
 ##TestLoadMasters()
 ##TestDeleteRecord()
-##TestReadWriteAll()
+TestReadWriteAll()
 ##TestTES4()
 ##TestGMST()
 ##TestGLOB()

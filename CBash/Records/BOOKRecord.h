@@ -156,7 +156,7 @@ class BOOKRecord : public Record
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eBOOK;}
         char * GetStrType() {return "BOOK";}
-        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(_FileHandler &SaveHandler);
         bool IsScroll()
             {
             return (DATA.value.flags & fIsScroll) != 0;

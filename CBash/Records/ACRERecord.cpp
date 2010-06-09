@@ -134,36 +134,36 @@ unsigned int ACRERecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int ACRERecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
+int ACRERecord::WriteRecord(_FileHandler &SaveHandler)
     {
     char null = 0;
 
     if(EDID.IsLoaded())
-        _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);
+        SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
 
     if(NAME.IsLoaded())
-        _writeSubRecord(buffer, eNAME, NAME.GetSize(), &NAME.value, usedBuffer);
+        SaveHandler.writeSubRecord(eNAME, &NAME.value, NAME.GetSize());
 
     if(Ownership.IsLoaded() && Ownership->XOWN.IsLoaded())
         {
-        _writeSubRecord(buffer, eXOWN, Ownership->XOWN.GetSize(), &Ownership->XOWN.value, usedBuffer);
+        SaveHandler.writeSubRecord(eXOWN, &Ownership->XOWN.value, Ownership->XOWN.GetSize());
         if(Ownership->XRNK.IsLoaded())
-            _writeSubRecord(buffer, eXRNK, Ownership->XRNK.GetSize(), Ownership->XRNK.value, usedBuffer);
+            SaveHandler.writeSubRecord(eXRNK, Ownership->XRNK.value, Ownership->XRNK.GetSize());
         if(Ownership->XGLB.IsLoaded())
-            _writeSubRecord(buffer, eXGLB, Ownership->XGLB.GetSize(), Ownership->XGLB.value, usedBuffer);
+            SaveHandler.writeSubRecord(eXGLB, Ownership->XGLB.value, Ownership->XGLB.GetSize());
         }
 
     if(XESP.IsLoaded())
-        _writeSubRecord(buffer, eXESP, XESP.GetSize(), XESP.value, usedBuffer);
+        SaveHandler.writeSubRecord(eXESP, XESP.value, XESP.GetSize());
 
     if(XRGD.IsLoaded())
-        _writeSubRecord(buffer, eXRGD, XRGD.GetSize(), XRGD.value, usedBuffer);
+        SaveHandler.writeSubRecord(eXRGD, XRGD.value, XRGD.GetSize());
 
     if(XSCL.IsLoaded())
-        _writeSubRecord(buffer, eXSCL, XSCL.GetSize(), XSCL.value, usedBuffer);
+        SaveHandler.writeSubRecord(eXSCL, XSCL.value, XSCL.GetSize());
 
     if(DATA.IsLoaded())
-        _writeSubRecord(buffer, eDATA, DATA.GetSize(), &DATA.value, usedBuffer);
+        SaveHandler.writeSubRecord(eDATA, &DATA.value, DATA.GetSize());
     return -1;
     }
 

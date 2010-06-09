@@ -109,18 +109,18 @@ unsigned int CLASRecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int CLASRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
+int CLASRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
-        _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);
+        SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
     if(FULL.IsLoaded())
-        _writeSubRecord(buffer, eFULL, FULL.GetSize(), FULL.value, usedBuffer);
+        SaveHandler.writeSubRecord(eFULL, FULL.value, FULL.GetSize());
     if(DESC.IsLoaded())
-        _writeSubRecord(buffer, eDESC, DESC.GetSize(), DESC.value, usedBuffer);
+        SaveHandler.writeSubRecord(eDESC, DESC.value, DESC.GetSize());
     if(ICON.IsLoaded())
-        _writeSubRecord(buffer, eICON, ICON.GetSize(), ICON.value, usedBuffer);
+        SaveHandler.writeSubRecord(eICON, ICON.value, ICON.GetSize());
     if(DATA.IsLoaded())
-        _writeSubRecord(buffer, eDATA, DATA.GetSize(), &DATA.value, usedBuffer);
+        SaveHandler.writeSubRecord(eDATA, &DATA.value, DATA.GetSize());
     return -1;
     }
 

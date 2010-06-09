@@ -206,7 +206,7 @@ class ARMORecord : public Record
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eARMO;}
         char * GetStrType() {return "ARMO";}
-        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(_FileHandler &SaveHandler);
         bool IsHead()
             {
             return (BMDT.value.flags & fIsHead) != 0;

@@ -98,5 +98,5 @@ class BSGNRecord : public Record
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eBSGN;}
         char * GetStrType() {return "BSGN";}
-        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(_FileHandler &SaveHandler);
     };

@@ -146,29 +146,29 @@ unsigned int CLMTRecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int CLMTRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
+int CLMTRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
-        _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);
+        SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
     if(Weathers.size())
-        _writeSubRecord(buffer, eWLST, (unsigned int)Weathers.size() * sizeof(CLMTWLST), &Weathers[0], usedBuffer);
+        SaveHandler.writeSubRecord(eWLST, &Weathers[0], (unsigned int)Weathers.size() * sizeof(CLMTWLST));
     //else
-    //    _writeSubRecord(buffer, eWLST, 0, NULL, usedBuffer);
+    //    SaveHandler.writeSubRecord(eWLST, NULL, 0);
 
     if(FNAM.IsLoaded())
-        _writeSubRecord(buffer, eFNAM, FNAM.GetSize(), FNAM.value, usedBuffer);
+        SaveHandler.writeSubRecord(eFNAM, FNAM.value, FNAM.GetSize());
     if(GNAM.IsLoaded())
-        _writeSubRecord(buffer, eGNAM, GNAM.GetSize(), GNAM.value, usedBuffer);
+        SaveHandler.writeSubRecord(eGNAM, GNAM.value, GNAM.GetSize());
 
     if(MODL.MODL.IsLoaded())
-        _writeSubRecord(buffer, eMODL, MODL.MODL.GetSize(), MODL.MODL.value, usedBuffer);
+        SaveHandler.writeSubRecord(eMODL, MODL.MODL.value, MODL.MODL.GetSize());
     if(MODL.MODB.IsLoaded())
-        _writeSubRecord(buffer, eMODB, MODL.MODB.GetSize(), &MODL.MODB.value, usedBuffer);
+        SaveHandler.writeSubRecord(eMODB, &MODL.MODB.value, MODL.MODB.GetSize());
     if(MODL.MODT.IsLoaded())
-        _writeSubRecord(buffer, eMODT, MODL.MODT.GetSize(), MODL.MODT.value, usedBuffer);
+        SaveHandler.writeSubRecord(eMODT, MODL.MODT.value, MODL.MODT.GetSize());
 
     if(TNAM.IsLoaded())
-        _writeSubRecord(buffer, eTNAM, TNAM.GetSize(), &TNAM.value, usedBuffer);
+        SaveHandler.writeSubRecord(eTNAM, &TNAM.value, TNAM.GetSize());
     return -1;
     }
 

@@ -1246,8 +1246,8 @@ class Record
         unsigned int UpdateReferences(unsigned int origFormID, unsigned int newFormID, _FormIDHandler &FormIDHandler);
 
         virtual void CopyFrom(Record *temp) {return;}
-        virtual int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer) abstract {};
-        int Write(WritableRecord &writeRecord, _FormIDHandler &FormIDHandler);
+        virtual int WriteRecord(_FileHandler &SaveHandler) abstract {};
+        unsigned int Write(_FileHandler &SaveHandler, _FormIDHandler &FormIDHandler);
         virtual int ParseRecord(unsigned char *buffer, const unsigned int &recSize) abstract {};
 
         bool IsDeleted() const

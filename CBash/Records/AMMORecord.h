@@ -154,7 +154,7 @@ class AMMORecord : public Record
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eAMMO;}
         char * GetStrType() {return "AMMO";}
-        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(_FileHandler &SaveHandler);
         bool IsNotNormalWeapon()
             {
             return (DATA.value.flags & fIsNotNormalWeapon) != 0;

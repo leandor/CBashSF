@@ -98,53 +98,117 @@ unsigned int Record::UpdateReferences(unsigned int origFormID, unsigned int newF
     return count;
     }
 
-int Record::Write(WritableRecord &writeRecord, _FormIDHandler &FormIDHandler)
+unsigned int Record::Write(_FileHandler &SaveHandler, _FormIDHandler &FormIDHandler)
     {
     //if masters have changed, all formIDs have to be updated...
     //so the record can't just be written as is.
-    if(recData != NULL && !FormIDHandler.MastersChanged())
+    unsigned int recSize = 0;
+    if(!FormIDHandler.MastersChanged() && recData != NULL)
         {
-        writeRecord.recSize = GetSize();
-        writeRecord.deleteBuffer = false;
-        writeRecord.recBuffer = &recData[-20];
+        recSize = GetSize();
+        SaveHandler.write(recData - 20, recSize + 20);
         Unload();
-        return 0;
+        return recSize + 20;
         }
     Read(FormIDHandler);
-    writeRecord.recSize = GetSize(true);
+    recSize = GetSize(true);
     FormIDHandler.CollapseFormID(formID);
     CollapseFormIDs(FormIDHandler);
-    writeRecord.deleteBuffer = true;
-    unsigned int usedBuffer = 0;
-    //Make the new buffer.
-    writeRecord.recBuffer = new unsigned char[writeRecord.recSize + 20];
-    //Write the record to the new buffer
-    WriteRecord(&writeRecord.recBuffer[20], usedBuffer);
+
+    IsLoaded(false);
+    unsigned int recType = GetType();
+    SaveHandler.write(&recType, 4);
+    SaveHandler.write(&recSize, 4);
+    SaveHandler.write(&flags, 4);
+    SaveHandler.write(&formID, 4);
+    SaveHandler.write(&flagsUnk, 4);
+    IsLoaded(true);
+
     //IsCompressed(true); //Test code
     if(IsCompressed())
         {
-        unsigned long compSize = 0;
-        unsigned char *compBuffer = NULL;
-        compSize = compressBound(writeRecord.recSize);
-        compBuffer = new unsigned char[compSize + 24];
-        memcpy(&compBuffer[20], &writeRecord.recSize, 4);
-        compress2(&compBuffer[24], &compSize, &writeRecord.recBuffer[20], writeRecord.recSize, 6);
-        delete []writeRecord.recBuffer;
-        writeRecord.recBuffer = compBuffer;
-        writeRecord.recSize = compSize + 4;
+        //printf("Compressed: %08X\n", formID);
+        unsigned long recStart = SaveHandler.tell();
+        unsigned long compSize = compressBound(recSize);
+        unsigned char *compBuffer = new unsigned char[compSize + 4];
+        SaveHandler.reserveBuffer(compSize + 4);
+        WriteRecord(SaveHandler);
+        memcpy(compBuffer, &recSize, 4);
+        if(SaveHandler.IsCached(recStart) && ((SaveHandler.UnusedCache() + recSize) >= compSize))
+            compress2(compBuffer + 4, &compSize, SaveHandler.getBuffer(recStart), recSize, 6);
+        else
+            {
+            SaveHandler.flush();
+            printf("Not in cache, written improperly!\n  Size: %u\n", recSize);
+            return recSize + 20;
+            }
+        SaveHandler.set_used((compSize + 4) - recSize);
+        recSize = compSize + 4;
+        SaveHandler.writeAt(recStart - 16, &recSize, 4);
+        SaveHandler.writeAt(recStart, compBuffer, recSize);
+        delete []compBuffer;
         }
+    else
+        WriteRecord(SaveHandler);
 
-    IsLoaded(false);
-    usedBuffer = GetType();
-    memcpy(&writeRecord.recBuffer[0], &usedBuffer, 4);
-    memcpy(&writeRecord.recBuffer[4], &writeRecord.recSize, 4);
-    memcpy(&writeRecord.recBuffer[8], &flags, 4);
-    memcpy(&writeRecord.recBuffer[12], &formID, 4);
-    memcpy(&writeRecord.recBuffer[16], &flagsUnk, 4);
-    IsLoaded(true);
-    if(recData != NULL)
-        Unload();
     FormIDHandler.ExpandFormID(formID);
-    ExpandFormIDs(FormIDHandler);
-    return 0;
+    if(recData == NULL)
+        ExpandFormIDs(FormIDHandler);
+    else
+        Unload();
+    return recSize + 20;
     }
+
+//int Record::Write(WritableRecord &writeRecord, _FormIDHandler &FormIDHandler, bool CloseMod)
+//    {
+//    //if masters have changed, all formIDs have to be updated...
+//    //so the record can't just be written as is.
+//    if(!FormIDHandler.MastersChanged() && recData != NULL)
+//        {
+//        writeRecord.recSize = GetSize();
+//        writeRecord.deleteBuffer = false;
+//        writeRecord.recBuffer = recData - 20;
+//        Unload();
+//        return 0;
+//        }
+//    Read(FormIDHandler);
+//    writeRecord.recSize = GetSize(true);
+//    FormIDHandler.CollapseFormID(formID);
+//    CollapseFormIDs(FormIDHandler);
+//    writeRecord.deleteBuffer = true;
+//    //Make the new buffer.
+//    writeRecord.recBuffer = new unsigned char[writeRecord.recSize + 20];
+//    //Write the record to the new buffer
+//    WriteRecord(writeRecord.recBuffer + 20);
+//    //IsCompressed(true); //Test code
+//    if(IsCompressed())
+//        {
+//        unsigned long compSize = compressBound(writeRecord.recSize);
+//        unsigned char *compBuffer = new unsigned char[compSize + 24];
+//        memcpy(compBuffer + 20, &writeRecord.recSize, 4);
+//        compress2(compBuffer + 24, &compSize, writeRecord.recBuffer +20, writeRecord.recSize, 6);
+//        delete []writeRecord.recBuffer;
+//        writeRecord.recBuffer = compBuffer;
+//        writeRecord.recSize = compSize + 4;
+//        }
+//
+//    IsLoaded(false);
+//    unsigned int recType = GetType();
+//    memcpy(writeRecord.recBuffer, &recType, 4);
+//    memcpy(writeRecord.recBuffer + 4, &writeRecord.recSize, 4);
+//    memcpy(writeRecord.recBuffer + 8, &flags, 4);
+//    memcpy(writeRecord.recBuffer + 12, &formID, 4);
+//    memcpy(writeRecord.recBuffer + 16, &flagsUnk, 4);
+//    IsLoaded(true);
+//    if(!CloseMod)
+//        {
+//        FormIDHandler.ExpandFormID(formID);
+//        if(recData == NULL)
+//            ExpandFormIDs(FormIDHandler);
+//        else
+//            Unload();
+//        }
+//    else
+//        delete this;
+//    return 0;
+//    }

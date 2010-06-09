@@ -139,30 +139,30 @@ unsigned int CONTRecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int CONTRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
+int CONTRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
-        _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);
+        SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
     if(FULL.IsLoaded())
-        _writeSubRecord(buffer, eFULL, FULL.GetSize(), FULL.value, usedBuffer);
+        SaveHandler.writeSubRecord(eFULL, FULL.value, FULL.GetSize());
     if(MODL.MODL.IsLoaded())
-        _writeSubRecord(buffer, eMODL, MODL.MODL.GetSize(), MODL.MODL.value, usedBuffer);
+        SaveHandler.writeSubRecord(eMODL, MODL.MODL.value, MODL.MODL.GetSize());
     if(MODL.MODB.IsLoaded())
-        _writeSubRecord(buffer, eMODB, MODL.MODB.GetSize(), &MODL.MODB.value, usedBuffer);
+        SaveHandler.writeSubRecord(eMODB, &MODL.MODB.value, MODL.MODB.GetSize());
     if(MODL.MODT.IsLoaded())
-        _writeSubRecord(buffer, eMODT, MODL.MODT.GetSize(), MODL.MODT.value, usedBuffer);
+        SaveHandler.writeSubRecord(eMODT, MODL.MODT.value, MODL.MODT.GetSize());
     if(SCRI.IsLoaded())
-        _writeSubRecord(buffer, eSCRI, SCRI.GetSize(), SCRI.value, usedBuffer);
+        SaveHandler.writeSubRecord(eSCRI, SCRI.value, SCRI.GetSize());
     if(CNTO.size())
         for(unsigned int p = 0; p < CNTO.size(); p++)
             if(CNTO[p]->IsLoaded())
-                _writeSubRecord(buffer, eCNTO, sizeof(GENCNTO), &CNTO[p]->value, usedBuffer);
+                SaveHandler.writeSubRecord(eCNTO, &CNTO[p]->value, sizeof(GENCNTO));
     if(DATA.IsLoaded())
-        _writeSubRecord(buffer, eDATA, DATA.GetSize(), &DATA.value, usedBuffer);
+        SaveHandler.writeSubRecord(eDATA, &DATA.value, DATA.GetSize());
     if(SNAM.IsLoaded())
-        _writeSubRecord(buffer, eSNAM, SNAM.GetSize(), SNAM.value, usedBuffer);
+        SaveHandler.writeSubRecord(eSNAM, SNAM.value, SNAM.GetSize());
     if(QNAM.IsLoaded())
-        _writeSubRecord(buffer, eQNAM, QNAM.GetSize(), QNAM.value, usedBuffer);
+        SaveHandler.writeSubRecord(eQNAM, QNAM.value, QNAM.GetSize());
     return -1;
     }
 

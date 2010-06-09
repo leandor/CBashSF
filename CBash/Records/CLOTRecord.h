@@ -176,7 +176,7 @@ class CLOTRecord : public Record
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eCLOT;}
         char * GetStrType() {return "CLOT";}
-        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(_FileHandler &SaveHandler);
         bool IsHead()
             {
             return (BMDT.value.flags & fIsHead) != 0;

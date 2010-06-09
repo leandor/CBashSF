@@ -290,22 +290,22 @@ unsigned int CREARecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int CREARecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
+int CREARecord::WriteRecord(_FileHandler &SaveHandler)
     {
     unsigned int cSize = 0;
     if(EDID.IsLoaded())
-        _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);
+        SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
     if(FULL.IsLoaded())
-        _writeSubRecord(buffer, eFULL, FULL.GetSize(), FULL.value, usedBuffer);
+        SaveHandler.writeSubRecord(eFULL, FULL.value, FULL.GetSize());
     if(MODL.MODL.IsLoaded())
-        _writeSubRecord(buffer, eMODL, MODL.MODL.GetSize(), MODL.MODL.value, usedBuffer);
+        SaveHandler.writeSubRecord(eMODL, MODL.MODL.value, MODL.MODL.GetSize());
     if(MODL.MODB.IsLoaded())
-        _writeSubRecord(buffer, eMODB, MODL.MODB.GetSize(), &MODL.MODB.value, usedBuffer);
+        SaveHandler.writeSubRecord(eMODB, &MODL.MODB.value, MODL.MODB.GetSize());
     if(MODL.MODT.IsLoaded())
-        _writeSubRecord(buffer, eMODT, MODL.MODT.GetSize(), MODL.MODT.value, usedBuffer);
+        SaveHandler.writeSubRecord(eMODT, MODL.MODT.value, MODL.MODT.GetSize());
     if(SPLO.size())
         for(unsigned int p = 0; p < SPLO.size(); p++)
-            _writeSubRecord(buffer, eSPLO, sizeof(unsigned int), SPLO[p], usedBuffer);
+            SaveHandler.writeSubRecord(eSPLO, SPLO[p], sizeof(unsigned int));
     if(NIFZ.size())
         {
         cSize = 1; //final null terminator
@@ -313,77 +313,77 @@ int CREARecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
             if(NIFZ[p].IsLoaded())
                 cSize += NIFZ[p].GetSize();
         if(cSize > 65535) cSize += 10;
-        _writeSubRecord(buffer, eNIFZ, cSize, NULL, usedBuffer);
+        SaveHandler.writeSubRecord(eNIFZ, NULL, cSize);
         for(unsigned int p = 0; p < NIFZ.size(); p++)
             if(NIFZ[p].IsLoaded())
-                _writeSubRecord(buffer, NULL, NIFZ[p].GetSize(), NIFZ[p].value, usedBuffer);
+                SaveHandler.write(NIFZ[p].value, NIFZ[p].GetSize());
         cSize = 0;
         //write final null terminator
-        _writeSubRecord(buffer, NULL, 1, &cSize, usedBuffer);
+        SaveHandler.write(&cSize, 1);
         }
     if(NIFT.IsLoaded())
-        _writeSubRecord(buffer, eNIFT, NIFT.GetSize(), NIFT.value, usedBuffer);
+        SaveHandler.writeSubRecord(eNIFT, NIFT.value, NIFT.GetSize());
     if(ACBS.IsLoaded())
-        _writeSubRecord(buffer, eACBS, ACBS.GetSize(), &ACBS.value, usedBuffer);
+        SaveHandler.writeSubRecord(eACBS, &ACBS.value, ACBS.GetSize());
     if(SNAM.size())
         for(unsigned int p = 0; p < SNAM.size(); p++)
             if(SNAM[p]->IsLoaded())
-                _writeSubRecord(buffer, eSNAM, SNAM[p]->GetSize(), &SNAM[p]->value, usedBuffer);
+                SaveHandler.writeSubRecord(eSNAM, &SNAM[p]->value, SNAM[p]->GetSize());
     if(INAM.IsLoaded())
-        _writeSubRecord(buffer, eINAM, INAM.GetSize(), INAM.value, usedBuffer);
+        SaveHandler.writeSubRecord(eINAM, INAM.value, INAM.GetSize());
     if(SCRI.IsLoaded())
-        _writeSubRecord(buffer, eSCRI, SCRI.GetSize(), SCRI.value, usedBuffer);
+        SaveHandler.writeSubRecord(eSCRI, SCRI.value, SCRI.GetSize());
     if(CNTO.size())
         for(unsigned int p = 0; p < CNTO.size(); p++)
             if(CNTO[p]->IsLoaded())
-                _writeSubRecord(buffer, eCNTO, sizeof(GENCNTO), &CNTO[p]->value, usedBuffer);
+                SaveHandler.writeSubRecord(eCNTO, &CNTO[p]->value, sizeof(GENCNTO));
     if(AIDT.IsLoaded())
-        _writeSubRecord(buffer, eAIDT, AIDT.GetSize(), &AIDT.value, usedBuffer);
+        SaveHandler.writeSubRecord(eAIDT, &AIDT.value, AIDT.GetSize());
     if(PKID.size())
         for(unsigned int p = 0; p < PKID.size(); p++)
-            _writeSubRecord(buffer, ePKID, sizeof(unsigned int), PKID[p], usedBuffer);
+            SaveHandler.writeSubRecord(ePKID, PKID[p], sizeof(unsigned int));
     if(KFFZ.size())
         {
         cSize = 1; //final null terminator
         for(unsigned int p = 0; p < KFFZ.size(); p++)
             if(KFFZ[p].IsLoaded())
                 cSize += KFFZ[p].GetSize();
-        _writeSubRecord(buffer, eKFFZ, cSize, NULL, usedBuffer);
+        SaveHandler.writeSubRecord(eKFFZ, NULL, cSize);
         for(unsigned int p = 0; p < KFFZ.size(); p++)
             if(KFFZ[p].IsLoaded())
-                _writeSubRecord(buffer, NULL, KFFZ[p].GetSize(), KFFZ[p].value, usedBuffer);
+                SaveHandler.write(KFFZ[p].value, KFFZ[p].GetSize());
         cSize = 0;
         //write final null terminator
-        _writeSubRecord(buffer, NULL, 1, &cSize, usedBuffer);
+        SaveHandler.write(&cSize, 1);
         }
     if(DATA.IsLoaded())
-        _writeSubRecord(buffer, eDATA, DATA.GetSize(), &DATA.value, usedBuffer);
+        SaveHandler.writeSubRecord(eDATA, &DATA.value, DATA.GetSize());
     if(RNAM.IsLoaded())
-        _writeSubRecord(buffer, eRNAM, RNAM.GetSize(), &RNAM.value, usedBuffer);
+        SaveHandler.writeSubRecord(eRNAM, &RNAM.value, RNAM.GetSize());
     if(ZNAM.IsLoaded())
-        _writeSubRecord(buffer, eZNAM, ZNAM.GetSize(), ZNAM.value, usedBuffer);
+        SaveHandler.writeSubRecord(eZNAM, ZNAM.value, ZNAM.GetSize());
 
     if(TNAM.IsLoaded())
-        _writeSubRecord(buffer, eTNAM, TNAM.GetSize(), &TNAM.value, usedBuffer);
+        SaveHandler.writeSubRecord(eTNAM, &TNAM.value, TNAM.GetSize());
     if(BNAM.IsLoaded())
-        _writeSubRecord(buffer, eBNAM, BNAM.GetSize(), &BNAM.value, usedBuffer);
+        SaveHandler.writeSubRecord(eBNAM, &BNAM.value, BNAM.GetSize());
     if(WNAM.IsLoaded())
-        _writeSubRecord(buffer, eWNAM, WNAM.GetSize(), &WNAM.value, usedBuffer);
+        SaveHandler.writeSubRecord(eWNAM, &WNAM.value, WNAM.GetSize());
     if(CSCR.IsLoaded())
-        _writeSubRecord(buffer, eCSCR, CSCR.GetSize(), CSCR.value, usedBuffer);
+        SaveHandler.writeSubRecord(eCSCR, CSCR.value, CSCR.GetSize());
     if(NAM0.IsLoaded())
-        _writeSubRecord(buffer, eNAM0, NAM0.GetSize(), NAM0.value, usedBuffer);
+        SaveHandler.writeSubRecord(eNAM0, NAM0.value, NAM0.GetSize());
     if(NAM1.IsLoaded())
-        _writeSubRecord(buffer, eNAM1, NAM1.GetSize(), NAM1.value, usedBuffer);
+        SaveHandler.writeSubRecord(eNAM1, NAM1.value, NAM1.GetSize());
     if(Sounds.size())
         for(unsigned int p = 0; p < Sounds.size(); p++)
             {
             if(Sounds[p]->CSDT.IsLoaded())
-                _writeSubRecord(buffer, eCSDT, Sounds[p]->CSDT.GetSize(), &Sounds[p]->CSDT.value, usedBuffer);
+                SaveHandler.writeSubRecord(eCSDT, &Sounds[p]->CSDT.value, Sounds[p]->CSDT.GetSize());
             if(Sounds[p]->CSDI.IsLoaded())
-                _writeSubRecord(buffer, eCSDI, Sounds[p]->CSDI.GetSize(), &Sounds[p]->CSDI.value, usedBuffer);
+                SaveHandler.writeSubRecord(eCSDI, &Sounds[p]->CSDI.value, Sounds[p]->CSDI.GetSize());
             if(Sounds[p]->CSDC.IsLoaded())
-                _writeSubRecord(buffer, eCSDC, Sounds[p]->CSDC.GetSize(), &Sounds[p]->CSDC.value, usedBuffer);
+                SaveHandler.writeSubRecord(eCSDC, &Sounds[p]->CSDC.value, Sounds[p]->CSDC.GetSize());
             }
     return -1;
     }

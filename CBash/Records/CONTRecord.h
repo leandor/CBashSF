@@ -172,7 +172,7 @@ class CONTRecord : public Record
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eCONT;}
         char * GetStrType() {return "CONT";}
-        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(_FileHandler &SaveHandler);
         bool IsRespawn()
             {
             return (DATA.value.flags & fIsRespawn) != 0;

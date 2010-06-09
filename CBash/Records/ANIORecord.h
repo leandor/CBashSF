@@ -89,5 +89,5 @@ class ANIORecord : public Record
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eANIO;}
         char * GetStrType() {return "ANIO";}
-        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(_FileHandler &SaveHandler);
     };

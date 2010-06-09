@@ -175,37 +175,37 @@ unsigned int ALCHRecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int ALCHRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
+int ALCHRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
-        _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);
+        SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
     if(FULL.IsLoaded())
-        _writeSubRecord(buffer, eFULL, FULL.GetSize(), FULL.value, usedBuffer);
+        SaveHandler.writeSubRecord(eFULL, FULL.value, FULL.GetSize());
     if(MODL.MODL.IsLoaded())
-        _writeSubRecord(buffer, eMODL, MODL.MODL.GetSize(), MODL.MODL.value, usedBuffer);
+        SaveHandler.writeSubRecord(eMODL, MODL.MODL.value, MODL.MODL.GetSize());
     if(MODL.MODB.IsLoaded())
-        _writeSubRecord(buffer, eMODB, MODL.MODB.GetSize(), &MODL.MODB.value, usedBuffer);
+        SaveHandler.writeSubRecord(eMODB, &MODL.MODB.value, MODL.MODB.GetSize());
     if(MODL.MODT.IsLoaded())
-        _writeSubRecord(buffer, eMODT, MODL.MODT.GetSize(), MODL.MODT.value, usedBuffer);
+        SaveHandler.writeSubRecord(eMODT, MODL.MODT.value, MODL.MODT.GetSize());
     if(ICON.IsLoaded())
-        _writeSubRecord(buffer, eICON, ICON.GetSize(), ICON.value, usedBuffer);
+        SaveHandler.writeSubRecord(eICON, ICON.value, ICON.GetSize());
     if(SCRI.IsLoaded())
-        _writeSubRecord(buffer, eSCRI, SCRI.GetSize(), SCRI.value, usedBuffer);
+        SaveHandler.writeSubRecord(eSCRI, SCRI.value, SCRI.GetSize());
     if(DATA.IsLoaded())
-        _writeSubRecord(buffer, eDATA, DATA.GetSize(), &DATA.value, usedBuffer);
+        SaveHandler.writeSubRecord(eDATA, &DATA.value, DATA.GetSize());
     if(ENIT.IsLoaded())
-        _writeSubRecord(buffer, eENIT, ENIT.GetSize(), &ENIT.value, usedBuffer);
+        SaveHandler.writeSubRecord(eENIT, &ENIT.value, ENIT.GetSize());
     if(Effects.size())
         for(unsigned int p = 0; p < Effects.size(); p++)
             {
             if(Effects[p]->EFID.IsLoaded())
-                _writeSubRecord(buffer, eEFID, Effects[p]->EFID.GetSize(), &Effects[p]->EFID.value, usedBuffer);
+                SaveHandler.writeSubRecord(eEFID, &Effects[p]->EFID.value, Effects[p]->EFID.GetSize());
             if(Effects[p]->EFIT.IsLoaded())
-                _writeSubRecord(buffer, eEFIT, Effects[p]->EFIT.GetSize(), &Effects[p]->EFIT.value, usedBuffer);
+                SaveHandler.writeSubRecord(eEFIT, &Effects[p]->EFIT.value, Effects[p]->EFIT.GetSize());
             if(Effects[p]->SCIT.IsLoaded())
-                _writeSubRecord(buffer, eSCIT, Effects[p]->SCIT.GetSize(), Effects[p]->SCIT.value, usedBuffer);
+                SaveHandler.writeSubRecord(eSCIT, Effects[p]->SCIT.value, Effects[p]->SCIT.GetSize());
             if(Effects[p]->FULL.IsLoaded())
-                _writeSubRecord(buffer, eFULL, Effects[p]->FULL.GetSize(), Effects[p]->FULL.value, usedBuffer);
+                SaveHandler.writeSubRecord(eFULL, Effects[p]->FULL.value, Effects[p]->FULL.GetSize());
             }
     return -1;
     }

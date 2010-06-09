@@ -175,7 +175,7 @@ class CLASRecord : public Record
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eCLAS;}
         char * GetStrType() {return "CLAS";}
-        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(_FileHandler &SaveHandler);
 
         bool IsPlayable()
             {

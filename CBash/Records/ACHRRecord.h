@@ -126,7 +126,7 @@ class ACHRRecord : public Record
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eACHR;}
         char * GetStrType() {return "ACHR";}
-        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(_FileHandler &SaveHandler);
         bool IsOppositeParent()
             {
             if(!XESP.IsLoaded()) return false;

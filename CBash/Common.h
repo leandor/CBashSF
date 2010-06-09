@@ -32,7 +32,8 @@ GPL License and Copyright Notice ============================================
 #include <vector>
 #include <list>
 #include <map>
-
+#include <boost/interprocess/file_mapping.hpp>
+#include <boost/interprocess/mapped_region.hpp>
 
 #ifndef NULL
 #ifdef __cplusplus
@@ -72,29 +73,26 @@ class Ex_NULL : public std::exception
 typedef unsigned int * FormID;
 
 extern time_t lastSave;
-//extern std::vector<FormID> FormIDsToRegister;
-//extern std::vector<FormID> FormIDsToUnregister;
-//extern std::vector<FormID> FormIDsToCheckMaster;
+
+extern const std::map<unsigned int, std::pair<unsigned int,unsigned int>> Function_Arguments;
+extern const std::map<unsigned int, char *> Function_Name;
+extern const std::map<unsigned int, char *> Comparison_Name;
+extern const std::map<unsigned int, char *> IDLEGroup_Name;
+extern const std::map<unsigned int, char *> PACKAIType_Name;
+extern const std::map<unsigned int, char *> PACKLocType_Name;
+extern const std::map<unsigned int, char *> PACKTargetType_Name;
+
+inline void _readBuffer(void *_DstBuf, const unsigned char *_SrcBuf, const unsigned int &_MaxCharCount, unsigned int &_BufPos)
+    {
+    memcpy(_DstBuf,_SrcBuf + _BufPos,_MaxCharCount);
+    _BufPos += _MaxCharCount;
+    }
 
 #ifdef _DEBUG
 void PrintIndent(const unsigned int &indentation);
 char * PrintFormID(FormID curFormID);
 char * PrintFormID(unsigned int curFormID);
 #endif
-
-inline void _assignBuffer(void **_DstBuf, unsigned char *_SrcBuf, unsigned int _MaxCharCount, unsigned int &_BufPos)
-    {
-    *_DstBuf = &_SrcBuf[_BufPos];
-    _BufPos += _MaxCharCount;
-    }
-
-inline void _readBuffer(void *_DstBuf, const void *_SrcBuf, unsigned int _MaxCharCount, unsigned int &_BufPos)
-    {
-    memcpy(_DstBuf,(unsigned char*)_SrcBuf+_BufPos,_MaxCharCount);
-    _BufPos += _MaxCharCount;
-    }
-void _writeBuffer(void *_DstBuf, const void *_SrcBuf, unsigned int _MaxCharCount, unsigned int &_BufPos);
-void _writeSubRecord(void *_DstBuf, unsigned int _Type, unsigned int _MaxCharCount, const void *_SrcBuf, unsigned int &_BufPos);
 
 template<class T>
 struct RecordField
@@ -560,120 +558,47 @@ class _FormIDHandler
         bool UsesMaster(const unsigned int &recordFID, const unsigned char &MASTIndex);
     };
 
-//extern _FormIDHandler *FormIDHandler;
-
-extern const std::map<unsigned int, std::pair<unsigned int,unsigned int>> Function_Arguments;
-extern const std::map<unsigned int, char *> Function_Name;
-extern const std::map<unsigned int, char *> Comparison_Name;
-extern const std::map<unsigned int, char *> IDLEGroup_Name;
-extern const std::map<unsigned int, char *> PACKAIType_Name;
-extern const std::map<unsigned int, char *> PACKLocType_Name;
-extern const std::map<unsigned int, char *> PACKTargetType_Name;
-
-
-struct sameStr
-    {
-	bool operator()( const char* s1, const char* s2 ) const
-	    {
-		return _stricmp( s1, s2 ) < 0;
-	    }
-    };
-
-//bool sortLoad(const char *l, const char *r);
-//bool sameFile(const char *l, const char *r);
-
 bool FileExists(const char *FileName);
 
-class WritableRecord
+class _FileHandler
     {
-    public:
-        unsigned int recSize;
-        unsigned char *recBuffer;
-        bool deleteBuffer;
-        WritableRecord():recSize(0), recBuffer(NULL) {}
-        virtual ~WritableRecord() {}
-    };
-
-class WritableDialogue : public WritableRecord
-    {
-    public:
-        unsigned int formID;
-        unsigned int ChildrenSize;
-        std::vector<WritableRecord> Children;
-        WritableDialogue():WritableRecord(), ChildrenSize(0) {}
-        ~WritableDialogue() {}
-    };
-
-class WritableCell : public WritableRecord
-    {
-    public:
-        unsigned int formID;
-        unsigned int ChildrenSize;
-        unsigned int PersistentSize;
-        unsigned int VWDSize;
-        unsigned int TemporarySize;
-        std::vector<WritableRecord> Persistent;
-        std::vector<WritableRecord> VWD;
-        std::vector<WritableRecord> Temporary;
-        WritableCell():WritableRecord(), formID(0), ChildrenSize(0), PersistentSize(0), VWDSize(0), TemporarySize(0) {}
-        ~WritableCell() {}
-    };
-
-class WritableWorld : public WritableRecord
-    {
-    public:
-        struct sortBlocks
-            {
-             bool operator()(const unsigned int &l, const unsigned int &r) const
-                {
-                return l < r;
-                }
-            };
-        struct WritableBlock
-            {
-            struct WritableSubBlock
-                {
-                unsigned int size;
-                std::vector<WritableCell> CELLS;
-                };
-            unsigned int size;
-            std::map<unsigned int, WritableSubBlock, sortBlocks> SubBlock;
-            };
-        unsigned int formID;
-        unsigned int WorldGRUPSize;
-        WritableRecord ROAD;
-        WritableCell CELL;
-        std::map<unsigned int, WritableBlock, sortBlocks> Block;
-        WritableWorld():WritableRecord(), formID(0), WorldGRUPSize(0) {}
-        ~WritableWorld() {}
-    };
-
-class FileBuffer
-    {
-    protected:
+    private:
+        boost::interprocess::mapped_region *m_region;
+        boost::interprocess::file_mapping *f_map;
         unsigned char *_Buffer;
-        unsigned int _BufSize;
-        unsigned int _BufPos;
+        unsigned long _BufSize;
+        unsigned long _BufPos;
+        unsigned int _BufEnd;
+        unsigned long _TotalWritten;
         int fh;
     public:
-        FileBuffer():_Buffer(NULL), _BufSize(0), _BufPos(0), fh(-1) {}
-        FileBuffer(unsigned int nSize):_Buffer(NULL), _BufSize(nSize), _BufPos(0), fh(-1)
+        _FileHandler():m_region(NULL), f_map(NULL), _Buffer(NULL), _BufSize(0), _BufPos(0), _BufEnd(0), _TotalWritten(0), fh(-1) {}
+        _FileHandler(unsigned int nSize):m_region(NULL), f_map(NULL), _Buffer(NULL), _BufSize(nSize), _BufPos(0), _BufEnd(0), _TotalWritten(0), fh(-1)
             {
             if(_BufSize == 0)
                 return;
             _Buffer = new unsigned char[_BufSize];
             }
-        ~FileBuffer()
+        ~_FileHandler()
             {
-            delete []_Buffer;
+            close();
+            if(m_region == NULL && f_map == NULL && _Buffer != NULL)
+                delete []_Buffer;
             }
-
-        int open_write(const char *FileName);
-        void close();
-        void resize(unsigned int nSize);
-        void seek(long _Offset, int _Origin);
-        void write(const void *_SrcBuf, unsigned int _SrcSize);
-        void write(WritableRecord &writeRecord);
+        int open_ReadOnly(const char *FileName);
+        int open_ReadWrite(const char *FileName);
+        unsigned long tell();
+        unsigned long set_used(long _Used);
+        void read(void *_DestBuf, unsigned int _MaxCharCount);
+        unsigned char *getBuffer(unsigned long _Offset);
+        unsigned long write(const void *_SrcBuf, unsigned int _MaxCharCount);
+        void writeSubRecord(unsigned int _Type, const void *_SrcBuf, unsigned int _MaxCharCount);
+        unsigned long writeAt(unsigned long _Offset, const void *_SrcBuf, unsigned int _MaxCharCount);
+        unsigned long UnusedCache();
+        bool IsCached(unsigned long _Offset);
+        bool eof();
+        int close();
+        void reserveBuffer(unsigned int nSize);
         void flush();
     };
 

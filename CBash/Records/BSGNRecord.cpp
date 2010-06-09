@@ -112,19 +112,19 @@ unsigned int BSGNRecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int BSGNRecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
+int BSGNRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
-        _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);
+        SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
     if(FULL.IsLoaded())
-        _writeSubRecord(buffer, eFULL, FULL.GetSize(), FULL.value, usedBuffer);
+        SaveHandler.writeSubRecord(eFULL, FULL.value, FULL.GetSize());
     if(ICON.IsLoaded())
-        _writeSubRecord(buffer, eICON, ICON.GetSize(), ICON.value, usedBuffer);
+        SaveHandler.writeSubRecord(eICON, ICON.value, ICON.GetSize());
     if(DESC.IsLoaded())
-        _writeSubRecord(buffer, eDESC, DESC.GetSize(), DESC.value, usedBuffer);
+        SaveHandler.writeSubRecord(eDESC, DESC.value, DESC.GetSize());
 
     for(unsigned int p = 0; p < SPLO.size(); p++)
-        _writeSubRecord(buffer, eSPLO, sizeof(unsigned int), SPLO[p], usedBuffer);
+        SaveHandler.writeSubRecord(eSPLO, SPLO[p], sizeof(unsigned int));
     return -1;
     }
 

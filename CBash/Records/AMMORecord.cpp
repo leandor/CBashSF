@@ -133,26 +133,26 @@ unsigned int AMMORecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int AMMORecord::WriteRecord(unsigned char *buffer, unsigned int &usedBuffer)
+int AMMORecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
-        _writeSubRecord(buffer, eEDID, EDID.GetSize(), EDID.value, usedBuffer);
+        SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
     if(FULL.IsLoaded())
-        _writeSubRecord(buffer, eFULL, FULL.GetSize(), FULL.value, usedBuffer);
+        SaveHandler.writeSubRecord(eFULL, FULL.value, FULL.GetSize());
     if(MODL.MODL.IsLoaded())
-        _writeSubRecord(buffer, eMODL, MODL.MODL.GetSize(), MODL.MODL.value, usedBuffer);
+        SaveHandler.writeSubRecord(eMODL, MODL.MODL.value, MODL.MODL.GetSize());
     if(MODL.MODB.IsLoaded())
-        _writeSubRecord(buffer, eMODB, MODL.MODB.GetSize(), &MODL.MODB.value, usedBuffer);
+        SaveHandler.writeSubRecord(eMODB, &MODL.MODB.value, MODL.MODB.GetSize());
     if(MODL.MODT.IsLoaded())
-        _writeSubRecord(buffer, eMODT, MODL.MODT.GetSize(), MODL.MODT.value, usedBuffer);
+        SaveHandler.writeSubRecord(eMODT, MODL.MODT.value, MODL.MODT.GetSize());
     if(ICON.IsLoaded())
-        _writeSubRecord(buffer, eICON, ICON.GetSize(), ICON.value, usedBuffer);
+        SaveHandler.writeSubRecord(eICON, ICON.value, ICON.GetSize());
     if(ENAM.IsLoaded())
-        _writeSubRecord(buffer, eENAM, ENAM.GetSize(), ENAM.value, usedBuffer);
+        SaveHandler.writeSubRecord(eENAM, ENAM.value, ENAM.GetSize());
     if(ANAM.IsLoaded())
-        _writeSubRecord(buffer, eANAM, ANAM.GetSize(), ANAM.value, usedBuffer);
+        SaveHandler.writeSubRecord(eANAM, ANAM.value, ANAM.GetSize());
     if(DATA.IsLoaded())
-        _writeSubRecord(buffer, eDATA, DATA.GetSize(), &DATA.value, usedBuffer);
+        SaveHandler.writeSubRecord(eDATA, &DATA.value, DATA.GetSize());
     return -1;
     }
 

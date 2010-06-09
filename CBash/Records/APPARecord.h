@@ -139,7 +139,7 @@ class APPARecord : public Record
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eAPPA;}
         char * GetStrType() {return "APPA";}
-        int WriteRecord(unsigned char *buffer, unsigned int &usedBuffer);
+        int WriteRecord(_FileHandler &SaveHandler);
         bool IsMortarPestle()
             {
             return (DATA.value.apparatus == eMortarPestle);
