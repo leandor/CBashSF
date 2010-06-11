@@ -274,9 +274,12 @@ def TestDeleteRecord():
 
 def TestMinimalLoad():
     Current = Collection()
-    newMod = Current.addMod("Oblivion.esm")
+    Current.addMod("Oblivion.esm")
+    Current.addMod("Oblivion_1.1.esm")
+    Current.addMod("Oscuro's_Oblivion_Overhaul.esm")
+    Current.addMod("Oscuro's_Oblivion_Overhaul.esp")
     Current.minimalLoad(LoadMasters=True)
-    newMod.safeSave()
+##    newMod.safeSave()
 
 def TestFullLoad():
     Current = Collection()
@@ -10688,10 +10691,10 @@ from timeit import Timer
 ##TestCopyAttrs()
 ##TestCleanMasters()
 ##TestFullLoad()
-##TestMinimalLoad()
+TestMinimalLoad()
 ##TestLoadMasters()
 ##TestDeleteRecord()
-TestReadWriteAll()
+##TestReadWriteAll()
 ##TestTES4()
 ##TestGMST()
 ##TestGLOB()

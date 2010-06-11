@@ -108,13 +108,31 @@ int AddMod(const unsigned int CollectionIndex, const char *ModName, bool CreateI
     try
         {
         if(CollectionIndex < Collections.size())
-            status = Collections[CollectionIndex]->AddMod(ModName, CreateIfNotExist);
+            status = Collections[CollectionIndex]->AddMod(ModName, CreateIfNotExist, false);
         else
             throw 1;
         }
     catch(...)
         {
         printf("Error adding mod:%s\n", ModName);
+        return -1;
+        }
+    return status;
+    }
+
+int AddMergeMod(const unsigned int CollectionIndex, const char *ModName)
+    {
+    int status = 0;
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            status = Collections[CollectionIndex]->AddMod(ModName, false, true);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("Error adding merge mod:%s\n", ModName);
         return -1;
         }
     return status;
@@ -431,6 +449,43 @@ unsigned int UpdateReferences(const unsigned int CollectionIndex, char *ModName,
         return 0;
         }
     return 0;
+    }
+////////////////////////////////////////////////////////////////////////
+int GetNumFIDConflicts(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID)
+    {
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumFIDConflicts(ModName, recordFID);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumFIDConflict: Error\n");
+        return 0;
+        }
+    return 0;
+    }
+
+void GetFIDConflicts(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, char **ModNames)
+    {
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            {
+            Collections[CollectionIndex]->GetFIDConflicts(ModName, recordFID, ModNames);
+            return;
+            }
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetFIDConflicts: Error\n");
+        return;
+        }
+    return;
     }
 ////////////////////////////////////////////////////////////////////////
 unsigned int GetNumGMSTRecords(const unsigned int CollectionIndex, char *ModName)

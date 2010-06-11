@@ -47,7 +47,7 @@ bool Collection::IsModAdded(const char *ModName)
     return false;
     }
 
-int Collection::AddMod(const char *ModName, bool CreateIfNotExist, bool DummyLoad)
+int Collection::AddMod(const char *ModName, bool CreateIfNotExist, bool MergeMod, bool DummyLoad)
     {
     _chdir(ModsDir);
     //Mods may not be added after collection is loaded.
@@ -62,7 +62,7 @@ int Collection::AddMod(const char *ModName, bool CreateIfNotExist, bool DummyLoa
         {
         char *FileName = new char[strlen(ModName)+1];
         strcpy_s(FileName, strlen(ModName)+1, ModName);
-        ModFiles.push_back(new ModFile(FileName, !exists, DummyLoad));
+        ModFiles.push_back(new ModFile(FileName, !exists, MergeMod, DummyLoad));
         return 0;
         }
     else
@@ -428,21 +428,33 @@ int Collection::Load(const bool &LoadMasters, const bool &FullLoad)
                 {
                 curModFile = ModFiles[p];
                 curModFile->LoadTES4();
-                for(unsigned char x = 0; x < curModFile->TES4.MAST.size(); ++x)
-                    Preloading = (AddMod(curModFile->TES4.MAST[x].value, false, !LoadMasters) == 0 || Preloading);
+                if(!curModFile->IsMerge)
+                    for(unsigned char x = 0; x < curModFile->TES4.MAST.size(); ++x)
+                        Preloading = (AddMod(curModFile->TES4.MAST[x].value, false, false, !LoadMasters) == 0 || Preloading);
                 }
             }while(Preloading);
         std::sort(ModFiles.begin(), ModFiles.end(), sortLoad);
-        LoadOrder.resize(ModFiles.size());
-        for(unsigned char p = 0; p < (unsigned char)ModFiles.size(); ++p)
-            LoadOrder[p] = ModFiles[p]->FileName;
-        for(unsigned char p = 0; p < (unsigned char)ModFiles.size(); ++p)
+        //LoadOrder.resize(ModFiles.size());
+        for(unsigned int p = 0; p < (unsigned int)ModFiles.size(); ++p)
+            if(!ModFiles[p]->IsMerge)
+                LoadOrder.push_back(ModFiles[p]->FileName);
+        unsigned int expandedIndex = 0;
+        for(unsigned int p = 0; p < (unsigned int)ModFiles.size(); ++p)
             {
             curModFile = ModFiles[p];
             //Loads GRUP and Record Headers.  Fully loads GMST records.
             curModFile->FormIDHandler.SetLoadOrder(LoadOrder);
-            curModFile->FormIDHandler.CreateFormIDLookup(p);
-            //curModFile->Load(true);
+            if(curModFile->IsMerge)
+                {
+                printf("%s has expanded: %02X\n", curModFile->FileName, 0xFF);
+                curModFile->FormIDHandler.CreateFormIDLookup(0xFF);
+                }
+            else
+                {
+                printf("%s has expanded: %02X\n", curModFile->FileName, expandedIndex);
+                curModFile->FormIDHandler.CreateFormIDLookup(expandedIndex);
+                ++expandedIndex;
+                }
             curModFile->Load(ReadThreads, FullLoad);
             IndexRecords(curModFile);
             }
@@ -1064,6 +1076,32 @@ int Collection::GetModIndex(const char *ModName)
             return lastModIndex_1;
             }
     return -1;
+    }
+
+int Collection::GetNumFIDConflicts(char *ModName, unsigned int recordFID)
+    {
+    if(ModName == NULL || recordFID == 0)
+        return -1;
+    return (unsigned int)FID_ModFile_Record.count(recordFID);
+    }
+
+void Collection::GetFIDConflicts(char *ModName, unsigned int recordFID, char **ModNames)
+    {
+    Record *curRecord = NULL;
+    ModFile *curModFile = NULL;
+    std::multimap<unsigned int, std::pair<ModFile *, Record *> >::iterator it = LookupRecord(ModName, recordFID, curModFile, curRecord);
+    if(curModFile == NULL || curRecord == NULL || it == FID_ModFile_Record.end())
+        return;
+    unsigned int count = (unsigned int)FID_ModFile_Record.count(recordFID);
+    std::vector<ModFile *> sortedConflicts;
+    sortedConflicts.reserve(count);
+    for(unsigned int x = 0; x < count;++it, ++x)
+        sortedConflicts.push_back(it->second.first);
+    std::sort(sortedConflicts.begin(), sortedConflicts.end(), sortLoad);
+    unsigned char x = 0;
+    for(int y = (int)sortedConflicts.size() - 1; y >= 0; --y, ++x)
+        ModNames[x] = sortedConflicts[y]->FileName;
+    sortedConflicts.clear();
     }
 
 unsigned int Collection::GetNumMods()

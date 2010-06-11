@@ -29,6 +29,7 @@ extern "C" __declspec(dllexport) int NewCollection(const char *ModsPath);
 extern "C" __declspec(dllexport) int DeleteCollection(const unsigned int CollectionIndex);
 ////////////////////////////////////////////////////////////////////////
 extern "C" __declspec(dllexport) int AddMod(const unsigned int CollectionIndex, const char *ModName, bool CreateIfNotExist);
+extern "C" __declspec(dllexport) int AddMergeMod(const unsigned int CollectionIndex, const char *ModName);
 extern "C" __declspec(dllexport) int MinimalLoad(const unsigned int CollectionIndex, const bool LoadMasters);
 extern "C" __declspec(dllexport) int FullLoad(const unsigned int CollectionIndex, const bool LoadMasters);
 ////////////////////////////////////////////////////////////////////////
@@ -51,6 +52,9 @@ extern "C" __declspec(dllexport) char * GetModName(const unsigned int Collection
 extern "C" __declspec(dllexport) unsigned int GetCorrectedFID(const unsigned int CollectionIndex, char *ModName, unsigned int recordObjectID);
 extern "C" __declspec(dllexport) unsigned int UpdateAllReferences(const unsigned int CollectionIndex, char *ModName, unsigned int origFormID, unsigned int newFormID);
 extern "C" __declspec(dllexport) unsigned int UpdateReferences(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, unsigned int origFormID, unsigned int newFormID);
+////////////////////////////////////////////////////////////////////////
+extern "C" __declspec(dllexport) int GetNumFIDConflicts(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID);
+extern "C" __declspec(dllexport) void GetFIDConflicts(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, char **ModNames);
 ////////////////////////////////////////////////////////////////////////
 //ADD
 extern "C" __declspec(dllexport) unsigned int GetNumGMSTRecords(const unsigned int CollectionIndex, char *ModName);

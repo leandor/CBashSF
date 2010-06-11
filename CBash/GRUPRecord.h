@@ -61,6 +61,8 @@ class GRUPRecords
                 ReadHandler.read(&curRecord->flagsUnk, 4);
                 if(curRecord->IsLoaded())
                     printf("Flag used!!!!\n");
+                if((curRecord->flags & 0x4000) != 0)
+                    printf("0x4000 used: %08X!!!!\n", curRecord->formID);
                 curRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
                 FormIDHandler.ExpandFormID(curRecord->formID);
                 ReadHandler.set_used(recordSize);
@@ -198,6 +200,8 @@ class GRUPRecords<DIALRecord>
                         ReadHandler.read(&curDIALRecord->flagsUnk, 4);
                         if(curDIALRecord->IsLoaded())
                             printf("Flag used!!!!\n");
+                        if((curDIALRecord->flags & 0x4000) != 0)
+                            printf("0x4000 used: %08X!!!!\n", curDIALRecord->formID);
                         curDIALRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
                         FormIDHandler.ExpandFormID(curDIALRecord->formID);
                         ReadHandler.set_used(recordSize);
@@ -216,6 +220,8 @@ class GRUPRecords<DIALRecord>
                         ReadHandler.read(&curINFORecord->flagsUnk, 4);
                         if(curINFORecord->IsLoaded())
                             printf("Flag used!!!!\n");
+                        if((curINFORecord->flags & 0x4000) != 0)
+                            printf("0x4000 used: %08X!!!!\n", curINFORecord->formID);
                         curINFORecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
                         FormIDHandler.ExpandFormID(curINFORecord->formID);
                         ReadHandler.set_used(recordSize);
@@ -439,6 +445,8 @@ class GRUPRecords<CELLRecord>
                         ReadHandler.read(&curCELLRecord->flagsUnk, 4);
                         if(curCELLRecord->IsLoaded())
                             printf("Flag used!!!!\n");
+                        if((curCELLRecord->flags & 0x4000) != 0)
+                            printf("0x4000 used: %08X!!!!\n", curCELLRecord->formID);
                         curCELLRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
                         FormIDHandler.ExpandFormID(curCELLRecord->formID);
                         ReadHandler.set_used(recordSize);
@@ -456,6 +464,8 @@ class GRUPRecords<CELLRecord>
                         ReadHandler.read(&curACHRRecord->flagsUnk, 4);
                         if(curACHRRecord->IsLoaded())
                             printf("Flag used!!!!\n");
+                        if((curACHRRecord->flags & 0x4000) != 0)
+                            printf("0x4000 used: %08X!!!!\n", curACHRRecord->formID);
                         curACHRRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
                         FormIDHandler.ExpandFormID(curACHRRecord->formID);
                         ReadHandler.set_used(recordSize);
@@ -470,6 +480,8 @@ class GRUPRecords<CELLRecord>
                         ReadHandler.read(&curACRERecord->flagsUnk, 4);
                         if(curACRERecord->IsLoaded())
                             printf("Flag used!!!!\n");
+                        if((curACRERecord->flags & 0x4000) != 0)
+                            printf("0x4000 used: %08X!!!!\n", curACRERecord->formID);
                         curACRERecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
                         FormIDHandler.ExpandFormID(curACRERecord->formID);
                         ReadHandler.set_used(recordSize);
@@ -484,6 +496,8 @@ class GRUPRecords<CELLRecord>
                         ReadHandler.read(&curREFRRecord->flagsUnk, 4);
                         if(curREFRRecord->IsLoaded())
                             printf("Flag used!!!!\n");
+                        if((curREFRRecord->flags & 0x4000) != 0)
+                            printf("0x4000 used: %08X!!!!\n", curREFRRecord->formID);
                         curREFRRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
                         FormIDHandler.ExpandFormID(curREFRRecord->formID);
                         ReadHandler.set_used(recordSize);
@@ -499,6 +513,8 @@ class GRUPRecords<CELLRecord>
                         ReadHandler.read(&curCELLRecord->PGRD->flagsUnk, 4);
                         if(curCELLRecord->PGRD->IsLoaded())
                             printf("Flag used!!!!\n");
+                        if((curCELLRecord->PGRD->flags & 0x4000) != 0)
+                            printf("0x4000 used: %08X!!!!\n", curCELLRecord->PGRD->formID);
                         curCELLRecord->PGRD->recData = ReadHandler.getBuffer(ReadHandler.tell());
                         FormIDHandler.ExpandFormID(curCELLRecord->PGRD->formID);
                         ReadHandler.set_used(recordSize);
@@ -958,6 +974,8 @@ class GRUPRecords<WRLDRecord>
                         ReadHandler.read(&curWRLDRecord->flagsUnk, 4);
                         if(curWRLDRecord->IsLoaded())
                             printf("Flag used!!!!\n");
+                        if((curWRLDRecord->flags & 0x4000) != 0)
+                            printf("0x4000 used: %08X!!!!\n", curWRLDRecord->formID);
                         curWRLDRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
                         FormIDHandler.ExpandFormID(curWRLDRecord->formID);
                         ReadHandler.set_used(recordSize);
@@ -982,6 +1000,8 @@ class GRUPRecords<WRLDRecord>
                         ReadHandler.read(&curCELLRecord->flagsUnk, 4);
                         if(curCELLRecord->IsLoaded())
                             printf("Flag used!!!!\n");
+                        if((curCELLRecord->flags & 0x4000) != 0)
+                            printf("0x4000 used: %08X!!!!\n", curCELLRecord->formID);
                         curCELLRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
                         FormIDHandler.ExpandFormID(curCELLRecord->formID);
                         ReadHandler.set_used(recordSize);
@@ -1001,6 +1021,8 @@ class GRUPRecords<WRLDRecord>
                         ReadHandler.read(&curWRLDRecord->ROAD->flagsUnk, 4);
                         if(curWRLDRecord->ROAD->IsLoaded())
                             printf("Flag used!!!!\n");
+                        if((curWRLDRecord->ROAD->flags & 0x4000) != 0)
+                            printf("0x4000 used: %08X!!!!\n", curWRLDRecord->ROAD->formID);
                         curWRLDRecord->ROAD->recData = ReadHandler.getBuffer(ReadHandler.tell());
                         FormIDHandler.ExpandFormID(curWRLDRecord->ROAD->formID);
                         ReadHandler.set_used(recordSize);
@@ -1015,6 +1037,8 @@ class GRUPRecords<WRLDRecord>
                         ReadHandler.read(&curCELLRecord->LAND->flagsUnk, 4);
                         if(curCELLRecord->LAND->IsLoaded())
                             printf("Flag used!!!!\n");
+                        if((curCELLRecord->LAND->flags & 0x4000) != 0)
+                            printf("0x4000 used: %08X!!!!\n", curCELLRecord->LAND->formID);
                         curCELLRecord->LAND->recData = ReadHandler.getBuffer(ReadHandler.tell());
                         FormIDHandler.ExpandFormID(curCELLRecord->LAND->formID);
                         ReadHandler.set_used(recordSize);
@@ -1039,6 +1063,8 @@ class GRUPRecords<WRLDRecord>
                         ReadHandler.read(&curCELLRecord->PGRD->flagsUnk, 4);
                         if(curCELLRecord->PGRD->IsLoaded())
                             printf("Flag used!!!!\n");
+                        if((curCELLRecord->PGRD->flags & 0x4000) != 0)
+                            printf("0x4000 used: %08X!!!!\n", curCELLRecord->PGRD->formID);
                         curCELLRecord->PGRD->recData = ReadHandler.getBuffer(ReadHandler.tell());
                         FormIDHandler.ExpandFormID(curCELLRecord->PGRD->formID);
                         ReadHandler.set_used(recordSize);
@@ -1052,6 +1078,8 @@ class GRUPRecords<WRLDRecord>
                         ReadHandler.read(&curACHRRecord->flagsUnk, 4);
                         if(curACHRRecord->IsLoaded())
                             printf("Flag used!!!!\n");
+                        if((curACHRRecord->flags & 0x4000) != 0)
+                            printf("0x4000 used: %08X!!!!\n", curACHRRecord->formID);
                         curACHRRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
                         FormIDHandler.ExpandFormID(curACHRRecord->formID);
                         ReadHandler.set_used(recordSize);
@@ -1066,6 +1094,8 @@ class GRUPRecords<WRLDRecord>
                         ReadHandler.read(&curACRERecord->flagsUnk, 4);
                         if(curACRERecord->IsLoaded())
                             printf("Flag used!!!!\n");
+                        if((curACRERecord->flags & 0x4000) != 0)
+                            printf("0x4000 used: %08X!!!!\n", curACRERecord->formID);
                         curACRERecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
                         FormIDHandler.ExpandFormID(curACRERecord->formID);
                         ReadHandler.set_used(recordSize);
@@ -1080,6 +1110,8 @@ class GRUPRecords<WRLDRecord>
                         ReadHandler.read(&curREFRRecord->flagsUnk, 4);
                         if(curREFRRecord->IsLoaded())
                             printf("Flag used!!!!\n");
+                        if((curREFRRecord->flags & 0x4000) != 0)
+                            printf("0x4000 used: %08X!!!!\n", curREFRRecord->formID);
                         curREFRRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
                         FormIDHandler.ExpandFormID(curREFRRecord->formID);
                         ReadHandler.set_used(recordSize);
@@ -1390,40 +1422,32 @@ class GRUPRecords<WRLDRecord>
             unsigned int type = eGRUP;
             unsigned int gType = eTop;
             unsigned int gLabel = eWRLD;
-            unsigned int TopSize;
-            unsigned int TopSizePos;
-            unsigned int worldSize;
-            unsigned int worldSizePos;
-            unsigned int blockSize;
-            unsigned int blockSizePos;
-            unsigned int subBlockSize;
-            unsigned int subBlockSizePos;
-            unsigned int childrenSize;
-            unsigned int childrenSizePos;
-            unsigned int childSize;
-            unsigned int childSizePos;
+            unsigned int TopSize = 0;
+            unsigned int TopSizePos = 0;
+            unsigned int worldSize = 0;
+            unsigned int worldSizePos = 0;
+            unsigned int blockSize = 0;
+            unsigned int blockSizePos = 0;
+            unsigned int subBlockSize = 0;
+            unsigned int subBlockSizePos = 0;
+            unsigned int childrenSize = 0;
+            unsigned int childrenSizePos = 0;
+            unsigned int childSize = 0;
+            unsigned int childSizePos = 0;
 
             unsigned int formCount = 0;
 
-            unsigned int numCellRecords;
-            unsigned int numSubBlocks;
-            unsigned int numChildren;
-            unsigned int numChild;
+            unsigned int numCellRecords = 0;
+            unsigned int numSubBlocks = 0;
+            unsigned int numChildren = 0;
+            unsigned int numChild = 0;
 
-            WRLDRecord *curWorld;
-            CELLRecord *curCell;
-            unsigned int worldFormID;
-            unsigned int cellFormID;
+            WRLDRecord *curWorld = NULL;
+            CELLRecord *curCell = NULL;
+            unsigned int worldFormID = 0;
+            unsigned int cellFormID = 0;
             int gridX, gridY;
             unsigned int BlockIndex, SubBlockIndex;
-
-        //struct sortBlocks
-        //    {
-        //     bool operator()(const unsigned int &l, const unsigned int &r) const
-        //        {
-        //        return l < r;
-        //        }
-        //    };
 
             std::map<unsigned int, std::map<unsigned int, std::vector<CELLRecord *> > > BlockedRecords;
             std::vector<Record *> Persistent;

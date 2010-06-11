@@ -104,8 +104,8 @@ class ARMORecord : public Record
             fIsTail        = 0x00008000,
             fIsHideRings   = 0x00010000,
             fIsHideAmulets = 0x00020000,
-            fIsNonPlayable = 0x00040000,
-            fIsHeavyArmor  = 0x00080000
+            fIsNonPlayable = 0x00400000,
+            fIsHeavyArmor  = 0x00800000
             };
         STRING EDID;
         STRING FULL;

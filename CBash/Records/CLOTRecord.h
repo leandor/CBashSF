@@ -76,7 +76,7 @@ class CLOTRecord : public Record
             fIsTail        = 0x00008000,
             fIsHideRings   = 0x00010000,
             fIsHideAmulets = 0x00020000,
-            fIsNonPlayable = 0x00040000
+            fIsNonPlayable = 0x00400000
             };
         STRING EDID;
         STRING FULL;

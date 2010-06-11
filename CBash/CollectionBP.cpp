@@ -2274,9 +2274,10 @@ unsigned int Collection::CopyGLOBRecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -2308,9 +2309,10 @@ unsigned int Collection::CopyCLASRecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -2342,9 +2344,10 @@ unsigned int Collection::CopyFACTRecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -2376,9 +2379,10 @@ unsigned int Collection::CopyHAIRRecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -2410,9 +2414,10 @@ unsigned int Collection::CopyEYESRecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -2444,9 +2449,10 @@ unsigned int Collection::CopyRACERecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -2478,9 +2484,10 @@ unsigned int Collection::CopySOUNRecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -2512,9 +2519,10 @@ unsigned int Collection::CopySKILRecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -2546,9 +2554,10 @@ unsigned int Collection::CopyMGEFRecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -2580,9 +2589,10 @@ unsigned int Collection::CopySCPTRecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -2614,9 +2624,10 @@ unsigned int Collection::CopyLTEXRecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -2648,9 +2659,10 @@ unsigned int Collection::CopyENCHRecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -2682,9 +2694,10 @@ unsigned int Collection::CopySPELRecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -2716,9 +2729,10 @@ unsigned int Collection::CopyBSGNRecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -2750,9 +2764,10 @@ unsigned int Collection::CopyACTIRecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -2784,9 +2799,10 @@ unsigned int Collection::CopyAPPARecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -2818,9 +2834,10 @@ unsigned int Collection::CopyARMORecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -2852,9 +2869,10 @@ unsigned int Collection::CopyBOOKRecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -2886,9 +2904,10 @@ unsigned int Collection::CopyCLOTRecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -2920,9 +2939,10 @@ unsigned int Collection::CopyCONTRecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -2954,9 +2974,10 @@ unsigned int Collection::CopyDOORRecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -2988,9 +3009,10 @@ unsigned int Collection::CopyINGRRecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -3022,9 +3044,10 @@ unsigned int Collection::CopyLIGHRecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -3056,9 +3079,10 @@ unsigned int Collection::CopyMISCRecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -3090,9 +3114,10 @@ unsigned int Collection::CopySTATRecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -3124,9 +3149,10 @@ unsigned int Collection::CopyGRASRecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -3158,9 +3184,10 @@ unsigned int Collection::CopyTREERecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -3192,9 +3219,10 @@ unsigned int Collection::CopyFLORRecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -3226,9 +3254,10 @@ unsigned int Collection::CopyFURNRecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -3260,9 +3289,10 @@ unsigned int Collection::CopyWEAPRecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -3294,9 +3324,10 @@ unsigned int Collection::CopyAMMORecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -3328,9 +3359,10 @@ unsigned int Collection::CopyNPC_Record(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -3362,9 +3394,10 @@ unsigned int Collection::CopyCREARecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -3396,9 +3429,10 @@ unsigned int Collection::CopyLVLCRecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -3430,9 +3464,10 @@ unsigned int Collection::CopySLGMRecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -3464,9 +3499,10 @@ unsigned int Collection::CopyKEYMRecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -3498,9 +3534,10 @@ unsigned int Collection::CopyALCHRecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -3532,9 +3569,10 @@ unsigned int Collection::CopySBSPRecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -3566,9 +3604,10 @@ unsigned int Collection::CopySGSTRecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -3600,9 +3639,10 @@ unsigned int Collection::CopyLVLIRecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -3634,9 +3674,10 @@ unsigned int Collection::CopyWTHRRecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -3668,9 +3709,10 @@ unsigned int Collection::CopyCLMTRecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -3702,9 +3744,10 @@ unsigned int Collection::CopyREGNRecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -3738,17 +3781,25 @@ unsigned int Collection::CopyCELLRecord(char *ModName, unsigned int srcRecordFID
     bool hasParent = (destParentFID != 0);
     if(hasParent)
         {
+        //See if the parent world record already exists
         LookupRecord(destModName, destParentFID, destMod, destParentRecord);
         if(destParentRecord == NULL || (isWorldCELL && destParentRecord->CELL != NULL))
-            return 0;
+            {
+            //If it doesn't, try and create it.
+            destParentFID = CopyWRLDRecord(ModName, destParentFID, destModName, asOverride);
+            LookupRecord(destModName, destParentFID, destMod, destParentRecord);
+            if(destParentRecord == NULL || (isWorldCELL && destParentRecord->CELL != NULL))
+                return 0;
+            }
         }
     else
         {
         if(asOverride)
             {
+            //See if its trying to copy a record that already exists in the destination mod
             LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
             if(destMod != NULL || copyRecord != NULL)
-                return 0;
+                return srcRecordFID;
             }
         destMod = LookupModFile(destModName);
         }
@@ -3789,9 +3840,10 @@ unsigned int Collection::CopyACHRRecord(char *ModName, unsigned int srcRecordFID
     ACHRRecord *copyRecord = NULL;
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     CELLRecord *destParentRecord = NULL;
@@ -3823,9 +3875,10 @@ unsigned int Collection::CopyACRERecord(char *ModName, unsigned int srcRecordFID
     ACRERecord *copyRecord = NULL;
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     CELLRecord *destParentRecord = NULL;
@@ -3857,9 +3910,10 @@ unsigned int Collection::CopyREFRRecord(char *ModName, unsigned int srcRecordFID
     REFRRecord *copyRecord = NULL;
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     CELLRecord *destParentRecord = NULL;
@@ -3891,9 +3945,10 @@ unsigned int Collection::CopyPGRDRecord(char *ModName, unsigned int srcRecordFID
     PGRDRecord *copyRecord = NULL;
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     CELLRecord *destParentRecord = NULL;
@@ -3925,9 +3980,10 @@ unsigned int Collection::CopyWRLDRecord(char *ModName, unsigned int srcRecordFID
     WRLDRecord *copyRecord = NULL;
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -3958,9 +4014,10 @@ unsigned int Collection::CopyROADRecord(char *ModName, unsigned int srcRecordFID
     ROADRecord *copyRecord = NULL;
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     WRLDRecord *destParentRecord = NULL;
@@ -3994,9 +4051,10 @@ unsigned int Collection::CopyLANDRecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     CELLRecord *destParentRecord = NULL;
@@ -4030,9 +4088,10 @@ unsigned int Collection::CopyDIALRecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -4064,9 +4123,10 @@ unsigned int Collection::CopyINFORecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     DIALRecord *destParentRecord = NULL;
@@ -4099,9 +4159,10 @@ unsigned int Collection::CopyQUSTRecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -4133,9 +4194,10 @@ unsigned int Collection::CopyIDLERecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -4167,9 +4229,10 @@ unsigned int Collection::CopyPACKRecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -4201,9 +4264,10 @@ unsigned int Collection::CopyCSTYRecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -4235,9 +4299,10 @@ unsigned int Collection::CopyLSCRRecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -4269,9 +4334,10 @@ unsigned int Collection::CopyLVSPRecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -4303,9 +4369,10 @@ unsigned int Collection::CopyANIORecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -4337,9 +4404,10 @@ unsigned int Collection::CopyWATRRecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);
@@ -4371,9 +4439,10 @@ unsigned int Collection::CopyEFSHRecord(char *ModName, unsigned int srcRecordFID
 
     if(asOverride)
         {
+        //See if its trying to copy a record that already exists in the destination mod
         LookupRecord(destModName, srcRecordFID, destMod, copyRecord);
         if(destMod != NULL || copyRecord != NULL)
-            return 0;
+            return srcRecordFID;
         }
 
     destMod = LookupModFile(destModName);

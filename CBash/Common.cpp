@@ -95,14 +95,31 @@ void _FormIDHandler::UpdateFormIDLookup()
     //which occurs on every formID that is read, set, and written...
 
     //The Collapsed lookup table has to be updated anytime the mod's masters change.
+    //It also sorts the masters based on the load order
     unsigned char numMods = (unsigned char)LoadOrder.size();
     char *curMaster = NULL;
     CollapsedIndex = (unsigned char)MAST.size();
     for(unsigned char p = 0; p < 255; ++p)
         CollapseIndex[p] = CollapsedIndex;
 
+    std::vector<STRING> sortedMAST;
+    sortedMAST.reserve(CollapsedIndex);
+    for(unsigned int x = 0; x < LoadOrder.size(); ++x)
+        {
+        for(unsigned char y = 0; y < CollapsedIndex; ++y)
+            {
+            if(_stricmp(LoadOrder[x], MAST[y].value) == 0)
+                {
+                sortedMAST.push_back(MAST[y]);
+                break;
+                }
+            }
+        }
+    MAST = sortedMAST;
+
     for(unsigned char p = 0; p < CollapsedIndex; ++p)
         {
+        MAST[p] = sortedMAST[p];
         curMaster = MAST[p].value;
         for(unsigned char y = 0; y < numMods; ++y)
             if(_stricmp(LoadOrder[y], curMaster) == 0)
@@ -111,10 +128,11 @@ void _FormIDHandler::UpdateFormIDLookup()
                 break;
                 }
         }
+    sortedMAST.clear();
     return;
     }
 
-void _FormIDHandler::CreateFormIDLookup(const unsigned char &expandedIndex)
+void _FormIDHandler::CreateFormIDLookup(const unsigned char expandedIndex)
     {
     //Each ModFile maintains a formID resolution lookup table of valid modIndexs
     //both when expanded into a load order corrected format
@@ -292,7 +310,7 @@ unsigned long _FileHandler::set_used(long _Used)
         return _BufPos;
     else if(_Used < 0)
         {
-        if(abs(_Used) > _BufPos)
+        if(((unsigned long)abs(_Used) > _BufPos))
             _BufPos = 0;
         else
             _BufPos += _Used;
@@ -307,7 +325,7 @@ unsigned long _FileHandler::set_used(long _Used)
     //Flush the buffer if it is getting full
     if((_BufPos + _Used) >= _BufSize)
         flush();
-    if(_Used < _BufSize)
+    if((unsigned long)_Used < _BufSize)
         _BufPos += _Used;
     else
         {

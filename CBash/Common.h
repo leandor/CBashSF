@@ -532,18 +532,18 @@ class _FormIDHandler
         char *FileName;
         std::vector<STRING> &MAST;
         unsigned int &nextObject;
-        std::vector<char *> LoadOrder;
         unsigned char ExpandIndex[255];
         unsigned char CollapseIndex[255];
-        unsigned char ExpandedIndex;
         unsigned char CollapsedIndex;
         bool bMastersChanged;
-
     public:
+        std::vector<char *> LoadOrder;
+        unsigned char ExpandedIndex;
         _FormIDHandler(char *cFileName, std::vector<STRING> &cMAST, unsigned int &cNextObject):FileName(cFileName), MAST(cMAST), nextObject(cNextObject), ExpandedIndex(0), CollapsedIndex(0), bMastersChanged(false) {}
+        ~_FormIDHandler() {}
         void SetLoadOrder(std::vector<char *> &cLoadOrder);
         unsigned int NextExpandedFID();
-        void CreateFormIDLookup(const unsigned char &expandedIndex);
+        void CreateFormIDLookup(const unsigned char expandedIndex);
         void UpdateFormIDLookup();
         void CollapseFormID(unsigned int &curFormID);
         void CollapseFormID(unsigned int *&curFormID);

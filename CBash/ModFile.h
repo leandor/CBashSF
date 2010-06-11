@@ -90,6 +90,7 @@ class ModFile
         _FileHandler ReadHandler;
         bool IsOpen, LoadedGRUPs, IsDummy;
     public:
+        bool IsMerge;
         _FormIDHandler FormIDHandler;
         char *FileName;
         TES4Record TES4;
@@ -151,7 +152,7 @@ class ModFile
         GRUPRecords<WATRRecord> WATR;
         GRUPRecords<EFSHRecord> EFSH;
 
-        ModFile(char *ModName, bool newFile=false, bool DummyLoad=false):IsOpen(newFile), LoadedGRUPs(newFile), IsDummy(DummyLoad),
+        ModFile(char *ModName, bool newFile=false, bool MergeMod=false, bool DummyLoad=false):IsOpen(newFile), LoadedGRUPs(newFile), IsMerge(MergeMod), IsDummy(DummyLoad),
                                                                          FileName(ModName), TES4(DummyLoad || newFile),
                                                                          FormIDHandler(ModName, TES4.MAST, TES4.HEDR.value.nextObject)
             {

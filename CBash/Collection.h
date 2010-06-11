@@ -62,7 +62,7 @@ class Collection
             }
 
         bool IsModAdded(const char *ModName);
-        int AddMod(const char *ModName, bool CreateIfNotExist=false, bool DummyLoad=false);
+        int AddMod(const char *ModName, bool CreateIfNotExist=false, bool MergeMod=false, bool DummyLoad=false);
         int CleanMasters(char *ModName);
         int SafeSaveMod(char *ModName, bool CloseMod=false);
 
@@ -116,6 +116,8 @@ class Collection
         unsigned int UpdateReferences(char *ModName, unsigned int recordFID, unsigned int origFormID, unsigned int newFormID);
         int GetModIndex(const char *ModName);
 
+        int GetNumFIDConflicts(char *ModName, unsigned int recordFID);
+        void GetFIDConflicts(char *ModName, unsigned int recordFID, char **ModNames);
 
         unsigned int GetNumMods();
         //ADD DEFINITIONS HERE

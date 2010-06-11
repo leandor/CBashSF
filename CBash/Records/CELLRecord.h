@@ -58,7 +58,7 @@ class CELLRecord : public Record
             float fogNear, fogFar;
             int directionalXY, directionalZ;
             float directionalFade, fogClip;
-            CELLXCLL():fogNear(0), fogFar(0), directionalXY(0), directionalZ(0), directionalFade(0), fogClip(0) {}
+            CELLXCLL():fogNear(0), fogFar(0), directionalXY(0), directionalZ(0), directionalFade(1.0f), fogClip(0) {}
             #ifdef _DEBUG
             void Debug(int debugLevel, size_t &indentation)
                 {
