@@ -121,11 +121,14 @@ int ModFile::Load(boost::threadpool::pool &Threads, const bool &FullLoad)
         };
     if(IsDummy || !TES4.IsLoaded() || LoadedGRUPs)
         return 0;
-    Open();
+    //printf("Begin Mod: %s\n", FileName);
+    //Open();
     LoadedGRUPs = true;
     unsigned long GRUPSize;
     unsigned long GRUPLabel;
+    //printf("%u\n", __LINE__);
     while(!ReadHandler.eof()){
+        //printf("%u\n", __LINE__);
         ReadHandler.set_used(4); //Skip "GRUP"
         ReadHandler.read(&GRUPSize, 4);
         ReadHandler.read(&GRUPLabel, 4);
@@ -136,7 +139,9 @@ int ModFile::Load(boost::threadpool::pool &Threads, const bool &FullLoad)
             case eIgGMST:
             case eGMST:
                 ReadHandler.read(&GMST.stamp, 4);
+                //printf("%u\n", __LINE__);
                 GMST.Skim(Threads, ReadHandler, FormIDHandler, true, GRUPSize);
+                //printf("%u\n", __LINE__);
                 break;
             case eIgGLOB:
             case eGLOB:
@@ -422,6 +427,7 @@ int ModFile::Load(boost::threadpool::pool &Threads, const bool &FullLoad)
                 return 0;
             }
         };
+    //printf("End Mod: %s\n", FileName);
     return 1;
     }
 

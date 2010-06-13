@@ -409,6 +409,19 @@ void Collection::IndexRecords(ModFile *curModFile)
         FID_ModFile_Record.insert(std::make_pair((*curEFSH)->formID,std::make_pair(curModFile,*curEFSH)));
     }
 
+void Collection::IndexRecords()
+    {
+    ModFile *curModFile = NULL;
+    //boost::threadpool::pool IndexThreads(NUMTHREADS);
+    for(unsigned int p = 0; p < (unsigned int)ModFiles.size(); ++p)
+        {
+        curModFile = ModFiles[p];
+        if(!curModFile->IsFake())
+            //IndexThreads.schedule(boost::bind(&Collection::IndexRecords, this, curModFile));
+            IndexRecords(curModFile);
+        }
+    }
+
 int Collection::Load(const bool &LoadMasters, const bool &FullLoad)
     {
     ModFile *curModFile = NULL;
@@ -442,22 +455,23 @@ int Collection::Load(const bool &LoadMasters, const bool &FullLoad)
         for(unsigned int p = 0; p < (unsigned int)ModFiles.size(); ++p)
             {
             curModFile = ModFiles[p];
-            //Loads GRUP and Record Headers.  Fully loads GMST records.
-            curModFile->FormIDHandler.SetLoadOrder(LoadOrder);
-            if(curModFile->IsMerge)
+            if(!curModFile->IsFake())
                 {
-                printf("%s has expanded: %02X\n", curModFile->FileName, 0xFF);
-                curModFile->FormIDHandler.CreateFormIDLookup(0xFF);
+                //Loads GRUP and Record Headers.  Fully loads GMST records.
+                curModFile->FormIDHandler.SetLoadOrder(LoadOrder);
+                if(curModFile->IsMerge)
+                    curModFile->FormIDHandler.CreateFormIDLookup(0xFF);
+                else
+                    {
+                    curModFile->FormIDHandler.CreateFormIDLookup(expandedIndex);
+                    ++expandedIndex;
+                    }
+                //printf("Start Load\n");
+                curModFile->Load(ReadThreads, FullLoad);
+                //printf("End Index\n");
                 }
-            else
-                {
-                printf("%s has expanded: %02X\n", curModFile->FileName, expandedIndex);
-                curModFile->FormIDHandler.CreateFormIDLookup(expandedIndex);
-                ++expandedIndex;
-                }
-            curModFile->Load(ReadThreads, FullLoad);
-            IndexRecords(curModFile);
             }
+        //printf("Done!\n");
         isLoaded = true;
         }
     catch(std::exception& e)
@@ -1093,6 +1107,32 @@ void Collection::GetFIDConflicts(char *ModName, unsigned int recordFID, char **M
     if(curModFile == NULL || curRecord == NULL || it == FID_ModFile_Record.end())
         return;
     unsigned int count = (unsigned int)FID_ModFile_Record.count(recordFID);
+    std::vector<ModFile *> sortedConflicts;
+    sortedConflicts.reserve(count);
+    for(unsigned int x = 0; x < count;++it, ++x)
+        sortedConflicts.push_back(it->second.first);
+    std::sort(sortedConflicts.begin(), sortedConflicts.end(), sortLoad);
+    unsigned char x = 0;
+    for(int y = (int)sortedConflicts.size() - 1; y >= 0; --y, ++x)
+        ModNames[x] = sortedConflicts[y]->FileName;
+    sortedConflicts.clear();
+    }
+
+int Collection::GetNumGMSTConflicts(char *ModName, char *recordEDID)
+    {
+    if(ModName == NULL || recordEDID == 0)
+        return -1;
+    return (unsigned int)GMST_ModFile_Record.count(recordEDID);
+    }
+
+void Collection::GetGMSTConflicts(char *ModName, char *recordEDID, char **ModNames)
+    {
+    GMSTRecord *curRecord = NULL;
+    ModFile *curModFile = NULL;
+    std::multimap<char *, std::pair<ModFile *, Record *>, sameStr>::iterator it = LookupGMSTRecord(ModName, recordEDID, curModFile, curRecord);
+    if(curModFile == NULL || curRecord == NULL || it == GMST_ModFile_Record.end())
+        return;
+    unsigned int count = (unsigned int)GMST_ModFile_Record.count(recordEDID);
     std::vector<ModFile *> sortedConflicts;
     sortedConflicts.reserve(count);
     for(unsigned int x = 0; x < count;++it, ++x)

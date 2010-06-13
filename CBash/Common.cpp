@@ -304,6 +304,11 @@ unsigned long _FileHandler::tell()
     return _BufPos + _TotalWritten;
     }
 
+bool _FileHandler::eof()
+    {
+    return (_BufPos >= _BufEnd);
+    }
+
 unsigned long _FileHandler::set_used(long _Used)
     {
     if(_Used == 0)
@@ -319,7 +324,11 @@ unsigned long _FileHandler::set_used(long _Used)
     //If in read mode, simply move the position
     if(fh == -1)
         {
+        //printf("Before seek:%u\n", _BufPos);
         _BufPos += _Used;
+        //printf("After seek:%u\n", _BufPos);
+        //if(eof())
+        //    printf("End!\n");
         return _BufPos;
         }
     //Flush the buffer if it is getting full
@@ -433,11 +442,6 @@ unsigned long _FileHandler::UnusedCache()
 bool _FileHandler::IsCached(unsigned long _Offset)
     {
     return (_Offset >= _TotalWritten && _Offset <= tell());
-    }
-
-bool _FileHandler::eof()
-    {
-    return (_BufPos >= _BufEnd);
     }
 
 int _FileHandler::close()

@@ -31,6 +31,8 @@ GPL License and Copyright Notice ============================================
 #include <math.h>
 #include <boost/threadpool.hpp>
 
+//#include "mmgr.h"
+
 template<class T>
 class GRUPRecords
     {
@@ -46,6 +48,8 @@ class GRUPRecords
             }
         bool Skim(boost::threadpool::pool &Threads, _FileHandler &ReadHandler, _FormIDHandler &FormIDHandler, const bool &FullLoad, const unsigned long &gSize)
             {
+            //ReadHandler.set_used(gSize - 20);
+            //return false;
             if(SkimmedGRUP || gSize == 0)
                 return false;
             SkimmedGRUP = true;
@@ -53,6 +57,7 @@ class GRUPRecords
             unsigned long gEnd = ReadHandler.tell() + gSize - 20;
             unsigned long recordSize = 0;
             while(ReadHandler.tell() < gEnd){
+                //printf("tell:%u, gEnd:%u\n", ReadHandler.tell(), gEnd);
                 curRecord = new T();
                 ReadHandler.set_used(4); //Skip type field
                 ReadHandler.read(&recordSize, 4);
@@ -69,7 +74,9 @@ class GRUPRecords
                 if(FullLoad)
                     Threads.schedule(boost::bind(&Record::Read, curRecord, boost::ref(FormIDHandler)));
                 Records.push_back(curRecord);
+                //return false;
                 };
+            //printf("End GMST\n");
             return true;
             }
         bool Read(_FormIDHandler &FormIDHandler)

@@ -143,7 +143,10 @@ int MinimalLoad(const unsigned int CollectionIndex, const bool LoadMasters)
     try
         {
         if(CollectionIndex < Collections.size())
+            {
             Collections[CollectionIndex]->Load(LoadMasters, false);
+            Collections[CollectionIndex]->IndexRecords();
+            }
         else
             throw 1;
         }
@@ -160,7 +163,10 @@ int FullLoad(const unsigned int CollectionIndex, const bool LoadMasters)
     try
         {
         if(CollectionIndex < Collections.size())
+            {
             Collections[CollectionIndex]->Load(LoadMasters, true);
+            Collections[CollectionIndex]->IndexRecords();
+            }
         else
             throw 1;
         }
@@ -483,6 +489,43 @@ void GetFIDConflicts(const unsigned int CollectionIndex, char *ModName, unsigned
     catch(...)
         {
         printf("GetFIDConflicts: Error\n");
+        return;
+        }
+    return;
+    }
+    
+int GetNumGMSTConflicts(const unsigned int CollectionIndex, char *ModName, char *recordEDID)
+    {
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            return Collections[CollectionIndex]->GetNumGMSTConflicts(ModName, recordEDID);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetNumGMSTConflicts: Error\n");
+        return 0;
+        }
+    return 0;
+    }
+
+void GetGMSTConflicts(const unsigned int CollectionIndex, char *ModName, char *recordEDID, char **ModNames)
+    {
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            {
+            Collections[CollectionIndex]->GetGMSTConflicts(ModName, recordEDID, ModNames);
+            return;
+            }
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("GetGMSTConflicts: Error\n");
         return;
         }
     return;

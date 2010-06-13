@@ -587,6 +587,7 @@ class _FileHandler
             }
         int open_ReadOnly(const char *FileName);
         int open_ReadWrite(const char *FileName);
+        bool eof();
         unsigned long tell();
         unsigned long set_used(long _Used);
         void read(void *_DestBuf, unsigned int _MaxCharCount);
@@ -596,7 +597,6 @@ class _FileHandler
         unsigned long writeAt(unsigned long _Offset, const void *_SrcBuf, unsigned int _MaxCharCount);
         unsigned long UnusedCache();
         bool IsCached(unsigned long _Offset);
-        bool eof();
         int close();
         void reserveBuffer(unsigned int nSize);
         void flush();

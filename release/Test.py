@@ -274,11 +274,8 @@ def TestDeleteRecord():
 
 def TestMinimalLoad():
     Current = Collection()
-    Current.addMod("Oblivion.esm")
-    Current.addMod("Oblivion_1.1.esm")
-    Current.addMod("Oscuro's_Oblivion_Overhaul.esm")
-    Current.addMod("Oscuro's_Oblivion_Overhaul.esp")
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("MMM-DD.esp")
+    Current.minimalLoad(LoadMasters=False)
 ##    newMod.safeSave()
 
 def TestFullLoad():
