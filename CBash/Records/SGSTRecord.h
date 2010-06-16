@@ -67,6 +67,16 @@ class SGSTRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const SGSTDATA &other) const
+                {
+                return (uses == other.uses && 
+                        value == other.value && 
+                        AlmostEqual(weight,other.weight,2));
+                }
+            bool operator !=(const SGSTDATA &other) const
+                {
+                return !(*this == other);
+                }
             };
         #pragma pack(pop)
     public:

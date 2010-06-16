@@ -52,6 +52,14 @@ class LVLCRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const LVLLVLD &other) const
+                {
+                return (chanceNone == other.chanceNone);
+                }
+            bool operator !=(const LVLLVLD &other) const
+                {
+                return !(*this == other);
+                }
             };
         struct LVLLVLO
             {
@@ -96,6 +104,16 @@ class LVLCRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const LVLLVLO &other) const
+                {
+                return (level == other.level && 
+                        listId == other.listId && 
+                        count == other.count);
+                }
+            bool operator !=(const LVLLVLO &other) const
+                {
+                return !(*this == other);
+                }
             };
     public:
         enum flagsFlags

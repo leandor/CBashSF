@@ -24,6 +24,25 @@ GPL License and Copyright Notice ============================================
 
 time_t lastSave = time(NULL);
 
+bool AlmostEqual(float A, float B, int maxUlps)
+    {
+    int aInt = *(int*)&A;
+    // Make aInt lexicographically ordered as a twos-complement int
+    if (aInt < 0)
+        aInt = 0x80000000 - aInt;
+    // Make bInt lexicographically ordered as a twos-complement int
+    int bInt = *(int*)&B;
+    if (bInt < 0)
+        bInt = 0x80000000 - bInt;
+
+    // Now we can compare aInt and bInt to find out how far apart A and B
+    // are.
+    int intDiff = abs(aInt - bInt);
+    if (intDiff <= maxUlps)
+        return true;
+    return false;
+    }
+
 void _FormIDHandler::CollapseFormID(unsigned int &curFormID)
     {
     if(curFormID == 0)

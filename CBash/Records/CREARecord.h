@@ -134,6 +134,28 @@ class CREARecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const CREADATA &other) const
+                {
+                return (creatureType == other.creatureType && 
+                        combat == other.combat && 
+                        magic == other.magic && 
+                        stealth == other.stealth && 
+                        soul == other.soul && 
+                        health == other.health && 
+                        attackDamage == other.attackDamage && 
+                        strength == other.strength && 
+                        intelligence == other.intelligence && 
+                        willpower == other.willpower && 
+                        agility == other.agility && 
+                        speed == other.speed && 
+                        endurance == other.endurance && 
+                        personality == other.personality && 
+                        luck == other.luck);
+                }
+            bool operator !=(const CREADATA &other) const
+                {
+                return !(*this == other);
+                }
             };
         struct CREARNAM
             {
@@ -151,6 +173,14 @@ class CREARecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const CREARNAM &other) const
+                {
+                return (attackReach == other.attackReach);
+                }
+            bool operator !=(const CREARNAM &other) const
+                {
+                return !(*this == other);
+                }
             };
         struct CREATNAM
             {
@@ -168,6 +198,14 @@ class CREARecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const CREATNAM &other) const
+                {
+                return (AlmostEqual(turningSpeed,other.turningSpeed,2));
+                }
+            bool operator !=(const CREATNAM &other) const
+                {
+                return !(*this == other);
+                }
             };
         struct CREABNAM
             {
@@ -185,6 +223,14 @@ class CREARecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const CREABNAM &other) const
+                {
+                return (AlmostEqual(baseScale,other.baseScale,2));
+                }
+            bool operator !=(const CREABNAM &other) const
+                {
+                return !(*this == other);
+                }
             };
         struct CREAWNAM
             {
@@ -202,6 +248,14 @@ class CREARecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const CREAWNAM &other) const
+                {
+                return (AlmostEqual(footWeight,other.footWeight,2));
+                }
+            bool operator !=(const CREAWNAM &other) const
+                {
+                return !(*this == other);
+                }
             };
         struct CREACSDT
             {
@@ -219,6 +273,14 @@ class CREARecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const CREACSDT &other) const
+                {
+                return (type == other.type);
+                }
+            bool operator !=(const CREACSDT &other) const
+                {
+                return !(*this == other);
+                }
             };
         struct CREACSDC
             {
@@ -236,6 +298,14 @@ class CREARecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const CREACSDC &other) const
+                {
+                return (chance == other.chance);
+                }
+            bool operator !=(const CREACSDC &other) const
+                {
+                return !(*this == other);
+                }
             };
         struct CREASound
             {
@@ -255,6 +325,16 @@ class CREARecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const CREASound &other) const
+                {
+                return (CSDT == other.CSDT && 
+                        CSDI == other.CSDI && 
+                        CSDC == other.CSDC);
+                }
+            bool operator !=(const CREASound &other) const
+                {
+                return !(*this == other);
+                }
             };
     public:
         enum flagsFlags
@@ -524,6 +604,8 @@ class CREARecord : public Record
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char FieldValue);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char **FieldValue, unsigned int nSize);
 
+        int DeleteField(const unsigned int Field);
+        int DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize(bool forceCalc=false);

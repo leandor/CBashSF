@@ -85,6 +85,20 @@ class SOUNRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const SOUNSNDX &other) const
+                {
+                return (minDistance == other.minDistance && 
+                        maxDistance == other.maxDistance && 
+                        freqAdjustment == other.freqAdjustment && 
+                        flags == other.flags && 
+                        staticAtten == other.staticAtten && 
+                        stopTime == other.stopTime && 
+                        startTime == other.startTime);
+                }
+            bool operator !=(const SOUNSNDX &other) const
+                {
+                return !(*this == other);
+                }
             };
 
     public:

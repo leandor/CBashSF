@@ -65,6 +65,17 @@ class APPARecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const APPADATA &other) const
+                {
+                return (apparatus == other.apparatus && 
+                        value == other.value && 
+                        AlmostEqual(weight,other.weight,2) && 
+                        AlmostEqual(quality,other.quality,2));
+                }
+            bool operator !=(const APPADATA &other) const
+                {
+                return !(*this == other);
+                }
             };
         #pragma pack(pop)
     public:

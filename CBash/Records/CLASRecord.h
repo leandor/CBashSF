@@ -102,6 +102,27 @@ class CLASRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const CLASDATA &other) const
+                {
+                return (primary[0] == other.primary[0] && 
+                        primary[1] == other.primary[1] && 
+                        specialization == other.specialization && 
+                        major[0] == other.major[0] && 
+                        major[1] == other.major[1] && 
+                        major[2] == other.major[2] && 
+                        major[3] == other.major[3] && 
+                        major[4] == other.major[4] && 
+                        major[5] == other.major[5] && 
+                        major[6] == other.major[6] && 
+                        flags == other.flags && 
+                        services == other.services && 
+                        trainSkill == other.trainSkill && 
+                        trainLevel == other.trainLevel);
+                }
+            bool operator !=(const CLASDATA &other) const
+                {
+                return !(*this == other);
+                }
             };
     public:
         enum flagsFlags

@@ -59,6 +59,14 @@ class IDLERecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const IDLEANAM &other) const
+                {
+                return (group == other.group);
+                }
+            bool operator !=(const IDLEANAM &other) const
+                {
+                return !(*this == other);
+                }
             };
         struct IDLEDATA
             {
@@ -78,6 +86,15 @@ class IDLERecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const IDLEDATA &other) const
+                {
+                return (parent == other.parent && 
+                        prevId == other.prevId);
+                }
+            bool operator !=(const IDLEDATA &other) const
+                {
+                return !(*this == other);
+                }
             };
     public:
         enum groupType

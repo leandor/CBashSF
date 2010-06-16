@@ -81,6 +81,17 @@ class ARMORecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const ARMODATA &other) const
+                {
+                return (strength == other.strength && 
+                        value == other.value && 
+                        health == other.health && 
+                        AlmostEqual(weight,other.weight,2));
+                }
+            bool operator !=(const ARMODATA &other) const
+                {
+                return !(*this == other);
+                }
             };
         #pragma pack(pop)
     public:

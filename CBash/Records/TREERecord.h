@@ -73,6 +73,21 @@ class TREERecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const TREECNAM &other) const
+                {
+                return (AlmostEqual(curvature,other.curvature,2) && 
+                        AlmostEqual(minAngle,other.minAngle,2) && 
+                        AlmostEqual(maxAngle,other.maxAngle,2) && 
+                        AlmostEqual(branchDim,other.branchDim,2) && 
+                        AlmostEqual(leafDim,other.leafDim,2) && 
+                        shadowRadius == other.shadowRadius && 
+                        AlmostEqual(rockSpeed,other.rockSpeed,2) && 
+                        AlmostEqual(rustleSpeed,other.rustleSpeed,2));
+                }
+            bool operator !=(const TREECNAM &other) const
+                {
+                return !(*this == other);
+                }
             };
         struct TREEBNAM
             {
@@ -92,6 +107,15 @@ class TREERecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const TREEBNAM &other) const
+                {
+                return (AlmostEqual(widthBill,other.widthBill,2) && 
+                        AlmostEqual(heightBill,other.heightBill,2));
+                }
+            bool operator !=(const TREEBNAM &other) const
+                {
+                return !(*this == other);
+                }
             };
     public:
         STRING EDID;

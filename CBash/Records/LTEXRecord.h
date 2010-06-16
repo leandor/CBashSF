@@ -57,6 +57,16 @@ class LTEXRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const LTEXHNAM &other) const
+                {
+                return (flags == other.flags && 
+                        friction == other.friction && 
+                        restitution == other.restitution);
+                }
+            bool operator !=(const LTEXHNAM &other) const
+                {
+                return !(*this == other);
+                }
             };
 
         struct LTEXSNAM
@@ -75,6 +85,14 @@ class LTEXRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const LTEXSNAM &other) const
+                {
+                return (specular == other.specular);
+                }
+            bool operator !=(const LTEXSNAM &other) const
+                {
+                return !(*this == other);
+                }
             };
     public:
         enum flagsFlags

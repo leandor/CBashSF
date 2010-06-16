@@ -84,6 +84,22 @@ class CELLRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const CELLXCLL &other) const
+                {
+                return (ambient == other.ambient && 
+                        directional == other.directional && 
+                        fog == other.fog && 
+                        AlmostEqual(fogNear,other.fogNear,2) && 
+                        AlmostEqual(fogFar,other.fogFar,2) && 
+                        directionalXY == other.directionalXY && 
+                        directionalZ == other.directionalZ &&                        
+                        AlmostEqual(directionalFade,other.directionalFade,2) && 
+                        AlmostEqual(fogClip,other.fogClip,2));
+                }
+            bool operator !=(const CELLXCLL &other) const
+                {
+                return !(*this == other);
+                }
             };
         struct CELLXCLW
             {
@@ -101,6 +117,14 @@ class CELLRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const CELLXCLW &other) const
+                {
+                return (AlmostEqual(waterHeight,other.waterHeight,2));
+                }
+            bool operator !=(const CELLXCLW &other) const
+                {
+                return !(*this == other);
+                }
             };
         struct CELLXCLC
             {
@@ -120,6 +144,15 @@ class CELLRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const CELLXCLC &other) const
+                {
+                return (posX == other.posX && 
+                        posY == other.posY);
+                }
+            bool operator !=(const CELLXCLC &other) const
+                {
+                return !(*this == other);
+                }
             };
     public:
         enum flagsFlags

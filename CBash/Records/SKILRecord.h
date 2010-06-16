@@ -54,6 +54,14 @@ class SKILRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const SKILINDX &other) const
+                {
+                return (skill == other.skill);
+                }
+            bool operator !=(const SKILINDX &other) const
+                {
+                return !(*this == other);
+                }
             };
 
         struct SKILDATA
@@ -83,6 +91,18 @@ class SKILRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const SKILDATA &other) const
+                {
+                return (action == other.action && 
+                        attribute == other.attribute && 
+                        specialization == other.specialization && 
+                        AlmostEqual(use0,other.use0,2) && 
+                        AlmostEqual(use1,other.use1,2));
+                }
+            bool operator !=(const SKILDATA &other) const
+                {
+                return !(*this == other);
+                }
             };
 
     public:

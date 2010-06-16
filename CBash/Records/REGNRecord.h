@@ -60,6 +60,15 @@ class REGNRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const REGNRPLD &other) const
+                {
+                return (AlmostEqual(posX,other.posX,2) && 
+                        AlmostEqual(posY,other.posY,2));
+                }
+            bool operator !=(const REGNRPLD &other) const
+                {
+                return !(*this == other);
+                }
             };
         struct REGNRPLI
             {
@@ -77,6 +86,14 @@ class REGNRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const REGNRPLI &other) const
+                {
+                return (edgeFalloff == other.edgeFalloff);
+                }
+            bool operator !=(const REGNRPLI &other) const
+                {
+                return !(*this == other);
+                }
             };
         struct REGNArea
             {
@@ -125,6 +142,15 @@ class REGNRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const REGNArea &other) const
+                {
+                return (RPLI == other.RPLI && 
+                        RPLD == other.RPLD);
+                }
+            bool operator !=(const REGNArea &other) const
+                {
+                return !(*this == other);
+                }
             };
         struct REGNRDWT
             {
@@ -145,6 +171,15 @@ class REGNRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const REGNRDWT &other) const
+                {
+                return (weather == other.weather && 
+                        chance == other.chance);
+                }
+            bool operator !=(const REGNRDWT &other) const
+                {
+                return !(*this == other);
+                }
             };
         struct REGNRDSD
             {
@@ -170,6 +205,16 @@ class REGNRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const REGNRDSD &other) const
+                {
+                return (sound == other.sound && 
+                        flags == other.flags && 
+                        flags == other.flags);
+                }
+            bool operator !=(const REGNRDSD &other) const
+                {
+                return !(*this == other);
+                }
             enum RDSDFlags
                 {
                 fIsPleasant = 0x00000001,
@@ -249,6 +294,14 @@ class REGNRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const REGNRDMD &other) const
+                {
+                return (type == other.type);
+                }
+            bool operator !=(const REGNRDMD &other) const
+                {
+                return !(*this == other);
+                }
             };
         struct REGNRDGS
             {
@@ -275,6 +328,14 @@ class REGNRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const REGNRDGS &other) const
+                {
+                return (grass == other.grass);
+                }
+            bool operator !=(const REGNRDGS &other) const
+                {
+                return !(*this == other);
+                }
             };
         struct REGNRDOT
             {
@@ -362,6 +423,29 @@ class REGNRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const REGNRDOT &other) const
+                {
+                return (objectId == other.objectId && 
+                        parentIndex == other.parentIndex && 
+                        AlmostEqual(density,other.density,2) && 
+                        clustering == other.clustering && 
+                        minSlope == other.minSlope && 
+                        maxSlope == other.maxSlope && 
+                        flags == other.flags && 
+                        radiusWRTParent == other.radiusWRTParent && 
+                        radius == other.radius && 
+                        AlmostEqual(maxHeight,other.maxHeight,2) && 
+                        AlmostEqual(sink,other.sink,2) && 
+                        AlmostEqual(sinkVar,other.sinkVar,2) && 
+                        AlmostEqual(sizeVar,other.sizeVar,2) && 
+                        angleVarX == other.angleVarX && 
+                        angleVarY == other.angleVarY && 
+                        angleVarZ == other.angleVarZ);
+                }
+            bool operator !=(const REGNRDOT &other) const
+                {
+                return !(*this == other);
+                }
             enum RDOTFlags
                 {
                 fIsConformToSlope = 0x00000001,
@@ -502,6 +586,16 @@ class REGNRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const REGNRDAT &other) const
+                {
+                return (entryType == other.entryType && 
+                        flags == other.flags && 
+                        priority == other.priority);
+                }
+            bool operator !=(const REGNRDAT &other) const
+                {
+                return !(*this == other);
+                }
             };
         struct REGNEntry
             {
@@ -579,6 +673,21 @@ class REGNRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const REGNEntry &other) const
+                {
+                return (RDAT == other.RDAT && 
+                        RDOT == other.RDOT && 
+                        RDMP == other.RDMP && 
+                        ICON == other.ICON && 
+                        RDGS == other.RDGS && 
+                        RDMD == other.RDMD && 
+                        RDSD == other.RDSD && 
+                        RDWT == other.RDWT);
+                }
+            bool operator !=(const REGNEntry &other) const
+                {
+                return !(*this == other);
+                }
             enum RDATFlags
                 {
                 fIsOverride = 0x00000001

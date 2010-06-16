@@ -58,6 +58,16 @@ class TES4Record : public Record
                     }
                 }
             #endif
+            bool operator ==(const TES4HEDR &other) const
+                {
+                return (AlmostEqual(version,other.version,2) && 
+                        numRecords == other.numRecords && 
+                        nextObject == other.nextObject);
+                }
+            bool operator !=(const TES4HEDR &other) const
+                {
+                return !(*this == other);
+                }
             };
         struct TES4DATA //Placeholder for writing. Otherwise not used.
             {

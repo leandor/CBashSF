@@ -50,6 +50,16 @@ class ROADRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const ROADPGRR &other) const
+                {
+                return (AlmostEqual(x,other.x,2) &&
+                        AlmostEqual(y,other.y,2) &&
+                        AlmostEqual(z,other.z,2));
+                }
+            bool operator !=(const ROADPGRR &other) const
+                {
+                return !(*this == other);
+                }
             };
     public:
         std::vector<GENPGRP> PGRP;

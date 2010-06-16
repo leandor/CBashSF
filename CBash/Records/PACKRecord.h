@@ -69,6 +69,15 @@ class PACKRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const PACKPKDT &other) const
+                {
+                return (flags == other.flags && 
+                        aiType == other.aiType);
+                }
+            bool operator !=(const PACKPKDT &other) const
+                {
+                return !(*this == other);
+                }
             };
         struct PACKPLDT
             {
@@ -98,6 +107,16 @@ class PACKRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const PACKPLDT &other) const
+                {
+                return (locType == other.locType && 
+                        locId == other.locId && 
+                        locRadius == other.locRadius);
+                }
+            bool operator !=(const PACKPLDT &other) const
+                {
+                return !(*this == other);
+                }
             };
         struct PACKPSDT
             {
@@ -126,6 +145,18 @@ class PACKRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const PACKPSDT &other) const
+                {
+                return (month == other.month && 
+                        day == other.day && 
+                        date == other.date && 
+                        time == other.time && 
+                        duration == other.duration);
+                }
+            bool operator !=(const PACKPSDT &other) const
+                {
+                return !(*this == other);
+                }
             };
         struct PACKPTDT
             {
@@ -155,6 +186,16 @@ class PACKRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const PACKPTDT &other) const
+                {
+                return (targetType == other.targetType && 
+                        targetId == other.targetId && 
+                        targetCount == other.targetCount);
+                }
+            bool operator !=(const PACKPTDT &other) const
+                {
+                return !(*this == other);
+                }
             };
     public:
         enum flagsFlags

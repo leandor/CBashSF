@@ -40,6 +40,14 @@ struct GENFLAG
                 }
         }
     #endif
+    bool operator ==(const GENFLAG& other) const
+        {
+        return flags == other.flags;
+        }
+    bool operator !=(const GENFLAG &other) const
+        {
+        return !(*this == other);
+        }
     };
 
 struct GENXNAM
@@ -59,6 +67,14 @@ struct GENXNAM
             }
         }
     #endif
+    bool operator ==(const GENXNAM& other) const
+        {
+        return (faction == other.faction && mod == other.mod);
+        }
+    bool operator !=(const GENXNAM &other) const
+        {
+        return !(*this == other);
+        }
     };
 
 struct GENFID
@@ -77,6 +93,14 @@ struct GENFID
             }
         }
     #endif
+    bool operator ==(const GENFID& other) const
+        {
+        return fid == other.fid;
+        }
+    bool operator !=(const GENFID &other) const
+        {
+        return !(*this == other);
+        }
     };
 
 struct GENSCHR
@@ -110,6 +134,17 @@ struct GENSCHR
             }
         }
     #endif
+    bool operator ==(const GENSCHR& other) const
+        {
+        return (numRefs == other.numRefs && 
+                compiledSize == other.compiledSize && 
+                lastIndex == other.lastIndex && 
+                scriptType == other.scriptType);
+        }
+    bool operator !=(const GENSCHR &other) const
+        {
+        return !(*this == other);
+        }
     };
 
 struct GENSCR_
@@ -135,6 +170,15 @@ struct GENSCR_
         indentation -= 2;
         }
     #endif
+    bool operator ==(const GENSCR_& other) const
+        {
+        return (reference == other.reference && 
+                isSCRO == other.isSCRO);
+        }
+    bool operator !=(const GENSCR_ &other) const
+        {
+        return !(*this == other);
+        }
     };
 
 struct GENEFID
@@ -153,7 +197,16 @@ struct GENEFID
         indentation -= 2;
         }
     #endif
+    bool operator ==(const GENEFID &other) const
+        {
+        return (name == other.name);
+        }
+    bool operator !=(const GENEFID &other) const
+        {
+        return !(*this == other);
+        }
     };
+
 struct GENEFIT
     {
     unsigned int name, magnitude, area, duration, recipient;
@@ -182,6 +235,19 @@ struct GENEFIT
             }
         }
     #endif
+    bool operator ==(const GENEFIT& other) const
+        {
+        return (name == other.name && 
+                magnitude == other.magnitude && 
+                area == other.area && 
+                duration == other.duration && 
+                recipient == other.recipient && 
+                actorValue == other.actorValue);
+        }
+    bool operator !=(const GENEFIT &other) const
+        {
+        return !(*this == other);
+        }
     };
 
 struct GENSCIT
@@ -218,6 +284,17 @@ struct GENSCIT
             }
         }
     #endif
+    bool operator ==(const GENSCIT& other) const
+        {
+        return (script == other.script && 
+                school == other.school && 
+                visual == other.visual && 
+                flags == other.flags);
+        }
+    bool operator !=(const GENSCIT &other) const
+        {
+        return !(*this == other);
+        }
     };
 
 struct GENEffect
@@ -239,6 +316,17 @@ struct GENEffect
         FULL.Debug("FULL", debugLevel, indentation);
         }
     #endif
+    bool operator ==(const GENEffect& other) const
+        {
+        return (EFID == other.EFID && 
+                EFIT == other.EFIT && 
+                SCIT == other.SCIT && 
+                FULL == other.FULL);
+        }
+    bool operator !=(const GENEffect &other) const
+        {
+        return !(*this == other);
+        }
     bool IsHostile()
         {
         if(!SCIT.IsLoaded()) return false;
@@ -284,6 +372,14 @@ struct GENANAM
                 }
         }
     #endif
+    bool operator ==(const GENANAM &other) const
+        {
+        return (enchantPoints == other.enchantPoints);
+        }
+    bool operator !=(const GENANAM &other) const
+        {
+        return !(*this == other);
+        }
     };
 
 struct GENUFLAG
@@ -303,6 +399,14 @@ struct GENUFLAG
                 }
         }
     #endif
+    bool operator ==(const GENUFLAG &other) const
+        {
+        return (flags == other.flags);
+        }
+    bool operator !=(const GENUFLAG &other) const
+        {
+        return !(*this == other);
+        }
     };
 
 struct GENWEIGHT
@@ -321,6 +425,14 @@ struct GENWEIGHT
             }
         }
     #endif
+    bool operator ==(const GENWEIGHT &other) const
+        {
+        return AlmostEqual(weight,other.weight,2);
+        }
+    bool operator !=(const GENWEIGHT &other) const
+        {
+        return !(*this == other);
+        }
     };
 
 struct GENENIT
@@ -354,6 +466,15 @@ struct GENENIT
             }
         }
     #endif
+    bool operator ==(const GENENIT &other) const
+        {
+        return (value == other.value && 
+                flags == other.flags);
+        }
+    bool operator !=(const GENENIT &other) const
+        {
+        return !(*this == other);
+        }
     };
 
 struct GENVALUEWEIGHT
@@ -375,6 +496,15 @@ struct GENVALUEWEIGHT
             }
         }
     #endif
+    bool operator ==(const GENVALUEWEIGHT &other) const
+        {
+        return (value == other.value && 
+                AlmostEqual(weight,other.weight,2));
+        }
+    bool operator !=(const GENVALUEWEIGHT &other) const
+        {
+        return !(*this == other);
+        }
     };
 
 struct GENCNTO
@@ -394,6 +524,15 @@ struct GENCNTO
             }
         }
     #endif
+    bool operator ==(const GENCNTO &other) const
+        {
+        return (item == other.item &&
+                count == other.count);
+        }
+    bool operator !=(const GENCNTO &other) const
+        {
+        return !(*this == other);
+        }
     };
 
 struct GENACBS
@@ -431,6 +570,20 @@ struct GENACBS
             }
         }
     #endif
+    bool operator ==(const GENACBS &other) const
+        {
+        return (flags == other.flags &&
+                baseSpell == other.baseSpell && 
+                fatigue == other.fatigue && 
+                barterGold == other.barterGold && 
+                level == other.level && 
+                calcMin == other.calcMin && 
+                calcMax == other.calcMax);
+        }
+    bool operator !=(const GENACBS &other) const
+        {
+        return !(*this == other);
+        }
     };
 
 struct GENSNAM
@@ -458,6 +611,15 @@ struct GENSNAM
             }
         }
     #endif
+    bool operator ==(const GENSNAM &other) const
+        {
+        return (faction == other.faction &&
+                rank == other.rank);
+        }
+    bool operator !=(const GENSNAM &other) const
+        {
+        return !(*this == other);
+        }
     };
 
 struct GENAIDT
@@ -503,6 +665,20 @@ struct GENAIDT
             }
         }
     #endif
+    bool operator ==(const GENAIDT &other) const
+        {
+        return (aggression == other.aggression &&
+                confidence == other.confidence && 
+                energyLevel == other.energyLevel && 
+                responsibility == other.responsibility && 
+                flags == other.flags && 
+                trainSkill == other.trainSkill && 
+                trainLevel == other.trainLevel);
+        }
+    bool operator !=(const GENAIDT &other) const
+        {
+        return !(*this == other);
+        }
     };
 
 struct GENCTDA
@@ -587,6 +763,18 @@ struct GENCTDA
             printf("CTDA\n");
         }
     #endif
+    bool operator ==(const GENCTDA &other) const
+        {
+        return (operType == other.operType &&
+                AlmostEqual(compValue,other.compValue,2) &&
+                ifunc == other.ifunc &&
+                param1 == other.param1 &&
+                param2 == other.param2);
+        }
+    bool operator !=(const GENCTDA &other) const
+        {
+        return !(*this == other);
+        }
     enum operTypeType
         {
         eEqual          = 0x00000000,
@@ -798,6 +986,16 @@ struct GENCLR
             }
         }
     #endif
+    bool operator ==(const GENCLR &other) const
+        {
+        return (red == other.red && 
+                green == other.green && 
+                blue == other.blue);
+        }
+    bool operator !=(const GENCLR &other) const
+        {
+        return !(*this == other);
+        }
     };
 
 struct MODELMODB
@@ -816,6 +1014,14 @@ struct MODELMODB
         indentation -= 2;
         }
     #endif
+    bool operator ==(const MODELMODB &other) const
+        {
+        return AlmostEqual(MODB,other.MODB,2);
+        }
+    bool operator !=(const MODELMODB &other) const
+        {
+        return !(*this == other);
+        }
     };
 
 struct GENMODEL
@@ -841,6 +1047,16 @@ struct GENMODEL
             }
         }
     #endif
+    bool operator ==(const GENMODEL &other) const
+        {
+        return (MODB == other.MODB && 
+                MODL == other.MODL && 
+                MODT == other.MODT);
+        }
+    bool operator !=(const GENMODEL &other) const
+        {
+        return !(*this == other);
+        }
     };
 
 struct GENRANK
@@ -859,6 +1075,14 @@ struct GENRANK
         indentation -= 2;
         }
     #endif
+    bool operator ==(const GENRANK &other) const
+        {
+        return (rank == other.rank);
+        }
+    bool operator !=(const GENRANK &other) const
+        {
+        return !(*this == other);
+        }
     };
 
 struct GENXOWN
@@ -884,6 +1108,16 @@ struct GENXOWN
             }
         }
     #endif
+    bool operator ==(const GENXOWN &other) const
+        {
+        return (XOWN == other.XOWN && 
+                XRNK == other.XRNK && 
+                XGLB == other.XGLB);
+        }
+    bool operator !=(const GENXOWN &other) const
+        {
+        return !(*this == other);
+        }
     };
 
 struct GENXPCI
@@ -907,6 +1141,15 @@ struct GENXPCI
             }
         }
     #endif
+    bool operator ==(const GENXPCI &other) const
+        {
+        return (XPCI == other.XPCI && 
+                FULL == other.FULL);
+        }
+    bool operator !=(const GENXPCI &other) const
+        {
+        return !(*this == other);
+        }
     };
 
 struct GENXLOD
@@ -929,6 +1172,17 @@ struct GENXLOD
             }
         }
     #endif
+    bool operator ==(const GENXLOD &other) const
+        {
+        return (AlmostEqual(lod1,other.lod1,2) && 
+                AlmostEqual(lod2,other.lod2,2) && 
+                AlmostEqual(lod3,other.lod3,2)
+                );
+        }
+    bool operator !=(const GENXLOD &other) const
+        {
+        return !(*this == other);
+        }
     };
 
 struct GENXESP
@@ -961,6 +1215,15 @@ struct GENXESP
             }
         }
     #endif
+    bool operator ==(const GENXESP &other) const
+        {
+        return (parent == other.parent && 
+                flags == other.flags);
+        }
+    bool operator !=(const GENXESP &other) const
+        {
+        return !(*this == other);
+        }
     };
 
 struct GENXSCL
@@ -979,6 +1242,14 @@ struct GENXSCL
         indentation -= 2;
         }
     #endif
+    bool operator ==(const GENXSCL &other) const
+        {
+        return (AlmostEqual(scale,other.scale,2));
+        }
+    bool operator !=(const GENXSCL &other) const
+        {
+        return !(*this == other);
+        }
     };
 
 struct GENPOSDATA
@@ -1015,6 +1286,20 @@ struct GENPOSDATA
         indentation -= 2;
         }
     #endif
+    bool operator ==(const GENPOSDATA &other) const
+        {
+        return (AlmostEqual(posX,other.posX,2) && 
+                AlmostEqual(posY,other.posY,2) && 
+                AlmostEqual(posZ,other.posZ,2) && 
+                AlmostEqual(rotX,other.rotX,2) && 
+                AlmostEqual(rotY,other.rotY,2) && 
+                AlmostEqual(rotZ,other.rotZ,2)
+                );
+        }
+    bool operator !=(const GENPOSDATA &other) const
+        {
+        return !(*this == other);
+        }
     };
 
 struct GENPGRP
@@ -1052,6 +1337,17 @@ struct GENPGRP
             }
         }
     #endif
+    bool operator ==(const GENPGRP &other) const
+        {
+        return (AlmostEqual(x,other.x,2) && 
+                AlmostEqual(y,other.y,2) && 
+                AlmostEqual(z,other.z,2) && 
+                connections == other.connections);
+        }
+    bool operator !=(const GENPGRP &other) const
+        {
+        return !(*this == other);
+        }
     };
 class Record
     {
@@ -1232,6 +1528,11 @@ class Record
         virtual int DeleteListElement(const unsigned int subField) {return -1;}
         virtual int DeleteListX2Element(const unsigned int subField, const unsigned int listIndex, const unsigned int listField) {return -1;}
         virtual int DeleteListX3Element(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field) {return -1;}
+
+        virtual int DeleteField(const unsigned int Field) {return -1;}
+        virtual int DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField) {return -1;}
+        virtual int DeleteListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field) {return -1;}
+        virtual int DeleteListX3Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field) {return -1;}
 
         virtual void Unload() abstract {};
         virtual unsigned int GetSize(bool forceCalc=false) abstract {};

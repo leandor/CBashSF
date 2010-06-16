@@ -83,6 +83,21 @@ class LIGHRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const LIGHDATA &other) const
+                {
+                return (duration == other.duration && 
+                        radius == other.radius && 
+                        color == other.color && 
+                        flags == other.flags && 
+                        AlmostEqual(falloff,other.falloff,2) && 
+                        AlmostEqual(fov,other.fov,2) && 
+                        value == other.value && 
+                        AlmostEqual(weight,other.weight,2));
+                }
+            bool operator !=(const LIGHDATA &other) const
+                {
+                return !(*this == other);
+                }
             };
         struct LIGHFNAM
             {
@@ -100,6 +115,14 @@ class LIGHRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const LIGHFNAM &other) const
+                {
+                return (AlmostEqual(fade,other.fade,2));
+                }
+            bool operator !=(const LIGHFNAM &other) const
+                {
+                return !(*this == other);
+                }
             };
     public:
         enum flagsFlags

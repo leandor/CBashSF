@@ -455,21 +455,18 @@ int Collection::Load(const bool &LoadMasters, const bool &FullLoad)
         for(unsigned int p = 0; p < (unsigned int)ModFiles.size(); ++p)
             {
             curModFile = ModFiles[p];
-            if(!curModFile->IsFake())
+            //Loads GRUP and Record Headers.  Fully loads GMST records.
+            curModFile->FormIDHandler.SetLoadOrder(LoadOrder);
+            if(curModFile->IsMerge)
+                curModFile->FormIDHandler.CreateFormIDLookup(0xFF);
+            else
                 {
-                //Loads GRUP and Record Headers.  Fully loads GMST records.
-                curModFile->FormIDHandler.SetLoadOrder(LoadOrder);
-                if(curModFile->IsMerge)
-                    curModFile->FormIDHandler.CreateFormIDLookup(0xFF);
-                else
-                    {
-                    curModFile->FormIDHandler.CreateFormIDLookup(expandedIndex);
-                    ++expandedIndex;
-                    }
-                //printf("Start Load\n");
-                curModFile->Load(ReadThreads, FullLoad);
-                //printf("End Index\n");
+                curModFile->FormIDHandler.CreateFormIDLookup(expandedIndex);
+                ++expandedIndex;
                 }
+            //printf("Start Load\n");
+            curModFile->Load(ReadThreads, FullLoad);
+            //printf("End Index\n");
             }
         //printf("Done!\n");
         isLoaded = true;
@@ -1101,18 +1098,18 @@ int Collection::GetNumFIDConflicts(char *ModName, unsigned int recordFID)
 
 void Collection::GetFIDConflicts(char *ModName, unsigned int recordFID, char **ModNames)
     {
-    Record *curRecord = NULL;
-    ModFile *curModFile = NULL;
-    std::multimap<unsigned int, std::pair<ModFile *, Record *> >::iterator it = LookupRecord(ModName, recordFID, curModFile, curRecord);
-    if(curModFile == NULL || curRecord == NULL || it == FID_ModFile_Record.end())
+    std::multimap<unsigned int, std::pair<ModFile *, Record *> >::iterator it = FID_ModFile_Record.find(recordFID);
+
+    if(it == FID_ModFile_Record.end())
         return;
+
     unsigned int count = (unsigned int)FID_ModFile_Record.count(recordFID);
     std::vector<ModFile *> sortedConflicts;
     sortedConflicts.reserve(count);
     for(unsigned int x = 0; x < count;++it, ++x)
         sortedConflicts.push_back(it->second.first);
     std::sort(sortedConflicts.begin(), sortedConflicts.end(), sortLoad);
-    unsigned char x = 0;
+    unsigned int x = 0;
     for(int y = (int)sortedConflicts.size() - 1; y >= 0; --y, ++x)
         ModNames[x] = sortedConflicts[y]->FileName;
     sortedConflicts.clear();
@@ -1508,6 +1505,70 @@ int Collection::DeleteFIDListX3Element(char *ModName, unsigned int recordFID, co
     curRecord->Read(curModFile->FormIDHandler);
     return curRecord->DeleteListX3Element(subField, listIndex, listField, listX2Index, listX2Field);
     }
+
+int Collection::DeleteTES4Field(char *ModName, const unsigned int Field)
+    {
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return -1;
+    
+    return curModFile->TES4.DeleteField(Field);
+    }
+
+int Collection::DeleteGMSTField(char *ModName, char *recordEDID, const unsigned int Field)
+    {
+    ModFile *curModFile = NULL;
+    GMSTRecord *curRecord = NULL;
+    LookupGMSTRecord(ModName, recordEDID, curModFile, curRecord);
+    if(curModFile == NULL || curRecord == NULL)
+        return -1;
+    return curRecord->DeleteField(Field);
+    }
+
+int Collection::DeleteFIDField(char *ModName, unsigned int recordFID, const unsigned int Field)
+    {
+    ModFile *curModFile = NULL;
+    Record *curRecord = NULL;
+    LookupRecord(ModName, recordFID, curModFile, curRecord);
+    if(curModFile == NULL || curRecord == NULL)
+        return -1;
+    curRecord->Read(curModFile->FormIDHandler);
+    return curRecord->DeleteField(Field);
+    }
+
+int Collection::DeleteFIDListField(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField)
+    {
+    ModFile *curModFile = NULL;
+    Record *curRecord = NULL;
+    LookupRecord(ModName, recordFID, curModFile, curRecord);
+    if(curModFile == NULL || curRecord == NULL)
+        return -1;
+    curRecord->Read(curModFile->FormIDHandler);
+    return curRecord->DeleteListField(subField, listIndex, listField);
+    }
+
+int Collection::DeleteFIDListX2Field(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field)
+    {
+    ModFile *curModFile = NULL;
+    Record *curRecord = NULL;
+    LookupRecord(ModName, recordFID, curModFile, curRecord);
+    if(curModFile == NULL || curRecord == NULL)
+        return -1;
+    curRecord->Read(curModFile->FormIDHandler);
+    return curRecord->DeleteListX2Field(subField, listIndex, listField, listX2Index, listX2Field);
+    }
+
+int Collection::DeleteFIDListX3Field(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field)
+    {
+    ModFile *curModFile = NULL;
+    Record *curRecord = NULL;
+    LookupRecord(ModName, recordFID, curModFile, curRecord);
+    if(curModFile == NULL || curRecord == NULL)
+        return -1;
+    curRecord->Read(curModFile->FormIDHandler);
+    return curRecord->DeleteListX3Field(subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field);
+    }
+
 
 #ifdef _DEBUG
 void Collection::Debug(int debugLevel, bool AllRecords)

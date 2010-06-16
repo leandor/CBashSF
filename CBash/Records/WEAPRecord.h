@@ -81,6 +81,21 @@ class WEAPRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const WEAPDATA &other) const
+                {
+                return (weaponType == other.weaponType && 
+                        AlmostEqual(speed,other.speed,2) && 
+                        AlmostEqual(reach,other.reach,2) && 
+                        flags == other.flags && 
+                        value == other.value && 
+                        health == other.health && 
+                        AlmostEqual(weight,other.weight,2) && 
+                        damage == other.damage);
+                }
+            bool operator !=(const WEAPDATA &other) const
+                {
+                return !(*this == other);
+                }
             };
         #pragma pack(pop)
     public:

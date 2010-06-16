@@ -190,6 +190,50 @@ class CSTYRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const CSTYCSTD &other) const
+                {
+                return (dodgeChance == other.dodgeChance && 
+                        lrChance == other.lrChance && 
+                        AlmostEqual(lrTimerMin,other.lrTimerMin,2) && 
+                        AlmostEqual(lrTimerMax,other.lrTimerMax,2) && 
+                        AlmostEqual(forTimerMin,other.forTimerMin,2) && 
+                        AlmostEqual(forTimerMax,other.forTimerMax,2) && 
+                        AlmostEqual(backTimerMin,other.backTimerMin,2) &&                         
+                        AlmostEqual(backTimerMax,other.backTimerMax,2) && 
+                        AlmostEqual(idleTimerMin,other.idleTimerMin,2) && 
+                        AlmostEqual(idleTimerMax,other.idleTimerMax,2) && 
+                        blkChance == other.blkChance && 
+                        atkChance == other.atkChance && 
+                        AlmostEqual(atkBRecoil,other.atkBRecoil,2) && 
+                        AlmostEqual(atkBUnc,other.atkBUnc,2) && 
+                        AlmostEqual(atkBh2h,other.atkBh2h,2) && 
+                        pAtkChance == other.pAtkChance && 
+                        AlmostEqual(pAtkBRecoil,other.pAtkBRecoil,2) && 
+                        AlmostEqual(pAtkBUnc,other.pAtkBUnc,2) && 
+                        pAtkNormal == other.pAtkNormal && 
+                        pAtkFor == other.pAtkFor && 
+                        pAtkBack == other.pAtkBack && 
+                        pAtkL == other.pAtkL && 
+                        pAtkR == other.pAtkR && 
+                        AlmostEqual(holdTimerMin,other.holdTimerMin,2) && 
+                        AlmostEqual(holdTimerMax,other.holdTimerMax,2) && 
+                        flagsA == other.flagsA && 
+                        acroDodge == other.acroDodge && 
+                        AlmostEqual(rMultOpt,other.rMultOpt,2) && 
+                        AlmostEqual(rMultMax,other.rMultMax,2) && 
+                        AlmostEqual(mDistance,other.mDistance,2) && 
+                        AlmostEqual(rDistance,other.rDistance,2) && 
+                        AlmostEqual(buffStand,other.buffStand,2) && 
+                        AlmostEqual(rStand,other.rStand,2) && 
+                        AlmostEqual(groupStand,other.groupStand,2) && 
+                        rushChance == other.rushChance && 
+                        AlmostEqual(rushMult,other.rushMult,2) && 
+                        flagsB == other.flagsB);
+                }
+            bool operator !=(const CSTYCSTD &other) const
+                {
+                return !(*this == other);
+                }
             };
 
         struct CSTYCSAD
@@ -259,6 +303,38 @@ class CSTYRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const CSTYCSAD &other) const
+                {
+                return (AlmostEqual(dodgeFMult,other.dodgeFMult,2) && 
+                        AlmostEqual(dodgeFBase,other.dodgeFBase,2) && 
+                        AlmostEqual(encSBase,other.encSBase,2) && 
+                        AlmostEqual(encSMult,other.encSMult,2) && 
+                        AlmostEqual(dodgeAtkMult,other.dodgeAtkMult,2) && 
+                        
+                        AlmostEqual(dodgeNAtkMult,other.dodgeNAtkMult,2) && 
+                        AlmostEqual(dodgeBAtkMult,other.dodgeBAtkMult,2) && 
+                        AlmostEqual(dodgeBNAtkMult,other.dodgeBNAtkMult,2) && 
+                        
+                        AlmostEqual(dodgeFAtkMult,other.dodgeFAtkMult,2) && 
+                        AlmostEqual(dodgeFNAtkMult,other.dodgeFNAtkMult,2) && 
+                        AlmostEqual(blockMult,other.blockMult,2) && 
+                        AlmostEqual(blockBase,other.blockBase,2) && 
+                        
+                        AlmostEqual(blockAtkMult,other.blockAtkMult,2) && 
+                        AlmostEqual(blockNAtkMult,other.blockNAtkMult,2) && 
+                        AlmostEqual(atkMult,other.atkMult,2) && 
+                        AlmostEqual(atkBase,other.atkBase,2) && 
+                        AlmostEqual(atkAtkMult,other.atkAtkMult,2) && 
+                        
+                        AlmostEqual(atkNAtkMult,other.atkNAtkMult,2) && 
+                        AlmostEqual(atkBlockMult,other.atkBlockMult,2) && 
+                        AlmostEqual(pAtkFBase,other.pAtkFBase,2) && 
+                        AlmostEqual(pAtkFMult,other.pAtkFMult,2));
+                }
+            bool operator !=(const CSTYCSAD &other) const
+                {
+                return !(*this == other);
+                }
             };
     public:
         enum flagsAFlags

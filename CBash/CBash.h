@@ -130,6 +130,7 @@ extern "C" __declspec(dllexport) int SetTES4FieldStrA(const unsigned int Collect
 extern "C" __declspec(dllexport) int SetTES4FieldUI(const unsigned int CollectionIndex, char *ModName, const unsigned int Field, unsigned int FieldValue);
 extern "C" __declspec(dllexport) int SetTES4FieldF (const unsigned int CollectionIndex, char *ModName, const unsigned int Field, float FieldValue);
 extern "C" __declspec(dllexport) int SetTES4FieldR (const unsigned int CollectionIndex, char *ModName, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
+extern "C" __declspec(dllexport) int DeleteTES4Field (const unsigned int CollectionIndex, char *ModName, const unsigned int Field);
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 extern "C" __declspec(dllexport) void GetGMSTRecords(const unsigned int CollectionIndex, char *ModName, char **RecordEIDs);
@@ -143,6 +144,7 @@ extern "C" __declspec(dllexport) int SetGMSTFieldStr (const unsigned int Collect
 extern "C" __declspec(dllexport) int SetGMSTFieldI (const unsigned int CollectionIndex, char *ModName, char *recordEDID, const unsigned int Field, int FieldValue);
 extern "C" __declspec(dllexport) int SetGMSTFieldUI(const unsigned int CollectionIndex, char *ModName, char *recordEDID, const unsigned int Field, unsigned int FieldValue);
 extern "C" __declspec(dllexport) int SetGMSTFieldF (const unsigned int CollectionIndex, char *ModName, char *recordEDID, const unsigned int Field, float FieldValue);
+extern "C" __declspec(dllexport) int DeleteGMSTField(const unsigned int CollectionIndex, char *ModName, char *recordEDID, const unsigned int Field);
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 //ADD
@@ -370,6 +372,7 @@ extern "C" __declspec(dllexport) int SetFIDFieldUI (const unsigned int Collectio
 extern "C" __declspec(dllexport) int SetFIDFieldUIA(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int Field, unsigned int FieldValue[], unsigned int nSize);
 extern "C" __declspec(dllexport) int SetFIDFieldF  (const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int Field, float FieldValue);
 extern "C" __declspec(dllexport) int SetFIDFieldR  (const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
+extern "C" __declspec(dllexport) int DeleteFIDField(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int Field);
 ////////////////////////////////////////////////////////////////////////
 extern "C" __declspec(dllexport) int CreateFIDListElement(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField);
 extern "C" __declspec(dllexport) int CreateFIDListX2Element(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
@@ -390,6 +393,7 @@ extern "C" __declspec(dllexport) int SetFIDListFieldUI (const unsigned int Colle
 extern "C" __declspec(dllexport) int SetFIDListFieldUIA(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue[], unsigned int nSize);
 extern "C" __declspec(dllexport) int SetFIDListFieldF  (const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, float FieldValue);
 extern "C" __declspec(dllexport) int SetFIDListFieldR  (const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize);
+extern "C" __declspec(dllexport) int DeleteFIDListField(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
 ////////////////////////////////////////////////////////////////////////
 extern "C" __declspec(dllexport) int SetFIDListX2FieldC (const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, char FieldValue);
 extern "C" __declspec(dllexport) int SetFIDListX2FieldUC(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned char FieldValue);
@@ -401,6 +405,7 @@ extern "C" __declspec(dllexport) int SetFIDListX2FieldI (const unsigned int Coll
 extern "C" __declspec(dllexport) int SetFIDListX2FieldUI(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned int FieldValue);
 extern "C" __declspec(dllexport) int SetFIDListX2FieldF (const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, float FieldValue);
 extern "C" __declspec(dllexport) int SetFIDListX2FieldR (const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned char *FieldValue, unsigned int nSize);
+extern "C" __declspec(dllexport) int DeleteFIDListX2Field(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field);
 ////////////////////////////////////////////////////////////////////////
 extern "C" __declspec(dllexport) int SetFIDListX3FieldC (const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, char FieldValue);
 extern "C" __declspec(dllexport) int SetFIDListX3FieldUC(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, unsigned char FieldValue);
@@ -412,6 +417,7 @@ extern "C" __declspec(dllexport) int SetFIDListX3FieldI (const unsigned int Coll
 extern "C" __declspec(dllexport) int SetFIDListX3FieldUI(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, unsigned int FieldValue);
 extern "C" __declspec(dllexport) int SetFIDListX3FieldF (const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, float FieldValue);
 extern "C" __declspec(dllexport) int SetFIDListX3FieldR (const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, unsigned char *FieldValue, unsigned int nSize);
+extern "C" __declspec(dllexport) int DeleteFIDListX3Field(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field);
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 //ADD

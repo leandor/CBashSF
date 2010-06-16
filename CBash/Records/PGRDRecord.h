@@ -50,6 +50,14 @@ class PGRDRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const PGRDDATA &other) const
+                {
+                return (count == other.count);
+                }
+            bool operator !=(const PGRDDATA &other) const
+                {
+                return !(*this == other);
+                }
             };
 
         //struct PGRDPGRR
@@ -104,6 +112,17 @@ class PGRDRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const PGRDPGRI &other) const
+                {
+                return (point == other.point && 
+                        AlmostEqual(x,other.x,2) && 
+                        AlmostEqual(y,other.y,2) && 
+                        AlmostEqual(z,other.z,2));
+                }
+            bool operator !=(const PGRDPGRI &other) const
+                {
+                return !(*this == other);
+                }
             };
 
         struct PGRDPGRL
@@ -132,6 +151,14 @@ class PGRDRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const PGRDPGRL &other) const
+                {
+                return (points == other.points);
+                }
+            bool operator !=(const PGRDPGRL &other) const
+                {
+                return !(*this == other);
+                }
             };
     public:
         ReqRecordField<PGRDDATA> DATA;

@@ -71,6 +71,17 @@ class BOOKRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const BOOKDATA &other) const
+                {
+                return (flags == other.flags && 
+                        teaches == other.teaches && 
+                        value == other.value && 
+                        AlmostEqual(weight,other.weight,2));
+                }
+            bool operator !=(const BOOKDATA &other) const
+                {
+                return !(*this == other);
+                }
             };
         #pragma pack(pop)
     public:

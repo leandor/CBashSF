@@ -75,6 +75,19 @@ class WRLDRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const WRLDMNAM &other) const
+                {
+                return (dimX == other.dimX && 
+                        dimY == other.dimY && 
+                        NWCellX == other.NWCellX && 
+                        NWCellY == other.NWCellY && 
+                        SECellX == other.SECellX && 
+                        SECellY == other.SECellY);
+                }
+            bool operator !=(const WRLDMNAM &other) const
+                {
+                return !(*this == other);
+                }
             };
 
         struct WRLDUNK
@@ -95,6 +108,15 @@ class WRLDRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const WRLDUNK &other) const
+                {
+                return (AlmostEqual(unk1,other.unk1,2) && 
+                        AlmostEqual(unk2,other.unk2,2));
+                }
+            bool operator !=(const WRLDUNK &other) const
+                {
+                return !(*this == other);
+                }
             };
 
     public:

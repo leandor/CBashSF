@@ -47,6 +47,14 @@ class GLOBRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const GLOBFNAM &other) const
+                {
+                return (format == other.format);
+                }
+            bool operator !=(const GLOBFNAM &other) const
+                {
+                return !(*this == other);
+                }
             };
 
         struct GLOBFLTV
@@ -65,6 +73,14 @@ class GLOBRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const GLOBFLTV &other) const
+                {
+                return (AlmostEqual(value,other.value,2));
+                }
+            bool operator !=(const GLOBFLTV &other) const
+                {
+                return !(*this == other);
+                }
             };
     public:
         STRING EDID;

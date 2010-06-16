@@ -71,6 +71,17 @@ class SPELRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const SPELSPIT &other) const
+                {
+                return (spellType == other.spellType && 
+                        cost == other.cost && 
+                        level == other.level && 
+                        flags == other.flags);
+                }
+            bool operator !=(const SPELSPIT &other) const
+                {
+                return !(*this == other);
+                }
             };
     public:
         enum flagsFlags

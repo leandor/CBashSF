@@ -65,6 +65,15 @@ class CONTRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const CONTDATA &other) const
+                {
+                return (flags == other.flags && 
+                        AlmostEqual(weight,other.weight,2));
+                }
+            bool operator !=(const CONTDATA &other) const
+                {
+                return !(*this == other);
+                }
             };
         #pragma pack(pop)
     public:

@@ -56,6 +56,14 @@ class SLGMRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const SLGMSOUL &other) const
+                {
+                return (soul == other.soul);
+                }
+            bool operator !=(const SLGMSOUL &other) const
+                {
+                return !(*this == other);
+                }
             };
         struct SLGMSLCP
             {
@@ -73,6 +81,14 @@ class SLGMRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const SLGMSLCP &other) const
+                {
+                return (capacity == other.capacity);
+                }
+            bool operator !=(const SLGMSLCP &other) const
+                {
+                return !(*this == other);
+                }
             };
     public:
         enum eSoulType

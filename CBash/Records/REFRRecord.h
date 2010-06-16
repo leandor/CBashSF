@@ -78,6 +78,15 @@ class REFRRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const REFRXTEL &other) const
+                {
+                return (destinationFid == other.destinationFid && 
+                        destination == other.destination);
+                }
+            bool operator !=(const REFRXTEL &other) const
+                {
+                return !(*this == other);
+                }
             };
 
         struct REFRXLOC
@@ -125,6 +134,16 @@ class REFRRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const REFRXLOC &other) const
+                {
+                return (level == other.level && 
+                        key == other.key && 
+                        flags == other.flags);
+                }
+            bool operator !=(const REFRXLOC &other) const
+                {
+                return !(*this == other);
+                }
             };
 
         struct REFRXSED
@@ -154,6 +173,21 @@ class REFRRecord : public Record
                 indentation -= 2;
                 }
             #endif
+            bool operator ==(const REFRXSED &other) const
+                {
+                if(!isOffset)
+                    {
+                    if(!other.isOffset)
+                        return (seed == other.seed);
+                    }
+                else if(other.isOffset)
+                    return offset == other.offset;
+                return false;
+                }
+            bool operator !=(const REFRXSED &other) const
+                {
+                return !(*this == other);
+                }
             };
 
         struct REFRXCHG
@@ -172,6 +206,14 @@ class REFRRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const REFRXCHG &other) const
+                {
+                return (AlmostEqual(charge,other.charge,2));
+                }
+            bool operator !=(const REFRXCHG &other) const
+                {
+                return !(*this == other);
+                }
             };
 
         struct REFRXHLT
@@ -190,6 +232,14 @@ class REFRRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const REFRXHLT &other) const
+                {
+                return (health == other.health);
+                }
+            bool operator !=(const REFRXHLT &other) const
+                {
+                return !(*this == other);
+                }
             };
 
         struct REFRXLCM
@@ -208,6 +258,14 @@ class REFRRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const REFRXLCM &other) const
+                {
+                return (levelMod == other.levelMod);
+                }
+            bool operator !=(const REFRXLCM &other) const
+                {
+                return !(*this == other);
+                }
             };
 
         struct REFRXCNT
@@ -226,6 +284,14 @@ class REFRRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const REFRXCNT &other) const
+                {
+                return (count == other.count);
+                }
+            bool operator !=(const REFRXCNT &other) const
+                {
+                return !(*this == other);
+                }
             };
 
         struct REFRTNAM
@@ -249,6 +315,14 @@ class REFRRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const REFRTNAM &other) const
+                {
+                return (markerType == other.markerType);
+                }
+            bool operator !=(const REFRTNAM &other) const
+                {
+                return !(*this == other);
+                }
             };
 
         struct REFRMAPMARKER
@@ -275,6 +349,16 @@ class REFRRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const REFRMAPMARKER &other) const
+                {
+                return (FNAM == other.FNAM && 
+                        FULL == other.FULL && 
+                        TNAM == other.TNAM);
+                }
+            bool operator !=(const REFRMAPMARKER &other) const
+                {
+                return !(*this == other);
+                }
             };
 
     public:

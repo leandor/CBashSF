@@ -59,6 +59,16 @@ class LANDRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const LANDNORMALS &other) const
+                {
+                return (x == other.x && 
+                        y == other.y && 
+                        z == other.z);
+                }
+            bool operator !=(const LANDNORMALS &other) const
+                {
+                return !(*this == other);
+                }
             };
 
         struct LANDVNML
@@ -94,6 +104,18 @@ class LANDRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const LANDVNML &other) const
+                {
+                for(unsigned int x = 0; x < 33; ++x)
+                    for(unsigned int y = 0; y < 33; ++y)
+                        if(VNML[x][y] != other.VNML[x][y])
+                            return false;
+                return true;
+                }
+            bool operator !=(const LANDVNML &other) const
+                {
+                return !(*this == other);
+                }
             };
 
         struct LANDVHGT
@@ -139,6 +161,20 @@ class LANDRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const LANDVHGT &other) const
+                {
+                if(!AlmostEqual(offset,other.offset,2))
+                    return false;
+                for(unsigned int x = 0; x < 33; ++x)
+                    for(unsigned int y = 0; y < 33; ++y)
+                        if(VHGT[x][y] != other.VHGT[x][y])
+                            return false;
+                return true;
+                }
+            bool operator !=(const LANDVHGT &other) const
+                {
+                return !(*this == other);
+                }
             };
 
         struct LANDCOLORS
@@ -163,6 +199,16 @@ class LANDRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const LANDCOLORS &other) const
+                {
+                return (red == other.red && 
+                        green == other.green && 
+                        blue == other.blue);
+                }
+            bool operator !=(const LANDCOLORS &other) const
+                {
+                return !(*this == other);
+                }
             };
 
         struct LANDVCLR
@@ -198,6 +244,18 @@ class LANDRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const LANDVCLR &other) const
+                {
+                for(unsigned int x = 0; x < 33; ++x)
+                    for(unsigned int y = 0; y < 33; ++y)
+                        if(VCLR[x][y] != other.VCLR[x][y])
+                            return false;
+                return true;
+                }
+            bool operator !=(const LANDVCLR &other) const
+                {
+                return !(*this == other);
+                }
             };
 
         struct LANDGENTXT
@@ -228,6 +286,16 @@ class LANDRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const LANDGENTXT &other) const
+                {
+                return (texture == other.texture && 
+                        quadrant == other.quadrant && 
+                        layer == other.layer);
+                }
+            bool operator !=(const LANDGENTXT &other) const
+                {
+                return !(*this == other);
+                }
             };
 
         struct LANDVTXT
@@ -258,6 +326,15 @@ class LANDRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const LANDVTXT &other) const
+                {
+                return (position == other.position && 
+                        AlmostEqual(opacity,other.opacity,2));
+                }
+            bool operator !=(const LANDVTXT &other) const
+                {
+                return !(*this == other);
+                }
             };
 
         struct LANDLAYERS
@@ -276,6 +353,15 @@ class LANDRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const LANDLAYERS &other) const
+                {
+                return (ATXT == other.ATXT && 
+                        VTXT == other.VTXT);
+                }
+            bool operator !=(const LANDLAYERS &other) const
+                {
+                return !(*this == other);
+                }
             };
         //struct LANDPOINTS
         //    {

@@ -417,6 +417,13 @@ class Collection
         int DeleteFIDListX2Element(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
         int DeleteFIDListX3Element(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field);
 
+        int DeleteTES4Field(char *ModName, const unsigned int Field);
+        int DeleteGMSTField(char *ModName, char *recordEDID, const unsigned int Field);
+        int DeleteFIDField(char *ModName, unsigned int recordFID, const unsigned int Field);
+        int DeleteFIDListField(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
+        int DeleteFIDListX2Field(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field);
+        int DeleteFIDListX3Field(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field);
+
         template<class T>
         void SetTES4Field(char *ModName, const unsigned int Field, T FieldValue, unsigned int nSize)
             {

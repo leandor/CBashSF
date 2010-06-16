@@ -60,6 +60,17 @@ class FLORRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const FLORPFPC &other) const
+                {
+                return (spring == other.spring && 
+                        summer == other.summer && 
+                        fall == other.fall && 
+                        winter == other.winter);
+                }
+            bool operator !=(const FLORPFPC &other) const
+                {
+                return !(*this == other);
+                }
             };
     public:
         STRING EDID;

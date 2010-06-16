@@ -59,6 +59,15 @@ class CLMTRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const CLMTWLST &other) const
+                {
+                return (weather == other.weather && 
+                        chance == other.chance);
+                }
+            bool operator !=(const CLMTWLST &other) const
+                {
+                return !(*this == other);
+                }
             };
 
         struct CLMTTNAM
@@ -89,6 +98,19 @@ class CLMTRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const CLMTTNAM &other) const
+                {
+                return (riseBegin == other.riseBegin && 
+                        riseEnd == other.riseEnd && 
+                        setBegin == other.setBegin && 
+                        setEnd == other.setEnd && 
+                        volatility == other.volatility && 
+                        phaseLength == other.phaseLength);
+                }
+            bool operator !=(const CLMTTNAM &other) const
+                {
+                return !(*this == other);
+                }
             };
     public:
         STRING EDID;

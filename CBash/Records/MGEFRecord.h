@@ -115,6 +115,28 @@ class MGEFRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const MGEFDATA &other) const
+                {
+                return (flags == other.flags && 
+                        AlmostEqual(baseCost,other.baseCost,2) && 
+                        associated == other.associated && 
+                        school == other.school && 
+                        resistValue == other.resistValue && 
+                        light == other.light && 
+                        AlmostEqual(projectileSpeed,other.projectileSpeed,2) && 
+                        effectShader == other.effectShader && 
+                        enchantEffect == other.enchantEffect && 
+                        castingSound == other.castingSound && 
+                        boltSound == other.boltSound && 
+                        hitSound == other.hitSound && 
+                        areaSound == other.areaSound && 
+                        AlmostEqual(cefEnchantment,other.cefEnchantment,2) && 
+                        AlmostEqual(cefBarter,other.cefBarter,2));
+                }
+            bool operator !=(const MGEFDATA &other) const
+                {
+                return !(*this == other);
+                }
             };
     public:
         enum flagsFlags

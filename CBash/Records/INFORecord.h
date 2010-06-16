@@ -75,6 +75,15 @@ class INFORecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const INFODATA &other) const
+                {
+                return (dialType == other.dialType && 
+                        flags == other.flags);
+                }
+            bool operator !=(const INFODATA &other) const
+                {
+                return !(*this == other);
+                }
             };
 
         struct INFOTRDT
@@ -113,6 +122,16 @@ class INFORecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const INFOTRDT &other) const
+                {
+                return (emotionType == other.emotionType && 
+                        emotionValue == other.emotionValue && 
+                        responseNum == other.responseNum);
+                }
+            bool operator !=(const INFOTRDT &other) const
+                {
+                return !(*this == other);
+                }
             };
         struct INFOResponse
             {
@@ -132,6 +151,16 @@ class INFORecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const INFOResponse &other) const
+                {
+                return (TRDT == other.TRDT && 
+                        NAM1 == other.NAM1 && 
+                        NAM2 == other.NAM2);
+                }
+            bool operator !=(const INFOResponse &other) const
+                {
+                return !(*this == other);
+                }
             enum eEmotionType
                 {
                 eNeutral  = 0,

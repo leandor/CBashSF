@@ -69,6 +69,17 @@ class ENCHRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const ENCHENIT &other) const
+                {
+                return (itemType == other.itemType && 
+                        chargeAmount == other.chargeAmount && 
+                        enchantCost == other.enchantCost && 
+                        flags == other.flags);
+                }
+            bool operator !=(const ENCHENIT &other) const
+                {
+                return !(*this == other);
+                }
             };
     public:
         enum flagsFlags

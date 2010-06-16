@@ -94,6 +94,8 @@ char * PrintFormID(FormID curFormID);
 char * PrintFormID(unsigned int curFormID);
 #endif
 
+bool AlmostEqual(float A, float B, int maxUlps);
+
 template<class T>
 struct RecordField
     {
@@ -103,7 +105,12 @@ struct RecordField
     unsigned int GetSize() const
         {return sizeof(T);}
     bool IsLoaded() const
-        {return isLoaded;}
+        {
+        T defaultValue;
+        if(value == defaultValue)
+            return false;
+        return isLoaded;
+        }
     void Unload()
         {
         T newValue;
@@ -125,7 +132,15 @@ struct RecordField
         curPos += subSize;
         return true;
         }
-
+    bool operator ==(const RecordField<T> &other) const
+        {
+        return (value == other.value && 
+                isLoaded == other.isLoaded);
+        }
+    bool operator !=(const RecordField<T> &other) const
+        {
+        return !(*this == other);
+        }
     #ifdef _DEBUG
     void Debug(const char *name, int debugLevel, unsigned int &indentation)
         {
@@ -165,6 +180,14 @@ struct ReqRecordField
         curPos += subSize;
         return true;
         }
+    bool operator ==(const ReqRecordField<T> &other) const
+        {
+        return (value == other.value);
+        }
+    bool operator !=(const ReqRecordField<T> &other) const
+        {
+        return !(*this == other);
+        }
 
     #ifdef _DEBUG
     void Debug(const char *name, int debugLevel, unsigned int &indentation)
@@ -191,7 +214,10 @@ struct OptRecordField
     unsigned int GetSize() const
         {return sizeof(T);}
     bool IsLoaded() const
-        {return value != NULL;}
+        {
+        T defaultValue;
+        return (value != NULL && *value != defaultValue);
+        }
     void Load()
         {
         if(value == NULL)
@@ -238,6 +264,21 @@ struct OptRecordField
                 value = NULL;
                 }
         return *this;
+        }
+    bool operator ==(const OptRecordField<T> &other) const
+        {
+        if(!IsLoaded())
+            {
+            if(!other.IsLoaded())
+                return true;
+            }
+        else if(other.IsLoaded() && *value == *other.value)
+            return true;
+        return false;
+        }
+    bool operator !=(const OptRecordField<T> &other) const
+        {
+        return !(*this == other);
         }
 
     #ifdef _DEBUG
@@ -327,6 +368,22 @@ struct STRING
                 }
         return *this;
         }
+    bool operator ==(const STRING &other) const
+        {
+        if(!IsLoaded())
+            {
+            if(!other.IsLoaded())
+                return true;
+            }
+        else if(other.IsLoaded() && (strcmp(value, other.value) == 0))
+            return true;
+        return false;
+        }
+    bool operator !=(const STRING &other) const
+        {
+        return !(*this == other);
+        }
+
     #ifdef _DEBUG
     void Debug(const char *name, int debugLevel, unsigned int &indentation)
         {
@@ -422,6 +479,22 @@ struct NONNULLSTRING
                 }
         return *this;
         }
+    bool operator ==(const NONNULLSTRING &other) const
+        {
+        if(!IsLoaded())
+            {
+            if(!other.IsLoaded())
+                return true;
+            }
+        else if(other.IsLoaded() && (strcmp(value, other.value) == 0))
+            return true;
+        return false;
+        }
+    bool operator !=(const NONNULLSTRING &other) const
+        {
+        return !(*this == other);
+        }
+
     #ifdef _DEBUG
     void Debug(const char *name, int debugLevel, unsigned int &indentation)
         {
@@ -504,6 +577,22 @@ struct RAWBYTES
                 }
         return *this;
         }
+    bool operator ==(const RAWBYTES &other) const
+        {
+        if(!IsLoaded())
+            {
+            if(!other.IsLoaded())
+                return true;
+            }
+        else if(other.IsLoaded() && size == other.size && (memcmp(value, other.value, size) == 0))
+            return true;
+        return false;
+        }
+    bool operator !=(const RAWBYTES &other) const
+        {
+        return !(*this == other);
+        }
+
     #ifdef _DEBUG
     void Debug(const char *name, int debugLevel, unsigned int &indentation)
         {

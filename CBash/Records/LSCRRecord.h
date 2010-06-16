@@ -61,6 +61,17 @@ class LSCRRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const LSCRLNAM &other) const
+                {
+                return (direct == other.direct && 
+                        indirect == other.indirect && 
+                        gridY == other.gridY && 
+                        gridX == other.gridX);
+                }
+            bool operator !=(const LSCRLNAM &other) const
+                {
+                return !(*this == other);
+                }
             };
     public:
         STRING EDID;

@@ -411,7 +411,7 @@ unsigned int GetCorrectedFID(const unsigned int CollectionIndex, char *ModName, 
     try
         {
         if(CollectionIndex < Collections.size())
-            Collections[CollectionIndex]->GetCorrectedFID(ModName, recordObjectID);
+            return Collections[CollectionIndex]->GetCorrectedFID(ModName, recordObjectID);
         else
             throw 1;
         }
@@ -1694,6 +1694,23 @@ int SetTES4FieldR(const unsigned int CollectionIndex, char *ModName, const unsig
         }
     return 0;
     }
+
+int DeleteTES4Field(const unsigned int CollectionIndex, char *ModName, const unsigned int Field)
+    {
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->DeleteTES4Field(ModName, Field);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("Error deleting:\nMod: %s\nRecord: TES4\nField: %i\n", ModName, Field);
+        return -1;
+        }
+    return 0;
+    }
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 void GetGMSTRecords(const unsigned int CollectionIndex, char *ModName, char **RecordEIDs)
@@ -1846,6 +1863,23 @@ int SetGMSTFieldF(const unsigned int CollectionIndex, char *ModName, char *recor
     catch(...)
         {
         printf("Error setting:\nMod: %s\nRecord: %s\nField: %i\nValue: %f\n", ModName, recordEDID, Field, FieldValue);
+        return -1;
+        }
+    return 0;
+    }
+    
+int DeleteGMSTField(const unsigned int CollectionIndex, char *ModName, char *recordEDID, const unsigned int Field)
+    {
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->DeleteGMSTField(ModName, recordEDID, Field);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("Error deleting:\nMod: %s\nRecord: %s\nField: %i\n", ModName, recordEDID, Field);
         return -1;
         }
     return 0;
@@ -5299,6 +5333,7 @@ int SetFIDFieldC(const unsigned int CollectionIndex, char *ModName, unsigned int
         }
     return 0;
     }
+
 int SetFIDFieldUC(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int Field, unsigned char FieldValue)
     {
     try
@@ -5315,6 +5350,7 @@ int SetFIDFieldUC(const unsigned int CollectionIndex, char *ModName, unsigned in
         }
     return 0;
     }
+
 int SetFIDFieldStr(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int Field, char *FieldValue)
     {
     try
@@ -5331,6 +5367,7 @@ int SetFIDFieldStr(const unsigned int CollectionIndex, char *ModName, unsigned i
         }
     return 0;
     }
+
 int SetFIDFieldStrA(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int Field, char **FieldValue, unsigned int nSize)
     {
     try
@@ -5349,6 +5386,7 @@ int SetFIDFieldStrA(const unsigned int CollectionIndex, char *ModName, unsigned 
         }
     return 0;
     }
+
 int SetFIDFieldS(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int Field, short FieldValue)
     {
     try
@@ -5365,6 +5403,7 @@ int SetFIDFieldS(const unsigned int CollectionIndex, char *ModName, unsigned int
         }
     return 0;
     }
+
 int SetFIDFieldUS(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int Field, unsigned short FieldValue)
     {
     try
@@ -5381,6 +5420,7 @@ int SetFIDFieldUS(const unsigned int CollectionIndex, char *ModName, unsigned in
         }
     return 0;
     }
+
 int SetFIDFieldI(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int Field, int FieldValue)
     {
     try
@@ -5397,6 +5437,7 @@ int SetFIDFieldI(const unsigned int CollectionIndex, char *ModName, unsigned int
         }
     return 0;
     }
+
 int SetFIDFieldUI(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int Field, unsigned int FieldValue)
     {
     try
@@ -5413,6 +5454,7 @@ int SetFIDFieldUI(const unsigned int CollectionIndex, char *ModName, unsigned in
         }
     return 0;
     }
+
 int SetFIDFieldUIA(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int Field, unsigned int FieldValue[], unsigned int nSize)
     {
     try
@@ -5432,6 +5474,7 @@ int SetFIDFieldUIA(const unsigned int CollectionIndex, char *ModName, unsigned i
         }
     return 0;
     }
+
 int SetFIDFieldF(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int Field, float FieldValue)
     {
     try
@@ -5448,6 +5491,7 @@ int SetFIDFieldF(const unsigned int CollectionIndex, char *ModName, unsigned int
         }
     return 0;
     }
+
 int SetFIDFieldR(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
     {
     try
@@ -5463,6 +5507,23 @@ int SetFIDFieldR(const unsigned int CollectionIndex, char *ModName, unsigned int
         for(unsigned int p = 0; p < nSize; p++)
             printf("%02X", FieldValue[p]);
         printf("\n");
+        return -1;
+        }
+    return 0;
+    }
+    
+int DeleteFIDField(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int Field)
+    {
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->DeleteFIDField(ModName, recordFID, Field);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("Error deleting:\nMod: %s\nFormID: %08X\nField: %i\n", ModName, recordFID, Field);
         return -1;
         }
     return 0;
@@ -5732,6 +5793,7 @@ int SetFIDListFieldF (const unsigned int CollectionIndex, char *ModName, unsigne
         }
     return 0;
     }
+
 int SetFIDListFieldR (const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize)
     {
     try
@@ -5747,6 +5809,23 @@ int SetFIDListFieldR (const unsigned int CollectionIndex, char *ModName, unsigne
         for(unsigned int p = 0; p < nSize; p++)
             printf("%02X", FieldValue[p]);
         printf("\n");
+        return -1;
+        }
+    return 0;
+    }
+
+int DeleteFIDListField(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField)
+    {
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->DeleteFIDListField(ModName, recordFID, subField, listIndex, listField);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("Error setting:\nMod: %s\nFormID: %08X\nField: %i\n", ModName, recordFID, subField);
         return -1;
         }
     return 0;
@@ -5866,6 +5945,7 @@ int SetFIDListX2FieldI (const unsigned int CollectionIndex, char *ModName, unsig
         }
     return 0;
     }
+
 int SetFIDListX2FieldUI(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned int FieldValue)
     {
     try
@@ -5882,6 +5962,7 @@ int SetFIDListX2FieldUI(const unsigned int CollectionIndex, char *ModName, unsig
         }
     return 0;
     }
+
 int SetFIDListX2FieldF (const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, float FieldValue)
     {
     try
@@ -5898,6 +5979,7 @@ int SetFIDListX2FieldF (const unsigned int CollectionIndex, char *ModName, unsig
         }
     return 0;
     }
+
 int SetFIDListX2FieldR (const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned char *FieldValue, unsigned int nSize)
     {
     try
@@ -5913,6 +5995,23 @@ int SetFIDListX2FieldR (const unsigned int CollectionIndex, char *ModName, unsig
         for(unsigned int p = 0; p < nSize; p++)
             printf("%02X", FieldValue[p]);
         printf("\n");
+        return -1;
+        }
+    return 0;
+    }
+
+int DeleteFIDListX2Field(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field)
+    {
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->DeleteFIDListX2Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("Error deleting:\nMod: %s\nFormID: %08X\nField: %i\n", ModName, recordFID, subField);
         return -1;
         }
     return 0;
@@ -6032,6 +6131,7 @@ int SetFIDListX3FieldI (const unsigned int CollectionIndex, char *ModName, unsig
         }
     return 0;
     }
+
 int SetFIDListX3FieldUI(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, unsigned int FieldValue)
     {
     try
@@ -6048,6 +6148,7 @@ int SetFIDListX3FieldUI(const unsigned int CollectionIndex, char *ModName, unsig
         }
     return 0;
     }
+
 int SetFIDListX3FieldF (const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, float FieldValue)
     {
     try
@@ -6064,6 +6165,7 @@ int SetFIDListX3FieldF (const unsigned int CollectionIndex, char *ModName, unsig
         }
     return 0;
     }
+
 int SetFIDListX3FieldR (const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, unsigned char *FieldValue, unsigned int nSize)
     {
     try
@@ -6079,6 +6181,23 @@ int SetFIDListX3FieldR (const unsigned int CollectionIndex, char *ModName, unsig
         for(unsigned int p = 0; p < nSize; p++)
             printf("%02X", FieldValue[p]);
         printf("\n");
+        return -1;
+        }
+    return 0;
+    }
+
+int DeleteFIDListX3Field(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field)
+    {
+    try
+        {
+        if(CollectionIndex < Collections.size())
+            Collections[CollectionIndex]->DeleteFIDListX3Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field);
+        else
+            throw 1;
+        }
+    catch(...)
+        {
+        printf("Error setting:\nMod: %s\nFormID: %08X\nField: %i\n", ModName, recordFID, subField);
         return -1;
         }
     return 0;

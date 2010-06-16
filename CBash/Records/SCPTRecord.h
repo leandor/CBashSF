@@ -46,12 +46,30 @@ class SCPTRecord : public Record
                 memset(&unused1[0], 0, sizeof(unused1));
                 memset(&unused2[0], 0, sizeof(unused2));
                 }
+            bool operator ==(const SCPTSLSD &other) const
+                {
+                return (index == other.index && 
+                        flags == other.flags);
+                }
+            bool operator !=(const SCPTSLSD &other) const
+                {
+                return !(*this == other);
+                }
             };
 
         struct SCPTVARS
             {
             ReqRecordField<SCPTSLSD> SLSD;
             STRING SCVR;
+            bool operator ==(const SCPTVARS &other) const
+                {
+                return (SLSD == other.SLSD && 
+                        SCVR == other.SCVR);
+                }
+            bool operator !=(const SCPTVARS &other) const
+                {
+                return !(*this == other);
+                }
             enum flagsFlags
                 {
                 fIsLongOrShort = 0x00000001

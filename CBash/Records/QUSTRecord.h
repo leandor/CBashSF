@@ -67,6 +67,15 @@ class QUSTRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const QUSTDATA &other) const
+                {
+                return (flags == other.flags && 
+                        priority == other.priority);
+                }
+            bool operator !=(const QUSTDATA &other) const
+                {
+                return !(*this == other);
+                }
             };
         struct QUSTEntry
             {
@@ -126,6 +135,20 @@ class QUSTRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const QUSTEntry &other) const
+                {
+                return (QSDT == other.QSDT && 
+                        CTDA == other.CTDA && 
+                        CNAM == other.CNAM && 
+                        SCHR == other.SCHR && 
+                        SCDA == other.SCDA && 
+                        SCTX == other.SCTX && 
+                        SCR_ == other.SCR_);
+                }
+            bool operator !=(const QUSTEntry &other) const
+                {
+                return !(*this == other);
+                }
             enum entriesFlags
                 {
                 fIsCompletes = 0x00000001
@@ -169,6 +192,14 @@ class QUSTRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const QUSTINDX &other) const
+                {
+                return (stage == other.stage);
+                }
+            bool operator !=(const QUSTINDX &other) const
+                {
+                return !(*this == other);
+                }
             };
         struct QUSTStage
             {
@@ -203,6 +234,15 @@ class QUSTRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const QUSTStage &other) const
+                {
+                return (INDX == other.INDX && 
+                        Entries == other.Entries);
+                }
+            bool operator !=(const QUSTStage &other) const
+                {
+                return !(*this == other);
+                }
             };
         struct QUSTQSTA
             {
@@ -231,6 +271,15 @@ class QUSTRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const QUSTQSTA &other) const
+                {
+                return (targetId == other.targetId && 
+                        flags == other.flags);
+                }
+            bool operator !=(const QUSTQSTA &other) const
+                {
+                return !(*this == other);
+                }
             };
         struct QUSTTarget
             {
@@ -265,6 +314,15 @@ class QUSTRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const QUSTTarget &other) const
+                {
+                return (QSTA == other.QSTA && 
+                        CTDA == other.CTDA);
+                }
+            bool operator !=(const QUSTTarget &other) const
+                {
+                return !(*this == other);
+                }
             enum targetsFlags
                 {
                 fIsIgnoresLocks = 0x00000001

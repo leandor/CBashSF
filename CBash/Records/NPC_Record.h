@@ -162,6 +162,43 @@ class NPC_Record : public Record
                     }
                 }
             #endif
+            bool operator ==(const NPC_DATA &other) const
+                {
+                return (armorer == other.armorer && 
+                        athletics == other.athletics && 
+                        blade == other.blade && 
+                        block == other.block && 
+                        blunt == other.blunt && 
+                        h2h == other.h2h && 
+                        heavyArmor == other.heavyArmor && 
+                        alchemy == other.alchemy && 
+                        alteration == other.alteration && 
+                        conjuration == other.conjuration && 
+                        destruction == other.destruction && 
+                        illusion == other.illusion && 
+                        mysticism == other.mysticism && 
+                        restoration == other.restoration && 
+                        acrobatics == other.acrobatics && 
+                        lightArmor == other.lightArmor && 
+                        marksman == other.marksman && 
+                        mercantile == other.mercantile && 
+                        security == other.security && 
+                        sneak == other.sneak && 
+                        speechcraft == other.speechcraft && 
+                        health == other.health && 
+                        strength == other.strength && 
+                        intelligence == other.intelligence && 
+                        willpower == other.willpower && 
+                        agility == other.agility && 
+                        speed == other.speed && 
+                        endurance == other.endurance && 
+                        personality == other.personality && 
+                        luck == other.luck);
+                }
+            bool operator !=(const NPC_DATA &other) const
+                {
+                return !(*this == other);
+                }
             };
         #pragma pack(pop)
         struct NPC_LNAM
@@ -180,6 +217,14 @@ class NPC_Record : public Record
                     }
                 }
             #endif
+            bool operator ==(const NPC_LNAM &other) const
+                {
+                return (AlmostEqual(hairLength,other.hairLength,2));
+                }
+            bool operator !=(const NPC_LNAM &other) const
+                {
+                return !(*this == other);
+                }
             };
         struct NPC_FNAM
             {
@@ -197,6 +242,14 @@ class NPC_Record : public Record
                     }
                 }
             #endif
+            bool operator ==(const NPC_FNAM &other) const
+                {
+                return (fnam == other.fnam);
+                }
+            bool operator !=(const NPC_FNAM &other) const
+                {
+                return !(*this == other);
+                }
             };
     public:
         enum flagsFlags
@@ -424,6 +477,9 @@ class NPC_Record : public Record
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char FieldValue);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char **FieldValue, unsigned int nSize);
+
+        int DeleteField(const unsigned int Field);
+        int DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize(bool forceCalc=false);

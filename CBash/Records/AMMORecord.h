@@ -80,6 +80,18 @@ class AMMORecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const AMMODATA &other) const
+                {
+                return (AlmostEqual(speed,other.speed,2) && 
+                        flags == other.flags && 
+                        value == other.value && 
+                        AlmostEqual(weight,other.weight,2) && 
+                        damage == other.damage);
+                }
+            bool operator !=(const AMMODATA &other) const
+                {
+                return !(*this == other);
+                }
             };
         #pragma pack(pop)
     public:

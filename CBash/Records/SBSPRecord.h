@@ -51,6 +51,16 @@ class SBSPRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const SBSPDNAM &other) const
+                {
+                return (AlmostEqual(sizeX,other.sizeX,2) && 
+                        AlmostEqual(sizeY,other.sizeY,2) && 
+                        AlmostEqual(sizeZ,other.sizeZ,2));
+                }
+            bool operator !=(const SBSPDNAM &other) const
+                {
+                return !(*this == other);
+                }
             };
     public:
         STRING EDID;

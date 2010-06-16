@@ -1011,3 +1011,281 @@ void NPC_Record::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
         }
     return;
     }
+
+int NPC_Record::DeleteField(const unsigned int Field)
+    {
+    GENAIDT defaultAIDT;
+    GENACBS defaultACBS;
+    NPC_DATA defaultDATA;
+    GENCLR defaultHCLR;
+    NPC_FNAM defaultFNAM;
+    switch(Field)
+        {
+        case 5: //eid
+            EDID.Unload();
+            break;
+        case 6: //full
+            FULL.Unload();
+            break;
+        case 7: //modPath
+            MODL.MODL.Unload();
+            break;
+        case 8: //modb
+            MODL.MODB.Unload();
+            break;
+        case 9: //modt_p
+            MODL.MODT.Unload();
+            break;
+        case 10: //flags
+            ACBS.value.flags = defaultACBS.flags;
+            break;
+        case 11: //baseSpell
+            ACBS.value.baseSpell = defaultACBS.baseSpell;
+            break;
+        case 12: //fatigue
+            ACBS.value.fatigue = defaultACBS.fatigue;
+            break;
+        case 13: //barterGold
+            ACBS.value.barterGold = defaultACBS.barterGold;
+            break;
+        case 14: //level
+            ACBS.value.level = defaultACBS.level;
+            break;
+        case 15: //calcMin
+            ACBS.value.calcMin = defaultACBS.calcMin;
+            break;
+        case 16: //calcMax
+            ACBS.value.calcMax = defaultACBS.calcMax;
+            break;
+        case 18: //deathItem
+            INAM.Unload();
+            break;
+        case 19: //race
+            RNAM.Unload();
+            break;
+        case 20: //spells
+            for(unsigned int x = 0; x < SPLO.size(); x++)
+                delete SPLO[x];
+            SPLO.clear();
+            break;
+        case 21: //script
+            SCRI.Unload();
+            break;
+        case 23: //aggression
+            AIDT.value.aggression = defaultAIDT.aggression;
+            break;
+        case 24: //confidence
+            AIDT.value.confidence = defaultAIDT.confidence;
+            break;
+        case 25: //energyLevel
+            AIDT.value.confidence = defaultAIDT.confidence;
+            break;
+        case 26: //responsibility
+            AIDT.value.responsibility = defaultAIDT.responsibility;
+            break;
+        case 27: //services
+            AIDT.value.flags = defaultAIDT.flags;
+            break;
+        case 28: //trainSkill
+            AIDT.value.trainSkill = defaultAIDT.trainSkill;
+            break;
+        case 29: //trainLevel
+            AIDT.value.trainLevel = defaultAIDT.trainLevel;
+            break;
+        case 30: //unused1
+            AIDT.value.unused1[0] = defaultAIDT.unused1[0];
+            AIDT.value.unused1[1] = defaultAIDT.unused1[1];
+            break;
+        case 31: //aiPackages
+            for(unsigned int x = 0; x < PKID.size(); x++)
+                delete PKID[x];
+            PKID.clear();
+            break;
+        case 32: //animations
+            KFFZ.clear();
+            break;
+        case 33: //iclass
+            CNAM.Unload();
+            break;
+        case 34: //armorer
+            DATA.value.armorer = defaultDATA.armorer;
+            break;
+        case 35: //athletics
+            DATA.value.athletics = defaultDATA.athletics;
+            break;
+        case 36: //blade
+            DATA.value.blade = defaultDATA.blade;
+            break;
+        case 37: //block
+            DATA.value.block = defaultDATA.block;
+            break;
+        case 38: //blunt
+            DATA.value.blunt = defaultDATA.blunt;
+            break;
+        case 39: //h2h
+            DATA.value.h2h = defaultDATA.h2h;
+            break;
+        case 40: //heavyArmor
+            DATA.value.heavyArmor = defaultDATA.heavyArmor;
+            break;
+        case 41: //alchemy
+            DATA.value.alchemy = defaultDATA.alchemy;
+            break;
+        case 42: //alteration
+            DATA.value.alteration = defaultDATA.alteration;
+            break;
+        case 43: //conjuration
+            DATA.value.conjuration = defaultDATA.conjuration;
+            break;
+        case 44: //destruction
+            DATA.value.destruction = defaultDATA.destruction;
+            break;
+        case 45: //illusion
+            DATA.value.illusion = defaultDATA.illusion;
+            break;
+        case 46: //mysticism
+            DATA.value.mysticism = defaultDATA.mysticism;
+            break;
+        case 47: //restoration
+            DATA.value.restoration = defaultDATA.restoration;
+            break;
+        case 48: //acrobatics
+            DATA.value.acrobatics = defaultDATA.acrobatics;
+            break;
+        case 49: //lightArmor
+            DATA.value.lightArmor = defaultDATA.lightArmor;
+            break;
+        case 50: //marksman
+            DATA.value.marksman = defaultDATA.marksman;
+            break;
+        case 51: //mercantile
+            DATA.value.mercantile = defaultDATA.mercantile;
+            break;
+        case 52: //security
+            DATA.value.security = defaultDATA.security;
+            break;
+        case 53: //sneak
+            DATA.value.sneak = defaultDATA.sneak;
+            break;
+        case 54: //speechcraft
+            DATA.value.speechcraft = defaultDATA.speechcraft;
+            break;
+        case 55: //health
+            DATA.value.health = defaultDATA.health;
+            break;
+        case 56: //unused2
+            DATA.value.unused1[0] = defaultDATA.unused1[0];
+            DATA.value.unused1[1] = defaultDATA.unused1[1];
+            break;
+        case 57: //strength
+            DATA.value.strength = defaultDATA.strength;
+            break;
+        case 58: //intelligence
+            DATA.value.intelligence = defaultDATA.intelligence;
+            break;
+        case 59: //willpower
+            DATA.value.willpower = defaultDATA.willpower;
+            break;
+        case 60: //agility
+            DATA.value.agility = defaultDATA.agility;
+            break;
+        case 61: //speed
+            DATA.value.speed = defaultDATA.speed;
+            break;
+        case 62: //endurance
+            DATA.value.endurance = defaultDATA.endurance;
+            break;
+        case 63: //personality
+            DATA.value.personality = defaultDATA.personality;
+            break;
+        case 64: //luck
+            DATA.value.luck = defaultDATA.luck;
+            break;
+        case 65: //hair
+            HNAM.Unload();
+            break;
+        case 66: //hairLength
+            LNAM.Unload();
+            break;
+        case 67: //eye
+            ENAM.Unload();
+            break;
+        case 68: //hairRed
+            HCLR.value.red = defaultHCLR.red;
+            break;
+        case 69: //hairGreen
+            HCLR.value.green = defaultHCLR.green;
+            break;
+        case 70: //hairBlue
+            HCLR.value.blue = defaultHCLR.blue;
+            break;
+        case 71: //unused3
+            HCLR.value.unused1 = defaultHCLR.unused1;
+            break;
+        case 72: //combatStyle
+            ZNAM.Unload();
+            break;
+        case 73: //fggs_p
+            FGGS.Unload();
+            break;
+        case 74: //fgga_p
+            FGGA.Unload();
+            break;
+        case 75: //fgts_p
+            FGTS.Unload();
+            break;
+        case 76: //fnam
+            FNAM.value.fnam = defaultFNAM.fnam;
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }
+
+int NPC_Record::DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField)
+    {
+    GENSNAM defaultSNAM;
+    GENCNTO defaultCNTO;
+    switch(subField)
+        {
+        case 17: //factions
+            if(listIndex >= SNAM.size())
+                return 0;
+            switch(listField)
+                {
+                case 1: //faction
+                    SNAM[listIndex]->value.faction = defaultSNAM.faction;
+                    break;
+                case 2: //rank
+                    SNAM[listIndex]->value.rank = defaultSNAM.rank;
+                    break;
+                case 3: //unused1
+                    SNAM[listIndex]->value.unused1[0] = defaultSNAM.unused1[0];
+                    SNAM[listIndex]->value.unused1[1] = defaultSNAM.unused1[1];
+                    SNAM[listIndex]->value.unused1[2] = defaultSNAM.unused1[2];
+                    break;
+                default:
+                    return 0;
+                }
+            break;
+        case 22: //items
+            if(listIndex >= CNTO.size())
+                return 0;
+            switch(listField)
+                {
+                case 1: //item
+                    CNTO[listIndex]->value.item = defaultCNTO.item;
+                    break;
+                case 2: //count
+                    CNTO[listIndex]->value.count = defaultCNTO.count;
+                    break;
+                default:
+                    return 0;
+                }
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }

@@ -54,6 +54,14 @@ class FACTRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const FACTCNAM &other) const
+                {
+                return (AlmostEqual(crimeGoldMultiplier,other.crimeGoldMultiplier,2));
+                }
+            bool operator !=(const FACTCNAM &other) const
+                {
+                return !(*this == other);
+                }
             };
 
         struct FACTRNAM
@@ -76,6 +84,17 @@ class FACTRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const FACTRNAM &other) const
+                {
+                return (RNAM == other.RNAM && 
+                        MNAM == other.MNAM && 
+                        FNAM == other.FNAM && 
+                        INAM == other.INAM);
+                }
+            bool operator !=(const FACTRNAM &other) const
+                {
+                return !(*this == other);
+                }
             };
     public:
         enum flagsFlags

@@ -78,6 +78,26 @@ class GMSTRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const GMSTDATA &other) const
+                {
+                if(format != other.format)
+                    return false;
+                switch(format)
+                    {
+                    case 's':
+                        return strcmp(s, other.s) == 0;
+                    case 'i':
+                        return i == other.i;
+                    case 'f':
+                        return AlmostEqual(f,other.f,2);
+                    default:
+                        return false;
+                    }
+                }
+            bool operator !=(const GMSTDATA &other) const
+                {
+                return !(*this == other);
+                }
             };
     public:
         STRING EDID;

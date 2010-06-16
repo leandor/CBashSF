@@ -67,6 +67,17 @@ class WTHRRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const WTHRColors &other) const
+                {
+                return (rise == other.rise && 
+                        day == other.day && 
+                        set == other.set && 
+                        night == other.night);
+                }
+            bool operator !=(const WTHRColors &other) const
+                {
+                return !(*this == other);
+                }
             };
         struct WTHRNAM0
             {
@@ -120,6 +131,23 @@ class WTHRRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const WTHRNAM0 &other) const
+                {
+                return (upperSky == other.upperSky && 
+                        fog == other.fog && 
+                        lowerClouds == other.lowerClouds && 
+                        ambient == other.ambient && 
+                        sunlight == other.sunlight && 
+                        sun == other.sun && 
+                        stars == other.stars && 
+                        lowerSky == other.lowerSky && 
+                        horizon == other.horizon && 
+                        upperClouds == other.upperClouds);
+                }
+            bool operator !=(const WTHRNAM0 &other) const
+                {
+                return !(*this == other);
+                }
             };
         struct WTHRFNAM
             {
@@ -143,6 +171,17 @@ class WTHRRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const WTHRFNAM &other) const
+                {
+                return (AlmostEqual(fogDayNear,other.fogDayNear,2) && 
+                        AlmostEqual(fogDayFar,other.fogDayFar,2) && 
+                        AlmostEqual(fogNightNear,other.fogNightNear,2) && 
+                        AlmostEqual(fogNightFar,other.fogNightFar,2));
+                }
+            bool operator !=(const WTHRFNAM &other) const
+                {
+                return !(*this == other);
+                }
             };
         struct WTHRHNAM
             {
@@ -192,6 +231,27 @@ class WTHRRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const WTHRHNAM &other) const
+                {
+                return (AlmostEqual(eyeAdaptSpeed,other.eyeAdaptSpeed,2) && 
+                        AlmostEqual(blurRadius,other.blurRadius,2) && 
+                        AlmostEqual(blurPasses,other.blurPasses,2) && 
+                        AlmostEqual(emissiveMult,other.emissiveMult,2) && 
+                        AlmostEqual(targetLum,other.targetLum,2) && 
+                        AlmostEqual(upperLumClamp,other.upperLumClamp,2) && 
+                        AlmostEqual(brightScale,other.brightScale,2) && 
+                        AlmostEqual(brightClamp,other.brightClamp,2) && 
+                        AlmostEqual(lumRampNoTex,other.lumRampNoTex,2) && 
+                        AlmostEqual(lumRampMin,other.lumRampMin,2) && 
+                        AlmostEqual(lumRampMax,other.lumRampMax,2) && 
+                        AlmostEqual(sunlightDimmer,other.sunlightDimmer,2) && 
+                        AlmostEqual(grassDimmer,other.grassDimmer,2) && 
+                        AlmostEqual(treeDimmer,other.treeDimmer,2));
+                }
+            bool operator !=(const WTHRHNAM &other) const
+                {
+                return !(*this == other);
+                }
             };
         struct WTHRDATA
             {
@@ -243,6 +303,28 @@ class WTHRRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const WTHRDATA &other) const
+                {
+                return (windSpeed == other.windSpeed && 
+                        lowerCloudSpeed == other.lowerCloudSpeed && 
+                        upperCloudSpeed == other.upperCloudSpeed && 
+                        transDelta == other.transDelta && 
+                        sunGlare == other.sunGlare && 
+                        sunDamage == other.sunDamage && 
+                        rainFadeIn == other.rainFadeIn && 
+                        rainFadeOut == other.rainFadeOut && 
+                        boltFadeIn == other.boltFadeIn && 
+                        boltFadeOut == other.boltFadeOut && 
+                        boltFrequency == other.boltFrequency && 
+                        weatherType == other.weatherType && 
+                        boltRed == other.boltRed && 
+                        boltGreen == other.boltGreen && 
+                        boltBlue == other.boltBlue);
+                }
+            bool operator !=(const WTHRDATA &other) const
+                {
+                return !(*this == other);
+                }
             };
         struct WTHRSNAM
             {
@@ -265,6 +347,15 @@ class WTHRRecord : public Record
                     printf("      SNAM\n");
                 }
             #endif
+            bool operator ==(const WTHRSNAM &other) const
+                {
+                return (sound == other.sound && 
+                        type == other.type);
+                }
+            bool operator !=(const WTHRSNAM &other) const
+                {
+                return !(*this == other);
+                }
             enum eSoundType
                 {
                 eDefault,

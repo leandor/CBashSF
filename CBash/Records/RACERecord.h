@@ -66,6 +66,15 @@ class RACERecord : public Record
             {
             char value, boost;
             RACESKILL(bool newRecord=false):value(-1), boost(0) {}
+            bool operator ==(const RACESKILL &other) const
+                {
+                return (value == other.value && 
+                        boost == other.boost);
+                }
+            bool operator !=(const RACESKILL &other) const
+                {
+                return !(*this == other);
+                }
             };
 
         struct RACEDATA
@@ -120,6 +129,25 @@ class RACERecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const RACEDATA &other) const
+                {
+                return (skills[0] == other.skills[0] && 
+                        skills[1] == other.skills[1] && 
+                        skills[2] == other.skills[2] && 
+                        skills[3] == other.skills[3] && 
+                        skills[4] == other.skills[4] && 
+                        skills[5] == other.skills[5] && 
+                        skills[6] == other.skills[6] && 
+                        AlmostEqual(maleHeight,other.maleHeight,2) && 
+                        AlmostEqual(femaleHeight,other.femaleHeight,2) && 
+                        AlmostEqual(maleWeight,other.maleWeight,2) && 
+                        AlmostEqual(femaleWeight,other.femaleWeight,2) && 
+                        flags == other.flags);
+                }
+            bool operator !=(const RACEDATA &other) const
+                {
+                return !(*this == other);
+                }
             };
 
         struct RACEVNAM
@@ -140,6 +168,15 @@ class RACERecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const RACEVNAM &other) const
+                {
+                return (maleVoice == other.maleVoice && 
+                        femaleVoice == other.femaleVoice);
+                }
+            bool operator !=(const RACEVNAM &other) const
+                {
+                return !(*this == other);
+                }
             };
 
         struct RACEDNAM
@@ -160,6 +197,15 @@ class RACERecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const RACEDNAM &other) const
+                {
+                return (defaultHairMale == other.defaultHairMale && 
+                        defaultHairFemale == other.defaultHairFemale);
+                }
+            bool operator !=(const RACEDNAM &other) const
+                {
+                return !(*this == other);
+                }
             };
 
         struct RACECNAM
@@ -178,6 +224,14 @@ class RACERecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const RACECNAM &other) const
+                {
+                return (defaultHairColor == other.defaultHairColor);
+                }
+            bool operator !=(const RACECNAM &other) const
+                {
+                return !(*this == other);
+                }
             };
 
         struct RACEPNAM
@@ -196,6 +250,14 @@ class RACERecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const RACEPNAM &other) const
+                {
+                return (AlmostEqual(mainClamp,other.mainClamp,2));
+                }
+            bool operator !=(const RACEPNAM &other) const
+                {
+                return !(*this == other);
+                }
             };
 
         struct RACEUNAM
@@ -214,6 +276,14 @@ class RACERecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const RACEUNAM &other) const
+                {
+                return (AlmostEqual(faceClamp,other.faceClamp,2));
+                }
+            bool operator !=(const RACEUNAM &other) const
+                {
+                return !(*this == other);
+                }
             };
 
         struct RACEATTR
@@ -274,6 +344,29 @@ class RACERecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const RACEATTR &other) const
+                {
+                return (maleStrength == other.maleStrength && 
+                        maleIntelligence == other.maleIntelligence && 
+                        maleWillpower == other.maleWillpower && 
+                        maleAgility == other.maleAgility && 
+                        maleSpeed == other.maleSpeed && 
+                        maleEndurance == other.maleEndurance && 
+                        malePersonality == other.malePersonality && 
+                        maleLuck == other.maleLuck && 
+                        femaleStrength == other.femaleStrength && 
+                        femaleIntelligence == other.femaleIntelligence && 
+                        femaleWillpower == other.femaleWillpower && 
+                        femaleAgility == other.femaleAgility && 
+                        femaleSpeed == other.femaleSpeed && 
+                        femaleEndurance == other.femaleEndurance && 
+                        femalePersonality == other.femalePersonality && 
+                        femaleLuck == other.femaleLuck);
+                }
+            bool operator !=(const RACEATTR &other) const
+                {
+                return !(*this == other);
+                }
             };
 
         struct RACEMODEL
@@ -301,6 +394,17 @@ class RACERecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const RACEMODEL &other) const
+                {
+                return (MODB == other.MODB && 
+                        MODL == other.MODL && 
+                        MODT == other.MODT && 
+                        ICON == other.ICON);
+                }
+            bool operator !=(const RACEMODEL &other) const
+                {
+                return !(*this == other);
+                }
             };
 
         struct RACESNAM
@@ -322,6 +426,15 @@ class RACERecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const RACESNAM &other) const
+                {
+                return (SNAM[0] == other.SNAM[0] && 
+                        SNAM[1] == other.SNAM[1]);
+                }
+            bool operator !=(const RACESNAM &other) const
+                {
+                return !(*this == other);
+                }
             };
     public:
         enum flagsFlags

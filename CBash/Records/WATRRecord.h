@@ -52,6 +52,14 @@ class WATRRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const WATRANAM &other) const
+                {
+                return (opacity == other.opacity);
+                }
+            bool operator !=(const WATRANAM &other) const
+                {
+                return !(*this == other);
+                }
             };
         struct WATRDATA
             {
@@ -151,6 +159,39 @@ class WATRRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const WATRDATA &other) const
+                {
+                return (AlmostEqual(windVelocity,other.windVelocity,2) && 
+                        AlmostEqual(windDirection,other.windDirection,2) && 
+                        AlmostEqual(waveAmp,other.waveAmp,2) && 
+                        AlmostEqual(waveFreq,other.waveFreq,2) && 
+                        AlmostEqual(sunPower,other.sunPower,2) && 
+                        AlmostEqual(reflectAmt,other.reflectAmt,2) && 
+                        AlmostEqual(fresnelAmt,other.fresnelAmt,2) && 
+                        AlmostEqual(xSpeed,other.xSpeed,2) && 
+                        AlmostEqual(ySpeed,other.ySpeed,2) && 
+                        AlmostEqual(fogNear,other.fogNear,2) && 
+                        AlmostEqual(fogFar,other.fogFar,2) && 
+                        shallow == other.shallow && 
+                        deep == other.deep && 
+                        refl == other.refl && 
+                        blend == other.blend && 
+                        AlmostEqual(rainForce,other.rainForce,2) && 
+                        AlmostEqual(rainVelocity,other.rainVelocity,2) && 
+                        AlmostEqual(rainFalloff,other.rainFalloff,2) && 
+                        AlmostEqual(rainDampner,other.rainDampner,2) && 
+                        AlmostEqual(rainSize,other.rainSize,2) && 
+                        AlmostEqual(dispForce,other.dispForce,2) && 
+                        AlmostEqual(dispVelocity,other.dispVelocity,2) && 
+                        AlmostEqual(dispFalloff,other.dispFalloff,2) && 
+                        AlmostEqual(dispDampner,other.dispDampner,2) && 
+                        AlmostEqual(dispSize,other.dispSize,2) && 
+                        damage == other.damage);
+                }
+            bool operator !=(const WATRDATA &other) const
+                {
+                return !(*this == other);
+                }
             };
         struct WATRGNAM
             {
@@ -172,6 +213,16 @@ class WATRRecord : public Record
                     }
                 }
             #endif
+            bool operator ==(const WATRGNAM &other) const
+                {
+                return (dayWater == other.dayWater && 
+                        nightWater == other.nightWater && 
+                        underWater == other.underWater);
+                }
+            bool operator !=(const WATRGNAM &other) const
+                {
+                return !(*this == other);
+                }
             };
     public:
         enum flagsFlags
