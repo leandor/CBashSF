@@ -96,23 +96,39 @@ void * CLOTRecord::GetOtherField(const unsigned int Field)
         case 10: //flags
             return &BMDT.value.flags;
         case 11: //maleBody_modPath
-            return MODL.MODL.value;
+            if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
+                return MODL->MODL.value;
+            return NULL;
         case 12: //maleBody_modb
-            return &MODL.MODB.value.MODB;
+            if(MODL.IsLoaded() && MODL->MODB.IsLoaded())
+                return &MODL->MODB.value.MODB;
+            return NULL;
         case 14: //maleWorld_modPath
-            return MOD2.MODL.value;
+            if(MOD2.IsLoaded() && MOD2->MODL.IsLoaded())
+                return MOD2->MODL.value;
+            return NULL;
         case 15: //maleWorld_modb
-            return &MOD2.MODB.value.MODB;
+            if(MOD2.IsLoaded() && MOD2->MODB.IsLoaded())
+                return &MOD2->MODB.value.MODB;
+            return NULL;
         case 17: //maleIconPath
             return ICON.value;
         case 18: //femaleBody_modPath
-            return MOD3.MODL.value;
+            if(MOD3.IsLoaded() && MOD3->MODL.IsLoaded())
+                return MOD3->MODL.value;
+            return NULL;
         case 19: //femaleBody_modb
-            return &MOD3.MODB.value.MODB;
+            if(MOD3.IsLoaded() && MOD3->MODB.IsLoaded())
+                return &MOD3->MODB.value.MODB;
+            return NULL;
         case 21: //femaleWorld_modPath
-            return MOD4.MODL.value;
+            if(MOD4.IsLoaded() && MOD4->MODL.IsLoaded())
+                return MOD4->MODL.value;
+            return NULL;
         case 22: //femaleWorld_modb
-            return &MOD4.MODB.value.MODB;
+            if(MOD4.IsLoaded() && MOD4->MODB.IsLoaded())
+                return &MOD4->MODB.value.MODB;
+            return NULL;
         case 24: //femaleIconPath
             return ICO2.value;
         case 25: //value
@@ -129,13 +145,21 @@ unsigned int CLOTRecord::GetFieldArraySize(const unsigned int Field)
     switch(Field)
         {
         case 13: //maleBody_modt_p
-            return MODL.MODT.size;
+            if(MODL.IsLoaded() && MODL->MODT.IsLoaded())
+                return MODL->MODT.size;
+            return 0;
         case 16: //maleWorld_modt_p
-            return MOD2.MODT.size;
+            if(MOD2.IsLoaded() && MOD2->MODT.IsLoaded())
+                return MOD2->MODT.size;
+            return 0;
         case 20: //femaleBody_modt_p
-            return MOD3.MODT.size;
+            if(MOD3.IsLoaded() && MOD3->MODT.IsLoaded())
+                return MOD3->MODT.size;
+            return 0;
         case 23: //femaleWorld_modt_p
-            return MOD4.MODT.size;
+            if(MOD4.IsLoaded() && MOD4->MODT.IsLoaded())
+                return MOD4->MODT.size;
+            return 0;
         default:
             return 0;
         }
@@ -146,16 +170,28 @@ void CLOTRecord::GetFieldArray(const unsigned int Field, void **FieldValues)
     switch(Field)
         {
         case 13: //maleBody_modt_p
-            *FieldValues = MODL.MODT.value;
+            if(MODL.IsLoaded() && MODL->MODT.IsLoaded())
+                *FieldValues = MODL->MODT.value;
+            else
+                *FieldValues = NULL;
             return;
         case 16: //maleWorld_modt_p
-            *FieldValues = MOD2.MODT.value;
+            if(MOD2.IsLoaded() && MOD2->MODT.IsLoaded())
+                *FieldValues = MOD2->MODT.value;
+            else
+                *FieldValues = NULL;
             return;
         case 20: //femaleBody_modt_p
-            *FieldValues = MOD3.MODT.value;
+            if(MOD3.IsLoaded() && MOD3->MODT.IsLoaded())
+                *FieldValues = MOD3->MODT.value;
+            else
+                *FieldValues = NULL;
             return;
         case 23: //femaleWorld_modt_p
-            *FieldValues = MOD4.MODT.value;
+            if(MOD4.IsLoaded() && MOD4->MODT.IsLoaded())
+                *FieldValues = MOD4->MODT.value;
+            else
+                *FieldValues = NULL;
             return;
         default:
             *FieldValues = NULL;
@@ -174,19 +210,23 @@ void CLOTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
             FULL.Copy(FieldValue);
             break;
         case 11: //maleBody_modPath
-            MODL.MODL.Copy(FieldValue);
+            MODL.Load();
+            MODL->MODL.Copy(FieldValue);
             break;
         case 14: //maleWorld_modPath
-            MOD2.MODL.Copy(FieldValue);
+            MOD2.Load();
+            MOD2->MODL.Copy(FieldValue);
             break;
         case 17: //maleIconPath
             ICON.Copy(FieldValue);
             break;
         case 18: //femaleBody_modPath
-            MOD3.MODL.Copy(FieldValue);
+            MOD3.Load();
+            MOD3->MODL.Copy(FieldValue);
             break;
         case 21: //femaleWorld_modPath
-            MOD4.MODL.Copy(FieldValue);
+            MOD4.Load();
+            MOD4->MODL.Copy(FieldValue);
             break;
         case 24: //femaleIconPath
             ICO2.Copy(FieldValue);
@@ -242,20 +282,24 @@ void CLOTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     switch(Field)
         {
         case 12: //maleBody_modb
-            MODL.MODB.value.MODB = FieldValue;
-            MODL.MODB.isLoaded = true;
+            MODL.Load();
+            MODL->MODB.Load();
+            MODL->MODB.value.MODB = FieldValue;
             break;
         case 15: //maleWorld_modb
-            MOD2.MODB.value.MODB = FieldValue;
-            MOD2.MODB.isLoaded = true;
+            MOD2.Load();
+            MOD2->MODB.Load();
+            MOD2->MODB.value.MODB = FieldValue;
             break;
         case 19: //femaleBody_modb
-            MOD3.MODB.value.MODB = FieldValue;
-            MOD3.MODB.isLoaded = true;
+            MOD3.Load();
+            MOD3->MODB.Load();
+            MOD3->MODB.value.MODB = FieldValue;
             break;
         case 22: //femaleWorld_modb
-            MOD4.MODB.value.MODB = FieldValue;
-            MOD4.MODB.isLoaded = true;
+            MOD4.Load();
+            MOD4->MODB.Load();
+            MOD4->MODB.value.MODB = FieldValue;
             break;
         case 26: //weight
             DATA.value.weight = FieldValue;
@@ -271,16 +315,24 @@ void CLOTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     switch(Field)
         {
         case 13: //maleBody_modt_p
-            MODL.MODT.Copy(FieldValue, nSize);
+            MODL.Load();
+            MODL->MODT.Load();
+            MODL->MODT.Copy(FieldValue, nSize);
             break;
         case 16: //maleWorld_modt_p
-            MOD2.MODT.Copy(FieldValue, nSize);
+            MOD2.Load();
+            MOD2->MODT.Load();
+            MOD2->MODT.Copy(FieldValue, nSize);
             break;
         case 20: //femaleBody_modt_p
-            MOD3.MODT.Copy(FieldValue, nSize);
+            MOD3.Load();
+            MOD3->MODT.Load();
+            MOD3->MODT.Copy(FieldValue, nSize);
             break;
         case 23: //femaleWorld_modt_p
-            MOD4.MODT.Copy(FieldValue, nSize);
+            MOD4.Load();
+            MOD4->MODT.Load();
+            MOD4->MODT.Copy(FieldValue, nSize);
             break;
         default:
             return;

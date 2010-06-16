@@ -123,31 +123,40 @@ int RACERecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                         switch(curINDX)
                             {
                             case 0:
-                                MOD0.MODL.Read(buffer, subSize, curPos);
+                                MOD0.Load();
+                                MOD0->MODL.Read(buffer, subSize, curPos);
                                 break;
                             case 1:
-                                MOD1.MODL.Read(buffer, subSize, curPos);
+                                MOD1.Load();
+                                MOD1->MODL.Read(buffer, subSize, curPos);
                                 break;
                             case 2:
-                                MOD2.MODL.Read(buffer, subSize, curPos);
+                                MOD2.Load();
+                                MOD2->MODL.Read(buffer, subSize, curPos);
                                 break;
                             case 3:
-                                MOD3.MODL.Read(buffer, subSize, curPos);
+                                MOD3.Load();
+                                MOD3->MODL.Read(buffer, subSize, curPos);
                                 break;
                             case 4:
-                                MOD4.MODL.Read(buffer, subSize, curPos);
+                                MOD4.Load();
+                                MOD4->MODL.Read(buffer, subSize, curPos);
                                 break;
                             case 5:
-                                MOD5.MODL.Read(buffer, subSize, curPos);
+                                MOD5.Load();
+                                MOD5->MODL.Read(buffer, subSize, curPos);
                                 break;
                             case 6:
-                                MOD6.MODL.Read(buffer, subSize, curPos);
+                                MOD6.Load();
+                                MOD6->MODL.Read(buffer, subSize, curPos);
                                 break;
                             case 7:
-                                MOD7.MODL.Read(buffer, subSize, curPos);
+                                MOD7.Load();
+                                MOD7->MODL.Read(buffer, subSize, curPos);
                                 break;
                             case 8:
-                                MOD8.MODL.Read(buffer, subSize, curPos);
+                                MOD8.Load();
+                                MOD8->MODL.Read(buffer, subSize, curPos);
                                 break;
                             default:
                                 //ERROR
@@ -159,10 +168,12 @@ int RACERecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                             }
                         break;
                     case 2:
-                        MMODL.MODL.Read(buffer, subSize, curPos);
+                        MMODL.Load();
+                        MMODL->MODL.Read(buffer, subSize, curPos);
                         break;
                     case 3:
-                        FMODL.MODL.Read(buffer, subSize, curPos);
+                        FMODL.Load();
+                        FMODL->MODL.Read(buffer, subSize, curPos);
                         break;
                     default:
                         //ERROR
@@ -180,31 +191,40 @@ int RACERecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                         switch(curINDX)
                             {
                             case 0:
-                                MOD0.ICON.Read(buffer, subSize, curPos);
+                                MOD0.Load();
+                                MOD0->ICON.Read(buffer, subSize, curPos);
                                 break;
                             case 1:
-                                MOD1.ICON.Read(buffer, subSize, curPos);
+                                MOD1.Load();
+                                MOD1->ICON.Read(buffer, subSize, curPos);
                                 break;
                             case 2:
-                                MOD2.ICON.Read(buffer, subSize, curPos);
+                                MOD2.Load();
+                                MOD2->ICON.Read(buffer, subSize, curPos);
                                 break;
                             case 3:
-                                MOD3.ICON.Read(buffer, subSize, curPos);
+                                MOD3.Load();
+                                MOD3->ICON.Read(buffer, subSize, curPos);
                                 break;
                             case 4:
-                                MOD4.ICON.Read(buffer, subSize, curPos);
+                                MOD4.Load();
+                                MOD4->ICON.Read(buffer, subSize, curPos);
                                 break;
                             case 5:
-                                MOD5.ICON.Read(buffer, subSize, curPos);
+                                MOD5.Load();
+                                MOD5->ICON.Read(buffer, subSize, curPos);
                                 break;
                             case 6:
-                                MOD6.ICON.Read(buffer, subSize, curPos);
+                                MOD6.Load();
+                                MOD6->ICON.Read(buffer, subSize, curPos);
                                 break;
                             case 7:
-                                MOD7.ICON.Read(buffer, subSize, curPos);
+                                MOD7.Load();
+                                MOD7->ICON.Read(buffer, subSize, curPos);
                                 break;
                             case 8:
-                                MOD8.ICON.Read(buffer, subSize, curPos);
+                                MOD8.Load();
+                                MOD8->ICON.Read(buffer, subSize, curPos);
                                 break;
                             default:
                                 //ERROR
@@ -285,31 +305,40 @@ int RACERecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                         switch(curINDX)
                             {
                             case 0:
-                                MOD0.MODB.Read(buffer, subSize, curPos);
+                                MOD0.Load();
+                                MOD0->MODB.Read(buffer, subSize, curPos);
                                 break;
                             case 1:
-                                MOD1.MODB.Read(buffer, subSize, curPos);
+                                MOD1.Load();
+                                MOD1->MODB.Read(buffer, subSize, curPos);
                                 break;
                             case 2:
-                                MOD2.MODB.Read(buffer, subSize, curPos);
+                                MOD2.Load();
+                                MOD2->MODB.Read(buffer, subSize, curPos);
                                 break;
                             case 3:
-                                MOD3.MODB.Read(buffer, subSize, curPos);
+                                MOD3.Load();
+                                MOD3->MODB.Read(buffer, subSize, curPos);
                                 break;
                             case 4:
-                                MOD4.MODB.Read(buffer, subSize, curPos);
+                                MOD4.Load();
+                                MOD4->MODB.Read(buffer, subSize, curPos);
                                 break;
                             case 5:
-                                MOD5.MODB.Read(buffer, subSize, curPos);
+                                MOD5.Load();
+                                MOD5->MODB.Read(buffer, subSize, curPos);
                                 break;
                             case 6:
-                                MOD6.MODB.Read(buffer, subSize, curPos);
+                                MOD6.Load();
+                                MOD6->MODB.Read(buffer, subSize, curPos);
                                 break;
                             case 7:
-                                MOD7.MODB.Read(buffer, subSize, curPos);
+                                MOD7.Load();
+                                MOD7->MODB.Read(buffer, subSize, curPos);
                                 break;
                             case 8:
-                                MOD8.MODB.Read(buffer, subSize, curPos);
+                                MOD8.Load();
+                                MOD8->MODB.Read(buffer, subSize, curPos);
                                 break;
                             default:
                                 //ERROR
@@ -321,10 +350,12 @@ int RACERecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                             }
                         break;
                     case 2:
-                        MMODL.MODB.Read(buffer, subSize, curPos);
+                        MMODL.Load();
+                        MMODL->MODB.Read(buffer, subSize, curPos);
                         break;
                      case 3:
-                        FMODL.MODB.Read(buffer, subSize, curPos);
+                        FMODL.Load();
+                        FMODL->MODB.Read(buffer, subSize, curPos);
                         break;
                     default:
                         //ERROR
@@ -342,31 +373,40 @@ int RACERecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                         switch(curINDX)
                             {
                             case 0:
-                                MOD0.MODT.Read(buffer, subSize, curPos);
+                                MOD0.Load();
+                                MOD0->MODT.Read(buffer, subSize, curPos);
                                 break;
                             case 1:
-                                MOD1.MODT.Read(buffer, subSize, curPos);
+                                MOD1.Load();
+                                MOD1->MODT.Read(buffer, subSize, curPos);
                                 break;
                             case 2:
-                                MOD2.MODT.Read(buffer, subSize, curPos);
+                                MOD2.Load();
+                                MOD2->MODT.Read(buffer, subSize, curPos);
                                 break;
                             case 3:
-                                MOD3.MODT.Read(buffer, subSize, curPos);
+                                MOD3.Load();
+                                MOD3->MODT.Read(buffer, subSize, curPos);
                                 break;
                             case 4:
-                                MOD4.MODT.Read(buffer, subSize, curPos);
+                                MOD4.Load();
+                                MOD4->MODT.Read(buffer, subSize, curPos);
                                 break;
                             case 5:
-                                MOD5.MODT.Read(buffer, subSize, curPos);
+                                MOD5.Load();
+                                MOD5->MODT.Read(buffer, subSize, curPos);
                                 break;
                             case 6:
-                                MOD6.MODT.Read(buffer, subSize, curPos);
+                                MOD6.Load();
+                                MOD6->MODT.Read(buffer, subSize, curPos);
                                 break;
                             case 7:
-                                MOD7.MODT.Read(buffer, subSize, curPos);
+                                MOD7.Load();
+                                MOD7->MODT.Read(buffer, subSize, curPos);
                                 break;
                             case 8:
-                                MOD8.MODT.Read(buffer, subSize, curPos);
+                                MOD8.Load();
+                                MOD8->MODT.Read(buffer, subSize, curPos);
                                 break;
                             default:
                                 //ERROR
@@ -378,10 +418,12 @@ int RACERecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                             }
                         break;
                     case 2:
-                        MMODL.MODT.Read(buffer, subSize, curPos);
+                        MMODL.Load();
+                        MMODL->MODT.Read(buffer, subSize, curPos);
                         break;
                     case 3:
-                        FMODL.MODT.Read(buffer, subSize, curPos);
+                        FMODL.Load();
+                        FMODL->MODT.Read(buffer, subSize, curPos);
                         break;
                     default:
                         //ERROR
@@ -494,208 +536,208 @@ unsigned int RACERecord::GetSize(bool forceCalc)
     if(ATTR.IsLoaded())
         TotSize += ATTR.GetSize() + 6;
 
-    if(MOD0.MODL.IsLoaded())
+    if(MOD0.IsLoaded() && MOD0->MODL.IsLoaded())
         {
-        cSize = MOD0.MODL.GetSize();
+        cSize = MOD0->MODL.GetSize();
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
-        }
-    if(MOD0.MODB.IsLoaded())
-        TotSize += MOD0.MODB.GetSize() + 6;
-    if(MOD0.MODT.IsLoaded())
-        {
-        cSize = MOD0.MODT.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-    if(MOD0.ICON.IsLoaded())
-        {
-        cSize = MOD0.ICON.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(MOD1.MODL.IsLoaded())
-        {
-        cSize = MOD1.MODL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-    if(MOD1.MODB.IsLoaded())
-        TotSize += MOD1.MODB.GetSize() + 6;
-    if(MOD1.MODT.IsLoaded())
-        {
-        cSize = MOD1.MODT.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-    if(MOD1.ICON.IsLoaded())
-        {
-        cSize = MOD1.ICON.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
+        if(MOD0->MODB.IsLoaded())
+            TotSize += MOD0->MODB.GetSize() + 6;
+        if(MOD0->MODT.IsLoaded())
+            {
+            cSize = MOD0->MODT.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        if(MOD0->ICON.IsLoaded())
+            {
+            cSize = MOD0->ICON.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
         }
 
-    if(MOD2.MODL.IsLoaded())
+    if(MOD1.IsLoaded() && MOD1->MODL.IsLoaded())
         {
-        cSize = MOD2.MODL.GetSize();
+        cSize = MOD1->MODL.GetSize();
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
-        }
-    if(MOD2.MODB.IsLoaded())
-        TotSize += MOD2.MODB.GetSize() + 6;
-    if(MOD2.MODT.IsLoaded())
-        {
-        cSize = MOD2.MODT.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-    if(MOD2.ICON.IsLoaded())
-        {
-        cSize = MOD2.ICON.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(MOD3.MODL.IsLoaded())
-        {
-        cSize = MOD3.MODL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-    if(MOD3.MODB.IsLoaded())
-        TotSize += MOD3.MODB.GetSize() + 6;
-    if(MOD3.MODT.IsLoaded())
-        {
-        cSize = MOD3.MODT.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-    if(MOD3.ICON.IsLoaded())
-        {
-        cSize = MOD3.ICON.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
+        if(MOD1->MODB.IsLoaded())
+            TotSize += MOD1->MODB.GetSize() + 6;
+        if(MOD1->MODT.IsLoaded())
+            {
+            cSize = MOD1->MODT.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        if(MOD1->ICON.IsLoaded())
+            {
+            cSize = MOD1->ICON.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
         }
 
-    if(MOD4.MODL.IsLoaded())
+    if(MOD2.IsLoaded() && MOD2->MODL.IsLoaded())
         {
-        cSize = MOD4.MODL.GetSize();
+        cSize = MOD2->MODL.GetSize();
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
-        }
-    if(MOD4.MODB.IsLoaded())
-        TotSize += MOD4.MODB.GetSize() + 6;
-    if(MOD4.MODT.IsLoaded())
-        {
-        cSize = MOD4.MODT.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-    if(MOD4.ICON.IsLoaded())
-        {
-        cSize = MOD4.ICON.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(MOD5.MODL.IsLoaded())
-        {
-        cSize = MOD5.MODL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-    if(MOD5.MODB.IsLoaded())
-        TotSize += MOD5.MODB.GetSize() + 6;
-    if(MOD5.MODT.IsLoaded())
-        {
-        cSize = MOD5.MODT.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-    if(MOD5.ICON.IsLoaded())
-        {
-        cSize = MOD5.ICON.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
+        if(MOD2->MODB.IsLoaded())
+            TotSize += MOD2->MODB.GetSize() + 6;
+        if(MOD2->MODT.IsLoaded())
+            {
+            cSize = MOD2->MODT.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        if(MOD2->ICON.IsLoaded())
+            {
+            cSize = MOD2->ICON.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
         }
 
-    if(MOD6.MODL.IsLoaded())
+    if(MOD3.IsLoaded() && MOD3->MODL.IsLoaded())
         {
-        cSize = MOD6.MODL.GetSize();
+        cSize = MOD3->MODL.GetSize();
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
-        }
-    if(MOD6.MODB.IsLoaded())
-        TotSize += MOD6.MODB.GetSize() + 6;
-    if(MOD6.MODT.IsLoaded())
-        {
-        cSize = MOD6.MODT.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-    if(MOD6.ICON.IsLoaded())
-        {
-        cSize = MOD6.ICON.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(MOD7.MODL.IsLoaded())
-        {
-        cSize = MOD7.MODL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-    if(MOD7.MODB.IsLoaded())
-        TotSize += MOD7.MODB.GetSize() + 6;
-    if(MOD7.MODT.IsLoaded())
-        {
-        cSize = MOD7.MODT.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-    if(MOD7.ICON.IsLoaded())
-        {
-        cSize = MOD7.ICON.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
+        if(MOD3->MODB.IsLoaded())
+            TotSize += MOD3->MODB.GetSize() + 6;
+        if(MOD3->MODT.IsLoaded())
+            {
+            cSize = MOD3->MODT.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        if(MOD3->ICON.IsLoaded())
+            {
+            cSize = MOD3->ICON.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
         }
 
-    if(MOD8.MODL.IsLoaded())
+    if(MOD4.IsLoaded() && MOD4->MODL.IsLoaded())
         {
-        cSize = MOD8.MODL.GetSize();
+        cSize = MOD4->MODL.GetSize();
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
-        }
-    if(MOD8.MODB.IsLoaded())
-        TotSize += MOD8.MODB.GetSize() + 6;
-    if(MOD8.MODT.IsLoaded())
-        {
-        cSize = MOD8.MODT.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-    if(MOD8.ICON.IsLoaded())
-        {
-        cSize = MOD8.ICON.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
+        if(MOD4->MODB.IsLoaded())
+            TotSize += MOD4->MODB.GetSize() + 6;
+        if(MOD4->MODT.IsLoaded())
+            {
+            cSize = MOD4->MODT.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        if(MOD4->ICON.IsLoaded())
+            {
+            cSize = MOD4->ICON.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
         }
 
-    if(MMODL.MODL.IsLoaded())
+    if(MOD5.IsLoaded() && MOD5->MODL.IsLoaded())
         {
-        cSize = MMODL.MODL.GetSize();
+        cSize = MOD5->MODL.GetSize();
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
+        if(MOD5->MODB.IsLoaded())
+            TotSize += MOD5->MODB.GetSize() + 6;
+        if(MOD5->MODT.IsLoaded())
+            {
+            cSize = MOD5->MODT.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        if(MOD5->ICON.IsLoaded())
+            {
+            cSize = MOD5->ICON.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
         }
-    if(MMODL.MODB.IsLoaded())
-        TotSize += MMODL.MODB.GetSize() + 6;
-    if(MMODL.MODT.IsLoaded())
+
+    if(MOD6.IsLoaded() && MOD6->MODL.IsLoaded())
         {
-        cSize = MMODL.MODT.GetSize();
+        cSize = MOD6->MODL.GetSize();
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
+        if(MOD6->MODB.IsLoaded())
+            TotSize += MOD6->MODB.GetSize() + 6;
+        if(MOD6->MODT.IsLoaded())
+            {
+            cSize = MOD6->MODT.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        if(MOD6->ICON.IsLoaded())
+            {
+            cSize = MOD6->ICON.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        }
+
+    if(MOD7.IsLoaded() && MOD7->MODL.IsLoaded())
+        {
+        cSize = MOD7->MODL.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        if(MOD7->MODB.IsLoaded())
+            TotSize += MOD7->MODB.GetSize() + 6;
+        if(MOD7->MODT.IsLoaded())
+            {
+            cSize = MOD7->MODT.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        if(MOD7->ICON.IsLoaded())
+            {
+            cSize = MOD7->ICON.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        }
+
+    if(MOD8.IsLoaded() && MOD8->MODL.IsLoaded())
+        {
+        cSize = MOD8->MODL.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        if(MOD8->MODB.IsLoaded())
+            TotSize += MOD8->MODB.GetSize() + 6;
+        if(MOD8->MODT.IsLoaded())
+            {
+            cSize = MOD8->MODT.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        if(MOD8->ICON.IsLoaded())
+            {
+            cSize = MOD8->ICON.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        }
+
+    if(MMODL.IsLoaded() && MMODL->MODL.IsLoaded())
+        {
+        cSize = MMODL->MODL.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        if(MMODL->MODB.IsLoaded())
+            TotSize += MMODL->MODB.GetSize() + 6;
+        if(MMODL->MODT.IsLoaded())
+            {
+            cSize = MMODL->MODT.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
         }
 
     if(MICON0.IsLoaded())
@@ -729,19 +771,19 @@ unsigned int RACERecord::GetSize(bool forceCalc)
         TotSize += cSize += 6;
         }
 
-    if(FMODL.MODL.IsLoaded())
+    if(FMODL.IsLoaded() && FMODL->MODL.IsLoaded())
         {
-        cSize = FMODL.MODL.GetSize();
+        cSize = FMODL->MODL.GetSize();
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
-        }
-    if(FMODL.MODB.IsLoaded())
-        TotSize += FMODL.MODB.GetSize() + 6;
-    if(FMODL.MODT.IsLoaded())
-        {
-        cSize = FMODL.MODT.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
+        if(FMODL->MODB.IsLoaded())
+            TotSize += FMODL->MODB.GetSize() + 6;
+        if(FMODL->MODT.IsLoaded())
+            {
+            cSize = FMODL->MODT.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
         }
 
     if(FICON0.IsLoaded())
@@ -836,112 +878,132 @@ int RACERecord::WriteRecord(_FileHandler &SaveHandler)
     SaveHandler.writeSubRecord(eNAM0, NULL, 0);
 
     SaveHandler.writeSubRecord(eINDX, &curINDX, 4);
-    if(MOD0.MODL.IsLoaded())
-        SaveHandler.writeSubRecord(eMODL, MOD0.MODL.value, MOD0.MODL.GetSize());
-    if(MOD0.MODB.IsLoaded())
-        SaveHandler.writeSubRecord(eMODB, &MOD0.MODB.value, MOD0.MODB.GetSize());
-    if(MOD0.MODT.IsLoaded())
-        SaveHandler.writeSubRecord(eMODT, MOD0.MODT.value, MOD0.MODT.GetSize());
-    if(MOD0.ICON.IsLoaded())
-        SaveHandler.writeSubRecord(eICON, MOD0.ICON.value, MOD0.ICON.GetSize());
+    if(MOD0.IsLoaded() && MOD0->MODL.IsLoaded())
+        {
+        SaveHandler.writeSubRecord(eMODL, MOD0->MODL.value, MOD0->MODL.GetSize());
+        if(MOD0->MODB.IsLoaded())
+            SaveHandler.writeSubRecord(eMODB, &MOD0->MODB.value, MOD0->MODB.GetSize());
+        if(MOD0->MODT.IsLoaded())
+            SaveHandler.writeSubRecord(eMODT, MOD0->MODT.value, MOD0->MODT.GetSize());
+        if(MOD0->ICON.IsLoaded())
+            SaveHandler.writeSubRecord(eICON, MOD0->ICON.value, MOD0->ICON.GetSize());
+        }
     curINDX++;
 
     SaveHandler.writeSubRecord(eINDX, &curINDX, 4);
-    if(MOD1.MODL.IsLoaded())
-        SaveHandler.writeSubRecord(eMODL, MOD1.MODL.value, MOD1.MODL.GetSize());
-    if(MOD1.MODB.IsLoaded())
-        SaveHandler.writeSubRecord(eMODB, &MOD1.MODB.value, MOD1.MODB.GetSize());
-    if(MOD1.MODT.IsLoaded())
-        SaveHandler.writeSubRecord(eMODT, MOD1.MODT.value, MOD1.MODT.GetSize());
-    if(MOD1.ICON.IsLoaded())
-        SaveHandler.writeSubRecord(eICON, MOD1.ICON.value, MOD1.ICON.GetSize());
+    if(MOD1.IsLoaded() && MOD1->MODL.IsLoaded())
+        {
+        SaveHandler.writeSubRecord(eMODL, MOD1->MODL.value, MOD1->MODL.GetSize());
+        if(MOD1->MODB.IsLoaded())
+            SaveHandler.writeSubRecord(eMODB, &MOD1->MODB.value, MOD1->MODB.GetSize());
+        if(MOD1->MODT.IsLoaded())
+            SaveHandler.writeSubRecord(eMODT, MOD1->MODT.value, MOD1->MODT.GetSize());
+        if(MOD1->ICON.IsLoaded())
+            SaveHandler.writeSubRecord(eICON, MOD1->ICON.value, MOD1->ICON.GetSize());
+        }
     curINDX++;
 
     SaveHandler.writeSubRecord(eINDX, &curINDX, 4);
-    if(MOD2.MODL.IsLoaded())
-        SaveHandler.writeSubRecord(eMODL, MOD2.MODL.value, MOD2.MODL.GetSize());
-    if(MOD2.MODB.IsLoaded())
-        SaveHandler.writeSubRecord(eMODB, &MOD2.MODB.value, MOD2.MODB.GetSize());
-    if(MOD2.MODT.IsLoaded())
-        SaveHandler.writeSubRecord(eMODT, MOD2.MODT.value, MOD2.MODT.GetSize());
-    if(MOD2.ICON.IsLoaded())
-        SaveHandler.writeSubRecord(eICON, MOD2.ICON.value, MOD2.ICON.GetSize());
+    if(MOD2.IsLoaded() && MOD2->MODL.IsLoaded())
+        {
+        SaveHandler.writeSubRecord(eMODL, MOD2->MODL.value, MOD2->MODL.GetSize());
+        if(MOD2->MODB.IsLoaded())
+            SaveHandler.writeSubRecord(eMODB, &MOD2->MODB.value, MOD2->MODB.GetSize());
+        if(MOD2->MODT.IsLoaded())
+            SaveHandler.writeSubRecord(eMODT, MOD2->MODT.value, MOD2->MODT.GetSize());
+        if(MOD2->ICON.IsLoaded())
+            SaveHandler.writeSubRecord(eICON, MOD2->ICON.value, MOD2->ICON.GetSize());
+        }
     curINDX++;
 
     SaveHandler.writeSubRecord(eINDX, &curINDX, 4);
-    if(MOD3.MODL.IsLoaded())
-        SaveHandler.writeSubRecord(eMODL, MOD3.MODL.value, MOD3.MODL.GetSize());
-    if(MOD3.MODB.IsLoaded())
-        SaveHandler.writeSubRecord(eMODB, &MOD3.MODB.value, MOD3.MODB.GetSize());
-    if(MOD3.MODT.IsLoaded())
-        SaveHandler.writeSubRecord(eMODT, MOD3.MODT.value, MOD3.MODT.GetSize());
-    if(MOD3.ICON.IsLoaded())
-        SaveHandler.writeSubRecord(eICON, MOD3.ICON.value, MOD3.ICON.GetSize());
+    if(MOD3.IsLoaded() && MOD3->MODL.IsLoaded())
+        {
+        SaveHandler.writeSubRecord(eMODL, MOD3->MODL.value, MOD3->MODL.GetSize());
+        if(MOD3->MODB.IsLoaded())
+            SaveHandler.writeSubRecord(eMODB, &MOD3->MODB.value, MOD3->MODB.GetSize());
+        if(MOD3->MODT.IsLoaded())
+            SaveHandler.writeSubRecord(eMODT, MOD3->MODT.value, MOD3->MODT.GetSize());
+        if(MOD3->ICON.IsLoaded())
+            SaveHandler.writeSubRecord(eICON, MOD3->ICON.value, MOD3->ICON.GetSize());
+        }
     curINDX++;
 
     SaveHandler.writeSubRecord(eINDX, &curINDX, 4);
-    if(MOD4.MODL.IsLoaded())
-        SaveHandler.writeSubRecord(eMODL, MOD4.MODL.value, MOD4.MODL.GetSize());
-    if(MOD4.MODB.IsLoaded())
-        SaveHandler.writeSubRecord(eMODB, &MOD4.MODB.value, MOD4.MODB.GetSize());
-    if(MOD4.MODT.IsLoaded())
-        SaveHandler.writeSubRecord(eMODT, MOD4.MODT.value, MOD4.MODT.GetSize());
-    if(MOD4.ICON.IsLoaded())
-        SaveHandler.writeSubRecord(eICON, MOD4.ICON.value, MOD4.ICON.GetSize());
+    if(MOD4.IsLoaded() && MOD4->MODL.IsLoaded())
+        {
+        SaveHandler.writeSubRecord(eMODL, MOD4->MODL.value, MOD4->MODL.GetSize());
+        if(MOD4->MODB.IsLoaded())
+            SaveHandler.writeSubRecord(eMODB, &MOD4->MODB.value, MOD4->MODB.GetSize());
+        if(MOD4->MODT.IsLoaded())
+            SaveHandler.writeSubRecord(eMODT, MOD4->MODT.value, MOD4->MODT.GetSize());
+        if(MOD4->ICON.IsLoaded())
+            SaveHandler.writeSubRecord(eICON, MOD4->ICON.value, MOD4->ICON.GetSize());
+        }
     curINDX++;
 
     SaveHandler.writeSubRecord(eINDX, &curINDX, 4);
-    if(MOD5.MODL.IsLoaded())
-        SaveHandler.writeSubRecord(eMODL, MOD5.MODL.value, MOD5.MODL.GetSize());
-    if(MOD5.MODB.IsLoaded())
-        SaveHandler.writeSubRecord(eMODB, &MOD5.MODB.value, MOD5.MODB.GetSize());
-    if(MOD5.MODT.IsLoaded())
-        SaveHandler.writeSubRecord(eMODT, MOD5.MODT.value, MOD5.MODT.GetSize());
-    if(MOD5.ICON.IsLoaded())
-        SaveHandler.writeSubRecord(eICON, MOD5.ICON.value, MOD5.ICON.GetSize());
+    if(MOD5.IsLoaded() && MOD5->MODL.IsLoaded())
+        {
+        SaveHandler.writeSubRecord(eMODL, MOD5->MODL.value, MOD5->MODL.GetSize());
+        if(MOD5->MODB.IsLoaded())
+            SaveHandler.writeSubRecord(eMODB, &MOD5->MODB.value, MOD5->MODB.GetSize());
+        if(MOD5->MODT.IsLoaded())
+            SaveHandler.writeSubRecord(eMODT, MOD5->MODT.value, MOD5->MODT.GetSize());
+        if(MOD5->ICON.IsLoaded())
+            SaveHandler.writeSubRecord(eICON, MOD5->ICON.value, MOD5->ICON.GetSize());
+        }
     curINDX++;
 
     SaveHandler.writeSubRecord(eINDX, &curINDX, 4);
-    if(MOD6.MODL.IsLoaded())
-        SaveHandler.writeSubRecord(eMODL, MOD6.MODL.value, MOD6.MODL.GetSize());
-    if(MOD6.MODB.IsLoaded())
-        SaveHandler.writeSubRecord(eMODB, &MOD6.MODB.value, MOD6.MODB.GetSize());
-    if(MOD6.MODT.IsLoaded())
-        SaveHandler.writeSubRecord(eMODT, MOD6.MODT.value, MOD6.MODT.GetSize());
-    if(MOD6.ICON.IsLoaded())
-        SaveHandler.writeSubRecord(eICON, MOD6.ICON.value, MOD6.ICON.GetSize());
+    if(MOD6.IsLoaded() && MOD6->MODL.IsLoaded())
+        {
+        SaveHandler.writeSubRecord(eMODL, MOD6->MODL.value, MOD6->MODL.GetSize());
+        if(MOD6->MODB.IsLoaded())
+            SaveHandler.writeSubRecord(eMODB, &MOD6->MODB.value, MOD6->MODB.GetSize());
+        if(MOD6->MODT.IsLoaded())
+            SaveHandler.writeSubRecord(eMODT, MOD6->MODT.value, MOD6->MODT.GetSize());
+        if(MOD6->ICON.IsLoaded())
+            SaveHandler.writeSubRecord(eICON, MOD6->ICON.value, MOD6->ICON.GetSize());
+        }
     curINDX++;
 
     SaveHandler.writeSubRecord(eINDX, &curINDX, 4);
-    if(MOD7.MODL.IsLoaded())
-        SaveHandler.writeSubRecord(eMODL, MOD7.MODL.value, MOD7.MODL.GetSize());
-    if(MOD7.MODB.IsLoaded())
-        SaveHandler.writeSubRecord(eMODB, &MOD7.MODB.value, MOD7.MODB.GetSize());
-    if(MOD7.MODT.IsLoaded())
-        SaveHandler.writeSubRecord(eMODT, MOD7.MODT.value, MOD7.MODT.GetSize());
-    if(MOD7.ICON.IsLoaded())
-        SaveHandler.writeSubRecord(eICON, MOD7.ICON.value, MOD7.ICON.GetSize());
+    if(MOD7.IsLoaded() && MOD7->MODL.IsLoaded())
+        {
+        SaveHandler.writeSubRecord(eMODL, MOD7->MODL.value, MOD7->MODL.GetSize());
+        if(MOD7->MODB.IsLoaded())
+            SaveHandler.writeSubRecord(eMODB, &MOD7->MODB.value, MOD7->MODB.GetSize());
+        if(MOD7->MODT.IsLoaded())
+            SaveHandler.writeSubRecord(eMODT, MOD7->MODT.value, MOD7->MODT.GetSize());
+        if(MOD7->ICON.IsLoaded())
+            SaveHandler.writeSubRecord(eICON, MOD7->ICON.value, MOD7->ICON.GetSize());
+        }
     curINDX++;
 
     SaveHandler.writeSubRecord(eINDX, &curINDX, 4);
-    if(MOD8.MODL.IsLoaded())
-        SaveHandler.writeSubRecord(eMODL, MOD8.MODL.value, MOD8.MODL.GetSize());
-    if(MOD8.MODB.IsLoaded())
-        SaveHandler.writeSubRecord(eMODB, &MOD8.MODB.value, MOD8.MODB.GetSize());
-    if(MOD8.MODT.IsLoaded())
-        SaveHandler.writeSubRecord(eMODT, MOD8.MODT.value, MOD8.MODT.GetSize());
-    if(MOD8.ICON.IsLoaded())
-        SaveHandler.writeSubRecord(eICON, MOD8.ICON.value, MOD8.ICON.GetSize());
+    if(MOD8.IsLoaded() && MOD8->MODL.IsLoaded())
+        {
+        SaveHandler.writeSubRecord(eMODL, MOD8->MODL.value, MOD8->MODL.GetSize());
+        if(MOD8->MODB.IsLoaded())
+            SaveHandler.writeSubRecord(eMODB, &MOD8->MODB.value, MOD8->MODB.GetSize());
+        if(MOD8->MODT.IsLoaded())
+            SaveHandler.writeSubRecord(eMODT, MOD8->MODT.value, MOD8->MODT.GetSize());
+        if(MOD8->ICON.IsLoaded())
+            SaveHandler.writeSubRecord(eICON, MOD8->ICON.value, MOD8->ICON.GetSize());
+        }
 
     curINDX = 0;
     SaveHandler.writeSubRecord(eNAM1, NULL, 0);
     SaveHandler.writeSubRecord(eMNAM, NULL, 0);
-    if(MMODL.MODL.IsLoaded())
-        SaveHandler.writeSubRecord(eMODL, MMODL.MODL.value, MMODL.MODL.GetSize());
-    if(MMODL.MODB.IsLoaded())
-        SaveHandler.writeSubRecord(eMODB, &MMODL.MODB.value, MMODL.MODB.GetSize());
-    if(MMODL.MODT.IsLoaded())
-        SaveHandler.writeSubRecord(eMODT, MMODL.MODT.value, MMODL.MODT.GetSize());
+    if(MMODL.IsLoaded() && MMODL->MODL.IsLoaded())
+        {
+        SaveHandler.writeSubRecord(eMODL, MMODL->MODL.value, MMODL->MODL.GetSize());
+        if(MMODL->MODB.IsLoaded())
+            SaveHandler.writeSubRecord(eMODB, &MMODL->MODB.value, MMODL->MODB.GetSize());
+        if(MMODL->MODT.IsLoaded())
+            SaveHandler.writeSubRecord(eMODT, MMODL->MODT.value, MMODL->MODT.GetSize());
+        }
 
     SaveHandler.writeSubRecord(eINDX, &curINDX, 4);
     if(MICON0.IsLoaded())
@@ -969,12 +1031,14 @@ int RACERecord::WriteRecord(_FileHandler &SaveHandler)
 
     curINDX = 0;
     SaveHandler.writeSubRecord(eFNAM, NULL, 0);
-    if(FMODL.MODL.IsLoaded())
-        SaveHandler.writeSubRecord(eMODL, FMODL.MODL.value, FMODL.MODL.GetSize());
-    if(FMODL.MODB.IsLoaded())
-        SaveHandler.writeSubRecord(eMODB, &FMODL.MODB.value, FMODL.MODB.GetSize());
-    if(FMODL.MODT.IsLoaded())
-        SaveHandler.writeSubRecord(eMODT, FMODL.MODT.value, FMODL.MODT.GetSize());
+    if(FMODL.IsLoaded() && FMODL->MODL.IsLoaded())
+        {
+        SaveHandler.writeSubRecord(eMODL, FMODL->MODL.value, FMODL->MODL.GetSize());
+        if(FMODL->MODB.IsLoaded())
+            SaveHandler.writeSubRecord(eMODB, &FMODL->MODB.value, FMODL->MODB.GetSize());
+        if(FMODL->MODT.IsLoaded())
+            SaveHandler.writeSubRecord(eMODT, FMODL->MODT.value, FMODL->MODT.GetSize());
+        }
 
     SaveHandler.writeSubRecord(eINDX, &curINDX, 4);
     if(FICON0.IsLoaded())

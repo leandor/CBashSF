@@ -111,6 +111,10 @@ struct RecordField
             return false;
         return isLoaded;
         }
+    void Load()
+        {
+        isLoaded = true;
+        }
     void Unload()
         {
         T newValue;
@@ -131,6 +135,10 @@ struct RecordField
         //size = subSize;
         curPos += subSize;
         return true;
+        }
+    T *operator->() const
+        {
+        return &value;
         }
     bool operator ==(const RecordField<T> &other) const
         {
@@ -166,6 +174,7 @@ struct ReqRecordField
         {return sizeof(T);}
     bool IsLoaded() const
         {return true;}
+    void Load() {};
     void Unload()
         {
         T newValue;
@@ -179,6 +188,10 @@ struct ReqRecordField
         //size = subSize;
         curPos += subSize;
         return true;
+        }
+    T *operator->() const
+        {
+        return &value;
         }
     bool operator ==(const ReqRecordField<T> &other) const
         {
@@ -323,6 +336,7 @@ struct STRING
         {return (unsigned int)strlen(value) + 1;}
     bool IsLoaded() const
         {return value != NULL;}
+    void Load() {};
     void Unload()
         {
         delete []value;
@@ -432,6 +446,7 @@ struct NONNULLSTRING
         {return (unsigned int)strlen(value);}
     bool IsLoaded() const
         {return value != NULL;}
+    void Load() {};
     void Unload()
         {
         delete []value;
@@ -538,6 +553,7 @@ struct RAWBYTES
         {return size;}
     bool IsLoaded() const
         {return value != NULL;}
+    void Load() {};
     void Unload()
         {
         size = 0;

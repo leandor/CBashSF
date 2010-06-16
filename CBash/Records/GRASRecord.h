@@ -125,7 +125,7 @@ class GRASRecord : public Record
             fIsFitSlope  = 0x00000004
             };
         STRING EDID;
-        GENMODEL MODL;
+        OptRecordField<GENMODEL> MODL;
         ReqRecordField<GRASDATA> DATA;
 
         GRASRecord(bool newRecord=false):Record(newRecord) {}
@@ -136,9 +136,13 @@ class GRASRecord : public Record
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
             EDID = srcRecord->EDID;
-            MODL.MODB = srcRecord->MODL.MODB;
-            MODL.MODL = srcRecord->MODL.MODL;
-            MODL.MODT = srcRecord->MODL.MODT;
+            if(srcRecord->MODL.IsLoaded())
+                {
+                MODL.Load();
+                MODL->MODB = srcRecord->MODL->MODB;
+                MODL->MODL = srcRecord->MODL->MODL;
+                MODL->MODT = srcRecord->MODL->MODT;
+                }
             DATA = srcRecord->DATA;
             return;
             }
@@ -147,9 +151,7 @@ class GRASRecord : public Record
             {
             IsLoaded(false);
             EDID.Unload();
-            MODL.MODB.Unload();
-            MODL.MODL.Unload();
-            MODL.MODT.Unload();
+            MODL.Unload();
             DATA.Unload();
             }
 

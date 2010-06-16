@@ -119,7 +119,7 @@ class TREERecord : public Record
             };
     public:
         STRING EDID;
-        GENMODEL MODL;
+        OptRecordField<GENMODEL> MODL;
         STRING ICON;
         std::vector<unsigned int> SNAM;
         ReqRecordField<TREECNAM> CNAM;
@@ -133,9 +133,13 @@ class TREERecord : public Record
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
             EDID = srcRecord->EDID;
-            MODL.MODB = srcRecord->MODL.MODB;
-            MODL.MODL = srcRecord->MODL.MODL;
-            MODL.MODT = srcRecord->MODL.MODT;
+            if(srcRecord->MODL.IsLoaded())
+                {
+                MODL.Load();
+                MODL->MODB = srcRecord->MODL->MODB;
+                MODL->MODL = srcRecord->MODL->MODL;
+                MODL->MODT = srcRecord->MODL->MODT;
+                }
             ICON = srcRecord->ICON;
             SNAM = srcRecord->SNAM;
             CNAM = srcRecord->CNAM;
@@ -147,9 +151,7 @@ class TREERecord : public Record
             {
             IsLoaded(false);
             EDID.Unload();
-            MODL.MODB.Unload();
-            MODL.MODL.Unload();
-            MODL.MODT.Unload();
+            MODL.Unload();
             ICON.Unload();
             SNAM.clear();
             CNAM.Unload();

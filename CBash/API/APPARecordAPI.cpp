@@ -60,9 +60,13 @@ void * APPARecord::GetOtherField(const unsigned int Field)
         case 6: //full
             return FULL.value;
         case 7: //modPath
-            return MODL.MODL.value;
+            if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
+                return MODL->MODL.value;
+            return NULL;
         case 8: //modb
-            return &MODL.MODB.value.MODB;
+            if(MODL.IsLoaded() && MODL->MODB.IsLoaded())
+                return &MODL->MODB.value.MODB;
+            return NULL;
         case 10: //iconPath
             return ICON.value;
         case 11: //script
@@ -87,7 +91,9 @@ unsigned int APPARecord::GetFieldArraySize(const unsigned int Field)
     switch(Field)
         {
         case 9: //modt_p
-            return MODL.MODT.size;
+            if(MODL.IsLoaded() && MODL->MODT.IsLoaded())
+                return MODL->MODT.size;
+            return 0;
         default:
             return 0;
         }
@@ -98,7 +104,10 @@ void APPARecord::GetFieldArray(const unsigned int Field, void **FieldValues)
     switch(Field)
         {
         case 9: //modt_p
-            *FieldValues = MODL.MODT.value;
+            if(MODL.IsLoaded() && MODL->MODT.IsLoaded())
+                *FieldValues = MODL->MODT.value;
+            else
+                *FieldValues = NULL;
             return;
         default:
             *FieldValues = NULL;
@@ -117,7 +126,8 @@ void APPARecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
             FULL.Copy(FieldValue);
             break;
         case 7: //modPath
-            MODL.MODL.Copy(FieldValue);
+            MODL.Load();
+            MODL->MODL.Copy(FieldValue);
             break;
         case 10: //iconPath
             ICON.Copy(FieldValue);
@@ -133,8 +143,9 @@ void APPARecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     switch(Field)
         {
         case 8: //modb
-            MODL.MODB.value.MODB = FieldValue;
-            MODL.MODB.isLoaded = true;
+            MODL.Load();
+            MODL->MODB.Load();
+            MODL->MODB.value.MODB = FieldValue;
             break;
         case 14: //weight
             DATA.value.weight = FieldValue;
@@ -153,7 +164,9 @@ void APPARecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     switch(Field)
         {
         case 9: //modt_p
-            MODL.MODT.Copy(FieldValue, nSize);
+            MODL.Load();
+            MODL->MODT.Load();
+            MODL->MODT.Copy(FieldValue, nSize);
             break;
         default:
             return;

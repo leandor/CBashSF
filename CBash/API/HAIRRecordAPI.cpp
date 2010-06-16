@@ -51,10 +51,14 @@ void * HAIRRecord::GetOtherField(const unsigned int Field)
             return EDID.value;
         case 6: //full
             return FULL.value;
-        case 7: //MODL.modPath
-            return MODL.MODL.value;
-        case 8: //MODL.modb_p
-            return &MODL.MODB.value.MODB;
+        case 7: //modPath
+            if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
+                return MODL->MODL.value;
+            return NULL;
+        case 8: //modb_p
+            if(MODL.IsLoaded() && MODL->MODB.IsLoaded())
+                return &MODL->MODB.value.MODB;
+            return NULL;
         case 10: //iconPath
             return ICON.value;
         case 11: //flags
@@ -68,8 +72,10 @@ unsigned int HAIRRecord::GetFieldArraySize(const unsigned int Field)
     {
     switch(Field)
         {
-        case 9: //MODL.modt_p
-            return MODL.MODT.size;
+        case 9: //modt_p
+            if(MODL.IsLoaded() && MODL->MODT.IsLoaded())
+                return MODL->MODT.size;
+            return 0;
         default:
             return 0;
         }
@@ -79,8 +85,11 @@ void HAIRRecord::GetFieldArray(const unsigned int Field, void **FieldValues)
     {
     switch(Field)
         {
-        case 9: //MODL.modt_p
-            *FieldValues = MODL.MODT.value;
+        case 9: //modt_p
+            if(MODL.IsLoaded() && MODL->MODT.IsLoaded())
+                *FieldValues = MODL->MODT.value;
+            else
+                *FieldValues = NULL;
             return;
         default:
             *FieldValues = NULL;
@@ -98,8 +107,9 @@ void HAIRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
         case 6: //full
             FULL.Copy(FieldValue);
             break;
-        case 7: //MODL.modPath
-            MODL.MODL.Copy(FieldValue);
+        case 7: //modPath
+            MODL.Load();
+            MODL->MODL.Copy(FieldValue);
             break;
         case 10: //iconPath
             ICON.Copy(FieldValue);
@@ -114,9 +124,10 @@ void HAIRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     {
     switch(Field)
         {
-        case 8: //MODL.modb
-            MODL.MODB.value.MODB = FieldValue;
-            MODL.MODB.isLoaded = true;
+        case 8: //modb
+            MODL.Load();
+            MODL->MODB.Load();
+            MODL->MODB.value.MODB = FieldValue;
             break;
         default:
             return;
@@ -128,8 +139,10 @@ void HAIRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     {
     switch(Field)
         {
-        case 9: //MODL.modt_p
-            MODL.MODT.Copy(FieldValue, nSize);
+        case 9: //modt_p
+            MODL.Load();
+            MODL->MODT.Load();
+            MODL->MODT.Copy(FieldValue, nSize);
             break;
         default:
             return;

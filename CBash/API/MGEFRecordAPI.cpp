@@ -91,10 +91,14 @@ void * MGEFRecord::GetOtherField(const unsigned int Field)
             return DESC.value;
         case 8: //iconPath
             return ICON.value;
-        case 9: //MODL.modPath
-            return MODL.MODL.value;
+        case 9: //modPath
+            if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
+                return MODL->MODL.value;
+            return NULL;
         case 10: //modb
-            return &MODL.MODB.value.MODB;
+            if(MODL.IsLoaded() && MODL->MODB.IsLoaded())
+                return &MODL->MODB.value.MODB;
+            return NULL;
         case 12: //flags
             return &DATA.value.flags;
         case 13: //baseCost
@@ -136,8 +140,10 @@ unsigned int MGEFRecord::GetFieldArraySize(const unsigned int Field)
     {
     switch(Field)
         {
-        case 11: //MODL.modt_p
-            return MODL.MODT.size;
+        case 11: //modt_p
+            if(MODL.IsLoaded() && MODL->MODT.IsLoaded())
+                return MODL->MODT.size;
+            return 0;
         case 18: //unused1
             return 2;
         case 29: //counterEffects
@@ -151,8 +157,11 @@ void MGEFRecord::GetFieldArray(const unsigned int Field, void **FieldValues)
     {
     switch(Field)
         {
-        case 11: //MODL.modt_p
-            *FieldValues = MODL.MODT.value;
+        case 11: //modt_p
+            if(MODL.IsLoaded() && MODL->MODT.IsLoaded())
+                *FieldValues = MODL->MODT.value;
+            else
+                *FieldValues = NULL;
             return;
         case 18: //unused1
             *FieldValues = &DATA.value.unused1[0];
@@ -184,8 +193,9 @@ void MGEFRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
         case 8: //iconPath
             ICON.Copy(FieldValue);
             break;
-        case 9: //MODL.modPath
-            MODL.MODL.Copy(FieldValue);
+        case 9: //modPath
+            MODL.Load();
+            MODL->MODL.Copy(FieldValue);
             break;
         default:
             return;
@@ -197,9 +207,10 @@ void MGEFRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     {
     switch(Field)
         {
-        case 10: //MODL.modb
-            MODL.MODB.value.MODB = FieldValue;
-            MODL.MODB.isLoaded = true;
+        case 10: //modb
+            MODL.Load();
+            MODL->MODB.Load();
+            MODL->MODB.value.MODB = FieldValue;
             break;
         case 13: //baseCost
             DATA.value.baseCost = FieldValue;
@@ -223,8 +234,10 @@ void MGEFRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     {
     switch(Field)
         {
-        case 11: //MODL.modt_p
-            MODL.MODT.Copy(FieldValue, nSize);
+        case 11: //modt_p
+            MODL.Load();
+            MODL->MODT.Load();
+            MODL->MODT.Copy(FieldValue, nSize);
             break;
         case 18: //unused1
             if(nSize != 2)

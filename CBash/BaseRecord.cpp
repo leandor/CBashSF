@@ -93,8 +93,6 @@ unsigned int Record::UpdateReferences(unsigned int origFormID, unsigned int newF
             }
     if(count)
         recData = NULL;
-    //if(recData != NULL)
-    //    Unload();
     return count;
     }
 
@@ -158,57 +156,3 @@ unsigned int Record::Write(_FileHandler &SaveHandler, _FormIDHandler &FormIDHand
         Unload();
     return recSize + 20;
     }
-
-//int Record::Write(WritableRecord &writeRecord, _FormIDHandler &FormIDHandler, bool CloseMod)
-//    {
-//    //if masters have changed, all formIDs have to be updated...
-//    //so the record can't just be written as is.
-//    if(!FormIDHandler.MastersChanged() && recData != NULL)
-//        {
-//        writeRecord.recSize = GetSize();
-//        writeRecord.deleteBuffer = false;
-//        writeRecord.recBuffer = recData - 20;
-//        Unload();
-//        return 0;
-//        }
-//    Read(FormIDHandler);
-//    writeRecord.recSize = GetSize(true);
-//    FormIDHandler.CollapseFormID(formID);
-//    CollapseFormIDs(FormIDHandler);
-//    writeRecord.deleteBuffer = true;
-//    //Make the new buffer.
-//    writeRecord.recBuffer = new unsigned char[writeRecord.recSize + 20];
-//    //Write the record to the new buffer
-//    WriteRecord(writeRecord.recBuffer + 20);
-//    //IsCompressed(true); //Test code
-//    if(IsCompressed())
-//        {
-//        unsigned long compSize = compressBound(writeRecord.recSize);
-//        unsigned char *compBuffer = new unsigned char[compSize + 24];
-//        memcpy(compBuffer + 20, &writeRecord.recSize, 4);
-//        compress2(compBuffer + 24, &compSize, writeRecord.recBuffer +20, writeRecord.recSize, 6);
-//        delete []writeRecord.recBuffer;
-//        writeRecord.recBuffer = compBuffer;
-//        writeRecord.recSize = compSize + 4;
-//        }
-//
-//    IsLoaded(false);
-//    unsigned int recType = GetType();
-//    memcpy(writeRecord.recBuffer, &recType, 4);
-//    memcpy(writeRecord.recBuffer + 4, &writeRecord.recSize, 4);
-//    memcpy(writeRecord.recBuffer + 8, &flags, 4);
-//    memcpy(writeRecord.recBuffer + 12, &formID, 4);
-//    memcpy(writeRecord.recBuffer + 16, &flagsUnk, 4);
-//    IsLoaded(true);
-//    if(!CloseMod)
-//        {
-//        FormIDHandler.ExpandFormID(formID);
-//        if(recData == NULL)
-//            ExpandFormIDs(FormIDHandler);
-//        else
-//            Unload();
-//        }
-//    else
-//        delete this;
-//    return 0;
-//    }

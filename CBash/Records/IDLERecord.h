@@ -112,7 +112,7 @@ class IDLERecord : public Record
             fIsNotReturnFile = 0x00000080
             };
         STRING EDID;
-        GENMODEL MODL;
+        OptRecordField<GENMODEL> MODL;
         std::vector<ReqRecordField<GENCTDA> *> CTDA;
         ReqRecordField<IDLEANAM> ANAM;
         ReqRecordField<IDLEDATA> DATA;
@@ -127,9 +127,13 @@ class IDLERecord : public Record
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
             EDID = srcRecord->EDID;
-            MODL.MODB = srcRecord->MODL.MODB;
-            MODL.MODL = srcRecord->MODL.MODL;
-            MODL.MODT = srcRecord->MODL.MODT;
+            if(srcRecord->MODL.IsLoaded())
+                {
+                MODL.Load();
+                MODL->MODB = srcRecord->MODL->MODB;
+                MODL->MODL = srcRecord->MODL->MODL;
+                MODL->MODT = srcRecord->MODL->MODT;
+                }
             CTDA.clear();
             CTDA.resize(srcRecord->CTDA.size());
             for(unsigned int x = 0; x < srcRecord->CTDA.size(); x++)
@@ -150,9 +154,7 @@ class IDLERecord : public Record
             {
             IsLoaded(false);
             EDID.Unload();
-            MODL.MODB.Unload();
-            MODL.MODL.Unload();
-            MODL.MODT.Unload();
+            MODL.Unload();
             for(unsigned int x = 0; x < CTDA.size(); x++)
                 delete CTDA[x];
             CTDA.clear();

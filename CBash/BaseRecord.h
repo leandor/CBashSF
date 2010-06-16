@@ -1026,7 +1026,7 @@ struct MODELMODB
 
 struct GENMODEL
     {
-    RecordField<MODELMODB> MODB;
+    ReqRecordField<MODELMODB> MODB;
     STRING MODL;
     RAWBYTES MODT;
     #ifdef _DEBUG

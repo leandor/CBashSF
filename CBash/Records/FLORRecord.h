@@ -75,7 +75,7 @@ class FLORRecord : public Record
     public:
         STRING EDID;
         STRING FULL;
-        GENMODEL MODL;
+        OptRecordField<GENMODEL> MODL;
         OptRecordField<GENFID> SCRI;
         RecordField<GENFID> PFIG;
         ReqRecordField<FLORPFPC> PFPC;
@@ -89,9 +89,13 @@ class FLORRecord : public Record
             flagsUnk = srcRecord->flagsUnk;
             EDID = srcRecord->EDID;
             FULL = srcRecord->FULL;
-            MODL.MODB = srcRecord->MODL.MODB;
-            MODL.MODL = srcRecord->MODL.MODL;
-            MODL.MODT = srcRecord->MODL.MODT;
+            if(srcRecord->MODL.IsLoaded())
+                {
+                MODL.Load();
+                MODL->MODB = srcRecord->MODL->MODB;
+                MODL->MODL = srcRecord->MODL->MODL;
+                MODL->MODT = srcRecord->MODL->MODT;
+                }
             SCRI = srcRecord->SCRI;
             PFIG = srcRecord->PFIG;
             PFPC = srcRecord->PFPC;
@@ -103,9 +107,7 @@ class FLORRecord : public Record
             IsLoaded(false);
             EDID.Unload();
             FULL.Unload();
-            MODL.MODB.Unload();
-            MODL.MODL.Unload();
-            MODL.MODT.Unload();
+            MODL.Unload();
             SCRI.Unload();
             PFIG.Unload();
             PFPC.Unload();

@@ -35,7 +35,7 @@ class STATRecord : public Record
             };
     public:
         STRING EDID;
-        GENMODEL MODL;
+        OptRecordField<GENMODEL> MODL;
         STATRecord(bool newRecord=false):Record(newRecord) {}
         STATRecord(const unsigned int &newFormID):Record(newFormID) {}
         STATRecord(STATRecord *srcRecord):Record(true)
@@ -44,9 +44,13 @@ class STATRecord : public Record
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
             EDID = srcRecord->EDID;
-            MODL.MODB = srcRecord->MODL.MODB;
-            MODL.MODL = srcRecord->MODL.MODL;
-            MODL.MODT = srcRecord->MODL.MODT;
+            if(srcRecord->MODL.IsLoaded())
+                {
+                MODL.Load();
+                MODL->MODB = srcRecord->MODL->MODB;
+                MODL->MODL = srcRecord->MODL->MODL;
+                MODL->MODT = srcRecord->MODL->MODT;
+                }
             return;
             }
         ~STATRecord() {}
@@ -54,9 +58,7 @@ class STATRecord : public Record
             {
             IsLoaded(false);
             EDID.Unload();
-            MODL.MODB.Unload();
-            MODL.MODL.Unload();
-            MODL.MODT.Unload();
+            MODL.Unload();
             }
 
         #ifdef _DEBUG

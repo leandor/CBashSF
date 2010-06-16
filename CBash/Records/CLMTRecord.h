@@ -117,7 +117,7 @@ class CLMTRecord : public Record
         std::vector<CLMTWLST> Weathers;
         STRING FNAM;
         STRING GNAM;
-        GENMODEL MODL;
+        OptRecordField<GENMODEL> MODL;
         ReqRecordField<CLMTTNAM> TNAM;
         CLMTRecord(bool newRecord=false):Record(newRecord) {}
         CLMTRecord(const unsigned int &newFormID):Record(newFormID) {}
@@ -130,9 +130,13 @@ class CLMTRecord : public Record
             Weathers = srcRecord->Weathers;
             FNAM = srcRecord->FNAM;
             GNAM = srcRecord->GNAM;
-            MODL.MODB = srcRecord->MODL.MODB;
-            MODL.MODL = srcRecord->MODL.MODL;
-            MODL.MODT = srcRecord->MODL.MODT;
+            if(srcRecord->MODL.IsLoaded())
+                {
+                MODL.Load();
+                MODL->MODB = srcRecord->MODL->MODB;
+                MODL->MODL = srcRecord->MODL->MODL;
+                MODL->MODT = srcRecord->MODL->MODT;
+                }
             TNAM = srcRecord->TNAM;
             return;
             }
@@ -144,9 +148,7 @@ class CLMTRecord : public Record
             Weathers.clear();
             FNAM.Unload();
             GNAM.Unload();
-            MODL.MODB.Unload();
-            MODL.MODL.Unload();
-            MODL.MODT.Unload();
+            MODL.Unload();
             TNAM.Unload();
             }
 

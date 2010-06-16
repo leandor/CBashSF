@@ -56,13 +56,16 @@ int DOORRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 FULL.Read(buffer, subSize, curPos);
                 break;
             case eMODL:
-                MODL.MODL.Read(buffer, subSize, curPos);
+                MODL.Load();
+                MODL->MODL.Read(buffer, subSize, curPos);
                 break;
             case eMODB:
-                MODL.MODB.Read(buffer, subSize, curPos);
+                MODL.Load();
+                MODL->MODB.Read(buffer, subSize, curPos);
                 break;
             case eMODT:
-                MODL.MODT.Read(buffer, subSize, curPos);
+                MODL.Load();
+                MODL->MODT.Read(buffer, subSize, curPos);
                 break;
             case eSCRI:
                 SCRI.Read(buffer, subSize, curPos);
@@ -114,19 +117,19 @@ unsigned int DOORRecord::GetSize(bool forceCalc)
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
         }
-    if(MODL.MODL.IsLoaded())
+    if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
         {
-        cSize = MODL.MODL.GetSize();
+        cSize = MODL->MODL.GetSize();
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
-        }
-    if(MODL.MODB.IsLoaded())
-        TotSize += MODL.MODB.GetSize() + 6;
-    if(MODL.MODT.IsLoaded())
-        {
-        cSize = MODL.MODT.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
+        if(MODL->MODB.IsLoaded())
+            TotSize += MODL->MODB.GetSize() + 6;
+        if(MODL->MODT.IsLoaded())
+            {
+            cSize = MODL->MODT.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
         }
     if(SCRI.IsLoaded())
         TotSize += SCRI.GetSize() + 6;
@@ -149,12 +152,14 @@ int DOORRecord::WriteRecord(_FileHandler &SaveHandler)
         SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
     if(FULL.IsLoaded())
         SaveHandler.writeSubRecord(eFULL, FULL.value, FULL.GetSize());
-    if(MODL.MODL.IsLoaded())
-        SaveHandler.writeSubRecord(eMODL, MODL.MODL.value, MODL.MODL.GetSize());
-    if(MODL.MODB.IsLoaded())
-        SaveHandler.writeSubRecord(eMODB, &MODL.MODB.value, MODL.MODB.GetSize());
-    if(MODL.MODT.IsLoaded())
-        SaveHandler.writeSubRecord(eMODT, MODL.MODT.value, MODL.MODT.GetSize());
+    if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
+        {
+        SaveHandler.writeSubRecord(eMODL, MODL->MODL.value, MODL->MODL.GetSize());
+        if(MODL->MODB.IsLoaded())
+            SaveHandler.writeSubRecord(eMODB, &MODL->MODB.value, MODL->MODB.GetSize());
+        if(MODL->MODT.IsLoaded())
+            SaveHandler.writeSubRecord(eMODT, MODL->MODT.value, MODL->MODT.GetSize());
+        }
     if(SCRI.IsLoaded())
         SaveHandler.writeSubRecord(eSCRI, SCRI.value, SCRI.GetSize());
     if(SNAM.IsLoaded())

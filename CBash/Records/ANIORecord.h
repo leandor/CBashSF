@@ -37,7 +37,7 @@ class ANIORecord : public Record
             };
     public:
         STRING EDID;
-        GENMODEL MODL;
+        OptRecordField<GENMODEL> MODL;
         ReqRecordField<GENFID> DATA;
         ANIORecord(bool newRecord=false):Record(newRecord) {}
         ANIORecord(const unsigned int &newFormID):Record(newFormID) {}
@@ -47,9 +47,13 @@ class ANIORecord : public Record
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
             EDID = srcRecord->EDID;
-            MODL.MODB = srcRecord->MODL.MODB;
-            MODL.MODL = srcRecord->MODL.MODL;
-            MODL.MODT = srcRecord->MODL.MODT;
+            if(srcRecord->MODL.IsLoaded())
+                {
+                MODL.Load();
+                MODL->MODB = srcRecord->MODL->MODB;
+                MODL->MODL = srcRecord->MODL->MODL;
+                MODL->MODT = srcRecord->MODL->MODT;
+                }
             DATA = srcRecord->DATA;
             return;
             }
@@ -58,9 +62,7 @@ class ANIORecord : public Record
             {
             IsLoaded(false);
             EDID.Unload();
-            MODL.MODB.Unload();
-            MODL.MODL.Unload();
-            MODL.MODT.Unload();
+            MODL.Unload();
             DATA.Unload();
             }
 

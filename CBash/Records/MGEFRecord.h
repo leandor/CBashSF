@@ -170,7 +170,7 @@ class MGEFRecord : public Record
         STRING FULL;
         STRING DESC;
         STRING ICON;
-        GENMODEL MODL;
+        OptRecordField<GENMODEL> MODL;
         ReqRecordField<MGEFDATA> DATA;
         std::vector<unsigned int> ESCE;
         MGEFRecord(bool newRecord=false):Record(newRecord) {}
@@ -184,9 +184,13 @@ class MGEFRecord : public Record
             FULL = srcRecord->FULL;
             DESC = srcRecord->DESC;
             ICON = srcRecord->ICON;
-            MODL.MODB = srcRecord->MODL.MODB;
-            MODL.MODL = srcRecord->MODL.MODL;
-            MODL.MODT = srcRecord->MODL.MODT;
+            if(srcRecord->MODL.IsLoaded())
+                {
+                MODL.Load();
+                MODL->MODB = srcRecord->MODL->MODB;
+                MODL->MODL = srcRecord->MODL->MODL;
+                MODL->MODT = srcRecord->MODL->MODT;
+                }
             DATA = srcRecord->DATA;
             ESCE = srcRecord->ESCE;
             }
@@ -198,9 +202,7 @@ class MGEFRecord : public Record
             FULL.Unload();
             DESC.Unload();
             ICON.Unload();
-            MODL.MODB.Unload();
-            MODL.MODL.Unload();
-            MODL.MODT.Unload();
+            MODL.Unload();
             DATA.Unload();
             ESCE.clear();
             }

@@ -84,11 +84,11 @@ class CLOTRecord : public Record
         OptRecordField<GENFID> ENAM;
         OptRecordField<GENANAM> ANAM;
         ReqRecordField<GENUFLAG> BMDT;
-        GENMODEL MODL;
-        GENMODEL MOD2;
+        OptRecordField<GENMODEL> MODL;
+        OptRecordField<GENMODEL> MOD2;
         STRING ICON;
-        GENMODEL MOD3;
-        GENMODEL MOD4;
+        OptRecordField<GENMODEL> MOD3;
+        OptRecordField<GENMODEL> MOD4;
         STRING ICO2;
         ReqRecordField<GENVALUEWEIGHT> DATA;
         CLOTRecord(bool newRecord=false):Record(newRecord) {}
@@ -104,19 +104,35 @@ class CLOTRecord : public Record
             ENAM = srcRecord->ENAM;
             ANAM = srcRecord->ANAM;
             BMDT = srcRecord->BMDT;
-            MODL.MODB = srcRecord->MODL.MODB;
-            MODL.MODL = srcRecord->MODL.MODL;
-            MODL.MODT = srcRecord->MODL.MODT;
-            MOD2.MODB = srcRecord->MOD2.MODB;
-            MOD2.MODL = srcRecord->MOD2.MODL;
-            MOD2.MODT = srcRecord->MOD2.MODT;
+            if(srcRecord->MODL.IsLoaded())
+                {
+                MODL.Load();
+                MODL->MODB = srcRecord->MODL->MODB;
+                MODL->MODL = srcRecord->MODL->MODL;
+                MODL->MODT = srcRecord->MODL->MODT;
+                }
+            if(srcRecord->MOD2.IsLoaded())
+                {
+                MOD2.Load();
+                MOD2->MODB = srcRecord->MOD2->MODB;
+                MOD2->MODL = srcRecord->MOD2->MODL;
+                MOD2->MODT = srcRecord->MOD2->MODT;
+                }
             ICON = srcRecord->ICON;
-            MOD3.MODB = srcRecord->MOD3.MODB;
-            MOD3.MODL = srcRecord->MOD3.MODL;
-            MOD3.MODT = srcRecord->MOD3.MODT;
-            MOD4.MODB = srcRecord->MOD4.MODB;
-            MOD4.MODL = srcRecord->MOD4.MODL;
-            MOD4.MODT = srcRecord->MOD4.MODT;
+            if(srcRecord->MOD3.IsLoaded())
+                {
+                MOD3.Load();
+                MOD3->MODB = srcRecord->MOD3->MODB;
+                MOD3->MODL = srcRecord->MOD3->MODL;
+                MOD3->MODT = srcRecord->MOD3->MODT;
+                }
+            if(srcRecord->MOD4.IsLoaded())
+                {
+                MOD4.Load();
+                MOD4->MODB = srcRecord->MOD4->MODB;
+                MOD4->MODL = srcRecord->MOD4->MODL;
+                MOD4->MODT = srcRecord->MOD4->MODT;
+                }
             ICO2 = srcRecord->ICO2;
             DATA = srcRecord->DATA;
             return;
@@ -131,19 +147,11 @@ class CLOTRecord : public Record
             ENAM.Unload();
             ANAM.Unload();
             BMDT.Unload();
-            MODL.MODB.Unload();
-            MODL.MODL.Unload();
-            MODL.MODT.Unload();
-            MOD2.MODB.Unload();
-            MOD2.MODL.Unload();
-            MOD2.MODT.Unload();
+            MODL.Unload();
+            MOD2.Unload();
             ICON.Unload();
-            MOD3.MODB.Unload();
-            MOD3.MODL.Unload();
-            MOD3.MODT.Unload();
-            MOD4.MODB.Unload();
-            MOD4.MODL.Unload();
-            MOD4.MODT.Unload();
+            MOD3.Unload();
+            MOD4.Unload();
             ICO2.Unload();
             DATA.Unload();
             }

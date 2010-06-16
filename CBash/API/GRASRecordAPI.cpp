@@ -70,9 +70,13 @@ void * GRASRecord::GetOtherField(const unsigned int Field)
         case 5: //eid
             return EDID.value;
         case 6: //modPath
-            return MODL.MODL.value;
+            if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
+                return MODL->MODL.value;
+            return NULL;
         case 7: //modb
-            return &MODL.MODB.value.MODB;
+            if(MODL.IsLoaded() && MODL->MODB.IsLoaded())
+                return &MODL->MODB.value.MODB;
+            return NULL;
         case 9: //density
             return &DATA.value.density;
         case 10: //minSlope
@@ -103,7 +107,9 @@ unsigned int GRASRecord::GetFieldArraySize(const unsigned int Field)
     switch(Field)
         {
         case 8: //modt_p
-            return MODL.MODT.size;
+            if(MODL.IsLoaded() && MODL->MODT.IsLoaded())
+                return MODL->MODT.size;
+            return 0;
         case 12: //unused1
             return 1;
         case 14: //unused2
@@ -120,7 +126,10 @@ void GRASRecord::GetFieldArray(const unsigned int Field, void **FieldValues)
     switch(Field)
         {
         case 8: //modt_p
-            *FieldValues = MODL.MODT.value;
+            if(MODL.IsLoaded() && MODL->MODT.IsLoaded())
+                *FieldValues = MODL->MODT.value;
+            else
+                *FieldValues = NULL;
             return;
         case 12: //unused1
             *FieldValues = &DATA.value.unused1;
@@ -145,7 +154,8 @@ void GRASRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
             EDID.Copy(FieldValue);
             break;
         case 6: //modPath
-            MODL.MODL.Copy(FieldValue);
+            MODL.Load();
+            MODL->MODL.Copy(FieldValue);
             break;
         default:
             return;
@@ -158,8 +168,9 @@ void GRASRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     switch(Field)
         {
         case 7: //modb
-            MODL.MODB.value.MODB = FieldValue;
-            MODL.MODB.isLoaded = true;
+            MODL.Load();
+            MODL->MODB.Load();
+            MODL->MODB.value.MODB = FieldValue;
             break;
         case 16: //posRange
             DATA.value.posRange = FieldValue;
@@ -184,7 +195,9 @@ void GRASRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     switch(Field)
         {
         case 8: //modt_p
-            MODL.MODT.Copy(FieldValue, nSize);
+            MODL.Load();
+            MODL->MODT.Load();
+            MODL->MODT.Copy(FieldValue, nSize);
             break;
         case 12: //unused1
             if(nSize != 1)

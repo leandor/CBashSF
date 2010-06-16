@@ -60,9 +60,13 @@ void * DOORRecord::GetOtherField(const unsigned int Field)
         case 6: //full
             return FULL.value;
         case 7: //modPath
-            return MODL.MODL.value;
+            if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
+                return MODL->MODL.value;
+            return NULL;
         case 8: //modb
-            return &MODL.MODB.value.MODB;
+            if(MODL.IsLoaded() && MODL->MODB.IsLoaded())
+                return &MODL->MODB.value.MODB;
+            return NULL;
         case 10: //script
             if(SCRI.IsLoaded())
                 return &SCRI->fid;
@@ -91,7 +95,9 @@ unsigned int DOORRecord::GetFieldArraySize(const unsigned int Field)
     switch(Field)
         {
         case 9: //modt_p
-            return MODL.MODT.size;
+            if(MODL.IsLoaded() && MODL->MODT.IsLoaded())
+                return MODL->MODT.size;
+            return 0;
         case 15: //destinations
             return (unsigned int)TNAM.size();
         default:
@@ -104,7 +110,10 @@ void DOORRecord::GetFieldArray(const unsigned int Field, void **FieldValues)
     switch(Field)
         {
         case 9: //modt_p
-            *FieldValues = MODL.MODT.value;
+            if(MODL.IsLoaded() && MODL->MODT.IsLoaded())
+                *FieldValues = MODL->MODT.value;
+            else
+                *FieldValues = NULL;
             return;
         case 15: //destinations
             for(unsigned int p = 0;p < TNAM.size();p++)
@@ -127,7 +136,8 @@ void DOORRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
             FULL.Copy(FieldValue);
             break;
         case 7: //modPath
-            MODL.MODL.Copy(FieldValue);
+            MODL.Load();
+            MODL->MODL.Copy(FieldValue);
             break;
         default:
             return;
@@ -140,8 +150,9 @@ void DOORRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     switch(Field)
         {
         case 8: //modb
-            MODL.MODB.value.MODB = FieldValue;
-            MODL.MODB.isLoaded = true;
+            MODL.Load();
+            MODL->MODB.Load();
+            MODL->MODB.value.MODB = FieldValue;
             break;
         default:
             return;
@@ -154,7 +165,9 @@ void DOORRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     switch(Field)
         {
         case 9: //modt_p
-            MODL.MODT.Copy(FieldValue, nSize);
+            MODL.Load();
+            MODL->MODT.Load();
+            MODL->MODT.Copy(FieldValue, nSize);
             break;
         default:
             return;

@@ -139,7 +139,7 @@ class LIGHRecord : public Record
             fIsSpotShadow   = 0x00000400
             };
         STRING EDID;
-        GENMODEL MODL;
+        OptRecordField<GENMODEL> MODL;
         OptRecordField<GENFID> SCRI;
         STRING FULL;
         STRING ICON;
@@ -155,9 +155,13 @@ class LIGHRecord : public Record
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
             EDID = srcRecord->EDID;
-            MODL.MODB = srcRecord->MODL.MODB;
-            MODL.MODL = srcRecord->MODL.MODL;
-            MODL.MODT = srcRecord->MODL.MODT;
+            if(srcRecord->MODL.IsLoaded())
+                {
+                MODL.Load();
+                MODL->MODB = srcRecord->MODL->MODB;
+                MODL->MODL = srcRecord->MODL->MODL;
+                MODL->MODT = srcRecord->MODL->MODT;
+                }
             SCRI = srcRecord->SCRI;
             FULL = srcRecord->FULL;
             ICON = srcRecord->ICON;
@@ -171,9 +175,7 @@ class LIGHRecord : public Record
             {
             IsLoaded(false);
             EDID.Unload();
-            MODL.MODB.Unload();
-            MODL.MODL.Unload();
-            MODL.MODT.Unload();
+            MODL.Unload();
             SCRI.Unload();
             FULL.Unload();
             ICON.Unload();

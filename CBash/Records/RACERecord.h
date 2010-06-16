@@ -371,7 +371,7 @@ class RACERecord : public Record
 
         struct RACEMODEL
             {
-            RecordField<MODELMODB> MODB;
+            ReqRecordField<MODELMODB> MODB;
             STRING MODL;
             RAWBYTES MODT;
             STRING ICON;
@@ -453,17 +453,17 @@ class RACERecord : public Record
         RecordField<RACEPNAM> PNAM;
         RecordField<RACEUNAM> UNAM;
         ReqRecordField<RACEATTR> ATTR;
-        RACEMODEL MOD0;
-        RACEMODEL MOD1;
-        RACEMODEL MOD2;
-        RACEMODEL MOD3;
-        RACEMODEL MOD4;
-        RACEMODEL MOD5;
-        RACEMODEL MOD6;
-        RACEMODEL MOD7;
-        RACEMODEL MOD8;
+        OptRecordField<RACEMODEL> MOD0;
+        OptRecordField<RACEMODEL> MOD1;
+        OptRecordField<RACEMODEL> MOD2;
+        OptRecordField<RACEMODEL> MOD3;
+        OptRecordField<RACEMODEL> MOD4;
+        OptRecordField<RACEMODEL> MOD5;
+        OptRecordField<RACEMODEL> MOD6;
+        OptRecordField<RACEMODEL> MOD7;
+        OptRecordField<RACEMODEL> MOD8;
 
-        GENMODEL MMODL;
+        OptRecordField<GENMODEL> MMODL;
 
         STRING MICON0;
         STRING MICON1;
@@ -471,7 +471,7 @@ class RACERecord : public Record
         STRING MICON3;
         STRING MICON4;
 
-        GENMODEL FMODL;
+        OptRecordField<GENMODEL> FMODL;
 
         STRING FICON0;
         STRING FICON1;
@@ -520,54 +520,94 @@ class RACERecord : public Record
             UNAM = srcRecord->UNAM;
             ATTR = srcRecord->ATTR;
 
-            MOD0.MODB = srcRecord->MOD0.MODB;
-            MOD0.MODL = srcRecord->MOD0.MODL;
-            MOD0.MODT = srcRecord->MOD0.MODT;
-            MOD0.ICON = srcRecord->MOD0.ICON;
+            if(srcRecord->MOD0.IsLoaded())
+                {
+                MOD0.Load();
+                MOD0->MODB = srcRecord->MOD0->MODB;
+                MOD0->MODL = srcRecord->MOD0->MODL;
+                MOD0->MODT = srcRecord->MOD0->MODT;
+                MOD0->ICON = srcRecord->MOD0->ICON;
+                }
 
-            MOD1.MODB = srcRecord->MOD1.MODB;
-            MOD1.MODL = srcRecord->MOD1.MODL;
-            MOD1.MODT = srcRecord->MOD1.MODT;
-            MOD1.ICON = srcRecord->MOD1.ICON;
+            if(srcRecord->MOD1.IsLoaded())
+                {
+                MOD1.Load();
+                MOD1->MODB = srcRecord->MOD1->MODB;
+                MOD1->MODL = srcRecord->MOD1->MODL;
+                MOD1->MODT = srcRecord->MOD1->MODT;
+                MOD1->ICON = srcRecord->MOD1->ICON;
+                }
 
-            MOD2.MODB = srcRecord->MOD2.MODB;
-            MOD2.MODL = srcRecord->MOD2.MODL;
-            MOD2.MODT = srcRecord->MOD2.MODT;
-            MOD2.ICON = srcRecord->MOD2.ICON;
+            if(srcRecord->MOD2.IsLoaded())
+                {
+                MOD2.Load();
+                MOD2->MODB = srcRecord->MOD2->MODB;
+                MOD2->MODL = srcRecord->MOD2->MODL;
+                MOD2->MODT = srcRecord->MOD2->MODT;
+                MOD2->ICON = srcRecord->MOD2->ICON;
+                }
 
-            MOD3.MODB = srcRecord->MOD3.MODB;
-            MOD3.MODL = srcRecord->MOD3.MODL;
-            MOD3.MODT = srcRecord->MOD3.MODT;
-            MOD3.ICON = srcRecord->MOD3.ICON;
+            if(srcRecord->MOD3.IsLoaded())
+                {
+                MOD3.Load();
+                MOD3->MODB = srcRecord->MOD3->MODB;
+                MOD3->MODL = srcRecord->MOD3->MODL;
+                MOD3->MODT = srcRecord->MOD3->MODT;
+                MOD3->ICON = srcRecord->MOD3->ICON;
+                }
 
-            MOD4.MODB = srcRecord->MOD4.MODB;
-            MOD4.MODL = srcRecord->MOD4.MODL;
-            MOD4.MODT = srcRecord->MOD4.MODT;
-            MOD4.ICON = srcRecord->MOD4.ICON;
+            if(srcRecord->MOD4.IsLoaded())
+                {
+                MOD4.Load();
+                MOD4->MODB = srcRecord->MOD4->MODB;
+                MOD4->MODL = srcRecord->MOD4->MODL;
+                MOD4->MODT = srcRecord->MOD4->MODT;
+                MOD4->ICON = srcRecord->MOD4->ICON;
+                }
 
-            MOD5.MODB = srcRecord->MOD5.MODB;
-            MOD5.MODL = srcRecord->MOD5.MODL;
-            MOD5.MODT = srcRecord->MOD5.MODT;
-            MOD5.ICON = srcRecord->MOD5.ICON;
+            if(srcRecord->MOD5.IsLoaded())
+                {
+                MOD5.Load();
+                MOD5->MODB = srcRecord->MOD5->MODB;
+                MOD5->MODL = srcRecord->MOD5->MODL;
+                MOD5->MODT = srcRecord->MOD5->MODT;
+                MOD5->ICON = srcRecord->MOD5->ICON;
+                }
 
-            MOD6.MODB = srcRecord->MOD6.MODB;
-            MOD6.MODL = srcRecord->MOD6.MODL;
-            MOD6.MODT = srcRecord->MOD6.MODT;
-            MOD6.ICON = srcRecord->MOD6.ICON;
+            if(srcRecord->MOD6.IsLoaded())
+                {
+                MOD6.Load();
+                MOD6->MODB = srcRecord->MOD6->MODB;
+                MOD6->MODL = srcRecord->MOD6->MODL;
+                MOD6->MODT = srcRecord->MOD6->MODT;
+                MOD6->ICON = srcRecord->MOD6->ICON;
+                }
 
-            MOD7.MODB = srcRecord->MOD7.MODB;
-            MOD7.MODL = srcRecord->MOD7.MODL;
-            MOD7.MODT = srcRecord->MOD7.MODT;
-            MOD7.ICON = srcRecord->MOD7.ICON;
+            if(srcRecord->MOD7.IsLoaded())
+                {
+                MOD7.Load();
+                MOD7->MODB = srcRecord->MOD7->MODB;
+                MOD7->MODL = srcRecord->MOD7->MODL;
+                MOD7->MODT = srcRecord->MOD7->MODT;
+                MOD7->ICON = srcRecord->MOD7->ICON;
+                }
 
-            MOD8.MODB = srcRecord->MOD8.MODB;
-            MOD8.MODL = srcRecord->MOD8.MODL;
-            MOD8.MODT = srcRecord->MOD8.MODT;
-            MOD8.ICON = srcRecord->MOD8.ICON;
+            if(srcRecord->MOD8.IsLoaded())
+                {
+                MOD8.Load();
+                MOD8->MODB = srcRecord->MOD8->MODB;
+                MOD8->MODL = srcRecord->MOD8->MODL;
+                MOD8->MODT = srcRecord->MOD8->MODT;
+                MOD8->ICON = srcRecord->MOD8->ICON;
+                }
 
-            MMODL.MODB = srcRecord->MMODL.MODB;
-            MMODL.MODL = srcRecord->MMODL.MODL;
-            MMODL.MODT = srcRecord->MMODL.MODT;
+            if(srcRecord->MMODL.IsLoaded())
+                {
+                MMODL.Load();
+                MMODL->MODB = srcRecord->MMODL->MODB;
+                MMODL->MODL = srcRecord->MMODL->MODL;
+                MMODL->MODT = srcRecord->MMODL->MODT;
+                }
 
             MICON0 = srcRecord->MICON0;
             MICON1 = srcRecord->MICON1;
@@ -575,9 +615,13 @@ class RACERecord : public Record
             MICON3 = srcRecord->MICON3;
             MICON4 = srcRecord->MICON4;
 
-            FMODL.MODB = srcRecord->FMODL.MODB;
-            FMODL.MODL = srcRecord->FMODL.MODL;
-            FMODL.MODT = srcRecord->FMODL.MODT;
+            if(srcRecord->FMODL.IsLoaded())
+                {
+                FMODL.Load();
+                FMODL->MODB = srcRecord->FMODL->MODB;
+                FMODL->MODL = srcRecord->FMODL->MODL;
+                FMODL->MODT = srcRecord->FMODL->MODT;
+                }
 
             FICON0 = srcRecord->FICON0;
             FICON1 = srcRecord->FICON1;
@@ -622,54 +666,17 @@ class RACERecord : public Record
             UNAM.Unload();
             ATTR.Unload();
 
-            MOD0.MODB.Unload();
-            MOD0.MODL.Unload();
-            MOD0.MODT.Unload();
-            MOD0.ICON.Unload();
+            MOD0.Unload();
+            MOD1.Unload();
+            MOD2.Unload();
+            MOD3.Unload();
+            MOD4.Unload();
+            MOD5.Unload();
+            MOD6.Unload();
+            MOD7.Unload();
+            MOD8.Unload();
 
-            MOD1.MODB.Unload();
-            MOD1.MODL.Unload();
-            MOD1.MODT.Unload();
-            MOD1.ICON.Unload();
-
-            MOD2.MODB.Unload();
-            MOD2.MODL.Unload();
-            MOD2.MODT.Unload();
-            MOD2.ICON.Unload();
-
-            MOD3.MODB.Unload();
-            MOD3.MODL.Unload();
-            MOD3.MODT.Unload();
-            MOD3.ICON.Unload();
-
-            MOD4.MODB.Unload();
-            MOD4.MODL.Unload();
-            MOD4.MODT.Unload();
-            MOD4.ICON.Unload();
-
-            MOD5.MODB.Unload();
-            MOD5.MODL.Unload();
-            MOD5.MODT.Unload();
-            MOD5.ICON.Unload();
-
-            MOD6.MODB.Unload();
-            MOD6.MODL.Unload();
-            MOD6.MODT.Unload();
-            MOD6.ICON.Unload();
-
-            MOD7.MODB.Unload();
-            MOD7.MODL.Unload();
-            MOD7.MODT.Unload();
-            MOD7.ICON.Unload();
-
-            MOD8.MODB.Unload();
-            MOD8.MODL.Unload();
-            MOD8.MODT.Unload();
-            MOD8.ICON.Unload();
-
-            MMODL.MODB.Unload();
-            MMODL.MODL.Unload();
-            MMODL.MODT.Unload();
+            MMODL.Unload();
 
             MICON0.Unload();
             MICON1.Unload();
@@ -677,9 +684,7 @@ class RACERecord : public Record
             MICON3.Unload();
             MICON4.Unload();
 
-            FMODL.MODB.Unload();
-            FMODL.MODL.Unload();
-            FMODL.MODT.Unload();
+            FMODL.Unload();
 
             FICON0.Unload();
             FICON1.Unload();

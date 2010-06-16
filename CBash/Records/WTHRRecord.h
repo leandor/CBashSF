@@ -441,7 +441,7 @@ class WTHRRecord : public Record
         STRING EDID;
         STRING CNAM;
         STRING DNAM;
-        GENMODEL MODL;
+        OptRecordField<GENMODEL> MODL;
         ReqRecordField<WTHRNAM0> NAM0;
         ReqRecordField<WTHRFNAM> FNAM;
         ReqRecordField<WTHRHNAM> HNAM;
@@ -458,9 +458,13 @@ class WTHRRecord : public Record
             EDID = srcRecord->EDID;
             CNAM = srcRecord->CNAM;
             DNAM = srcRecord->DNAM;
-            MODL.MODB = srcRecord->MODL.MODB;
-            MODL.MODL = srcRecord->MODL.MODL;
-            MODL.MODT = srcRecord->MODL.MODT;
+            if(srcRecord->MODL.IsLoaded())
+                {
+                MODL.Load();
+                MODL->MODB = srcRecord->MODL->MODB;
+                MODL->MODL = srcRecord->MODL->MODL;
+                MODL->MODT = srcRecord->MODL->MODT;
+                }
             NAM0 = srcRecord->NAM0;
             FNAM = srcRecord->FNAM;
             HNAM = srcRecord->HNAM;
@@ -485,9 +489,7 @@ class WTHRRecord : public Record
             EDID.Unload();
             CNAM.Unload();
             DNAM.Unload();
-            MODL.MODB.Unload();
-            MODL.MODL.Unload();
-            MODL.MODT.Unload();
+            MODL.Unload();
             NAM0.Unload();
             FNAM.Unload();
             HNAM.Unload();

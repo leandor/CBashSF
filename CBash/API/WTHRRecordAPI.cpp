@@ -473,9 +473,13 @@ void * WTHRRecord::GetOtherField(const unsigned int Field)
         case 7: //upperLayer
             return DNAM.value;
         case 8: //modPath
-            return MODL.MODL.value;
+            if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
+                return MODL->MODL.value;
+            return NULL;
         case 9: //modb
-            return &MODL.MODB.value.MODB;
+            if(MODL.IsLoaded() && MODL->MODB.IsLoaded())
+                return &MODL->MODB.value.MODB;
+            return NULL;
         case 11: //upperSky.rise.red
             return &NAM0.value.upperSky.rise.red;
         case 12: //upperSky.rise.green
@@ -794,7 +798,9 @@ unsigned int WTHRRecord::GetFieldArraySize(const unsigned int Field)
     switch(Field)
         {
         case 10: //modt_p
-            return MODL.MODT.size;
+            if(MODL.IsLoaded() && MODL->MODT.IsLoaded())
+                return MODL->MODT.size;
+            return 0;
         case 14: //upperSky.rise.unused1
             return 1;
         case 18: //upperSky.day.unused1
@@ -885,7 +891,10 @@ void WTHRRecord::GetFieldArray(const unsigned int Field, void **FieldValues)
     switch(Field)
         {
         case 10: //modt_p
-            *FieldValues = MODL.MODT.value;
+            if(MODL.IsLoaded() && MODL->MODT.IsLoaded())
+                *FieldValues = MODL->MODT.value;
+            else
+                *FieldValues = NULL;
             return;
         case 14: //upperSky.rise.unused1
             *FieldValues = &NAM0.value.upperSky.rise.unused1;
@@ -1077,7 +1086,8 @@ void WTHRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
             DNAM.Copy(FieldValue);
             break;
         case 8: //modPath
-            MODL.MODL.Copy(FieldValue);
+            MODL.Load();
+            MODL->MODL.Copy(FieldValue);
             break;
         default:
             return;
@@ -1090,8 +1100,9 @@ void WTHRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     switch(Field)
         {
         case 9: //modb
-            MODL.MODB.value.MODB = FieldValue;
-            MODL.MODB.isLoaded = true;
+            MODL.Load();
+            MODL->MODB.Load();
+            MODL->MODB.value.MODB = FieldValue;
             break;
         case 171: //fogDayNear
             FNAM.value.fogDayNear = FieldValue;
@@ -1159,7 +1170,9 @@ void WTHRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     switch(Field)
         {
         case 10: //modt_p
-            MODL.MODT.Copy(FieldValue, nSize);
+            MODL.Load();
+            MODL->MODT.Load();
+            MODL->MODT.Copy(FieldValue, nSize);
             break;
         case 14: //upperSky.rise.unused1
             if(nSize != 1)

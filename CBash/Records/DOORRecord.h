@@ -53,7 +53,7 @@ class DOORRecord : public Record
             };
         STRING EDID;
         STRING FULL;
-        GENMODEL MODL;
+        OptRecordField<GENMODEL> MODL;
         OptRecordField<GENFID> SCRI;
         OptRecordField<GENFID> SNAM;
         OptRecordField<GENFID> ANAM;
@@ -69,9 +69,13 @@ class DOORRecord : public Record
             flagsUnk = srcRecord->flagsUnk;
             EDID = srcRecord->EDID;
             FULL = srcRecord->FULL;
-            MODL.MODB = srcRecord->MODL.MODB;
-            MODL.MODL = srcRecord->MODL.MODL;
-            MODL.MODT = srcRecord->MODL.MODT;
+            if(srcRecord->MODL.IsLoaded())
+                {
+                MODL.Load();
+                MODL->MODB = srcRecord->MODL->MODB;
+                MODL->MODL = srcRecord->MODL->MODL;
+                MODL->MODT = srcRecord->MODL->MODT;
+                }
             SCRI = srcRecord->SCRI;
             SNAM = srcRecord->SNAM;
             ANAM = srcRecord->ANAM;
@@ -93,9 +97,7 @@ class DOORRecord : public Record
             IsLoaded(false);
             EDID.Unload();
             FULL.Unload();
-            MODL.MODB.Unload();
-            MODL.MODL.Unload();
-            MODL.MODT.Unload();
+            MODL.Unload();
             SCRI.Unload();
             SNAM.Unload();
             ANAM.Unload();

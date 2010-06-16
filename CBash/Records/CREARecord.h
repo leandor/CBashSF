@@ -394,7 +394,7 @@ class CREARecord : public Record
             };
         STRING EDID;
         STRING FULL;
-        GENMODEL MODL;
+        OptRecordField<GENMODEL> MODL;
         std::vector<unsigned int *> SPLO;
         std::vector<STRING> NIFZ;
         RAWBYTES NIFT;
@@ -426,9 +426,13 @@ class CREARecord : public Record
             flagsUnk = srcRecord->flagsUnk;
             EDID = srcRecord->EDID;
             FULL = srcRecord->FULL;
-            MODL.MODB = srcRecord->MODL.MODB;
-            MODL.MODL = srcRecord->MODL.MODL;
-            MODL.MODT = srcRecord->MODL.MODT;
+            if(srcRecord->MODL.IsLoaded())
+                {
+                MODL.Load();
+                MODL->MODB = srcRecord->MODL->MODB;
+                MODL->MODL = srcRecord->MODL->MODL;
+                MODL->MODT = srcRecord->MODL->MODT;
+                }
             SPLO.clear();
             SPLO.resize(srcRecord->SPLO.size());
             for(unsigned int x = 0; x < srcRecord->SPLO.size(); x++)
@@ -503,9 +507,7 @@ class CREARecord : public Record
             IsLoaded(false);
             EDID.Unload();
             FULL.Unload();
-            MODL.MODB.Unload();
-            MODL.MODL.Unload();
-            MODL.MODT.Unload();
+            MODL.Unload();
 
             for(unsigned int x = 0; x < SPLO.size(); x++)
                 delete SPLO[x];

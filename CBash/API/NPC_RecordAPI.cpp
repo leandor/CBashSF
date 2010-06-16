@@ -222,9 +222,13 @@ void * NPC_Record::GetOtherField(const unsigned int Field)
         case 6: //full
             return FULL.value;
         case 7: //modPath
-            return MODL.MODL.value;
+            if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
+                return MODL->MODL.value;
+            return NULL;
         case 8: //modb
-            return &MODL.MODB.value.MODB;
+            if(MODL.IsLoaded() && MODL->MODB.IsLoaded())
+                return &MODL->MODB.value.MODB;
+            return NULL;
         case 10: //flags
             return &ACBS.value.flags;
         case 11: //baseSpell
@@ -359,7 +363,9 @@ unsigned int NPC_Record::GetFieldArraySize(const unsigned int Field)
     switch(Field)
         {
         case 9: //modt_p
-            return MODL.MODT.size;
+            if(MODL.IsLoaded() && MODL->MODT.IsLoaded())
+                return MODL->MODT.size;
+            return 0;
         case 20: //spells
             return (unsigned int)SPLO.size();
         case 30: //unused1
@@ -388,7 +394,10 @@ void NPC_Record::GetFieldArray(const unsigned int Field, void **FieldValues)
     switch(Field)
         {
         case 9: //modt_p
-            *FieldValues = MODL.MODT.value;
+            if(MODL.IsLoaded() && MODL->MODT.IsLoaded())
+                *FieldValues = MODL->MODT.value;
+            else
+                *FieldValues = NULL;
             return;
         case 20: //spells
             for(unsigned int p = 0;p < SPLO.size();p++)
@@ -556,7 +565,8 @@ void NPC_Record::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
             FULL.Copy(FieldValue);
             break;
         case 7: //modPath
-            MODL.MODL.Copy(FieldValue);
+            MODL.Load();
+            MODL->MODL.Copy(FieldValue);
             break;
         default:
             return;
@@ -569,8 +579,9 @@ void NPC_Record::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     switch(Field)
         {
         case 8: //modb
-            MODL.MODB.value.MODB = FieldValue;
-            MODL.MODB.isLoaded = true;
+            MODL.Load();
+            MODL->MODB.Load();
+            MODL->MODB.value.MODB = FieldValue;
             break;
         case 66: //hairLength
             LNAM.Load();
@@ -587,7 +598,9 @@ void NPC_Record::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     switch(Field)
         {
         case 9: //modt_p
-            MODL.MODT.Copy(FieldValue, nSize);
+            MODL.Load();
+            MODL->MODT.Load();
+            MODL->MODT.Copy(FieldValue, nSize);
             break;
         case 30: //unused1
             if(nSize != 2)
@@ -1028,13 +1041,16 @@ int NPC_Record::DeleteField(const unsigned int Field)
             FULL.Unload();
             break;
         case 7: //modPath
-            MODL.MODL.Unload();
+            if(MODL.IsLoaded())
+                MODL->MODL.Unload();
             break;
         case 8: //modb
-            MODL.MODB.Unload();
+            if(MODL.IsLoaded())
+                MODL->MODB.Unload();
             break;
         case 9: //modt_p
-            MODL.MODT.Unload();
+            if(MODL.IsLoaded())
+                MODL->MODT.Unload();
             break;
         case 10: //flags
             ACBS.value.flags = defaultACBS.flags;
