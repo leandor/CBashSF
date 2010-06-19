@@ -396,7 +396,7 @@ class CREARecord : public Record
         STRING FULL;
         OptRecordField<GENMODEL> MODL;
         std::vector<unsigned int *> SPLO;
-        std::vector<STRING> NIFZ;
+        std::vector<ISTRING> NIFZ;
         RAWBYTES NIFT;
         ReqRecordField<GENACBS> ACBS;
         std::vector<ReqRecordField<GENSNAM> *> SNAM;
@@ -405,7 +405,7 @@ class CREARecord : public Record
         std::vector<ReqRecordField<GENCNTO> *> CNTO;
         ReqRecordField<GENAIDT> AIDT;
         std::vector<unsigned int *> PKID;
-        std::vector<STRING> KFFZ;
+        std::vector<ISTRING> KFFZ;
         ReqRecordField<CREADATA> DATA;
         ReqRecordField<CREARNAM> RNAM;
         OptRecordField<GENFID> ZNAM;
@@ -413,8 +413,8 @@ class CREARecord : public Record
         ReqRecordField<CREABNAM> BNAM;
         ReqRecordField<CREAWNAM> WNAM;
         OptRecordField<GENFID> CSCR;
-        STRING NAM0;
-        STRING NAM1;
+        ISTRING NAM0;
+        ISTRING NAM1;
         std::vector<CREASound *> Sounds;
 
         CREARecord(bool newRecord=false):Record(newRecord) {}

@@ -294,7 +294,7 @@ class NPC_Record : public Record
         std::vector<ReqRecordField<GENCNTO> *> CNTO;
         ReqRecordField<GENAIDT> AIDT;
         std::vector<unsigned int *> PKID;
-        std::vector<STRING> KFFZ;
+        std::vector<ISTRING> KFFZ;
         ReqRecordField<GENFID> CNAM;
         ReqRecordField<NPC_DATA> DATA;
         RecordField<GENFID> HNAM;

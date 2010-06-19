@@ -97,6 +97,7 @@ class ACTIRecord : public Record
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
         void SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue);
 
+        int DeleteField(const unsigned int Field);
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize(bool forceCalc=false);

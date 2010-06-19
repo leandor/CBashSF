@@ -34,6 +34,7 @@ int CREARecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
     ReqRecordField<GENSNAM> *newSNAM = NULL;
     ReqRecordField<GENCNTO> *newCNTO = NULL;
     CREASound *newSound = NULL;
+    unsigned int testNIFT = 0;
     while(curPos < recSize){
         _readBuffer(&subType,buffer,4,curPos);
         switch(subType)
@@ -76,11 +77,17 @@ int CREARecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 break;
             case eNIFZ:
                 for(subSize += curPos;curPos < (subSize - 1);curPos += (unsigned int)strlen((char*)&buffer[curPos]) + 1)
-                    NIFZ.push_back(STRING((char*)&buffer[curPos]));
+                    NIFZ.push_back(ISTRING((char*)&buffer[curPos]));
                 curPos++;
                 break;
             case eNIFT:
                 NIFT.Read(buffer, subSize, curPos);
+                //Hack
+                testNIFT = 0;
+                for(unsigned int x = 0; x < NIFT.size; ++x)
+                    testNIFT += NIFT.value[x];
+                if(testNIFT == 0)
+                    NIFT.Unload();
                 break;
             case eACBS:
                 ACBS.Read(buffer, subSize, curPos);
@@ -111,7 +118,7 @@ int CREARecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 break;
             case eKFFZ:
                 for(subSize += curPos;curPos < (subSize - 1);curPos += (unsigned int)strlen((char*)&buffer[curPos]) + 1)
-                    KFFZ.push_back(STRING((char*)&buffer[curPos]));
+                    KFFZ.push_back(ISTRING((char*)&buffer[curPos]));
                 curPos++;
                 break;
             case eDATA:

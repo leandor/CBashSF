@@ -181,8 +181,6 @@ class LVLIRecord : public Record
         int DeleteListElement(const unsigned int subField);
         int GetOtherFieldType(const unsigned int Field);
         void * GetOtherField(const unsigned int Field);
-        //unsigned int GetFieldArraySize(const unsigned int Field);
-        //void GetFieldArray(const unsigned int Field, void **FieldValues);
         int GetListFieldType(const unsigned int subField, const unsigned int listField);
         unsigned int GetListSize(const unsigned int Field);
         unsigned int GetListArraySize(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
@@ -193,7 +191,9 @@ class LVLIRecord : public Record
         void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, short FieldValue);
         void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize);
         void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue);
-        //void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
+
+        int DeleteField(const unsigned int Field);
+        int DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize(bool forceCalc=false);

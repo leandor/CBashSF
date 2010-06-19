@@ -183,7 +183,7 @@ struct GENSCR_
 
 struct GENEFID
     {
-    int name;
+    unsigned int name;
     GENEFID():name(0) {}
     #ifdef _DEBUG
     void Debug(int debugLevel, size_t &indentation)

@@ -209,6 +209,8 @@ class LIGHRecord : public Record
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, int FieldValue);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue);
 
+        int DeleteField(const unsigned int Field);
+
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eLIGH;}

@@ -118,6 +118,7 @@ struct RecordField
     void Unload()
         {
         T newValue;
+        value.~T();
         value = newValue;
         isLoaded = false;
         }
@@ -178,6 +179,7 @@ struct ReqRecordField
     void Unload()
         {
         T newValue;
+        value.~T();
         value = newValue;
         }
     bool Read(unsigned char *buffer, unsigned int subSize, unsigned int &curPos)
@@ -269,6 +271,8 @@ struct OptRecordField
                     {
                     value = new T();
                     }
+                else
+                    value->~T();
                 *value = *rhs.value;
                 }
             else
@@ -394,6 +398,126 @@ struct STRING
         return false;
         }
     bool operator !=(const STRING &other) const
+        {
+        return !(*this == other);
+        }
+
+    #ifdef _DEBUG
+    void Debug(const char *name, int debugLevel, unsigned int &indentation)
+        {
+        if(IsLoaded())
+            {
+            if(name)
+                {
+                PrintIndent(indentation);
+                printf("%s:\n", name);
+                }
+            if(debugLevel > 3)
+                {
+                indentation += 2;
+                PrintIndent(indentation);
+                printf("%s = %s\n", name, value);
+                indentation -= 2;
+                }
+            }
+        }
+    #endif
+    };
+
+struct ISTRING
+    {
+    char *value;
+    ISTRING():value(NULL) {}
+    ISTRING(const ISTRING &p):value(NULL)
+        {
+        if(!p.IsLoaded())
+            return;
+        unsigned int size = p.GetSize();
+        value = new char[size];
+        memcpy(value, p.value, size);
+        }
+    ISTRING(const char *p):value(NULL)
+        {
+        unsigned int size = (unsigned int)strlen(p) + 1;
+        value = new char[size];
+        strcpy_s(value, size, p);
+        unsigned int len = (unsigned int)strlen(value);
+        for (unsigned int i = 0; i < len; ++i)
+           value[i] = tolower(value[i]);
+        }
+    ~ISTRING()
+        {
+        delete []value;
+        }
+    unsigned int GetSize() const
+        {return (unsigned int)strlen(value) + 1;}
+    bool IsLoaded() const
+        {return value != NULL;}
+    void Load() {};
+    void Unload()
+        {
+        delete []value;
+        value = NULL;
+        }
+    bool Read(unsigned char *buffer, const unsigned int &subSize, unsigned int &curPos)
+        {
+        if(IsLoaded())
+            {
+            curPos += subSize;
+            return false;
+            }
+        value = new char[subSize];
+        memcpy(value, buffer + curPos, subSize);
+
+        unsigned int len = (unsigned int)strlen(value);
+        for (unsigned int i = 0; i < len; ++i)
+           value[i] = tolower(value[i]);
+        curPos += subSize;
+        return true;
+        }
+    void Copy(const ISTRING &FieldValue)
+        {
+        if(!FieldValue.IsLoaded())
+            return;
+        delete []value;
+        unsigned int size = FieldValue.GetSize();
+        value = new char[size];
+        strcpy_s(value, size, FieldValue.value);
+        }
+    void Copy(char *FieldValue)
+        {
+        delete []value;
+        unsigned int size = (unsigned int)strlen(FieldValue) + 1;
+        value = new char[size];
+        strcpy_s(value, size, FieldValue);
+        unsigned int len = (unsigned int)strlen(value);
+        for (unsigned int i = 0; i < len; ++i)
+           value[i] = tolower(value[i]);
+        }
+    ISTRING& operator = (const ISTRING &rhs)
+        {
+        if(this != &rhs)
+            if(rhs.value != NULL)
+                Copy(rhs);
+            else
+                {
+                delete []value;
+                value = NULL;
+                }
+        return *this;
+        }
+    bool operator ==(const ISTRING &other) const
+        {
+        if(!IsLoaded())
+            {
+            if(!other.IsLoaded())
+                return true;
+            }
+        else if(other.IsLoaded() && (strcmp(value, other.value) == 0))
+            return true;
+        return false;
+        }
+    bool operator !=(const ISTRING &other) const
         {
         return !(*this == other);
         }

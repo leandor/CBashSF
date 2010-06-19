@@ -115,8 +115,8 @@ class CLMTRecord : public Record
     public:
         STRING EDID;
         std::vector<CLMTWLST> Weathers;
-        STRING FNAM;
-        STRING GNAM;
+        ISTRING FNAM;
+        ISTRING GNAM;
         OptRecordField<GENMODEL> MODL;
         ReqRecordField<CLMTTNAM> TNAM;
         CLMTRecord(bool newRecord=false):Record(newRecord) {}
@@ -179,6 +179,9 @@ class CLMTRecord : public Record
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue);
+
+        int DeleteField(const unsigned int Field);
+        int DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize(bool forceCalc=false);
