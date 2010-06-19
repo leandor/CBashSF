@@ -89,3 +89,23 @@ void GLOBRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
         }
     return;
     }
+
+int GLOBRecord::DeleteField(const unsigned int Field)
+    {
+    switch(Field)
+        {
+        case 5: //eid
+            EDID.Unload();
+            break;
+        case 6: //format
+            FNAM.Unload();
+            break;
+        case 7: //value
+            //Regardless of format, it is always stored as a float. Go figure.
+            FLTV.Unload();
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }

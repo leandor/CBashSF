@@ -1015,7 +1015,7 @@ void NPC_Record::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
                 KFFZ.resize(nSize);
                 for(unsigned int x = 0; x < nSize; x++)
                     {
-                    KFFZ[x] = STRING(FieldValue[x]);
+                    KFFZ[x] = ISTRING(FieldValue[x]);
                     }
                 }
             break;
@@ -1032,6 +1032,7 @@ int NPC_Record::DeleteField(const unsigned int Field)
     NPC_DATA defaultDATA;
     GENCLR defaultHCLR;
     NPC_FNAM defaultFNAM;
+    unsigned int nSize;
     switch(Field)
         {
         case 5: //eid
@@ -1073,6 +1074,12 @@ int NPC_Record::DeleteField(const unsigned int Field)
         case 16: //calcMax
             ACBS.value.calcMax = defaultACBS.calcMax;
             break;
+        case 17: //factions
+            nSize = (unsigned int)SNAM.size();
+            for(unsigned int x = 0; x < nSize; x++)
+                delete SNAM[x];
+            SNAM.clear();
+            break;
         case 18: //deathItem
             INAM.Unload();
             break;
@@ -1080,12 +1087,19 @@ int NPC_Record::DeleteField(const unsigned int Field)
             RNAM.Unload();
             break;
         case 20: //spells
-            for(unsigned int x = 0; x < SPLO.size(); x++)
+            nSize = (unsigned int)SPLO.size();
+            for(unsigned int x = 0; x < nSize; x++)
                 delete SPLO[x];
             SPLO.clear();
             break;
         case 21: //script
             SCRI.Unload();
+            break;
+        case 22: //items
+            nSize = (unsigned int)CNTO.size();
+            for(unsigned int x = 0; x < nSize; x++)
+                delete CNTO[x];
+            CNTO.clear();
             break;
         case 23: //aggression
             AIDT.value.aggression = defaultAIDT.aggression;
@@ -1113,7 +1127,8 @@ int NPC_Record::DeleteField(const unsigned int Field)
             AIDT.value.unused1[1] = defaultAIDT.unused1[1];
             break;
         case 31: //aiPackages
-            for(unsigned int x = 0; x < PKID.size(); x++)
+            nSize = (unsigned int)PKID.size();
+            for(unsigned int x = 0; x < nSize; x++)
                 delete PKID[x];
             PKID.clear();
             break;

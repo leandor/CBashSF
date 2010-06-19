@@ -289,3 +289,77 @@ void LIGHRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
         }
     return;
     }
+
+int LIGHRecord::DeleteField(const unsigned int Field)
+    {
+    LIGHDATA defaultDATA;
+    switch(Field)
+        {
+        case 5: //eid
+            EDID.Unload();
+            break;
+        case 6: //modPath
+            if(MODL.IsLoaded())
+                MODL->MODL.Unload();
+            break;
+        case 7: //modb
+            if(MODL.IsLoaded())
+                MODL->MODB.Unload();
+            break;
+        case 8: //modt_p
+            if(MODL.IsLoaded())
+                MODL->MODT.Unload();
+            break;
+        case 9: //script
+            SCRI.Unload();
+            break;
+        case 10: //full
+            FULL.Unload();
+            break;
+        case 11: //iconPath
+            ICON.Unload();
+            break;
+        case 12: //duration
+            DATA.value.duration = defaultDATA.duration;
+            break;
+        case 13: //radius
+            DATA.value.radius = defaultDATA.radius;
+            break;
+        case 14: //color.red
+            DATA.value.color.red = defaultDATA.color.red;
+            break;
+        case 15: //color.green
+            DATA.value.color.green = defaultDATA.color.green;
+            break;
+        case 16: //color.blue
+            DATA.value.color.blue = defaultDATA.color.blue;
+            break;
+        case 17: //color.unused1
+            DATA.value.color.unused1 = defaultDATA.color.unused1;
+            break;
+        case 18: //flags
+            DATA.value.flags = defaultDATA.flags;
+            break;
+        case 19: //falloff
+            DATA.value.falloff = defaultDATA.falloff;
+            break;
+        case 20: //fov
+            DATA.value.fov = defaultDATA.fov;
+            break;
+        case 21: //value
+            DATA.value.value = defaultDATA.value;
+            break;
+        case 22: //weight
+            DATA.value.weight = defaultDATA.weight;
+            break;
+        case 23: //fade
+            FNAM.Unload();
+            break;
+        case 24: //sound
+            SNAM.Unload();
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }

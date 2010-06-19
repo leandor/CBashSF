@@ -143,9 +143,9 @@ void TES4Record::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     {
     switch(Field)
         {
-        case 5: //eid, not present on TES4
+        //case 5: //eid, not present on TES4
             //EDID.Copy(FieldValue);
-            return;
+        //    return;
         case 11: //author
             CNAM.Copy(FieldValue);
             break;
@@ -199,4 +199,41 @@ void TES4Record::GetFieldArray(const unsigned int Field, void **FieldValues)
             *FieldValues = NULL;
             return;
         }
+    }
+
+int TES4Record::DeleteField(const unsigned int Field)
+    {
+    TES4HEDR defaultHEDR;
+    switch(Field)
+        {
+        case 6: //version
+            HEDR.value.version = defaultHEDR.version;
+            break;
+        case 7: //numRecords
+            HEDR.value.numRecords = defaultHEDR.numRecords;
+            break;
+        case 8: //nextObject
+            HEDR.value.nextObject = defaultHEDR.nextObject;
+            break;
+        case 9: //ofst_p
+            OFST.Unload();
+            break;
+        case 10: //dele_p
+            DELE.Unload();
+            break;
+        case 11: //author
+            CNAM.Unload();
+            break;
+        case 12: //description
+            SNAM.Unload();
+            break;
+        case 13: //masters
+            //Good chance of breaking the plugin if called. Might be better to disallow.
+            //Or atleast try and fix things up on this side.
+            MAST.clear();
+            break;
+        default:
+            return 0;
+        }
+    return 1;
     }

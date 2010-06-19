@@ -309,3 +309,66 @@ void LVSPRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
+
+int LVSPRecord::DeleteField(const unsigned int Field)
+    {
+    unsigned int nSize;
+    switch(Field)
+        {
+        case 5: //eid
+            EDID.Unload();
+            break;
+        case 6: //chanceNone
+            LVLD.Unload();
+            break;
+        case 7: //flags
+            LVLF.Unload();
+            break;
+        case 10: //entries
+            nSize = (unsigned int)Entries.size();
+            for(unsigned int x = 0; x < nSize; x++)
+                delete Entries[x];
+            Entries.clear();
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }
+
+int LVSPRecord::DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField)
+    {
+    LVLLVLO defaultLVLO;
+    switch(subField)
+        {
+        case 10: //entries
+            if(listIndex >= Entries.size())
+                return 0;
+            switch(listField)
+                {
+                case 1: //level
+                    Entries[listIndex]->value.level = defaultLVLO.level;
+                    break;
+                case 2: //unused1
+                    Entries[listIndex]->value.unused1[0] = defaultLVLO.unused1[0];
+                    Entries[listIndex]->value.unused1[1] = defaultLVLO.unused1[1];
+                    break;
+                case 3: //listId
+                    Entries[listIndex]->value.listId = defaultLVLO.listId;
+                    break;
+                case 4: //count
+                    Entries[listIndex]->value.count = defaultLVLO.count;
+                    break;
+                case 5: //unused2
+                    Entries[listIndex]->value.unused2[0] = defaultLVLO.unused2[0];
+                    Entries[listIndex]->value.unused2[1] = defaultLVLO.unused2[1];
+                    break;
+                default:
+                    return 0;
+                }
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }

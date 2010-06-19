@@ -152,3 +152,39 @@ void LTEXRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
         }
     return;
     }
+
+int LTEXRecord::DeleteField(const unsigned int Field)
+    {
+    LTEXHNAM defaultHNAM;
+    unsigned int nSize;
+    switch(Field)
+        {
+        case 5: //eid
+            EDID.Unload();
+            break;
+        case 6: //iconPath
+            ICON.Unload();
+            break;
+        case 7: //flags
+            HNAM.value.flags = defaultHNAM.flags;
+            break;
+        case 8: //friction
+            HNAM.value.friction = defaultHNAM.friction;
+            break;
+        case 9: //restitution
+            HNAM.value.restitution = defaultHNAM.restitution;
+            break;
+        case 10: //specular
+            SNAM.Unload();
+            break;
+        case 11: //grass
+            nSize = (unsigned int)GNAM.size();
+            for(unsigned int x = 0; x < nSize; x++)
+                delete GNAM[x];
+            GNAM.clear();
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }

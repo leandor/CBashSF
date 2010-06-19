@@ -458,3 +458,91 @@ void IDLERecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
         }
     return;
     }
+
+int IDLERecord::DeleteField(const unsigned int Field)
+    {
+    IDLEDATA defaultDATA;
+    unsigned int nSize;
+    switch(Field)
+        {
+        case 5: //eid
+            EDID.Unload();
+            break;
+        case 6: //modPath
+            if(MODL.IsLoaded())
+                MODL->MODL.Unload();
+            break;
+        case 7: //modb
+            if(MODL.IsLoaded())
+                MODL->MODB.Unload();
+            break;
+        case 8: //modt_p
+            if(MODL.IsLoaded())
+                MODL->MODT.Unload();
+            break;
+        case 9: //conditions
+            nSize = (unsigned int)CTDA.size();
+            for(unsigned int x = 0; x < nSize; x++)
+                delete CTDA[x];
+            CTDA.clear();
+            break;
+        case 10: //group
+            ANAM.Unload();
+            break;
+        case 11: //parent
+            DATA.value.parent = defaultDATA.parent;
+            break;
+        case 12: //prevId
+            DATA.value.prevId = defaultDATA.prevId;
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }
+
+int IDLERecord::DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField)
+    {
+    GENCTDA defaultCTDA;
+    switch(subField)
+        {
+        case 9: //conditions
+            if(listIndex >= CTDA.size())
+                return 0;
+            switch(listField)
+                {
+                case 1: //operType
+                    CTDA[listIndex]->value.operType = defaultCTDA.operType;
+                    break;
+                case 2: //unused1
+                    CTDA[listIndex]->value.unused1[0] = defaultCTDA.unused1[0];
+                    CTDA[listIndex]->value.unused1[1] = defaultCTDA.unused1[1];
+                    CTDA[listIndex]->value.unused1[2] = defaultCTDA.unused1[2];
+                    break;
+                case 3: //compValue
+                    CTDA[listIndex]->value.compValue = defaultCTDA.compValue;
+                    break;
+                case 4: //ifunc
+                    CTDA[listIndex]->value.ifunc = defaultCTDA.ifunc;
+                    break;
+                case 5: //param1
+                    CTDA[listIndex]->value.param1 = defaultCTDA.param1;
+                    break;
+                case 6: //param2
+                    CTDA[listIndex]->value.param2 = defaultCTDA.param2;
+                    break;
+                case 7: //unused2
+                    CTDA[listIndex]->value.unused2[0] = defaultCTDA.unused2[0];
+                    CTDA[listIndex]->value.unused2[1] = defaultCTDA.unused2[1];
+                    CTDA[listIndex]->value.unused2[2] = defaultCTDA.unused2[2];
+                    CTDA[listIndex]->value.unused2[3] = defaultCTDA.unused2[3];
+                    break;
+                default:
+                    return 0;
+                }
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }

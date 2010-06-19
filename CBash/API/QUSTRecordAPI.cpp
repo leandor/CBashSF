@@ -1721,3 +1721,340 @@ void QUSTRecord::SetListX3Field(_FormIDHandler &FormIDHandler, const unsigned in
         }
     return;
     }
+
+int QUSTRecord::DeleteField(const unsigned int Field)
+    {
+    QUSTDATA defaultDATA;
+    unsigned int nSize;
+    switch(Field)
+        {
+        case 5: //eid
+            EDID.Unload();
+            break;
+        case 6: //script
+            SCRI.Unload();
+            break;
+        case 7: //full
+            FULL.Unload();
+            break;
+        case 8: //iconPath
+            ICON.Unload();
+            break;
+        case 9: //flags
+            DATA.value.flags = defaultDATA.flags;
+            break;
+        case 10: //priority
+            DATA.value.priority = defaultDATA.priority;
+            break;
+        case 11: //conditions
+            nSize = (unsigned int)CTDA.size();
+            for(unsigned int x = 0; x < nSize; x++)
+                delete CTDA[x];
+            CTDA.clear();
+            break;
+        case 12: //stages
+            nSize = (unsigned int)Stages.size();
+            for(unsigned int x = 0; x < nSize; x++)
+                delete Stages[x];
+            Stages.clear();
+            break;
+        case 13: //targets
+            nSize = (unsigned int)Targets.size();
+            for(unsigned int x = 0; x < nSize; x++)
+                delete Targets[x];
+            Targets.clear();
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }
+
+int QUSTRecord::DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField)
+    {
+    GENCTDA defaultCTDA;
+    QUSTQSTA defaultQSTA;
+    unsigned int nSize;
+    switch(subField)
+        {
+        case 11: //conditions
+            if(listIndex >= CTDA.size())
+                return 0;
+            switch(listField)
+                {
+                case 1: //operType
+                    CTDA[listIndex]->value.operType = defaultCTDA.operType;
+                    break;
+                case 2: //unused1
+                    CTDA[listIndex]->value.unused1[0] = defaultCTDA.unused1[0];
+                    CTDA[listIndex]->value.unused1[1] = defaultCTDA.unused1[1];
+                    CTDA[listIndex]->value.unused1[2] = defaultCTDA.unused1[2];
+                    break;
+                case 3: //compValue
+                    CTDA[listIndex]->value.compValue = defaultCTDA.compValue;
+                    break;
+                case 4: //ifunc
+                    CTDA[listIndex]->value.ifunc = defaultCTDA.ifunc;
+                    break;
+                case 5: //param1
+                    CTDA[listIndex]->value.param1 = defaultCTDA.param1;
+                    break;
+                case 6: //param2
+                    CTDA[listIndex]->value.param2 = defaultCTDA.param2;
+                    break;
+                case 7: //unused2
+                    CTDA[listIndex]->value.unused2[0] = defaultCTDA.unused2[0];
+                    CTDA[listIndex]->value.unused2[1] = defaultCTDA.unused2[1];
+                    CTDA[listIndex]->value.unused2[2] = defaultCTDA.unused2[2];
+                    CTDA[listIndex]->value.unused2[3] = defaultCTDA.unused2[3];
+                    break;
+                default:
+                    return 0;
+                }
+            break;
+        case 12: //stages
+            if(listIndex >= Stages.size())
+                return 0;
+            switch(listField)
+                {
+                case 1: //stage
+                    Stages[listIndex]->INDX.Unload();
+                    break;
+                case 2: //entries
+                    nSize = (unsigned int)Stages[listIndex]->Entries.size();
+                    for(unsigned int x = 0; x < nSize; x++)
+                        delete Stages[listIndex]->Entries[x];
+                    Stages[listIndex]->Entries.clear();
+                    break;
+                default:
+                    return 0;
+                }
+            break;
+        case 13: //targets
+            if(listIndex >= Targets.size())
+                return 0;
+            switch(listField)
+                {
+                case 1: //targetId
+                    Targets[listIndex]->QSTA.value.targetId = defaultQSTA.targetId;
+                    break;
+                case 2: //flags
+                    Targets[listIndex]->QSTA.value.flags = defaultQSTA.flags;
+                    break;
+                case 3: //unused1
+                    Targets[listIndex]->QSTA.value.unused1[0] = defaultQSTA.unused1[0];
+                    Targets[listIndex]->QSTA.value.unused1[1] = defaultQSTA.unused1[1];
+                    Targets[listIndex]->QSTA.value.unused1[2] = defaultQSTA.unused1[2];
+                    break;
+                case 4: //conditions
+                    nSize = (unsigned int)Targets[listIndex]->CTDA.size();
+                    for(unsigned int x = 0; x < nSize; x++)
+                        delete Targets[listIndex]->CTDA[x];
+                    Targets[listIndex]->CTDA.clear();
+                    break;
+                default:
+                    return 0;
+                }
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }
+
+int QUSTRecord::DeleteListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field)
+    {
+    GENCTDA defaultCTDA;
+    GENSCHR defaultSCHR;
+    unsigned int nSize;
+    switch(subField)
+        {
+        case 12: //stages
+            if(listIndex >= Stages.size())
+                return 0;
+            switch(listField)
+                {
+                case 2: //entries
+                    if(listX2Index >= Stages[listIndex]->Entries.size())
+                        return 0;
+                    switch(listX2Field)
+                        {
+                        case 1: //flags
+                            Stages[listIndex]->Entries[listX2Index]->QSDT.Unload();
+                            break;
+                        case 2: //conditions
+                            nSize = (unsigned int)Stages[listIndex]->Entries[listX2Index]->CTDA.size();
+                            for(unsigned int x = 0; x < nSize; x++)
+                                delete Stages[listIndex]->Entries[listX2Index]->CTDA[x];
+                            Stages[listIndex]->Entries[listX2Index]->CTDA.clear();
+                            break;
+                        case 3: //text
+                            Stages[listIndex]->Entries[listX2Index]->CNAM.Unload();
+                            break;
+                        case 4: //unused1
+                            Stages[listIndex]->Entries[listX2Index]->SCHR.value.unused1[0] = defaultSCHR.unused1[0];
+                            Stages[listIndex]->Entries[listX2Index]->SCHR.value.unused1[1] = defaultSCHR.unused1[1];
+                            Stages[listIndex]->Entries[listX2Index]->SCHR.value.unused1[2] = defaultSCHR.unused1[2];
+                            Stages[listIndex]->Entries[listX2Index]->SCHR.value.unused1[3] = defaultSCHR.unused1[3];
+                            break;
+                        case 5: //numRefs
+                            Stages[listIndex]->Entries[listX2Index]->SCHR.value.numRefs = defaultSCHR.numRefs;
+                            break;
+                        case 6: //compiledSize
+                            Stages[listIndex]->Entries[listX2Index]->SCHR.value.compiledSize = defaultSCHR.compiledSize;
+                            break;
+                        case 7: //lastIndex
+                            Stages[listIndex]->Entries[listX2Index]->SCHR.value.lastIndex = defaultSCHR.lastIndex;
+                            break;
+                        case 8: //scriptType
+                            Stages[listIndex]->Entries[listX2Index]->SCHR.value.scriptType = defaultSCHR.scriptType;
+                            break;
+                        case 9: //compiled_p
+                            Stages[listIndex]->Entries[listX2Index]->SCDA.Unload();
+                            break;
+                        case 10: //scriptText
+                            Stages[listIndex]->Entries[listX2Index]->SCTX.Unload();
+                            break;
+                        case 11: //references
+                            nSize = (unsigned int)Stages[listIndex]->Entries[listX2Index]->SCR_.size();
+                            for(unsigned int x = 0; x < nSize; x++)
+                                delete Stages[listIndex]->Entries[listX2Index]->SCR_[x];
+                            Stages[listIndex]->Entries[listX2Index]->SCR_.clear();
+                            break;
+                        default:
+                            return 0;
+                        }
+                    break;
+                default:
+                    return 0;
+                }
+            break;
+        case 13: //targets
+            if(listIndex >= Targets.size())
+                return 0;
+            switch(listField)
+                {
+                case 4: //conditions
+                    if(listX2Index >= Targets[listIndex]->CTDA.size())
+                        return 0;
+                    switch(listX2Field)
+                        {
+                        case 1: //operType
+                            Targets[listIndex]->CTDA[listX2Index]->value.operType = defaultCTDA.operType;
+                            break;
+                        case 2: //unused1
+                            Targets[listIndex]->CTDA[listX2Index]->value.unused1[0] = defaultCTDA.unused1[0];
+                            Targets[listIndex]->CTDA[listX2Index]->value.unused1[1] = defaultCTDA.unused1[1];
+                            Targets[listIndex]->CTDA[listX2Index]->value.unused1[2] = defaultCTDA.unused1[2];
+                            break;
+                        case 3: //compValue
+                            Targets[listIndex]->CTDA[listX2Index]->value.compValue = defaultCTDA.compValue;
+                            break;
+                        case 4: //ifunc
+                            Targets[listIndex]->CTDA[listX2Index]->value.ifunc = defaultCTDA.ifunc;
+                            break;
+                        case 5: //param1
+                            Targets[listIndex]->CTDA[listX2Index]->value.param1 = defaultCTDA.param1;
+                            break;
+                        case 6: //param2
+                            Targets[listIndex]->CTDA[listX2Index]->value.param2 = defaultCTDA.param2;
+                            break;
+                        case 7: //unused2
+                            Targets[listIndex]->CTDA[listX2Index]->value.unused2[0] = defaultCTDA.unused2[0];
+                            Targets[listIndex]->CTDA[listX2Index]->value.unused2[1] = defaultCTDA.unused2[1];
+                            Targets[listIndex]->CTDA[listX2Index]->value.unused2[2] = defaultCTDA.unused2[2];
+                            Targets[listIndex]->CTDA[listX2Index]->value.unused2[3] = defaultCTDA.unused2[3];
+                            break;
+                        default:
+                            return 0;
+                        }
+                    break;
+                default:
+                    return 0;
+                }
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }
+
+int QUSTRecord::DeleteListX3Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field)
+    {
+    GENCTDA defaultCTDA;
+    GENSCR_ defaultSCR_;
+    switch(subField)
+        {
+        case 12: //stages
+            if(listIndex >= Stages.size())
+                return 0;
+            switch(listField)
+                {
+                case 2: //entries
+                    if(listX2Index >= Stages[listIndex]->Entries.size())
+                        return 0;
+                    switch(listX2Field)
+                        {
+                        case 2: //conditions
+                            if(listX3Index >= Stages[listIndex]->Entries[listX2Index]->CTDA.size())
+                                return 0;
+                            switch(listX3Field)
+                                {
+                                case 1: //operType
+                                    Stages[listIndex]->Entries[listX2Index]->CTDA[listX3Index]->value.operType = defaultCTDA.operType;
+                                    break;
+                                case 2: //unused1
+                                    Stages[listIndex]->Entries[listX2Index]->CTDA[listX3Index]->value.unused1[0] = defaultCTDA.unused1[0];
+                                    Stages[listIndex]->Entries[listX2Index]->CTDA[listX3Index]->value.unused1[1] = defaultCTDA.unused1[1];
+                                    Stages[listIndex]->Entries[listX2Index]->CTDA[listX3Index]->value.unused1[2] = defaultCTDA.unused1[2];
+                                    break;
+                                case 3: //compValue
+                                    Stages[listIndex]->Entries[listX2Index]->CTDA[listX3Index]->value.compValue = defaultCTDA.compValue;
+                                    break;
+                                case 4: //ifunc
+                                    Stages[listIndex]->Entries[listX2Index]->CTDA[listX3Index]->value.ifunc = defaultCTDA.ifunc;
+                                    break;
+                                case 5: //param1
+                                    Stages[listIndex]->Entries[listX2Index]->CTDA[listX3Index]->value.param1 = defaultCTDA.param1;
+                                    break;
+                                case 6: //param2
+                                    Stages[listIndex]->Entries[listX2Index]->CTDA[listX3Index]->value.param2 = defaultCTDA.param2;
+                                    break;
+                                case 7: //unused2
+                                    Stages[listIndex]->Entries[listX2Index]->CTDA[listX3Index]->value.unused2[0] = defaultCTDA.unused2[0];
+                                    Stages[listIndex]->Entries[listX2Index]->CTDA[listX3Index]->value.unused2[1] = defaultCTDA.unused2[1];
+                                    Stages[listIndex]->Entries[listX2Index]->CTDA[listX3Index]->value.unused2[2] = defaultCTDA.unused2[2];
+                                    Stages[listIndex]->Entries[listX2Index]->CTDA[listX3Index]->value.unused2[3] = defaultCTDA.unused2[3];
+                                    break;
+                                default:
+                                    return 0;
+                                }
+                            break;
+                        case 11: //references
+                            if(listX3Index >= Stages[listIndex]->Entries[listX2Index]->SCR_.size())
+                                return 0;
+                            switch(listX3Field)
+                                {
+                                case 1: //reference
+                                    Stages[listIndex]->Entries[listX2Index]->SCR_[listX3Index]->value.reference = defaultSCR_.reference;
+                                    break;
+                                case 2: //isSCRO
+                                    Stages[listIndex]->Entries[listX2Index]->SCR_[listX3Index]->value.isSCRO = defaultSCR_.isSCRO;
+                                    break;
+                                default:
+                                    return 0;
+                                }
+                            break;
+                        default:
+                            return 0;
+                        }
+                    break;
+                default:
+                    return 0;
+                }
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }

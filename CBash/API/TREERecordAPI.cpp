@@ -243,3 +243,66 @@ void TREERecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
         }
     return;
     }
+
+int TREERecord::DeleteField(const unsigned int Field)
+    {
+    TREECNAM defaultCNAM;
+    TREEBNAM defaultBNAM;
+    switch(Field)
+        {
+        case 5: //eid
+            EDID.Unload();
+            break;
+        case 6: //modPath
+            if(MODL.IsLoaded())
+                MODL->MODL.Unload();
+            break;
+        case 7: //modb
+            if(MODL.IsLoaded())
+                MODL->MODB.Unload();
+            break;
+        case 8: //modt_p
+            if(MODL.IsLoaded())
+                MODL->MODT.Unload();
+            break;
+        case 9: //iconPath
+            ICON.Unload();
+            break;
+        case 10: //speedTree
+            SNAM.clear();
+            break;
+        case 11: //curvature
+            CNAM.value.curvature = defaultCNAM.curvature;
+            break;
+        case 12: //minAngle
+            CNAM.value.minAngle = defaultCNAM.minAngle;
+            break;
+        case 13: //maxAngle
+            CNAM.value.maxAngle = defaultCNAM.maxAngle;
+            break;
+        case 14: //branchDim
+            CNAM.value.branchDim = defaultCNAM.branchDim;
+            break;
+        case 15: //leafDim
+            CNAM.value.leafDim = defaultCNAM.leafDim;
+            break;
+        case 16: //shadowRadius
+            CNAM.value.shadowRadius = defaultCNAM.shadowRadius;
+            break;
+        case 17: //rockSpeed
+            CNAM.value.rockSpeed = defaultCNAM.rockSpeed;
+            break;
+        case 18: //rustleSpeed
+            CNAM.value.rustleSpeed = defaultCNAM.rustleSpeed;
+            break;
+        case 19: //widthBill
+            BNAM.value.widthBill = defaultBNAM.widthBill;
+            break;
+        case 20: //heightBill
+            BNAM.value.heightBill = defaultBNAM.heightBill;
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }

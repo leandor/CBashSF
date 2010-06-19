@@ -342,3 +342,93 @@ void MGEFRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
         }
     return;
     }
+
+int MGEFRecord::DeleteField(const unsigned int Field)
+    {
+    MGEFDATA defaultDATA;
+    switch(Field)
+        {
+        case 5: //eid
+            EDID.Unload();
+            break;
+        case 6: //full
+            FULL.Unload();
+            break;
+        case 7: //text
+            DESC.Unload();
+            break;
+        case 8: //iconPath
+            ICON.Unload();
+            break;
+        case 9: //modPath
+            if(MODL.IsLoaded())
+                MODL->MODL.Unload();
+            break;
+        case 10: //modb
+            if(MODL.IsLoaded())
+                MODL->MODB.Unload();
+            break;
+        case 11: //modt_p
+            if(MODL.IsLoaded())
+                MODL->MODT.Unload();
+            break;
+        case 12: //flags
+            DATA.value.flags = defaultDATA.flags;
+            break;
+        case 13: //baseCost
+            DATA.value.baseCost = defaultDATA.baseCost;
+            break;
+        case 14: //associated
+            DATA.value.associated = defaultDATA.associated;
+            break;
+        case 15: //school
+            DATA.value.school = defaultDATA.school;
+            break;
+        case 16: //resistValue
+            DATA.value.resistValue = defaultDATA.resistValue;
+            break;
+        case 17: //unk1
+            DATA.value.unk1 = defaultDATA.unk1;
+            break;
+        case 18: //unused1
+            DATA.value.unused1[0] = defaultDATA.unused1[0];
+            DATA.value.unused1[1] = defaultDATA.unused1[1];
+            break;
+        case 19: //light
+            DATA.value.light = defaultDATA.light;
+            break;
+        case 20: //projectileSpeed
+            DATA.value.projectileSpeed = defaultDATA.projectileSpeed;
+            break;
+        case 21: //effectShader
+            DATA.value.effectShader = defaultDATA.effectShader;
+            break;
+        case 22: //enchantEffect
+            DATA.value.enchantEffect = defaultDATA.enchantEffect;
+            break;
+        case 23: //castingSound
+            DATA.value.castingSound = defaultDATA.castingSound;
+            break;
+        case 24: //boltSound
+            DATA.value.boltSound = defaultDATA.boltSound;
+            break;
+        case 25: //hitSound
+            DATA.value.hitSound = defaultDATA.hitSound;
+            break;
+        case 26: //areaSound
+            DATA.value.areaSound = defaultDATA.areaSound;
+            break;
+        case 27: //cefEnchantment
+            DATA.value.cefEnchantment = defaultDATA.cefEnchantment;
+            break;
+        case 28: //cefBarter
+            DATA.value.cefBarter = defaultDATA.cefBarter;
+            break;
+        case 29: //counterEffects
+            ESCE.clear();
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }

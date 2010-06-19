@@ -271,3 +271,70 @@ void GRASRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
     return;
     }
 
+int GRASRecord::DeleteField(const unsigned int Field)
+    {
+    GRASDATA defaultDATA;
+    switch(Field)
+        {
+        case 5: //eid
+            EDID.Unload();
+            break;
+        case 6: //modPath
+            if(MODL.IsLoaded())
+                MODL->MODL.Unload();
+            break;
+        case 7: //modb
+            if(MODL.IsLoaded())
+                MODL->MODB.Unload();
+            break;
+        case 8: //modt_p
+            if(MODL.IsLoaded())
+                MODL->MODT.Unload();
+            break;
+        case 9: //density
+            DATA.value.density = defaultDATA.density;
+            break;
+        case 10: //minSlope
+            DATA.value.minSlope = defaultDATA.minSlope;
+            break;
+        case 11: //maxSlope
+            DATA.value.maxSlope = defaultDATA.maxSlope;
+            break;
+        case 12: //unused1
+            DATA.value.unused1 = defaultDATA.unused1;
+            break;
+        case 13: //waterDistance
+            DATA.value.waterDistance = defaultDATA.waterDistance;
+            break;
+        case 14: //unused2
+            DATA.value.unused2[0] = defaultDATA.unused2[0];
+            DATA.value.unused2[1] = defaultDATA.unused2[1];
+            break;
+        case 15: //waterOp
+            DATA.value.waterOp = defaultDATA.waterOp;
+            break;
+        case 16: //posRange
+            DATA.value.posRange = defaultDATA.posRange;
+            break;
+        case 17: //heightRange
+            DATA.value.heightRange = defaultDATA.heightRange;
+            break;
+        case 18: //colorRange
+            DATA.value.colorRange = defaultDATA.colorRange;
+            break;
+        case 19: //wavePeriod
+            DATA.value.wavePeriod = defaultDATA.wavePeriod;
+            break;
+        case 20: //flags
+            DATA.value.flags = defaultDATA.flags;
+            break;
+        case 21: //unused3
+            DATA.value.unused3[0] = defaultDATA.unused3[0];
+            DATA.value.unused3[1] = defaultDATA.unused3[1];
+            DATA.value.unused3[2] = defaultDATA.unused3[2];
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }

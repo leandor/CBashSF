@@ -315,3 +315,78 @@ void WRLDRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
         }
     return;
     }
+
+int WRLDRecord::DeleteField(const unsigned int Field)
+    {
+    WRLDMNAM defaultMNAM;
+    WRLDUNK defaultUNK;
+    switch(Field)
+        {
+        case 5: //eid
+            EDID.Unload();
+            break;
+        case 6: //full
+            FULL.Unload();
+            break;
+        case 7: //parent
+            WNAM.Unload();
+            break;
+        case 8: //climate
+            CNAM.Unload();
+            break;
+        case 9: //water
+            NAM2.Unload();
+            break;
+        case 10: //mapPath
+            ICON.Unload();
+            break;
+        case 11: //dimX
+            if(MNAM.IsLoaded())
+                MNAM->dimX = defaultMNAM.dimX;
+            break;
+        case 12: //dimY
+            if(MNAM.IsLoaded())
+                MNAM->dimY = defaultMNAM.dimY;
+            break;
+        case 13: //NWCellX
+            if(MNAM.IsLoaded())
+                MNAM->NWCellX = defaultMNAM.NWCellX;
+            break;
+        case 14: //NWCellY
+            if(MNAM.IsLoaded())
+                MNAM->NWCellY = defaultMNAM.NWCellY;
+            break;
+        case 15: //SECellX
+            if(MNAM.IsLoaded())
+                MNAM->SECellX = defaultMNAM.SECellX;
+            break;
+        case 16: //SECellY
+            if(MNAM.IsLoaded())
+                MNAM->SECellY = defaultMNAM.SECellY;
+            break;
+        case 17: //flags
+            DATA.Unload();
+            break;
+        case 18: //unknown00
+            NAM0.value.unk1 = defaultUNK.unk1;
+            break;
+        case 19: //unknown01
+            NAM0.value.unk2 = defaultUNK.unk2;
+            break;
+        case 20: //unknown90
+            NAM9.value.unk1 = defaultUNK.unk1;
+            break;
+        case 21: //unknown91
+            NAM9.value.unk2 = defaultUNK.unk2;
+            break;
+        case 22: //sound
+            SNAM.Unload();
+            break;
+        case 23: //ofst_p
+            OFST.Unload();
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }

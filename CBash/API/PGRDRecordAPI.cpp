@@ -556,3 +556,117 @@ void PGRDRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
         }
     return;
     }
+
+int PGRDRecord::DeleteField(const unsigned int Field)
+    {
+    unsigned int nSize;
+    switch(Field)
+        {
+        case 6: //count
+            DATA.Unload();
+            break;
+        case 7: //PGRP
+            PGRP.clear();
+            break;
+        case 8: //PGAG
+            PGAG.Unload();
+            break;
+        case 9: //PGRR
+            PGRR.Unload();
+            break;
+        case 10: //PGRI
+            PGRI.clear();
+            break;
+        case 11: //PGRL
+            nSize = (unsigned int)PGRL.size();
+            for(unsigned int x = 0; x < nSize; x++)
+                delete PGRL[x];
+            PGRL.clear();
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }
+
+int PGRDRecord::DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField)
+    {
+    GENPGRP defaultPGRP;
+    PGRDPGRI defaultPGRI;
+    PGRDPGRL defaultPGRL;
+    unsigned int reference;
+    switch(subField)
+        {
+        case 7: //PGRP
+            if(listIndex >= PGRP.size())
+                return 0;
+            switch(listField)
+                {
+                case 1: //x
+                    PGRP[listIndex].x = defaultPGRP.x;
+                    break;
+                case 2: //y
+                    PGRP[listIndex].y = defaultPGRP.y;
+                    break;
+                case 3: //z
+                    PGRP[listIndex].z = defaultPGRP.z;
+                    break;
+                case 4: //connections
+                    PGRP[listIndex].connections = defaultPGRP.connections;
+                    break;
+                case 5: //unused1
+                    PGRP[listIndex].unused1[0] = defaultPGRP.unused1[0];
+                    PGRP[listIndex].unused1[1] = defaultPGRP.unused1[1];
+                    PGRP[listIndex].unused1[2] = defaultPGRP.unused1[2];
+                    break;
+                default:
+                    return 0;
+                }
+            break;
+        case 10: //PGRI
+            if(listIndex >= PGRI.size())
+                return 0;
+            switch(listField)
+                {
+                case 1: //point
+                    PGRI[listIndex].point = defaultPGRI.point;
+                    break;
+                case 2: //unused1
+                    PGRI[listIndex].unused1[0] = defaultPGRI.unused1[0];
+                    PGRI[listIndex].unused1[1] = defaultPGRI.unused1[1];
+                    break;
+                case 3: //x
+                    PGRI[listIndex].x = defaultPGRI.x;
+                    break;
+                case 4: //y
+                    PGRI[listIndex].y = defaultPGRI.y;
+                    break;
+                case 5: //z
+                    PGRI[listIndex].z = defaultPGRI.z;
+                    break;
+                default:
+                    return 0;
+                }
+            break;
+        case 11: //PGRL
+            if(listIndex >= PGRL.size())
+                return 0;
+            switch(listField)
+                {
+                case 1: //reference
+                    PGRL[listIndex]->points[0] = defaultPGRL.points[0];
+                    break;
+                case 2: //points
+                    reference = PGRL[listIndex]->points[0];
+                    PGRL[listIndex]->points.clear();
+                    PGRL[listIndex]->points.push_back(reference);
+                    break;
+                default:
+                    return 0;
+                }
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }

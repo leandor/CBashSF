@@ -1204,3 +1204,292 @@ void REGNRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned in
         }
     }
 
+int REGNRecord::DeleteField(const unsigned int Field)
+    {
+    GENCLR defaultCLR;
+    unsigned int nSize;
+    switch(Field)
+        {
+        case 5: //eid
+            EDID.Unload();
+            break;
+        case 6: //iconPath
+            ICON.Unload();
+            break;
+        case 7: //mapRed
+            RCLR.value.red = defaultCLR.red;
+            break;
+        case 8: //mapGreen
+            RCLR.value.green = defaultCLR.green;
+            break;
+        case 9: //mapBlue
+            RCLR.value.blue = defaultCLR.blue;
+            break;
+        case 10: //unused1
+            RCLR.value.unused1 = defaultCLR.unused1;
+            break;
+        case 11: //worldspace
+            WNAM.Unload();
+            break;
+        case 12: //areas
+            nSize = (unsigned int)Areas.size();
+            for(unsigned int x = 0; x < nSize; x++)
+                delete Areas[x];
+            Areas.clear();
+            break;
+        case 13: //entries
+            nSize = (unsigned int)Entries.size();
+            for(unsigned int x = 0; x < nSize; x++)
+                delete Entries[x];
+            Entries.clear();
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }
+
+int REGNRecord::DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField)
+    {
+    REGNRDAT defaultRDAT;
+    switch(subField)
+        {
+        case 12: //areas
+            if(listIndex >= Areas.size())
+                return 0;
+            switch(listField)
+                {
+                case 1: //edgeFalloff
+                    Areas[listIndex]->RPLI.Unload();
+                    break;
+                case 2: //points
+                    Areas[listIndex]->RPLD.clear();
+                    break;
+                default:
+                    return 0;
+                }
+            break;
+        case 13: //entries
+            if(listIndex >= Entries.size())
+                return 0;
+            switch(listField)
+                {
+                case 1: //entryType
+                    Entries[listIndex]->RDAT.value.entryType = defaultRDAT.entryType;
+                    break;
+                case 2: //flags
+                    Entries[listIndex]->RDAT.value.flags = defaultRDAT.flags;
+                    break;
+                case 3: //priority
+                    Entries[listIndex]->RDAT.value.priority = defaultRDAT.priority;
+                    break;
+                case 4: //unused1
+                    Entries[listIndex]->RDAT.value.unused1[0] = defaultRDAT.unused1[0];
+                    Entries[listIndex]->RDAT.value.unused1[1] = defaultRDAT.unused1[1];
+                    break;
+                case 5: //objects
+                    Entries[listIndex]->RDOT.clear();
+                    break;
+                case 6: //mapName
+                    Entries[listIndex]->RDMP.Unload();
+                    break;
+                case 7: //iconPath
+                    Entries[listIndex]->ICON.Unload();
+                    break;
+                case 8: //grasses
+                    Entries[listIndex]->RDGS.clear();
+                    break;
+                case 9: //musicType
+                    Entries[listIndex]->RDMD.Unload();
+                    break;
+                case 10: //sounds
+                    Entries[listIndex]->RDSD.clear();
+                    break;
+                case 11: //weathers
+                    Entries[listIndex]->RDWT.clear();
+                    break;
+                default:
+                    return 0;
+                }
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }
+
+int REGNRecord::DeleteListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field)
+    {
+    REGNRPLD defaultRPLD;
+    REGNRDOT defaultRDOT;
+    REGNRDGS defaultRDGS;
+    REGNRDSD defaultRDSD;
+    REGNRDWT defaultRDWT;
+    switch(subField)
+        {
+        case 12: //areas
+            if(listIndex >= Areas.size())
+                return 0;
+            switch(listField)
+                {
+                case 2: //points
+                    if(listX2Index >= Areas[listIndex]->RPLD.size())
+                        return 0;
+                    switch(listX2Field)
+                        {
+                        case 1: //posX
+                            Areas[listIndex]->RPLD[listX2Index].posX = defaultRPLD.posX;
+                            break;
+                        case 2: //posY
+                            Areas[listIndex]->RPLD[listX2Index].posY = defaultRPLD.posY;
+                            break;
+                        default:
+                            return 0;
+                        }
+                    break;
+                default:
+                    return 0;
+                }
+            break;
+        case 13: //entries
+            if(listIndex >= Entries.size())
+                return 0;
+            switch(listField)
+                {
+                case 5: //objects
+                    if(listX2Index >= Entries[listIndex]->RDOT.size())
+                        return 0;
+                    switch(listX2Field)
+                        {
+                        case 1: //objectId
+                            Entries[listIndex]->RDOT[listX2Index].objectId = defaultRDOT.objectId;
+                            break;
+                        case 2: //parentIndex
+                            Entries[listIndex]->RDOT[listX2Index].parentIndex = defaultRDOT.parentIndex;
+                            break;
+                        case 3: //unused1
+                            Entries[listIndex]->RDOT[listX2Index].unused1[0] = defaultRDOT.unused1[0];
+                            Entries[listIndex]->RDOT[listX2Index].unused1[1] = defaultRDOT.unused1[1];
+                            break;
+                        case 4: //density
+                            Entries[listIndex]->RDOT[listX2Index].density = defaultRDOT.density;
+                            break;
+                        case 5: //clustering
+                            Entries[listIndex]->RDOT[listX2Index].clustering = defaultRDOT.clustering;
+                            break;
+                        case 6: //minSlope
+                            Entries[listIndex]->RDOT[listX2Index].minSlope = defaultRDOT.minSlope;
+                            break;
+                        case 7: //maxSlope
+                            Entries[listIndex]->RDOT[listX2Index].maxSlope = defaultRDOT.maxSlope;
+                            break;
+                        case 8: //flags
+                            Entries[listIndex]->RDOT[listX2Index].flags = defaultRDOT.flags;
+                            break;
+                        case 9: //radiusWRTParent
+                            Entries[listIndex]->RDOT[listX2Index].radiusWRTParent = defaultRDOT.radiusWRTParent;
+                            break;
+                        case 10: //radius
+                            Entries[listIndex]->RDOT[listX2Index].radius = defaultRDOT.radius;
+                            break;
+                        case 11: //unk1
+                            Entries[listIndex]->RDOT[listX2Index].unk1[0] = defaultRDOT.unk1[0];
+                            Entries[listIndex]->RDOT[listX2Index].unk1[1] = defaultRDOT.unk1[1];
+                            Entries[listIndex]->RDOT[listX2Index].unk1[2] = defaultRDOT.unk1[2];
+                            Entries[listIndex]->RDOT[listX2Index].unk1[3] = defaultRDOT.unk1[3];
+                            break;
+                        case 12: //maxHeight
+                            Entries[listIndex]->RDOT[listX2Index].maxHeight = defaultRDOT.maxHeight;
+                            break;
+                        case 13: //sink
+                            Entries[listIndex]->RDOT[listX2Index].sink = defaultRDOT.sink;
+                            break;
+                        case 14: //sinkVar
+                            Entries[listIndex]->RDOT[listX2Index].sinkVar = defaultRDOT.sinkVar;
+                            break;
+                        case 15: //sizeVar
+                            Entries[listIndex]->RDOT[listX2Index].sizeVar = defaultRDOT.sizeVar;
+                            break;
+                        case 16: //angleVarX
+                            Entries[listIndex]->RDOT[listX2Index].angleVarX = defaultRDOT.angleVarX;
+                            break;
+                        case 17: //angleVarY
+                            Entries[listIndex]->RDOT[listX2Index].angleVarY = defaultRDOT.angleVarY;
+                            break;
+                        case 18: //angleVarZ
+                            Entries[listIndex]->RDOT[listX2Index].angleVarZ = defaultRDOT.angleVarZ;
+                            break;
+                        case 19: //unused2
+                            Entries[listIndex]->RDOT[listX2Index].unused2[0] = defaultRDOT.unused2[0];
+                            Entries[listIndex]->RDOT[listX2Index].unused2[1] = defaultRDOT.unused2[1];
+                            break;
+                        case 20: //unk2
+                            Entries[listIndex]->RDOT[listX2Index].unk2[0] = defaultRDOT.unk2[0];
+                            Entries[listIndex]->RDOT[listX2Index].unk2[1] = defaultRDOT.unk2[1];
+                            Entries[listIndex]->RDOT[listX2Index].unk2[2] = defaultRDOT.unk2[2];
+                            Entries[listIndex]->RDOT[listX2Index].unk2[3] = defaultRDOT.unk2[3];
+                            break;
+                        default:
+                            return 0;
+                        }
+                    break;
+                case 8: //grasses
+                    if(listX2Index >= Entries[listIndex]->RDGS.size())
+                        return 0;
+                    switch(listX2Field)
+                        {
+                        case 1: //grass
+                            Entries[listIndex]->RDGS[listX2Index].grass = defaultRDGS.grass;
+                            break;
+                        case 2: //unk1
+                            Entries[listIndex]->RDGS[listX2Index].unk1[0] = defaultRDGS.unk1[0];
+                            Entries[listIndex]->RDGS[listX2Index].unk1[1] = defaultRDGS.unk1[1];
+                            Entries[listIndex]->RDGS[listX2Index].unk1[2] = defaultRDGS.unk1[2];
+                            Entries[listIndex]->RDGS[listX2Index].unk1[3] = defaultRDGS.unk1[3];
+                            break;
+                        default:
+                            return 0;
+                        }
+                    break;
+                case 10: //sounds
+                    if(listX2Index >= Entries[listIndex]->RDSD.size())
+                        return 0;
+                    switch(listX2Field)
+                        {
+                        case 1: //sound
+                            Entries[listIndex]->RDSD[listX2Index].sound = defaultRDSD.sound;
+                            break;
+                        case 2: //flags
+                            Entries[listIndex]->RDSD[listX2Index].flags = defaultRDSD.flags;
+                            break;
+                        case 3: //chance
+                            Entries[listIndex]->RDSD[listX2Index].chance = defaultRDSD.chance;
+                            break;
+                        default:
+                            return 0;
+                        }
+                    break;
+                case 11: //weathers
+                    if(listX2Index >= Entries[listIndex]->RDWT.size())
+                        return 0;
+                    switch(listX2Field)
+                        {
+                        case 1: //weather
+                            Entries[listIndex]->RDWT[listX2Index].weather = defaultRDWT.weather;
+                            break;
+                        case 2: //chance
+                            Entries[listIndex]->RDWT[listX2Index].chance = defaultRDWT.chance;
+                            break;
+                        default:
+                            return 0;
+                        }
+                    break;
+                default:
+                    return 0;
+                }
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }

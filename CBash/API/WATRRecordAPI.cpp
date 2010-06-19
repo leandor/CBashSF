@@ -589,3 +589,193 @@ void WATRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
         }
     return;
     }
+
+int WATRRecord::DeleteField(const unsigned int Field)
+    {
+    WATRDATA defaultDATA;
+    WATRGNAM defaultGNAM;
+    switch(Field)
+        {
+        case 5: //eid
+            EDID.Unload();
+            break;
+        case 6: //texture
+            TNAM.Unload();
+            break;
+        case 7: //opacity
+            ANAM.Unload();
+            break;
+        case 8: //flags
+            FNAM.Unload();
+            break;
+        case 9: //material
+            MNAM.Unload();
+            break;
+        case 10: //sound
+            SNAM.Unload();
+            break;
+        case 11: //windVelocity
+            if(DATA.IsLoaded())
+                DATA->windVelocity = defaultDATA.windVelocity;
+            break;
+        case 12: //windDirection
+            if(DATA.IsLoaded())
+                DATA->windDirection = defaultDATA.windDirection;
+            break;
+        case 13: //waveAmp
+            if(DATA.IsLoaded())
+                DATA->waveAmp = defaultDATA.waveAmp;
+            break;
+        case 14: //waveFreq
+            if(DATA.IsLoaded())
+                DATA->waveFreq = defaultDATA.waveFreq;
+            break;
+        case 15: //sunPower
+            if(DATA.IsLoaded())
+                DATA->sunPower = defaultDATA.sunPower;
+            break;
+        case 16: //reflectAmt
+            if(DATA.IsLoaded())
+                DATA->reflectAmt = defaultDATA.reflectAmt;
+            break;
+        case 17: //fresnelAmt
+            if(DATA.IsLoaded())
+                DATA->fresnelAmt = defaultDATA.fresnelAmt;
+            break;
+        case 18: //xSpeed
+            if(DATA.IsLoaded())
+                DATA->xSpeed = defaultDATA.xSpeed;
+            break;
+        case 19: //ySpeed
+            if(DATA.IsLoaded())
+                DATA->ySpeed = defaultDATA.ySpeed;
+            break;
+        case 20: //fogNear
+            if(DATA.IsLoaded())
+                DATA->fogNear = defaultDATA.fogNear;
+            break;
+        case 21: //fogFar
+            if(DATA.IsLoaded())
+                DATA->fogFar = defaultDATA.fogFar;
+            break;
+        case 22: //shallow.red
+            if(DATA.IsLoaded())
+                DATA->shallow.red = defaultDATA.shallow.red;
+            break;
+        case 23: //shallow.green
+            if(DATA.IsLoaded())
+                DATA->shallow.green = defaultDATA.shallow.green;
+            break;
+        case 24: //shallow.blue
+            if(DATA.IsLoaded())
+                DATA->shallow.blue = defaultDATA.shallow.blue;
+            break;
+        case 25: //shallow.unused1
+            if(DATA.IsLoaded())
+                DATA->shallow.unused1 = defaultDATA.shallow.unused1;
+            break;
+        case 26: //deep.red
+            if(DATA.IsLoaded())
+                DATA->deep.red = defaultDATA.deep.red;
+            break;
+        case 27: //deep.green
+            if(DATA.IsLoaded())
+                DATA->deep.green = defaultDATA.deep.green;
+            break;
+        case 28: //deep.blue
+            if(DATA.IsLoaded())
+                DATA->deep.blue = defaultDATA.deep.blue;
+            break;
+        case 29: //deep.unused1
+            if(DATA.IsLoaded())
+                DATA->deep.unused1 = defaultDATA.deep.unused1;
+            break;
+        case 30: //refl.red
+            if(DATA.IsLoaded())
+                DATA->refl.red = defaultDATA.refl.red;
+            break;
+        case 31: //refl.green
+            if(DATA.IsLoaded())
+                DATA->refl.green = defaultDATA.refl.green;
+            break;
+        case 32: //refl.blue
+            if(DATA.IsLoaded())
+                DATA->refl.blue = defaultDATA.refl.blue;
+            break;
+        case 33: //refl.unused1
+            if(DATA.IsLoaded())
+                DATA->refl.unused1 = defaultDATA.refl.unused1;
+            break;
+        case 34: //blend
+            if(DATA.IsLoaded())
+                DATA->blend = defaultDATA.blend;
+            break;
+        case 35: //unused1
+            if(DATA.IsLoaded())
+                {
+                DATA->unused1[0] = defaultDATA.unused1[0];
+                DATA->unused1[1] = defaultDATA.unused1[1];
+                DATA->unused1[2] = defaultDATA.unused1[2];
+                }
+            break;
+        case 36: //rainForce
+            if(DATA.IsLoaded())
+                DATA->rainForce = defaultDATA.rainForce;
+            break;
+        case 37: //rainVelocity
+            if(DATA.IsLoaded())
+                DATA->rainVelocity = defaultDATA.rainVelocity;
+            break;
+        case 38: //rainFalloff
+            if(DATA.IsLoaded())
+                DATA->rainFalloff = defaultDATA.rainFalloff;
+            break;
+        case 39: //rainDampner
+            if(DATA.IsLoaded())
+                DATA->rainDampner = defaultDATA.rainDampner;
+            break;
+        case 40: //rainSize
+            if(DATA.IsLoaded())
+                DATA->rainSize = defaultDATA.rainSize;
+            break;
+        case 41: //dispForce
+            if(DATA.IsLoaded())
+                DATA->dispForce = defaultDATA.dispForce;
+            break;
+        case 42: //dispVelocity
+            if(DATA.IsLoaded())
+                DATA->dispVelocity = defaultDATA.dispVelocity;
+            break;
+        case 43: //dispFalloff
+            if(DATA.IsLoaded())
+                DATA->dispFalloff = defaultDATA.dispFalloff;
+            break;
+        case 44: //dispDampner
+            if(DATA.IsLoaded())
+                DATA->dispDampner = defaultDATA.dispDampner;
+            break;
+        case 45: //dispSize
+            if(DATA.IsLoaded())
+                DATA->dispSize = defaultDATA.dispSize;
+            break;
+        case 46: //damage
+            if(DATA.IsLoaded())
+                DATA->damage = defaultDATA.damage;
+            break;
+        case 47: //dayWater
+            if(GNAM.IsLoaded())
+                GNAM->dayWater = defaultGNAM.dayWater;
+            break;
+        case 48: //nightWater
+            if(GNAM.IsLoaded())
+                GNAM->nightWater = defaultGNAM.nightWater;
+            break;
+        case 49: //underWater
+            if(GNAM.IsLoaded())
+                GNAM->underWater = defaultGNAM.underWater;
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }

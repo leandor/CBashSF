@@ -169,3 +169,52 @@ void SKILRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
+int SKILRecord::DeleteField(const unsigned int Field)
+    {
+    SKILDATA defaultDATA;
+    switch(Field)
+        {
+        case 5: //eid
+            EDID.Unload();
+            break;
+        case 6: //skill
+            INDX.Unload();
+            break;
+        case 7: //description
+            DESC.Unload();
+            break;
+        case 8: //iconPath
+            ICON.Unload();
+            break;
+        case 9: //action
+            ICON.Unload();
+            break;
+        case 10: //attribute
+            DATA.value.attribute = defaultDATA.attribute;
+            break;
+        case 11: //specialization
+            DATA.value.specialization = defaultDATA.specialization;
+            break;
+        case 12: //use0
+            DATA.value.use0 = defaultDATA.use0;
+            break;
+        case 13: //use1
+            DATA.value.use1 = defaultDATA.use1;
+            break;
+        case 14: //apprentice
+            ANAM.Unload();
+            break;
+        case 15: //journeyman
+            JNAM.Unload();
+            break;
+        case 16: //expert
+            ENAM.Unload();
+            break;
+        case 17: //master
+            MNAM.Unload();
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }

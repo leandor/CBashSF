@@ -120,3 +120,30 @@ void GMSTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
         }
     return;
     }
+
+int GMSTRecord::DeleteField(const unsigned int Field)
+    {
+    GMSTDATA defaultDATA;
+    switch(Field)
+        {
+        case 6: //value
+            switch(DATA.format)
+                {
+                case 's':
+                    delete []DATA.s;
+                    DATA.s = defaultDATA.s;
+                    break;
+                case 'i':
+                    DATA.i = defaultDATA.i;
+                    break;
+                case 'f':
+                    DATA.f = defaultDATA.f;
+                    break;
+                default:
+                    return 0;
+                }
+        default:
+            return 0;
+        }
+    return 1;
+    }

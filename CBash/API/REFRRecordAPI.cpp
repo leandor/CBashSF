@@ -625,3 +625,202 @@ void REFRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
         }
     return;
     }
+
+int REFRRecord::DeleteField(const unsigned int Field)
+    {
+    REFRXTEL defaultXTEL;
+    REFRXLOC defaultXLOC;
+    GENXESP defaultXESP;
+    GENXLOD defaultXLOD;
+    REFRTNAM defaultTNAM;
+    GENPOSDATA defaultDATA;
+    switch(Field)
+        {
+        case 5: //eid
+            EDID.Unload();
+            break;
+        case 6: //base
+            NAME.Unload();
+            break;
+        case 7: //destinationFormID
+            if(XTEL.IsLoaded())
+                XTEL->destinationFid = defaultXTEL.destinationFid;
+            break;
+        case 8: //destinationPosX
+            if(XTEL.IsLoaded())
+                XTEL->destination.posX = defaultXTEL.destination.posX;
+            break;
+        case 9: //destinationPosY
+            if(XTEL.IsLoaded())
+                XTEL->destination.posY = defaultXTEL.destination.posY;
+            break;
+        case 10: //destinationPosZ
+            if(XTEL.IsLoaded())
+                XTEL->destination.posZ = defaultXTEL.destination.posZ;
+            break;
+        case 11: //destinationRotX
+            if(XTEL.IsLoaded())
+                XTEL->destination.rotX = defaultXTEL.destination.rotX;
+            break;
+        case 12: //destinationRotY
+            if(XTEL.IsLoaded())
+                XTEL->destination.rotY = defaultXTEL.destination.rotY;
+            break;
+        case 13: //destinationRotZ
+            if(XTEL.IsLoaded())
+                XTEL->destination.rotZ = defaultXTEL.destination.rotZ;
+            break;
+        case 14: //lockLevel
+            if(XLOC.IsLoaded())
+                XLOC->level = defaultXLOC.level;
+            break;
+        case 15: //unused1
+            if(XLOC.IsLoaded())
+                {
+                XLOC->unused1[0] = defaultXLOC.unused1[0];
+                XLOC->unused1[1] = defaultXLOC.unused1[1];
+                XLOC->unused1[2] = defaultXLOC.unused1[2];
+                }
+            break;
+        case 16: //lockKey
+            if(XLOC.IsLoaded())
+                XLOC->key = defaultXLOC.key;
+            break;
+        case 17: //unused2
+            if(XLOC.IsLoaded())
+                {
+                XLOC->unused2[0] = defaultXLOC.unused2[0];
+                XLOC->unused2[1] = defaultXLOC.unused2[1];
+                XLOC->unused2[2] = defaultXLOC.unused2[2];
+                XLOC->unused2[3] = defaultXLOC.unused2[3];
+                }
+            break;
+        case 18: //lockFlags
+            if(XLOC.IsLoaded())
+                XLOC->flags = defaultXLOC.flags;
+            break;
+        case 19: //unused3
+            if(XLOC.IsLoaded())
+                {
+                XLOC->unused3[0] = defaultXLOC.unused3[0];
+                XLOC->unused3[1] = defaultXLOC.unused3[1];
+                XLOC->unused3[2] = defaultXLOC.unused3[2];
+                }
+            break;
+        case 20: //owner
+            if(Ownership.IsLoaded())
+                Ownership->XOWN.Unload();
+            break;
+        case 21: //rank
+            if(Ownership.IsLoaded())
+                Ownership->XRNK.Unload();
+            break;
+        case 22: //globalVariable
+            if(Ownership.IsLoaded())
+                Ownership->XGLB.Unload();
+            break;
+        case 23: //parent
+            if(XESP.IsLoaded())
+                XESP->parent = defaultXESP.parent;
+            break;
+        case 24: //parentFlags
+            if(XESP.IsLoaded())
+                XESP->flags = defaultXESP.flags;
+            break;
+        case 25: //unused4
+            if(XESP.IsLoaded())
+                {
+                XESP->unused1[0] = defaultXESP.unused1[0];
+                XESP->unused1[1] = defaultXESP.unused1[1];
+                XESP->unused1[2] = defaultXESP.unused1[2];
+                }
+            break;
+        case 26: //targetFormID
+            XTRG.Unload();
+            break;
+        case 27: //seed
+            XSED.Unload();
+            break;
+        case 28: //lod1
+            if(XLOD.IsLoaded())
+                XLOD->lod1 = defaultXLOD.lod1;
+            break;
+        case 29: //lod2
+            if(XLOD.IsLoaded())
+                XLOD->lod2 = defaultXLOD.lod2;
+            break;
+        case 30: //lod3
+            if(XLOD.IsLoaded())
+                XLOD->lod3 = defaultXLOD.lod3;
+            break;
+        case 31: //charge
+            XCHG.Unload();
+            break;
+        case 32: //health
+            XHLT.Unload();
+            break;
+        case 33: //unknownXPCIFormID
+            if(XPCI.IsLoaded())
+                XPCI->XPCI.Unload();
+            break;
+        case 34: //unknownXPCIString
+            if(XPCI.IsLoaded())
+                XPCI->FULL.Unload();
+            break;
+        case 35: //levelMod
+            XLCM.Unload();
+            break;
+        case 36: //unknownXRTMFormID
+            XRTM.Unload();
+            break;
+        case 37: //actionFlags
+            XACT.Unload();
+            break;
+        case 38: //count
+            XCNT.Unload();
+            break;
+        case 39: //markerFlags
+            if(Marker.IsLoaded())
+                Marker->FNAM.Unload();
+            break;
+        case 40: //markerName
+            if(Marker.IsLoaded())
+                Marker->FULL.Unload();
+            break;
+        case 41: //markerType
+            if(Marker.IsLoaded())
+                Marker->TNAM.value.markerType = defaultTNAM.markerType;
+            break;
+        case 42: //markerUnused
+            if(Marker.IsLoaded())
+                Marker->TNAM.value.unused1 = defaultTNAM.unused1;
+            break;
+        case 43: //scale
+            XSCL.Unload();
+            break;
+        case 44: //soul
+            XSOL.Unload();
+            break;
+        case 45: //posX
+            DATA.value.posX = defaultDATA.posX;
+            break;
+        case 46: //posY
+            DATA.value.posY = defaultDATA.posY;
+            break;
+        case 47: //posZ
+            DATA.value.posZ = defaultDATA.posZ;
+            break;
+        case 48: //rotX
+            DATA.value.rotX = defaultDATA.rotX;
+            break;
+        case 49: //rotY
+            DATA.value.rotY = defaultDATA.rotY;
+            break;
+        case 50: //rotZ
+            DATA.value.rotZ = defaultDATA.rotZ;
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }

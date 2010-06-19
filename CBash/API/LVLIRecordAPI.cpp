@@ -59,14 +59,8 @@ int LVLIRecord::GetOtherFieldType(const unsigned int Field)
             return UBYTE_FIELD;
         case 7: //flags
             return UBYTE_FIELD;
-        case 8: //script
-            return UNKNOWN_FIELD;
-        case 9: //template
-            return UNKNOWN_FIELD;
         case 10: //entries
             return LIST_FIELD;
-        //case 11: //data_p
-        //    return BYTES_FIELD;
         default:
             return UNKNOWN_FIELD;
         }
@@ -86,30 +80,6 @@ void * LVLIRecord::GetOtherField(const unsigned int Field)
             return NULL;
         }
     }
-
-//unsigned int LVLIRecord::GetFieldArraySize(const unsigned int Field)
-//    {
-//    switch(Field)
-//        {
-//        case 11: //data_p
-//            return DATA.size;
-//        default:
-//            return 0;
-//        }
-//    }
-
-//void LVLIRecord::GetFieldArray(const unsigned int Field, void **FieldValues)
-//    {
-//    switch(Field)
-//        {
-//        case 11: //data_p
-//            *FieldValues = DATA.value;
-//            return;
-//        default:
-//            *FieldValues = NULL;
-//            return;
-//        }
-//    }
 
 int LVLIRecord::GetListFieldType(const unsigned int subField, const unsigned int listField)
     {
@@ -333,16 +303,65 @@ void LVLIRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-//void LVLIRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
-//    {
-//    switch(Field)
-//        {
-//        case 11: //data_p
-//            DATA.Copy(FieldValue, nSize);
-//            break;
-//        default:
-//            return;
-//        }
-//    return;
-//    }
+int LVLIRecord::DeleteField(const unsigned int Field)
+    {
+    unsigned int nSize;
+    switch(Field)
+        {
+        case 5: //eid
+            EDID.Unload();
+            break;
+        case 6: //chanceNone
+            LVLD.Unload();
+            break;
+        case 7: //flags
+            LVLF.Unload();
+            break;
+        case 10: //entries
+            nSize = (unsigned int)Entries.size();
+            for(unsigned int x = 0; x < nSize; x++)
+                delete Entries[x];
+            Entries.clear();
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }
 
+int LVLIRecord::DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField)
+    {
+    LVLLVLO defaultLVLO;
+    switch(subField)
+        {
+        case 10: //entries
+            if(listIndex >= Entries.size())
+                return 0;
+            switch(listField)
+                {
+                case 1: //level
+                    Entries[listIndex]->value.level = defaultLVLO.level;
+                    break;
+                case 2: //unused1
+                    Entries[listIndex]->value.unused1[0] = defaultLVLO.unused1[0];
+                    Entries[listIndex]->value.unused1[1] = defaultLVLO.unused1[1];
+                    break;
+                case 3: //listId
+                    Entries[listIndex]->value.listId = defaultLVLO.listId;
+                    break;
+                case 4: //count
+                    Entries[listIndex]->value.count = defaultLVLO.count;
+                    break;
+                case 5: //unused2
+                    Entries[listIndex]->value.unused2[0] = defaultLVLO.unused2[0];
+                    Entries[listIndex]->value.unused2[1] = defaultLVLO.unused2[1];
+                    break;
+                default:
+                    return 0;
+                }
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }

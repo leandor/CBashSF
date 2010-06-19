@@ -299,3 +299,75 @@ void ROADRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
         }
     return;
     }
+
+int ROADRecord::DeleteField(const unsigned int Field)
+    {
+    switch(Field)
+        {
+        case 6: //PGRP
+            PGRP.clear();
+            break;
+        case 7: //PGRR
+            PGRR.clear();
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }
+
+int ROADRecord::DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField)
+    {
+    GENPGRP defaultPGRP;
+    ROADPGRR defaultPGRR;
+    switch(subField)
+        {
+        case 6: //PGRP
+            if(listIndex >= PGRP.size())
+                return 0;
+            switch(listField)
+                {
+                case 1: //x
+                    PGRP[listIndex].x = defaultPGRP.x;
+                    break;
+                case 2: //y
+                    PGRP[listIndex].y = defaultPGRP.y;
+                    break;
+                case 3: //z
+                    PGRP[listIndex].z = defaultPGRP.z;
+                    break;
+                case 4: //connections
+                    PGRP[listIndex].connections = defaultPGRP.connections;
+                    break;
+                case 5: //unused1
+                    PGRP[listIndex].unused1[0] = defaultPGRP.unused1[0];
+                    PGRP[listIndex].unused1[1] = defaultPGRP.unused1[1];
+                    PGRP[listIndex].unused1[2] = defaultPGRP.unused1[2];
+                    break;
+                default:
+                    return 0;
+                }
+            break;
+        case 7: //PGRR
+            if(listIndex >= PGRR.size())
+                return 0;
+            switch(listField)
+                {
+                case 1: //x
+                    PGRR[listIndex].x = defaultPGRR.x;
+                    break;
+                case 2: //y
+                    PGRR[listIndex].y = defaultPGRR.y;
+                    break;
+                case 3: //z
+                    PGRR[listIndex].z = defaultPGRR.z;
+                    break;
+                default:
+                    return 0;
+                }
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }

@@ -200,3 +200,47 @@ void SOUNRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
+int SOUNRecord::DeleteField(const unsigned int Field)
+    {
+    SOUNSNDX defaultSNDX;
+    switch(Field)
+        {
+        case 5: //eid
+            EDID.Unload();
+            break;
+        case 6: //soundFile
+            FNAM.Unload();
+            break;
+        case 7: //minDistance
+            SNDX.value.minDistance = defaultSNDX.minDistance;
+            break;
+        case 8: //maxDistance
+            SNDX.value.maxDistance = defaultSNDX.maxDistance;
+            break;
+        case 9: //freqAdjustment
+            SNDX.value.freqAdjustment = defaultSNDX.freqAdjustment;
+            break;
+        case 10: //unused1
+            SNDX.value.unused1 = defaultSNDX.unused1;
+            break;
+        case 11: //flags
+            SNDX.value.flags = defaultSNDX.flags;
+            break;
+        case 12: //unused2
+            SNDX.value.unused2[0] = defaultSNDX.unused2[0];
+            SNDX.value.unused2[1] = defaultSNDX.unused2[1];
+            break;
+        case 13: //staticAtten
+            SNDX.value.staticAtten = defaultSNDX.staticAtten;
+            break;
+        case 14: //stopTime
+            SNDX.value.stopTime = defaultSNDX.stopTime;
+            break;
+        case 15: //startTime
+            SNDX.value.startTime = defaultSNDX.startTime;
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }

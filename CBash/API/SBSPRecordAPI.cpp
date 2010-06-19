@@ -85,3 +85,26 @@ void SBSPRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
         }
     return;
     }
+
+int SBSPRecord::DeleteField(const unsigned int Field)
+    {
+    SBSPDNAM defaultDNAM;
+    switch(Field)
+        {
+        case 5: //eid
+            EDID.Unload();
+            break;
+        case 6: //sizeX
+            DNAM.value.sizeX = defaultDNAM.sizeX;
+            break;
+        case 7: //sizeY
+            DNAM.value.sizeY = defaultDNAM.sizeY;
+            break;
+        case 8: //sizeZ
+            DNAM.value.sizeZ = defaultDNAM.sizeZ;
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }

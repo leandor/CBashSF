@@ -809,3 +809,196 @@ void INFORecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
         }
     return;
     }
+
+int INFORecord::DeleteField(const unsigned int Field)
+    {
+    INFODATA defaultDATA;
+    GENSCHR defaultSCHR;
+    unsigned int nSize;
+    switch(Field)
+        {
+        case 5: //eid
+            EDID.Unload();
+            break;
+        case 6: //dialType
+            DATA.value.dialType = defaultDATA.dialType;
+            break;
+        case 7: //flags
+            DATA.value.flags = defaultDATA.flags;
+            break;
+        case 8: //unused1
+            DATA.value.unused1 = defaultDATA.unused1;
+            break;
+        case 9: //quest
+            QSTI.Unload();
+            break;
+        case 10: //topic
+            TPIC.Unload();
+            break;
+        case 11: //prevInfo
+            PNAM.Unload();
+            break;
+        case 12: //addTopics
+            nSize = (unsigned int)NAME.size();
+            for(unsigned int x = 0; x < nSize; x++)
+                delete NAME[x];
+            NAME.clear();
+            break;
+        case 13: //responses
+            nSize = (unsigned int)Responses.size();
+            for(unsigned int x = 0; x < nSize; x++)
+                delete Responses[x];
+            Responses.clear();
+            break;
+        case 14: //conditions
+            nSize = (unsigned int)CTDA.size();
+            for(unsigned int x = 0; x < nSize; x++)
+                delete CTDA[x];
+            CTDA.clear();
+            break;
+        case 15: //choices
+            nSize = (unsigned int)TCLT.size();
+            for(unsigned int x = 0; x < nSize; x++)
+                delete TCLT[x];
+            TCLT.clear();
+            break;
+        case 16: //linksFrom
+            nSize = (unsigned int)TCLF.size();
+            for(unsigned int x = 0; x < nSize; x++)
+                delete TCLF[x];
+            TCLF.clear();
+            break;
+        case 17: //unused2
+            SCHR.value.unused1[0] = defaultSCHR.unused1[0];
+            SCHR.value.unused1[1] = defaultSCHR.unused1[1];
+            SCHR.value.unused1[2] = defaultSCHR.unused1[2];
+            SCHR.value.unused1[3] = defaultSCHR.unused1[3];
+            break;
+        case 18: //numRefs
+            SCHR.value.numRefs = defaultSCHR.numRefs;
+            break;
+        case 19: //compiledSize
+            SCHR.value.compiledSize = defaultSCHR.compiledSize;
+            break;
+        case 20: //lastIndex
+            SCHR.value.lastIndex = defaultSCHR.lastIndex;
+            break;
+        case 21: //scriptType
+            SCHR.value.scriptType = defaultSCHR.scriptType;
+            break;
+        case 22: //compiled_p
+            SCDA.Unload();
+            break;
+        case 23: //scriptText
+            SCTX.Unload();
+            break;
+        case 24: //references
+            nSize = (unsigned int)SCR_.size();
+            for(unsigned int x = 0; x < nSize; x++)
+                delete SCR_[x];
+            SCR_.clear();
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }
+
+
+int INFORecord::DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField)
+    {
+    INFOTRDT defaultTRDT;
+    GENCTDA defaultCTDA;
+    GENSCR_ defaultSCR_;
+    switch(subField)
+        {
+        case 13: //responses
+            if(listIndex >= Responses.size())
+                return 0;
+            switch(listField)
+                {
+                case 1: //emotionType
+                    Responses[listIndex]->TRDT.value.emotionType = defaultTRDT.emotionType;
+                    break;
+                case 2: //emotionValue
+                    Responses[listIndex]->TRDT.value.emotionValue = defaultTRDT.emotionValue;
+                    break;
+                case 3: //unused1
+                    Responses[listIndex]->TRDT.value.unused1[0] = defaultTRDT.unused1[0];
+                    Responses[listIndex]->TRDT.value.unused1[1] = defaultTRDT.unused1[1];
+                    Responses[listIndex]->TRDT.value.unused1[2] = defaultTRDT.unused1[2];
+                    Responses[listIndex]->TRDT.value.unused1[3] = defaultTRDT.unused1[3];
+                    break;
+                case 4: //responseNum
+                    Responses[listIndex]->TRDT.value.responseNum = defaultTRDT.responseNum;
+                    break;
+                case 5: //unused2
+                    Responses[listIndex]->TRDT.value.unused2[0] = defaultTRDT.unused2[0];
+                    Responses[listIndex]->TRDT.value.unused2[1] = defaultTRDT.unused2[1];
+                    Responses[listIndex]->TRDT.value.unused2[2] = defaultTRDT.unused2[2];
+                    break;
+                case 6: //responseText
+                    Responses[listIndex]->NAM1.Unload();
+                    break;
+                case 7: //actorNotes
+                    Responses[listIndex]->NAM2.Unload();
+                    break;
+                default:
+                    return 0;
+                }
+            break;
+        case 14: //conditions
+            if(listIndex >= CTDA.size())
+                return 0;
+            switch(listField)
+                {
+                case 1: //operType
+                    CTDA[listIndex]->value.operType = defaultCTDA.operType;
+                    break;
+                case 2: //unused1
+                    CTDA[listIndex]->value.unused1[0] = defaultCTDA.unused1[0];
+                    CTDA[listIndex]->value.unused1[1] = defaultCTDA.unused1[1];
+                    CTDA[listIndex]->value.unused1[2] = defaultCTDA.unused1[2];
+                    break;
+                case 3: //compValue
+                    CTDA[listIndex]->value.compValue = defaultCTDA.compValue;
+                    break;
+                case 4: //ifunc
+                    CTDA[listIndex]->value.ifunc = defaultCTDA.ifunc;
+                    break;
+                case 5: //param1
+                    CTDA[listIndex]->value.param1 = defaultCTDA.param1;
+                    break;
+                case 6: //param2
+                    CTDA[listIndex]->value.param2 = defaultCTDA.param2;
+                    break;
+                case 7: //unused2
+                    CTDA[listIndex]->value.unused2[0] = defaultCTDA.unused2[0];
+                    CTDA[listIndex]->value.unused2[1] = defaultCTDA.unused2[1];
+                    CTDA[listIndex]->value.unused2[2] = defaultCTDA.unused2[2];
+                    CTDA[listIndex]->value.unused2[3] = defaultCTDA.unused2[3];
+                    break;
+                default:
+                    return 0;
+                }
+            break;
+        case 24: //references
+            if(listIndex >= SCR_.size())
+                return 0;
+            switch(listField)
+                {
+                case 1: //reference
+                    SCR_[listIndex]->value.reference = defaultSCR_.reference;
+                    break;
+                case 2: //isSCRO
+                    SCR_[listIndex]->value.isSCRO = defaultSCR_.isSCRO;
+                    break;
+                default:
+                    return 0;
+                }
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }

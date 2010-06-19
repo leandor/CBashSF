@@ -534,3 +534,123 @@ void PACKRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
         }
     return;
     }
+
+int PACKRecord::DeleteField(const unsigned int Field)
+    {
+    PACKPKDT defaultPKDT;
+    PACKPLDT defaultPLDT;
+    PACKPSDT defaultPSDT;
+    PACKPTDT defaultPTDT;
+    unsigned int nSize;
+    switch(Field)
+        {
+        case 5: //eid
+            EDID.Unload();
+            break;
+        case 6: //flags
+            PKDT.value.flags = defaultPKDT.flags;
+            break;
+        case 7: //aiType
+            PKDT.value.aiType = defaultPKDT.aiType;
+            break;
+        case 8: //unused1
+            PKDT.value.unused1[0] = defaultPKDT.unused1[0];
+            PKDT.value.unused1[1] = defaultPKDT.unused1[1];
+            PKDT.value.unused1[2] = defaultPKDT.unused1[2];
+            break;
+        case 9: //locType
+            if(PLDT.IsLoaded())
+                PLDT->locType = defaultPLDT.locType;
+            break;
+        case 10: //locId
+            if(PLDT.IsLoaded())
+                PLDT->locId = defaultPLDT.locId;
+            break;
+        case 11: //locRadius
+            if(PLDT.IsLoaded())
+                PLDT->locRadius = defaultPLDT.locRadius;
+            break;
+        case 12: //month
+            PSDT.value.month = defaultPSDT.month;
+            break;
+        case 13: //day
+            PSDT.value.day = defaultPSDT.day;
+            break;
+        case 14: //date
+            PSDT.value.date = defaultPSDT.date;
+            break;
+        case 15: //time
+            PSDT.value.time = defaultPSDT.time;
+            break;
+        case 16: //duration
+            PSDT.value.duration = defaultPSDT.duration;
+            break;
+        case 17: //targetType
+            if(PTDT.IsLoaded())
+                PTDT->targetType = defaultPTDT.targetType;
+            break;
+        case 18: //targetId
+            if(PTDT.IsLoaded())
+                PTDT->targetId = defaultPTDT.targetId;
+            break;
+        case 19: //targetCount
+            if(PTDT.IsLoaded())
+                PTDT->targetCount = defaultPTDT.targetCount;
+            break;
+        case 20: //conditions
+            nSize = (unsigned int)CTDA.size();
+            for(unsigned int x = 0; x < nSize; x++)
+                delete CTDA[x];
+            CTDA.clear();
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }
+
+int PACKRecord::DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField)
+    {
+    GENCTDA defaultCTDA;
+    switch(subField)
+        {
+        case 20: //conditions
+            if(listIndex >= CTDA.size())
+                return 0;
+            switch(listField)
+                {
+                case 1: //operType
+                    CTDA[listIndex]->value.operType = defaultCTDA.operType;
+                    break;
+                case 2: //unused1
+                    CTDA[listIndex]->value.unused1[0] = defaultCTDA.unused1[0];
+                    CTDA[listIndex]->value.unused1[1] = defaultCTDA.unused1[1];
+                    CTDA[listIndex]->value.unused1[2] = defaultCTDA.unused1[2];
+                    break;
+                case 3: //compValue
+                    CTDA[listIndex]->value.compValue = defaultCTDA.compValue;
+                    break;
+                case 4: //ifunc
+                    CTDA[listIndex]->value.ifunc = defaultCTDA.ifunc;
+                    break;
+                case 5: //param1
+                    CTDA[listIndex]->value.param1 = defaultCTDA.param1;
+                    break;
+                case 6: //param2
+                    CTDA[listIndex]->value.param2 = defaultCTDA.param2;
+                    break;
+                case 7: //unused2
+                    CTDA[listIndex]->value.unused2[0] = defaultCTDA.unused2[0];
+                    CTDA[listIndex]->value.unused2[1] = defaultCTDA.unused2[1];
+                    CTDA[listIndex]->value.unused2[2] = defaultCTDA.unused2[2];
+                    CTDA[listIndex]->value.unused2[3] = defaultCTDA.unused2[3];
+                    break;
+                default:
+                    return 0;
+                }
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }

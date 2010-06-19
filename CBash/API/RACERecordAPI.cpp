@@ -1285,3 +1285,410 @@ void RACERecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
+int RACERecord::DeleteField(const unsigned int Field)
+    {
+    RACEDATA defaultDATA;
+    RACEVNAM defaultVNAM;
+    RACEDNAM defaultDNAM;
+    RACEATTR defaultATTR;
+    unsigned int nSize;
+    switch(Field)
+        {
+        case 5: //eid
+            EDID.Unload();
+            break;
+        case 6: //full
+            FULL.Unload();
+            break;
+        case 7: //text
+            DESC.Unload();
+            break;
+        case 8: //spells
+            nSize = (unsigned int)SPLO.size();
+            for(unsigned int x = 0; x < nSize; x++)
+                delete SPLO[x];
+            SPLO.clear();
+            break;
+        case 9: //relations
+            nSize = (unsigned int)XNAM.size();
+            for(unsigned int x = 0; x < nSize; x++)
+                delete XNAM[x];
+            XNAM.clear();
+            break;
+        case 10: //skill1
+            DATA.value.skills[0].value = defaultDATA.skills[0].value;
+            break;
+        case 11: //skill1Boost
+            DATA.value.skills[0].boost = defaultDATA.skills[0].boost;
+            break;
+        case 12: //skill2
+            DATA.value.skills[1].value = defaultDATA.skills[1].value;
+            break;
+        case 13: //skill2Boost
+            DATA.value.skills[1].boost = defaultDATA.skills[1].boost;
+            break;
+        case 14: //skill3
+            DATA.value.skills[2].value = defaultDATA.skills[2].value;
+            break;
+        case 15: //skill3Boost
+            DATA.value.skills[2].boost = defaultDATA.skills[2].boost;
+            break;
+        case 16: //skill4
+            DATA.value.skills[3].value = defaultDATA.skills[3].value;
+            break;
+        case 17: //skill4Boost
+            DATA.value.skills[3].boost = defaultDATA.skills[3].boost;
+            break;
+        case 18: //skill5
+            DATA.value.skills[4].value = defaultDATA.skills[4].value;
+            break;
+        case 19: //skill5Boost
+            DATA.value.skills[4].boost = defaultDATA.skills[4].boost;
+            break;
+        case 20: //skill6
+            DATA.value.skills[5].value = defaultDATA.skills[5].value;
+            break;
+        case 21: //skill6Boost
+            DATA.value.skills[5].boost = defaultDATA.skills[5].boost;
+            break;
+        case 22: //skill7
+            DATA.value.skills[6].value = defaultDATA.skills[6].value;
+            break;
+        case 23: //skill7Boost
+            DATA.value.skills[6].boost = defaultDATA.skills[6].boost;
+            break;
+        case 24: //unused1
+            DATA.value.unused1[0] = defaultDATA.unused1[0];
+            DATA.value.unused1[1] = defaultDATA.unused1[1];
+            break;
+        case 25: //maleHeight
+            DATA.value.maleHeight = defaultDATA.maleHeight;
+            break;
+        case 26: //femaleHeight
+            DATA.value.femaleHeight = defaultDATA.femaleHeight;
+            break;
+        case 27: //maleWeight
+            DATA.value.maleWeight = defaultDATA.maleWeight;
+            break;
+        case 28: //femaleWeight
+            DATA.value.femaleWeight = defaultDATA.femaleWeight;
+            break;
+        case 29: //flags
+            DATA.value.flags = defaultDATA.flags;
+            break;
+        case 30: //maleVoice
+            VNAM.value.maleVoice = defaultVNAM.maleVoice;
+            break;
+        case 31: //femaleVoice
+            VNAM.value.femaleVoice = defaultVNAM.femaleVoice;
+            break;
+        case 32: //defaultHairMale
+            DNAM.value.defaultHairMale = defaultDNAM.defaultHairMale;
+            break;
+        case 33: //defaultHairFemale
+            DNAM.value.defaultHairFemale = defaultDNAM.defaultHairFemale;
+            break;
+        case 34: //defaultHairColor
+            CNAM.Unload();
+            break;
+        case 35: //mainClamp
+            PNAM.Unload();
+            break;
+        case 36: //faceClamp
+            UNAM.Unload();
+            break;
+        case 37: //maleStrength
+            ATTR.value.maleStrength = defaultATTR.maleStrength;
+            break;
+        case 38: //maleIntelligence
+            ATTR.value.maleIntelligence = defaultATTR.maleIntelligence;
+            break;
+        case 39: //maleWillpower
+            ATTR.value.maleWillpower = defaultATTR.maleWillpower;
+            break;
+        case 40: //maleAgility
+            ATTR.value.maleAgility = defaultATTR.maleAgility;
+            break;
+        case 41: //maleSpeed
+            ATTR.value.maleSpeed = defaultATTR.maleSpeed;
+            break;
+        case 42: //maleEndurance
+            ATTR.value.maleEndurance = defaultATTR.maleEndurance;
+            break;
+        case 43: //malePersonality
+            ATTR.value.malePersonality = defaultATTR.malePersonality;
+            break;
+        case 44: //maleLuck
+            ATTR.value.maleLuck = defaultATTR.maleLuck;
+            break;
+        case 45: //femaleStrength
+            ATTR.value.femaleStrength = defaultATTR.femaleStrength;
+            break;
+        case 46: //femaleIntelligence
+            ATTR.value.femaleIntelligence = defaultATTR.femaleIntelligence;
+            break;
+        case 47: //femaleWillpower
+            ATTR.value.femaleWillpower = defaultATTR.femaleWillpower;
+            break;
+        case 48: //femaleAgility
+            ATTR.value.femaleAgility = defaultATTR.femaleAgility;
+            break;
+        case 49: //femaleSpeed
+            ATTR.value.femaleSpeed = defaultATTR.femaleSpeed;
+            break;
+        case 50: //femaleEndurance
+            ATTR.value.femaleEndurance = defaultATTR.femaleEndurance;
+            break;
+        case 51: //femalePersonality
+            ATTR.value.femalePersonality = defaultATTR.femalePersonality;
+            break;
+        case 52: //femaleLuck
+            ATTR.value.femaleLuck = defaultATTR.femaleLuck;
+            break;
+        case 53: //head_modPath
+            if(MOD0.IsLoaded())
+                MOD0->MODL.Unload();
+            break;
+        case 54: //head_modb
+            if(MOD0.IsLoaded())
+                MOD0->MODB.Unload();
+            break;
+        case 55: //head_iconPath
+            if(MOD0.IsLoaded())
+                MOD0->ICON.Unload();
+            break;
+        case 56: //head_modt_p
+            if(MOD0.IsLoaded())
+                MOD0->MODT.Unload();
+            break;
+        case 57: //maleEars_modPath
+            if(MOD1.IsLoaded())
+                MOD1->MODL.Unload();
+            break;
+        case 58: //maleEars_modb
+            if(MOD1.IsLoaded())
+                MOD1->MODB.Unload();
+            break;
+        case 59: //maleEars_iconPath
+            if(MOD1.IsLoaded())
+                MOD1->ICON.Unload();
+            break;
+        case 60: //maleEars_modt_p
+            if(MOD1.IsLoaded())
+                MOD1->MODT.Unload();
+            break;
+        case 61: //femaleEars_modPath
+            if(MOD2.IsLoaded())
+                MOD2->MODL.Unload();
+            break;
+        case 62: //femaleEars_modb
+            if(MOD2.IsLoaded())
+                MOD2->MODB.Unload();
+            break;
+        case 63: //femaleEars_iconPath
+            if(MOD2.IsLoaded())
+                MOD2->ICON.Unload();
+            break;
+        case 64: //femaleEars_modt_p
+            if(MOD2.IsLoaded())
+                MOD2->MODT.Unload();
+            break;
+        case 65: //mouth_modPath
+            if(MOD3.IsLoaded())
+                MOD3->MODL.Unload();
+            break;
+        case 66: //mouth_modb
+            if(MOD3.IsLoaded())
+                MOD3->MODB.Unload();
+            break;
+        case 67: //mouth_iconPath
+            if(MOD3.IsLoaded())
+                MOD3->ICON.Unload();
+            break;
+        case 68: //mouth_modt_p
+            if(MOD3.IsLoaded())
+                MOD3->MODT.Unload();
+            break;
+        case 69: //teethLower_modPath
+            if(MOD4.IsLoaded())
+                MOD4->MODL.Unload();
+            break;
+        case 70: //teethLower_modb
+            if(MOD4.IsLoaded())
+                MOD4->MODB.Unload();
+            break;
+        case 71: //teethLower_iconPath
+            if(MOD4.IsLoaded())
+                MOD4->ICON.Unload();
+            break;
+        case 72: //teethLower_modt_p
+            if(MOD4.IsLoaded())
+                MOD4->MODT.Unload();
+            break;
+        case 73: //teethUpper_modPath
+            if(MOD5.IsLoaded())
+                MOD5->MODL.Unload();
+            break;
+        case 74: //teethUpper_modb
+            if(MOD5.IsLoaded())
+                MOD5->MODB.Unload();
+            break;
+        case 75: //teethUpper_iconPath
+            if(MOD5.IsLoaded())
+                MOD5->ICON.Unload();
+            break;
+        case 76: //teethUpper_modt_p
+            if(MOD5.IsLoaded())
+                MOD5->MODT.Unload();
+            break;
+        case 77: //tongue_modPath
+            if(MOD6.IsLoaded())
+                MOD6->MODL.Unload();
+            break;
+        case 78: //tongue_modb
+            if(MOD6.IsLoaded())
+                MOD6->MODB.Unload();
+            break;
+        case 79: //tongue_iconPath
+            if(MOD6.IsLoaded())
+                MOD6->ICON.Unload();
+            break;
+        case 80: //tongue_modt_p
+            if(MOD6.IsLoaded())
+                MOD6->MODT.Unload();
+            break;
+        case 81: //leftEye_modPath
+            if(MOD7.IsLoaded())
+                MOD7->MODL.Unload();
+            break;
+        case 82: //leftEye_modb
+            if(MOD7.IsLoaded())
+                MOD7->MODB.Unload();
+            break;
+        case 83: //leftEye_iconPath
+            if(MOD7.IsLoaded())
+                MOD7->ICON.Unload();
+            break;
+        case 84: //leftEye_modt_p
+            if(MOD7.IsLoaded())
+                MOD7->MODT.Unload();
+            break;
+        case 85: //rightEye_modPath
+            if(MOD8.IsLoaded())
+                MOD8->MODL.Unload();
+            break;
+        case 86: //rightEye_modb
+            if(MOD8.IsLoaded())
+                MOD8->MODB.Unload();
+            break;
+        case 87: //rightEye_iconPath
+            if(MOD8.IsLoaded())
+                MOD8->ICON.Unload();
+            break;
+        case 88: //rightEye_modt_p
+            if(MOD8.IsLoaded())
+                MOD8->MODT.Unload();
+            break;
+        case 89: //maleTailModelPath
+            if(MMODL.IsLoaded())
+                MMODL->MODL.Unload();
+            break;
+        case 90: //maleTailModel_modb
+            if(MMODL.IsLoaded())
+                MMODL->MODB.Unload();
+            break;
+        case 91: //maleTailModel_modt_p
+            if(MMODL.IsLoaded())
+                MMODL->MODT.Unload();
+            break;
+        case 92: //maleUpperBodyPath
+            MICON0.Unload();
+            break;
+        case 93: //maleLowerBodyPath
+            MICON1.Unload();
+            break;
+        case 94: //maleHandPath
+            MICON2.Unload();
+            break;
+        case 95: //maleFootPath
+            MICON3.Unload();
+            break;
+        case 96: //maleTailPath
+            MICON4.Unload();
+            break;
+        case 97: //femaleTailModelPath
+            if(FMODL.IsLoaded())
+                FMODL->MODL.Unload();
+            break;
+        case 98: //femaleTailModel_modb
+            if(FMODL.IsLoaded())
+                FMODL->MODB.Unload();
+            break;
+        case 99: //femaleTailModel_modt_p
+            if(FMODL.IsLoaded())
+                FMODL->MODT.Unload();
+            break;
+        case 100: //femaleUpperBodyPath
+            FICON0.Unload();
+            break;
+        case 101: //femaleLowerBodyPath
+            FICON1.Unload();
+            break;
+        case 102: //femaleHandPath
+            FICON2.Unload();
+            break;
+        case 103: //femaleFootPath
+            FICON3.Unload();
+            break;
+        case 104: //femaleTailPath
+            FICON4.Unload();
+            break;
+        case 105: //hairs
+            HNAM.clear();
+            break;
+        case 106: //eyes
+            ENAM.clear();
+            break;
+        case 107: //fggs_p
+            FGGS.Unload();
+            break;
+        case 108: //fgga_p
+            FGGA.Unload();
+            break;
+        case 109: //fgts_p
+            FGTS.Unload();
+            break;
+        case 110: //snam_p
+            SNAM.Unload();
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }
+
+int RACERecord::DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField)
+    {
+    GENXNAM defaultXNAM;
+    switch(subField)
+        {
+        case 9: //relations
+            if(listIndex >= XNAM.size())
+                return 0;
+            switch(listField)
+                {
+                case 1: //faction
+                    XNAM[listIndex]->value.faction = defaultXNAM.faction;
+                    break;
+                case 2: //mod
+                    XNAM[listIndex]->value.mod = defaultXNAM.mod;
+                    break;
+                default:
+                    return 0;
+                }
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }

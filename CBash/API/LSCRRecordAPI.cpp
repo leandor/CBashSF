@@ -210,3 +210,61 @@ void LSCRRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
         }
     return;
     }
+
+int LSCRRecord::DeleteField(const unsigned int Field)
+    {
+    unsigned int nSize;
+    switch(Field)
+        {
+        case 5: //eid
+            EDID.Unload();
+            break;
+        case 6: //iconPath
+            ICON.Unload();
+            break;
+        case 7: //text
+            DESC.Unload();
+            break;
+        case 8: //locations
+            nSize = (unsigned int)LNAM.size();
+            for(unsigned int x = 0; x < nSize; x++)
+                delete LNAM[x];
+            LNAM.clear();
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }
+
+int LSCRRecord::DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField)
+    {
+    LSCRLNAM defaultLNAM;
+    switch(subField)
+        {
+        case 8: //locations
+            if(listIndex >= LNAM.size())
+                return 0;
+            switch(listField)
+                {
+                case 1: //direct
+                    LNAM[listIndex]->value.direct = defaultLNAM.direct;
+                    break;
+                case 2: //indirect
+                    LNAM[listIndex]->value.indirect = defaultLNAM.indirect;
+                    break;
+                case 3: //gridY
+                    LNAM[listIndex]->value.gridY = defaultLNAM.gridY;
+                    break;
+                case 4: //gridX
+                    LNAM[listIndex]->value.gridX = defaultLNAM.gridX;
+                    break;
+                default:
+                    return 0;
+                }
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }

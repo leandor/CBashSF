@@ -466,3 +466,122 @@ void SCPTRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
+
+int SCPTRecord::DeleteField(const unsigned int Field)
+    {
+    GENSCHR defaultSCHR;
+    unsigned int nSize;
+    switch(Field)
+        {
+        case 5: //eid
+            EDID.Unload();
+            break;
+        case 6: //unused1
+            SCHR.value.unused1[0] = defaultSCHR.unused1[0];
+            SCHR.value.unused1[1] = defaultSCHR.unused1[1];
+            SCHR.value.unused1[2] = defaultSCHR.unused1[2];
+            SCHR.value.unused1[3] = defaultSCHR.unused1[3];
+            break;
+        case 7: //numRefs
+            SCHR.value.numRefs = defaultSCHR.numRefs;
+            break;
+        case 8: //compiledSize
+            SCHR.value.compiledSize = defaultSCHR.compiledSize;
+            break;
+        case 9: //lastIndex
+            SCHR.value.lastIndex = defaultSCHR.lastIndex;
+            break;
+        case 10: //scriptType
+            SCHR.value.scriptType = defaultSCHR.scriptType;
+            break;
+        case 11: //compiled_p
+            SCDA.Unload();
+            break;
+        case 12: //scriptText
+            SCTX.Unload();
+            break;
+        case 13: //vars
+            nSize = (unsigned int)VARS.size();
+            for(unsigned int x = 0; x < nSize; x++)
+                delete VARS[x];
+            VARS.clear();
+            break;
+        case 14: //references
+            nSize = (unsigned int)SCR_.size();
+            for(unsigned int x = 0; x < nSize; x++)
+                delete SCR_[x];
+            SCR_.clear();
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }
+
+int SCPTRecord::DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField)
+    {
+    SCPTVARS defaultVARS;
+    GENSCR_ defaultSCR_;
+    switch(subField)
+        {
+        case 13: //vars
+            if(listIndex >= VARS.size())
+                return 0;
+            switch(listField)
+                {
+                case 1: //index
+                    VARS[listIndex]->SLSD.value.index = defaultVARS.SLSD.value.index;
+                    break;
+                case 2: //unused1
+                    VARS[listIndex]->SLSD.value.unused1[0] = defaultVARS.SLSD.value.unused1[0];
+                    VARS[listIndex]->SLSD.value.unused1[1] = defaultVARS.SLSD.value.unused1[1];
+                    VARS[listIndex]->SLSD.value.unused1[2] = defaultVARS.SLSD.value.unused1[2];
+                    VARS[listIndex]->SLSD.value.unused1[3] = defaultVARS.SLSD.value.unused1[3];
+                    VARS[listIndex]->SLSD.value.unused1[4] = defaultVARS.SLSD.value.unused1[4];
+                    VARS[listIndex]->SLSD.value.unused1[5] = defaultVARS.SLSD.value.unused1[5];
+                    VARS[listIndex]->SLSD.value.unused1[6] = defaultVARS.SLSD.value.unused1[6];
+                    VARS[listIndex]->SLSD.value.unused1[7] = defaultVARS.SLSD.value.unused1[7];
+                    VARS[listIndex]->SLSD.value.unused1[8] = defaultVARS.SLSD.value.unused1[8];
+                    VARS[listIndex]->SLSD.value.unused1[9] = defaultVARS.SLSD.value.unused1[9];
+                    VARS[listIndex]->SLSD.value.unused1[10] = defaultVARS.SLSD.value.unused1[10];
+                    VARS[listIndex]->SLSD.value.unused1[11] = defaultVARS.SLSD.value.unused1[11];
+                    break;
+                case 3: //flags
+                    VARS[listIndex]->SLSD.value.flags = defaultVARS.SLSD.value.flags;
+                    break;
+                case 4: //unused2
+                    VARS[listIndex]->SLSD.value.unused2[0] = defaultVARS.SLSD.value.unused2[0];
+                    VARS[listIndex]->SLSD.value.unused2[1] = defaultVARS.SLSD.value.unused2[1];
+                    VARS[listIndex]->SLSD.value.unused2[2] = defaultVARS.SLSD.value.unused2[2];
+                    VARS[listIndex]->SLSD.value.unused2[3] = defaultVARS.SLSD.value.unused2[3];
+                    VARS[listIndex]->SLSD.value.unused2[4] = defaultVARS.SLSD.value.unused2[4];
+                    VARS[listIndex]->SLSD.value.unused2[5] = defaultVARS.SLSD.value.unused2[5];
+                    VARS[listIndex]->SLSD.value.unused2[6] = defaultVARS.SLSD.value.unused2[6];
+                    break;
+                case 5: //name
+                    VARS[listIndex]->SCVR.Unload();
+                    break;
+                default:
+                    return 0;
+                }
+            break;
+        case 14: //references
+            if(listIndex >= SCR_.size())
+                return 0;
+            switch(listField)
+                {
+                case 1: //reference
+                    SCR_[listIndex]->value.reference = defaultSCR_.reference;
+                    break;
+                case 2: //isSCRO
+                    SCR_[listIndex]->value.isSCRO = defaultSCR_.isSCRO;
+                    break;
+                default:
+                    return 0;
+                }
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }
