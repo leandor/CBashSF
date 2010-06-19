@@ -135,3 +135,29 @@ void DIALRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
         }
     return;
     }
+
+int DIALRecord::DeleteField(const unsigned int Field)
+    {
+    unsigned int nSize;
+    switch(Field)
+        {
+        case 5: //eid
+            EDID.Unload();
+            break;
+        case 6: //quests
+            nSize = (unsigned int)QSTI.size();
+            for(unsigned int x = 0; x < nSize; x++)
+                delete QSTI[x];
+            QSTI.clear();
+            break;
+        case 7: //full
+            FULL.Unload();
+            break;
+        case 8: //dialType
+            DATA.Unload();
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }

@@ -124,3 +124,32 @@ void BSGNRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
         }
     return;
     }
+
+int BSGNRecord::DeleteField(const unsigned int Field)
+    {
+    unsigned int nSize;
+    switch(Field)
+        {
+        case 5: //eid
+            EDID.Unload();
+            break;
+        case 6: //full
+            FULL.Unload();
+            break;
+        case 7: //iconPath
+            ICON.Unload();
+            break;
+        case 8: //text
+            DESC.Unload();
+            break;
+        case 9: //spells
+            nSize = (unsigned int)SPLO.size();
+            for(unsigned int x = 0; x < nSize; x++)
+                delete SPLO[x];
+            SPLO.clear();
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }

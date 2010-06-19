@@ -663,3 +663,240 @@ void CSTYRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
         }
     return;
     }
+
+int CSTYRecord::DeleteField(const unsigned int Field)
+    {
+    CSTYCSTD defaultCSTD;
+    CSTYCSAD defaultCSAD;
+    switch(Field)
+        {
+        case 5: //eid
+            EDID.Unload();
+            break;
+        case 6: //dodgeChance
+            CSTD.value.dodgeChance = defaultCSTD.dodgeChance;
+            break;
+        case 7: //lrChance
+            CSTD.value.lrChance = defaultCSTD.lrChance;
+            break;
+        case 8: //unused1
+            CSTD.value.unused1[0] = defaultCSTD.unused1[0];
+            CSTD.value.unused1[1] = defaultCSTD.unused1[1];
+            break;
+        case 9: //lrTimerMin
+            CSTD.value.lrTimerMin = defaultCSTD.lrTimerMin;
+            break;
+        case 10: //lrTimerMax
+            CSTD.value.lrTimerMax = defaultCSTD.lrTimerMax;
+            break;
+        case 11: //forTimerMin
+            CSTD.value.forTimerMin = defaultCSTD.forTimerMin;
+            break;
+        case 12: //forTimerMax
+            CSTD.value.forTimerMax = defaultCSTD.forTimerMax;
+            break;
+        case 13: //backTimerMin
+            CSTD.value.backTimerMin = defaultCSTD.backTimerMin;
+            break;
+        case 14: //backTimerMax
+            CSTD.value.backTimerMax = defaultCSTD.backTimerMax;
+            break;
+        case 15: //idleTimerMin
+            CSTD.value.idleTimerMin = defaultCSTD.idleTimerMin;
+            break;
+        case 16: //idleTimerMax
+            CSTD.value.idleTimerMax = defaultCSTD.idleTimerMax;
+            break;
+        case 17: //blkChance
+            CSTD.value.blkChance = defaultCSTD.blkChance;
+            break;
+        case 18: //atkChance
+            CSTD.value.atkChance = defaultCSTD.atkChance;
+            break;
+        case 19: //unused2
+            CSTD.value.unused2[0] = defaultCSTD.unused2[0];
+            CSTD.value.unused2[1] = defaultCSTD.unused2[1];
+            break;
+        case 20: //atkBRecoil
+            CSTD.value.atkBRecoil = defaultCSTD.atkBRecoil;
+            break;
+        case 21: //atkBUnc
+            CSTD.value.atkBUnc = defaultCSTD.atkBUnc;
+            break;
+        case 22: //atkBh2h
+            CSTD.value.atkBh2h = defaultCSTD.atkBh2h;
+            break;
+        case 23: //pAtkChance
+            CSTD.value.pAtkChance = defaultCSTD.pAtkChance;
+            break;
+        case 24: //unused3
+            CSTD.value.unused3[0] = defaultCSTD.unused3[0];
+            CSTD.value.unused3[1] = defaultCSTD.unused3[1];
+            CSTD.value.unused3[2] = defaultCSTD.unused3[2];
+            break;
+        case 25: //pAtkBRecoil
+            CSTD.value.pAtkBRecoil = defaultCSTD.pAtkBRecoil;
+            break;
+        case 26: //pAtkBUnc
+            CSTD.value.pAtkBUnc = defaultCSTD.pAtkBUnc;
+            break;
+        case 27: //pAtkNormal
+            CSTD.value.pAtkNormal = defaultCSTD.pAtkNormal;
+            break;
+        case 28: //pAtkFor
+            CSTD.value.pAtkFor = defaultCSTD.pAtkFor;
+            break;
+        case 29: //pAtkBack
+            CSTD.value.pAtkBack = defaultCSTD.pAtkBack;
+            break;
+        case 30: //pAtkL
+            CSTD.value.pAtkL = defaultCSTD.pAtkL;
+            break;
+        case 31: //pAtkR
+            CSTD.value.pAtkR = defaultCSTD.pAtkR;
+            break;
+        case 32: //unused4
+            CSTD.value.unused4[0] = defaultCSTD.unused4[0];
+            CSTD.value.unused4[1] = defaultCSTD.unused4[1];
+            CSTD.value.unused4[2] = defaultCSTD.unused4[2];
+            break;
+        case 33: //holdTimerMin
+            CSTD.value.holdTimerMin = defaultCSTD.holdTimerMin;
+            break;
+        case 34: //holdTimerMax
+            CSTD.value.holdTimerMax = defaultCSTD.holdTimerMax;
+            break;
+        case 35: //flagsA
+            CSTD.value.flagsA = defaultCSTD.flagsA;
+            break;
+        case 36: //acroDodge
+            CSTD.value.acroDodge = defaultCSTD.acroDodge;
+            break;
+        case 37: //unused5
+            CSTD.value.unused5[0] = defaultCSTD.unused5[0];
+            CSTD.value.unused5[1] = defaultCSTD.unused5[1];
+            break;
+        case 38: //rMultOpt
+            CSTD.value.rMultOpt = defaultCSTD.rMultOpt;
+            break;
+        case 39: //rMultMax
+            CSTD.value.rMultMax = defaultCSTD.rMultMax;
+            break;
+        case 40: //mDistance
+            CSTD.value.mDistance = defaultCSTD.mDistance;
+            break;
+        case 41: //rDistance
+            CSTD.value.rDistance = defaultCSTD.rDistance;
+            break;
+        case 42: //buffStand
+            CSTD.value.buffStand = defaultCSTD.buffStand;
+            break;
+        case 43: //rStand
+            CSTD.value.rStand = defaultCSTD.rStand;
+            break;
+        case 44: //groupStand
+            CSTD.value.groupStand = defaultCSTD.groupStand;
+            break;
+        case 45: //rushChance
+            CSTD.value.rushChance = defaultCSTD.rushChance;
+            break;
+        case 46: //unused6
+            CSTD.value.unused6[0] = defaultCSTD.unused6[0];
+            CSTD.value.unused6[1] = defaultCSTD.unused6[1];
+            CSTD.value.unused6[2] = defaultCSTD.unused6[2];
+            break;
+        case 47: //rushMult
+            CSTD.value.rushMult = defaultCSTD.rushMult;
+            break;
+        case 48: //flagsB
+            CSTD.value.flagsB = defaultCSTD.flagsB;
+            break;
+        case 49: //dodgeFMult
+            if(CSAD.IsLoaded())
+                CSAD->dodgeFMult = defaultCSAD.dodgeFMult;
+            break;
+        case 50: //dodgeFBase
+            if(CSAD.IsLoaded())
+                CSAD->dodgeFBase = defaultCSAD.dodgeFBase;
+            break;
+        case 51: //encSBase
+            if(CSAD.IsLoaded())
+                CSAD->encSBase = defaultCSAD.encSBase;
+            break;
+        case 52: //encSMult
+            if(CSAD.IsLoaded())
+                CSAD->encSMult = defaultCSAD.encSMult;
+            break;
+        case 53: //dodgeAtkMult
+            if(CSAD.IsLoaded())
+                CSAD->dodgeAtkMult = defaultCSAD.dodgeAtkMult;
+            break;
+        case 54: //dodgeNAtkMult
+            if(CSAD.IsLoaded())
+                CSAD->dodgeNAtkMult = defaultCSAD.dodgeNAtkMult;
+            break;
+        case 55: //dodgeBAtkMult
+            if(CSAD.IsLoaded())
+                CSAD->dodgeBAtkMult = defaultCSAD.dodgeBAtkMult;
+            break;
+        case 56: //dodgeBNAtkMult
+            if(CSAD.IsLoaded())
+                CSAD->dodgeBNAtkMult = defaultCSAD.dodgeBNAtkMult;
+            break;
+        case 57: //dodgeFAtkMult
+            if(CSAD.IsLoaded())
+                CSAD->dodgeFAtkMult = defaultCSAD.dodgeFAtkMult;
+            break;
+        case 58: //dodgeFNAtkMult
+            if(CSAD.IsLoaded())
+                CSAD->dodgeFNAtkMult = defaultCSAD.dodgeFNAtkMult;
+            break;
+        case 59: //blockMult
+            if(CSAD.IsLoaded())
+                CSAD->blockMult = defaultCSAD.blockMult;
+            break;
+        case 60: //blockBase
+            if(CSAD.IsLoaded())
+                CSAD->blockBase = defaultCSAD.blockBase;
+            break;
+        case 61: //blockAtkMult
+            if(CSAD.IsLoaded())
+                CSAD->blockAtkMult = defaultCSAD.blockAtkMult;
+            break;
+        case 62: //blockNAtkMult
+            if(CSAD.IsLoaded())
+                CSAD->blockNAtkMult = defaultCSAD.blockNAtkMult;
+            break;
+        case 63: //atkMult
+            if(CSAD.IsLoaded())
+                CSAD->atkMult = defaultCSAD.atkMult;
+            break;
+        case 64: //atkBase
+            if(CSAD.IsLoaded())
+                CSAD->atkBase = defaultCSAD.atkBase;
+            break;
+        case 65: //atkAtkMult
+            if(CSAD.IsLoaded())
+                CSAD->atkAtkMult = defaultCSAD.atkAtkMult;
+            break;
+        case 66: //atkNAtkMult
+            if(CSAD.IsLoaded())
+                CSAD->atkNAtkMult = defaultCSAD.atkNAtkMult;
+            break;
+        case 67: //atkBlockMult
+            if(CSAD.IsLoaded())
+                CSAD->atkBlockMult = defaultCSAD.atkBlockMult;
+            break;
+        case 68: //pAtkFBase
+            if(CSAD.IsLoaded())
+                CSAD->pAtkFBase = defaultCSAD.pAtkFBase;
+            break;
+        case 69: //pAtkFMult
+            if(CSAD.IsLoaded())
+                CSAD->pAtkFMult = defaultCSAD.pAtkFMult;
+            break;
+        default:
+            return 0;
+        }
+    return 0;
+    }

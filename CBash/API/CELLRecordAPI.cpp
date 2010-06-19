@@ -515,3 +515,131 @@ void CELLRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
         }
     return;
     }
+
+int CELLRecord::DeleteField(const unsigned int Field)
+    {
+    CELLXCLL defaultXCLL;
+    CELLXCLC defaultXCLC;
+    switch(Field)
+        {
+        case 5: //eid
+            EDID.Unload();
+            break;
+        case 6: //full
+            FULL.Unload();
+            break;
+        case 7: //flags
+            DATA.Unload();
+            break;
+        case 8: //ambientRed
+            if(XCLL.IsLoaded())
+                XCLL->ambient.red = defaultXCLL.ambient.red;
+            break;
+        case 9: //ambientGreen
+            if(XCLL.IsLoaded())
+                XCLL->ambient.green = defaultXCLL.ambient.green;
+            break;
+        case 10: //ambientBlue
+            if(XCLL.IsLoaded())
+                XCLL->ambient.blue = defaultXCLL.ambient.blue;
+            break;
+        case 11: //unused1
+            if(XCLL.IsLoaded())
+                XCLL->ambient.unused1 = defaultXCLL.ambient.unused1;
+            break;
+        case 12: //directionalRed
+            if(XCLL.IsLoaded())
+                XCLL->directional.red = defaultXCLL.directional.red;
+            break;
+        case 13: //directionalGreen
+            if(XCLL.IsLoaded())
+                XCLL->directional.green = defaultXCLL.directional.green;
+            break;
+        case 14: //directionalBlue
+            if(XCLL.IsLoaded())
+                XCLL->directional.blue = defaultXCLL.directional.blue;
+            break;
+        case 15: //unused2
+            if(XCLL.IsLoaded())
+                XCLL->directional.unused1 = defaultXCLL.directional.unused1;
+            break;
+        case 16: //fogRed
+            if(XCLL.IsLoaded())
+                XCLL->fog.red = defaultXCLL.fog.red;
+            break;
+        case 17: //fogGreen
+            if(XCLL.IsLoaded())
+                XCLL->fog.green = defaultXCLL.fog.green;
+            break;
+        case 18: //fogBlue
+            if(XCLL.IsLoaded())
+                XCLL->fog.blue = defaultXCLL.fog.blue;
+            break;
+        case 19: //unused3
+            if(XCLL.IsLoaded())
+                XCLL->fog.unused1 = defaultXCLL.fog.unused1;
+            break;
+        case 20: //fogNear
+            if(XCLL.IsLoaded())
+                XCLL->fogNear = defaultXCLL.fogNear;
+            break;
+        case 21: //fogFar
+            if(XCLL.IsLoaded())
+                XCLL->fogFar = defaultXCLL.fogFar;
+            break;
+        case 22: //directionalXY
+            if(XCLL.IsLoaded())
+                XCLL->directionalXY = defaultXCLL.directionalXY;
+            break;
+        case 23: //directionalZ
+            if(XCLL.IsLoaded())
+                XCLL->directionalZ = defaultXCLL.directionalZ;
+            break;
+        case 24: //directionalFade
+            if(XCLL.IsLoaded())
+                XCLL->directionalFade = defaultXCLL.directionalFade;
+            break;
+        case 25: //fogClip
+            if(XCLL.IsLoaded())
+                XCLL->fogClip = defaultXCLL.fogClip;
+            break;
+        case 26: //music
+            XCMT.Unload();
+            break;
+        case 27: //owner
+            if(Ownership.IsLoaded())
+                Ownership->XOWN.Unload();
+            break;
+        case 28: //rank
+            if(Ownership.IsLoaded())
+                Ownership->XRNK.Unload();
+            break;
+        case 29: //globalVariable
+            if(Ownership.IsLoaded())
+                Ownership->XGLB.Unload();
+            break;
+        case 30: //climate
+            XCCM.Unload();
+            break;
+        case 31: //waterHeight
+            XCLW.Unload();
+            break;
+        case 32: //regions
+            XCLR.clear();
+            break;
+        case 33: //posX
+            if(!IsInterior())
+                XCLC.value.posX = defaultXCLC.posX;
+            break;
+        case 34: //posY
+            if(!IsInterior())
+                XCLC.value.posY = defaultXCLC.posY;
+            break;
+        case 35: //water
+            XCWT.Unload();
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }

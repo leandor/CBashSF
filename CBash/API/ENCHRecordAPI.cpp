@@ -476,3 +476,113 @@ void ENCHRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
         }
     return;
     }
+
+int ENCHRecord::DeleteField(const unsigned int Field)
+    {
+    ENCHENIT defaultENIT;
+    unsigned int nSize;
+    switch(Field)
+        {
+        case 5: //eid
+            EDID.Unload();
+            break;
+        case 6: //full
+            FULL.Unload();
+            break;
+        case 7: //itemType
+            ENIT.value.itemType = defaultENIT.itemType;
+            break;
+        case 8: //chargeAmount
+            ENIT.value.chargeAmount = defaultENIT.chargeAmount;
+            break;
+        case 9: //enchantCost
+            ENIT.value.enchantCost = defaultENIT.enchantCost;
+            break;
+        case 10: //flags
+            ENIT.value.flags = defaultENIT.flags;
+            break;
+        case 11: //unused1
+            ENIT.value.unused1[0] = defaultENIT.unused1[0];
+            ENIT.value.unused1[1] = defaultENIT.unused1[1];
+            ENIT.value.unused1[2] = defaultENIT.unused1[2];
+            break;
+        case 12: //Effects
+            nSize = (unsigned int)Effects.size();
+            for(unsigned int x = 0; x < nSize; x++)
+                delete Effects[x];
+            Effects.clear();
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }
+
+
+int ENCHRecord::DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField)
+    {
+    GENEFIT defaultEFIT;
+    GENSCIT defaultSCIT;
+    switch(subField)
+        {
+        case 12: //Effects
+            if(listIndex >= Effects.size())
+                return 0;
+            switch(listField)
+                {
+                case 1: //name0, both are always the same value, so return one and set both
+                case 2: //name
+                    Effects[listIndex]->EFID.Unload();
+                    Effects[listIndex]->EFIT.value.name = defaultEFIT.name;
+                    break;
+                case 3: //magnitude
+                    Effects[listIndex]->EFIT.value.magnitude = defaultEFIT.magnitude;
+                    break;
+                case 4: //area
+                    Effects[listIndex]->EFIT.value.area = defaultEFIT.area;
+                    break;
+                case 5: //duration
+                    Effects[listIndex]->EFIT.value.duration = defaultEFIT.duration;
+                    break;
+                case 6: //recipient
+                    Effects[listIndex]->EFIT.value.recipient = defaultEFIT.recipient;
+                    break;
+                case 7: //actorValue
+                    Effects[listIndex]->EFIT.value.actorValue = defaultEFIT.actorValue;
+                    break;
+                case 8: //script
+                    if(Effects[listIndex]->SCIT.IsLoaded())
+                        Effects[listIndex]->SCIT->script = defaultSCIT.script;
+                    break;
+                case 9: //school
+                    if(Effects[listIndex]->SCIT.IsLoaded())
+                        Effects[listIndex]->SCIT->school = defaultSCIT.school;
+                    break;
+                case 10: //visual
+                    if(Effects[listIndex]->SCIT.IsLoaded())
+                        Effects[listIndex]->SCIT->visual = defaultSCIT.visual;
+                    break;
+                case 11: //flags
+                    if(Effects[listIndex]->SCIT.IsLoaded())
+                        Effects[listIndex]->SCIT->flags = defaultSCIT.flags;
+                    break;
+                case 12: //unused1
+                    if(Effects[listIndex]->SCIT.IsLoaded())
+                        {
+                        Effects[listIndex]->SCIT->unused1[0] = defaultSCIT.unused1[0];
+                        Effects[listIndex]->SCIT->unused1[1] = defaultSCIT.unused1[1];
+                        Effects[listIndex]->SCIT->unused1[2] = defaultSCIT.unused1[2];
+                        }
+                    break;
+                case 13: //full
+                    Effects[listIndex]->FULL.Unload();
+                    break;
+                default:
+                    return 0;
+                }
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }

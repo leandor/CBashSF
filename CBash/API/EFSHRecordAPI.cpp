@@ -160,7 +160,7 @@ int EFSHRecord::GetOtherFieldType(const unsigned int Field)
             return UBYTE_FIELD;
         case 72: //key3.blue
             return UBYTE_FIELD;
-        case 73: //key2.unused1
+        case 73: //key3.unused1
             return BYTES_FIELD;
         case 74: //key1A
             return FLOAT_FIELD;
@@ -340,7 +340,7 @@ unsigned int EFSHRecord::GetFieldArraySize(const unsigned int Field)
             return 1;
         case 69: //key2.unused1
             return 1;
-        case 73: //key2.unused1
+        case 73: //key3.unused1
             return 1;
         default:
             return 0;
@@ -366,8 +366,8 @@ void EFSHRecord::GetFieldArray(const unsigned int Field, void **FieldValues)
         case 69: //key2.unused1
             *FieldValues = &DATA.value.key2.unused1;
             return;
-        case 73: //key2.unused1
-            *FieldValues = &DATA.value.key2.unused1;
+        case 73: //key3.unused1
+            *FieldValues = &DATA.value.key3.unused1;
             return;
         default:
             *FieldValues = NULL;
@@ -498,10 +498,10 @@ void EFSHRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
                 return;
             DATA.value.key2.unused1 = FieldValue[0];
             break;
-        case 73: //key2.unused1
+        case 73: //key3.unused1
             if(nSize != 1)
                 return;
-            DATA.value.key2.unused1 = FieldValue[0];
+            DATA.value.key3.unused1 = FieldValue[0];
             break;
         default:
             return;
@@ -662,4 +662,242 @@ void EFSHRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
             return;
         }
     return;
+    }
+
+int EFSHRecord::DeleteField(const unsigned int Field)
+    {
+    EFSHDATA defaultDATA;
+    switch(Field)
+        {
+        case 5: //eid
+            EDID.Unload();
+            break;
+        case 6: //fillTexture
+            ICON.Unload();
+            break;
+        case 7: //particleTexture
+            ICO2.Unload();
+            break;
+        case 8: //flags
+            DATA.value.flags = defaultDATA.flags;
+            break;
+        case 9: //unused1
+            DATA.value.unused1[0] = defaultDATA.unused1[0];
+            DATA.value.unused1[1] = defaultDATA.unused1[1];
+            DATA.value.unused1[2] = defaultDATA.unused1[2];
+            break;
+        case 10: //memSBlend
+            DATA.value.memSBlend = defaultDATA.memSBlend;
+            break;
+        case 11: //memBlendOp
+            DATA.value.memBlendOp = defaultDATA.memBlendOp;
+            break;
+        case 12: //memZFunc
+            DATA.value.memZFunc = defaultDATA.memZFunc;
+            break;
+        case 13: //fill.red
+            DATA.value.fill.red = defaultDATA.fill.red;
+            break;
+        case 14: //fill.green
+            DATA.value.fill.green = defaultDATA.fill.green;
+            break;
+        case 15: //fill.blue
+            DATA.value.fill.blue = defaultDATA.fill.blue;
+            break;
+        case 16: //fill.unused1
+            DATA.value.fill.unused1 = defaultDATA.fill.unused1;
+            break;
+        case 17: //fillAIn
+            DATA.value.fillAIn = defaultDATA.fillAIn;
+            break;
+        case 18: //fillAFull
+            DATA.value.fillAFull = defaultDATA.fillAFull;
+            break;
+        case 19: //fillAOut
+            DATA.value.fillAOut = defaultDATA.fillAOut;
+            break;
+        case 20: //fillAPRatio
+            DATA.value.fillAPRatio = defaultDATA.fillAPRatio;
+            break;
+        case 21: //fillAAmp
+            DATA.value.fillAAmp = defaultDATA.fillAAmp;
+            break;
+        case 22: //fillAFreq
+            DATA.value.fillAFreq = defaultDATA.fillAFreq;
+            break;
+        case 23: //fillAnimSpdU
+            DATA.value.fillAnimSpdU = defaultDATA.fillAnimSpdU;
+            break;
+        case 24: //fillAnimSpdV
+            DATA.value.fillAnimSpdV = defaultDATA.fillAnimSpdV;
+            break;
+        case 25: //edgeOff
+            DATA.value.edgeOff = defaultDATA.edgeOff;
+            break;
+        case 26: //edge.red
+            DATA.value.edge.red = defaultDATA.edge.red;
+            break;
+        case 27: //edge.green
+            DATA.value.edge.green = defaultDATA.edge.green;
+            break;
+        case 28: //edge.blue
+            DATA.value.edge.blue = defaultDATA.edge.blue;
+            break;
+        case 29: //edge.unused1
+            DATA.value.edge.unused1 = defaultDATA.edge.unused1;
+            break;
+        case 30: //edgeAIn
+            DATA.value.edgeAIn = defaultDATA.edgeAIn;
+            break;
+        case 31: //edgeAFull
+            DATA.value.edgeAFull = defaultDATA.edgeAFull;
+            break;
+        case 32: //edgeAOut
+            DATA.value.edgeAOut = defaultDATA.edgeAOut;
+            break;
+        case 33: //edgeAPRatio
+            DATA.value.edgeAPRatio = defaultDATA.edgeAPRatio;
+            break;
+        case 34: //edgeAAmp
+            DATA.value.edgeAAmp = defaultDATA.edgeAAmp;
+            break;
+        case 35: //edgeAFreq
+            DATA.value.edgeAFreq = defaultDATA.edgeAFreq;
+            break;
+        case 36: //fillAFRatio
+            DATA.value.fillAFRatio = defaultDATA.fillAFRatio;
+            break;
+        case 37: //edgeAFRatio
+            DATA.value.edgeAFRatio = defaultDATA.edgeAFRatio;
+            break;
+        case 38: //memDBlend
+            DATA.value.memDBlend = defaultDATA.memDBlend;
+            break;
+        case 39: //partSBlend
+            DATA.value.partSBlend = defaultDATA.partSBlend;
+            break;
+        case 40: //partBlendOp
+            DATA.value.partBlendOp = defaultDATA.partBlendOp;
+            break;
+        case 41: //partZFunc
+            DATA.value.partZFunc = defaultDATA.partZFunc;
+            break;
+        case 42: //partDBlend
+            DATA.value.partDBlend = defaultDATA.partDBlend;
+            break;
+        case 43: //partBUp
+            DATA.value.partBUp = defaultDATA.partBUp;
+            break;
+        case 44: //partBFull
+            DATA.value.partBFull = defaultDATA.partBFull;
+            break;
+        case 45: //partBDown
+            DATA.value.partBDown = defaultDATA.partBDown;
+            break;
+        case 46: //partBFRatio
+            DATA.value.partBFRatio = defaultDATA.partBFRatio;
+            break;
+        case 47: //partBPRatio
+            DATA.value.partBPRatio = defaultDATA.partBPRatio;
+            break;
+        case 48: //partLTime
+            DATA.value.partLTime = defaultDATA.partLTime;
+            break;
+        case 49: //partLDelta
+            DATA.value.partLDelta = defaultDATA.partLDelta;
+            break;
+        case 50: //partNSpd
+            DATA.value.partNSpd = defaultDATA.partNSpd;
+            break;
+        case 51: //partNAcc
+            DATA.value.partNAcc = defaultDATA.partNAcc;
+            break;
+        case 52: //partVel1
+            DATA.value.partVel1 = defaultDATA.partVel1;
+            break;
+        case 53: //partVel2
+            DATA.value.partVel2 = defaultDATA.partVel2;
+            break;
+        case 54: //partVel3
+            DATA.value.partVel3 = defaultDATA.partVel3;
+            break;
+        case 55: //partAcc1
+            DATA.value.partAcc1 = defaultDATA.partAcc1;
+            break;
+        case 56: //partAcc2
+            DATA.value.partAcc2 = defaultDATA.partAcc2;
+            break;
+        case 57: //partAcc3
+            DATA.value.partAcc3 = defaultDATA.partAcc3;
+            break;
+        case 58: //partKey1
+            DATA.value.partKey1 = defaultDATA.partKey1;
+            break;
+        case 59: //partKey2
+            DATA.value.partKey2 = defaultDATA.partKey2;
+            break;
+        case 60: //partKey1Time
+            DATA.value.partKey1Time = defaultDATA.partKey1Time;
+            break;
+        case 61: //partKey2Time
+            DATA.value.partKey2Time = defaultDATA.partKey2Time;
+            break;
+        case 62: //key1.red
+            DATA.value.key1.red = defaultDATA.key1.red;
+            break;
+        case 63: //key1.green
+            DATA.value.key1.green = defaultDATA.key1.green;
+            break;
+        case 64: //key1.blue
+            DATA.value.key1.blue = defaultDATA.key1.blue;
+            break;
+        case 65: //key1.unused1
+            DATA.value.key1.unused1 = defaultDATA.key1.unused1;
+            break;
+        case 66: //key2.red
+            DATA.value.key2.red = defaultDATA.key2.red;
+            break;
+        case 67: //key2.green
+            DATA.value.key2.green = defaultDATA.key2.green;
+            break;
+        case 68: //key2.blue
+            DATA.value.key2.blue = defaultDATA.key2.blue;
+            break;
+        case 69: //key2.unused1
+            DATA.value.key2.unused1 = defaultDATA.key2.unused1;
+            break;
+        case 70: //key3.red
+            DATA.value.key3.red = defaultDATA.key3.red;
+            break;
+        case 71: //key3.green
+            DATA.value.key3.green = defaultDATA.key3.green;
+            break;
+        case 72: //key3.blue
+            DATA.value.key3.blue = defaultDATA.key3.blue;
+            break;
+        case 73: //key3.unused1
+            DATA.value.key3.unused1 = defaultDATA.key3.unused1;
+            break;
+        case 74: //key1A
+            DATA.value.key1A = defaultDATA.key1A;
+            break;
+        case 75: //key2A
+            DATA.value.key2A = defaultDATA.key2A;
+            break;
+        case 76: //key3A
+            DATA.value.key3A = defaultDATA.key3A;
+            break;
+        case 77: //key1Time
+            DATA.value.key1Time = defaultDATA.key1Time;
+            break;
+        case 78: //key2Time
+            DATA.value.key2Time = defaultDATA.key2Time;
+            break;
+        case 79: //key3Time
+            DATA.value.key3Time = defaultDATA.key3Time;
+            break;
+        default:
+            return 0;
+        }
+    return 1;
     }

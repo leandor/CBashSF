@@ -942,7 +942,7 @@ void CREARecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
                 NIFZ.resize(nSize);
                 for(unsigned int x = 0; x < nSize; x++)
                     {
-                    NIFZ[x] = STRING(FieldValue[x]);
+                    NIFZ[x] = ISTRING(FieldValue[x]);
                     }
                 }
             break;
@@ -953,7 +953,7 @@ void CREARecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
                 KFFZ.resize(nSize);
                 for(unsigned int x = 0; x < nSize; x++)
                     {
-                    KFFZ[x] = STRING(FieldValue[x]);
+                    KFFZ[x] = ISTRING(FieldValue[x]);
                     }
                 }
             break;
@@ -968,6 +968,7 @@ int CREARecord::DeleteField(const unsigned int Field)
     GENAIDT defaultAIDT;
     GENACBS defaultACBS;
     CREADATA defaultDATA;
+    unsigned int nSize;
     switch(Field)
         {
         case 5: //eid
@@ -989,7 +990,8 @@ int CREARecord::DeleteField(const unsigned int Field)
                 MODL->MODT.Unload();
             break;
         case 10: //spells
-            for(unsigned int x = 0; x < SPLO.size(); x++)
+            nSize = (unsigned int)SPLO.size();
+            for(unsigned int x = 0; x < nSize; x++)
                 delete SPLO[x];
             SPLO.clear();
             break;
@@ -1020,11 +1022,23 @@ int CREARecord::DeleteField(const unsigned int Field)
         case 19: //calcMax
             ACBS.value.calcMax = defaultACBS.calcMax;
             break;
+        case 20: //factions
+            nSize = (unsigned int)SNAM.size();
+            for(unsigned int x = 0; x < nSize; x++)
+                delete SNAM[x];
+            SNAM.clear();
+            break;
         case 21: //deathItem
             INAM.Unload();
             break;
         case 22: //script
             SCRI.Unload();
+            break;
+        case 23: //items
+            nSize = (unsigned int)CNTO.size();
+            for(unsigned int x = 0; x < nSize; x++)
+                delete CNTO[x];
+            CNTO.clear();
             break;
         case 24: //aggression
             AIDT.value.aggression = defaultAIDT.aggression;
@@ -1052,7 +1066,8 @@ int CREARecord::DeleteField(const unsigned int Field)
             AIDT.value.unused1[1] = defaultAIDT.unused1[1];
             break;
         case 32: //aiPackages
-            for(unsigned int x = 0; x < PKID.size(); x++)
+            nSize = (unsigned int)PKID.size();
+            for(unsigned int x = 0; x < nSize; x++)
                 delete PKID[x];
             PKID.clear();
             break;
@@ -1134,6 +1149,12 @@ int CREARecord::DeleteField(const unsigned int Field)
             break;
         case 58: //bloodDecalPath
             NAM1.Unload();
+            break;
+        case 59: //sounds
+            nSize = (unsigned int)Sounds.size();
+            for(unsigned int x = 0; x < nSize; x++)
+                delete Sounds[x];
+            Sounds.clear();
             break;
         default:
             return 0;

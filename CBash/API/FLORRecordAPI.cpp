@@ -206,3 +206,50 @@ void FLORRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
         }
     return;
     }
+
+int FLORRecord::DeleteField(const unsigned int Field)
+    {
+    FLORPFPC defaultPFPC;
+    switch(Field)
+        {
+        case 5: //eid
+            EDID.Unload();
+            break;
+        case 6: //full
+            FULL.Unload();
+            break;
+        case 7: //modPath
+            if(MODL.IsLoaded())
+                MODL->MODL.Unload();
+            break;
+        case 8: //modb
+            if(MODL.IsLoaded())
+                MODL->MODB.Unload();
+            break;
+        case 9: //modt_p
+            if(MODL.IsLoaded())
+                MODL->MODT.Unload();
+            break;
+        case 10: //script
+            SCRI.Unload();
+            break;
+        case 11: //ingredient
+            PFIG.Unload();
+            break;
+        case 12: //spring
+            PFPC.value.spring = defaultPFPC.spring;
+            break;
+        case 13: //summer
+            PFPC.value.summer = defaultPFPC.summer;
+            break;
+        case 14: //fall
+            PFPC.value.fall = defaultPFPC.fall;
+            break;
+        case 15: //winter
+            PFPC.value.winter = defaultPFPC.winter;
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }

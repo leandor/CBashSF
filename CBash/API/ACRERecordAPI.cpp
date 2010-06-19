@@ -267,3 +267,73 @@ void ACRERecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
         }
     return;
     }
+
+int ACRERecord::DeleteField(const unsigned int Field)
+    {
+    GENXESP defaultXESP;
+    GENPOSDATA defaultDATA;
+    switch(Field)
+        {
+        case 5: //eid
+            EDID.Unload();
+            break;
+        case 6: //base
+            NAME.Unload();
+            break;
+        case 7: //owner
+            if(Ownership.IsLoaded())
+                Ownership->XOWN.Unload();
+            break;
+        case 8: //rank
+            if(Ownership.IsLoaded())
+                Ownership->XRNK.Unload();
+            break;
+        case 9: //globalVariable
+            if(Ownership.IsLoaded())
+                Ownership->XGLB.Unload();
+            break;
+        case 10: //parent
+            if(XESP.IsLoaded())
+                XESP->parent = defaultXESP.parent;
+            break;
+        case 11: //parentFlags
+            if(XESP.IsLoaded())
+                XESP->flags = defaultXESP.flags;
+            break;
+        case 12: //unused1
+            if(XESP.IsLoaded())
+                {
+                XESP->unused1[0] = defaultXESP.unused1[0];
+                XESP->unused1[1] = defaultXESP.unused1[1];
+                XESP->unused1[2] = defaultXESP.unused1[2];
+                }
+            break;
+        case 13: //xrgd_p
+            XRGD.Unload();
+            break;
+        case 14: //scale
+            XSCL.Unload();
+            break;
+        case 15: //posX
+            DATA.value.posX = defaultDATA.posX;
+            break;
+        case 16: //posY
+            DATA.value.posY = defaultDATA.posY;
+            break;
+        case 17: //posZ
+            DATA.value.posZ = defaultDATA.posZ;
+            break;
+        case 18: //rotX
+            DATA.value.rotX = defaultDATA.rotX;
+            break;
+        case 19: //rotY
+            DATA.value.rotY = defaultDATA.rotY;
+            break;
+        case 20: //rotZ
+            DATA.value.rotZ = defaultDATA.rotZ;
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }

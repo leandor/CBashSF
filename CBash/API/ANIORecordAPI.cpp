@@ -149,3 +149,31 @@ void ANIORecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
         }
     return;
     }
+
+int ANIORecord::DeleteField(const unsigned int Field)
+    {
+    switch(Field)
+        {
+        case 5: //eid
+            EDID.Unload();
+            break;
+        case 6: //modPath
+            if(MODL.IsLoaded())
+                MODL->MODL.Unload();
+            break;
+        case 7: //modb
+            if(MODL.IsLoaded())
+                MODL->MODB.Unload();
+            break;
+        case 8: //modt_p
+            if(MODL.IsLoaded())
+                MODL->MODT.Unload();
+            break;
+        case 9: //animationId
+            DATA.Unload();
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }

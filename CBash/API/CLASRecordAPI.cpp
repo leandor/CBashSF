@@ -251,3 +251,72 @@ void CLASRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
         }
     return;
     }
+
+int CLASRecord::DeleteField(const unsigned int Field)
+    {
+    CLASDATA defaultDATA;
+    switch(Field)
+        {
+        case 5: //eid
+            EDID.Unload();
+            break;
+        case 6: //full
+            FULL.Unload();
+            break;
+        case 7: //description
+            DESC.Unload();
+            break;
+        case 8: //iconPath
+            ICON.Unload();
+            break;
+        case 9: //primary1
+            DATA.value.primary[0] = defaultDATA.primary[0];
+            break;
+        case 10: //primary2
+            DATA.value.primary[1] = defaultDATA.primary[1];
+            break;
+        case 11: //specialization
+            DATA.value.specialization = defaultDATA.specialization;
+            break;
+        case 12: //major1
+            DATA.value.major[0] = defaultDATA.major[0];
+            break;
+        case 13: //major2
+            DATA.value.major[1] = defaultDATA.major[1];
+            break;
+        case 14: //major3
+            DATA.value.major[2] = defaultDATA.major[2];
+            break;
+        case 15: //major4
+            DATA.value.major[3] = defaultDATA.major[3];
+            break;
+        case 16: //major5
+            DATA.value.major[4] = defaultDATA.major[4];
+            break;
+        case 17: //major6
+            DATA.value.major[5] = defaultDATA.major[5];
+            break;
+        case 18: //major7
+            DATA.value.major[6] = defaultDATA.major[6];
+            break;
+        case 19: //flags
+            DATA.value.flags = defaultDATA.flags;
+            break;
+        case 20: //services
+            DATA.value.services = defaultDATA.services;
+            break;
+        case 21: //trainSkill
+            DATA.value.trainSkill = defaultDATA.trainSkill;
+            break;
+        case 22: //trainLevel
+            DATA.value.trainLevel = defaultDATA.trainLevel;
+            break;
+        case 23: //unused1
+            DATA.value.unused1[0] = defaultDATA.unused1[0];
+            DATA.value.unused1[1] = defaultDATA.unused1[1];
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }

@@ -235,3 +235,61 @@ void AMMORecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
         }
     return;
     }
+
+int AMMORecord::DeleteField(const unsigned int Field)
+    {
+    AMMODATA defaultDATA;
+    switch(Field)
+        {
+        case 5: //eid
+            EDID.Unload();
+            break;
+        case 6: //full
+            FULL.Unload();
+            break;
+        case 7: //modPath
+            if(MODL.IsLoaded())
+                MODL->MODL.Unload();
+            break;
+        case 8: //modb
+            if(MODL.IsLoaded())
+                MODL->MODB.Unload();
+            break;
+        case 9: //modt_p
+            if(MODL.IsLoaded())
+                MODL->MODT.Unload();
+            break;
+        case 10: //iconPath
+            ICON.Unload();
+            break;
+        case 11: //enchantment
+            ENAM.Unload();
+            break;
+        case 12: //enchantPoints
+            ANAM.Unload();
+            break;
+        case 13: //speed
+            DATA.value.speed = defaultDATA.speed;
+            break;
+        case 14: //flags
+            DATA.value.flags = defaultDATA.flags;
+            break;
+        case 15: //unused1
+            DATA.value.unused1[0] = defaultDATA.unused1[0];
+            DATA.value.unused1[1] = defaultDATA.unused1[1];
+            DATA.value.unused1[2] = defaultDATA.unused1[2];
+            break;
+        case 16: //value
+            DATA.value.value = defaultDATA.value;
+            break;
+        case 17: //weight
+            DATA.value.weight = defaultDATA.weight;
+            break;
+        case 18: //damage
+            DATA.value.damage = defaultDATA.damage;
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }

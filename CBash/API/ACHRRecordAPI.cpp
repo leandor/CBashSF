@@ -296,3 +296,88 @@ void ACHRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
         }
     return;
     }
+
+int ACHRRecord::DeleteField(const unsigned int Field)
+    {
+    GENXESP defaultXESP;
+    GENXLOD defaultXLOD;
+    GENPOSDATA defaultDATA;
+    switch(Field)
+        {
+        case 5: //eid
+            EDID.Unload();
+            break;
+        case 6: //base
+            NAME.Unload();
+            break;
+        case 7: //unknownXPCIFormID
+            if(XPCI.IsLoaded())
+                XPCI->XPCI.Unload();
+            break;
+        case 8: //unknownXPCIString
+            if(XPCI.IsLoaded())
+                XPCI->FULL.Unload();
+            break;
+        case 9: //lod1
+            if(XLOD.IsLoaded())
+                XLOD->lod1 = defaultXLOD.lod1;
+            break;
+        case 10: //lod2
+            if(XLOD.IsLoaded())
+                XLOD->lod2 = defaultXLOD.lod2;
+            break;
+        case 11: //lod3
+            if(XLOD.IsLoaded())
+                XLOD->lod3 = defaultXLOD.lod3;
+            break;
+        case 12: //parent
+            if(XESP.IsLoaded())
+                XESP->parent = defaultXESP.parent;
+            break;
+        case 13: //parentFlags
+            if(XESP.IsLoaded())
+                XESP->flags = defaultXESP.flags;
+            break;
+        case 14: //unused1
+            if(XESP.IsLoaded())
+                {
+                XESP->unused1[0] = defaultXESP.unused1[0];
+                XESP->unused1[1] = defaultXESP.unused1[1];
+                XESP->unused1[2] = defaultXESP.unused1[2];
+                }
+            break;
+        case 15: //merchantContainer
+            XMRC.Unload();
+            break;
+        case 16: //horse
+            XHRS.Unload();
+            break;
+        case 17: //xrgd_p
+            XRGD.Unload();
+            break;
+        case 18: //scale
+            XSCL.Unload();
+            break;
+        case 19: //posX
+            DATA.value.posX = defaultDATA.posX;
+            break;
+        case 20: //posY
+            DATA.value.posY = defaultDATA.posY;
+            break;
+        case 21: //posZ
+            DATA.value.posZ = defaultDATA.posZ;
+            break;
+        case 22: //rotX
+            DATA.value.rotX = defaultDATA.rotX;
+            break;
+        case 23: //rotY
+            DATA.value.rotY = defaultDATA.rotY;
+            break;
+        case 24: //rotZ
+            DATA.value.rotZ = defaultDATA.rotZ;
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }

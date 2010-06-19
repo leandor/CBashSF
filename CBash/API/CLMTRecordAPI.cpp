@@ -317,3 +317,82 @@ void CLMTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
         }
     return;
     }
+
+int CLMTRecord::DeleteField(const unsigned int Field)
+    {
+    CLMTTNAM defaultTNAM;
+    switch(Field)
+        {
+        case 5: //eid
+            EDID.Unload();
+            break;
+        case 6: //weathers
+            Weathers.clear();
+            break;
+        case 7: //sunPath
+            FNAM.Unload();
+            break;
+        case 8: //glarePath
+            GNAM.Unload();
+            break;
+        case 9: //modPath
+            if(MODL.IsLoaded())
+                MODL->MODL.Unload();
+            break;
+        case 10: //modb
+            if(MODL.IsLoaded())
+                MODL->MODB.Unload();
+            break;
+        case 11: //modt_p
+            if(MODL.IsLoaded())
+                MODL->MODT.Unload();
+            break;
+        case 12: //riseBegin
+            TNAM.value.riseBegin = defaultTNAM.riseBegin;
+            break;
+        case 13: //riseEnd
+            TNAM.value.riseEnd = defaultTNAM.riseEnd;
+            break;
+        case 14: //setBegin
+            TNAM.value.setBegin = defaultTNAM.setBegin;
+            break;
+        case 15: //setEnd
+            TNAM.value.setEnd = defaultTNAM.setEnd;
+            break;
+        case 16: //volatility
+            TNAM.value.volatility = defaultTNAM.volatility;
+            break;
+        case 17: //phaseLength
+            TNAM.value.phaseLength = defaultTNAM.phaseLength;
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }
+
+int CLMTRecord::DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField)
+    {
+    CLMTWLST defaultWLST;
+    switch(subField)
+        {
+        case 6: //weathers
+            if(listIndex >= Weathers.size())
+                return 0;
+            switch(listField)
+                {
+                case 1: //weather
+                    Weathers[listIndex].weather = defaultWLST.weather;
+                    break;
+                case 2: //chance
+                    Weathers[listIndex].chance = defaultWLST.chance;
+                    break;
+                default:
+                    return 0;
+                }
+            break;
+        default:
+            return 0;
+        }
+    return 0;
+    }

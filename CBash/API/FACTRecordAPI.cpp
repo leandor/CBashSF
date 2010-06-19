@@ -308,3 +308,86 @@ void FACTRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
         }
     return;
     }
+
+int FACTRecord::DeleteField(const unsigned int Field)
+    {
+    unsigned int nSize;
+    switch(Field)
+        {
+        case 5: //eid
+            EDID.Unload();
+            break;
+        case 6: //full
+            FULL.Unload();
+            break;
+        case 7: //relations
+            nSize = (unsigned int)XNAM.size();
+            for(unsigned int x = 0; x < nSize; x++)
+                delete XNAM[x];
+            XNAM.clear();
+            break;
+        case 8: //flags
+            DATA.Unload();
+            break;
+        case 9: //crimeGoldMultiplier
+            CNAM.Unload();
+            break;
+        case 10: //ranks
+            nSize = (unsigned int)RNAM.size();
+            for(unsigned int x = 0; x < nSize; x++)
+                delete RNAM[x];
+            RNAM.clear();
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }
+
+int FACTRecord::DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField)
+    {
+    GENXNAM defaultXNAM;
+    FACTRNAM defaultRNAM;
+    switch(subField)
+        {
+        case 7: //relations
+            if(listIndex >= XNAM.size())
+                return 0;
+            switch(listField)
+                {
+                case 1: //faction
+                    XNAM[listIndex]->value.faction = defaultXNAM.faction;
+                    break;
+                case 2: //mod
+                    XNAM[listIndex]->value.mod = defaultXNAM.mod;
+                    break;
+                default:
+                    return 0;
+                }
+            break;
+        case 10: //ranks
+            if(listIndex >= RNAM.size())
+                return 0;
+            switch(listField)
+                {
+                case 1: //rank
+                    RNAM[listIndex]->value.RNAM = defaultRNAM.RNAM;
+                    break;
+                case 2: //male
+                    RNAM[listIndex]->value.MNAM.Unload();
+                    break;
+                case 3: //female
+                    RNAM[listIndex]->value.FNAM.Unload();
+                    break;
+                case 4: //insigniaPath
+                    RNAM[listIndex]->value.INAM.Unload();
+                    break;
+                default:
+                    return 0;
+                }
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }

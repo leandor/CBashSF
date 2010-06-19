@@ -353,3 +353,92 @@ void ARMORecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
         }
     return;
     }
+
+int ARMORecord::DeleteField(const unsigned int Field)
+    {
+    GENVALUEWEIGHT defaultDATA;
+    switch(Field)
+        {
+        case 5: //eid
+            EDID.Unload();
+            break;
+        case 6: //full
+            FULL.Unload();
+            break;
+        case 7: //script
+            SCRI.Unload();
+            break;
+        case 8: //enchantment
+            ENAM.Unload();
+            break;
+        case 9: //enchantPoints
+            ANAM.Unload();
+            break;
+        case 10: //flags
+            BMDT.Unload();
+            break;
+        case 11: //maleBody_modPath
+            if(MODL.IsLoaded())
+                MODL->MODL.Unload();
+            break;
+        case 12: //maleBody_modb
+            if(MODL.IsLoaded())
+                MODL->MODB.Unload();
+            break;
+        case 13: //maleBody_modt_p
+            if(MODL.IsLoaded())
+                MODL->MODT.Unload();
+            break;
+        case 14: //maleWorld_modPath
+            if(MOD2.IsLoaded())
+                MOD2->MODL.Unload();
+            break;
+        case 15: //maleWorld_modb
+            if(MOD2.IsLoaded())
+                MOD2->MODB.Unload();
+            break;
+        case 16: //maleWorld_modt_p
+            if(MOD2.IsLoaded())
+                MOD2->MODT.Unload();
+            break;
+        case 17: //maleIconPath
+            ICON.Unload();
+            break;
+        case 18: //femaleBody_modPath
+            if(MOD3.IsLoaded())
+                MOD3->MODL.Unload();
+            break;
+        case 19: //femaleBody_modb
+            if(MOD3.IsLoaded())
+                MOD3->MODB.Unload();
+            break;
+        case 20: //femaleBody_modt_p
+            if(MOD3.IsLoaded())
+                MOD3->MODT.Unload();
+            break;
+        case 21: //femaleWorld_modPath
+            if(MOD4.IsLoaded())
+                MOD4->MODL.Unload();
+            break;
+        case 22: //femaleWorld_modb
+            if(MOD4.IsLoaded())
+                MOD4->MODB.Unload();
+            break;
+        case 23: //femaleWorld_modt_p
+            if(MOD4.IsLoaded())
+                MOD4->MODT.Unload();
+            break;
+        case 24: //femaleIconPath
+            ICO2.Unload();
+            break;
+        case 25: //value
+            DATA.value.value = defaultDATA.value;
+            break;
+        case 26: //weight
+            DATA.value.weight = defaultDATA.weight;
+            break;
+        default:
+            return 0;
+        }
+    return 0;
+    }

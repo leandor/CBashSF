@@ -239,3 +239,53 @@ void DOORRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
         }
     return;
     }
+
+int DOORRecord::DeleteField(const unsigned int Field)
+    {
+    unsigned int nSize;
+    switch(Field)
+        {
+        case 5: //eid
+            EDID.Unload();
+            break;
+        case 6: //full
+            FULL.Unload();
+            break;
+        case 7: //modPath
+            if(MODL.IsLoaded())
+                MODL->MODL.Unload();
+            break;
+        case 8: //modb
+            if(MODL.IsLoaded())
+                MODL->MODB.Unload();
+            break;
+        case 9: //modt_p
+            if(MODL.IsLoaded())
+                MODL->MODT.Unload();
+            break;
+        case 10: //script
+            SCRI.Unload();
+            break;
+        case 11: //soundOpen
+            SNAM.Unload();
+            break;
+        case 12: //soundClose
+            ANAM.Unload();
+            break;
+        case 13: //soundLoop
+            BNAM.Unload();
+            break;
+        case 14: //flags
+            FNAM.Unload();
+            break;
+        case 15: //destinations
+            nSize = (unsigned int)TNAM.size();
+            for(unsigned int x = 0; x < nSize; x++)
+                delete TNAM[x];
+            TNAM.clear();
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }

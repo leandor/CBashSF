@@ -85,3 +85,25 @@ void EYESRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
         }
     return;
     }
+
+int EYESRecord::DeleteField(const unsigned int Field)
+    {
+    switch(Field)
+        {
+        case 5: //eid
+            EDID.Unload();
+            break;
+        case 6: //full
+            FULL.Unload();
+            break;
+        case 7: //iconPath
+            ICON.Unload();
+            break;
+        case 8: //flags
+            DATA.Unload();
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }

@@ -333,3 +333,80 @@ void CONTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
+
+int CONTRecord::DeleteField(const unsigned int Field)
+    {
+    CONTDATA defaultDATA;
+    unsigned int nSize;
+    switch(Field)
+        {
+        case 5: //eid
+            EDID.Unload();
+            break;
+        case 6: //full
+            FULL.Unload();
+            break;
+        case 7: //modPath
+            if(MODL.IsLoaded())
+                MODL->MODL.Unload();
+            break;
+        case 8: //modb
+            if(MODL.IsLoaded())
+                MODL->MODB.Unload();
+            break;
+        case 9: //modt_p
+            if(MODL.IsLoaded())
+                MODL->MODT.Unload();
+            break;
+        case 10: //script
+            SCRI.Unload();
+            break;
+        case 11: //items
+            nSize = (unsigned int)CNTO.size();
+            for(unsigned int x = 0; x < nSize; x++)
+                delete CNTO[x];
+            CNTO.clear();
+            break;
+        case 12: //flags
+            DATA.value.flags = defaultDATA.flags;
+            break;
+        case 13: //weight
+            DATA.value.weight = defaultDATA.weight;
+            break;
+        case 14: //soundOpen
+            SNAM.Unload();
+            break;
+        case 15: //soundClose
+            QNAM.Unload();
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }
+
+int CONTRecord::DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField)
+    {
+    GENCNTO defaultCNTO;
+    switch(subField)
+        {
+        case 11: //items
+            if(listIndex >= CNTO.size())
+                return 0;
+            switch(listField)
+                {
+                case 1: //item
+                    CNTO[listIndex]->value.item = defaultCNTO.item;
+                    break;
+                case 2: //count
+                    CNTO[listIndex]->value.count = defaultCNTO.count;
+                    break;
+                default:
+                    return 0;
+                }
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }
