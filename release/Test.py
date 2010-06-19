@@ -2071,8 +2071,8 @@ def TestENCH():
     newRecord.unused1 = [0,1,2]
 
     newEffect = newRecord.newEffectsElement()
-    newEffect.name0 = 0x52474E49
-    newEffect.name = 0x53414C43
+    newEffect.name0 = "SEFF"
+    newEffect.name = "SEFF"
     newEffect.magnitude = 1
     newEffect.area = 2
     newEffect.duration = 3
@@ -2080,14 +2080,14 @@ def TestENCH():
     newEffect.actorValue = 5
     newEffect.script = 0xFF000007
     newEffect.school = 324
-    newEffect.visual = 0x53414C43
+    newEffect.visual = "SEFF"
     newEffect.flags = 16
     newEffect.unused1 = [3,4,5]
     newEffect.full = "ENCH?"
 
     newEffect = newRecord.newEffectsElement()
-    newEffect.name0 = 0x52474E49
-    newEffect.name = 0x48434E45
+    newEffect.name0 = "SEFF"
+    newEffect.name = "SEFF"
     newEffect.magnitude = 6
     newEffect.area = 7
     newEffect.duration = 8
@@ -2095,10 +2095,11 @@ def TestENCH():
     newEffect.actorValue = 10
     newEffect.script = 0xFF00000A
     newEffect.school = 11
-    newEffect.visual = 0x48434E45
+    newEffect.visual = "SEFF"
     newEffect.flags = 13
     newEffect.unused1 = [6,7,8]
     newEffect.full = "ENCH??"
+
     print "ENCH:Set Test Results"
     print
     print "fid    :", PrintFormID(newRecord.fid)
@@ -2195,8 +2196,8 @@ def TestSPEL():
     newRecord.unused1 = [0,1,2]
 
     newEffect = newRecord.newEffectsElement()
-    newEffect.name0 = 0x4C455053
-    newEffect.name = 0x53414C43
+    newEffect.name0 = "SEFF"
+    newEffect.name = "SEFF"
     newEffect.magnitude = 1
     newEffect.area = 2
     newEffect.duration = 3
@@ -2204,14 +2205,14 @@ def TestSPEL():
     newEffect.actorValue = 5
     newEffect.script = 0xFF000007
     newEffect.school = 324
-    newEffect.visual = 0x53414C43
+    newEffect.visual = "SEFF"
     newEffect.flags = 16
     newEffect.unused1 = [3,4,5]
     newEffect.full = "SPEL?"
 
     newEffect = newRecord.newEffectsElement()
-    newEffect.name0 = 0x52474E49
-    newEffect.name = 0x4C455053
+    newEffect.name0 = "SEFF"
+    newEffect.name = "SEFF"
     newEffect.magnitude = 6
     newEffect.area = 7
     newEffect.duration = 8
@@ -2219,7 +2220,7 @@ def TestSPEL():
     newEffect.actorValue = 10
     newEffect.script = 0xFF00000A
     newEffect.school = 11
-    newEffect.visual = 0x4C455053
+    newEffect.visual = "SEFF"
     newEffect.flags = 13
     newEffect.unused1 = [6,7,8]
     newEffect.full = "SPEL??"
@@ -3061,8 +3062,8 @@ def TestINGR():
     newRecord.unused1 = [0x00, 0xFE, 0xFD]
 
     newEffect = newRecord.newEffectsElement()
-    newEffect.name0 = 0x52474E49
-    newEffect.name = 0x53414C43
+    newEffect.name0 = "SEFF"
+    newEffect.name = "SEFF"
     newEffect.magnitude = 1
     newEffect.area = 2
     newEffect.duration = 3
@@ -3070,14 +3071,14 @@ def TestINGR():
     newEffect.actorValue = 5
     newEffect.script = 0xFF000007
     newEffect.school = 324
-    newEffect.visual = 0x52474E49
+    newEffect.visual = "SEFF"
     newEffect.flags = 16
     newEffect.unused1 = [3,4,5]
     newEffect.full = "INGR?"
 
     newEffect = newRecord.newEffectsElement()
-    newEffect.name0 = 0x52474E49
-    newEffect.name = 0x52474E49
+    newEffect.name0 = "SEFF"
+    newEffect.name = "SEFF"
     newEffect.magnitude = 6
     newEffect.area = 7
     newEffect.duration = 8
@@ -3085,7 +3086,7 @@ def TestINGR():
     newEffect.actorValue = 10
     newEffect.script = 0xFF00000A
     newEffect.school = 11
-    newEffect.visual = 0x4C455053
+    newEffect.visual = "SEFF"
     newEffect.flags = 13
     newEffect.unused1 = [6,7,8]
     newEffect.full = "INGR??"
@@ -4930,8 +4931,8 @@ def TestALCH():
     newRecord.unused1 = [0x00, 0xFE, 0xFD]
 
     newEffect = newRecord.newEffectsElement()
-    newEffect.name0 = 0x52474E49
-    newEffect.name = 0x53414C43
+    newEffect.name0 = "SEFF"
+    newEffect.name = "SEFF"
     newEffect.magnitude = 1
     newEffect.area = 2
     newEffect.duration = 3
@@ -4939,14 +4940,14 @@ def TestALCH():
     newEffect.actorValue = 5
     newEffect.script = 0xFF000007
     newEffect.school = 324
-    newEffect.visual = 0x52474E49
+    newEffect.visual = "SEFF"
     newEffect.flags = 16
     newEffect.unused1 = [3,4,5]
     newEffect.full = "ALCH?"
 
     newEffect = newRecord.newEffectsElement()
-    newEffect.name0 = 0x52474E49
-    newEffect.name = 0x52474E49
+    newEffect.name0 = "SEFF"
+    newEffect.name = "SEFF"
     newEffect.magnitude = 6
     newEffect.area = 7
     newEffect.duration = 8
@@ -4954,7 +4955,7 @@ def TestALCH():
     newEffect.actorValue = 10
     newEffect.script = 0xFF00000A
     newEffect.school = 11
-    newEffect.visual = 0x4C455053
+    newEffect.visual = "SEFF"
     newEffect.flags = 13
     newEffect.unused1 = [6,7,8]
     newEffect.full = "ALCH??"
@@ -5123,8 +5124,8 @@ def TestSGST():
     newRecord.script = 7
 
     newEffect = newRecord.newEffectsElement()
-    newEffect.name0 = 0x52474E49
-    newEffect.name = 0x52474E49
+    newEffect.name0 = "SEFF"
+    newEffect.name = "SEFF"
     newEffect.magnitude = 1
     newEffect.area = 2
     newEffect.duration = 6
@@ -5132,14 +5133,14 @@ def TestSGST():
     newEffect.actorValue = 5
     newEffect.script = 0xFF000007
     newEffect.school = 324
-    newEffect.visual = 0x52474E49
+    newEffect.visual = "SEFF"
     newEffect.flags = 16
     newEffect.unused1 = [3,4,5]
     newEffect.full = "SGST?"
 
     newEffect = newRecord.newEffectsElement()
-    newEffect.name0 = 0x52474E49
-    newEffect.name = 0x52474E49
+    newEffect.name0 = "SEFF"
+    newEffect.name = "SEFF"
     newEffect.magnitude = 6
     newEffect.area = 7
     newEffect.duration = 7
@@ -5147,15 +5148,15 @@ def TestSGST():
     newEffect.actorValue = 10
     newEffect.script = 0xFF00000A
     newEffect.school = 11
-    newEffect.visual = 0x4C455053
+    newEffect.visual = "SEFF"
     newEffect.flags = 13
     newEffect.unused1 = [6,7,8]
     newEffect.full = "SGST??"
 
 
     newEffect = newRecord.newEffectsElement()
-    newEffect.name0 = 0x52474E49
-    newEffect.name = 0x52474E49
+    newEffect.name0 = "SEFF"
+    newEffect.name = "SEFF"
     newEffect.magnitude = 6
     newEffect.area = 8
     newEffect.duration = 8
@@ -5163,7 +5164,7 @@ def TestSGST():
     newEffect.actorValue = 10
     newEffect.script = 0xFF00000A
     newEffect.school = 11
-    newEffect.visual = 0x4C455053
+    newEffect.visual = "SEFF"
     newEffect.flags = 13
     newEffect.unused1 = [6,7,8]
     newEffect.full = "SGST???"
@@ -10688,7 +10689,7 @@ from timeit import Timer
 ##TestCopyAttrs()
 ##TestCleanMasters()
 ##TestFullLoad()
-TestMinimalLoad()
+##TestMinimalLoad()
 ##TestLoadMasters()
 ##TestDeleteRecord()
 ##TestReadWriteAll()
@@ -10739,16 +10740,16 @@ TestMinimalLoad()
 ##TestREGN()
 ##TestCELL()
 ##TestWRLD()
-##TestDIAL()
-##TestQUST()
-##TestIDLE()
-##TestPACK()
-##TestCSTY()
-##TestLSCR()
-##TestLVSP()
-##TestANIO()
-##TestWATR()
-##TestEFSH()
+TestDIAL()
+TestQUST()
+TestIDLE()
+TestPACK()
+TestCSTY()
+TestLSCR()
+TestLVSP()
+TestANIO()
+TestWATR()
+TestEFSH()
 ####Current.debug(6, True)
 ##print "Entirely Finished\n"
 

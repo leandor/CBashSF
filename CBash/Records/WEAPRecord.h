@@ -182,6 +182,8 @@ class WEAPRecord : public Record
         void SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned short FieldValue);
 
+        int DeleteField(const unsigned int Field);
+
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eWEAP;}

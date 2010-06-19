@@ -439,8 +439,8 @@ class WTHRRecord : public Record
             fUnk2     = 0x10000000
             };
         STRING EDID;
-        STRING CNAM;
-        STRING DNAM;
+        ISTRING CNAM;
+        ISTRING DNAM;
         OptRecordField<GENMODEL> MODL;
         ReqRecordField<WTHRNAM0> NAM0;
         ReqRecordField<WTHRFNAM> FNAM;

@@ -465,19 +465,19 @@ class RACERecord : public Record
 
         OptRecordField<GENMODEL> MMODL;
 
-        STRING MICON0;
-        STRING MICON1;
-        STRING MICON2;
-        STRING MICON3;
-        STRING MICON4;
+        ISTRING MICON0;
+        ISTRING MICON1;
+        ISTRING MICON2;
+        ISTRING MICON3;
+        ISTRING MICON4;
 
         OptRecordField<GENMODEL> FMODL;
 
-        STRING FICON0;
-        STRING FICON1;
-        STRING FICON2;
-        STRING FICON3;
-        STRING FICON4;
+        ISTRING FICON0;
+        ISTRING FICON1;
+        ISTRING FICON2;
+        ISTRING FICON3;
+        ISTRING FICON4;
 
         std::vector<unsigned int> HNAM;
         std::vector<unsigned int> ENAM;
@@ -740,6 +740,8 @@ class RACERecord : public Record
         void SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue);
 
+        int DeleteField(const unsigned int Field);
+        int DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize(bool forceCalc=false);

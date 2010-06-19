@@ -110,6 +110,8 @@ class TES4Record : public Record
         unsigned int GetFieldArraySize(const unsigned int Field);
         void GetFieldArray(const unsigned int Field, void **FieldValues);
 
+        int DeleteField(const unsigned int Field);
+
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eTES4;}

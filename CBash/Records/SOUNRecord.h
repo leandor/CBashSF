@@ -114,7 +114,7 @@ class SOUNRecord : public Record
             fIs360LFE               = 0x00000080
             };
         STRING EDID;
-        STRING FNAM;
+        ISTRING FNAM;
         ReqRecordField<SOUNSNDX> SNDX;
         SOUNRecord(bool newRecord=false):Record(newRecord) {}
         SOUNRecord(const unsigned int &newFormID):Record(newFormID) {}
@@ -152,6 +152,7 @@ class SOUNRecord : public Record
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, short FieldValue);
 
+        int DeleteField(const unsigned int Field);
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize(bool forceCalc=false);

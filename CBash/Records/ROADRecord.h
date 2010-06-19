@@ -100,6 +100,9 @@ class ROADRecord : public Record
         void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue);
         void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize);
 
+        int DeleteField(const unsigned int Field);
+        int DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
+
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize(bool forceCalc=false);
         unsigned int GetType() {return eROAD;}

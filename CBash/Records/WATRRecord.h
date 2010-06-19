@@ -231,10 +231,10 @@ class WATRRecord : public Record
             fIsReflective = 0x00000002
             };
         STRING EDID;
-        STRING TNAM;
+        ISTRING TNAM;
         ReqRecordField<WATRANAM> ANAM;
         ReqRecordField<GENFLAG> FNAM;
-        STRING MNAM;
+        ISTRING MNAM;
         OptRecordField<GENFID> SNAM;
         OptRecordField<WATRDATA> DATA;
         OptRecordField<WATRGNAM> GNAM;
@@ -298,6 +298,8 @@ class WATRRecord : public Record
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned short FieldValue);
+
+        int DeleteField(const unsigned int Field);
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize(bool forceCalc=false);

@@ -601,7 +601,7 @@ class REGNRecord : public Record
             {
             ReqRecordField<REGNRDAT> RDAT;
             std::vector<REGNRDOT> RDOT;
-            STRING RDMP;
+            ISTRING RDMP;
             STRING ICON;
             std::vector<REGNRDGS> RDGS;
             OptRecordField<REGNRDMD> RDMD;
@@ -974,6 +974,9 @@ class REGNRecord : public Record
         void SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned char *FieldValue, unsigned int nSize);
         void SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned char FieldValue);
 
+        int DeleteField(const unsigned int Field);
+        int DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
+        int DeleteListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field);
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize(bool forceCalc=false);
