@@ -32,6 +32,7 @@ class DIALRecord : public Record
         enum DIALRecordFields {
             eEDID = 0x44494445,
             eQSTI = 0x49545351,
+            eQSTR = 0x52545351,
             eFULL = 0x4C4C5546,
             eDATA = 0x41544144
             };
@@ -48,6 +49,7 @@ class DIALRecord : public Record
             };
         STRING EDID;
         std::vector<unsigned int *> QSTI;
+        std::vector<unsigned int *> QSTR;
         STRING FULL;
         ReqRecordField<GENFLAG> DATA;
         std::vector<INFORecord *> INFO;
@@ -71,6 +73,8 @@ class DIALRecord : public Record
             {
             for(unsigned int x = 0; x < QSTI.size(); x++)
                 delete QSTI[x];
+            for(unsigned int x = 0; x < QSTR.size(); x++)
+                delete QSTR[x];
             for(unsigned int x = 0; x < INFO.size(); x++)
                 delete INFO[x];
             }
@@ -83,6 +87,10 @@ class DIALRecord : public Record
                 delete QSTI[x];
             QSTI.clear();
 
+            for(unsigned int x = 0; x < QSTR.size(); x++)
+                delete QSTR[x];
+            QSTR.clear();
+            
             FULL.Unload();
             DATA.Unload();
             }
@@ -93,6 +101,8 @@ class DIALRecord : public Record
                 return;
             for(unsigned int x = 0; x < QSTI.size(); x++)
                 FormIDs.push_back(QSTI[x]);
+            for(unsigned int x = 0; x < QSTR.size(); x++)
+                FormIDs.push_back(QSTR[x]);
             }
 
         #ifdef _DEBUG

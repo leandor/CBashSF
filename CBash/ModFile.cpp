@@ -501,9 +501,11 @@ int ModFile::CleanMasters()
     _FormIDHandler TempHandler(FileName, TES4.MAST, TES4.HEDR.value.nextObject);
     TempHandler.SetLoadOrder(FormIDHandler.LoadOrder);
     TempHandler.CreateFormIDLookup(FormIDHandler.ExpandedIndex);
+    std::vector<int> ToRemove;
+    ToRemove.reserve(TES4.MAST.size());
     for(int p = 0; p < (unsigned char)TES4.MAST.size();++p)
         {
-        printf("Checking: %s\n", TES4.MAST[p].value);
+        //printf("Checking: %s\n", TES4.MAST[p].value);
         if(GMST.CheckMasters(p, TempHandler)) continue;
         if(GLOB.CheckMasters(p, TempHandler)) continue;
         if(CLAS.CheckMasters(p, TempHandler)) continue;
@@ -560,12 +562,19 @@ int ModFile::CleanMasters()
         if(ANIO.CheckMasters(p, TempHandler)) continue;
         if(WATR.CheckMasters(p, TempHandler)) continue;
         if(EFSH.CheckMasters(p, TempHandler)) continue;
-        printf("Removing: %s\n", TES4.MAST[p].value);
+        //printf("Removing: %s\n", TES4.MAST[p].value);
         //Master not used, so remove it.
-        TES4.MAST.erase(TES4.MAST.begin() + p);
+        ToRemove.push_back(p);
+        //TES4.MAST.erase(TES4.MAST.begin() + p);
         //FormIDHandler.UpdateFormIDLookup();
-        --p; //Keep the value from incrementing
+        //--p; //Keep the value from incrementing
         ++cleaned;
+        }
+    if(cleaned)
+        {
+        for(int p = (int)ToRemove.size() - 1; p >= 0; --p)
+            TES4.MAST.erase(TES4.MAST.begin() + ToRemove[p]);
+        FormIDHandler.UpdateFormIDLookup();
         }
     return cleaned;
     }

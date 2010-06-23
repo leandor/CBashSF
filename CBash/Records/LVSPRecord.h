@@ -122,7 +122,7 @@ class LVSPRecord : public Record
             fAltCalcFromAllLevels = 0x00000080
             };
         STRING EDID;
-        RecordField<LVLLVLD> LVLD;
+        ReqRecordField<LVLLVLD> LVLD;
         RecordField<GENFLAG> LVLF;
         std::vector<ReqRecordField<LVLLVLO> *> Entries;
 

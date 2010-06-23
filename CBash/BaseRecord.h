@@ -1545,6 +1545,7 @@ class Record
         void CollapseFormIDs(_FormIDHandler &FormIDHandler);
         void AddMasters(_FormIDHandler &FormIDHandler);
         unsigned int UpdateReferences(unsigned int origFormID, unsigned int newFormID, _FormIDHandler &FormIDHandler);
+        bool CheckMasters(unsigned int MASTIndex, _FormIDHandler &FormIDHandler);
 
         virtual void CopyFrom(Record *temp) {return;}
         virtual int WriteRecord(_FileHandler &SaveHandler) abstract {};

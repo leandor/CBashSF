@@ -28,11 +28,13 @@ int DIALRecord::GetOtherFieldType(const unsigned int Field)
         {
         case 6: //quests
             return FIDARRAY_FIELD;
-        case 7: //full
+        case 7: //removedQuests
+            return FIDARRAY_FIELD;
+        case 8: //full
             return STRING_FIELD;
-        case 8: //dialType
+        case 9: //dialType
             return UBYTE_FIELD;
-        case 9: //INFO
+        case 10: //INFO
             return SUBRECORDS_FIELD;
         default:
             return UNKNOWN_FIELD;
@@ -45,9 +47,9 @@ void * DIALRecord::GetOtherField(const unsigned int Field)
         {
         case 5: //eid
             return EDID.value;
-        case 7: //full
+        case 8: //full
             return FULL.value;
-        case 8: //dialType
+        case 9: //dialType
             return &DATA.value.flags;
         default:
             return NULL;
@@ -60,7 +62,9 @@ unsigned int DIALRecord::GetFieldArraySize(const unsigned int Field)
         {
         case 6: //quests
             return (unsigned int)QSTI.size();
-        case 9: //INFO
+        case 7: //removedQuests
+            return (unsigned int)QSTR.size();
+        case 10: //INFO
             return (unsigned int)INFO.size();
         default:
             return 0;
@@ -75,7 +79,11 @@ void DIALRecord::GetFieldArray(const unsigned int Field, void **FieldValues)
             for(unsigned int p = 0;p < QSTI.size();p++)
                 FieldValues[p] = QSTI[p];
             return;
-        case 9: //INFO
+        case 7: //removedQuests
+            for(unsigned int p = 0;p < QSTR.size();p++)
+                FieldValues[p] = QSTR[p];
+            return;
+        case 10: //INFO
             for(unsigned int p = 0;p < INFO.size();p++)
                 FieldValues[p] = &INFO[p]->formID;
             return;
@@ -92,7 +100,7 @@ void DIALRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
         case 5: //eid
             EDID.Copy(FieldValue);
             break;
-        case 7: //full
+        case 8: //full
             FULL.Copy(FieldValue);
             break;
         default:
@@ -106,6 +114,8 @@ void DIALRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     switch(Field)
         {
         case 6: //quests
+            for(unsigned int x = 0; x < QSTI.size(); x++)
+                delete QSTI[x];
             QSTI.clear();
             if(nSize)
                 {
@@ -114,6 +124,20 @@ void DIALRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
                     {
                     QSTI[x] = new unsigned int(FieldValue[x]);
                     FormIDHandler.AddMaster(QSTI[x]);
+                    }
+                }
+            break;
+        case 7: //removedQuests
+            for(unsigned int x = 0; x < QSTR.size(); x++)
+                delete QSTR[x];
+            QSTR.clear();
+            if(nSize)
+                {
+                QSTR.resize(nSize);
+                for(unsigned int x = 0; x < nSize; x++)
+                    {
+                    QSTR[x] = new unsigned int(FieldValue[x]);
+                    FormIDHandler.AddMaster(QSTR[x]);
                     }
                 }
             break;
@@ -127,7 +151,7 @@ void DIALRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     {
     switch(Field)
         {
-        case 8: //dialType
+        case 9: //dialType
             DATA.value.flags = FieldValue;
             break;
         default:
@@ -150,10 +174,16 @@ int DIALRecord::DeleteField(const unsigned int Field)
                 delete QSTI[x];
             QSTI.clear();
             break;
-        case 7: //full
+        case 7: //removedQuests
+            nSize = (unsigned int)QSTR.size();
+            for(unsigned int x = 0; x < nSize; x++)
+                delete QSTR[x];
+            QSTR.clear();
+            break;
+        case 8: //full
             FULL.Unload();
             break;
-        case 8: //dialType
+        case 9: //dialType
             DATA.Unload();
             break;
         default:

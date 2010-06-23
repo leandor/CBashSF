@@ -274,8 +274,9 @@ def TestDeleteRecord():
 
 def TestMinimalLoad():
     Current = Collection()
-    Current.addMod("MMM-DD.esp")
+    modFile = Current.addMod("bgBalancingEVCore.esp")
     Current.minimalLoad(LoadMasters=False)
+    
 ##    newMod.safeSave()
 
 def TestFullLoad():
@@ -10689,7 +10690,7 @@ from timeit import Timer
 ##TestCopyAttrs()
 ##TestCleanMasters()
 ##TestFullLoad()
-##TestMinimalLoad()
+TestMinimalLoad()
 ##TestLoadMasters()
 ##TestDeleteRecord()
 ##TestReadWriteAll()
@@ -10740,16 +10741,16 @@ from timeit import Timer
 ##TestREGN()
 ##TestCELL()
 ##TestWRLD()
-TestDIAL()
-TestQUST()
-TestIDLE()
-TestPACK()
-TestCSTY()
-TestLSCR()
-TestLVSP()
-TestANIO()
-TestWATR()
-TestEFSH()
+##TestDIAL()
+##TestQUST()
+##TestIDLE()
+##TestPACK()
+##TestCSTY()
+##TestLSCR()
+##TestLVSP()
+##TestANIO()
+##TestWATR()
+##TestEFSH()
 ####Current.debug(6, True)
 ##print "Entirely Finished\n"
 

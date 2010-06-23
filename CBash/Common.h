@@ -107,9 +107,7 @@ struct RecordField
     bool IsLoaded() const
         {
         T defaultValue;
-        if(value == defaultValue)
-            return false;
-        return isLoaded;
+        return (isLoaded && value != defaultValue);
         }
     void Load()
         {

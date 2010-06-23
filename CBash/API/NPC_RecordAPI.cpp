@@ -334,9 +334,7 @@ void * NPC_Record::GetOtherField(const unsigned int Field)
         case 65: //hair
             return &HNAM.value.fid;
         case 66: //hairLength
-            if(LNAM.IsLoaded())
-                return &LNAM->hairLength;
-            return NULL;
+            return &LNAM.value.hairLength;
         case 67: //eye
             if(ENAM.IsLoaded())
                 return &ENAM->fid;
@@ -584,8 +582,7 @@ void NPC_Record::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
             MODL->MODB.value.MODB = FieldValue;
             break;
         case 66: //hairLength
-            LNAM.Load();
-            LNAM->hairLength = FieldValue;
+            LNAM.value.hairLength = FieldValue;
             break;
         default:
             return;
@@ -1015,7 +1012,7 @@ void NPC_Record::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
                 KFFZ.resize(nSize);
                 for(unsigned int x = 0; x < nSize; x++)
                     {
-                    KFFZ[x] = ISTRING(FieldValue[x]);
+                    KFFZ[x] = STRING(FieldValue[x]);
                     }
                 }
             break;

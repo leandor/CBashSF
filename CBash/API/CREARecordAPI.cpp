@@ -953,7 +953,7 @@ void CREARecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
                 KFFZ.resize(nSize);
                 for(unsigned int x = 0; x < nSize; x++)
                     {
-                    KFFZ[x] = ISTRING(FieldValue[x]);
+                    KFFZ[x] = STRING(FieldValue[x]);
                     }
                 }
             break;

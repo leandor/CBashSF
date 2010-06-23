@@ -206,7 +206,6 @@ void LVLIRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
         {
         case 6: //chanceNone
             LVLD.value.chanceNone = FieldValue;
-            LVLD.isLoaded = true;
             if((LVLD.value.chanceNone & fAltCalcFromAllLevels) != 0)
                 {
                 LVLD.value.chanceNone &= ~fAltCalcFromAllLevels;

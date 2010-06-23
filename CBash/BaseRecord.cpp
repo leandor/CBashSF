@@ -96,6 +96,18 @@ unsigned int Record::UpdateReferences(unsigned int origFormID, unsigned int newF
     return count;
     }
 
+bool Record::CheckMasters(unsigned int MASTIndex, _FormIDHandler &FormIDHandler)
+    {
+    unsigned int count = 0;
+    std::vector<FormID> FormIDs;
+    Read(FormIDHandler);
+    GetReferencedFormIDs(FormIDs);
+    for(unsigned int x = 0; x < FormIDs.size(); ++x)
+        if(FormIDHandler.UsesMaster(*FormIDs[x], MASTIndex))
+            return true;
+    return false;
+    }
+
 unsigned int Record::Write(_FileHandler &SaveHandler, _FormIDHandler &FormIDHandler)
     {
     //if masters have changed, all formIDs have to be updated...

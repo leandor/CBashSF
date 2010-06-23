@@ -57,6 +57,11 @@ int DIALRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 _readBuffer(curFormID,buffer,subSize,curPos);
                 QSTI.push_back(curFormID);
                 break;
+            case eQSTR:
+                curFormID = new unsigned int;
+                _readBuffer(curFormID,buffer,subSize,curPos);
+                QSTR.push_back(curFormID);
+                break;
             case eFULL:
                 FULL.Read(buffer, subSize, curPos);
                 break;
@@ -89,6 +94,8 @@ unsigned int DIALRecord::GetSize(bool forceCalc)
         }
     if(QSTI.size())
         TotSize += (unsigned int)QSTI.size() * (sizeof(unsigned int) + 6);
+    if(QSTR.size())
+        TotSize += (unsigned int)QSTR.size() * (sizeof(unsigned int) + 6);
     if(FULL.IsLoaded())
         {
         cSize = FULL.GetSize();
@@ -107,6 +114,9 @@ int DIALRecord::WriteRecord(_FileHandler &SaveHandler)
     if(QSTI.size())
         for(unsigned int p = 0; p < QSTI.size(); p++)
             SaveHandler.writeSubRecord(eQSTI, QSTI[p], sizeof(unsigned int));
+    if(QSTR.size())
+        for(unsigned int p = 0; p < QSTR.size(); p++)
+            SaveHandler.writeSubRecord(eQSTR, QSTR[p], sizeof(unsigned int));
     if(FULL.IsLoaded())
         SaveHandler.writeSubRecord(eFULL, FULL.value, FULL.GetSize());
     if(DATA.IsLoaded())
@@ -139,6 +149,19 @@ void DIALRecord::Debug(int debugLevel)
         indentation -= 2;
         }
 
+    if(QSTR.size())
+        {
+        PrintIndent(indentation);
+        printf("QSTR:\n");
+        indentation += 2;
+        for(unsigned int p = 0;p < QSTR.size();p++)
+            {
+            PrintIndent(indentation);
+            printf("%u:%s\n", p, PrintFormID(QSTR[p]));
+            }
+        indentation -= 2;
+        }
+        
     FULL.Debug("FULL", debugLevel, indentation);
 
     DATA.Debug("DATA", debugLevel, indentation);

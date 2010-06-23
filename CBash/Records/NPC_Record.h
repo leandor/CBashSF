@@ -294,11 +294,11 @@ class NPC_Record : public Record
         std::vector<ReqRecordField<GENCNTO> *> CNTO;
         ReqRecordField<GENAIDT> AIDT;
         std::vector<unsigned int *> PKID;
-        std::vector<ISTRING> KFFZ;
+        std::vector<STRING> KFFZ;
         ReqRecordField<GENFID> CNAM;
         ReqRecordField<NPC_DATA> DATA;
         RecordField<GENFID> HNAM;
-        OptRecordField<NPC_LNAM> LNAM;
+        ReqRecordField<NPC_LNAM> LNAM;
         OptRecordField<GENFID> ENAM;
         ReqRecordField<GENCLR> HCLR;
         OptRecordField<GENFID> ZNAM;

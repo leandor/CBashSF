@@ -106,7 +106,7 @@ int NPC_Record::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 break;
             case eKFFZ:
                 for(subSize += curPos;curPos < (subSize - 1);curPos += (unsigned int)strlen((char*)&buffer[curPos]) + 1)
-                    KFFZ.push_back(ISTRING((char*)&buffer[curPos]));
+                    KFFZ.push_back(STRING((char*)&buffer[curPos]));
                 curPos++;
                 break;
             case eCNAM:
@@ -308,7 +308,7 @@ int NPC_Record::WriteRecord(_FileHandler &SaveHandler)
     if(HNAM.IsLoaded())
         SaveHandler.writeSubRecord(eHNAM, &HNAM.value, HNAM.GetSize());
     if(LNAM.IsLoaded())
-        SaveHandler.writeSubRecord(eLNAM, LNAM.value, LNAM.GetSize());
+        SaveHandler.writeSubRecord(eLNAM, &LNAM.value, LNAM.GetSize());
     if(ENAM.IsLoaded())
         SaveHandler.writeSubRecord(eENAM, ENAM.value, ENAM.GetSize());
     if(HCLR.IsLoaded())

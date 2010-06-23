@@ -405,7 +405,7 @@ class CREARecord : public Record
         std::vector<ReqRecordField<GENCNTO> *> CNTO;
         ReqRecordField<GENAIDT> AIDT;
         std::vector<unsigned int *> PKID;
-        std::vector<ISTRING> KFFZ;
+        std::vector<STRING> KFFZ;
         ReqRecordField<CREADATA> DATA;
         ReqRecordField<CREARNAM> RNAM;
         OptRecordField<GENFID> ZNAM;

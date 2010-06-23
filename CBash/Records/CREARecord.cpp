@@ -118,7 +118,7 @@ int CREARecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 break;
             case eKFFZ:
                 for(subSize += curPos;curPos < (subSize - 1);curPos += (unsigned int)strlen((char*)&buffer[curPos]) + 1)
-                    KFFZ.push_back(ISTRING((char*)&buffer[curPos]));
+                    KFFZ.push_back(STRING((char*)&buffer[curPos]));
                 curPos++;
                 break;
             case eDATA:
