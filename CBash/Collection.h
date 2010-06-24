@@ -117,11 +117,11 @@ class Collection
         unsigned int UpdateReferences(char *ModName, unsigned int recordFID, unsigned int origFormID, unsigned int newFormID);
         int GetModIndex(const char *ModName);
 
-        int GetNumFIDConflicts(char *ModName, unsigned int recordFID);
-        void GetFIDConflicts(char *ModName, unsigned int recordFID, char **ModNames);
+        int GetNumFIDConflicts(unsigned int recordFID);
+        void GetFIDConflicts(unsigned int recordFID, char **ModNames);
 
-        int GetNumGMSTConflicts(char *ModName, char *recordEDID);
-        void GetGMSTConflicts(char *ModName, char *recordEDID, char **ModNames);
+        int GetNumGMSTConflicts(char *recordEDID);
+        void GetGMSTConflicts(char *recordEDID, char **ModNames);
         
         unsigned int GetNumMods();
         //ADD DEFINITIONS HERE

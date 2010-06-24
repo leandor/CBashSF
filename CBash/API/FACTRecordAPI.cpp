@@ -216,7 +216,6 @@ void FACTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
         {
         case 9: //crimeGoldMultiplier
             CNAM.value.crimeGoldMultiplier = FieldValue;
-            CNAM.isLoaded = true;
             break;
         default:
             return;

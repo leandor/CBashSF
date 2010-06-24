@@ -107,7 +107,7 @@ class FACTRecord : public Record
         STRING FULL;
         std::vector<ReqRecordField<GENXNAM> *> XNAM;
         ReqRecordField<GENFLAG> DATA;
-        RecordField<FACTCNAM> CNAM;
+        ReqRecordField<FACTCNAM> CNAM;
         std::vector<ReqRecordField<FACTRNAM> *> RNAM;
 
         FACTRecord(bool newRecord=false):Record(newRecord) {}

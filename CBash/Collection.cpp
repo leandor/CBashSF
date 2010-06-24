@@ -1089,14 +1089,14 @@ int Collection::GetModIndex(const char *ModName)
     return -1;
     }
 
-int Collection::GetNumFIDConflicts(char *ModName, unsigned int recordFID)
+int Collection::GetNumFIDConflicts(unsigned int recordFID)
     {
-    if(ModName == NULL || recordFID == 0)
+    if(recordFID == 0)
         return -1;
     return (unsigned int)FID_ModFile_Record.count(recordFID);
     }
 
-void Collection::GetFIDConflicts(char *ModName, unsigned int recordFID, char **ModNames)
+void Collection::GetFIDConflicts(unsigned int recordFID, char **ModNames)
     {
     std::multimap<unsigned int, std::pair<ModFile *, Record *> >::iterator it = FID_ModFile_Record.find(recordFID);
 
@@ -1115,27 +1115,27 @@ void Collection::GetFIDConflicts(char *ModName, unsigned int recordFID, char **M
     sortedConflicts.clear();
     }
 
-int Collection::GetNumGMSTConflicts(char *ModName, char *recordEDID)
+int Collection::GetNumGMSTConflicts(char *recordEDID)
     {
-    if(ModName == NULL || recordEDID == 0)
+    if(recordEDID == 0)
         return -1;
     return (unsigned int)GMST_ModFile_Record.count(recordEDID);
     }
 
-void Collection::GetGMSTConflicts(char *ModName, char *recordEDID, char **ModNames)
+void Collection::GetGMSTConflicts(char *recordEDID, char **ModNames)
     {
-    GMSTRecord *curRecord = NULL;
-    ModFile *curModFile = NULL;
-    std::multimap<char *, std::pair<ModFile *, Record *>, sameStr>::iterator it = LookupGMSTRecord(ModName, recordEDID, curModFile, curRecord);
-    if(curModFile == NULL || curRecord == NULL || it == GMST_ModFile_Record.end())
+    std::multimap<char *, std::pair<ModFile *, Record *>, sameStr>::iterator it = GMST_ModFile_Record.find(recordEDID);
+
+    if(it == GMST_ModFile_Record.end())
         return;
+
     unsigned int count = (unsigned int)GMST_ModFile_Record.count(recordEDID);
     std::vector<ModFile *> sortedConflicts;
     sortedConflicts.reserve(count);
     for(unsigned int x = 0; x < count;++it, ++x)
         sortedConflicts.push_back(it->second.first);
     std::sort(sortedConflicts.begin(), sortedConflicts.end(), sortLoad);
-    unsigned char x = 0;
+    unsigned int x = 0;
     for(int y = (int)sortedConflicts.size() - 1; y >= 0; --y, ++x)
         ModNames[x] = sortedConflicts[y]->FileName;
     sortedConflicts.clear();

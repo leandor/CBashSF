@@ -53,10 +53,10 @@ extern "C" __declspec(dllexport) unsigned int GetCorrectedFID(const unsigned int
 extern "C" __declspec(dllexport) unsigned int UpdateAllReferences(const unsigned int CollectionIndex, char *ModName, unsigned int origFormID, unsigned int newFormID);
 extern "C" __declspec(dllexport) unsigned int UpdateReferences(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, unsigned int origFormID, unsigned int newFormID);
 ////////////////////////////////////////////////////////////////////////
-extern "C" __declspec(dllexport) int GetNumFIDConflicts(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID);
-extern "C" __declspec(dllexport) void GetFIDConflicts(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, char **ModNames);
-extern "C" __declspec(dllexport) int GetNumGMSTConflicts(const unsigned int CollectionIndex, char *ModName, char *recordEDID);
-extern "C" __declspec(dllexport) void GetGMSTConflicts(const unsigned int CollectionIndex, char *ModName, char *recordEDID, char **ModNames);
+extern "C" __declspec(dllexport) int GetNumFIDConflicts(const unsigned int CollectionIndex, unsigned int recordFID);
+extern "C" __declspec(dllexport) void GetFIDConflicts(const unsigned int CollectionIndex, unsigned int recordFID, char **ModNames);
+extern "C" __declspec(dllexport) int GetNumGMSTConflicts(const unsigned int CollectionIndex, char *recordEDID);
+extern "C" __declspec(dllexport) void GetGMSTConflicts(const unsigned int CollectionIndex, char *recordEDID, char **ModNames);
 ////////////////////////////////////////////////////////////////////////
 //ADD
 extern "C" __declspec(dllexport) unsigned int GetNumGMSTRecords(const unsigned int CollectionIndex, char *ModName);

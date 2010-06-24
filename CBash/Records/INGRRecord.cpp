@@ -166,7 +166,7 @@ unsigned int INGRRecord::GetSize(bool forceCalc)
                 TotSize += Effects[p]->EFID.GetSize() + 6;
             if(Effects[p]->EFIT.IsLoaded())
                 TotSize += Effects[p]->EFIT.GetSize() + 6;
-            if(Effects[p]->SCIT.IsLoaded())
+            if(Effects[p]->SCIT.IsLoaded() || Effects[p]->FULL.IsLoaded())
                 TotSize += Effects[p]->SCIT.GetSize() + 6;
             if(Effects[p]->FULL.IsLoaded())
                 {
@@ -207,7 +207,7 @@ int INGRRecord::WriteRecord(_FileHandler &SaveHandler)
                 SaveHandler.writeSubRecord(eEFID, &Effects[p]->EFID.value, Effects[p]->EFID.GetSize());
             if(Effects[p]->EFIT.IsLoaded())
                 SaveHandler.writeSubRecord(eEFIT, &Effects[p]->EFIT.value, Effects[p]->EFIT.GetSize());
-            if(Effects[p]->SCIT.IsLoaded())
+            if(Effects[p]->SCIT.IsLoaded() || Effects[p]->FULL.IsLoaded())
                 SaveHandler.writeSubRecord(eSCIT, Effects[p]->SCIT.value, Effects[p]->SCIT.GetSize());
             if(Effects[p]->FULL.IsLoaded())
                 SaveHandler.writeSubRecord(eFULL, Effects[p]->FULL.value, Effects[p]->FULL.GetSize());

@@ -457,12 +457,12 @@ unsigned int UpdateReferences(const unsigned int CollectionIndex, char *ModName,
     return 0;
     }
 ////////////////////////////////////////////////////////////////////////
-int GetNumFIDConflicts(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID)
+int GetNumFIDConflicts(const unsigned int CollectionIndex, unsigned int recordFID)
     {
     try
         {
         if(CollectionIndex < Collections.size())
-            return Collections[CollectionIndex]->GetNumFIDConflicts(ModName, recordFID);
+            return Collections[CollectionIndex]->GetNumFIDConflicts(recordFID);
         else
             throw 1;
         }
@@ -474,13 +474,13 @@ int GetNumFIDConflicts(const unsigned int CollectionIndex, char *ModName, unsign
     return 0;
     }
 
-void GetFIDConflicts(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, char **ModNames)
+void GetFIDConflicts(const unsigned int CollectionIndex, unsigned int recordFID, char **ModNames)
     {
     try
         {
         if(CollectionIndex < Collections.size())
             {
-            Collections[CollectionIndex]->GetFIDConflicts(ModName, recordFID, ModNames);
+            Collections[CollectionIndex]->GetFIDConflicts(recordFID, ModNames);
             return;
             }
         else
@@ -494,12 +494,12 @@ void GetFIDConflicts(const unsigned int CollectionIndex, char *ModName, unsigned
     return;
     }
     
-int GetNumGMSTConflicts(const unsigned int CollectionIndex, char *ModName, char *recordEDID)
+int GetNumGMSTConflicts(const unsigned int CollectionIndex, char *recordEDID)
     {
     try
         {
         if(CollectionIndex < Collections.size())
-            return Collections[CollectionIndex]->GetNumGMSTConflicts(ModName, recordEDID);
+            return Collections[CollectionIndex]->GetNumGMSTConflicts(recordEDID);
         else
             throw 1;
         }
@@ -511,13 +511,13 @@ int GetNumGMSTConflicts(const unsigned int CollectionIndex, char *ModName, char 
     return 0;
     }
 
-void GetGMSTConflicts(const unsigned int CollectionIndex, char *ModName, char *recordEDID, char **ModNames)
+void GetGMSTConflicts(const unsigned int CollectionIndex, char *recordEDID, char **ModNames)
     {
     try
         {
         if(CollectionIndex < Collections.size())
             {
-            Collections[CollectionIndex]->GetGMSTConflicts(ModName, recordEDID, ModNames);
+            Collections[CollectionIndex]->GetGMSTConflicts(recordEDID, ModNames);
             return;
             }
         else
