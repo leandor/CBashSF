@@ -70,6 +70,13 @@ class Ex_NULL : public std::exception
             {return "NULL Pointer";}
     };
 
+class Ex_INVALIDINDEX : public std::exception
+    {
+    public:
+        const char * __CLR_OR_THIS_CALL what() const
+            {return "Invalid Index";}
+    };
+
 typedef unsigned int * FormID;
 
 extern time_t lastSave;
@@ -128,8 +135,12 @@ struct RecordField
             return false;
             }
         if(subSize > sizeof(T))
-            printf("Hug?\n");
-        memcpy(&value, buffer + curPos, subSize);
+            {
+            printf("Rec? subSize:%u, sizeof:%u\n", subSize, sizeof(T));
+            memcpy(&value, buffer + curPos, sizeof(T));
+            }
+        else
+            memcpy(&value, buffer + curPos, subSize);
         isLoaded = true;
         //size = subSize;
         curPos += subSize;
@@ -183,8 +194,12 @@ struct ReqRecordField
     bool Read(unsigned char *buffer, unsigned int subSize, unsigned int &curPos)
         {
         if(subSize > sizeof(T))
-            printf("Huh? subSize:%u, sizeof:%u\n", subSize, sizeof(T));
-        memcpy(&value, buffer + curPos, subSize);
+            {
+            printf("Req? subSize:%u, sizeof:%u\n", subSize, sizeof(T));
+            memcpy(&value, buffer + curPos, sizeof(T));
+            }
+        else
+            memcpy(&value, buffer + curPos, subSize);
         //size = subSize;
         curPos += subSize;
         return true;
@@ -248,10 +263,14 @@ struct OptRecordField
             curPos += subSize;
             return false;
             }
-        if(subSize > sizeof(T))
-            printf("Hui?\n");
         value = new T();
-        memcpy(value, buffer + curPos, subSize);
+        if(subSize > sizeof(T))
+            {
+            printf("Opt? subSize:%u, sizeof:%u\n", subSize, sizeof(T));
+            memcpy(value, buffer + curPos, sizeof(T));
+            }
+        else
+            memcpy(value, buffer + curPos, subSize);
         curPos += subSize;
         return true;
         }

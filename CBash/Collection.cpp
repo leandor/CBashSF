@@ -1034,6 +1034,13 @@ char * Collection::GetModName(const unsigned int iIndex)
     return NULL;
     }
 
+bool Collection::ModIsFake(const unsigned int iIndex)
+    {
+    if(iIndex < ModFiles.size())
+        return ModFiles[iIndex]->IsFake();
+    return true;
+    }
+
 unsigned int Collection::GetCorrectedFID(char *ModName, unsigned int recordObjectID)
     {
     ModFile *curModFile = LookupModFile(ModName);

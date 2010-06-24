@@ -288,19 +288,19 @@ unsigned int WATRRecord::GetFieldArraySize(const unsigned int Field)
         {
         case 25: //shallow.unused1
             if(DATA.IsLoaded())
-            	return 1;
+                return 1;
             return 0;
         case 29: //deep.unused1
             if(DATA.IsLoaded())
-            	return 1;
+                return 1;
             return 0;
         case 33: //refl.unused1
             if(DATA.IsLoaded())
-            	return 1;
+                return 1;
             return 0;
         case 35: //unused1
             if(DATA.IsLoaded())
-            	return 3;
+                return 3;
             return 0;
         default:
             return 0;
@@ -313,27 +313,27 @@ void WATRRecord::GetFieldArray(const unsigned int Field, void **FieldValues)
         {
         case 25: //shallow.unused1
             if(DATA.IsLoaded())
-            	*FieldValues = &DATA->shallow.unused1;
+                *FieldValues = &DATA->shallow.unused1;
             else
-            	*FieldValues = NULL;
+                *FieldValues = NULL;
             return;
         case 29: //deep.unused1
             if(DATA.IsLoaded())
-            	*FieldValues = &DATA->deep.unused1;
+                *FieldValues = &DATA->deep.unused1;
             else
-            	*FieldValues = NULL;
+                *FieldValues = NULL;
             return;
         case 33: //refl.unused1
             if(DATA.IsLoaded())
-            	*FieldValues = &DATA->refl.unused1;
+                *FieldValues = &DATA->refl.unused1;
             else
-            	*FieldValues = NULL;
+                *FieldValues = NULL;
             return;
         case 35: //unused1
             if(DATA.IsLoaded())
-            	*FieldValues = &DATA->unused1[0];
+                *FieldValues = &DATA->unused1[0];
             else
-            	*FieldValues = NULL;
+                *FieldValues = NULL;
             return;
         default:
             *FieldValues = NULL;

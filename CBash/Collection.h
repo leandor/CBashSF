@@ -32,10 +32,10 @@ GPL License and Copyright Notice ============================================
 
 struct sameStr
     {
-	bool operator()( const char* s1, const char* s2 ) const
-	    {
-		return _stricmp( s1, s2 ) < 0;
-	    }
+    bool operator()( const char* s1, const char* s2 ) const
+        {
+        return _stricmp( s1, s2 ) < 0;
+        }
     };
 
 class Collection
@@ -112,6 +112,7 @@ class Collection
         ModFile *LookupModFile(char *ModName);
         unsigned int SetRecordFormID(char *ModName, unsigned int recordFID, unsigned int FieldValue);
         char * GetModName(const unsigned int iIndex);
+        bool ModIsFake(const unsigned int iIndex);
         unsigned int GetCorrectedFID(char *ModName, unsigned int recordObjectID);
         unsigned int UpdateReferences(char *ModName, unsigned int origFormID, unsigned int newFormID);
         unsigned int UpdateReferences(char *ModName, unsigned int recordFID, unsigned int origFormID, unsigned int newFormID);

@@ -21,6 +21,12 @@ GPL License and Copyright Notice ============================================
 */
 // CBash.h
 //#define _UNICODE
+
+//Internal Functions
+void Validate(const char *ModsPath);
+void Validate(const unsigned int CollectionIndex);
+
+//Exported Functions
 extern "C" __declspec(dllexport) unsigned int GetMajor();
 extern "C" __declspec(dllexport) unsigned int GetMinor();
 extern "C" __declspec(dllexport) unsigned int GetRevision();
@@ -49,6 +55,7 @@ extern "C" __declspec(dllexport) void GetMods(const unsigned int CollectionIndex
 ////////////////////////////////////////////////////////////////////////
 extern "C" __declspec(dllexport) unsigned int SetRecordFormID(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, unsigned int FieldValue);
 extern "C" __declspec(dllexport) char * GetModName(const unsigned int CollectionIndex, const unsigned int iIndex);
+extern "C" __declspec(dllexport) bool ModIsFake(const unsigned int CollectionIndex, const unsigned int iIndex);
 extern "C" __declspec(dllexport) unsigned int GetCorrectedFID(const unsigned int CollectionIndex, char *ModName, unsigned int recordObjectID);
 extern "C" __declspec(dllexport) unsigned int UpdateAllReferences(const unsigned int CollectionIndex, char *ModName, unsigned int origFormID, unsigned int newFormID);
 extern "C" __declspec(dllexport) unsigned int UpdateReferences(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, unsigned int origFormID, unsigned int newFormID);
