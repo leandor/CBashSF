@@ -27,7 +27,7 @@ GPL License and Copyright Notice ============================================
 class QUSTRecord : public Record
     {
     private:
-        enum QUSTRecordFields {
+        enum QUSTSubRecords {
             eEDID = 0x44494445,
             eSCRI = 0x49524353,
             eFULL = 0x4C4C5546,
@@ -79,13 +79,13 @@ class QUSTRecord : public Record
             };
         struct QUSTEntry
             {
-            ReqRecordField<GENFLAG> QSDT;
-            std::vector<ReqRecordField<GENCTDA> *> CTDA;
+            ReqSubRecord<GENFLAG> QSDT;
+            std::vector<ReqSubRecord<GENCTDA> *> CTDA;
             STRING CNAM;
-            ReqRecordField<GENSCHR> SCHR;
+            ReqSubRecord<GENSCHR> SCHR;
             RAWBYTES SCDA;
             NONNULLSTRING SCTX;
-            std::vector<ReqRecordField<GENSCR_> *> SCR_;
+            std::vector<ReqSubRecord<GENSCR_> *> SCR_;
             ~QUSTEntry()
                 {
                 for(unsigned int x = 0; x < CTDA.size(); x++)
@@ -203,7 +203,7 @@ class QUSTRecord : public Record
             };
         struct QUSTStage
             {
-            ReqRecordField<QUSTINDX> INDX;
+            ReqSubRecord<QUSTINDX> INDX;
             std::vector<QUSTEntry *> Entries;
             ~QUSTStage()
                 {
@@ -283,8 +283,8 @@ class QUSTRecord : public Record
             };
         struct QUSTTarget
             {
-            ReqRecordField<QUSTQSTA> QSTA;
-            std::vector<ReqRecordField<GENCTDA> *> CTDA;
+            ReqSubRecord<QUSTQSTA> QSTA;
+            std::vector<ReqSubRecord<GENCTDA> *> CTDA;
             ~QUSTTarget()
                 {
                 for(unsigned int x = 0; x < CTDA.size(); x++)
@@ -358,11 +358,11 @@ class QUSTRecord : public Record
             fIsRepeatedStages = 0x00000008
             };
         STRING EDID;
-        OptRecordField<GENFID> SCRI;
+        OptSubRecord<GENFID> SCRI;
         STRING FULL;
         STRING ICON;
-        ReqRecordField<QUSTDATA> DATA;
-        std::vector<ReqRecordField<GENCTDA> *> CTDA;
+        ReqSubRecord<QUSTDATA> DATA;
+        std::vector<ReqSubRecord<GENCTDA> *> CTDA;
         std::vector<QUSTStage *> Stages;
         std::vector<QUSTTarget *> Targets;
 
@@ -383,7 +383,7 @@ class QUSTRecord : public Record
             CTDA.resize(srcRecord->CTDA.size());
             for(unsigned int x = 0; x < srcRecord->CTDA.size(); x++)
                 {
-                CTDA[x] = new ReqRecordField<GENCTDA>;
+                CTDA[x] = new ReqSubRecord<GENCTDA>;
                 *CTDA[x] = *srcRecord->CTDA[x];
                 }
             Stages.clear();
@@ -402,7 +402,7 @@ class QUSTRecord : public Record
                     Stages[x]->Entries[y]->CTDA.resize(srcRecord->Stages[x]->Entries[y]->CTDA.size());
                     for(unsigned int p = 0; p < srcRecord->Stages[x]->Entries[y]->CTDA.size(); p++)
                         {
-                        Stages[x]->Entries[y]->CTDA[p] = new ReqRecordField<GENCTDA>;
+                        Stages[x]->Entries[y]->CTDA[p] = new ReqSubRecord<GENCTDA>;
                         *Stages[x]->Entries[y]->CTDA[p] = *srcRecord->Stages[x]->Entries[y]->CTDA[p];
                         }
                     Stages[x]->Entries[y]->CNAM = srcRecord->Stages[x]->Entries[y]->CNAM;
@@ -413,7 +413,7 @@ class QUSTRecord : public Record
                     Stages[x]->Entries[y]->SCR_.resize(srcRecord->Stages[x]->Entries[y]->SCR_.size());
                     for(unsigned int p = 0; p < srcRecord->Stages[x]->Entries[y]->SCR_.size(); p++)
                         {
-                        Stages[x]->Entries[y]->SCR_[p] = new ReqRecordField<GENSCR_>;
+                        Stages[x]->Entries[y]->SCR_[p] = new ReqSubRecord<GENSCR_>;
                         *Stages[x]->Entries[y]->SCR_[p] = *srcRecord->Stages[x]->Entries[y]->SCR_[p];
                         }
                     }
@@ -428,7 +428,7 @@ class QUSTRecord : public Record
                 Targets[x]->CTDA.resize(srcRecord->Targets[x]->CTDA.size());
                 for(unsigned int y = 0; y < srcRecord->Targets[x]->CTDA.size(); y++)
                     {
-                    Targets[x]->CTDA[y] = new ReqRecordField<GENCTDA>;
+                    Targets[x]->CTDA[y] = new ReqSubRecord<GENCTDA>;
                     *Targets[x]->CTDA[y] = *srcRecord->Targets[x]->CTDA[y];
                     }
                 }

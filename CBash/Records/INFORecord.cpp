@@ -33,10 +33,10 @@ int INFORecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
     unsigned int curPos = 0;
     FormID curFormID = NULL;
     INFOResponse *newResponse = NULL;
-    ReqRecordField<GENCTDA> *newCTDA = NULL;
+    ReqSubRecord<GENCTDA> *newCTDA = NULL;
     std::pair<unsigned int, unsigned int> CTDAFunction;
     std::map<unsigned int, std::pair<unsigned int,unsigned int>>::const_iterator curCTDAFunction;
-    ReqRecordField<GENSCR_> *newSCR_ = NULL;
+    ReqSubRecord<GENSCR_> *newSCR_ = NULL;
     while(curPos < recSize){
         _readBuffer(&subType,buffer,4,curPos);
         switch(subType)
@@ -94,7 +94,7 @@ int INFORecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 break;
             case eCTDT:
             case eCTDA:
-                newCTDA = new ReqRecordField<GENCTDA>;
+                newCTDA = new ReqSubRecord<GENCTDA>;
                 newCTDA->Read(buffer, subSize, curPos);
                 CTDA.push_back(newCTDA);
                 break;
@@ -121,13 +121,13 @@ int INFORecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 SCTX.Read(buffer, subSize, curPos);
                 break;
             case eSCRV:
-                newSCR_ = new ReqRecordField<GENSCR_>;
+                newSCR_ = new ReqSubRecord<GENSCR_>;
                 newSCR_->Read(buffer, subSize, curPos);
                 newSCR_->value.isSCRO = false;
                 SCR_.push_back(newSCR_);
                 break;
             case eSCRO:
-                newSCR_ = new ReqRecordField<GENSCR_>;
+                newSCR_ = new ReqSubRecord<GENSCR_>;
                 newSCR_->Read(buffer, subSize, curPos);
                 newSCR_->value.isSCRO = true;
                 SCR_.push_back(newSCR_);

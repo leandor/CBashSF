@@ -26,7 +26,7 @@ GPL License and Copyright Notice ============================================
 class GMSTRecord : public Record
     {
     private:
-        enum GMSTRecordFields {
+        enum GMSTSubRecords {
             eEDID = 0x44494445,
             eDATA = 0x41544144
             };

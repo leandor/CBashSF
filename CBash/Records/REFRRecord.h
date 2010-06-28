@@ -327,9 +327,9 @@ class REFRRecord : public Record
 
         struct REFRMAPMARKER
             {
-            ReqRecordField<GENFLAG> FNAM;
+            ReqSubRecord<GENFLAG> FNAM;
             STRING FULL;
-            ReqRecordField<REFRTNAM> TNAM;
+            ReqSubRecord<REFRTNAM> TNAM;
             #ifdef _DEBUG
             void Debug(char *name, int debugLevel, size_t &indentation)
                 {
@@ -409,26 +409,26 @@ class REFRRecord : public Record
             };
 
         STRING EDID;
-        ReqRecordField<GENFID> NAME;
-        OptRecordField<REFRXTEL> XTEL;
-        OptRecordField<REFRXLOC> XLOC;
-        OptRecordField<GENXOWN> Ownership;
-        OptRecordField<GENXESP> XESP;
-        OptRecordField<GENFID> XTRG;
-        OptRecordField<REFRXSED> XSED;
-        OptRecordField<GENXLOD> XLOD;
-        OptRecordField<REFRXCHG> XCHG;
-        OptRecordField<REFRXHLT> XHLT;
-        OptRecordField<GENXPCI> XPCI;
-        OptRecordField<REFRXLCM> XLCM;
-        OptRecordField<GENFID> XRTM;
-        OptRecordField<GENUFLAG> XACT;
-        OptRecordField<REFRXCNT> XCNT;
-        OptRecordField<REFRMAPMARKER> Marker;
+        ReqSubRecord<GENFID> NAME;
+        OptSubRecord<REFRXTEL> XTEL;
+        OptSubRecord<REFRXLOC> XLOC;
+        OptSubRecord<GENXOWN> Ownership;
+        OptSubRecord<GENXESP> XESP;
+        OptSubRecord<GENFID> XTRG;
+        OptSubRecord<REFRXSED> XSED;
+        OptSubRecord<GENXLOD> XLOD;
+        OptSubRecord<REFRXCHG> XCHG;
+        OptSubRecord<REFRXHLT> XHLT;
+        OptSubRecord<GENXPCI> XPCI;
+        OptSubRecord<REFRXLCM> XLCM;
+        OptSubRecord<GENFID> XRTM;
+        OptSubRecord<GENUFLAG> XACT;
+        OptSubRecord<REFRXCNT> XCNT;
+        OptSubRecord<REFRMAPMARKER> Marker;
         //bool ONAM; //Open by Default, empty marker, written whenever fOpenByDefault is true
-        OptRecordField<GENXSCL> XSCL;
-        OptRecordField<GENFLAG> XSOL;
-        ReqRecordField<GENPOSDATA> DATA;
+        OptSubRecord<GENXSCL> XSCL;
+        OptSubRecord<GENFLAG> XSOL;
+        ReqSubRecord<GENPOSDATA> DATA;
 
         REFRRecord(bool newRecord=false):Record(newRecord) {}
         REFRRecord(const unsigned int &newFormID):Record(newFormID) {}

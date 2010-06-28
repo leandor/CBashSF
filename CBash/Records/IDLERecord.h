@@ -27,7 +27,7 @@ GPL License and Copyright Notice ============================================
 class IDLERecord : public Record
     {
     private:
-        enum IDLERecordFields {
+        enum IDLESubRecords {
             eEDID = 0x44494445,
 
             eMODL = 0x4C444F4D,
@@ -112,10 +112,10 @@ class IDLERecord : public Record
             fIsNotReturnFile = 0x00000080
             };
         STRING EDID;
-        OptRecordField<GENMODEL> MODL;
-        std::vector<ReqRecordField<GENCTDA> *> CTDA;
-        ReqRecordField<IDLEANAM> ANAM;
-        ReqRecordField<IDLEDATA> DATA;
+        OptSubRecord<GENMODEL> MODL;
+        std::vector<ReqSubRecord<GENCTDA> *> CTDA;
+        ReqSubRecord<IDLEANAM> ANAM;
+        ReqSubRecord<IDLEDATA> DATA;
 
         IDLERecord(bool newRecord=false):Record(newRecord) {}
         IDLERecord(const unsigned int &newFormID):Record(newFormID) {}
@@ -138,7 +138,7 @@ class IDLERecord : public Record
             CTDA.resize(srcRecord->CTDA.size());
             for(unsigned int x = 0; x < srcRecord->CTDA.size(); x++)
                 {
-                CTDA[x] = new ReqRecordField<GENCTDA>;
+                CTDA[x] = new ReqSubRecord<GENCTDA>;
                 *CTDA[x] = *srcRecord->CTDA[x];
                 }
             ANAM = srcRecord->ANAM;

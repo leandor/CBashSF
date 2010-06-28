@@ -27,7 +27,7 @@ GPL License and Copyright Notice ============================================
 class FACTRecord : public Record
     {
     private:
-        enum FACTRecordFields {
+        enum FACTSubRecords {
             eEDID = 0x44494445,
             eFULL = 0x4C4C5546,
             eXNAM = 0x4D414E58,
@@ -105,10 +105,10 @@ class FACTRecord : public Record
             };
         STRING EDID;
         STRING FULL;
-        std::vector<ReqRecordField<GENXNAM> *> XNAM;
-        ReqRecordField<GENFLAG> DATA;
-        ReqRecordField<FACTCNAM> CNAM;
-        std::vector<ReqRecordField<FACTRNAM> *> RNAM;
+        std::vector<ReqSubRecord<GENXNAM> *> XNAM;
+        ReqSubRecord<GENFLAG> DATA;
+        ReqSubRecord<FACTCNAM> CNAM;
+        std::vector<ReqSubRecord<FACTRNAM> *> RNAM;
 
         FACTRecord(bool newRecord=false):Record(newRecord) {}
         FACTRecord(const unsigned int &newFormID):Record(newFormID) {}
@@ -124,7 +124,7 @@ class FACTRecord : public Record
             XNAM.resize(srcRecord->XNAM.size());
             for(unsigned int x = 0; x < srcRecord->XNAM.size(); x++)
                 {
-                XNAM[x] = new ReqRecordField<GENXNAM>;
+                XNAM[x] = new ReqSubRecord<GENXNAM>;
                 *XNAM[x] = *srcRecord->XNAM[x];
                 }
 
@@ -135,7 +135,7 @@ class FACTRecord : public Record
             RNAM.resize(srcRecord->RNAM.size());
             for(unsigned int x = 0; x < srcRecord->RNAM.size(); x++)
                 {
-                RNAM[x] = new ReqRecordField<FACTRNAM>;
+                RNAM[x] = new ReqSubRecord<FACTRNAM>;
                 *RNAM[x] = *srcRecord->RNAM[x];
                 }
             }

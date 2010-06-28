@@ -26,7 +26,7 @@ GPL License and Copyright Notice ============================================
 class HAIRRecord : public Record
     {
     private:
-        enum HAIRRecordFields {
+        enum HAIRSubRecords {
             eEDID = 0x44494445,
             eFULL = 0x4C4C5546,
 
@@ -47,9 +47,9 @@ class HAIRRecord : public Record
             };
         STRING EDID;
         STRING FULL;
-        OptRecordField<GENMODEL> MODL;
+        OptSubRecord<GENMODEL> MODL;
         STRING ICON;
-        ReqRecordField<GENFLAG> DATA;
+        ReqSubRecord<GENFLAG> DATA;
 
         HAIRRecord(bool newRecord=false):Record(newRecord) {}
         HAIRRecord(const unsigned int &newFormID):Record(newFormID) {}

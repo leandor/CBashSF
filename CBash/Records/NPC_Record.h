@@ -27,7 +27,7 @@ GPL License and Copyright Notice ============================================
 class NPC_Record : public Record
     {
     private:
-        enum NPC_RecordFields {
+        enum NPC_SubRecords {
             eEDID = 0x44494445,
             eFULL = 0x4C4C5546,
 
@@ -284,28 +284,28 @@ class NPC_Record : public Record
             };
         STRING EDID;
         STRING FULL;
-        OptRecordField<GENMODEL> MODL;
-        ReqRecordField<GENACBS> ACBS;
-        std::vector<ReqRecordField<GENSNAM> *> SNAM;
-        OptRecordField<GENFID> INAM;
-        OptRecordField<GENFID> RNAM;
+        OptSubRecord<GENMODEL> MODL;
+        ReqSubRecord<GENACBS> ACBS;
+        std::vector<ReqSubRecord<GENSNAM> *> SNAM;
+        OptSubRecord<GENFID> INAM;
+        OptSubRecord<GENFID> RNAM;
         std::vector<unsigned int *> SPLO;
-        OptRecordField<GENFID> SCRI;
-        std::vector<ReqRecordField<GENCNTO> *> CNTO;
-        ReqRecordField<GENAIDT> AIDT;
+        OptSubRecord<GENFID> SCRI;
+        std::vector<ReqSubRecord<GENCNTO> *> CNTO;
+        ReqSubRecord<GENAIDT> AIDT;
         std::vector<unsigned int *> PKID;
         std::vector<STRING> KFFZ;
-        ReqRecordField<GENFID> CNAM;
-        ReqRecordField<NPC_DATA> DATA;
-        RecordField<GENFID> HNAM;
-        ReqRecordField<NPC_LNAM> LNAM;
-        OptRecordField<GENFID> ENAM;
-        ReqRecordField<GENCLR> HCLR;
-        OptRecordField<GENFID> ZNAM;
+        ReqSubRecord<GENFID> CNAM;
+        ReqSubRecord<NPC_DATA> DATA;
+        OptSubRecord<GENFID> HNAM;
+        SemiOptSubRecord<NPC_LNAM> LNAM;
+        OptSubRecord<GENFID> ENAM;
+        ReqSubRecord<GENCLR> HCLR;
+        OptSubRecord<GENFID> ZNAM;
         RAWBYTES FGGS;
         RAWBYTES FGGA;
         RAWBYTES FGTS;
-        ReqRecordField<NPC_FNAM> FNAM;
+        ReqSubRecord<NPC_FNAM> FNAM;
 
         NPC_Record(bool newRecord=false):Record(newRecord) {IsCompressed(true);}
         NPC_Record(const unsigned int &newFormID):Record(newFormID) {IsCompressed(true);}
@@ -328,7 +328,7 @@ class NPC_Record : public Record
             SNAM.resize(srcRecord->SNAM.size());
             for(unsigned int x = 0; x < srcRecord->SNAM.size(); x++)
                 {
-                SNAM[x] = new ReqRecordField<GENSNAM>;
+                SNAM[x] = new ReqSubRecord<GENSNAM>;
                 *SNAM[x] = *srcRecord->SNAM[x];
                 }
             INAM = srcRecord->INAM;
@@ -342,7 +342,7 @@ class NPC_Record : public Record
             CNTO.resize(srcRecord->CNTO.size());
             for(unsigned int x = 0; x < srcRecord->CNTO.size(); x++)
                 {
-                CNTO[x] = new ReqRecordField<GENCNTO>;
+                CNTO[x] = new ReqSubRecord<GENCNTO>;
                 *CNTO[x] = *srcRecord->CNTO[x];
                 }
             AIDT = srcRecord->AIDT;
@@ -443,7 +443,8 @@ class NPC_Record : public Record
             for(unsigned int x = 0; x < PKID.size(); x++)
                 FormIDs.push_back(PKID[x]);
             FormIDs.push_back(&CNAM.value.fid);
-            FormIDs.push_back(&HNAM.value.fid);
+            if(HNAM.IsLoaded())
+                FormIDs.push_back(&HNAM->fid);
             if(ENAM.IsLoaded())
                 FormIDs.push_back(&ENAM->fid);
             if(ZNAM.IsLoaded())

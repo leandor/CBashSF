@@ -27,7 +27,7 @@ GPL License and Copyright Notice ============================================
 class LVLIRecord : public Record
     {
     protected:
-        enum LVLIRecordFields {
+        enum LVLISubRecords {
             eEDID = 0x44494445,
 
             eLVLD = 0x444C564C,
@@ -123,9 +123,9 @@ class LVLIRecord : public Record
             fAltCalcFromAllLevels = 0x00000080
             };
         STRING EDID;
-        ReqRecordField<LVLLVLD> LVLD;
-        RecordField<GENFLAG> LVLF;
-        std::vector<ReqRecordField<LVLLVLO> *> Entries;
+        ReqSubRecord<LVLLVLD> LVLD;
+        SubRecord<GENFLAG> LVLF;
+        std::vector<ReqSubRecord<LVLLVLO> *> Entries;
         //RAWBYTES DATA; //Older version of LVLF. Auto-updated to newer format.
 
         LVLIRecord(bool newRecord=false):Record(newRecord) {}
@@ -142,7 +142,7 @@ class LVLIRecord : public Record
             Entries.resize(srcRecord->Entries.size());
             for(unsigned int x = 0; x < srcRecord->Entries.size(); x++)
                 {
-                Entries[x] = new ReqRecordField<LVLLVLO>;
+                Entries[x] = new ReqSubRecord<LVLLVLO>;
                 *Entries[x] = *srcRecord->Entries[x];
                 }
             //DATA = srcRecord->DATA;

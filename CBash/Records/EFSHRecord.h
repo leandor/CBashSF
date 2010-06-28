@@ -27,7 +27,7 @@ GPL License and Copyright Notice ============================================
 class EFSHRecord : public Record
     {
     private:
-        enum EFSHRecordFields {
+        enum EFSHSubRecords {
             eEDID = 0x44494445,
             eICON = 0x4E4F4349,
             eICO2 = 0x324F4349,
@@ -283,7 +283,7 @@ class EFSHRecord : public Record
         STRING EDID;
         STRING ICON;
         STRING ICO2;
-        ReqRecordField<EFSHDATA> DATA;
+        ReqSubRecord<EFSHDATA> DATA;
 
         EFSHRecord(bool newRecord=false):Record(newRecord) {}
         EFSHRecord(const unsigned int &newFormID):Record(newFormID) {}

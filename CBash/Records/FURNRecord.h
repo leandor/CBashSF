@@ -26,7 +26,7 @@ GPL License and Copyright Notice ============================================
 class FURNRecord : public Record
     {
     private:
-        enum FURNRecordFields {
+        enum FURNSubRecords {
             eEDID = 0x44494445,
             eFULL = 0x4C4C5546,
 
@@ -75,9 +75,9 @@ class FURNRecord : public Record
             };
         STRING EDID;
         STRING FULL;
-        OptRecordField<GENMODEL> MODL;
-        OptRecordField<GENFID> SCRI;
-        ReqRecordField<GENUFLAG> MNAM;
+        OptSubRecord<GENMODEL> MODL;
+        OptSubRecord<GENFID> SCRI;
+        ReqSubRecord<GENUFLAG> MNAM;
 
         FURNRecord(bool newRecord=false):Record(newRecord) {}
         FURNRecord(const unsigned int &newFormID):Record(newFormID) {}

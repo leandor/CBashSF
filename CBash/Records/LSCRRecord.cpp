@@ -31,7 +31,7 @@ int LSCRRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
     unsigned int subType = 0;
     unsigned int subSize = 0;
     unsigned int curPos = 0;
-    ReqRecordField<LSCRLNAM> *newLNAM = NULL;
+    ReqSubRecord<LSCRLNAM> *newLNAM = NULL;
     while(curPos < recSize){
         _readBuffer(&subType,buffer,4,curPos);
         switch(subType)
@@ -59,7 +59,7 @@ int LSCRRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 DESC.Read(buffer, subSize, curPos);
                 break;
             case eLNAM:
-                newLNAM = new ReqRecordField<LSCRLNAM>;
+                newLNAM = new ReqSubRecord<LSCRLNAM>;
                 newLNAM->Read(buffer, subSize, curPos);
                 LNAM.push_back(newLNAM);
                 break;

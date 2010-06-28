@@ -27,7 +27,7 @@ GPL License and Copyright Notice ============================================
 class LVLCRecord : public Record
     {
     protected:
-        enum LVLCRecordFields {
+        enum LVLCSubRecords {
             eEDID = 0x44494445,
 
             eLVLD = 0x444C564C,
@@ -124,11 +124,11 @@ class LVLCRecord : public Record
             fAltCalcFromAllLevels = 0x00000080
             };
         STRING EDID;
-        ReqRecordField<LVLLVLD> LVLD;
-        RecordField<GENFLAG> LVLF;
-        OptRecordField<GENFID> SCRI;
-        OptRecordField<GENFID> TNAM;
-        std::vector<ReqRecordField<LVLLVLO> *> Entries;
+        ReqSubRecord<LVLLVLD> LVLD;
+        SubRecord<GENFLAG> LVLF;
+        OptSubRecord<GENFID> SCRI;
+        OptSubRecord<GENFID> TNAM;
+        std::vector<ReqSubRecord<LVLLVLO> *> Entries;
 
         LVLCRecord(bool newRecord=false):Record(newRecord) {}
         LVLCRecord(const unsigned int &newFormID):Record(newFormID) {}
@@ -146,7 +146,7 @@ class LVLCRecord : public Record
             Entries.resize(srcRecord->Entries.size());
             for(unsigned int x = 0; x < srcRecord->Entries.size(); x++)
                 {
-                Entries[x] = new ReqRecordField<LVLLVLO>;
+                Entries[x] = new ReqSubRecord<LVLLVLO>;
                 *Entries[x] = *srcRecord->Entries[x];
                 }
             return;

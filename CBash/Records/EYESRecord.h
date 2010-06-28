@@ -26,7 +26,7 @@ GPL License and Copyright Notice ============================================
 class EYESRecord : public Record
     {
     private:
-        enum EYESRecordFields {
+        enum EYESSubRecords {
             eEDID = 0x44494445,
             eFULL = 0x4C4C5546,
             eICON = 0x4E4F4349,
@@ -40,7 +40,7 @@ class EYESRecord : public Record
         STRING EDID;
         STRING FULL;
         STRING ICON;
-        ReqRecordField<GENFLAG> DATA;
+        ReqSubRecord<GENFLAG> DATA;
 
         EYESRecord(bool newRecord=false):Record(newRecord) {}
         EYESRecord(const unsigned int &newFormID):Record(newFormID) {}

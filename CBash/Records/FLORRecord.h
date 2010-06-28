@@ -26,7 +26,7 @@ GPL License and Copyright Notice ============================================
 class FLORRecord : public Record
     {
     private:
-        enum FLORRecordFields {
+        enum FLORSubRecords {
             eEDID = 0x44494445,
             eFULL = 0x4C4C5546,
 
@@ -75,10 +75,10 @@ class FLORRecord : public Record
     public:
         STRING EDID;
         STRING FULL;
-        OptRecordField<GENMODEL> MODL;
-        OptRecordField<GENFID> SCRI;
-        RecordField<GENFID> PFIG;
-        ReqRecordField<FLORPFPC> PFPC;
+        OptSubRecord<GENMODEL> MODL;
+        OptSubRecord<GENFID> SCRI;
+        SubRecord<GENFID> PFIG;
+        ReqSubRecord<FLORPFPC> PFPC;
 
         FLORRecord(bool newRecord=false):Record(newRecord) {}
         FLORRecord(const unsigned int &newFormID):Record(newFormID) {}

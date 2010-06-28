@@ -26,7 +26,7 @@ GPL License and Copyright Notice ============================================
 class CSTYRecord : public Record
     {
     private:
-        enum CSTYRecordFields {
+        enum CSTYSubRecords {
             eEDID = 0x44494445,
             eCSTD = 0x44545343,
             eCSAD = 0x44415343
@@ -353,8 +353,8 @@ class CSTYRecord : public Record
             fIsDoNotAcquire       = 0x00000001
             };
         STRING EDID;
-        ReqRecordField<CSTYCSTD> CSTD;
-        OptRecordField<CSTYCSAD> CSAD;
+        ReqSubRecord<CSTYCSTD> CSTD;
+        OptSubRecord<CSTYCSAD> CSAD;
         CSTYRecord(bool newRecord=false):Record(newRecord) {}
         CSTYRecord(const unsigned int &newFormID):Record(newFormID) {}
         CSTYRecord(CSTYRecord *srcRecord):Record(true)

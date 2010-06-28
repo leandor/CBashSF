@@ -27,7 +27,7 @@ GPL License and Copyright Notice ============================================
 class INGRRecord : public Record
     {
     private:
-        enum INGRRecordFields {
+        enum INGRSubRecords {
             eEDID = 0x44494445,
             eFULL = 0x4C4C5546,
 
@@ -52,11 +52,11 @@ class INGRRecord : public Record
             };
         STRING EDID;
         STRING FULL;
-        OptRecordField<GENMODEL> MODL;
+        OptSubRecord<GENMODEL> MODL;
         STRING ICON;
-        OptRecordField<GENFID> SCRI;
-        ReqRecordField<GENWEIGHT> DATA;
-        ReqRecordField<GENENIT> ENIT;
+        OptSubRecord<GENFID> SCRI;
+        ReqSubRecord<GENWEIGHT> DATA;
+        ReqSubRecord<GENENIT> ENIT;
         std::vector<GENEffect *> Effects;
 
         INGRRecord(bool newRecord=false):Record(newRecord) {}

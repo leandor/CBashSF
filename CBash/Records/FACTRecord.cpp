@@ -30,8 +30,8 @@ int FACTRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
     unsigned int subType = 0;
     unsigned int subSize = 0;
     unsigned int curPos = 0;
-    ReqRecordField<GENXNAM> *newXNAM = NULL;
-    ReqRecordField<FACTRNAM> *newRNAM = NULL;
+    ReqSubRecord<GENXNAM> *newXNAM = NULL;
+    ReqSubRecord<FACTRNAM> *newRNAM = NULL;
     while(curPos < recSize){
         _readBuffer(&subType,buffer,4,curPos);
         switch(subType)
@@ -56,7 +56,7 @@ int FACTRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 FULL.Read(buffer, subSize, curPos);
                 break;
             case eXNAM:
-                newXNAM = new ReqRecordField<GENXNAM>;
+                newXNAM = new ReqSubRecord<GENXNAM>;
                 newXNAM->Read(buffer, subSize, curPos);
                 XNAM.push_back(newXNAM);
                 break;
@@ -67,14 +67,14 @@ int FACTRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 CNAM.Read(buffer, subSize, curPos);
                 break;
             case eRNAM:
-                newRNAM = new ReqRecordField<FACTRNAM>;
+                newRNAM = new ReqSubRecord<FACTRNAM>;
                 newRNAM->Read(buffer, subSize, curPos);
                 RNAM.push_back(newRNAM);
                 break;
             case eMNAM:
                 if(newRNAM == NULL)
                     {
-                    newRNAM = new ReqRecordField<FACTRNAM>;
+                    newRNAM = new ReqSubRecord<FACTRNAM>;
                     RNAM.push_back(newRNAM);
                     }
                 newRNAM->value.MNAM.Read(buffer, subSize, curPos);
@@ -82,7 +82,7 @@ int FACTRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
             case eFNAM:
                 if(newRNAM == NULL)
                     {
-                    newRNAM = new ReqRecordField<FACTRNAM>;
+                    newRNAM = new ReqSubRecord<FACTRNAM>;
                     RNAM.push_back(newRNAM);
                     }
                 newRNAM->value.FNAM.Read(buffer, subSize, curPos);
@@ -90,7 +90,7 @@ int FACTRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
             case eINAM:
                 if(newRNAM == NULL)
                     {
-                    newRNAM = new ReqRecordField<FACTRNAM>;
+                    newRNAM = new ReqSubRecord<FACTRNAM>;
                     RNAM.push_back(newRNAM);
                     }
                 newRNAM->value.INAM.Read(buffer, subSize, curPos);

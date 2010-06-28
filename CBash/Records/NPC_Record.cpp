@@ -32,8 +32,8 @@ int NPC_Record::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
     unsigned int subSize = 0;
     unsigned int curPos = 0;
     FormID curFormID = NULL;
-    ReqRecordField<GENSNAM> *newSNAM = NULL;
-    ReqRecordField<GENCNTO> *newCNTO = NULL;
+    ReqSubRecord<GENSNAM> *newSNAM = NULL;
+    ReqSubRecord<GENCNTO> *newCNTO = NULL;
     while(curPos < recSize){
         _readBuffer(&subType,buffer,4,curPos);
         switch(subType)
@@ -73,7 +73,7 @@ int NPC_Record::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 ACBS.Read(buffer, subSize, curPos);
                 break;
             case eSNAM:
-                newSNAM = new ReqRecordField<GENSNAM>;
+                newSNAM = new ReqSubRecord<GENSNAM>;
                 newSNAM->Read(buffer, subSize, curPos);
                 SNAM.push_back(newSNAM);
                 break;
@@ -92,7 +92,7 @@ int NPC_Record::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 SCRI.Read(buffer, subSize, curPos);
                 break;
             case eCNTO:
-                newCNTO = new ReqRecordField<GENCNTO>;
+                newCNTO = new ReqSubRecord<GENCNTO>;
                 newCNTO->Read(buffer, subSize, curPos);
                 CNTO.push_back(newCNTO);
                 break;
@@ -306,9 +306,9 @@ int NPC_Record::WriteRecord(_FileHandler &SaveHandler)
     if(DATA.IsLoaded())
         SaveHandler.writeSubRecord(eDATA, &DATA.value, DATA.GetSize());
     if(HNAM.IsLoaded())
-        SaveHandler.writeSubRecord(eHNAM, &HNAM.value, HNAM.GetSize());
+        SaveHandler.writeSubRecord(eHNAM, HNAM.value, HNAM.GetSize());
     if(LNAM.IsLoaded())
-        SaveHandler.writeSubRecord(eLNAM, &LNAM.value, LNAM.GetSize());
+        SaveHandler.writeSubRecord(eLNAM, LNAM.value, LNAM.GetSize());
     if(ENAM.IsLoaded())
         SaveHandler.writeSubRecord(eENAM, ENAM.value, ENAM.GetSize());
     if(HCLR.IsLoaded())

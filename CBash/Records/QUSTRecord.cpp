@@ -32,13 +32,13 @@ int QUSTRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
     unsigned int subSize = 0;
     unsigned int curPos = 0;
     int whichCTDA = 0;
-    ReqRecordField<GENCTDA> *newCTDA = NULL;
+    ReqSubRecord<GENCTDA> *newCTDA = NULL;
     std::pair<unsigned int, unsigned int> CTDAFunction;
     std::map<unsigned int, std::pair<unsigned int,unsigned int>>::const_iterator curCTDAFunction;
     QUSTStage *newStage = NULL;
     QUSTEntry *newEntry = NULL;
     QUSTTarget *newTarget = NULL;
-    ReqRecordField<GENSCR_> *newSCR_ = NULL;
+    ReqSubRecord<GENSCR_> *newSCR_ = NULL;
     while(curPos < recSize){
         _readBuffer(&subType,buffer,4,curPos);
         switch(subType)
@@ -73,7 +73,7 @@ int QUSTRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 break;
             case eCTDT:
             case eCTDA:
-                newCTDA = new ReqRecordField<GENCTDA>;
+                newCTDA = new ReqSubRecord<GENCTDA>;
                 newCTDA->Read(buffer, subSize, curPos);
                 switch(whichCTDA)
                     {
@@ -182,7 +182,7 @@ int QUSTRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                     newEntry = new QUSTEntry;
                     newStage->Entries.push_back(newEntry);
                     }
-                newSCR_ = new ReqRecordField<GENSCR_>;
+                newSCR_ = new ReqSubRecord<GENSCR_>;
                 newSCR_->Read(buffer, subSize, curPos);
                 newSCR_->value.isSCRO = false;
                 newEntry->SCR_.push_back(newSCR_);
@@ -198,7 +198,7 @@ int QUSTRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                     newEntry = new QUSTEntry;
                     newStage->Entries.push_back(newEntry);
                     }
-                newSCR_ = new ReqRecordField<GENSCR_>;
+                newSCR_ = new ReqSubRecord<GENSCR_>;
                 newSCR_->Read(buffer, subSize, curPos);
                 newSCR_->value.isSCRO = true;
                 newEntry->SCR_.push_back(newSCR_);

@@ -27,7 +27,7 @@ GPL License and Copyright Notice ============================================
 class RACERecord : public Record
     {
     private:
-        enum RACERecordFields {
+        enum RACESubRecords {
             eEDID = 0x44494445,
             eFULL = 0x4C4C5546,
             eDESC = 0x43534544,
@@ -371,7 +371,7 @@ class RACERecord : public Record
 
         struct RACEMODEL
             {
-            ReqRecordField<MODELMODB> MODB;
+            ReqSubRecord<MODELMODB> MODB;
             STRING MODL;
             RAWBYTES MODT;
             STRING ICON;
@@ -445,46 +445,46 @@ class RACERecord : public Record
         STRING FULL;
         STRING DESC;
         std::vector<unsigned int *> SPLO;
-        std::vector<ReqRecordField<GENXNAM> *> XNAM;
-        ReqRecordField<RACEDATA> DATA;
-        RecordField<RACEVNAM> VNAM;
-        RecordField<RACEDNAM> DNAM;
-        ReqRecordField<RACECNAM> CNAM;
-        RecordField<RACEPNAM> PNAM;
-        RecordField<RACEUNAM> UNAM;
-        ReqRecordField<RACEATTR> ATTR;
-        OptRecordField<RACEMODEL> MOD0;
-        OptRecordField<RACEMODEL> MOD1;
-        OptRecordField<RACEMODEL> MOD2;
-        OptRecordField<RACEMODEL> MOD3;
-        OptRecordField<RACEMODEL> MOD4;
-        OptRecordField<RACEMODEL> MOD5;
-        OptRecordField<RACEMODEL> MOD6;
-        OptRecordField<RACEMODEL> MOD7;
-        OptRecordField<RACEMODEL> MOD8;
+        std::vector<ReqSubRecord<GENXNAM> *> XNAM;
+        ReqSubRecord<RACEDATA> DATA;
+        SubRecord<RACEVNAM> VNAM;
+        SubRecord<RACEDNAM> DNAM;
+        ReqSubRecord<RACECNAM> CNAM;
+        SubRecord<RACEPNAM> PNAM;
+        SubRecord<RACEUNAM> UNAM;
+        ReqSubRecord<RACEATTR> ATTR;
+        OptSubRecord<RACEMODEL> MOD0;
+        OptSubRecord<RACEMODEL> MOD1;
+        OptSubRecord<RACEMODEL> MOD2;
+        OptSubRecord<RACEMODEL> MOD3;
+        OptSubRecord<RACEMODEL> MOD4;
+        OptSubRecord<RACEMODEL> MOD5;
+        OptSubRecord<RACEMODEL> MOD6;
+        OptSubRecord<RACEMODEL> MOD7;
+        OptSubRecord<RACEMODEL> MOD8;
 
-        OptRecordField<GENMODEL> MMODL;
+        OptSubRecord<GENMODEL> MMODL;
 
-        ISTRING MICON0;
-        ISTRING MICON1;
-        ISTRING MICON2;
-        ISTRING MICON3;
-        ISTRING MICON4;
+        STRING MICON0;
+        STRING MICON1;
+        STRING MICON2;
+        STRING MICON3;
+        STRING MICON4;
 
-        OptRecordField<GENMODEL> FMODL;
+        OptSubRecord<GENMODEL> FMODL;
 
-        ISTRING FICON0;
-        ISTRING FICON1;
-        ISTRING FICON2;
-        ISTRING FICON3;
-        ISTRING FICON4;
+        STRING FICON0;
+        STRING FICON1;
+        STRING FICON2;
+        STRING FICON3;
+        STRING FICON4;
 
         std::vector<unsigned int> HNAM;
         std::vector<unsigned int> ENAM;
         RAWBYTES FGGS;
         RAWBYTES FGGA;
         RAWBYTES FGTS;
-        ReqRecordField<RACESNAM> SNAM;
+        ReqSubRecord<RACESNAM> SNAM;
 
         RACERecord(bool newRecord=false):Record(newRecord) {}
         RACERecord(const unsigned int &newFormID):Record(newFormID) {}
@@ -506,7 +506,7 @@ class RACERecord : public Record
             XNAM.resize(srcRecord->XNAM.size());
             for(unsigned int x = 0; x < srcRecord->XNAM.size(); x++)
                 {
-                XNAM[x] = new ReqRecordField<GENXNAM>;
+                XNAM[x] = new ReqSubRecord<GENXNAM>;
                 *XNAM[x] = *srcRecord->XNAM[x];
                 }
 

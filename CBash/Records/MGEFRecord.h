@@ -27,7 +27,7 @@ GPL License and Copyright Notice ============================================
 class MGEFRecord : public Record
     {
     private:
-        enum MGEFRecordFields {
+        enum MGEFSubRecords {
             eEDID = 0x44494445,
             eFULL = 0x4C4C5546,
             eDESC = 0x43534544,
@@ -170,8 +170,8 @@ class MGEFRecord : public Record
         STRING FULL;
         STRING DESC;
         STRING ICON;
-        OptRecordField<GENMODEL> MODL;
-        ReqRecordField<MGEFDATA> DATA;
+        OptSubRecord<GENMODEL> MODL;
+        ReqSubRecord<MGEFDATA> DATA;
         std::vector<unsigned int> ESCE;
         MGEFRecord(bool newRecord=false):Record(newRecord) {}
         MGEFRecord(const unsigned int &newFormID):Record(newFormID) {}

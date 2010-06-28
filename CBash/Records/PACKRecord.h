@@ -27,7 +27,7 @@ GPL License and Copyright Notice ============================================
 class PACKRecord : public Record
     {
     private:
-        enum PACKRecordFields {
+        enum PACKSubRecords {
             eEDID = 0x44494445,
             ePKDT = 0x54444B50,
             ePLDT = 0x54444C50,
@@ -253,11 +253,11 @@ class PACKRecord : public Record
             eTargetObjectType  = 2
             };
         STRING EDID;
-        ReqRecordField<PACKPKDT> PKDT;
-        OptRecordField<PACKPLDT> PLDT;
-        ReqRecordField<PACKPSDT> PSDT;
-        OptRecordField<PACKPTDT> PTDT;
-        std::vector<ReqRecordField<GENCTDA> *> CTDA;
+        ReqSubRecord<PACKPKDT> PKDT;
+        OptSubRecord<PACKPLDT> PLDT;
+        ReqSubRecord<PACKPSDT> PSDT;
+        OptSubRecord<PACKPTDT> PTDT;
+        std::vector<ReqSubRecord<GENCTDA> *> CTDA;
 
         PACKRecord(bool newRecord=false):Record(newRecord) {}
         PACKRecord(const unsigned int &newFormID):Record(newFormID) {}
@@ -275,7 +275,7 @@ class PACKRecord : public Record
             CTDA.resize(srcRecord->CTDA.size());
             for(unsigned int x = 0; x < srcRecord->CTDA.size(); x++)
                 {
-                CTDA[x] = new ReqRecordField<GENCTDA>;
+                CTDA[x] = new ReqSubRecord<GENCTDA>;
                 *CTDA[x] = *srcRecord->CTDA[x];
                 }
             return;

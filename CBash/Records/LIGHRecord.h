@@ -26,7 +26,7 @@ GPL License and Copyright Notice ============================================
 class LIGHRecord : public Record
     {
     private:
-        enum LIGHRecordFields {
+        enum LIGHSubRecords {
             eEDID = 0x44494445,
 
             eMODL = 0x4C444F4D,
@@ -139,13 +139,13 @@ class LIGHRecord : public Record
             fIsSpotShadow   = 0x00000400
             };
         STRING EDID;
-        OptRecordField<GENMODEL> MODL;
-        OptRecordField<GENFID> SCRI;
+        OptSubRecord<GENMODEL> MODL;
+        OptSubRecord<GENFID> SCRI;
         STRING FULL;
         STRING ICON;
-        ReqRecordField<LIGHDATA> DATA;
-        OptRecordField<LIGHFNAM> FNAM;
-        OptRecordField<GENFID> SNAM;
+        ReqSubRecord<LIGHDATA> DATA;
+        OptSubRecord<LIGHFNAM> FNAM;
+        OptSubRecord<GENFID> SNAM;
 
         LIGHRecord(bool newRecord=false):Record(newRecord) {}
         LIGHRecord(const unsigned int &newFormID):Record(newFormID) {}

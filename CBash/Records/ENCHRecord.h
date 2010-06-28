@@ -27,7 +27,7 @@ GPL License and Copyright Notice ============================================
 class ENCHRecord : public Record
     {
     private:
-        enum ENCHRecordFields {
+        enum ENCHSubRecords {
             eEDID = 0x44494445,
             eFULL = 0x4C4C5546,
             eENIT = 0x54494E45,
@@ -95,7 +95,7 @@ class ENCHRecord : public Record
             };
         STRING EDID;
         STRING FULL;
-        ReqRecordField<ENCHENIT> ENIT;
+        ReqSubRecord<ENCHENIT> ENIT;
         std::vector<GENEffect *> Effects;
         ENCHRecord(bool newRecord=false):Record(newRecord) {}
         ENCHRecord(const unsigned int &newFormID):Record(newFormID) {}

@@ -161,7 +161,7 @@ class PGRDRecord : public Record
                 }
             };
     public:
-        ReqRecordField<PGRDDATA> DATA;
+        ReqSubRecord<PGRDDATA> DATA;
         std::vector<GENPGRP> PGRP;
         RAWBYTES PGAG;
         RAWBYTES PGRR;

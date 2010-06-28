@@ -26,7 +26,7 @@ GPL License and Copyright Notice ============================================
 class GRASRecord : public Record
     {
     private:
-        enum GRASRecordFields {
+        enum GRASSubRecords {
             eEDID = 0x44494445,
 
             eMODL = 0x4C444F4D,
@@ -125,8 +125,8 @@ class GRASRecord : public Record
             fIsFitSlope  = 0x00000004
             };
         STRING EDID;
-        OptRecordField<GENMODEL> MODL;
-        ReqRecordField<GRASDATA> DATA;
+        OptSubRecord<GENMODEL> MODL;
+        ReqSubRecord<GRASDATA> DATA;
 
         GRASRecord(bool newRecord=false):Record(newRecord) {}
         GRASRecord(const unsigned int &newFormID):Record(newFormID) {}

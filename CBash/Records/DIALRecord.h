@@ -29,7 +29,7 @@ GPL License and Copyright Notice ============================================
 class DIALRecord : public Record
     {
     private:
-        enum DIALRecordFields {
+        enum DIALSubRecords {
             eEDID = 0x44494445,
             eQSTI = 0x49545351,
             eQSTR = 0x52545351,
@@ -51,7 +51,7 @@ class DIALRecord : public Record
         std::vector<unsigned int *> QSTI;
         std::vector<unsigned int *> QSTR;
         STRING FULL;
-        ReqRecordField<GENFLAG> DATA;
+        ReqSubRecord<GENFLAG> DATA;
         std::vector<INFORecord *> INFO;
         DIALRecord(bool newRecord=false):Record(newRecord) {}
         DIALRecord(const unsigned int &newFormID):Record(newFormID) {}

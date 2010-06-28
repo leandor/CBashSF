@@ -27,7 +27,7 @@ GPL License and Copyright Notice ============================================
 class DOORRecord : public Record
     {
     private:
-        enum DOORRecordFields {
+        enum DOORSubRecords {
             eEDID = 0x44494445,
             eFULL = 0x4C4C5546,
 
@@ -53,12 +53,12 @@ class DOORRecord : public Record
             };
         STRING EDID;
         STRING FULL;
-        OptRecordField<GENMODEL> MODL;
-        OptRecordField<GENFID> SCRI;
-        OptRecordField<GENFID> SNAM;
-        OptRecordField<GENFID> ANAM;
-        OptRecordField<GENFID> BNAM;
-        ReqRecordField<GENFLAG> FNAM;
+        OptSubRecord<GENMODEL> MODL;
+        OptSubRecord<GENFID> SCRI;
+        OptSubRecord<GENFID> SNAM;
+        OptSubRecord<GENFID> ANAM;
+        OptSubRecord<GENFID> BNAM;
+        ReqSubRecord<GENFLAG> FNAM;
         std::vector<unsigned int *> TNAM;
         DOORRecord(bool newRecord=false):Record(newRecord) {}
         DOORRecord(const unsigned int &newFormID):Record(newFormID) {}

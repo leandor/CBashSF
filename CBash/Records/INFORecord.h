@@ -27,7 +27,7 @@ GPL License and Copyright Notice ============================================
 class INFORecord : public Record
     {
     private:
-        enum INFORecordFields {
+        enum INFOSubRecords {
             eEDID = 0x44494445,
             eDATA = 0x41544144,
             eQSTI = 0x49545351,
@@ -135,7 +135,7 @@ class INFORecord : public Record
             };
         struct INFOResponse
             {
-            ReqRecordField<INFOTRDT> TRDT;
+            ReqSubRecord<INFOTRDT> TRDT;
             STRING NAM1;
             STRING NAM2;
             #ifdef _DEBUG
@@ -271,20 +271,20 @@ class INFORecord : public Record
             fIsRunForRumors = 0x00000040
             };
         STRING EDID;
-        ReqRecordField<INFODATA> DATA;
-        ReqRecordField<GENFID> QSTI;
-        OptRecordField<GENFID> TPIC;
-        OptRecordField<GENFID> PNAM;
+        ReqSubRecord<INFODATA> DATA;
+        ReqSubRecord<GENFID> QSTI;
+        OptSubRecord<GENFID> TPIC;
+        OptSubRecord<GENFID> PNAM;
         std::vector<unsigned int *> NAME;
         std::vector<INFOResponse *> Responses;
-        std::vector<ReqRecordField<GENCTDA> *> CTDA;
+        std::vector<ReqSubRecord<GENCTDA> *> CTDA;
         std::vector<unsigned int *> TCLT;
         std::vector<unsigned int *> TCLF;
 
-        ReqRecordField<GENSCHR> SCHR;
+        ReqSubRecord<GENSCHR> SCHR;
         RAWBYTES SCDA;
         NONNULLSTRING SCTX;
-        std::vector<ReqRecordField<GENSCR_> *> SCR_;
+        std::vector<ReqSubRecord<GENSCR_> *> SCR_;
 
         INFORecord(bool newRecord=false):Record(newRecord) {}
         INFORecord(const unsigned int &newFormID):Record(newFormID) {}
@@ -314,7 +314,7 @@ class INFORecord : public Record
             CTDA.resize(srcRecord->CTDA.size());
             for(unsigned int x = 0; x < srcRecord->CTDA.size(); x++)
                 {
-                CTDA[x] = new ReqRecordField<GENCTDA>;
+                CTDA[x] = new ReqSubRecord<GENCTDA>;
                 *CTDA[x] = *srcRecord->CTDA[x];
                 }
             TCLT.clear();
@@ -333,7 +333,7 @@ class INFORecord : public Record
             SCR_.resize(srcRecord->SCR_.size());
             for(unsigned int x = 0; x < srcRecord->SCR_.size(); x++)
                 {
-                SCR_[x] = new ReqRecordField<GENSCR_>;
+                SCR_[x] = new ReqSubRecord<GENSCR_>;
                 *SCR_[x] = *srcRecord->SCR_[x];
                 }
             return;

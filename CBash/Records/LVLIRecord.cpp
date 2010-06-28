@@ -31,8 +31,8 @@ int LVLIRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
     unsigned int subType = 0;
     unsigned int subSize = 0;
     unsigned int curPos = 0;
-    ReqRecordField<LVLLVLO> *newEntry = NULL;
-    ReqRecordField<unsigned char> DATA;
+    ReqSubRecord<LVLLVLO> *newEntry = NULL;
+    ReqSubRecord<unsigned char> DATA;
     while(curPos < recSize){
         _readBuffer(&subType,buffer,4,curPos);
         switch(subType)
@@ -66,7 +66,7 @@ int LVLIRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 LVLF.Read(buffer, subSize, curPos);
                 break;
             case eLVLO:
-                newEntry = new ReqRecordField<LVLLVLO>;
+                newEntry = new ReqSubRecord<LVLLVLO>;
                 newEntry->Read(buffer, subSize, curPos);
                 Entries.push_back(newEntry);
                 break;

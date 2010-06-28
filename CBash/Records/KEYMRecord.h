@@ -26,7 +26,7 @@ GPL License and Copyright Notice ============================================
 class KEYMRecord : public Record
     {
     private:
-        enum KEYMRecordFields {
+        enum KEYMSubRecords {
             eEDID = 0x44494445,
             eFULL = 0x4C4C5546,
 
@@ -41,10 +41,10 @@ class KEYMRecord : public Record
     public:
         STRING EDID;
         STRING FULL;
-        OptRecordField<GENMODEL> MODL;
+        OptSubRecord<GENMODEL> MODL;
         STRING ICON;
-        OptRecordField<GENFID> SCRI;
-        ReqRecordField<GENVALUEWEIGHT> DATA;
+        OptSubRecord<GENFID> SCRI;
+        ReqSubRecord<GENVALUEWEIGHT> DATA;
         KEYMRecord(bool newRecord=false):Record(newRecord) {}
         KEYMRecord(const unsigned int &newFormID):Record(newFormID) {}
         KEYMRecord(KEYMRecord *srcRecord):Record(true)

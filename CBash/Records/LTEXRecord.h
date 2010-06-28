@@ -27,7 +27,7 @@ GPL License and Copyright Notice ============================================
 class LTEXRecord : public Record
     {
     private:
-        enum LTEXRecordFields {
+        enum LTEXSubRecords {
             eEDID = 0x44494445,
             eICON = 0x4E4F4349,
             eHNAM = 0x4D414E48,
@@ -115,8 +115,8 @@ class LTEXRecord : public Record
             };
         STRING EDID;
         STRING ICON;
-        RecordField<LTEXHNAM> HNAM;
-        RecordField<LTEXSNAM> SNAM;
+        SubRecord<LTEXHNAM> HNAM;
+        SubRecord<LTEXSNAM> SNAM;
         std::vector<unsigned int *> GNAM;
         LTEXRecord(bool newRecord=false):Record(newRecord) {}
         LTEXRecord(const unsigned int &newFormID):Record(newFormID) {}

@@ -27,7 +27,7 @@ GPL License and Copyright Notice ============================================
 class MISCRecord : public Record
     {
     private:
-        enum MISCRecordFields {
+        enum MISCSubRecords {
             eEDID = 0x44494445,
             eFULL = 0x4C4C5546,
 
@@ -42,10 +42,10 @@ class MISCRecord : public Record
     public:
         STRING EDID;
         STRING FULL;
-        OptRecordField<GENMODEL> MODL;
+        OptSubRecord<GENMODEL> MODL;
         STRING ICON;
-        OptRecordField<GENFID> SCRI;
-        ReqRecordField<GENVALUEWEIGHT> DATA;
+        OptSubRecord<GENFID> SCRI;
+        ReqSubRecord<GENVALUEWEIGHT> DATA;
 
         MISCRecord(bool newRecord=false):Record(newRecord) {}
         MISCRecord(const unsigned int &newFormID):Record(newFormID) {}

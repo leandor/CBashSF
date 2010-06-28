@@ -27,7 +27,7 @@ GPL License and Copyright Notice ============================================
 class LSCRRecord : public Record
     {
     private:
-        enum LSCRRecordFields {
+        enum LSCRSubRecords {
             eEDID = 0x44494445,
             eICON = 0x4E4F4349,
             eDESC = 0x43534544,
@@ -77,7 +77,7 @@ class LSCRRecord : public Record
         STRING EDID;
         STRING ICON;
         STRING DESC;
-        std::vector<ReqRecordField<LSCRLNAM> *> LNAM;
+        std::vector<ReqSubRecord<LSCRLNAM> *> LNAM;
 
         LSCRRecord(bool newRecord=false):Record(newRecord) {}
         LSCRRecord(const unsigned int &newFormID):Record(newFormID) {}
@@ -93,7 +93,7 @@ class LSCRRecord : public Record
             LNAM.resize(srcRecord->LNAM.size());
             for(unsigned int x = 0; x < srcRecord->LNAM.size(); x++)
                 {
-                LNAM[x] = new ReqRecordField<LSCRLNAM>;
+                LNAM[x] = new ReqSubRecord<LSCRLNAM>;
                 *LNAM[x] = *srcRecord->LNAM[x];
                 }
             return;

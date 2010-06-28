@@ -26,7 +26,7 @@ GPL License and Copyright Notice ============================================
 class GLOBRecord : public Record
     {
     private:
-        enum GLOBRecordFields {
+        enum GLOBSubRecords {
             eEDID = 0x44494445,
             eFNAM = 0x4D414E46,
             eFLTV = 0x56544C46
@@ -84,8 +84,8 @@ class GLOBRecord : public Record
             };
     public:
         STRING EDID;
-        ReqRecordField<GLOBFNAM> FNAM;
-        ReqRecordField<GLOBFLTV> FLTV;
+        ReqSubRecord<GLOBFNAM> FNAM;
+        ReqSubRecord<GLOBFLTV> FLTV;
 
         GLOBRecord(bool newRecord=false):Record(newRecord) {}
         GLOBRecord(const unsigned int &newFormID):Record(newFormID) {}

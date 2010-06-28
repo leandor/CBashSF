@@ -27,7 +27,7 @@ GPL License and Copyright Notice ============================================
 class REGNRecord : public Record
     {
     private:
-        enum REGNRecordFields {
+        enum REGNSubRecords {
             eEDID = 0x44494445,
             eICON = 0x4E4F4349,
             eRCLR = 0x524C4352,
@@ -97,7 +97,7 @@ class REGNRecord : public Record
             };
         struct REGNArea
             {
-            ReqRecordField<REGNRPLI> RPLI;
+            ReqSubRecord<REGNRPLI> RPLI;
             std::vector<REGNRPLD> RPLD;
             #ifdef _DEBUG
             void Debug(int debugLevel, size_t &indentation)
@@ -599,12 +599,12 @@ class REGNRecord : public Record
             };
         struct REGNEntry
             {
-            ReqRecordField<REGNRDAT> RDAT;
+            ReqSubRecord<REGNRDAT> RDAT;
             std::vector<REGNRDOT> RDOT;
             ISTRING RDMP;
             STRING ICON;
             std::vector<REGNRDGS> RDGS;
-            OptRecordField<REGNRDMD> RDMD;
+            OptSubRecord<REGNRDMD> RDMD;
             std::vector<REGNRDSD> RDSD;
             std::vector<REGNRDWT> RDWT;
             #ifdef _DEBUG
@@ -857,8 +857,8 @@ class REGNRecord : public Record
             };
         STRING EDID;
         STRING ICON;
-        ReqRecordField<GENCLR> RCLR;
-        RecordField<GENFID> WNAM;
+        ReqSubRecord<GENCLR> RCLR;
+        SubRecord<GENFID> WNAM;
         std::vector<REGNArea *> Areas;
         std::vector<REGNEntry *> Entries;
         REGNRecord(bool newRecord=false):Record(newRecord) {}

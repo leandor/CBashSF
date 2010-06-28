@@ -30,7 +30,7 @@ int LANDRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
     unsigned int subType = 0;
     unsigned int subSize = 0;
     unsigned int curPos = 0;
-    ReqRecordField<LANDGENTXT> *curTexture = NULL;
+    ReqSubRecord<LANDGENTXT> *curTexture = NULL;
     LANDLAYERS *curLayer = NULL;
     while(curPos < recSize){
         _readBuffer(&subType,buffer,4,curPos);
@@ -62,7 +62,7 @@ int LANDRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 VCLR.Read(buffer, subSize, curPos);
                 break;
             case eBTXT:
-                curTexture = new ReqRecordField<LANDGENTXT>;
+                curTexture = new ReqSubRecord<LANDGENTXT>;
                 curTexture->Read(buffer, subSize, curPos);
                 BTXT.push_back(curTexture);
                 break;

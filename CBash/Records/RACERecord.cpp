@@ -34,7 +34,7 @@ int RACERecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
     int curINDX = -1;
     unsigned int curPos = 0;
     FormID curFormID = NULL;
-    ReqRecordField<GENXNAM> *newXNAM = NULL;
+    ReqSubRecord<GENXNAM> *newXNAM = NULL;
     while(curPos < recSize){
         _readBuffer(&subType,buffer,4,curPos);
         switch(subType)
@@ -67,7 +67,7 @@ int RACERecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 SPLO.push_back(curFormID);
                 break;
             case eXNAM:
-                newXNAM = new ReqRecordField<GENXNAM>;
+                newXNAM = new ReqSubRecord<GENXNAM>;
                 newXNAM->Read(buffer, subSize, curPos);
                 XNAM.push_back(newXNAM);
                 break;

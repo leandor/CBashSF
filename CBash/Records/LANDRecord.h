@@ -26,7 +26,7 @@ GPL License and Copyright Notice ============================================
 class LANDRecord : public Record
     {
     private:
-        enum LANDRecordFields {
+        enum LANDSubRecords {
             eDATA = 0x41544144,
             eVNML = 0x4C4D4E56,
             eVHGT = 0x54474856,
@@ -339,7 +339,7 @@ class LANDRecord : public Record
 
         struct LANDLAYERS
             {
-            ReqRecordField<LANDGENTXT> ATXT;
+            ReqSubRecord<LANDGENTXT> ATXT;
             std::vector<LANDVTXT> VTXT;
             #ifdef _DEBUG
             void Debug(int debugLevel, size_t &indentation)
@@ -402,10 +402,10 @@ class LANDRecord : public Record
             eTopRight
             };
         RAWBYTES DATA;
-        OptRecordField<LANDVNML> VNML;
-        OptRecordField<LANDVHGT> VHGT;
-        OptRecordField<LANDVCLR> VCLR;
-        std::vector<ReqRecordField<LANDGENTXT> *> BTXT;
+        OptSubRecord<LANDVNML> VNML;
+        OptSubRecord<LANDVHGT> VHGT;
+        OptSubRecord<LANDVCLR> VCLR;
+        std::vector<ReqSubRecord<LANDGENTXT> *> BTXT;
         std::vector<LANDLAYERS *> Layers;
         std::vector<unsigned int> VTEX;
         //LANDMERGED *Merged;
@@ -430,7 +430,7 @@ class LANDRecord : public Record
             BTXT.resize(srcRecord->BTXT.size());
             for(unsigned int x = 0; x < srcRecord->BTXT.size(); ++x)
                 {
-                BTXT[x] = new ReqRecordField<LANDGENTXT>;
+                BTXT[x] = new ReqSubRecord<LANDGENTXT>;
                 *BTXT[x] = *srcRecord->BTXT[x];
                 }
             Layers.clear();
