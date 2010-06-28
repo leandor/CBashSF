@@ -27,7 +27,7 @@ GPL License and Copyright Notice ============================================
 class SCPTRecord : public Record
     {
     private:
-        enum SCPTRecordFields {
+        enum SCPTSubRecords {
             eEDID = 0x44494445,
             eSCHR = 0x52484353,
             eSCDA = 0x41444353,
@@ -59,7 +59,7 @@ class SCPTRecord : public Record
 
         struct SCPTVARS
             {
-            ReqRecordField<SCPTSLSD> SLSD;
+            ReqSubRecord<SCPTSLSD> SLSD;
             STRING SCVR;
             bool operator ==(const SCPTVARS &other) const
                 {
@@ -129,12 +129,12 @@ class SCPTRecord : public Record
 
     public:
         STRING EDID;
-        ReqRecordField<GENSCHR> SCHR;
+        ReqSubRecord<GENSCHR> SCHR;
         RAWBYTES SCDA;
         NONNULLSTRING SCTX;
 
         std::vector<SCPTVARS *> VARS;
-        std::vector<ReqRecordField<GENSCR_> *> SCR_;
+        std::vector<ReqSubRecord<GENSCR_> *> SCR_;
         SCPTRecord(bool newRecord=false):Record(newRecord) {}
         SCPTRecord(const unsigned int &newFormID):Record(newFormID) {}
         SCPTRecord(SCPTRecord *srcRecord):Record(true)
@@ -160,7 +160,7 @@ class SCPTRecord : public Record
             SCR_.resize(srcRecord->SCR_.size());
             for(unsigned int x = 0; x < srcRecord->SCR_.size(); x++)
                 {
-                SCR_[x] = new ReqRecordField<GENSCR_>;
+                SCR_[x] = new ReqSubRecord<GENSCR_>;
                 *SCR_[x] = *srcRecord->SCR_[x];
                 }
 

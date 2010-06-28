@@ -31,7 +31,7 @@ int WTHRRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
     unsigned int subType = 0;
     unsigned int subSize = 0;
     unsigned int curPos = 0;
-    ReqRecordField<WTHRSNAM> *newSNAM = NULL;
+    ReqSubRecord<WTHRSNAM> *newSNAM = NULL;
     while(curPos < recSize){
         _readBuffer(&subType,buffer,4,curPos);
         switch(subType)
@@ -83,7 +83,7 @@ int WTHRRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 DATA.Read(buffer, subSize, curPos);
                 break;
             case eSNAM:
-                newSNAM = new ReqRecordField<WTHRSNAM>;
+                newSNAM = new ReqSubRecord<WTHRSNAM>;
                 newSNAM->Read(buffer, subSize, curPos);
                 Sounds.push_back(newSNAM);
                 break;

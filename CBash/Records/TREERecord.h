@@ -27,7 +27,7 @@ GPL License and Copyright Notice ============================================
 class TREERecord : public Record
     {
     private:
-        enum TREERecordFields {
+        enum TREESubRecords {
             eEDID = 0x44494445,
 
             eMODL = 0x4C444F4D,
@@ -119,11 +119,11 @@ class TREERecord : public Record
             };
     public:
         STRING EDID;
-        OptRecordField<GENMODEL> MODL;
+        OptSubRecord<GENMODEL> MODL;
         STRING ICON;
         std::vector<unsigned int> SNAM;
-        ReqRecordField<TREECNAM> CNAM;
-        ReqRecordField<TREEBNAM> BNAM;
+        ReqSubRecord<TREECNAM> CNAM;
+        ReqSubRecord<TREEBNAM> BNAM;
 
         TREERecord(bool newRecord=false):Record(newRecord) {}
         TREERecord(const unsigned int &newFormID):Record(newFormID) {}

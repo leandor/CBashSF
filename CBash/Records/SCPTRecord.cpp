@@ -32,7 +32,7 @@ int SCPTRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
     unsigned int subSize = 0;
     unsigned int curPos = 0;
     SCPTVARS *newVARS = NULL;
-    ReqRecordField<GENSCR_> *newSCR_ = NULL;
+    ReqSubRecord<GENSCR_> *newSCR_ = NULL;
     while(curPos < recSize){
         _readBuffer(&subType,buffer,4,curPos);
         switch(subType)
@@ -76,13 +76,13 @@ int SCPTRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 newVARS->SCVR.Read(buffer, subSize, curPos);
                 break;
             case eSCRV:
-                newSCR_ = new ReqRecordField<GENSCR_>;
+                newSCR_ = new ReqSubRecord<GENSCR_>;
                 newSCR_->Read(buffer, subSize, curPos);
                 newSCR_->value.isSCRO = false;
                 SCR_.push_back(newSCR_);
                 break;
             case eSCRO:
-                newSCR_ = new ReqRecordField<GENSCR_>;
+                newSCR_ = new ReqSubRecord<GENSCR_>;
                 newSCR_->Read(buffer, subSize, curPos);
                 newSCR_->value.isSCRO = true;
                 SCR_.push_back(newSCR_);

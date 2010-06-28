@@ -26,7 +26,7 @@ GPL License and Copyright Notice ============================================
 class SOUNRecord : public Record
     {
     private:
-        enum SOUNRecordFields {
+        enum SOUNSubRecords {
             eEDID = 0x44494445,
             eFNAM = 0x4D414E46,
             eSNDD = 0x44444E53,
@@ -115,7 +115,7 @@ class SOUNRecord : public Record
             };
         STRING EDID;
         ISTRING FNAM;
-        ReqRecordField<SOUNSNDX> SNDX;
+        ReqSubRecord<SOUNSNDX> SNDX;
         SOUNRecord(bool newRecord=false):Record(newRecord) {}
         SOUNRecord(const unsigned int &newFormID):Record(newFormID) {}
         SOUNRecord(SOUNRecord *srcRecord):Record(true)

@@ -26,7 +26,7 @@ GPL License and Copyright Notice ============================================
 class SBSPRecord : public Record
     {
     private:
-        enum SBSPRecordFields {
+        enum SBSPSubRecords {
             eEDID = 0x44494445,
 
             eDNAM = 0x4D414E44
@@ -64,7 +64,7 @@ class SBSPRecord : public Record
             };
     public:
         STRING EDID;
-        ReqRecordField<SBSPDNAM> DNAM;
+        ReqSubRecord<SBSPDNAM> DNAM;
 
         SBSPRecord(bool newRecord=false):Record(newRecord) {}
         SBSPRecord(const unsigned int &newFormID):Record(newFormID) {}

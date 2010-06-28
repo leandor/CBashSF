@@ -27,7 +27,7 @@ GPL License and Copyright Notice ============================================
 class SPELRecord : public Record
     {
     private:
-        enum SPELRecordFields {
+        enum SPELSubRecords {
             eEDID = 0x44494445,
             eFULL = 0x4C4C5546,
             eSPIT = 0x54495053,
@@ -113,7 +113,7 @@ class SPELRecord : public Record
             };
         STRING EDID;
         STRING FULL;
-        ReqRecordField<SPELSPIT> SPIT;
+        ReqSubRecord<SPELSPIT> SPIT;
         std::vector<GENEffect *> Effects;
 
         SPELRecord(bool newRecord=false):Record(newRecord) {}

@@ -26,7 +26,7 @@ GPL License and Copyright Notice ============================================
 class SLGMRecord : public Record
     {
     private:
-        enum SLGMRecordFields {
+        enum SLGMSubRecords {
             eEDID = 0x44494445,
             eFULL = 0x4C4C5546,
 
@@ -102,12 +102,12 @@ class SLGMRecord : public Record
             };
         STRING EDID;
         STRING FULL;
-        OptRecordField<GENMODEL> MODL;
+        OptSubRecord<GENMODEL> MODL;
         STRING ICON;
-        OptRecordField<GENFID> SCRI;
-        ReqRecordField<GENVALUEWEIGHT> DATA;
-        ReqRecordField<SLGMSOUL> SOUL;
-        ReqRecordField<SLGMSLCP> SLCP;
+        OptSubRecord<GENFID> SCRI;
+        ReqSubRecord<GENVALUEWEIGHT> DATA;
+        ReqSubRecord<SLGMSOUL> SOUL;
+        ReqSubRecord<SLGMSLCP> SLCP;
 
         SLGMRecord(bool newRecord=false):Record(newRecord) {}
         SLGMRecord(const unsigned int &newFormID):Record(newFormID) {}

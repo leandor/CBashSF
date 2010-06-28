@@ -26,7 +26,7 @@ GPL License and Copyright Notice ============================================
 class STATRecord : public Record
     {
     private:
-        enum STATRecordFields {
+        enum STATSubRecords {
             eEDID = 0x44494445,
 
             eMODL = 0x4C444F4D,
@@ -35,7 +35,7 @@ class STATRecord : public Record
             };
     public:
         STRING EDID;
-        OptRecordField<GENMODEL> MODL;
+        OptSubRecord<GENMODEL> MODL;
         STATRecord(bool newRecord=false):Record(newRecord) {}
         STATRecord(const unsigned int &newFormID):Record(newFormID) {}
         STATRecord(STATRecord *srcRecord):Record(true)

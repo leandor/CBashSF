@@ -27,7 +27,7 @@ GPL License and Copyright Notice ============================================
 class SGSTRecord : public Record
     {
     private:
-        enum SGSTRecordFields {
+        enum SGSTSubRecords {
             eEDID = 0x44494445,
             eFULL = 0x4C4C5546,
 
@@ -82,11 +82,11 @@ class SGSTRecord : public Record
     public:
         STRING EDID;
         STRING FULL;
-        OptRecordField<GENMODEL> MODL;
+        OptSubRecord<GENMODEL> MODL;
         STRING ICON;
-        OptRecordField<GENFID> SCRI;
+        OptSubRecord<GENFID> SCRI;
         std::vector<GENEffect *> Effects;
-        ReqRecordField<SGSTDATA> DATA;
+        ReqSubRecord<SGSTDATA> DATA;
 
         SGSTRecord(bool newRecord=false):Record(newRecord) {}
         SGSTRecord(const unsigned int &newFormID):Record(newFormID) {}

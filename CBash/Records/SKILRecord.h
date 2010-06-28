@@ -26,7 +26,7 @@ GPL License and Copyright Notice ============================================
 class SKILRecord : public Record
     {
     private:
-        enum SKILRecordFields {
+        enum SKILSubRecords {
             eEDID = 0x44494445,
             eINDX = 0x58444E49,
             eDESC = 0x43534544,
@@ -107,10 +107,10 @@ class SKILRecord : public Record
 
     public:
         STRING EDID;
-        ReqRecordField<SKILINDX> INDX;
+        ReqSubRecord<SKILINDX> INDX;
         STRING DESC;
         STRING ICON;
-        ReqRecordField<SKILDATA> DATA;
+        ReqSubRecord<SKILDATA> DATA;
         STRING ANAM;
         STRING JNAM;
         STRING ENAM;

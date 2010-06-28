@@ -26,7 +26,7 @@ GPL License and Copyright Notice ============================================
 class WEAPRecord : public Record
     {
     private:
-        enum WEAPRecordFields {
+        enum WEAPSubRecords {
             eEDID = 0x44494445,
             eFULL = 0x4C4C5546,
 
@@ -114,12 +114,12 @@ class WEAPRecord : public Record
             };
         STRING EDID;
         STRING FULL;
-        OptRecordField<GENMODEL> MODL;
+        OptSubRecord<GENMODEL> MODL;
         STRING ICON;
-        OptRecordField<GENFID> SCRI;
-        OptRecordField<GENFID> ENAM;
-        OptRecordField<GENANAM> ANAM;
-        ReqRecordField<WEAPDATA> DATA;
+        OptSubRecord<GENFID> SCRI;
+        OptSubRecord<GENFID> ENAM;
+        OptSubRecord<GENANAM> ANAM;
+        ReqSubRecord<WEAPDATA> DATA;
 
         WEAPRecord(bool newRecord=false):Record(newRecord) {}
         WEAPRecord(const unsigned int &newFormID):Record(newFormID) {}

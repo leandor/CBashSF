@@ -29,7 +29,7 @@ GPL License and Copyright Notice ============================================
 class WRLDRecord : public Record
     {
     private:
-        enum WRLDRecordFields {
+        enum WRLDSubRecords {
             eEDID = 0x44494445,
             eFULL = 0x4C4C5546,
 
@@ -136,19 +136,19 @@ class WRLDRecord : public Record
         STRING EDID;
         STRING FULL;
 
-        OptRecordField<GENFID> WNAM;
-        OptRecordField<GENFID> CNAM;
-        OptRecordField<GENFID> NAM2;
+        OptSubRecord<GENFID> WNAM;
+        OptSubRecord<GENFID> CNAM;
+        OptSubRecord<GENFID> NAM2;
 
         STRING ICON;
 
-        OptRecordField<WRLDMNAM> MNAM;
-        ReqRecordField<GENFLAG> DATA;
+        OptSubRecord<WRLDMNAM> MNAM;
+        ReqSubRecord<GENFLAG> DATA;
 
-        ReqRecordField<WRLDUNK> NAM0;
-        ReqRecordField<WRLDUNK> NAM9;
+        ReqSubRecord<WRLDUNK> NAM0;
+        ReqSubRecord<WRLDUNK> NAM9;
 
-        OptRecordField<GENUFLAG> SNAM;
+        OptSubRecord<GENUFLAG> SNAM;
         RAWBYTES OFST;
         ROADRecord *ROAD;
         CELLRecord *CELL;

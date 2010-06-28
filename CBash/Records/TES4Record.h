@@ -26,7 +26,7 @@ GPL License and Copyright Notice ============================================
 class TES4Record : public Record
     {
     private:
-        enum TES4RecordFields {
+        enum TES4SubRecords {
             eHEDR = 0x52444548,
             eCNAM = 0x4D414E43,
             eSNAM = 0x4D414E53,
@@ -75,7 +75,7 @@ class TES4Record : public Record
             TES4DATA():unk1(0), unk2(0) {}
             };
     public:
-        ReqRecordField<TES4HEDR> HEDR;
+        ReqSubRecord<TES4HEDR> HEDR;
         RAWBYTES OFST;
         RAWBYTES DELE;
         STRING CNAM;

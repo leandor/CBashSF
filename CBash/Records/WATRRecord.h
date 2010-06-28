@@ -26,7 +26,7 @@ GPL License and Copyright Notice ============================================
 class WATRRecord : public Record
     {
     private:
-        enum WATRRecordFields {
+        enum WATRSubRecords {
             eEDID = 0x44494445,
             eTNAM = 0x4D414E54,
             eANAM = 0x4D414E41,
@@ -232,12 +232,12 @@ class WATRRecord : public Record
             };
         STRING EDID;
         ISTRING TNAM;
-        ReqRecordField<WATRANAM> ANAM;
-        ReqRecordField<GENFLAG> FNAM;
+        ReqSubRecord<WATRANAM> ANAM;
+        ReqSubRecord<GENFLAG> FNAM;
         ISTRING MNAM;
-        OptRecordField<GENFID> SNAM;
-        OptRecordField<WATRDATA> DATA;
-        OptRecordField<WATRGNAM> GNAM;
+        OptSubRecord<GENFID> SNAM;
+        OptSubRecord<WATRDATA> DATA;
+        OptSubRecord<WATRGNAM> GNAM;
 
         WATRRecord(bool newRecord=false):Record(newRecord) {}
         WATRRecord(const unsigned int &newFormID):Record(newFormID) {}

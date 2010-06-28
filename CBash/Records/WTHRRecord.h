@@ -27,7 +27,7 @@ GPL License and Copyright Notice ============================================
 class WTHRRecord : public Record
     {
     private:
-        enum WTHRRecordFields {
+        enum WTHRSubRecords {
             eEDID = 0x44494445,
             eCNAM = 0x4D414E43,
             eDNAM = 0x4D414E44,
@@ -441,12 +441,12 @@ class WTHRRecord : public Record
         STRING EDID;
         ISTRING CNAM;
         ISTRING DNAM;
-        OptRecordField<GENMODEL> MODL;
-        ReqRecordField<WTHRNAM0> NAM0;
-        ReqRecordField<WTHRFNAM> FNAM;
-        ReqRecordField<WTHRHNAM> HNAM;
-        ReqRecordField<WTHRDATA> DATA;
-        std::vector<ReqRecordField<WTHRSNAM> *> Sounds;
+        OptSubRecord<GENMODEL> MODL;
+        ReqSubRecord<WTHRNAM0> NAM0;
+        ReqSubRecord<WTHRFNAM> FNAM;
+        ReqSubRecord<WTHRHNAM> HNAM;
+        ReqSubRecord<WTHRDATA> DATA;
+        std::vector<ReqSubRecord<WTHRSNAM> *> Sounds;
 
         WTHRRecord(bool newRecord=false):Record(newRecord) {}
         WTHRRecord(const unsigned int &newFormID):Record(newFormID) {}
@@ -473,7 +473,7 @@ class WTHRRecord : public Record
             Sounds.resize(srcRecord->Sounds.size());
             for(unsigned int x = 0; x < srcRecord->Sounds.size(); x++)
                 {
-                Sounds[x] = new ReqRecordField<WTHRSNAM>;
+                Sounds[x] = new ReqSubRecord<WTHRSNAM>;
                 *Sounds[x] = *srcRecord->Sounds[x];
                 }
             return;
