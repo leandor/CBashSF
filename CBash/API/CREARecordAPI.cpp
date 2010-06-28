@@ -24,17 +24,17 @@ GPL License and Copyright Notice ============================================
 
 int CREARecord::CreateListElement(const unsigned int subField)
     {
-    ReqRecordField<GENSNAM> *curSNAM = NULL;
-    ReqRecordField<GENCNTO> *curCNTO = NULL;
+    ReqSubRecord<GENSNAM> *curSNAM = NULL;
+    ReqSubRecord<GENCNTO> *curCNTO = NULL;
     CREASound *curSound = NULL;
     switch(subField)
         {
         case 20: //factions
-            curSNAM = new ReqRecordField<GENSNAM>;
+            curSNAM = new ReqSubRecord<GENSNAM>;
             SNAM.push_back(curSNAM);
             return (int)SNAM.size() - 1;
         case 23: //items
-            curCNTO = new ReqRecordField<GENCNTO>;
+            curCNTO = new ReqSubRecord<GENCNTO>;
             CNTO.push_back(curCNTO);
             return (int)CNTO.size() - 1;
         case 59: //sounds
@@ -48,8 +48,8 @@ int CREARecord::CreateListElement(const unsigned int subField)
 
 int CREARecord::DeleteListElement(const unsigned int subField)
     {
-    ReqRecordField<GENSNAM> *curSNAM = NULL;
-    ReqRecordField<GENCNTO> *curCNTO = NULL;
+    ReqSubRecord<GENSNAM> *curSNAM = NULL;
+    ReqSubRecord<GENCNTO> *curCNTO = NULL;
     CREASound *curSound = NULL;
     switch(subField)
         {

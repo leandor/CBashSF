@@ -26,7 +26,7 @@ GPL License and Copyright Notice ============================================
 class CLOTRecord : public Record
     {
     private:
-        enum CLOTRecordFields {
+        enum CLOTSubRecords {
             eEDID = 0x44494445,
             eFULL = 0x4C4C5546,
             eSCRI = 0x49524353,
@@ -80,17 +80,17 @@ class CLOTRecord : public Record
             };
         STRING EDID;
         STRING FULL;
-        OptRecordField<GENFID> SCRI;
-        OptRecordField<GENFID> ENAM;
-        OptRecordField<GENANAM> ANAM;
-        ReqRecordField<GENUFLAG> BMDT;
-        OptRecordField<GENMODEL> MODL;
-        OptRecordField<GENMODEL> MOD2;
+        OptSubRecord<GENFID> SCRI;
+        OptSubRecord<GENFID> ENAM;
+        OptSubRecord<GENANAM> ANAM;
+        ReqSubRecord<GENUFLAG> BMDT;
+        OptSubRecord<GENMODEL> MODL;
+        OptSubRecord<GENMODEL> MOD2;
         STRING ICON;
-        OptRecordField<GENMODEL> MOD3;
-        OptRecordField<GENMODEL> MOD4;
+        OptSubRecord<GENMODEL> MOD3;
+        OptSubRecord<GENMODEL> MOD4;
         STRING ICO2;
-        ReqRecordField<GENVALUEWEIGHT> DATA;
+        ReqSubRecord<GENVALUEWEIGHT> DATA;
         CLOTRecord(bool newRecord=false):Record(newRecord) {}
         CLOTRecord(const unsigned int &newFormID):Record(newFormID) {}
         CLOTRecord(CLOTRecord *srcRecord):Record(true)

@@ -45,15 +45,15 @@ class ACHRRecord : public Record
             fIsOppositeParent = 0x00000001
             };
         STRING EDID;
-        ReqRecordField<GENFID> NAME;
-        OptRecordField<GENXPCI> XPCI;
-        OptRecordField<GENXLOD> XLOD;
-        OptRecordField<GENXESP> XESP;
-        OptRecordField<GENFID> XMRC;
-        RecordField<GENFID> XHRS;
+        ReqSubRecord<GENFID> NAME;
+        OptSubRecord<GENXPCI> XPCI;
+        OptSubRecord<GENXLOD> XLOD;
+        OptSubRecord<GENXESP> XESP;
+        OptSubRecord<GENFID> XMRC;
+        SubRecord<GENFID> XHRS;
         RAWBYTES XRGD;
-        OptRecordField<GENXSCL> XSCL;
-        ReqRecordField<GENPOSDATA> DATA;
+        OptSubRecord<GENXSCL> XSCL;
+        ReqSubRecord<GENPOSDATA> DATA;
         ACHRRecord(bool newRecord=false):Record(newRecord) {IsPersistent(true);}
         ACHRRecord(const unsigned int &newFormID):Record(newFormID) {IsPersistent(true);}
         ACHRRecord(ACHRRecord *srcRecord):Record(true)

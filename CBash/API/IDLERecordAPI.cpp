@@ -24,11 +24,11 @@ GPL License and Copyright Notice ============================================
 
 int IDLERecord::CreateListElement(const unsigned int subField)
     {
-    ReqRecordField<GENCTDA> *curCTDA = NULL;
+    ReqSubRecord<GENCTDA> *curCTDA = NULL;
     switch(subField)
         {
         case 9: //conditions
-            curCTDA = new ReqRecordField<GENCTDA>;
+            curCTDA = new ReqSubRecord<GENCTDA>;
             CTDA.push_back(curCTDA);
             return (int)CTDA.size() - 1;
         default:
@@ -38,7 +38,7 @@ int IDLERecord::CreateListElement(const unsigned int subField)
 
 int IDLERecord::DeleteListElement(const unsigned int subField)
     {
-    ReqRecordField<GENCTDA> *curCTDA = NULL;
+    ReqSubRecord<GENCTDA> *curCTDA = NULL;
     switch(subField)
         {
         case 9: //conditions

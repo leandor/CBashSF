@@ -409,7 +409,7 @@ void _FileHandler::writeSubRecord(unsigned int _Type, const void *_SrcBuf, unsig
         write(&_Type, 4);
         write(&_MaxCharCount, 2);
         }
-    else //Requires XXXX RecordField
+    else //Requires XXXX SubRecord
         {
         _Temp = 4;
         write("XXXX", 4);

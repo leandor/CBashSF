@@ -27,7 +27,7 @@ GPL License and Copyright Notice ============================================
 class CLMTRecord : public Record
     {
     private:
-        enum CLMTRecordFields {
+        enum CLMTSubRecords {
             eEDID = 0x44494445,
             eWLST = 0x54534C57,
             eFNAM = 0x4D414E46,
@@ -117,8 +117,8 @@ class CLMTRecord : public Record
         std::vector<CLMTWLST> Weathers;
         ISTRING FNAM;
         ISTRING GNAM;
-        OptRecordField<GENMODEL> MODL;
-        ReqRecordField<CLMTTNAM> TNAM;
+        OptSubRecord<GENMODEL> MODL;
+        ReqSubRecord<CLMTTNAM> TNAM;
         CLMTRecord(bool newRecord=false):Record(newRecord) {}
         CLMTRecord(const unsigned int &newFormID):Record(newFormID) {}
         CLMTRecord(CLMTRecord *srcRecord):Record(true)

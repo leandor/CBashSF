@@ -2,7 +2,7 @@
 1 = ModFile
 2 = GRUP
 3 = Individual Records
-4 = RecordField Details
+4 = SubRecord Details
 5 = w/ unknowns (including flags)
 6 = w/ longtext & byte dumps (including unused)
 

@@ -26,7 +26,7 @@ GPL License and Copyright Notice ============================================
 class BOOKRecord : public Record
     {
     private:
-        enum BOOKRecordFields {
+        enum BOOKSubRecords {
             eEDID = 0x44494445,
             eFULL = 0x4C4C5546,
 
@@ -92,13 +92,13 @@ class BOOKRecord : public Record
             };
         STRING EDID;
         STRING FULL;
-        OptRecordField<GENMODEL> MODL;
+        OptSubRecord<GENMODEL> MODL;
         STRING ICON;
         STRING DESC;
-        OptRecordField<GENFID> SCRI;
-        OptRecordField<GENFID> ENAM;
-        OptRecordField<GENANAM> ANAM;
-        ReqRecordField<BOOKDATA> DATA;
+        OptSubRecord<GENFID> SCRI;
+        OptSubRecord<GENFID> ENAM;
+        OptSubRecord<GENANAM> ANAM;
+        ReqSubRecord<BOOKDATA> DATA;
 
         BOOKRecord(bool newRecord=false):Record(newRecord) {}
         BOOKRecord(const unsigned int &newFormID):Record(newFormID) {}

@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 int SCPTRecord::CreateListElement(const unsigned int subField)
     {
     SCPTVARS *curVARS = NULL;
-    ReqRecordField<GENSCR_> *curSCR_ = NULL;
+    ReqSubRecord<GENSCR_> *curSCR_ = NULL;
     switch(subField)
         {
         case 13: //vars
@@ -33,7 +33,7 @@ int SCPTRecord::CreateListElement(const unsigned int subField)
             VARS.push_back(curVARS);
             return (int)VARS.size() - 1;
         case 14: //references
-            curSCR_ = new ReqRecordField<GENSCR_>;
+            curSCR_ = new ReqSubRecord<GENSCR_>;
             SCR_.push_back(curSCR_);
             return (int)SCR_.size() - 1;
         default:
@@ -44,7 +44,7 @@ int SCPTRecord::CreateListElement(const unsigned int subField)
 int SCPTRecord::DeleteListElement(const unsigned int subField)
     {
     SCPTVARS *curVARS = NULL;
-    ReqRecordField<GENSCR_> *curSCR_ = NULL;
+    ReqSubRecord<GENSCR_> *curSCR_ = NULL;
     switch(subField)
         {
         case 13: //vars

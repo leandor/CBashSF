@@ -24,13 +24,13 @@ GPL License and Copyright Notice ============================================
 
 int QUSTRecord::CreateListElement(const unsigned int subField)
     {
-    ReqRecordField<GENCTDA> *curCTDA = NULL;
+    ReqSubRecord<GENCTDA> *curCTDA = NULL;
     QUSTStage *curStage = NULL;
     QUSTTarget *curTarget = NULL;
     switch(subField)
         {
         case 11: //conditions
-            curCTDA = new ReqRecordField<GENCTDA>;
+            curCTDA = new ReqSubRecord<GENCTDA>;
             CTDA.push_back(curCTDA);
             return (int)CTDA.size() - 1;
         case 12: //stages
@@ -48,7 +48,7 @@ int QUSTRecord::CreateListElement(const unsigned int subField)
 
 int QUSTRecord::DeleteListElement(const unsigned int subField)
     {
-    ReqRecordField<GENCTDA> *curCTDA = NULL;
+    ReqSubRecord<GENCTDA> *curCTDA = NULL;
     QUSTStage *curStage = NULL;
     QUSTTarget *curTarget = NULL;
     switch(subField)
@@ -75,7 +75,7 @@ int QUSTRecord::DeleteListElement(const unsigned int subField)
 
 int QUSTRecord::CreateListX2Element(const unsigned int subField, const unsigned int listIndex, const unsigned int listField)
     {
-    ReqRecordField<GENCTDA> *curCTDA = NULL;
+    ReqSubRecord<GENCTDA> *curCTDA = NULL;
     QUSTEntry * curEntry;
     switch(subField)
         {
@@ -97,7 +97,7 @@ int QUSTRecord::CreateListX2Element(const unsigned int subField, const unsigned 
             switch(listField)
                 {
                 case 4: //conditions
-                    curCTDA = new ReqRecordField<GENCTDA>;
+                    curCTDA = new ReqSubRecord<GENCTDA>;
                     Targets[listIndex]->CTDA.push_back(curCTDA);
                     return (int) Targets[listIndex]->CTDA.size() - 1;
                 default:
@@ -111,7 +111,7 @@ int QUSTRecord::CreateListX2Element(const unsigned int subField, const unsigned 
 int QUSTRecord::DeleteListX2Element(const unsigned int subField, const unsigned int listIndex, const unsigned int listField)
     {
     QUSTEntry * curEntry;
-    ReqRecordField<GENCTDA> *curCTDA = NULL;
+    ReqSubRecord<GENCTDA> *curCTDA = NULL;
     switch(subField)
         {
         case 12: //stages
@@ -147,8 +147,8 @@ int QUSTRecord::DeleteListX2Element(const unsigned int subField, const unsigned 
 
 int QUSTRecord::CreateListX3Element(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned int listX2Index, const unsigned int listX2Field)
     {
-    ReqRecordField<GENCTDA> *curCTDA = NULL;
-    ReqRecordField<GENSCR_> *curSCR_ = NULL;
+    ReqSubRecord<GENCTDA> *curCTDA = NULL;
+    ReqSubRecord<GENSCR_> *curSCR_ = NULL;
     switch(subField)
         {
         case 12: //stages
@@ -162,11 +162,11 @@ int QUSTRecord::CreateListX3Element(const unsigned int subField, const unsigned 
                     switch(listX2Field)
                         {
                         case 2: //conditions
-                            curCTDA = new ReqRecordField<GENCTDA>;
+                            curCTDA = new ReqSubRecord<GENCTDA>;
                             Stages[listIndex]->Entries[listX2Index]->CTDA.push_back(curCTDA);
                             return (int)Stages[listIndex]->Entries[listX2Index]->CTDA.size() - 1;
                         case 11: //references
-                            curSCR_ = new ReqRecordField<GENSCR_>;
+                            curSCR_ = new ReqSubRecord<GENSCR_>;
                             Stages[listIndex]->Entries[listX2Index]->SCR_.push_back(curSCR_);
                             return (int)Stages[listIndex]->Entries[listX2Index]->SCR_.size() - 1;
                         default:
@@ -182,8 +182,8 @@ int QUSTRecord::CreateListX3Element(const unsigned int subField, const unsigned 
 
 int QUSTRecord::DeleteListX3Element(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned int listX2Index, const unsigned int listX2Field)
     {
-    ReqRecordField<GENCTDA> *curCTDA = NULL;
-    ReqRecordField<GENSCR_> *curSCR_ = NULL;
+    ReqSubRecord<GENCTDA> *curCTDA = NULL;
+    ReqSubRecord<GENSCR_> *curSCR_ = NULL;
     switch(subField)
         {
         case 12: //stages

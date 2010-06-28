@@ -33,7 +33,7 @@ GPL License and Copyright Notice ============================================
 class CELLRecord : public Record
     {
     private:
-        enum CELLRecordFields {
+        enum CELLSubRecords {
             eEDID = 0x44494445,
             eFULL = 0x4C4C5546,
             eDATA = 0x41544144,
@@ -173,15 +173,15 @@ class CELLRecord : public Record
             };
         STRING EDID;
         STRING FULL;
-        ReqRecordField<GENFLAG> DATA;
-        OptRecordField<CELLXCLL> XCLL;
-        RecordField<GENFLAG> XCMT;
-        OptRecordField<GENXOWN> Ownership;
-        RecordField<GENFID> XCCM;
-        RecordField<CELLXCLW> XCLW;
+        ReqSubRecord<GENFLAG> DATA;
+        OptSubRecord<CELLXCLL> XCLL;
+        SubRecord<GENFLAG> XCMT;
+        OptSubRecord<GENXOWN> Ownership;
+        SubRecord<GENFID> XCCM;
+        SubRecord<CELLXCLW> XCLW;
         std::vector<unsigned int> XCLR;
-        RecordField<CELLXCLC> XCLC;
-        RecordField<GENFID> XCWT;
+        SubRecord<CELLXCLC> XCLC;
+        SubRecord<GENFID> XCWT;
         std::vector<ACHRRecord *> ACHR;
         std::vector<ACRERecord *> ACRE;
         std::vector<REFRRecord *> REFR;

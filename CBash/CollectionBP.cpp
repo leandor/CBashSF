@@ -3349,7 +3349,6 @@ unsigned int Collection::CopyNPC_Record(char *ModName, unsigned int srcRecordFID
     {
     ModFile *srcMod = NULL;
     NPC_Record *srcRecord = NULL;
-
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
     if(srcMod == NULL || srcRecord == NULL)
         return 0;

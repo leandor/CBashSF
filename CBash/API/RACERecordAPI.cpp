@@ -24,11 +24,11 @@ GPL License and Copyright Notice ============================================
 
 int RACERecord::CreateListElement(const unsigned int subField)
     {
-    ReqRecordField<GENXNAM> *curXNAM = NULL;
+    ReqSubRecord<GENXNAM> *curXNAM = NULL;
     switch(subField)
         {
         case 9: //relations
-            curXNAM = new ReqRecordField<GENXNAM>;
+            curXNAM = new ReqSubRecord<GENXNAM>;
             XNAM.push_back(curXNAM);
             return (int)XNAM.size() - 1;
         default:
@@ -38,7 +38,7 @@ int RACERecord::CreateListElement(const unsigned int subField)
 
 int RACERecord::DeleteListElement(const unsigned int subField)
     {
-    ReqRecordField<GENXNAM> *curXNAM = NULL;
+    ReqSubRecord<GENXNAM> *curXNAM = NULL;
     switch(subField)
         {
         case 9: //relations

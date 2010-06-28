@@ -299,9 +299,9 @@ struct GENSCIT
 
 struct GENEffect
     {
-    ReqRecordField<GENEFID> EFID;
-    ReqRecordField<GENEFIT> EFIT;
-    OptRecordField<GENSCIT> SCIT;
+    ReqSubRecord<GENEFID> EFID;
+    ReqSubRecord<GENEFIT> EFIT;
+    OptSubRecord<GENSCIT> SCIT;
     STRING FULL;
     enum SCITFlags
         {
@@ -1026,7 +1026,7 @@ struct MODELMODB
 
 struct GENMODEL
     {
-    ReqRecordField<MODELMODB> MODB;
+    ReqSubRecord<MODELMODB> MODB;
     STRING MODL;
     RAWBYTES MODT;
     #ifdef _DEBUG
@@ -1087,9 +1087,9 @@ struct GENRANK
 
 struct GENXOWN
     {
-    ReqRecordField<GENFID> XOWN;
-    OptRecordField<GENRANK> XRNK;
-    OptRecordField<GENFID> XGLB;
+    ReqSubRecord<GENFID> XOWN;
+    OptSubRecord<GENRANK> XRNK;
+    OptSubRecord<GENFID> XGLB;
     #ifdef _DEBUG
     void Debug(char *name, int debugLevel, size_t &indentation)
         {
@@ -1122,7 +1122,7 @@ struct GENXOWN
 
 struct GENXPCI
     {
-    OptRecordField<GENFID> XPCI;
+    OptSubRecord<GENFID> XPCI;
     STRING FULL;
     #ifdef _DEBUG
     void Debug(char *name, int debugLevel, size_t &indentation)

@@ -27,7 +27,7 @@ GPL License and Copyright Notice ============================================
 class CONTRecord : public Record
     {
     private:
-        enum CONTRecordFields {
+        enum CONTSubRecords {
             eEDID = 0x44494445,
             eFULL = 0x4C4C5546,
 
@@ -83,12 +83,12 @@ class CONTRecord : public Record
             };
         STRING EDID;
         STRING FULL;
-        OptRecordField<GENMODEL> MODL;
-        OptRecordField<GENFID> SCRI;
-        std::vector<ReqRecordField<GENCNTO> *> CNTO;
-        ReqRecordField<CONTDATA> DATA;
-        OptRecordField<GENFID> SNAM;
-        OptRecordField<GENFID> QNAM;
+        OptSubRecord<GENMODEL> MODL;
+        OptSubRecord<GENFID> SCRI;
+        std::vector<ReqSubRecord<GENCNTO> *> CNTO;
+        ReqSubRecord<CONTDATA> DATA;
+        OptSubRecord<GENFID> SNAM;
+        OptSubRecord<GENFID> QNAM;
 
         CONTRecord(bool newRecord=false):Record(newRecord) {}
         CONTRecord(const unsigned int &newFormID):Record(newFormID) {}
@@ -112,7 +112,7 @@ class CONTRecord : public Record
             CNTO.resize(srcRecord->CNTO.size());
             for(unsigned int x = 0; x < srcRecord->CNTO.size(); x++)
                 {
-                CNTO[x] = new ReqRecordField<GENCNTO>;
+                CNTO[x] = new ReqSubRecord<GENCNTO>;
                 *CNTO[x] = *srcRecord->CNTO[x];
                 }
 

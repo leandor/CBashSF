@@ -27,7 +27,7 @@ int LANDRecord::CreateListElement(const unsigned int subField)
     switch(subField)
         {
         case 12: //baseTextures
-            BTXT.push_back(new ReqRecordField<LANDGENTXT>);
+            BTXT.push_back(new ReqSubRecord<LANDGENTXT>);
             return (int)BTXT.size() - 1;
         case 13: //alphaLayers
             Layers.push_back(new LANDLAYERS());
@@ -1603,7 +1603,7 @@ void LANDRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned in
 void LANDRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned int FieldValue)
     {
     unsigned char curQuadrant;
-    ReqRecordField<LANDGENTXT> *curTexture;
+    ReqSubRecord<LANDGENTXT> *curTexture;
     LANDLAYERS *curLayer;
     switch(subField)
         {
@@ -1626,7 +1626,7 @@ void LANDRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned in
                     //No existing BTXT, so make one if able
                     if(BTXT.size() > 3)
                         return;
-                    curTexture = new ReqRecordField<LANDGENTXT>;
+                    curTexture = new ReqSubRecord<LANDGENTXT>;
                     curTexture->value.layer = -1;
                     curTexture->value.quadrant = curQuadrant;
                     curTexture->value.texture = FieldValue;

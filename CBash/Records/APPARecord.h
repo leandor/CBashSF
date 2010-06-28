@@ -27,7 +27,7 @@ GPL License and Copyright Notice ============================================
 class APPARecord : public Record
     {
     private:
-        enum APPARecordFields {
+        enum APPASubRecords {
             eEDID = 0x44494445,
             eFULL = 0x4C4C5546,
 
@@ -88,10 +88,10 @@ class APPARecord : public Record
             };
         STRING EDID;
         STRING FULL;
-        OptRecordField<GENMODEL> MODL;
+        OptSubRecord<GENMODEL> MODL;
         STRING ICON;
-        OptRecordField<GENFID> SCRI;
-        ReqRecordField<APPADATA> DATA;
+        OptSubRecord<GENFID> SCRI;
+        ReqSubRecord<APPADATA> DATA;
 
         APPARecord(bool newRecord=false):Record(newRecord) {}
         APPARecord(const unsigned int &newFormID):Record(newFormID) {}

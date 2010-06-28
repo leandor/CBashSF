@@ -24,11 +24,11 @@ GPL License and Copyright Notice ============================================
 
 int WTHRRecord::CreateListElement(const unsigned int subField)
     {
-    ReqRecordField<WTHRSNAM> *curSNAM = NULL;
+    ReqSubRecord<WTHRSNAM> *curSNAM = NULL;
     switch(subField)
         {
         case 204: //sounds
-            curSNAM = new ReqRecordField<WTHRSNAM>;
+            curSNAM = new ReqSubRecord<WTHRSNAM>;
             Sounds.push_back(curSNAM);
             return (int)Sounds.size() - 1;
         default:
@@ -38,7 +38,7 @@ int WTHRRecord::CreateListElement(const unsigned int subField)
 
 int WTHRRecord::DeleteListElement(const unsigned int subField)
     {
-    ReqRecordField<WTHRSNAM> *curSNAM = NULL;
+    ReqSubRecord<WTHRSNAM> *curSNAM = NULL;
     switch(subField)
         {
         case 204: //sounds

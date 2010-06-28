@@ -45,12 +45,12 @@ class ACRERecord : public Record
             fIsOppositeParent = 0x00000001
             };
         STRING EDID;
-        ReqRecordField<GENFID> NAME;
-        OptRecordField<GENXOWN> Ownership;
-        OptRecordField<GENXESP> XESP;
+        ReqSubRecord<GENFID> NAME;
+        OptSubRecord<GENXOWN> Ownership;
+        OptSubRecord<GENXESP> XESP;
         RAWBYTES XRGD;
-        OptRecordField<GENXSCL> XSCL;
-        ReqRecordField<GENPOSDATA> DATA;
+        OptSubRecord<GENXSCL> XSCL;
+        ReqSubRecord<GENPOSDATA> DATA;
         //Used on reading
         ACRERecord(bool newRecord=false):Record(newRecord) {IsTemporary(true);}
         //Used on new records

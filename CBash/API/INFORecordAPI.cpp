@@ -25,8 +25,8 @@ GPL License and Copyright Notice ============================================
 int INFORecord::CreateListElement(const unsigned int subField)
     {
     INFOResponse *curResponse = NULL;
-    ReqRecordField<GENCTDA> *curCTDA = NULL;
-    ReqRecordField<GENSCR_> *curSCR_ = NULL;
+    ReqSubRecord<GENCTDA> *curCTDA = NULL;
+    ReqSubRecord<GENSCR_> *curSCR_ = NULL;
     switch(subField)
         {
         case 13: //responses
@@ -34,11 +34,11 @@ int INFORecord::CreateListElement(const unsigned int subField)
             Responses.push_back(curResponse);
             return (int)Responses.size() - 1;
         case 14: //conditions
-            curCTDA = new ReqRecordField<GENCTDA>;
+            curCTDA = new ReqSubRecord<GENCTDA>;
             CTDA.push_back(curCTDA);
             return (int)CTDA.size() - 1;
         case 24: //references
-            curSCR_ = new ReqRecordField<GENSCR_>;
+            curSCR_ = new ReqSubRecord<GENSCR_>;
             SCR_.push_back(curSCR_);
             return (int)SCR_.size() - 1;
         default:
@@ -49,8 +49,8 @@ int INFORecord::CreateListElement(const unsigned int subField)
 int INFORecord::DeleteListElement(const unsigned int subField)
     {
     INFOResponse *curResponse = NULL;
-    ReqRecordField<GENCTDA> *curCTDA = NULL;
-    ReqRecordField<GENSCR_> *curSCR_ = NULL;
+    ReqSubRecord<GENCTDA> *curCTDA = NULL;
+    ReqSubRecord<GENSCR_> *curSCR_ = NULL;
     switch(subField)
         {
         case 13: //responses

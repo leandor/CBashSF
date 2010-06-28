@@ -30,6 +30,7 @@ GPL License and Copyright Notice ============================================
 #include <vector>
 #include <math.h>
 #include <boost/threadpool.hpp>
+#include <set>
 
 //#include "mmgr.h"
 
@@ -46,7 +47,7 @@ class GRUPRecords
             for(unsigned int p = 0;p < Records.size(); p++)
                 delete Records[p];
             }
-        bool Skim(boost::threadpool::pool &Threads, _FileHandler &ReadHandler, _FormIDHandler &FormIDHandler, const bool &FullLoad, const unsigned long &gSize)
+        bool Skim(boost::threadpool::pool &Threads, _FileHandler &ReadHandler, _FormIDHandler &FormIDHandler, const bool &FullLoad, const unsigned long &gSize, std::set<unsigned int> &UsedFormIDs)
             {
             //ReadHandler.set_used(gSize - 20);
             //return false;
@@ -56,6 +57,8 @@ class GRUPRecords
             T * curRecord = NULL;
             unsigned long gEnd = ReadHandler.tell() + gSize - 20;
             unsigned long recordSize = 0;
+            std::pair<std::set<unsigned int>::iterator,bool> ret;
+
             while(ReadHandler.tell() < gEnd){
                 //printf("tell:%u, gEnd:%u\n", ReadHandler.tell(), gEnd);
                 curRecord = new T();
@@ -64,16 +67,26 @@ class GRUPRecords
                 ReadHandler.read(&curRecord->flags, 4);
                 ReadHandler.read(&curRecord->formID, 4);
                 ReadHandler.read(&curRecord->flagsUnk, 4);
+                FormIDHandler.ExpandFormID(curRecord->formID);
+                ret = UsedFormIDs.insert(curRecord->formID);
                 if(curRecord->IsLoaded())
                     printf("Flag used!!!!\n");
                 if((curRecord->flags & 0x4000) != 0)
                     printf("0x4000 used: %08X!!!!\n", curRecord->formID);
-                curRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
-                FormIDHandler.ExpandFormID(curRecord->formID);
+                //Make sure the formID is unique within the mod
+                if(ret.second == true)
+                    {
+                    curRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
+                    if(FullLoad)
+                        Threads.schedule(boost::bind(&Record::Read, curRecord, boost::ref(FormIDHandler)));
+                    Records.push_back(curRecord);
+                    }
+                else
+                    {
+                    printf("Record skipped with duplicate formID: %08X\n", curRecord->formID);
+                    delete curRecord;
+                    }
                 ReadHandler.set_used(recordSize);
-                if(FullLoad)
-                    Threads.schedule(boost::bind(&Record::Read, curRecord, boost::ref(FormIDHandler)));
-                Records.push_back(curRecord);
                 //return false;
                 };
             //printf("End GMST\n");
@@ -188,7 +201,7 @@ class GRUPRecords<DIALRecord>
             for(unsigned int p = 0;p < Records.size(); p++)
                 delete Records[p];
             }
-        bool Skim(boost::threadpool::pool &Threads, _FileHandler &ReadHandler, _FormIDHandler &FormIDHandler, const bool &FullLoad, const unsigned long &gSize)
+        bool Skim(boost::threadpool::pool &Threads, _FileHandler &ReadHandler, _FormIDHandler &FormIDHandler, const bool &FullLoad, const unsigned long &gSize, std::set<unsigned int> &UsedFormIDs)
             {
             if(SkimmedGRUP || gSize == 0)
                 return false;
@@ -198,6 +211,7 @@ class GRUPRecords<DIALRecord>
             unsigned int recordType = 0;
             unsigned long gEnd = ReadHandler.tell() + gSize - 20;
             unsigned long recordSize = 0;
+            std::pair<std::set<unsigned int>::iterator,bool> ret;
 
             while(ReadHandler.tell() < gEnd){
                 ReadHandler.read(&recordType, 4);
@@ -209,16 +223,26 @@ class GRUPRecords<DIALRecord>
                         ReadHandler.read(&curDIALRecord->flags, 4);
                         ReadHandler.read(&curDIALRecord->formID, 4);
                         ReadHandler.read(&curDIALRecord->flagsUnk, 4);
+                        ret = UsedFormIDs.insert(curDIALRecord->formID);
                         if(curDIALRecord->IsLoaded())
                             printf("Flag used!!!!\n");
                         if((curDIALRecord->flags & 0x4000) != 0)
                             printf("0x4000 used: %08X!!!!\n", curDIALRecord->formID);
-                        curDIALRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
-                        FormIDHandler.ExpandFormID(curDIALRecord->formID);
+                        //Make sure the formID is unique within the mod
+                        if(ret.second == true)
+                            {
+                            curDIALRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
+                            FormIDHandler.ExpandFormID(curDIALRecord->formID);
+                            if(FullLoad)
+                                Threads.schedule(boost::bind(&Record::Read, curDIALRecord, boost::ref(FormIDHandler)));
+                            Records.push_back(curDIALRecord);
+                            }
+                        else
+                            {
+                            printf("Record skipped with duplicate formID: %08X\n", curDIALRecord->formID);
+                            delete curDIALRecord;
+                            }
                         ReadHandler.set_used(recordSize);
-                        if(FullLoad)
-                            Threads.schedule(boost::bind(&Record::Read, curDIALRecord, boost::ref(FormIDHandler)));
-                        Records.push_back(curDIALRecord);
                         break;
                     case eGRUP: //All GRUPs will be recreated from scratch on write (saves memory)
                         ReadHandler.set_used(8); //Skip label and type fields
@@ -229,16 +253,26 @@ class GRUPRecords<DIALRecord>
                         ReadHandler.read(&curINFORecord->flags, 4);
                         ReadHandler.read(&curINFORecord->formID, 4);
                         ReadHandler.read(&curINFORecord->flagsUnk, 4);
+                        ret = UsedFormIDs.insert(curINFORecord->formID);
                         if(curINFORecord->IsLoaded())
                             printf("Flag used!!!!\n");
                         if((curINFORecord->flags & 0x4000) != 0)
                             printf("0x4000 used: %08X!!!!\n", curINFORecord->formID);
-                        curINFORecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
-                        FormIDHandler.ExpandFormID(curINFORecord->formID);
+                        //Make sure the formID is unique within the mod
+                        if(ret.second == true)
+                            {
+                            curINFORecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
+                            FormIDHandler.ExpandFormID(curINFORecord->formID);
+                            if(FullLoad)
+                                Threads.schedule(boost::bind(&Record::Read, curINFORecord, boost::ref(FormIDHandler)));
+                            curDIALRecord->INFO.push_back(curINFORecord);
+                            }
+                        else
+                            {
+                            printf("Record skipped with duplicate formID: %08X\n", curINFORecord->formID);
+                            delete curINFORecord;
+                            }
                         ReadHandler.set_used(recordSize);
-                        if(FullLoad)
-                            Threads.schedule(boost::bind(&Record::Read, curINFORecord, boost::ref(FormIDHandler)));
-                        curDIALRecord->INFO.push_back(curINFORecord);
                         break;
                     default:
                         printf("  DIAL: Unexpected Field = %04x\n", recordType);
@@ -437,7 +471,7 @@ class GRUPRecords<CELLRecord>
             for(unsigned int p = 0;p < Records.size(); p++)
                 delete Records[p];
             }
-        bool Skim(boost::threadpool::pool &Threads, _FileHandler &ReadHandler, _FormIDHandler &FormIDHandler, const bool &FullLoad, const unsigned long &gSize)
+        bool Skim(boost::threadpool::pool &Threads, _FileHandler &ReadHandler, _FormIDHandler &FormIDHandler, const bool &FullLoad, const unsigned long &gSize, std::set<unsigned int> &UsedFormIDs)
             {
             if(SkimmedGRUP || gSize == 0)
                 return false;
@@ -449,6 +483,7 @@ class GRUPRecords<CELLRecord>
             unsigned int recordType = 0;
             unsigned long gEnd = ReadHandler.tell() + gSize - 20;
             unsigned long recordSize = 0;
+            std::pair<std::set<unsigned int>::iterator,bool> ret;
 
             while(ReadHandler.tell() < gEnd){
                 ReadHandler.read(&recordType, 4);
@@ -460,16 +495,26 @@ class GRUPRecords<CELLRecord>
                         ReadHandler.read(&curCELLRecord->flags, 4);
                         ReadHandler.read(&curCELLRecord->formID, 4);
                         ReadHandler.read(&curCELLRecord->flagsUnk, 4);
+                        ret = UsedFormIDs.insert(curCELLRecord->formID);
                         if(curCELLRecord->IsLoaded())
                             printf("Flag used!!!!\n");
                         if((curCELLRecord->flags & 0x4000) != 0)
                             printf("0x4000 used: %08X!!!!\n", curCELLRecord->formID);
-                        curCELLRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
-                        FormIDHandler.ExpandFormID(curCELLRecord->formID);
+                        //Make sure the formID is unique within the mod
+                        if(ret.second == true)
+                            {
+                            curCELLRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
+                            FormIDHandler.ExpandFormID(curCELLRecord->formID);
+                            if(FullLoad)
+                                Threads.schedule(boost::bind(&Record::Read, curCELLRecord, boost::ref(FormIDHandler)));
+                            Records.push_back(curCELLRecord);
+                            }
+                        else
+                            {
+                            printf("Record skipped with duplicate formID: %08X\n", curCELLRecord->formID);
+                            delete curCELLRecord;
+                            }
                         ReadHandler.set_used(recordSize);
-                        if(FullLoad)
-                            Threads.schedule(boost::bind(&Record::Read, curCELLRecord, boost::ref(FormIDHandler)));
-                        Records.push_back(curCELLRecord);
                         break;
                     case eGRUP: //All GRUPs will be recreated from scratch on write (saves memory)
                         ReadHandler.set_used(12); //skip the rest of the header
@@ -479,48 +524,78 @@ class GRUPRecords<CELLRecord>
                         ReadHandler.read(&curACHRRecord->flags, 4);
                         ReadHandler.read(&curACHRRecord->formID, 4);
                         ReadHandler.read(&curACHRRecord->flagsUnk, 4);
+                        ret = UsedFormIDs.insert(curACHRRecord->formID);
                         if(curACHRRecord->IsLoaded())
                             printf("Flag used!!!!\n");
                         if((curACHRRecord->flags & 0x4000) != 0)
                             printf("0x4000 used: %08X!!!!\n", curACHRRecord->formID);
-                        curACHRRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
-                        FormIDHandler.ExpandFormID(curACHRRecord->formID);
+                        //Make sure the formID is unique within the mod
+                        if(ret.second == true)
+                            {
+                            curACHRRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
+                            FormIDHandler.ExpandFormID(curACHRRecord->formID);
+                            if(FullLoad)
+                                Threads.schedule(boost::bind(&Record::Read, curACHRRecord, boost::ref(FormIDHandler)));
+                            curCELLRecord->ACHR.push_back(curACHRRecord);
+                            }
+                        else
+                            {
+                            printf("Record skipped with duplicate formID: %08X\n", curACHRRecord->formID);
+                            delete curACHRRecord;
+                            }
                         ReadHandler.set_used(recordSize);
-                        if(FullLoad)
-                            Threads.schedule(boost::bind(&Record::Read, curACHRRecord, boost::ref(FormIDHandler)));
-                        curCELLRecord->ACHR.push_back(curACHRRecord);
                         break;
                     case eACRE:
                         curACRERecord = new ACRERecord();
                         ReadHandler.read(&curACRERecord->flags, 4);
                         ReadHandler.read(&curACRERecord->formID, 4);
                         ReadHandler.read(&curACRERecord->flagsUnk, 4);
+                        ret = UsedFormIDs.insert(curACRERecord->formID);
                         if(curACRERecord->IsLoaded())
                             printf("Flag used!!!!\n");
                         if((curACRERecord->flags & 0x4000) != 0)
                             printf("0x4000 used: %08X!!!!\n", curACRERecord->formID);
-                        curACRERecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
-                        FormIDHandler.ExpandFormID(curACRERecord->formID);
+                        //Make sure the formID is unique within the mod
+                        if(ret.second == true)
+                            {
+                            curACRERecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
+                            FormIDHandler.ExpandFormID(curACRERecord->formID);
+                            if(FullLoad)
+                                Threads.schedule(boost::bind(&Record::Read, curACRERecord, boost::ref(FormIDHandler)));
+                            curCELLRecord->ACRE.push_back(curACRERecord);
+                            }
+                        else
+                            {
+                            printf("Record skipped with duplicate formID: %08X\n", curACRERecord->formID);
+                            delete curACRERecord;
+                            }
                         ReadHandler.set_used(recordSize);
-                        if(FullLoad)
-                            Threads.schedule(boost::bind(&Record::Read, curACRERecord, boost::ref(FormIDHandler)));
-                        curCELLRecord->ACRE.push_back(curACRERecord);
                         break;
                     case eREFR:
                         curREFRRecord = new REFRRecord();
                         ReadHandler.read(&curREFRRecord->flags, 4);
                         ReadHandler.read(&curREFRRecord->formID, 4);
                         ReadHandler.read(&curREFRRecord->flagsUnk, 4);
+                        ret = UsedFormIDs.insert(curREFRRecord->formID);
                         if(curREFRRecord->IsLoaded())
                             printf("Flag used!!!!\n");
                         if((curREFRRecord->flags & 0x4000) != 0)
                             printf("0x4000 used: %08X!!!!\n", curREFRRecord->formID);
-                        curREFRRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
-                        FormIDHandler.ExpandFormID(curREFRRecord->formID);
+                        //Make sure the formID is unique within the mod
+                        if(ret.second == true)
+                            {
+                            curREFRRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
+                            FormIDHandler.ExpandFormID(curREFRRecord->formID);
+                            if(FullLoad)
+                                Threads.schedule(boost::bind(&Record::Read, curREFRRecord, boost::ref(FormIDHandler)));
+                            curCELLRecord->REFR.push_back(curREFRRecord);
+                            }
+                        else
+                            {
+                            printf("Record skipped with duplicate formID: %08X\n", curREFRRecord->formID);
+                            delete curREFRRecord;
+                            }
                         ReadHandler.set_used(recordSize);
-                        if(FullLoad)
-                            Threads.schedule(boost::bind(&Record::Read, curREFRRecord, boost::ref(FormIDHandler)));
-                        curCELLRecord->REFR.push_back(curREFRRecord);
                         break;
                     case ePGRD:
                         delete curCELLRecord->PGRD;
@@ -528,15 +603,26 @@ class GRUPRecords<CELLRecord>
                         ReadHandler.read(&curCELLRecord->PGRD->flags, 4);
                         ReadHandler.read(&curCELLRecord->PGRD->formID, 4);
                         ReadHandler.read(&curCELLRecord->PGRD->flagsUnk, 4);
+                        ret = UsedFormIDs.insert(curCELLRecord->PGRD->formID);
                         if(curCELLRecord->PGRD->IsLoaded())
                             printf("Flag used!!!!\n");
                         if((curCELLRecord->PGRD->flags & 0x4000) != 0)
                             printf("0x4000 used: %08X!!!!\n", curCELLRecord->PGRD->formID);
-                        curCELLRecord->PGRD->recData = ReadHandler.getBuffer(ReadHandler.tell());
-                        FormIDHandler.ExpandFormID(curCELLRecord->PGRD->formID);
+                        //Make sure the formID is unique within the mod
+                        if(ret.second == true)
+                            {
+                            curCELLRecord->PGRD->recData = ReadHandler.getBuffer(ReadHandler.tell());
+                            FormIDHandler.ExpandFormID(curCELLRecord->PGRD->formID);
+                            if(FullLoad)
+                                Threads.schedule(boost::bind(&Record::Read, curCELLRecord->PGRD, boost::ref(FormIDHandler)));
+                            }
+                        else
+                            {
+                            printf("Record skipped with duplicate formID: %08X\n", curCELLRecord->PGRD->formID);
+                            delete curCELLRecord->PGRD;
+                            curCELLRecord->PGRD = NULL;
+                            }
                         ReadHandler.set_used(recordSize);
-                        if(FullLoad)
-                            Threads.schedule(boost::bind(&Record::Read, curCELLRecord->PGRD, boost::ref(FormIDHandler)));
                         break;
                     default:
                         printf("  CELL: Unexpected Record = %04x\n", recordType);
@@ -980,7 +1066,7 @@ class GRUPRecords<WRLDRecord>
             for(unsigned int p = 0;p < Records.size(); p++)
                 delete Records[p];
             }
-        bool Skim(boost::threadpool::pool &Threads, _FileHandler &ReadHandler, _FormIDHandler &FormIDHandler, const bool &FullLoad, const unsigned long &gSize)
+        bool Skim(boost::threadpool::pool &Threads, _FileHandler &ReadHandler, _FormIDHandler &FormIDHandler, const bool &FullLoad, const unsigned long &gSize, std::set<unsigned int> &UsedFormIDs)
             {
             if(SkimmedGRUP || gSize == 0)
                 return false;
@@ -996,6 +1082,7 @@ class GRUPRecords<WRLDRecord>
             unsigned int recordType = 0;
             unsigned long gEnd = ReadHandler.tell() + gSize - 20;
             unsigned long recordSize = 0;
+            std::pair<std::set<unsigned int>::iterator,bool> ret;
 
             while(ReadHandler.tell() < gEnd){
                 ReadHandler.read(&recordType, 4);
@@ -1007,41 +1094,61 @@ class GRUPRecords<WRLDRecord>
                         ReadHandler.read(&curWRLDRecord->flags, 4);
                         ReadHandler.read(&curWRLDRecord->formID, 4);
                         ReadHandler.read(&curWRLDRecord->flagsUnk, 4);
+                        ret = UsedFormIDs.insert(curWRLDRecord->formID);
                         if(curWRLDRecord->IsLoaded())
                             printf("Flag used!!!!\n");
                         if((curWRLDRecord->flags & 0x4000) != 0)
                             printf("0x4000 used: %08X!!!!\n", curWRLDRecord->formID);
-                        curWRLDRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
-                        FormIDHandler.ExpandFormID(curWRLDRecord->formID);
+                        //Make sure the formID is unique within the mod
+                        if(ret.second == true)
+                            {
+                            curWRLDRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
+                            FormIDHandler.ExpandFormID(curWRLDRecord->formID);
+                            if(FullLoad)
+                                Threads.schedule(boost::bind(&Record::Read, curWRLDRecord, boost::ref(FormIDHandler)));
+                            Records.push_back(curWRLDRecord);
+                            }
+                        else
+                            {
+                            printf("Record skipped with duplicate formID: %08X\n", curWRLDRecord->formID);
+                            delete curWRLDRecord;
+                            }
                         ReadHandler.set_used(recordSize);
-                        if(FullLoad)
-                            Threads.schedule(boost::bind(&Record::Read, curWRLDRecord, boost::ref(FormIDHandler)));
-                        Records.push_back(curWRLDRecord);
                         break;
                     case eCELL:
-                        switch(lastGRUP)
-                            {
-                            case eWorld:
-                                delete curWRLDRecord->CELL;
-                                curCELLRecord = curWRLDRecord->CELL = new CELLRecord();
-                                break;
-                            default:
-                                curCELLRecord = new CELLRecord();
-                                curWRLDRecord->CELLS.push_back(curCELLRecord);
-                                break;
-                            }
+                        curCELLRecord = new CELLRecord();
                         ReadHandler.read(&curCELLRecord->flags, 4);
                         ReadHandler.read(&curCELLRecord->formID, 4);
                         ReadHandler.read(&curCELLRecord->flagsUnk, 4);
+                        ret = UsedFormIDs.insert(curCELLRecord->formID);
                         if(curCELLRecord->IsLoaded())
                             printf("Flag used!!!!\n");
                         if((curCELLRecord->flags & 0x4000) != 0)
                             printf("0x4000 used: %08X!!!!\n", curCELLRecord->formID);
-                        curCELLRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
-                        FormIDHandler.ExpandFormID(curCELLRecord->formID);
+                        //Make sure the formID is unique within the mod
+                        if(ret.second == true)
+                            {
+                            curCELLRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
+                            FormIDHandler.ExpandFormID(curCELLRecord->formID);
+                            if(FullLoad)
+                                Threads.schedule(boost::bind(&Record::Read, curCELLRecord, boost::ref(FormIDHandler)));
+                            switch(lastGRUP)
+                                {
+                                case eWorld:
+                                    delete curWRLDRecord->CELL;
+                                    curWRLDRecord->CELL = curCELLRecord;
+                                    break;
+                                default:
+                                    curWRLDRecord->CELLS.push_back(curCELLRecord);
+                                    break;
+                                }
+                            }
+                        else
+                            {
+                            printf("Record skipped with duplicate formID: %08X\n", curCELLRecord->formID);
+                            delete curCELLRecord;
+                            }
                         ReadHandler.set_used(recordSize);
-                        if(FullLoad)
-                            Threads.schedule(boost::bind(&Record::Read, curCELLRecord, boost::ref(FormIDHandler)));
                         break;
                     case eGRUP: //All GRUPs will be recreated from scratch on write (saves memory)
                         ReadHandler.set_used(4);
@@ -1054,15 +1161,26 @@ class GRUPRecords<WRLDRecord>
                         ReadHandler.read(&curWRLDRecord->ROAD->flags, 4);
                         ReadHandler.read(&curWRLDRecord->ROAD->formID, 4);
                         ReadHandler.read(&curWRLDRecord->ROAD->flagsUnk, 4);
+                        ret = UsedFormIDs.insert(curWRLDRecord->ROAD->formID);
                         if(curWRLDRecord->ROAD->IsLoaded())
                             printf("Flag used!!!!\n");
                         if((curWRLDRecord->ROAD->flags & 0x4000) != 0)
                             printf("0x4000 used: %08X!!!!\n", curWRLDRecord->ROAD->formID);
-                        curWRLDRecord->ROAD->recData = ReadHandler.getBuffer(ReadHandler.tell());
-                        FormIDHandler.ExpandFormID(curWRLDRecord->ROAD->formID);
+                        //Make sure the formID is unique within the mod
+                        if(ret.second == true)
+                            {
+                            curWRLDRecord->ROAD->recData = ReadHandler.getBuffer(ReadHandler.tell());
+                            FormIDHandler.ExpandFormID(curWRLDRecord->ROAD->formID);
+                            if(FullLoad)
+                                Threads.schedule(boost::bind(&Record::Read, curWRLDRecord->ROAD, boost::ref(FormIDHandler)));
+                            }
+                        else
+                            {
+                            printf("Record skipped with duplicate formID: %08X\n", curWRLDRecord->ROAD->formID);
+                            delete curWRLDRecord->ROAD;
+                            curWRLDRecord->ROAD = NULL;
+                            }
                         ReadHandler.set_used(recordSize);
-                        if(FullLoad)
-                            Threads.schedule(boost::bind(&Record::Read, curWRLDRecord->ROAD, boost::ref(FormIDHandler)));
                         break;
                     case eLAND:
                         delete curCELLRecord->LAND;
@@ -1070,25 +1188,36 @@ class GRUPRecords<WRLDRecord>
                         ReadHandler.read(&curCELLRecord->LAND->flags, 4);
                         ReadHandler.read(&curCELLRecord->LAND->formID, 4);
                         ReadHandler.read(&curCELLRecord->LAND->flagsUnk, 4);
+                        ret = UsedFormIDs.insert(curCELLRecord->LAND->formID);
                         if(curCELLRecord->LAND->IsLoaded())
                             printf("Flag used!!!!\n");
                         if((curCELLRecord->LAND->flags & 0x4000) != 0)
                             printf("0x4000 used: %08X!!!!\n", curCELLRecord->LAND->formID);
-                        curCELLRecord->LAND->recData = ReadHandler.getBuffer(ReadHandler.tell());
-                        FormIDHandler.ExpandFormID(curCELLRecord->LAND->formID);
+                        //Make sure the formID is unique within the mod
+                        if(ret.second == true)
+                            {
+                            curCELLRecord->LAND->recData = ReadHandler.getBuffer(ReadHandler.tell());
+                            FormIDHandler.ExpandFormID(curCELLRecord->LAND->formID);
+                            if(FullLoad)
+                                {
+                                Threads.schedule(boost::bind(&Record::Read, curCELLRecord->LAND, boost::ref(FormIDHandler)));
+                                GridXY_LAND[curCELLRecord->XCLC.value.posX][curCELLRecord->XCLC.value.posY] = curCELLRecord->LAND;
+                                //curCELLRecord->LAND->Read(fileBuffer, FormIDHandler);
+                                }
+                            else //Parent CELL is not loaded, so load temporarily for indexing
+                                {
+                                curCELLRecord->Read(FormIDHandler);
+                                GridXY_LAND[curCELLRecord->XCLC.value.posX][curCELLRecord->XCLC.value.posY] = curCELLRecord->LAND;
+                                curCELLRecord->Unload();
+                                }
+                            }
+                        else
+                            {
+                            printf("Record skipped with duplicate formID: %08X\n", curCELLRecord->LAND->formID);
+                            delete curCELLRecord->LAND;
+                            curCELLRecord->LAND = NULL;
+                            }
                         ReadHandler.set_used(recordSize);
-                        if(FullLoad)
-                            {
-                            Threads.schedule(boost::bind(&Record::Read, curCELLRecord->LAND, boost::ref(FormIDHandler)));
-                            GridXY_LAND[curCELLRecord->XCLC.value.posX][curCELLRecord->XCLC.value.posY] = curCELLRecord->LAND;
-                            //curCELLRecord->LAND->Read(fileBuffer, FormIDHandler);
-                            }
-                        else //Parent CELL is not loaded, so load temporarily for indexing
-                            {
-                            curCELLRecord->Read(FormIDHandler);
-                            GridXY_LAND[curCELLRecord->XCLC.value.posX][curCELLRecord->XCLC.value.posY] = curCELLRecord->LAND;
-                            curCELLRecord->Unload();
-                            }
                         break;
                     case ePGRD:
                         delete curCELLRecord->PGRD;
@@ -1096,63 +1225,104 @@ class GRUPRecords<WRLDRecord>
                         ReadHandler.read(&curCELLRecord->PGRD->flags, 4);
                         ReadHandler.read(&curCELLRecord->PGRD->formID, 4);
                         ReadHandler.read(&curCELLRecord->PGRD->flagsUnk, 4);
+                        ret = UsedFormIDs.insert(curCELLRecord->PGRD->formID);
                         if(curCELLRecord->PGRD->IsLoaded())
                             printf("Flag used!!!!\n");
                         if((curCELLRecord->PGRD->flags & 0x4000) != 0)
                             printf("0x4000 used: %08X!!!!\n", curCELLRecord->PGRD->formID);
-                        curCELLRecord->PGRD->recData = ReadHandler.getBuffer(ReadHandler.tell());
-                        FormIDHandler.ExpandFormID(curCELLRecord->PGRD->formID);
+                        //Make sure the formID is unique within the mod
+                        if(ret.second == true)
+                            {
+                            curCELLRecord->PGRD->recData = ReadHandler.getBuffer(ReadHandler.tell());
+                            FormIDHandler.ExpandFormID(curCELLRecord->PGRD->formID);
+                            if(FullLoad)
+                                Threads.schedule(boost::bind(&Record::Read, curCELLRecord->PGRD, boost::ref(FormIDHandler)));
+                            }
+                        else
+                            {
+                            printf("Record skipped with duplicate formID: %08X\n", curCELLRecord->PGRD->formID);
+                            delete curCELLRecord->PGRD;
+                            curCELLRecord->PGRD = NULL;
+                            }
                         ReadHandler.set_used(recordSize);
-                        if(FullLoad)
-                            Threads.schedule(boost::bind(&Record::Read, curCELLRecord->PGRD, boost::ref(FormIDHandler)));
                         break;
                     case eACHR:
                         curACHRRecord = new ACHRRecord();
                         ReadHandler.read(&curACHRRecord->flags, 4);
                         ReadHandler.read(&curACHRRecord->formID, 4);
                         ReadHandler.read(&curACHRRecord->flagsUnk, 4);
+                        ret = UsedFormIDs.insert(curACHRRecord->formID);
                         if(curACHRRecord->IsLoaded())
                             printf("Flag used!!!!\n");
                         if((curACHRRecord->flags & 0x4000) != 0)
                             printf("0x4000 used: %08X!!!!\n", curACHRRecord->formID);
-                        curACHRRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
-                        FormIDHandler.ExpandFormID(curACHRRecord->formID);
+                        //Make sure the formID is unique within the mod
+                        if(ret.second == true)
+                            {
+                            curACHRRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
+                            FormIDHandler.ExpandFormID(curACHRRecord->formID);
+                            if(FullLoad)
+                                Threads.schedule(boost::bind(&Record::Read, curACHRRecord, boost::ref(FormIDHandler)));
+                            curCELLRecord->ACHR.push_back(curACHRRecord);
+                            }
+                        else
+                            {
+                            printf("Record skipped with duplicate formID: %08X\n", curACHRRecord->formID);
+                            delete curACHRRecord;
+                            }
                         ReadHandler.set_used(recordSize);
-                        if(FullLoad)
-                            Threads.schedule(boost::bind(&Record::Read, curACHRRecord, boost::ref(FormIDHandler)));
-                        curCELLRecord->ACHR.push_back(curACHRRecord);
                         break;
                     case eACRE:
                         curACRERecord = new ACRERecord();
                         ReadHandler.read(&curACRERecord->flags, 4);
                         ReadHandler.read(&curACRERecord->formID, 4);
                         ReadHandler.read(&curACRERecord->flagsUnk, 4);
+                        ret = UsedFormIDs.insert(curACRERecord->formID);
                         if(curACRERecord->IsLoaded())
                             printf("Flag used!!!!\n");
                         if((curACRERecord->flags & 0x4000) != 0)
                             printf("0x4000 used: %08X!!!!\n", curACRERecord->formID);
-                        curACRERecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
-                        FormIDHandler.ExpandFormID(curACRERecord->formID);
+                        //Make sure the formID is unique within the mod
+                        if(ret.second == true)
+                            {
+                            curACRERecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
+                            FormIDHandler.ExpandFormID(curACRERecord->formID);
+                            if(FullLoad)
+                                Threads.schedule(boost::bind(&Record::Read, curACRERecord, boost::ref(FormIDHandler)));
+                            curCELLRecord->ACRE.push_back(curACRERecord);
+                            }
+                        else
+                            {
+                            printf("Record skipped with duplicate formID: %08X\n", curACRERecord->formID);
+                            delete curACRERecord;
+                            }
                         ReadHandler.set_used(recordSize);
-                        if(FullLoad)
-                            Threads.schedule(boost::bind(&Record::Read, curACRERecord, boost::ref(FormIDHandler)));
-                        curCELLRecord->ACRE.push_back(curACRERecord);
                         break;
                     case eREFR:
                         curREFRRecord = new REFRRecord();
                         ReadHandler.read(&curREFRRecord->flags, 4);
                         ReadHandler.read(&curREFRRecord->formID, 4);
                         ReadHandler.read(&curREFRRecord->flagsUnk, 4);
+                        ret = UsedFormIDs.insert(curREFRRecord->formID);
                         if(curREFRRecord->IsLoaded())
                             printf("Flag used!!!!\n");
                         if((curREFRRecord->flags & 0x4000) != 0)
                             printf("0x4000 used: %08X!!!!\n", curREFRRecord->formID);
-                        curREFRRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
-                        FormIDHandler.ExpandFormID(curREFRRecord->formID);
+                        //Make sure the formID is unique within the mod
+                        if(ret.second == true)
+                            {
+                            curREFRRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
+                            FormIDHandler.ExpandFormID(curREFRRecord->formID);
+                            if(FullLoad)
+                                Threads.schedule(boost::bind(&Record::Read, curREFRRecord, boost::ref(FormIDHandler)));
+                            curCELLRecord->REFR.push_back(curREFRRecord);
+                            }
+                        else
+                            {
+                            printf("Record skipped with duplicate formID: %08X\n", curREFRRecord->formID);
+                            delete curREFRRecord;
+                            }
                         ReadHandler.set_used(recordSize);
-                        if(FullLoad)
-                            Threads.schedule(boost::bind(&Record::Read, curREFRRecord, boost::ref(FormIDHandler)));
-                        curCELLRecord->REFR.push_back(curREFRRecord);
                         break;
                     default:
                         printf("  WRLD: Unexpected Field = %04x\n", recordType);

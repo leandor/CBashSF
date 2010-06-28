@@ -26,7 +26,7 @@ GPL License and Copyright Notice ============================================
 class AMMORecord : public Record
     {
     private:
-        enum AMMORecordFields {
+        enum AMMOSubRecords {
             eEDID = 0x44494445,
             eFULL = 0x4C4C5546,
 
@@ -101,11 +101,11 @@ class AMMORecord : public Record
             };
         STRING EDID;
         STRING FULL;
-        OptRecordField<GENMODEL> MODL;
+        OptSubRecord<GENMODEL> MODL;
         STRING ICON;
-        OptRecordField<GENFID> ENAM;
-        OptRecordField<GENANAM> ANAM;
-        ReqRecordField<AMMODATA> DATA;
+        OptSubRecord<GENFID> ENAM;
+        OptSubRecord<GENANAM> ANAM;
+        ReqSubRecord<AMMODATA> DATA;
 
         AMMORecord(bool newRecord=false):Record(newRecord) {}
         AMMORecord(const unsigned int &newFormID):Record(newFormID) {}

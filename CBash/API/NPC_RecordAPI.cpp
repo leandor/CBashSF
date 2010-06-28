@@ -24,16 +24,16 @@ GPL License and Copyright Notice ============================================
 
 int NPC_Record::CreateListElement(const unsigned int subField)
     {
-    ReqRecordField<GENSNAM> *curSNAM = NULL;
-    ReqRecordField<GENCNTO> *curCNTO = NULL;
+    ReqSubRecord<GENSNAM> *curSNAM = NULL;
+    ReqSubRecord<GENCNTO> *curCNTO = NULL;
     switch(subField)
         {
         case 17: //factions
-            curSNAM = new ReqRecordField<GENSNAM>;
+            curSNAM = new ReqSubRecord<GENSNAM>;
             SNAM.push_back(curSNAM);
             return (int)SNAM.size() - 1;
         case 22: //items
-            curCNTO = new ReqRecordField<GENCNTO>;
+            curCNTO = new ReqSubRecord<GENCNTO>;
             CNTO.push_back(curCNTO);
             return (int)CNTO.size() - 1;
         default:
@@ -43,8 +43,8 @@ int NPC_Record::CreateListElement(const unsigned int subField)
 
 int NPC_Record::DeleteListElement(const unsigned int subField)
     {
-    ReqRecordField<GENSNAM> *curSNAM = NULL;
-    ReqRecordField<GENCNTO> *curCNTO = NULL;
+    ReqSubRecord<GENSNAM> *curSNAM = NULL;
+    ReqSubRecord<GENCNTO> *curCNTO = NULL;
     switch(subField)
         {
         case 17: //factions
@@ -332,9 +332,13 @@ void * NPC_Record::GetOtherField(const unsigned int Field)
         case 64: //luck
             return &DATA.value.luck;
         case 65: //hair
-            return &HNAM.value.fid;
+            if(HNAM.IsLoaded())
+                return &HNAM->fid;
+            return NULL;
         case 66: //hairLength
-            return &LNAM.value.hairLength;
+            if(LNAM.IsLoaded())
+                return &LNAM->hairLength;
+            return NULL;
         case 67: //eye
             if(ENAM.IsLoaded())
                 return &ENAM->fid;
@@ -582,7 +586,8 @@ void NPC_Record::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
             MODL->MODB.value.MODB = FieldValue;
             break;
         case 66: //hairLength
-            LNAM.value.hairLength = FieldValue;
+            LNAM.Load();
+            LNAM->hairLength = FieldValue;
             break;
         default:
             return;
@@ -663,9 +668,9 @@ void NPC_Record::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
             FormIDHandler.AddMaster(CNAM.value.fid);
             break;
         case 65: //hair
-            HNAM.value.fid = FieldValue;
-            HNAM.isLoaded = true;
-            FormIDHandler.AddMaster(HNAM.value.fid);
+            HNAM.Load();
+            HNAM->fid = FieldValue;
+            FormIDHandler.AddMaster(HNAM->fid);
             break;
         case 67: //eye
             ENAM.Load();

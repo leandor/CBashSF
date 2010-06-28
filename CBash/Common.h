@@ -103,12 +103,14 @@ char * PrintFormID(unsigned int curFormID);
 
 bool AlmostEqual(float A, float B, int maxUlps);
 
+//Base record field. Vestigial.
+//Used when it isn't known if the record is required or optional.
 template<class T>
-struct RecordField
+struct SubRecord
     {
     T value;
     bool isLoaded;
-    RecordField():isLoaded(false),value() {}
+    SubRecord():isLoaded(false),value() {}
     unsigned int GetSize() const
         {return sizeof(T);}
     bool IsLoaded() const
@@ -150,12 +152,12 @@ struct RecordField
         {
         return &value;
         }
-    bool operator ==(const RecordField<T> &other) const
+    bool operator ==(const SubRecord<T> &other) const
         {
         return (value == other.value && 
                 isLoaded == other.isLoaded);
         }
-    bool operator !=(const RecordField<T> &other) const
+    bool operator !=(const SubRecord<T> &other) const
         {
         return !(*this == other);
         }
@@ -175,11 +177,14 @@ struct RecordField
     #endif
     };
 
+//Used for subrecords that are required
+//Even if not actually loaded from disk, they are always considered loaded even if they're explicitly unloaded.
+//Unloading them simply resets the values to default.
 template<class T>
-struct ReqRecordField
+struct ReqSubRecord
     {
     T value;
-    ReqRecordField():value() {}
+    ReqSubRecord():value() {}
     unsigned int GetSize() const
         {return sizeof(T);}
     bool IsLoaded() const
@@ -208,11 +213,11 @@ struct ReqRecordField
         {
         return &value;
         }
-    bool operator ==(const ReqRecordField<T> &other) const
+    bool operator ==(const ReqSubRecord<T> &other) const
         {
         return (value == other.value);
         }
-    bool operator !=(const ReqRecordField<T> &other) const
+    bool operator !=(const ReqSubRecord<T> &other) const
         {
         return !(*this == other);
         }
@@ -230,12 +235,14 @@ struct ReqRecordField
     #endif
     };
 
+//Used for subrecords that are optional
+//Even if loaded, they are considered unloaded if they're equal to their defaults
 template<class T>
-struct OptRecordField
+struct OptSubRecord
     {
     T *value;
-    OptRecordField():value(NULL) {}
-    ~OptRecordField()
+    OptSubRecord():value(NULL) {}
+    ~OptSubRecord()
         {
         delete value;
         }
@@ -279,7 +286,7 @@ struct OptRecordField
         return value;
         }
 
-    OptRecordField<T>& operator = (const OptRecordField<T> &rhs)
+    OptSubRecord<T>& operator = (const OptSubRecord<T> &rhs)
         {
         if(this != &rhs)
             if(rhs.value != NULL)
@@ -299,7 +306,7 @@ struct OptRecordField
                 }
         return *this;
         }
-    bool operator ==(const OptRecordField<T> &other) const
+    bool operator ==(const OptSubRecord<T> &other) const
         {
         if(!IsLoaded())
             {
@@ -310,7 +317,112 @@ struct OptRecordField
             return true;
         return false;
         }
-    bool operator !=(const OptRecordField<T> &other) const
+    bool operator !=(const OptSubRecord<T> &other) const
+        {
+        return !(*this == other);
+        }
+
+    #ifdef _DEBUG
+    void Debug(const char *name, int debugLevel, unsigned int &indentation)
+        {
+        if(isLoaded)
+            {
+            if(name)
+                {
+                PrintIndent(indentation);
+                printf("%s:\n", name);
+                }
+            value->Debug(debugLevel, indentation);
+            }
+        }
+    #endif
+    };
+
+//Identical to OptSubRecord except for IsLoaded
+//Once loaded, they are always considered loaded unless they're explicitly unloaded.
+//They don't compare to the default value to see if they're
+// still considered loaded.
+template<class T>
+struct SemiOptSubRecord
+    {
+    T *value;
+    SemiOptSubRecord():value(NULL) {}
+    ~SemiOptSubRecord()
+        {
+        delete value;
+        }
+    unsigned int GetSize() const
+        {return sizeof(T);}
+    bool IsLoaded() const
+        {
+        T defaultValue;
+        return (value != NULL);
+        }
+    void Load()
+        {
+        if(value == NULL)
+            value = new T();
+        }
+    void Unload()
+        {
+        delete value;
+        value = NULL;
+        }
+    bool Read(unsigned char *buffer, unsigned int subSize, unsigned int &curPos)
+        {
+        if(value != NULL)
+            {
+            curPos += subSize;
+            return false;
+            }
+        value = new T();
+        if(subSize > sizeof(T))
+            {
+            printf("Opt? subSize:%u, sizeof:%u\n", subSize, sizeof(T));
+            memcpy(value, buffer + curPos, sizeof(T));
+            }
+        else
+            memcpy(value, buffer + curPos, subSize);
+        curPos += subSize;
+        return true;
+        }
+    T *operator->() const
+        {
+        return value;
+        }
+
+    SemiOptSubRecord<T>& operator = (const SemiOptSubRecord<T> &rhs)
+        {
+        if(this != &rhs)
+            if(rhs.value != NULL)
+                {
+                if(value == NULL)
+                    {
+                    value = new T();
+                    }
+                else
+                    value->~T();
+                *value = *rhs.value;
+                }
+            else
+                {
+                delete value;
+                value = NULL;
+                }
+        return *this;
+        }
+    bool operator ==(const SemiOptSubRecord<T> &other) const
+        {
+        if(!IsLoaded())
+            {
+            if(!other.IsLoaded())
+                return true;
+            }
+        else if(other.IsLoaded() && *value == *other.value)
+            return true;
+        return false;
+        }
+    bool operator !=(const SemiOptSubRecord<T> &other) const
         {
         return !(*this == other);
         }
@@ -394,13 +506,12 @@ struct STRING
     STRING& operator = (const STRING &rhs)
         {
         if(this != &rhs)
-            if(rhs.value != NULL)
+            {
+            if(rhs.IsLoaded())
                 Copy(rhs);
             else
-                {
-                delete []value;
-                value = NULL;
-                }
+                Unload();
+            }
         return *this;
         }
     bool operator ==(const STRING &other) const
@@ -514,13 +625,12 @@ struct ISTRING
     ISTRING& operator = (const ISTRING &rhs)
         {
         if(this != &rhs)
-            if(rhs.value != NULL)
+            {
+            if(rhs.IsLoaded())
                 Copy(rhs);
             else
-                {
-                delete []value;
-                value = NULL;
-                }
+                Unload();
+            }
         return *this;
         }
     bool operator ==(const ISTRING &other) const
@@ -626,13 +736,12 @@ struct NONNULLSTRING
     NONNULLSTRING& operator = (const NONNULLSTRING &rhs)
         {
         if(this != &rhs)
-            if(rhs.value != NULL)
+            {
+            if(rhs.IsLoaded())
                 Copy(rhs);
             else
-                {
-                delete []value;
-                value = NULL;
-                }
+                Unload();
+            }
         return *this;
         }
     bool operator ==(const NONNULLSTRING &other) const
@@ -723,15 +832,13 @@ struct RAWBYTES
         }
     RAWBYTES& operator = (const RAWBYTES &rhs)
         {
-        if (this != &rhs)
-            if(rhs.value != NULL)
+        if(this != &rhs)
+            {
+            if(rhs.IsLoaded())
                 Copy(rhs.value, rhs.size);
             else
-                {
-                delete []value;
-                value = NULL;
-                size = rhs.size;
-                }
+                Unload();
+            }
         return *this;
         }
     bool operator ==(const RAWBYTES &other) const

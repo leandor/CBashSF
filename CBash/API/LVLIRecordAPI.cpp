@@ -24,11 +24,11 @@ GPL License and Copyright Notice ============================================
 
 int LVLIRecord::CreateListElement(const unsigned int subField)
     {
-    ReqRecordField<LVLLVLO> *curEntry = NULL;
+    ReqSubRecord<LVLLVLO> *curEntry = NULL;
     switch(subField)
         {
         case 10: //entries
-            curEntry = new ReqRecordField<LVLLVLO>;
+            curEntry = new ReqSubRecord<LVLLVLO>;
             Entries.push_back(curEntry);
             return (int)Entries.size() - 1;
         default:
@@ -38,7 +38,7 @@ int LVLIRecord::CreateListElement(const unsigned int subField)
 
 int LVLIRecord::DeleteListElement(const unsigned int subField)
     {
-    ReqRecordField<LVLLVLO> *curEntry = NULL;
+    ReqSubRecord<LVLLVLO> *curEntry = NULL;
     switch(subField)
         {
         case 10: //entries

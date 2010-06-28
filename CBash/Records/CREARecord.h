@@ -27,7 +27,7 @@ GPL License and Copyright Notice ============================================
 class CREARecord : public Record
     {
     private:
-        enum CREARecordFields {
+        enum CREASubRecords {
             eEDID = 0x44494445,
             eFULL = 0x4C4C5546,
 
@@ -309,9 +309,9 @@ class CREARecord : public Record
             };
         struct CREASound
             {
-            ReqRecordField<CREACSDT> CSDT;
-            ReqRecordField<GENFID> CSDI;
-            ReqRecordField<CREACSDC> CSDC;
+            ReqSubRecord<CREACSDT> CSDT;
+            ReqSubRecord<GENFID> CSDI;
+            ReqSubRecord<CREACSDC> CSDC;
             #ifdef _DEBUG
             void Debug(int debugLevel, size_t &indentation)
                 {
@@ -394,25 +394,25 @@ class CREARecord : public Record
             };
         STRING EDID;
         STRING FULL;
-        OptRecordField<GENMODEL> MODL;
+        OptSubRecord<GENMODEL> MODL;
         std::vector<unsigned int *> SPLO;
         std::vector<ISTRING> NIFZ;
         RAWBYTES NIFT;
-        ReqRecordField<GENACBS> ACBS;
-        std::vector<ReqRecordField<GENSNAM> *> SNAM;
-        OptRecordField<GENFID> INAM;
-        OptRecordField<GENFID> SCRI;
-        std::vector<ReqRecordField<GENCNTO> *> CNTO;
-        ReqRecordField<GENAIDT> AIDT;
+        ReqSubRecord<GENACBS> ACBS;
+        std::vector<ReqSubRecord<GENSNAM> *> SNAM;
+        OptSubRecord<GENFID> INAM;
+        OptSubRecord<GENFID> SCRI;
+        std::vector<ReqSubRecord<GENCNTO> *> CNTO;
+        ReqSubRecord<GENAIDT> AIDT;
         std::vector<unsigned int *> PKID;
         std::vector<STRING> KFFZ;
-        ReqRecordField<CREADATA> DATA;
-        ReqRecordField<CREARNAM> RNAM;
-        OptRecordField<GENFID> ZNAM;
-        ReqRecordField<CREATNAM> TNAM;
-        ReqRecordField<CREABNAM> BNAM;
-        ReqRecordField<CREAWNAM> WNAM;
-        OptRecordField<GENFID> CSCR;
+        ReqSubRecord<CREADATA> DATA;
+        ReqSubRecord<CREARNAM> RNAM;
+        OptSubRecord<GENFID> ZNAM;
+        ReqSubRecord<CREATNAM> TNAM;
+        ReqSubRecord<CREABNAM> BNAM;
+        ReqSubRecord<CREAWNAM> WNAM;
+        OptSubRecord<GENFID> CSCR;
         ISTRING NAM0;
         ISTRING NAM1;
         std::vector<CREASound *> Sounds;
@@ -447,7 +447,7 @@ class CREARecord : public Record
             SNAM.resize(srcRecord->SNAM.size());
             for(unsigned int x = 0; x < srcRecord->SNAM.size(); x++)
                 {
-                SNAM[x] = new ReqRecordField<GENSNAM>;
+                SNAM[x] = new ReqSubRecord<GENSNAM>;
                 *SNAM[x] = *srcRecord->SNAM[x];
                 }
             INAM = srcRecord->INAM;
@@ -456,7 +456,7 @@ class CREARecord : public Record
             CNTO.resize(srcRecord->CNTO.size());
             for(unsigned int x = 0; x < srcRecord->CNTO.size(); x++)
                 {
-                CNTO[x] = new ReqRecordField<GENCNTO>;
+                CNTO[x] = new ReqSubRecord<GENCNTO>;
                 *CNTO[x] = *srcRecord->CNTO[x];
                 }
             AIDT = srcRecord->AIDT;

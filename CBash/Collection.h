@@ -93,7 +93,7 @@ class Collection
 
             unsigned int count = (unsigned int)FID_ModFile_Record.count(recordFID);
             for(unsigned int x = 0; x < count;++it, ++x)
-                if(_stricmp(it->second.first->FileName, ModName) == 0 )
+                if(_stricmp(it->second.first->FileName, ModName) == 0)
                     {
                     curModFile = it->second.first;
                     break;

@@ -27,7 +27,7 @@ GPL License and Copyright Notice ============================================
 class BSGNRecord : public Record
     {
     private:
-        enum BSGNRecordFields {
+        enum BSGNSubRecords {
             eEDID = 0x44494445,
             eFULL = 0x4C4C5546,
             eICON = 0x4E4F4349,

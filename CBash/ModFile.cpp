@@ -23,6 +23,7 @@ GPL License and Copyright Notice ============================================
 #include "ModFile.h"
 #include "Common.h"
 #include "BaseRecord.h"
+#include <set>
 
 int ModFile::Open()
     {
@@ -126,6 +127,7 @@ int ModFile::Load(boost::threadpool::pool &Threads, const bool &FullLoad)
     LoadedGRUPs = true;
     unsigned long GRUPSize;
     unsigned long GRUPLabel;
+    std::set<unsigned int> UsedFormIDs;
     //printf("%u\n", __LINE__);
     while(!ReadHandler.eof()){
         //printf("%u\n", __LINE__);
@@ -140,283 +142,283 @@ int ModFile::Load(boost::threadpool::pool &Threads, const bool &FullLoad)
             case eGMST:
                 ReadHandler.read(&GMST.stamp, 4);
                 //printf("%u\n", __LINE__);
-                GMST.Skim(Threads, ReadHandler, FormIDHandler, true, GRUPSize);
+                GMST.Skim(Threads, ReadHandler, FormIDHandler, true, GRUPSize, UsedFormIDs);
                 //printf("%u\n", __LINE__);
                 break;
             case eIgGLOB:
             case eGLOB:
                 ReadHandler.read(&GLOB.stamp, 4);
-                GLOB.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                GLOB.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgCLAS:
             case eCLAS:
                 ReadHandler.read(&CLAS.stamp, 4);
-                CLAS.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                CLAS.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgFACT:
             case eFACT:
                 ReadHandler.read(&FACT.stamp, 4);
-                FACT.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                FACT.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgHAIR:
             case eHAIR:
                 ReadHandler.read(&HAIR.stamp, 4);
-                HAIR.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                HAIR.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgEYES:
             case eEYES:
                 ReadHandler.read(&EYES.stamp, 4);
-                EYES.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                EYES.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgRACE:
             case eRACE:
                 ReadHandler.read(&RACE.stamp, 4);
-                RACE.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                RACE.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgSOUN:
             case eSOUN:
                 ReadHandler.read(&SOUN.stamp, 4);
-                SOUN.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                SOUN.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgSKIL:
             case eSKIL:
                 ReadHandler.read(&SKIL.stamp, 4);
-                SKIL.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                SKIL.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgMGEF:
             case eMGEF:
                 ReadHandler.read(&MGEF.stamp, 4);
-                MGEF.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                MGEF.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgSCPT:
             case eSCPT:
                 ReadHandler.read(&SCPT.stamp, 4);
-                SCPT.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                SCPT.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgLTEX:
             case eLTEX:
                 ReadHandler.read(&LTEX.stamp, 4);
-                LTEX.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                LTEX.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgENCH:
             case eENCH:
                 ReadHandler.read(&ENCH.stamp, 4);
-                ENCH.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                ENCH.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgSPEL:
             case eSPEL:
                 ReadHandler.read(&SPEL.stamp, 4);
-                SPEL.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                SPEL.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgBSGN:
             case eBSGN:
                 ReadHandler.read(&BSGN.stamp, 4);
-                BSGN.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                BSGN.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgACTI:
             case eACTI:
                 ReadHandler.read(&ACTI.stamp, 4);
-                ACTI.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                ACTI.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgAPPA:
             case eAPPA:
                 ReadHandler.read(&APPA.stamp, 4);
-                APPA.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                APPA.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgARMO:
             case eARMO:
                 ReadHandler.read(&ARMO.stamp, 4);
-                ARMO.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                ARMO.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgBOOK:
             case eBOOK:
                 ReadHandler.read(&BOOK.stamp, 4);
-                BOOK.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                BOOK.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgCLOT:
             case eCLOT:
                 ReadHandler.read(&CLOT.stamp, 4);
-                CLOT.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                CLOT.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgCONT:
             case eCONT:
                 ReadHandler.read(&CONT.stamp, 4);
-                CONT.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                CONT.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgDOOR:
             case eDOOR:
                 ReadHandler.read(&DOOR.stamp, 4);
-                DOOR.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                DOOR.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgINGR:
             case eINGR:
                 ReadHandler.read(&INGR.stamp, 4);
-                INGR.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                INGR.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgLIGH:
             case eLIGH:
                 ReadHandler.read(&LIGH.stamp, 4);
-                LIGH.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                LIGH.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgMISC:
             case eMISC:
                 ReadHandler.read(&MISC.stamp, 4);
-                MISC.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                MISC.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgSTAT:
             case eSTAT:
                 ReadHandler.read(&STAT.stamp, 4);
-                STAT.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                STAT.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgGRAS:
             case eGRAS:
                 ReadHandler.read(&GRAS.stamp, 4);
-                GRAS.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                GRAS.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgTREE:
             case eTREE:
                 ReadHandler.read(&TREE.stamp, 4);
-                TREE.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                TREE.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgFLOR:
             case eFLOR:
                 ReadHandler.read(&FLOR.stamp, 4);
-                FLOR.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                FLOR.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgFURN:
             case eFURN:
                 ReadHandler.read(&FURN.stamp, 4);
-                FURN.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                FURN.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgWEAP:
             case eWEAP:
                 ReadHandler.read(&WEAP.stamp, 4);
-                WEAP.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                WEAP.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgAMMO:
             case eAMMO:
                 ReadHandler.read(&AMMO.stamp, 4);
-                AMMO.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                AMMO.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgNPC_:
             case eNPC_:
                 ReadHandler.read(&NPC_.stamp, 4);
-                NPC_.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                NPC_.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgCREA:
             case eCREA:
                 ReadHandler.read(&CREA.stamp, 4);
-                CREA.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                CREA.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgLVLC:
             case eLVLC:
                 ReadHandler.read(&LVLC.stamp, 4);
-                LVLC.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                LVLC.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgSLGM:
             case eSLGM:
                 ReadHandler.read(&SLGM.stamp, 4);
-                SLGM.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                SLGM.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgKEYM:
             case eKEYM:
                 ReadHandler.read(&KEYM.stamp, 4);
-                KEYM.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                KEYM.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgALCH:
             case eALCH:
                 ReadHandler.read(&ALCH.stamp, 4);
-                ALCH.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                ALCH.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgSBSP:
             case eSBSP:
                 ReadHandler.read(&SBSP.stamp, 4);
-                SBSP.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                SBSP.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgSGST:
             case eSGST:
                 ReadHandler.read(&SGST.stamp, 4);
-                SGST.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                SGST.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgLVLI:
             case eLVLI:
                 ReadHandler.read(&LVLI.stamp, 4);
-                LVLI.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                LVLI.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgWTHR:
             case eWTHR:
                 ReadHandler.read(&WTHR.stamp, 4);
-                WTHR.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                WTHR.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgCLMT:
             case eCLMT:
                 ReadHandler.read(&CLMT.stamp, 4);
-                CLMT.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                CLMT.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgREGN:
             case eREGN:
                 ReadHandler.read(&REGN.stamp, 4);
-                REGN.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                REGN.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgCELL:
             case eCELL:
                 ReadHandler.read(&CELL.stamp, 4);
-                CELL.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                CELL.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgWRLD:
             case eWRLD:
                 ReadHandler.read(&WRLD.stamp, 4);
-                WRLD.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                WRLD.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgDIAL:
             case eDIAL:
                 ReadHandler.read(&DIAL.stamp, 4);
-                DIAL.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                DIAL.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgQUST:
             case eQUST:
                 ReadHandler.read(&QUST.stamp, 4);
-                QUST.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                QUST.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgIDLE:
             case eIDLE:
                 ReadHandler.read(&IDLE.stamp, 4);
-                IDLE.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                IDLE.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgPACK:
             case ePACK:
                 ReadHandler.read(&PACK.stamp, 4);
-                PACK.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                PACK.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgCSTY:
             case eCSTY:
                 ReadHandler.read(&CSTY.stamp, 4);
-                CSTY.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                CSTY.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgLSCR:
             case eLSCR:
                 ReadHandler.read(&LSCR.stamp, 4);
-                LSCR.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                LSCR.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgLVSP:
             case eLVSP:
                 ReadHandler.read(&LVSP.stamp, 4);
-                LVSP.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                LVSP.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgANIO:
             case eANIO:
                 ReadHandler.read(&ANIO.stamp, 4);
-                ANIO.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                ANIO.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgWATR:
             case eWATR:
                 ReadHandler.read(&WATR.stamp, 4);
-                WATR.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                WATR.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             case eIgEFSH:
             case eEFSH:
                 ReadHandler.read(&EFSH.stamp, 4);
-                EFSH.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize);
+                EFSH.Skim(Threads, ReadHandler, FormIDHandler, FullLoad, GRUPSize, UsedFormIDs);
                 break;
             default:
                 printf("FileName = %s\n", FileName);

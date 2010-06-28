@@ -102,7 +102,7 @@ int DeleteCollection(const unsigned int CollectionIndex)
         //Collections.erase(Collections.begin() + CollectionIndex);
         //m_dumpMemoryReport("AfterDelete.txt", true);
         }
-    catch(Ex_INVALIDINDEX &ex) {}
+    catch(Ex_INVALIDINDEX &ex) {} //Silently fail if deleting an already deleted collection
     catch(std::exception &ex)
         {
         printf("Error erasing collection at pos %i\n  %s\n", CollectionIndex, ex.what());

@@ -26,7 +26,7 @@ GPL License and Copyright Notice ============================================
 class CLASRecord : public Record
     {
     private:
-        enum CLASRecordFields {
+        enum CLASSubRecords {
             eEDID = 0x44494445,
             eFULL = 0x4C4C5546,
             eDESC = 0x43534544,
@@ -151,7 +151,7 @@ class CLASRecord : public Record
         STRING FULL;
         STRING DESC;
         STRING ICON;
-        ReqRecordField<CLASDATA> DATA;
+        ReqSubRecord<CLASDATA> DATA;
         CLASRecord(bool newRecord=false):Record(newRecord) {}
         CLASRecord(const unsigned int &newFormID):Record(newFormID) {}
         CLASRecord(CLASRecord *srcRecord):Record(true)

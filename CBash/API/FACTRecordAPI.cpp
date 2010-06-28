@@ -24,16 +24,16 @@ GPL License and Copyright Notice ============================================
 
 int FACTRecord::CreateListElement(const unsigned int subField)
     {
-    ReqRecordField<GENXNAM> *curXNAM = NULL;
-    ReqRecordField<FACTRNAM> *curRNAM = NULL;
+    ReqSubRecord<GENXNAM> *curXNAM = NULL;
+    ReqSubRecord<FACTRNAM> *curRNAM = NULL;
     switch(subField)
         {
         case 7: //relations
-            curXNAM = new ReqRecordField<GENXNAM>;
+            curXNAM = new ReqSubRecord<GENXNAM>;
             XNAM.push_back(curXNAM);
             return (int)XNAM.size() - 1;
         case 10: //ranks
-            curRNAM = new ReqRecordField<FACTRNAM>;
+            curRNAM = new ReqSubRecord<FACTRNAM>;
             RNAM.push_back(curRNAM);
             return (int)RNAM.size() - 1;
         default:
@@ -43,8 +43,8 @@ int FACTRecord::CreateListElement(const unsigned int subField)
 
 int FACTRecord::DeleteListElement(const unsigned int subField)
     {
-    ReqRecordField<GENXNAM> *curXNAM = NULL;
-    ReqRecordField<FACTRNAM> *curRNAM = NULL;
+    ReqSubRecord<GENXNAM> *curXNAM = NULL;
+    ReqSubRecord<FACTRNAM> *curRNAM = NULL;
     switch(subField)
         {
         case 9: //relations

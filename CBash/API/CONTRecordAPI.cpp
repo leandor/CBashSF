@@ -24,11 +24,11 @@ GPL License and Copyright Notice ============================================
 
 int CONTRecord::CreateListElement(const unsigned int subField)
     {
-    ReqRecordField<GENCNTO> *curCNTO = NULL;
+    ReqSubRecord<GENCNTO> *curCNTO = NULL;
     switch(subField)
         {
         case 11: //items
-            curCNTO = new ReqRecordField<GENCNTO>;
+            curCNTO = new ReqSubRecord<GENCNTO>;
             CNTO.push_back(curCNTO);
             return (int)CNTO.size() - 1;
         default:
@@ -38,7 +38,7 @@ int CONTRecord::CreateListElement(const unsigned int subField)
 
 int CONTRecord::DeleteListElement(const unsigned int subField)
     {
-    ReqRecordField<GENCNTO> *curCNTO = NULL;
+    ReqSubRecord<GENCNTO> *curCNTO = NULL;
     switch(subField)
         {
         case 11: //items

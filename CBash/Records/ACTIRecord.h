@@ -26,7 +26,7 @@ GPL License and Copyright Notice ============================================
 class ACTIRecord : public Record
     {
     private:
-        enum ACTIRecordFields {
+        enum ACTISubRecords {
             eEDID = 0x44494445,
             eFULL = 0x4C4C5546,
 
@@ -40,9 +40,9 @@ class ACTIRecord : public Record
     public:
         STRING EDID;
         STRING FULL;
-        OptRecordField<GENMODEL> MODL;
-        OptRecordField<GENFID> SCRI;
-        OptRecordField<GENFID> SNAM;
+        OptSubRecord<GENMODEL> MODL;
+        OptSubRecord<GENFID> SCRI;
+        OptSubRecord<GENFID> SNAM;
         ACTIRecord(bool newRecord=false):Record(newRecord) {}
         ACTIRecord(const unsigned int &newFormID):Record(newFormID) {}
         ACTIRecord(ACTIRecord *srcRecord):Record(true)

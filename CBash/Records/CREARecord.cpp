@@ -31,8 +31,8 @@ int CREARecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
     unsigned int subSize = 0;
     unsigned int curPos = 0;
     FormID curFormID = NULL;
-    ReqRecordField<GENSNAM> *newSNAM = NULL;
-    ReqRecordField<GENCNTO> *newCNTO = NULL;
+    ReqSubRecord<GENSNAM> *newSNAM = NULL;
+    ReqSubRecord<GENCNTO> *newCNTO = NULL;
     CREASound *newSound = NULL;
     unsigned int testNIFT = 0;
     while(curPos < recSize){
@@ -93,7 +93,7 @@ int CREARecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 ACBS.Read(buffer, subSize, curPos);
                 break;
             case eSNAM:
-                newSNAM = new ReqRecordField<GENSNAM>;
+                newSNAM = new ReqSubRecord<GENSNAM>;
                 newSNAM->Read(buffer, subSize, curPos);
                 SNAM.push_back(newSNAM);
                 break;
@@ -104,7 +104,7 @@ int CREARecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 SCRI.Read(buffer, subSize, curPos);
                 break;
             case eCNTO:
-                newCNTO = new ReqRecordField<GENCNTO>;
+                newCNTO = new ReqSubRecord<GENCNTO>;
                 newCNTO->Read(buffer, subSize, curPos);
                 CNTO.push_back(newCNTO);
                 break;

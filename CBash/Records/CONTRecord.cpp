@@ -30,7 +30,7 @@ int CONTRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
     unsigned int subType = 0;
     unsigned int subSize = 0;
     unsigned int curPos = 0;
-    ReqRecordField<GENCNTO> *newCNTO = NULL;
+    ReqSubRecord<GENCNTO> *newCNTO = NULL;
     while(curPos < recSize){
         _readBuffer(&subType,buffer,4,curPos);
         switch(subType)
@@ -70,7 +70,7 @@ int CONTRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 SCRI.Read(buffer, subSize, curPos);
                 break;
             case eCNTO:
-                newCNTO = new ReqRecordField<GENCNTO>;
+                newCNTO = new ReqSubRecord<GENCNTO>;
                 newCNTO->Read(buffer, subSize, curPos);
                 CNTO.push_back(newCNTO);
                 break;

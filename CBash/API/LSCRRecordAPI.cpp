@@ -24,11 +24,11 @@ GPL License and Copyright Notice ============================================
 
 int LSCRRecord::CreateListElement(const unsigned int subField)
     {
-    ReqRecordField<LSCRLNAM> *curLNAM = NULL;
+    ReqSubRecord<LSCRLNAM> *curLNAM = NULL;
     switch(subField)
         {
         case 8: //locations
-            curLNAM = new ReqRecordField<LSCRLNAM>;
+            curLNAM = new ReqSubRecord<LSCRLNAM>;
             LNAM.push_back(curLNAM);
             return (int)LNAM.size() - 1;
         default:
@@ -38,7 +38,7 @@ int LSCRRecord::CreateListElement(const unsigned int subField)
 
 int LSCRRecord::DeleteListElement(const unsigned int subField)
     {
-    ReqRecordField<LSCRLNAM> *curLNAM = NULL;
+    ReqSubRecord<LSCRLNAM> *curLNAM = NULL;
     switch(subField)
         {
         case 8: //locations

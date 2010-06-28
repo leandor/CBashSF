@@ -26,7 +26,7 @@ GPL License and Copyright Notice ============================================
 class ANIORecord : public Record
     {
     private:
-        enum ANIORecordFields {
+        enum ANIOSubRecords {
             eEDID = 0x44494445,
 
             eMODL = 0x4C444F4D,
@@ -37,8 +37,8 @@ class ANIORecord : public Record
             };
     public:
         STRING EDID;
-        OptRecordField<GENMODEL> MODL;
-        ReqRecordField<GENFID> DATA;
+        OptSubRecord<GENMODEL> MODL;
+        ReqSubRecord<GENFID> DATA;
         ANIORecord(bool newRecord=false):Record(newRecord) {}
         ANIORecord(const unsigned int &newFormID):Record(newFormID) {}
         ANIORecord(ANIORecord *srcRecord):Record(true)
