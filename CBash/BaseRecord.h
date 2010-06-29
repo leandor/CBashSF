@@ -1392,8 +1392,8 @@ class Record
             {
             switch(Field)
                 {
-                //case 0: //recType
-                //    return UINT_FIELD;
+                case 0: //recType
+                    return GetType();
                 //case 1: //size
                 //    return UINT_FIELD;
                 case 2: //flags1

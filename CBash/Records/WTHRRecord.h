@@ -439,8 +439,8 @@ class WTHRRecord : public Record
             fUnk2     = 0x10000000
             };
         STRING EDID;
-        ISTRING CNAM;
-        ISTRING DNAM;
+        STRING CNAM;
+        STRING DNAM;
         OptSubRecord<GENMODEL> MODL;
         ReqSubRecord<WTHRNAM0> NAM0;
         ReqSubRecord<WTHRFNAM> FNAM;
@@ -525,6 +525,9 @@ class WTHRRecord : public Record
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue);
         void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue);
+
+        int DeleteField(const unsigned int Field);
+        int DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
 
         int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
         unsigned int GetSize(bool forceCalc=false);

@@ -1820,3 +1820,687 @@ void WTHRRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
         }
     return;
     }
+
+int WTHRRecord::DeleteField(const unsigned int Field)
+    {
+    GENCLR defaultCLR;
+    WTHRFNAM defaultFNAM;
+    WTHRHNAM defaultHNAM;
+    WTHRDATA defaultDATA;
+    unsigned int nSize;
+    WTHRColors defaultColors;
+
+    switch(Field)
+        {
+        case 5: //eid
+            EDID.Unload();
+            break;
+        case 6: //lowerLayer
+            CNAM.Unload();
+            break;
+        case 7: //upperLayer
+            DNAM.Unload();
+            break;
+        case 8: //modPath
+            if(MODL.IsLoaded())
+                MODL->MODL.Unload();
+            break;
+        case 9: //modb
+            if(MODL.IsLoaded())
+                MODL->MODB.Unload();
+            break;
+        case 10: //modt_p
+            if(MODL.IsLoaded())
+                MODL->MODT.Unload();
+            break;
+        case 11: //upperSky.rise.red
+            NAM0.value.upperSky.rise.red = defaultCLR.red;
+            break;
+        case 12: //upperSky.rise.green
+            NAM0.value.upperSky.rise.green = defaultCLR.green;
+            break;
+        case 13: //upperSky.rise.blue
+            NAM0.value.upperSky.rise.blue = defaultCLR.blue;
+            break;
+        case 14: //upperSky.rise.unused1
+            NAM0.value.upperSky.rise.unused1 = defaultCLR.unused1;
+            break;
+        case 15: //upperSky.day.red
+            NAM0.value.upperSky.day.red = defaultCLR.red;
+            break;
+        case 16: //upperSky.day.green
+            NAM0.value.upperSky.day.green = defaultCLR.green;
+            break;
+        case 17: //upperSky.day.blue
+            NAM0.value.upperSky.day.blue = defaultCLR.blue;
+            break;
+        case 18: //upperSky.day.unused1
+            NAM0.value.upperSky.day.unused1 = defaultCLR.unused1;
+            break;
+        case 19: //upperSky.set.red
+            NAM0.value.upperSky.set.red = defaultCLR.red;
+            break;
+        case 20: //upperSky.set.green
+            NAM0.value.upperSky.set.green = defaultCLR.green;
+            break;
+        case 21: //upperSky.set.blue
+            NAM0.value.upperSky.set.blue = defaultCLR.blue;
+            break;
+        case 22: //upperSky.set.unused1
+            NAM0.value.upperSky.set.unused1 = defaultCLR.unused1;
+            break;
+        case 23: //upperSky.night.red
+            NAM0.value.upperSky.night.red = defaultCLR.red;
+            break;
+        case 24: //upperSky.night.green
+            NAM0.value.upperSky.night.green = defaultCLR.green;
+            break;
+        case 25: //upperSky.night.blue
+            NAM0.value.upperSky.night.blue = defaultCLR.blue;
+            break;
+        case 26: //upperSky.night.unused1
+            NAM0.value.upperSky.night.unused1 = defaultCLR.unused1;
+            break;
+        case 27: //fog.rise.red
+            NAM0.value.fog.rise.red = defaultCLR.red;
+            break;
+        case 28: //fog.rise.green
+            NAM0.value.fog.rise.green = defaultCLR.green;
+            break;
+        case 29: //fog.rise.blue
+            NAM0.value.fog.rise.blue = defaultCLR.blue;
+            break;
+        case 30: //fog.rise.unused1
+            NAM0.value.fog.rise.unused1 = defaultCLR.unused1;
+            break;
+        case 31: //fog.day.red
+            NAM0.value.fog.day.red = defaultCLR.red;
+            break;
+        case 32: //fog.day.green
+            NAM0.value.fog.day.green = defaultCLR.green;
+            break;
+        case 33: //fog.day.blue
+            NAM0.value.fog.day.blue = defaultCLR.blue;
+            break;
+        case 34: //fog.day.unused1
+            NAM0.value.fog.day.unused1 = defaultCLR.unused1;
+            break;
+        case 35: //fog.set.red
+            NAM0.value.fog.set.red = defaultCLR.red;
+            break;
+        case 36: //fog.set.green
+            NAM0.value.fog.set.green = defaultCLR.green;
+            break;
+        case 37: //fog.set.blue
+            NAM0.value.fog.set.blue = defaultCLR.blue;
+            break;
+        case 38: //fog.set.unused1
+            NAM0.value.fog.set.unused1 = defaultCLR.unused1;
+            break;
+        case 39: //fog.night.red
+            NAM0.value.fog.night.red = defaultCLR.red;
+            break;
+        case 40: //fog.night.green
+            NAM0.value.fog.night.green = defaultCLR.green;
+            break;
+        case 41: //fog.night.blue
+            NAM0.value.fog.night.blue = defaultCLR.blue;
+            break;
+        case 42: //fog.night.unused1
+            NAM0.value.fog.night.unused1 = defaultCLR.unused1;
+            break;
+        case 43: //lowerClouds.rise.red
+            NAM0.value.lowerClouds.rise.red = defaultCLR.red;
+            break;
+        case 44: //lowerClouds.rise.green
+            NAM0.value.lowerClouds.rise.green = defaultCLR.green;
+            break;
+        case 45: //lowerClouds.rise.blue
+            NAM0.value.lowerClouds.rise.blue = defaultCLR.blue;
+            break;
+        case 46: //lowerClouds.rise.unused1
+            NAM0.value.lowerClouds.rise.unused1 = defaultCLR.unused1;
+            break;
+        case 47: //lowerClouds.day.red
+            NAM0.value.lowerClouds.day.red = defaultCLR.red;
+            break;
+        case 48: //lowerClouds.day.green
+            NAM0.value.lowerClouds.day.green = defaultCLR.green;
+            break;
+        case 49: //lowerClouds.day.blue
+            NAM0.value.lowerClouds.day.blue = defaultCLR.blue;
+            break;
+        case 50: //lowerClouds.day.unused1
+            NAM0.value.lowerClouds.day.unused1 = defaultCLR.unused1;
+            break;
+        case 51: //lowerClouds.set.red
+            NAM0.value.lowerClouds.set.red = defaultCLR.red;
+            break;
+        case 52: //lowerClouds.set.green
+            NAM0.value.lowerClouds.set.green = defaultCLR.green;
+            break;
+        case 53: //lowerClouds.set.blue
+            NAM0.value.lowerClouds.set.blue = defaultCLR.blue;
+            break;
+        case 54: //lowerClouds.set.unused1
+            NAM0.value.lowerClouds.set.unused1 = defaultCLR.unused1;
+            break;
+        case 55: //lowerClouds.night.red
+            NAM0.value.lowerClouds.night.red = defaultCLR.red;
+            break;
+        case 56: //lowerClouds.night.green
+            NAM0.value.lowerClouds.night.green = defaultCLR.green;
+            break;
+        case 57: //lowerClouds.night.blue
+            NAM0.value.lowerClouds.night.blue = defaultCLR.blue;
+            break;
+        case 58: //lowerClouds.night.unused1
+            NAM0.value.lowerClouds.night.unused1 = defaultCLR.unused1;
+            break;
+        case 59: //ambient.rise.red
+            NAM0.value.ambient.rise.red = defaultCLR.red;
+            break;
+        case 60: //ambient.rise.green
+            NAM0.value.ambient.rise.green = defaultCLR.green;
+            break;
+        case 61: //ambient.rise.blue
+            NAM0.value.ambient.rise.blue = defaultCLR.blue;
+            break;
+        case 62: //ambient.rise.unused1
+            NAM0.value.ambient.rise.unused1 = defaultCLR.unused1;
+            break;
+        case 63: //ambient.day.red
+            NAM0.value.ambient.day.red = defaultCLR.red;
+            break;
+        case 64: //ambient.day.green
+            NAM0.value.ambient.day.green = defaultCLR.green;
+            break;
+        case 65: //ambient.day.blue
+            NAM0.value.ambient.day.blue = defaultCLR.blue;
+            break;
+        case 66: //ambient.day.unused1
+            NAM0.value.ambient.day.unused1 = defaultCLR.unused1;
+            break;
+        case 67: //ambient.set.red
+            NAM0.value.ambient.set.red = defaultCLR.red;
+            break;
+        case 68: //ambient.set.green
+            NAM0.value.ambient.set.green = defaultCLR.green;
+            break;
+        case 69: //ambient.set.blue
+            NAM0.value.ambient.set.blue = defaultCLR.blue;
+            break;
+        case 70: //ambient.set.unused1
+            NAM0.value.ambient.set.unused1 = defaultCLR.unused1;
+            break;
+        case 71: //ambient.night.red
+            NAM0.value.ambient.night.red = defaultCLR.red;
+            break;
+        case 72: //ambient.night.green
+            NAM0.value.ambient.night.green = defaultCLR.green;
+            break;
+        case 73: //ambient.night.blue
+            NAM0.value.ambient.night.blue = defaultCLR.blue;
+            break;
+        case 74: //ambient.night.unused1
+            NAM0.value.ambient.night.unused1 = defaultCLR.unused1;
+            break;
+        case 75: //sunlight.rise.red
+            NAM0.value.sunlight.rise.red = defaultCLR.red;
+            break;
+        case 76: //sunlight.rise.green
+            NAM0.value.sunlight.rise.green = defaultCLR.green;
+            break;
+        case 77: //sunlight.rise.blue
+            NAM0.value.sunlight.rise.blue = defaultCLR.blue;
+            break;
+        case 78: //sunlight.rise.unused1
+            NAM0.value.sunlight.rise.unused1 = defaultCLR.unused1;
+            break;
+        case 79: //sunlight.day.red
+            NAM0.value.sunlight.day.red = defaultCLR.red;
+            break;
+        case 80: //sunlight.day.green
+            NAM0.value.sunlight.day.green = defaultCLR.green;
+            break;
+        case 81: //sunlight.day.blue
+            NAM0.value.sunlight.day.blue = defaultCLR.blue;
+            break;
+        case 82: //sunlight.day.unused1
+            NAM0.value.sunlight.day.unused1 = defaultCLR.unused1;
+            break;
+        case 83: //sunlight.set.red
+            NAM0.value.sunlight.set.red = defaultCLR.red;
+            break;
+        case 84: //sunlight.set.green
+            NAM0.value.sunlight.set.green = defaultCLR.green;
+            break;
+        case 85: //sunlight.set.blue
+            NAM0.value.sunlight.set.blue = defaultCLR.blue;
+            break;
+        case 86: //sunlight.set.unused1
+            NAM0.value.sunlight.set.unused1 = defaultCLR.unused1;
+            break;
+        case 87: //sunlight.night.red
+            NAM0.value.sunlight.night.red = defaultCLR.red;
+            break;
+        case 88: //sunlight.night.green
+            NAM0.value.sunlight.night.green = defaultCLR.green;
+            break;
+        case 89: //sunlight.night.blue
+            NAM0.value.sunlight.night.blue = defaultCLR.blue;
+            break;
+        case 90: //sunlight.night.unused1
+            NAM0.value.sunlight.night.unused1 = defaultCLR.unused1;
+            break;
+        case 91: //sun.rise.red
+            NAM0.value.sun.rise.red = defaultCLR.red;
+            break;
+        case 92: //sun.rise.green
+            NAM0.value.sun.rise.green = defaultCLR.green;
+            break;
+        case 93: //sun.rise.blue
+            NAM0.value.sun.rise.blue = defaultCLR.blue;
+            break;
+        case 94: //sun.rise.unused1
+            NAM0.value.sun.rise.unused1 = defaultCLR.unused1;
+            break;
+        case 95: //sun.day.red
+            NAM0.value.sun.day.red = defaultCLR.red;
+            break;
+        case 96: //sun.day.green
+            NAM0.value.sun.day.green = defaultCLR.green;
+            break;
+        case 97: //sun.day.blue
+            NAM0.value.sun.day.blue = defaultCLR.blue;
+            break;
+        case 98: //sun.day.unused1
+            NAM0.value.sun.day.unused1 = defaultCLR.unused1;
+            break;
+        case 99: //sun.set.red
+            NAM0.value.sun.set.red = defaultCLR.red;
+            break;
+        case 100: //sun.set.green
+            NAM0.value.sun.set.green = defaultCLR.green;
+            break;
+        case 101: //sun.set.blue
+            NAM0.value.sun.set.blue = defaultCLR.blue;
+            break;
+        case 102: //sun.set.unused1
+            NAM0.value.sun.set.unused1 = defaultCLR.unused1;
+            break;
+        case 103: //sun.night.red
+            NAM0.value.sun.night.red = defaultCLR.red;
+            break;
+        case 104: //sun.night.green
+            NAM0.value.sun.night.green = defaultCLR.green;
+            break;
+        case 105: //sun.night.blue
+            NAM0.value.sun.night.blue = defaultCLR.blue;
+            break;
+        case 106: //sun.night.unused1
+            NAM0.value.sun.night.unused1 = defaultCLR.unused1;
+            break;
+        case 107: //stars.rise.red
+            NAM0.value.stars.rise.red = defaultCLR.red;
+            break;
+        case 108: //stars.rise.green
+            NAM0.value.stars.rise.green = defaultCLR.green;
+            break;
+        case 109: //stars.rise.blue
+            NAM0.value.stars.rise.blue = defaultCLR.blue;
+            break;
+        case 110: //stars.rise.unused1
+            NAM0.value.stars.rise.unused1 = defaultCLR.unused1;
+            break;
+        case 111: //stars.day.red
+            NAM0.value.stars.day.red = defaultCLR.red;
+            break;
+        case 112: //stars.day.green
+            NAM0.value.stars.day.green = defaultCLR.green;
+            break;
+        case 113: //stars.day.blue
+            NAM0.value.stars.day.blue = defaultCLR.blue;
+            break;
+        case 114: //stars.day.unused1
+            NAM0.value.stars.day.unused1 = defaultCLR.unused1;
+            break;
+        case 115: //stars.set.red
+            NAM0.value.stars.set.red = defaultCLR.red;
+            break;
+        case 116: //stars.set.green
+            NAM0.value.stars.set.green = defaultCLR.green;
+            break;
+        case 117: //stars.set.blue
+            NAM0.value.stars.set.blue = defaultCLR.blue;
+            break;
+        case 118: //stars.set.unused1
+            NAM0.value.stars.set.unused1 = defaultCLR.unused1;
+            break;
+        case 119: //stars.night.red
+            NAM0.value.stars.night.red = defaultCLR.red;
+            break;
+        case 120: //stars.night.green
+            NAM0.value.stars.night.green = defaultCLR.green;
+            break;
+        case 121: //stars.night.blue
+            NAM0.value.stars.night.blue = defaultCLR.blue;
+            break;
+        case 122: //stars.night.unused1
+            NAM0.value.stars.night.unused1 = defaultCLR.unused1;
+            break;
+        case 123: //lowerSky.rise.red
+            NAM0.value.lowerSky.rise.red = defaultCLR.red;
+            break;
+        case 124: //lowerSky.rise.green
+            NAM0.value.lowerSky.rise.green = defaultCLR.green;
+            break;
+        case 125: //lowerSky.rise.blue
+            NAM0.value.lowerSky.rise.blue = defaultCLR.blue;
+            break;
+        case 126: //lowerSky.rise.unused1
+            NAM0.value.lowerSky.rise.unused1 = defaultCLR.unused1;
+            break;
+        case 127: //lowerSky.day.red
+            NAM0.value.lowerSky.day.red = defaultCLR.red;
+            break;
+        case 128: //lowerSky.day.green
+            NAM0.value.lowerSky.day.green = defaultCLR.green;
+            break;
+        case 129: //lowerSky.day.blue
+            NAM0.value.lowerSky.day.blue = defaultCLR.blue;
+            break;
+        case 130: //lowerSky.day.unused1
+            NAM0.value.lowerSky.day.unused1 = defaultCLR.unused1;
+            break;
+        case 131: //lowerSky.set.red
+            NAM0.value.lowerSky.set.red = defaultCLR.red;
+            break;
+        case 132: //lowerSky.set.green
+            NAM0.value.lowerSky.set.green = defaultCLR.green;
+            break;
+        case 133: //lowerSky.set.blue
+            NAM0.value.lowerSky.set.blue = defaultCLR.blue;
+            break;
+        case 134: //lowerSky.set.unused1
+            NAM0.value.lowerSky.set.unused1 = defaultCLR.unused1;
+            break;
+        case 135: //lowerSky.night.red
+            NAM0.value.lowerSky.night.red = defaultCLR.red;
+            break;
+        case 136: //lowerSky.night.green
+            NAM0.value.lowerSky.night.green = defaultCLR.green;
+            break;
+        case 137: //lowerSky.night.blue
+            NAM0.value.lowerSky.night.blue = defaultCLR.blue;
+            break;
+        case 138: //lowerSky.night.unused1
+            NAM0.value.lowerSky.night.unused1 = defaultCLR.unused1;
+            break;
+        case 139: //horizon.rise.red
+            NAM0.value.horizon.rise.red = defaultCLR.red;
+            break;
+        case 140: //horizon.rise.green
+            NAM0.value.horizon.rise.green = defaultCLR.green;
+            break;
+        case 141: //horizon.rise.blue
+            NAM0.value.horizon.rise.blue = defaultCLR.blue;
+            break;
+        case 142: //horizon.rise.unused1
+            NAM0.value.horizon.rise.unused1 = defaultCLR.unused1;
+            break;
+        case 143: //horizon.day.red
+            NAM0.value.horizon.day.red = defaultCLR.red;
+            break;
+        case 144: //horizon.day.green
+            NAM0.value.horizon.day.green = defaultCLR.green;
+            break;
+        case 145: //horizon.day.blue
+            NAM0.value.horizon.day.blue = defaultCLR.blue;
+            break;
+        case 146: //horizon.day.unused1
+            NAM0.value.horizon.day.unused1 = defaultCLR.unused1;
+            break;
+        case 147: //horizon.set.red
+            NAM0.value.horizon.set.red = defaultCLR.red;
+            break;
+        case 148: //horizon.set.green
+            NAM0.value.horizon.set.green = defaultCLR.green;
+            break;
+        case 149: //horizon.set.blue
+            NAM0.value.horizon.set.blue = defaultCLR.blue;
+            break;
+        case 150: //horizon.set.unused1
+            NAM0.value.horizon.set.unused1 = defaultCLR.unused1;
+            break;
+        case 151: //horizon.night.red
+            NAM0.value.horizon.night.red = defaultCLR.red;
+            break;
+        case 152: //horizon.night.green
+            NAM0.value.horizon.night.green = defaultCLR.green;
+            break;
+        case 153: //horizon.night.blue
+            NAM0.value.horizon.night.blue = defaultCLR.blue;
+            break;
+        case 154: //horizon.night.unused1
+            NAM0.value.horizon.night.unused1 = defaultCLR.unused1;
+            break;
+        case 155: //upperClouds.rise.red
+            NAM0.value.upperClouds.rise.red = defaultCLR.red;
+            break;
+        case 156: //upperClouds.rise.green
+            NAM0.value.upperClouds.rise.green = defaultCLR.green;
+            break;
+        case 157: //upperClouds.rise.blue
+            NAM0.value.upperClouds.rise.blue = defaultCLR.blue;
+            break;
+        case 158: //upperClouds.rise.unused1
+            NAM0.value.upperClouds.rise.unused1 = defaultCLR.unused1;
+            break;
+        case 159: //upperClouds.day.red
+            NAM0.value.upperClouds.day.red = defaultCLR.red;
+            break;
+        case 160: //upperClouds.day.green
+            NAM0.value.upperClouds.day.green = defaultCLR.green;
+            break;
+        case 161: //upperClouds.day.blue
+            NAM0.value.upperClouds.day.blue = defaultCLR.blue;
+            break;
+        case 162: //upperClouds.day.unused1
+            NAM0.value.upperClouds.day.unused1 = defaultCLR.unused1;
+            break;
+        case 163: //upperClouds.set.red
+            NAM0.value.upperClouds.set.red = defaultCLR.red;
+            break;
+        case 164: //upperClouds.set.green
+            NAM0.value.upperClouds.set.green = defaultCLR.green;
+            break;
+        case 165: //upperClouds.set.blue
+            NAM0.value.upperClouds.set.blue = defaultCLR.blue;
+            break;
+        case 166: //upperClouds.set.unused1
+            NAM0.value.upperClouds.set.unused1 = defaultCLR.unused1;
+            break;
+        case 167: //upperClouds.night.red
+            NAM0.value.upperClouds.night.red = defaultCLR.red;
+            break;
+        case 168: //upperClouds.night.green
+            NAM0.value.upperClouds.night.green = defaultCLR.green;
+            break;
+        case 169: //upperClouds.night.blue
+            NAM0.value.upperClouds.night.blue = defaultCLR.blue;
+            break;
+        case 170: //upperClouds.night.unused1
+            NAM0.value.upperClouds.night.unused1 = defaultCLR.unused1;
+            break;
+
+        case 171: //fogDayNear
+            FNAM.value.fogDayNear = defaultFNAM.fogDayNear;
+            break;
+        case 172: //fogDayFar
+            FNAM.value.fogDayFar = defaultFNAM.fogDayFar;
+            break;
+        case 173: //fogNightNear
+            FNAM.value.fogNightNear = defaultFNAM.fogNightNear;
+            break;
+        case 174: //fogNightFar
+            FNAM.value.fogNightFar = defaultFNAM.fogNightFar;
+            break;
+
+        case 175: //eyeAdaptSpeed
+            HNAM.value.eyeAdaptSpeed = defaultHNAM.eyeAdaptSpeed;
+            break;
+        case 176: //blurRadius
+            HNAM.value.blurRadius = defaultHNAM.blurRadius;
+            break;
+        case 177: //blurPasses
+            HNAM.value.blurPasses = defaultHNAM.blurPasses;
+            break;
+        case 178: //emissiveMult
+            HNAM.value.emissiveMult = defaultHNAM.emissiveMult;
+            break;
+        case 179: //targetLum
+            HNAM.value.targetLum = defaultHNAM.targetLum;
+            break;
+        case 180: //upperLumClamp
+            HNAM.value.upperLumClamp = defaultHNAM.upperLumClamp;
+            break;
+        case 181: //brightScale
+            HNAM.value.brightScale = defaultHNAM.brightScale;
+            break;
+        case 182: //brightClamp
+            HNAM.value.brightClamp = defaultHNAM.brightClamp;
+            break;
+        case 183: //lumRampNoTex
+            HNAM.value.lumRampNoTex = defaultHNAM.lumRampNoTex;
+            break;
+        case 184: //lumRampMin
+            HNAM.value.lumRampMin = defaultHNAM.lumRampMin;
+            break;
+        case 185: //lumRampMax
+            HNAM.value.lumRampMax = defaultHNAM.lumRampMax;
+            break;
+        case 186: //sunlightDimmer
+            HNAM.value.sunlightDimmer = defaultHNAM.sunlightDimmer;
+            break;
+        case 187: //grassDimmer
+            HNAM.value.grassDimmer = defaultHNAM.grassDimmer;
+            break;
+        case 188: //treeDimmer
+            HNAM.value.treeDimmer = defaultHNAM.treeDimmer;
+            break;
+
+        case 189: //windSpeed
+            DATA.value.windSpeed = defaultDATA.windSpeed;
+            break;
+        case 190: //lowerCloudSpeed
+            DATA.value.lowerCloudSpeed = defaultDATA.lowerCloudSpeed;
+            break;
+        case 191: //upperCloudSpeed
+            DATA.value.upperCloudSpeed = defaultDATA.upperCloudSpeed;
+            break;
+        case 192: //transDelta
+            DATA.value.transDelta = defaultDATA.transDelta;
+            break;
+        case 193: //sunGlare
+            DATA.value.sunGlare = defaultDATA.sunGlare;
+            break;
+        case 194: //sunDamage
+            DATA.value.sunDamage = defaultDATA.sunDamage;
+            break;
+        case 195: //rainFadeIn
+            DATA.value.rainFadeIn = defaultDATA.rainFadeIn;
+            break;
+        case 196: //rainFadeOut
+            DATA.value.rainFadeOut = defaultDATA.rainFadeOut;
+            break;
+        case 197: //boltFadeIn
+            DATA.value.boltFadeIn = defaultDATA.boltFadeIn;
+            break;
+        case 198: //boltFadeOut
+            DATA.value.boltFadeOut = defaultDATA.boltFadeOut;
+            break;
+        case 199: //boltFrequency
+            DATA.value.boltFrequency = defaultDATA.boltFrequency;
+            break;
+        case 200: //weatherType
+            DATA.value.weatherType = defaultDATA.weatherType;
+            break;
+        case 201: //boltRed
+            DATA.value.boltRed = defaultDATA.boltRed;
+            break;
+        case 202: //boltGreen
+            DATA.value.boltGreen = defaultDATA.boltGreen;
+            break;
+        case 203: //boltBlue
+            DATA.value.boltBlue = defaultDATA.boltBlue;
+            break;
+
+        case 204: //sounds
+            nSize = (unsigned int)Sounds.size();
+            for(unsigned int x = 0; x < nSize; x++)
+                delete Sounds[x];
+            Sounds.clear();
+            break;
+
+        case 205: //convenience deleter
+            NAM0.value.upperSky = defaultColors;
+            break;
+        case 206: //convenience deleter
+            NAM0.value.fog = defaultColors;
+            break;
+        case 207: //convenience deleter
+            NAM0.value.lowerClouds = defaultColors;
+            break;
+        case 208: //convenience deleter
+            NAM0.value.ambient = defaultColors;
+            break;
+        case 209: //convenience deleter
+            NAM0.value.sunlight = defaultColors;
+            break;
+        case 210: //convenience deleter
+            NAM0.value.sun = defaultColors;
+            break;
+        case 211: //convenience deleter
+            NAM0.value.stars = defaultColors;
+            break;
+        case 212: //convenience deleter
+            NAM0.value.lowerSky = defaultColors;
+            break;
+        case 213: //convenience deleter
+            NAM0.value.horizon = defaultColors;
+            break;
+        case 214: //convenience deleter
+            NAM0.value.upperClouds = defaultColors;
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }
+
+int WTHRRecord::DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField)
+    {
+    WTHRSNAM defaultSNAM;
+    switch(subField)
+        {
+        case 204: //sounds
+            if(listIndex >= Sounds.size())
+                return 0;
+            switch(listField)
+                {
+                case 1: //sound
+                    Sounds[listIndex]->value.sound = defaultSNAM.sound;
+                    break;
+                case 2: //type
+                    Sounds[listIndex]->value.type = defaultSNAM.type;
+                    break;
+                default:
+                    return 0;
+                }
+            break;
+        default:
+            return 0;
+        }
+    return 1;
+    }
