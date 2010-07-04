@@ -166,6 +166,7 @@ int MinimalLoad(const unsigned int CollectionIndex, const bool LoadMasters)
     {
     try
         {
+        //printf("MinimalLoad: %u\n", CollectionIndex);
         Validate(CollectionIndex);
         Collections[CollectionIndex]->Load(LoadMasters, false);
         Collections[CollectionIndex]->IndexRecords();
@@ -187,6 +188,7 @@ int FullLoad(const unsigned int CollectionIndex, const bool LoadMasters)
     {
     try
         {
+        //printf("FullLoad: %u\n", CollectionIndex);
         Validate(CollectionIndex);
         Collections[CollectionIndex]->Load(LoadMasters, true);
         Collections[CollectionIndex]->IndexRecords();
@@ -477,7 +479,7 @@ char * GetModName(const unsigned int CollectionIndex, const unsigned int iIndex)
     return NULL;
     }
 
-bool ModIsFake(const unsigned int CollectionIndex, const unsigned int iIndex)
+unsigned int ModIsFake(const unsigned int CollectionIndex, const unsigned int iIndex)
     {
     try
         {
@@ -487,14 +489,14 @@ bool ModIsFake(const unsigned int CollectionIndex, const unsigned int iIndex)
     catch(std::exception &ex)
         {
         printf("ModIsFake: Error\n  %s\n", ex.what());
-        return true;
+        return 1;
         }
     catch(...)
         {
         printf("ModIsFake: Error\n  Unhandled Exception\n");
-        return true;
+        return 1;
         }
-    return true;
+    return 1;
     }
 
 unsigned int GetCorrectedFID(const unsigned int CollectionIndex, char *ModName, unsigned int recordObjectID)
@@ -534,6 +536,27 @@ unsigned int UpdateAllReferences(const unsigned int CollectionIndex, char *ModNa
     catch(...)
         {
         printf("UpdateAllReferences: Error\n  Unhandled Exception\n");
+        return 0;
+        }
+    return 0;
+    }
+
+unsigned int GetNumReferences(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, unsigned int referenceFormID)
+    {
+    try
+        {
+        Validate(CollectionIndex);
+        Validate(ModName);
+        return Collections[CollectionIndex]->GetNumReferences(ModName, recordFID, referenceFormID);
+        }
+    catch(std::exception &ex)
+        {
+        printf("GetNumReferences: Error\n  %s\n", ex.what());
+        return 0;
+        }
+    catch(...)
+        {
+        printf("GetNumReferences: Error\n  Unhandled Exception\n");
         return 0;
         }
     return 0;
@@ -4829,7 +4852,7 @@ unsigned int CreateREGNRecord(const unsigned int CollectionIndex, char *ModName)
     return 0;
     }
 
-unsigned int CreateCELLRecord(const unsigned int CollectionIndex, char *ModName, unsigned int parentFID, bool isWorldCELL)
+unsigned int CreateCELLRecord(const unsigned int CollectionIndex, char *ModName, unsigned int parentFID, int isWorldCELL)
     {
     try
         {
@@ -6153,7 +6176,7 @@ unsigned int CopyREGNRecord(const unsigned int CollectionIndex, char *ModName, u
     return 0;
     }
 
-unsigned int CopyCELLRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride, bool isWorldCELL)
+unsigned int CopyCELLRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride, int isWorldCELL)
     {
     try
         {

@@ -975,7 +975,8 @@ enum API_FieldTypes {
     USHORT_FIELD,
     UINTARRAY_FIELD,
     SUBRECORDS_FIELD,
-    SUBRECORD_FIELD
+    SUBRECORD_FIELD,
+    PARENTRECORD_FIELD
     };
 
 enum TopRecords {

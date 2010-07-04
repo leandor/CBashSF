@@ -78,6 +78,18 @@ void Record::AddMasters(_FormIDHandler &FormIDHandler)
     return;
     }
 
+unsigned int Record::GetNumReferences(unsigned int referenceFormID, _FormIDHandler &FormIDHandler)
+    {
+    unsigned int count = 0;
+    std::vector<FormID> FormIDs;
+    Read(FormIDHandler);
+    GetReferencedFormIDs(FormIDs);
+    for(unsigned int x = 0; x < FormIDs.size(); ++x)
+        if(*FormIDs[x] == referenceFormID)
+            ++count;
+    return count;
+    }
+
 unsigned int Record::UpdateReferences(unsigned int origFormID, unsigned int newFormID, _FormIDHandler &FormIDHandler)
     {
     unsigned int count = 0;

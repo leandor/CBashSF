@@ -1117,6 +1117,7 @@ class GRUPRecords<WRLDRecord>
                         break;
                     case eCELL:
                         curCELLRecord = new CELLRecord();
+                        curCELLRecord->Parent = curWRLDRecord;
                         ReadHandler.read(&curCELLRecord->flags, 4);
                         ReadHandler.read(&curCELLRecord->formID, 4);
                         ReadHandler.read(&curCELLRecord->flagsUnk, 4);
@@ -1780,6 +1781,7 @@ class GRUPRecords<WRLDRecord>
                 if(curWorld->CELL == NULL && FixedPersistent.size()) //create a default dummy cell for persistents
                     {
                     curWorld->CELL = new CELLRecord(FormIDHandler.NextExpandedFID());
+                    curWorld->CELL->Parent = curWorld;
                     curWorld->CELL->IsHasWater(true);
                     curWorld->CELL->IsPersistent(true);
                     curWorld->CELL->XCLC.value.posX = 0;

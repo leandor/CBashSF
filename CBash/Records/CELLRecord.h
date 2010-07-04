@@ -27,6 +27,7 @@ GPL License and Copyright Notice ============================================
 #include "REFRRecord.h"
 #include "PGRDRecord.h"
 #include "LANDRecord.h"
+//#include "WRLDRecord.h"
 #include "..\SubGRUPRecord.h"
 #include <vector>
 
@@ -187,9 +188,10 @@ class CELLRecord : public Record
         std::vector<REFRRecord *> REFR;
         PGRDRecord *PGRD;
         LANDRecord *LAND;
-        CELLRecord(bool newRecord=false):Record(newRecord), PGRD(NULL), LAND(NULL) {}
-        CELLRecord(const unsigned int &newFormID):Record(newFormID), PGRD(NULL), LAND(NULL) {}
-        CELLRecord(CELLRecord *srcRecord):Record(true), PGRD(NULL), LAND(NULL)
+        Record *Parent;
+        CELLRecord(bool newRecord=false):Record(newRecord), PGRD(NULL), LAND(NULL), Parent(NULL) {}
+        CELLRecord(const unsigned int &newFormID):Record(newFormID), PGRD(NULL), LAND(NULL), Parent(NULL) {}
+        CELLRecord(CELLRecord *srcRecord):Record(true), PGRD(NULL), LAND(NULL), Parent(NULL)
             {
             flags = srcRecord->flags;
             formID = srcRecord->formID;

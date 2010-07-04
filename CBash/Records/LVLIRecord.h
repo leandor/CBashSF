@@ -124,7 +124,7 @@ class LVLIRecord : public Record
             };
         STRING EDID;
         ReqSubRecord<LVLLVLD> LVLD;
-        SubRecord<GENFLAG> LVLF;
+        SemiOptSubRecord<GENFLAG> LVLF;
         std::vector<ReqSubRecord<LVLLVLO> *> Entries;
         //RAWBYTES DATA; //Older version of LVLF. Auto-updated to newer format.
 
@@ -204,53 +204,53 @@ class LVLIRecord : public Record
         bool IsCalcFromAllLevels()
             {
             if(!LVLF.IsLoaded()) return false;
-            return (LVLF.value.flags & fCalcFromAllLevels) != 0;
+            return (LVLF->flags & fCalcFromAllLevels) != 0;
             }
         void IsCalcFromAllLevels(bool value)
             {
             if(!LVLF.IsLoaded()) return;
             if(value)
-                LVLF.value.flags |= fCalcFromAllLevels;
+                LVLF->flags |= fCalcFromAllLevels;
             else
-                LVLF.value.flags &= ~fCalcFromAllLevels;
+                LVLF->flags &= ~fCalcFromAllLevels;
             }
         bool IsCalcForEachItem()
             {
             if(!LVLF.IsLoaded()) return false;
-            return (LVLF.value.flags & fCalcForEachItem) != 0;
+            return (LVLF->flags & fCalcForEachItem) != 0;
             }
         void IsCalcForEachItem(bool value)
             {
             if(!LVLF.IsLoaded()) return;
             if(value)
-                LVLF.value.flags |= fCalcForEachItem;
+                LVLF->flags |= fCalcForEachItem;
             else
-                LVLF.value.flags &= ~fCalcForEachItem;
+                LVLF->flags &= ~fCalcForEachItem;
             }
         bool IsUseAllSpells()
             {
             if(!LVLF.IsLoaded()) return false;
-            return (LVLF.value.flags & fUseAllSpells) != 0;
+            return (LVLF->flags & fUseAllSpells) != 0;
             }
         void IsUseAllSpells(bool value)
             {
             if(!LVLF.IsLoaded()) return;
             if(value)
-                LVLF.value.flags |= fUseAllSpells;
+                LVLF->flags |= fUseAllSpells;
             else
-                LVLF.value.flags &= ~fUseAllSpells;
+                LVLF->flags &= ~fUseAllSpells;
             }
         bool IsFlagMask(unsigned char Mask, bool Exact=false)
             {
             if(!LVLF.IsLoaded()) return false;
             if(Exact)
-                return (LVLF.value.flags & Mask) == Mask;
+                return (LVLF->flags & Mask) == Mask;
             else
-                return (LVLF.value.flags & Mask) != 0;
+                return (LVLF->flags & Mask) != 0;
             }
         void SetFlagMask(unsigned char Mask)
             {
-            LVLF.isLoaded = true;
-            LVLF.value.flags = Mask;
+            LVLF.Load();
+            LVLF->flags = Mask;
             }
     };

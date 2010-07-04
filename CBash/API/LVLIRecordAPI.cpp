@@ -75,7 +75,9 @@ void * LVLIRecord::GetOtherField(const unsigned int Field)
         case 6: //chanceNone
             return &LVLD.value.chanceNone;
         case 7: //flags
-            return &LVLF.value.flags;
+            if(LVLF.IsLoaded())
+                return &LVLF->flags;
+            return NULL;
         default:
             return NULL;
         }
@@ -209,13 +211,13 @@ void LVLIRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
             if((LVLD.value.chanceNone & fAltCalcFromAllLevels) != 0)
                 {
                 LVLD.value.chanceNone &= ~fAltCalcFromAllLevels;
-                LVLF.isLoaded = true;
+                LVLF.Load();
                 IsCalcFromAllLevels(true);
                 }
             break;
         case 7: //flags
-            LVLF.value.flags = FieldValue;
-            LVLF.isLoaded = true;
+            LVLF.Load();
+            LVLF->flags = FieldValue;
             break;
         default:
             return;

@@ -1544,6 +1544,7 @@ class Record
         void ExpandFormIDs(_FormIDHandler &FormIDHandler);
         void CollapseFormIDs(_FormIDHandler &FormIDHandler);
         void AddMasters(_FormIDHandler &FormIDHandler);
+        unsigned int GetNumReferences(unsigned int referenceFormID, _FormIDHandler &FormIDHandler);
         unsigned int UpdateReferences(unsigned int origFormID, unsigned int newFormID, _FormIDHandler &FormIDHandler);
         bool CheckMasters(unsigned int MASTIndex, _FormIDHandler &FormIDHandler);
 

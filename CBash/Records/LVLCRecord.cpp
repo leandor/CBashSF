@@ -57,7 +57,7 @@ int LVLCRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 if((LVLD.value.chanceNone & fAltCalcFromAllLevels) != 0)
                     {
                     LVLD.value.chanceNone &= ~fAltCalcFromAllLevels;
-                    LVLF.isLoaded = true;
+                    LVLF.Load();
                     IsCalcFromAllLevels(true);
                     }
                 break;
@@ -121,7 +121,7 @@ int LVLCRecord::WriteRecord(_FileHandler &SaveHandler)
     if(LVLD.IsLoaded())
         SaveHandler.writeSubRecord(eLVLD, &LVLD.value, LVLD.GetSize());
     if(LVLF.IsLoaded())
-        SaveHandler.writeSubRecord(eLVLF, &LVLF.value, LVLF.GetSize());
+        SaveHandler.writeSubRecord(eLVLF, LVLF.value, LVLF.GetSize());
     if(SCRI.IsLoaded())
         SaveHandler.writeSubRecord(eSCRI, SCRI.value, SCRI.GetSize());
     if(TNAM.IsLoaded())

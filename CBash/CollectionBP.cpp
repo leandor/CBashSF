@@ -1799,7 +1799,7 @@ unsigned int Collection::CreateREGNRecord(char *ModName)
     return newRecordFID;
     }
 
-unsigned int Collection::CreateCELLRecord(char *ModName, unsigned int parentFID, bool isWorldCELL)
+unsigned int Collection::CreateCELLRecord(char *ModName, unsigned int parentFID, int isWorldCELL)
     {
     ModFile *curModFile = NULL;
     WRLDRecord *parentRecord = NULL;
@@ -1807,7 +1807,7 @@ unsigned int Collection::CreateCELLRecord(char *ModName, unsigned int parentFID,
     if(hasParent)
         {
         LookupRecord(ModName, parentFID, curModFile, parentRecord);
-        if(parentRecord == NULL || (isWorldCELL && parentRecord->CELL != NULL))
+        if(parentRecord == NULL || (isWorldCELL > 0 && parentRecord->CELL != NULL))
             return 0;
         }
     else
@@ -1822,7 +1822,8 @@ unsigned int Collection::CreateCELLRecord(char *ModName, unsigned int parentFID,
     curRecord->IsInterior(!hasParent);
     if(hasParent)
         {
-        if(isWorldCELL)
+        curRecord->Parent = parentRecord;
+        if(isWorldCELL > 0)
             parentRecord->CELL = curRecord;
         else
             parentRecord->CELLS.push_back(curRecord);
@@ -3764,7 +3765,7 @@ unsigned int Collection::CopyREGNRecord(char *ModName, unsigned int srcRecordFID
     return copyRecord->formID;
     }
 
-unsigned int Collection::CopyCELLRecord(char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride, bool isWorldCELL)
+unsigned int Collection::CopyCELLRecord(char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride, int isWorldCELL)
     {
     ModFile *srcMod = NULL;
     CELLRecord *srcRecord = NULL;
@@ -3772,6 +3773,12 @@ unsigned int Collection::CopyCELLRecord(char *ModName, unsigned int srcRecordFID
     LookupRecord(ModName, srcRecordFID, srcMod, srcRecord);
     if(srcMod == NULL || srcRecord == NULL)
         return 0;
+
+    if(isWorldCELL == 2 && srcRecord->Parent != NULL)
+        if(((WRLDRecord *)srcRecord->Parent)->CELL == srcRecord)
+            isWorldCELL = 1;
+        else
+            isWorldCELL = 0;
 
     ModFile *destMod = NULL;
     WRLDRecord *destParentRecord = NULL;
@@ -3782,12 +3789,12 @@ unsigned int Collection::CopyCELLRecord(char *ModName, unsigned int srcRecordFID
         {
         //See if the parent world record already exists
         LookupRecord(destModName, destParentFID, destMod, destParentRecord);
-        if(destParentRecord == NULL || (isWorldCELL && destParentRecord->CELL != NULL))
+        if(destParentRecord == NULL || (isWorldCELL > 0 && destParentRecord->CELL != NULL))
             {
             //If it doesn't, try and create it.
             destParentFID = CopyWRLDRecord(ModName, destParentFID, destModName, asOverride);
             LookupRecord(destModName, destParentFID, destMod, destParentRecord);
-            if(destParentRecord == NULL || (isWorldCELL && destParentRecord->CELL != NULL))
+            if(destParentRecord == NULL || (isWorldCELL > 0 && destParentRecord->CELL != NULL))
                 return 0;
             }
         }
@@ -3815,7 +3822,8 @@ unsigned int Collection::CopyCELLRecord(char *ModName, unsigned int srcRecordFID
     copyRecord->IsInterior(!hasParent);
     if(hasParent)
         {
-        if(isWorldCELL)
+        copyRecord->Parent = destParentRecord;
+        if(isWorldCELL > 0)
             destParentRecord->CELL = copyRecord;
         else
             destParentRecord->CELLS.push_back(copyRecord);

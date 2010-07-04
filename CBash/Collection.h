@@ -43,6 +43,7 @@ class Collection
     private:
         char *ModsDir;
         std::vector<ModFile *> ModFiles;
+        std::vector<char *> LoadOrder;
         //std::vector<int> LoadRecordTypes;
         bool isLoaded;
     public:
@@ -111,10 +112,12 @@ class Collection
 
         ModFile *LookupModFile(char *ModName);
         unsigned int SetRecordFormID(char *ModName, unsigned int recordFID, unsigned int FieldValue);
+        unsigned int GetNumMods();
         char * GetModName(const unsigned int iIndex);
-        bool ModIsFake(const unsigned int iIndex);
+        unsigned int ModIsFake(const unsigned int iIndex);
         unsigned int GetCorrectedFID(char *ModName, unsigned int recordObjectID);
         unsigned int UpdateReferences(char *ModName, unsigned int origFormID, unsigned int newFormID);
+        unsigned int GetNumReferences(char *ModName, unsigned int recordFID, unsigned int referenceFormID);
         unsigned int UpdateReferences(char *ModName, unsigned int recordFID, unsigned int origFormID, unsigned int newFormID);
         int GetModIndex(const char *ModName);
 
@@ -124,7 +127,6 @@ class Collection
         int GetNumGMSTConflicts(char *recordEDID);
         void GetGMSTConflicts(char *recordEDID, char **ModNames);
         
-        unsigned int GetNumMods();
         //ADD DEFINITIONS HERE
         unsigned int GetNumGMSTRecords(char *ModName);
         unsigned int GetNumGLOBRecords(char *ModName);
@@ -325,7 +327,7 @@ class Collection
         unsigned int CreateWTHRRecord(char *ModName);
         unsigned int CreateCLMTRecord(char *ModName);
         unsigned int CreateREGNRecord(char *ModName);
-        unsigned int CreateCELLRecord(char *ModName, unsigned int parentFID, bool isWorldCELL);
+        unsigned int CreateCELLRecord(char *ModName, unsigned int parentFID, int isWorldCELL);
         unsigned int CreateACHRRecord(char *ModName, unsigned int parentFID);
         unsigned int CreateACRERecord(char *ModName, unsigned int parentFID);
         unsigned int CreateREFRRecord(char *ModName, unsigned int parentFID);
@@ -390,7 +392,7 @@ class Collection
         unsigned int CopyWTHRRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
         unsigned int CopyCLMTRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
         unsigned int CopyREGNRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyCELLRecord(char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride, bool isWorldCELL);
+        unsigned int CopyCELLRecord(char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride, int isWorldCELL);
         unsigned int CopyACHRRecord(char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride);
         unsigned int CopyACRERecord(char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride);
         unsigned int CopyREFRRecord(char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride);

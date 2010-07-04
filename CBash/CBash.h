@@ -55,9 +55,10 @@ extern "C" __declspec(dllexport) void GetMods(const unsigned int CollectionIndex
 ////////////////////////////////////////////////////////////////////////
 extern "C" __declspec(dllexport) unsigned int SetRecordFormID(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, unsigned int FieldValue);
 extern "C" __declspec(dllexport) char * GetModName(const unsigned int CollectionIndex, const unsigned int iIndex);
-extern "C" __declspec(dllexport) bool ModIsFake(const unsigned int CollectionIndex, const unsigned int iIndex);
+extern "C" __declspec(dllexport) unsigned int ModIsFake(const unsigned int CollectionIndex, const unsigned int iIndex);
 extern "C" __declspec(dllexport) unsigned int GetCorrectedFID(const unsigned int CollectionIndex, char *ModName, unsigned int recordObjectID);
 extern "C" __declspec(dllexport) unsigned int UpdateAllReferences(const unsigned int CollectionIndex, char *ModName, unsigned int origFormID, unsigned int newFormID);
+extern "C" __declspec(dllexport) unsigned int GetNumReferences(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, unsigned int referenceFormID);
 extern "C" __declspec(dllexport) unsigned int UpdateReferences(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, unsigned int origFormID, unsigned int newFormID);
 ////////////////////////////////////////////////////////////////////////
 extern "C" __declspec(dllexport) int GetNumFIDConflicts(const unsigned int CollectionIndex, unsigned int recordFID);
@@ -282,7 +283,7 @@ extern "C" __declspec(dllexport) unsigned int CreateLVLIRecord(const unsigned in
 extern "C" __declspec(dllexport) unsigned int CreateWTHRRecord(const unsigned int CollectionIndex, char *ModName);
 extern "C" __declspec(dllexport) unsigned int CreateCLMTRecord(const unsigned int CollectionIndex, char *ModName);
 extern "C" __declspec(dllexport) unsigned int CreateREGNRecord(const unsigned int CollectionIndex, char *ModName);
-extern "C" __declspec(dllexport) unsigned int CreateCELLRecord(const unsigned int CollectionIndex, char *ModName, unsigned int parentFID, bool isWorldCELL);
+extern "C" __declspec(dllexport) unsigned int CreateCELLRecord(const unsigned int CollectionIndex, char *ModName, unsigned int parentFID, int isWorldCELL);
 extern "C" __declspec(dllexport) unsigned int CreateACHRRecord(const unsigned int CollectionIndex, char *ModName, unsigned int parentFID);
 extern "C" __declspec(dllexport) unsigned int CreateACRERecord(const unsigned int CollectionIndex, char *ModName, unsigned int parentFID);
 extern "C" __declspec(dllexport) unsigned int CreateREFRRecord(const unsigned int CollectionIndex, char *ModName, unsigned int parentFID);
@@ -348,7 +349,7 @@ extern "C" __declspec(dllexport) unsigned int CopyLVLIRecord(const unsigned int 
 extern "C" __declspec(dllexport) unsigned int CopyWTHRRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
 extern "C" __declspec(dllexport) unsigned int CopyCLMTRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
 extern "C" __declspec(dllexport) unsigned int CopyREGNRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-extern "C" __declspec(dllexport) unsigned int CopyCELLRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride, bool isWorldCELL);
+extern "C" __declspec(dllexport) unsigned int CopyCELLRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride, int isWorldCELL);
 extern "C" __declspec(dllexport) unsigned int CopyACHRRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride);
 extern "C" __declspec(dllexport) unsigned int CopyACRERecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride);
 extern "C" __declspec(dllexport) unsigned int CopyREFRRecord(const unsigned int CollectionIndex, char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride);

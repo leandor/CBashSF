@@ -3,6 +3,7 @@ import struct
 from os.path import exists
 try:
     from bolt import GPath
+    import bush
 except:
     pass
 if(exists(".\\CBash.dll")):
@@ -15,10 +16,16 @@ class PrintFormID(object):
     def __init__(self, formID):
         self._FormID = formID
     def __repr__(self):
-        if(self._FormID): return "%08X" % self._FormID
+        if(self._FormID):
+            if isinstance(self._FormID, tuple):
+                return '(%s,0x%06X)' % (self._FormID[0].s,self._FormID[1])
+            return "%08X" % self._FormID
         return "None"
     def __str__(self):
-        if(self._FormID): return "%08X" % self._FormID
+        if(self._FormID):
+            if isinstance(self._FormID, tuple):
+                return '(%s,0x%06X)' % (self._FormID[0].s,self._FormID[1])
+            return "%08X" % self._FormID
         return "None"
 
 def getattr_deep(obj, attr):
@@ -27,6 +34,17 @@ def getattr_deep(obj, attr):
 def setattr_deep(obj, attr, value):
     attrs = attr.split('.')
     setattr(reduce(getattr, attrs[:-1], obj), attrs[-1], value)
+
+def MakeLongFid(collection, fid):
+    if(fid == None): return None
+    masterIndex = int(fid >> 24)
+    object = int(fid & 0xFFFFFFL)
+    master = CBash.GetModName(collection, masterIndex)
+    return (GPath(master),object)
+def MakeShortFid(collection, fid):
+    if(fid == None): return None
+    if not isinstance(fid,tuple): return fid
+    return CBash.GetCorrectedFID(collection, fid[0].s, fid[1])
 
 class Model(object):
     def __init__(self, CollectionIndex, ModName, recordID, listIndex):
@@ -59,7 +77,7 @@ class Model(object):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_modt_p(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 2)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 2)
         else:
             length = len(nValue)
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 2, struct.pack('B' * length, *nValue), length)
@@ -81,6 +99,11 @@ class Item(object):
         if nValue is None: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1)
         else: CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1, nValue)
     item = property(get_item, set_item)
+    def get_item_long(self):
+        return MakeLongFid(self._CollectionIndex,self.item)
+    def set_item_long(self, nValue):
+        self.item = MakeShortFid(self._CollectionIndex, nValue)
+    item_long = property(get_item_long, set_item_long)
     def get_count(self):
         CBash.ReadFIDListField.restype = POINTER(c_int)
         retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2)
@@ -115,8 +138,8 @@ class Condition(object):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused1(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2)
-        else: CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2, nValue)
+        if nValue is None or not len(nValue): CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2)
+        else: CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2, struct.pack('3B', *nValue), 3)
     unused1 = property(get_unused1, set_unused1)
     def get_compValue(self):
         CBash.ReadFIDListField.restype = POINTER(c_float)
@@ -125,7 +148,7 @@ class Condition(object):
         return None
     def set_compValue(self, nValue):
         if nValue is None: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3)
-        else: CBash.SetFIDListFieldF(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3, nValue)
+        else: CBash.SetFIDListFieldF(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3, c_float(round(nValue,6)))
     compValue = property(get_compValue, set_compValue)
     def get_ifunc(self):
         CBash.ReadFIDListField.restype = POINTER(c_uint)
@@ -145,6 +168,15 @@ class Condition(object):
         if nValue is None: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 5)
         else: CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 5, nValue)
     param1 = property(get_param1, set_param1)
+    def get_param1_long(self):
+        if self.ifunc in bush.fid1Conditions:
+            return MakeLongFid(self._CollectionIndex,self.param1)
+        return self.param1
+    def set_param1_long(self, nValue):
+        if self.ifunc in bush.fid1Conditions:
+            self.param1 = MakeShortFid(self._CollectionIndex, nValue)
+        else: self.param1 = nValue        
+    param1_long = property(get_param1_long, set_param1_long)
     def get_param2(self):
         CBash.ReadFIDListField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 6)
@@ -154,6 +186,15 @@ class Condition(object):
         if nValue is None: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 6)
         else: CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 6, nValue)
     param2 = property(get_param2, set_param2)
+    def get_param2_long(self):
+        if self.ifunc in bush.fid2Conditions:
+            return MakeLongFid(self._CollectionIndex,self.param2)
+        return self.param2
+    def set_param2_long(self, nValue):
+        if self.ifunc in bush.fid2Conditions:
+            self.param2 = MakeShortFid(self._CollectionIndex, nValue)
+        else: self.param2 = nValue        
+    param2_long = property(get_param2_long, set_param2_long)
     def get_unused2(self):
         numRecords = CBash.GetFIDListArraySize(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 7)
         if(numRecords > 0):
@@ -162,8 +203,8 @@ class Condition(object):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused2(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 7)
-        else: CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 7, nValue)
+        if nValue is None or not len(nValue): CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 7)
+        else: CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 7, struct.pack('4B', *nValue), 4)
     unused2 = property(get_unused2, set_unused2)
     def get_IsEqual(self):
         return self.operType and ((self.operType & 0xF0) == 0x00000000)
@@ -272,6 +313,43 @@ class Condition(object):
             self.operType &= 0xF0
             self.operType |= nValue
         else: self.operType = nValue
+class Reference(object):
+    def __init__(self, CollectionIndex, ModName, recordID, subField, listIndex):
+        self._CollectionIndex = CollectionIndex
+        self._ModName = ModName
+        self.GName = GPath(ModName)
+        self._recordID = recordID
+        self._subField = subField
+        self._listIndex = listIndex
+    def get_reference(self):
+        CBash.ReadFIDListField.restype = POINTER(c_uint)
+        retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1)
+        if(retValue): return retValue.contents.value
+        return None
+    def set_reference(self, nValue):
+        if nValue is None: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1)
+        else: CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1, nValue)
+    reference = property(get_reference, set_reference)
+    def get_reference_long(self):
+        if self.IsSCRO:
+            return MakeLongFid(self._CollectionIndex,self.reference)
+        return self.reference
+    def set_reference_long(self, nValue):
+        if self.IsSCRO:
+            self.reference = MakeShortFid(self._CollectionIndex, nValue)
+        else: self.reference = nValue            
+    reference_long = property(get_reference_long, set_reference_long)
+    def get_IsSCRO(self):
+        CBash.ReadFIDListField.restype = POINTER(c_uint)
+        retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2)
+        if(retValue): return bool(retValue.contents.value)
+        return None
+    def set_IsSCRO(self, nValue):
+        if isinstance(nValue, bool):
+            if(nValue): CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2, 1)
+            else: CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2, 0)
+        else: CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2, nValue)
+    IsSCRO = property(get_IsSCRO, set_IsSCRO)
 class Effect(object):
     def __init__(self, CollectionIndex, ModName, recordID, subField, listIndex):
         self._CollectionIndex = CollectionIndex
@@ -353,6 +431,11 @@ class Effect(object):
         if nValue is None: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 8)
         else: CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 8, nValue)
     script = property(get_script, set_script)
+    def get_script_long(self):
+        return MakeLongFid(self._CollectionIndex,self.script)
+    def set_script_long(self, nValue):
+        self.script = MakeShortFid(self._CollectionIndex, nValue)
+    script_long = property(get_script_long, set_script_long)
     def get_school(self):
         CBash.ReadFIDListField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 9)
@@ -388,7 +471,7 @@ class Effect(object):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused1(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 12)
+        if nValue is None or not len(nValue): CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 12)
         else: CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 12, struct.pack('3B', *nValue), 3)
     unused1 = property(get_unused1, set_unused1)
     def get_full(self):
@@ -406,6 +489,7 @@ class Effect(object):
             else: self.flags = 0x00000001
         elif self.flags: self.flags &= ~0x00000001
     IsHostile = property(get_IsHostile, set_IsHostile)
+
 class Faction(object):
     def __init__(self, CollectionIndex, ModName, recordID, subField, listIndex):
         self._CollectionIndex = CollectionIndex
@@ -423,6 +507,11 @@ class Faction(object):
         if nValue is None: CBash.DeleteFIDListField(self._CollectionIndex,  self._ModName,  self._recordID,  self._subField,  self._listIndex,  1)
         else: CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1, nValue)
     faction = property(get_faction, set_faction)
+    def get_faction_long(self):
+        return MakeLongFid(self._CollectionIndex,self.faction)
+    def set_faction_long(self, nValue):
+        self.faction = MakeShortFid(self._CollectionIndex, nValue)
+    faction_long = property(get_faction_long, set_faction_long)
     def get_rank(self):
         CBash.ReadFIDListField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2)
@@ -440,8 +529,92 @@ class Faction(object):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused1(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDListField(self._CollectionIndex,  self._ModName,  self._recordID,  self._subField,  self._listIndex,  3)
+        if nValue is None or not len(nValue): CBash.DeleteFIDListField(self._CollectionIndex,  self._ModName,  self._recordID,  self._subField,  self._listIndex,  3)
         else: CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3, struct.pack('3B', *nValue), 3)
+    unused1 = property(get_unused1, set_unused1)
+class Relation(object):
+    def __init__(self, CollectionIndex, ModName, recordID, subField, listIndex):
+        self._CollectionIndex = CollectionIndex
+        self._ModName = ModName
+        self.GName = GPath(ModName)
+        self._recordID = recordID
+        self._subField = subField
+        self._listIndex = listIndex
+    def get_faction(self):
+        CBash.ReadFIDListField.restype = POINTER(c_uint)
+        retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1)
+        if(retValue): return retValue.contents.value
+        return None
+    def set_faction(self, nValue):
+        if nValue is None: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1)
+        else: CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1, nValue)
+    faction = property(get_faction, set_faction)
+    def get_faction_long(self):
+        return MakeLongFid(self._CollectionIndex,self.faction)
+    def set_faction_long(self, nValue):
+        self.faction = MakeShortFid(self._CollectionIndex, nValue)
+    faction_long = property(get_faction_long, set_faction_long)
+    def get_mod(self):
+        CBash.ReadFIDListField.restype = POINTER(c_int)
+        retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2)
+        if(retValue): return retValue.contents.value
+        return None
+    def set_mod(self, nValue):
+        if nValue is None: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2)
+        else: CBash.SetFIDListFieldI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2, nValue)
+    mod = property(get_mod, set_mod)
+class PGRPRecord(object):
+    def __init__(self, CollectionIndex, ModName, recordID, listIndex):
+        self._CollectionIndex = CollectionIndex
+        self._ModName = ModName
+        self._recordID = recordID
+        self._listIndex = listIndex
+    def get_x(self):
+        CBash.ReadFIDListField.restype = POINTER(c_float)
+        retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 1)
+        if(retValue): return round(retValue.contents.value,6)
+        return None
+    def set_x(self, nValue):
+        if nValue is None: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 1)
+        else: CBash.SetFIDListFieldF(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 1, c_float(round(nValue,6)))
+    x = property(get_x, set_x)
+    def get_y(self):
+        CBash.ReadFIDListField.restype = POINTER(c_float)
+        retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 2)
+        if(retValue): return round(retValue.contents.value,6)
+        return None
+    def set_y(self, nValue):
+        if nValue is None: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 2)
+        else: CBash.SetFIDListFieldF(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 2, c_float(round(nValue,6)))
+    y = property(get_y, set_y)
+    def get_z(self):
+        CBash.ReadFIDListField.restype = POINTER(c_float)
+        retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 3)
+        if(retValue): return round(retValue.contents.value,6)
+        return None
+    def set_z(self, nValue):
+        if nValue is None: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 3)
+        else: CBash.SetFIDListFieldF(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 3, c_float(round(nValue,6)))
+    z = property(get_z, set_z)
+    def get_connections(self):
+        CBash.ReadFIDListField.restype = POINTER(c_ubyte)
+        retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 4)
+        if(retValue): return retValue.contents.value
+        return None
+    def set_connections(self, nValue):
+        if nValue is None: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 4)
+        else: CBash.SetFIDListFieldUC(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 4, c_ubyte(nValue))
+    connections = property(get_connections, set_connections)
+    def get_unused1(self):
+        numRecords = CBash.GetFIDListArraySize(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 5)
+        if(numRecords > 0):
+            cRecords = POINTER(c_ubyte * numRecords)()
+            CBash.GetFIDListArray(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 5, byref(cRecords))
+            return [cRecords.contents[x] for x in range(0, numRecords)]
+        return []
+    def set_unused1(self, nValue):
+        if nValue is None or not len(nValue): CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 5)
+        else: CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 5, struct.pack('3B', *nValue), 3)
     unused1 = property(get_unused1, set_unused1)
 #Record accessors
 class BaseRecord(object):
@@ -461,43 +634,42 @@ class BaseRecord(object):
         CBash.DeleteRecord(self._CollectionIndex, self._ModName, self._recordID, 0)
         return
 
+    def GetNumReferences(self, referenceFid):
+        referenceFid = MakeShortFid(self._CollectionIndex, referenceFid)
+        if referenceFid is None: return 0
+        return CBash.GetNumReferences(self._CollectionIndex, self._ModName, self._recordID, referenceFid)
+
     def UpdateReferences(self, origFid, newFid):
-        if not isinstance(origFid, int): return 0
-        if not isinstance(newFid, int): return 0
+        origFid = MakeShortFid(self._CollectionIndex, origFid)
+        newFid = MakeShortFid(self._CollectionIndex, newFid)
+        if not (origFid or newFid): return 0
         return CBash.UpdateReferences(self._CollectionIndex, self._ModName, self._recordID, origFid, newFid)
     def Conflicts(self):
-        numRecords = CBash.GetNumFIDConflicts(self._CollectionIndex, self._ModName, self._recordID)
+        numRecords = CBash.GetNumFIDConflicts(self._CollectionIndex, self._recordID)
         if(numRecords > 1):
             cModNames = (POINTER(c_char_p) * numRecords)()
-            CBash.GetFIDConflicts(self._CollectionIndex, self._ModName, self._recordID, cModNames)
+            CBash.GetFIDConflicts(self._CollectionIndex, self._recordID, cModNames)
             return [self.__class__(self._CollectionIndex, string_at(cModNames[x]), self._recordID) for x in range(0, numRecords)]
         return []
-    def mergeFilter(self,modFile,modSet):
+    def mergeFilter(self,modSet):
         """This method is called by the bashed patch mod merger. The intention is
         to allow a record to be filtered according to the specified modSet. E.g.
         for a list record, items coming from mods not in the modSet could be
         removed from the list."""
         pass
-    def get_longFid(self):
-        fid = self.fid
-        if(fid == None): return (None,None)
-        masterIndex = int(fid >> 24)
-        object = int(fid & 0xFFFFFFL)
-        master = CBash.GetModName(self._CollectionIndex, masterIndex)
-        return (GPath(master),object)
-    def set_longFid(self, nValue):
-        if nValue is None: return
-        if not isinstance(nValue,tuple): return
-        fid = CBash.GetCorrectedFID(self._CollectionIndex, nValue[0].s, nValue[1])
-        if(fid == 0): return
-        self.fid = fid
-    longFid = property(get_longFid, set_longFid)
+
     def CopyAsOverride(self, targetMod):
-        CBash.CopyFIDRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        CBash.CopyFIDRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         return
     def CopyAsNew(self, targetMod):
-        CBash.CopyFIDRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        CBash.CopyFIDRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         return
+    @property
+    def recType(self):
+        CBash.GetFIDFieldType.restype = (c_char * 4)
+        retValue = CBash.GetFIDFieldType(self._CollectionIndex, self._ModName, self._recordID, 0)
+        if(retValue): return retValue.value
+        return None
     def get_flags1(self):
         CBash.ReadFIDField.restype = POINTER(c_int)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 2)
@@ -508,7 +680,7 @@ class BaseRecord(object):
         CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 2, nValue)
     flags1 = property(get_flags1, set_flags1)
     def get_fid(self):
-        CBash.ReadFIDField.restype = POINTER(c_int)
+        CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 3)
         if(retValue): return retValue.contents.value
         return None
@@ -518,6 +690,12 @@ class BaseRecord(object):
         if(nValue != 0):
             self._recordID = nValue
     fid = property(get_fid, set_fid)
+    def get_fid_long(self):
+        return MakeLongFid(self._CollectionIndex,self.fid)
+    def set_fid_long(self, nValue):
+        if nValue is None: return
+        self.fid = MakeShortFid(self._CollectionIndex, nValue)
+    fid_long = property(get_fid_long, set_fid_long)
     def get_flags2(self):
         CBash.ReadFIDField.restype = POINTER(c_int)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 4)
@@ -632,6 +810,9 @@ class TES4Record(object):
         self.GName = GPath(ModName)
     def UnloadRecord(self):
         pass
+    @property
+    def recType(self):
+        return self._Type
     def get_flags1(self):
         CBash.ReadTES4Field.restype = POINTER(c_uint)
         retValue = CBash.ReadTES4Field(self._CollectionIndex, self._ModName, 2)
@@ -685,7 +866,7 @@ class TES4Record(object):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_ofst_p(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteTES4Field(self._CollectionIndex, self._ModName, 9)
+        if nValue is None or not len(nValue): CBash.DeleteTES4Field(self._CollectionIndex, self._ModName, 9)
         else:
             length = len(nValue)
             CBash.SetTES4FieldR(self._CollectionIndex, self._ModName, 9, struct.pack('B' * length, *nValue), length)
@@ -698,7 +879,7 @@ class TES4Record(object):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_dele_p(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteTES4Field(self._CollectionIndex, self._ModName, 10)
+        if nValue is None or not len(nValue): CBash.DeleteTES4Field(self._CollectionIndex, self._ModName, 10)
         else:
             length = len(nValue)
             CBash.SetTES4FieldR(self._CollectionIndex, self._ModName, 10, struct.pack('B' * length, *nValue), length)
@@ -725,7 +906,7 @@ class TES4Record(object):
             return [string_at(cRecords[x]) for x in range(0, numRecords)]
         return []
     def set_masters(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteTES4Field(self._CollectionIndex, self._ModName, 13)
+        if nValue is None or not len(nValue): CBash.DeleteTES4Field(self._CollectionIndex, self._ModName, 13)
         else:
             length = len(nValue)
             cRecords = (c_char_p * length)(*nValue)
@@ -756,34 +937,25 @@ class GMSTRecord(object):
     def DeleteRecord(self):
         CBash.DeleteGMSTRecord(self._CollectionIndex, self._ModName, self._recordID)
         return
+    def GetNumReferences(self, referenceFid):
+        return 0
     def UpdateReferences(self, origFid, newFid):
         return 0
     def Conflicts(self):
-        numRecords = CBash.GetNumGMSTConflicts(self._CollectionIndex, self._ModName, self._recordID)
+        numRecords = CBash.GetNumGMSTConflicts(self._CollectionIndex, self._recordID)
         if(numRecords > 1):
             cModNames = (POINTER(c_char_p) * numRecords)()
-            CBash.GetGMSTConflicts(self._CollectionIndex, self._ModName, self._recordID, cModNames)
+            CBash.GetGMSTConflicts(self._CollectionIndex, self._recordID, cModNames)
             return [GMSTRecord(self._CollectionIndex, string_at(cModNames[x]), self._recordID) for x in range(0, numRecords)]
         return []
-    def get_longFid(self):
-        fid = self.fid
-        if(fid == None): return (None,None)
-        masterIndex = int(fid >> 24)
-        object = int(fid & 0xFFFFFFL)
-        master = CBash.GetModName(self._CollectionIndex, masterIndex)
-        return (GPath(master),object)
-    def set_longFid(self, nValue):
-        if nValue is None: return
-        if not isinstance(nValue,tuple): return
-        fid = CBash.GetCorrectedFID(self._CollectionIndex, nValue[0].s, nValue[1])
-        if(fid == 0): return
-        self.fid = fid
-    longFid = property(get_longFid, set_longFid)
     def CopyAsOverride(self, targetMod):
         recID = CBash.CopyGMSTRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName)
         if(recID): return GMSTRecord(self._CollectionIndex, targetMod._ModName, self._recordID)
         return None
 
+    @property
+    def recType(self):
+        return self._Type
     def get_flags1(self):
         CBash.ReadGMSTField.restype = POINTER(c_int)
         retValue = CBash.ReadGMSTField(self._CollectionIndex, self._ModName, self._recordID, 2)
@@ -794,7 +966,7 @@ class GMSTRecord(object):
         CBash.SetGMSTFieldUI(self._CollectionIndex, self._ModName, self._recordID, 2, nValue)
     flags1 = property(get_flags1, set_flags1)
     def get_fid(self):
-        CBash.ReadGMSTField.restype = POINTER(c_int)
+        CBash.ReadGMSTField.restype = POINTER(c_uint)
         retValue = CBash.ReadGMSTField(self._CollectionIndex, self._ModName, self._recordID, 3)
         if(retValue): return retValue.contents.value
         return None
@@ -804,6 +976,12 @@ class GMSTRecord(object):
         if(nValue != 0):
             self._recordID = nValue
     fid = property(get_fid, set_fid)
+    def get_fid_long(self):
+        return MakeLongFid(self._CollectionIndex,self.fid)
+    def set_fid_long(self, nValue):
+        if nValue is None: return
+        self.fid = MakeShortFid(self._CollectionIndex, nValue)
+    fid_long = property(get_fid_long, set_fid_long)
     def get_flags2(self):
         CBash.ReadGMSTField.restype = POINTER(c_int)
         retValue = CBash.ReadGMSTField(self._CollectionIndex, self._ModName, self._recordID, 4)
@@ -855,27 +1033,23 @@ class ACHRRecord(BaseRecord):
     def CopyAsOverride(self, targetCELL):
         if isinstance(targetCELL, CBashModFile): targetID = self._parentID
         else: targetID = targetCELL._recordID
-        FID = CBash.CopyACHRRecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetID, c_bool(True))
+        FID = CBash.CopyACHRRecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetID, 1)
         if(FID): return ACHRRecord(self._CollectionIndex, targetCELL._ModName, FID, targetID)
         return None
     def CopyAsNew(self, targetCELL):
         if isinstance(targetCELL, CBashModFile): targetID = self._parentID
         else: targetID = targetCELL._recordID
-        FID = CBash.CopyACHRRecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetID, c_bool(False))
+        FID = CBash.CopyACHRRecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetID, 0)
         if(FID): return ACHRRecord(self._CollectionIndex, targetCELL._ModName, FID, targetID)
         return None
     def DeleteRecord(self):
         CBash.DeleteRecord(self._CollectionIndex, self._ModName, self._recordID, self._parentID)
         return
-    def get_base(self):
-        CBash.ReadFIDField.restype = POINTER(c_uint)
-        retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 6)
-        if(retValue): return retValue.contents.value
-        return None
-    def set_base(self, nValue):
-        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 6)
-        else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 6, nValue)
-    base = property(get_base, set_base)
+    def get_base_long(self):
+        return MakeLongFid(self._CollectionIndex,self.base)
+    def set_base_long(self, nValue):
+        self.base = MakeShortFid(self._CollectionIndex, nValue)
+    base_long = property(get_base_long, set_base_long)
     def get_unknownXPCIFormID(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
@@ -885,6 +1059,11 @@ class ACHRRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 7, nValue)
     unknownXPCIFormID = property(get_unknownXPCIFormID, set_unknownXPCIFormID)
+    def get_unknownXPCIFormID_long(self):
+        return MakeLongFid(self._CollectionIndex,self.unknownXPCIFormID)
+    def set_unknownXPCIFormID_long(self, nValue):
+        self.unknownXPCIFormID = MakeShortFid(self._CollectionIndex, nValue)
+    unknownXPCIFormID_long = property(get_unknownXPCIFormID_long, set_unknownXPCIFormID_long)
     def get_unknownXPCIString(self):
         CBash.ReadFIDField.restype = c_char_p
         return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
@@ -928,6 +1107,11 @@ class ACHRRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 12, nValue)
     parent = property(get_parent, set_parent)
+    def get_parent_long(self):
+        return MakeLongFid(self._CollectionIndex,self.parent)
+    def set_parent_long(self, nValue):
+        self.parent = MakeShortFid(self._CollectionIndex, nValue)
+    parent_long = property(get_parent_long, set_parent_long)
     def get_parentFlags(self):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
@@ -945,7 +1129,7 @@ class ACHRRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused1(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 14)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 14)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 14, struct.pack('3B', *nValue), 3)
     unused1 = property(get_unused1, set_unused1)
     def get_merchantContainer(self):
@@ -957,6 +1141,11 @@ class ACHRRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 15)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 15, nValue)
     merchantContainer = property(get_merchantContainer, set_merchantContainer)
+    def get_merchantContainer_long(self):
+        return MakeLongFid(self._CollectionIndex,self.merchantContainer)
+    def set_merchantContainer_long(self, nValue):
+        self.merchantContainer = MakeShortFid(self._CollectionIndex, nValue)
+    merchantContainer_long = property(get_merchantContainer_long, set_merchantContainer_long)
     def get_horse(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 16)
@@ -966,6 +1155,11 @@ class ACHRRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 16)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 16, nValue)
     horse = property(get_horse, set_horse)
+    def get_horse_long(self):
+        return MakeLongFid(self._CollectionIndex,self.horse)
+    def set_horse_long(self, nValue):
+        self.horse = MakeShortFid(self._CollectionIndex, nValue)
+    horse_long = property(get_horse_long, set_horse_long)
     def get_xrgd_p(self):
         numRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 17)
         if(numRecords > 0):
@@ -974,7 +1168,7 @@ class ACHRRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_xrgd_p(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 17)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 17)
         else:
             length = len(nValue)
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 17, struct.pack('B' * length, *nValue), length)
@@ -1063,13 +1257,13 @@ class ACRERecord(BaseRecord):
     def CopyAsOverride(self, targetCELL):
         if isinstance(targetCELL, CBashModFile): targetID = self._parentID
         else: targetID = targetCELL._recordID
-        FID = CBash.CopyACRERecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetID, c_bool(True))
+        FID = CBash.CopyACRERecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetID, 1)
         if(FID): return ACRERecord(self._CollectionIndex, targetCELL._ModName, FID, targetID)
         return None
     def CopyAsNew(self, targetCELL):
         if isinstance(targetCELL, CBashModFile): targetID = self._parentID
         else: targetID = targetCELL._recordID
-        FID = CBash.CopyACRERecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetID, c_bool(False))
+        FID = CBash.CopyACRERecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetID, 0)
         if(FID): return ACRERecord(self._CollectionIndex, targetCELL._ModName, FID, targetID)
         return None
     def DeleteRecord(self):
@@ -1084,6 +1278,11 @@ class ACRERecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 6)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 6, nValue)
     base = property(get_base, set_base)
+    def get_base_long(self):
+        return MakeLongFid(self._CollectionIndex,self.base)
+    def set_base_long(self, nValue):
+        self.base = MakeShortFid(self._CollectionIndex, nValue)
+    base_long = property(get_base_long, set_base_long)
     def get_owner(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
@@ -1093,6 +1292,11 @@ class ACRERecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 7, nValue)
     owner = property(get_owner, set_owner)
+    def get_owner_long(self):
+        return MakeLongFid(self._CollectionIndex,self.owner)
+    def set_owner_long(self, nValue):
+        self.owner = MakeShortFid(self._CollectionIndex, nValue)
+    owner_long = property(get_owner_long, set_owner_long)
     def get_rank(self):
         CBash.ReadFIDField.restype = POINTER(c_int)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
@@ -1111,6 +1315,11 @@ class ACRERecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 9, nValue)
     globalVariable = property(get_globalVariable, set_globalVariable)
+    def get_globalVariable_long(self):
+        return MakeLongFid(self._CollectionIndex,self.globalVariable)
+    def set_globalVariable_long(self, nValue):
+        self.globalVariable = MakeShortFid(self._CollectionIndex, nValue)
+    globalVariable_long = property(get_globalVariable_long, set_globalVariable_long)
     def get_parent(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
@@ -1129,6 +1338,11 @@ class ACRERecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         else: CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 11, c_ubyte(nValue))
     parentFlags = property(get_parentFlags, set_parentFlags)
+    def get_parent_long(self):
+        return MakeLongFid(self._CollectionIndex,self.parent)
+    def set_parent_long(self, nValue):
+        self.parent = MakeShortFid(self._CollectionIndex, nValue)
+    parent_long = property(get_parent_long, set_parent_long)
     def get_unused1(self):
         numRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 12)
         if(numRecords > 0):
@@ -1137,7 +1351,7 @@ class ACRERecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused1(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 12, struct.pack('3B', *nValue), 3)
     unused1 = property(get_unused1, set_unused1)
     def get_xrgd_p(self):
@@ -1148,7 +1362,7 @@ class ACRERecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_xrgd_p(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
         else:
             length = len(nValue)
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 13, struct.pack('B' * length, *nValue), length)
@@ -1231,11 +1445,11 @@ class ACRERecord(BaseRecord):
 class ACTIRecord(BaseRecord):
     _Type = 'ACTI'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyACTIRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopyACTIRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return ACTIRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopyACTIRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopyACTIRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return ACTIRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def get_full(self):
@@ -1269,7 +1483,7 @@ class ACTIRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_modt_p(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         else:
             length = len(nValue)
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 9, struct.pack('B' * length, *nValue), length)
@@ -1283,6 +1497,11 @@ class ACTIRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 10, c_uint(nValue))
     script = property(get_script, set_script)
+    def get_script_long(self):
+        return MakeLongFid(self._CollectionIndex,self.script)
+    def set_script_long(self, nValue):
+        self.script = MakeShortFid(self._CollectionIndex, nValue)
+    script_long = property(get_script_long, set_script_long)
     def get_sound(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
@@ -1292,16 +1511,21 @@ class ACTIRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 11, c_uint(nValue))
     sound = property(get_sound, set_sound)
+    def get_sound_long(self):
+        return MakeLongFid(self._CollectionIndex,self.sound)
+    def set_sound_long(self, nValue):
+        self.sound = MakeShortFid(self._CollectionIndex, nValue)
+    sound_long = property(get_sound_long, set_sound_long)
     copyattrs = BaseRecord.baseattrs + ['full','modPath','modb','modt_p','script','sound']
 
 class ALCHRecord(BaseRecord):
     _Type = 'ALCH'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyALCHRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopyALCHRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return ALCHRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopyALCHRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopyALCHRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return ALCHRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def newEffectsElement(self):
@@ -1339,7 +1563,7 @@ class ALCHRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_modt_p(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         else:
             length = len(nValue)
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 9, struct.pack('B' * length, *nValue), length)
@@ -1360,6 +1584,11 @@ class ALCHRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 11, c_uint(nValue))
     script = property(get_script, set_script)
+    def get_script_long(self):
+        return MakeLongFid(self._CollectionIndex,self.script)
+    def set_script_long(self, nValue):
+        self.script = MakeShortFid(self._CollectionIndex, nValue)
+    script_long = property(get_script_long, set_script_long)
     def get_weight(self):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
@@ -1395,7 +1624,7 @@ class ALCHRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused1(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 15)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 15)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 15, struct.pack('3B', *nValue), 3)
     unused1 = property(get_unused1, set_unused1)
     def get_effects(self):
@@ -1403,10 +1632,15 @@ class ALCHRecord(BaseRecord):
         if(numRecords > 0): return [Effect(self._CollectionIndex, self._ModName, self._recordID, 16, x) for x in range(0, numRecords)]
         return []
     def set_effects(self, nEffects):
-        if nEffects is None or nEffects == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 16)
+        if nEffects is None or not len(nEffects): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 16)
         else:
             diffLength = len(nEffects) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 16)
-            nValues = [(nEffect.name0, nEffect.name, nEffect.magnitude, nEffect.area, nEffect.duration, nEffect.recipient, nEffect.actorValue, nEffect.script, nEffect.school, nEffect.visual, nEffect.flags, nEffect.unused1, nEffect.full) for nEffect in nEffects]
+            if isinstance(nEffects[0], tuple):
+                nValues = nEffects
+            else:
+                nValues = [(nEffect.name0, nEffect.name, nEffect.magnitude, nEffect.area, nEffect.duration,
+                            nEffect.recipient, nEffect.actorValue, nEffect.script_long, nEffect.school,
+                            nEffect.visual, nEffect.flags, nEffect.unused1, nEffect.full) for nEffect in nEffects]
             while(diffLength < 0):
                 CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 16)
                 diffLength += 1
@@ -1414,8 +1648,13 @@ class ALCHRecord(BaseRecord):
                 CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 16)
                 diffLength -= 1
             for oEffect, nValue in zip(self.effects, nValues):
-                oEffect.name0, oEffect.name, oEffect.magnitude, oEffect.area, oEffect.duration, oEffect.recipient, oEffect.actorValue, oEffect.script, oEffect.school, oEffect.visual, oEffect.flags, oEffect.unused1, oEffect.full = nValue
+                oEffect.name0, oEffect.name, oEffect.magnitude, oEffect.area, oEffect.duration, oEffect.recipient, oEffect.actorValue, oEffect.script_long, oEffect.school, oEffect.visual, oEffect.flags, oEffect.unused1, oEffect.full = nValue
     effects = property(get_effects, set_effects)
+    def get_effects_list(self):
+        return [(effect.name0, effect.name, effect.magnitude, effect.area, effect.duration,
+                 effect.recipient, effect.actorValue, effect.script_long, effect.school,
+                 effect.visual, effect.flags, None, effect.full) for effect in self.effects]
+    effects_list = property(get_effects_list, set_effects)
     def get_IsNoAutoCalc(self):
         return self.flags != None and (self.flags & 0x00000001) != 0
     def set_IsNoAutoCalc(self, nValue):
@@ -1439,11 +1678,11 @@ class ALCHRecord(BaseRecord):
 class AMMORecord(BaseRecord):
     _Type = 'AMMO'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyAMMORecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopyAMMORecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return AMMORecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopyAMMORecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopyAMMORecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return AMMORecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def get_full(self):
@@ -1477,7 +1716,7 @@ class AMMORecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_modt_p(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         else:
             length = len(nValue)
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 9, struct.pack('B' * length, *nValue), length)
@@ -1498,6 +1737,11 @@ class AMMORecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 11, nValue)
     enchantment = property(get_enchantment, set_enchantment)
+    def get_enchantment_long(self):
+        return MakeLongFid(self._CollectionIndex,self.enchantment)
+    def set_enchantment_long(self, nValue):
+        self.enchantment = MakeShortFid(self._CollectionIndex, nValue)
+    enchantment_long = property(get_enchantment_long, set_enchantment_long)
     def get_enchantPoints(self):
         CBash.ReadFIDField.restype = POINTER(c_ushort)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
@@ -1533,7 +1777,7 @@ class AMMORecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused1(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 15)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 15)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 15, struct.pack('3B', *nValue), 3)
     unused1 = property(get_unused1, set_unused1)
     def get_value(self):
@@ -1585,11 +1829,11 @@ class AMMORecord(BaseRecord):
 class ANIORecord(BaseRecord):
     _Type = 'ANIO'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyANIORecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopyANIORecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return ANIORecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopyANIORecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopyANIORecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return ANIORecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def get_modPath(self):
@@ -1616,7 +1860,7 @@ class ANIORecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_modt_p(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         else:
             length = len(nValue)
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 8, struct.pack('B' * length, *nValue), length)
@@ -1630,16 +1874,21 @@ class ANIORecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 9, nValue)
     animationId = property(get_animationId, set_animationId)
+    def get_animationId_long(self):
+        return MakeLongFid(self._CollectionIndex,self.animationId)
+    def set_animationId_long(self, nValue):
+        self.animationId = MakeShortFid(self._CollectionIndex, nValue)
+    animationId_long = property(get_animationId_long, set_animationId_long)
     copyattrs = BaseRecord.baseattrs + ['modPath','modb','modt_p','animationId']
 
 class APPARecord(BaseRecord):
     _Type = 'APPA'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyAPPARecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopyAPPARecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return APPARecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopyAPPARecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopyAPPARecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return APPARecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def get_full(self):
@@ -1673,7 +1922,7 @@ class APPARecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_modt_p(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         else:
             length = len(nValue)
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 9, struct.pack('B' * length, *nValue), length)
@@ -1694,6 +1943,11 @@ class APPARecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 11, c_uint(nValue))
     script = property(get_script, set_script)
+    def get_script_long(self):
+        return MakeLongFid(self._CollectionIndex,self.script)
+    def set_script_long(self, nValue):
+        self.script = MakeShortFid(self._CollectionIndex, nValue)
+    script_long = property(get_script_long, set_script_long)
     def get_apparatus(self):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
@@ -1761,11 +2015,11 @@ class APPARecord(BaseRecord):
 class ARMORecord(BaseRecord):
     _Type = 'ARMO'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyARMORecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopyARMORecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return ARMORecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopyARMORecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopyARMORecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return ARMORecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def get_full(self):
@@ -1784,6 +2038,11 @@ class ARMORecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 7, c_uint(nValue))
     script = property(get_script, set_script)
+    def get_script_long(self):
+        return MakeLongFid(self._CollectionIndex,self.script)
+    def set_script_long(self, nValue):
+        self.script = MakeShortFid(self._CollectionIndex, nValue)
+    script_long = property(get_script_long, set_script_long)
     def get_enchantment(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
@@ -1793,6 +2052,11 @@ class ARMORecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 8, c_uint(nValue))
     enchantment = property(get_enchantment, set_enchantment)
+    def get_enchantment_long(self):
+        return MakeLongFid(self._CollectionIndex,self.enchantment)
+    def set_enchantment_long(self, nValue):
+        self.enchantment = MakeShortFid(self._CollectionIndex, nValue)
+    enchantment_long = property(get_enchantment_long, set_enchantment_long)
     def get_enchantPoints(self):
         CBash.ReadFIDField.restype = POINTER(c_ushort)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
@@ -1815,7 +2079,7 @@ class ARMORecord(BaseRecord):
         return Model(self._CollectionIndex, self._ModName, self._recordID, 11)
     def set_maleBody(self, nValue):
         thisModel = self.maleBody
-        if nValue is None: 
+        if nValue is None:
             thisModel.modPath = None
             thisModel.modb = None
             thisModel.modt_p = None
@@ -1828,7 +2092,7 @@ class ARMORecord(BaseRecord):
         return Model(self._CollectionIndex, self._ModName, self._recordID, 14)
     def set_maleWorld(self, nValue):
         thisModel = self.maleWorld
-        if nValue is None: 
+        if nValue is None:
             thisModel.modPath = None
             thisModel.modb = None
             thisModel.modt_p = None
@@ -1848,7 +2112,7 @@ class ARMORecord(BaseRecord):
         return Model(self._CollectionIndex, self._ModName, self._recordID, 18)
     def set_femaleBody(self, nValue):
         thisModel = self.femaleBody
-        if nValue is None: 
+        if nValue is None:
             thisModel.modPath = None
             thisModel.modb = None
             thisModel.modt_p = None
@@ -1861,7 +2125,7 @@ class ARMORecord(BaseRecord):
         return Model(self._CollectionIndex, self._ModName, self._recordID, 21)
     def set_femaleWorld(self, nValue):
         thisModel = self.femaleWorld
-        if nValue is None: 
+        if nValue is None:
             thisModel.modPath = None
             thisModel.modb = None
             thisModel.modt_p = None
@@ -2065,6 +2329,11 @@ class ARMORecord(BaseRecord):
             else: self.flags = 0x00040000
         elif self.flags: self.flags &= ~0x00400000
     IsNonPlayable = property(get_IsNonPlayable, set_IsNonPlayable)
+    def get_IsPlayable(self):
+        return not self.IsNonPlayable
+    def set_IsPlayable(self, nValue):
+        self.IsNonPlayable = not nValue
+    IsPlayable = property(get_IsPlayable, set_IsPlayable)
     def get_IsHeavyArmor(self):
         return self.flags != None and (self.flags & 0x00800000) != 0
     def set_IsHeavyArmor(self, nValue):
@@ -2081,11 +2350,11 @@ class ARMORecord(BaseRecord):
 class BOOKRecord(BaseRecord):
     _Type = 'BOOK'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyBOOKRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopyBOOKRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return BOOKRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopyBOOKRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopyBOOKRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return BOOKRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def get_full(self):
@@ -2119,7 +2388,7 @@ class BOOKRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_modt_p(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         else:
             length = len(nValue)
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 9, struct.pack('B' * length, *nValue), length)
@@ -2147,6 +2416,11 @@ class BOOKRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 12, c_uint(nValue))
     script = property(get_script, set_script)
+    def get_script_long(self):
+        return MakeLongFid(self._CollectionIndex,self.script)
+    def set_script_long(self, nValue):
+        self.script = MakeShortFid(self._CollectionIndex, nValue)
+    script_long = property(get_script_long, set_script_long)
     def get_enchantment(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
@@ -2156,6 +2430,11 @@ class BOOKRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 13, c_uint(nValue))
     enchantment = property(get_enchantment, set_enchantment)
+    def get_enchantment_long(self):
+        return MakeLongFid(self._CollectionIndex,self.enchantment)
+    def set_enchantment_long(self, nValue):
+        self.enchantment = MakeShortFid(self._CollectionIndex, nValue)
+    enchantment_long = property(get_enchantment_long, set_enchantment_long)
     def get_enchantPoints(self):
         CBash.ReadFIDField.restype = POINTER(c_ushort)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 14)
@@ -2225,11 +2504,11 @@ class BOOKRecord(BaseRecord):
 class BSGNRecord(BaseRecord):
     _Type = 'BSGN'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyBSGNRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopyBSGNRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return BSGNRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopyBSGNRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopyBSGNRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return BSGNRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def get_full(self):
@@ -2261,30 +2540,43 @@ class BSGNRecord(BaseRecord):
             return [cRecords[x].contents.value for x in range(0, numRecords)]
         return []
     def set_spells(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         else:
             length = len(nValue)
             cRecords = (c_uint * length)(*nValue)
             CBash.SetFIDFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 9, cRecords, length)
     spells = property(get_spells, set_spells)
+    def get_spells_long(self):
+        return [MakeLongFid(self._CollectionIndex,fid) for fid in self.spells]
+    def set_spells_long(self, nValue):
+        self.spells = [MakeShortFid(self._CollectionIndex,fid) for fid in nValue]
+    spells_long = property(get_spells_long, set_spells_long)
     copyattrs = BaseRecord.baseattrs + ['full','iconPath','text','spells']
 
 class CELLRecord(BaseRecord):
     _Type = 'CELL'
-    def __init__(self, CollectionIndex, ModName, recordID, parentID = 0):
+    def __init__(self, CollectionIndex, ModName, recordID, isWorldCell=2):
         BaseRecord.__init__(self, CollectionIndex, ModName, recordID)
-        self._parentID = parentID
-    def CopyAsOverride(self, target, isWorldCell=False):
+        self._IsWorldCell = isWorldCell
+    @property
+    def _parentID(self):
+        CBash.ReadFIDField.restype = POINTER(c_uint)
+        retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 41)
+        if(retValue): return retValue.contents.value
+        return 0
+    def CopyAsOverride(self, target, isWorldCell=None):
+        if isWorldCell is None: isWorldCell = self._IsWorldCell
         if isinstance(target, CBashModFile): targetID = self._parentID
         else: targetID = target._recordID
-        FID = CBash.CopyCELLRecord(self._CollectionIndex, self._ModName, self._recordID, target._ModName, targetID, c_bool(True), c_bool(isWorldCell))
-        if(FID): return CELLRecord(self._CollectionIndex, target._ModName, FID, targetID)
+        FID = CBash.CopyCELLRecord(self._CollectionIndex, self._ModName, self._recordID, target._ModName, targetID, 1, isWorldCell)
+        if(FID): return CELLRecord(self._CollectionIndex, target._ModName, FID, isWorldCell)
         return None
-    def CopyAsNew(self, target, isWorldCell=False):
+    def CopyAsNew(self, target, isWorldCell=None):
+        if isWorldCell is None: isWorldCell = self._IsWorldCell
         if isinstance(target, CBashModFile): targetID = self._parentID
         else: targetID = target._recordID
-        FID = CBash.CopyCELLRecord(self._CollectionIndex, self._ModName, self._recordID, target._ModName, targetID, c_bool(False), c_bool(isWorldCell))
-        if(FID): return CELLRecord(self._CollectionIndex, target._ModName, FID, targetID)
+        FID = CBash.CopyCELLRecord(self._CollectionIndex, self._ModName, self._recordID, target._ModName, targetID, 0, int(isWorldCell))
+        if(FID): return CELLRecord(self._CollectionIndex, target._ModName, FID, isWorldCell)
         return None
     def DeleteRecord(self):
         CBash.DeleteRecord(self._CollectionIndex, self._ModName, self._recordID, self._parentID)
@@ -2360,7 +2652,7 @@ class CELLRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused1(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 11, struct.pack('B', *nValue), 1)
     unused1 = property(get_unused1, set_unused1)
     def get_directionalRed(self):
@@ -2398,7 +2690,7 @@ class CELLRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused2(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 15)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 15)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 15, struct.pack('B', *nValue), 1)
     unused2 = property(get_unused2, set_unused2)
     def get_fogRed(self):
@@ -2436,7 +2728,7 @@ class CELLRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused3(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 19)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 19)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 19, struct.pack('B', *nValue), 1)
     unused3 = property(get_unused3, set_unused3)
     def get_fogNear(self):
@@ -2511,6 +2803,11 @@ class CELLRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 27)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 27, nValue)
     owner = property(get_owner, set_owner)
+    def get_owner_long(self):
+        return MakeLongFid(self._CollectionIndex,self.owner)
+    def set_owner_long(self, nValue):
+        self.owner = MakeShortFid(self._CollectionIndex, nValue)
+    owner_long = property(get_owner_long, set_owner_long)
     def get_rank(self):
         CBash.ReadFIDField.restype = POINTER(c_int)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 28)
@@ -2529,6 +2826,11 @@ class CELLRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 29)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 29, nValue)
     globalVariable = property(get_globalVariable, set_globalVariable)
+    def get_globalVariable_long(self):
+        return MakeLongFid(self._CollectionIndex,self.globalVariable)
+    def set_globalVariable_long(self, nValue):
+        self.globalVariable = MakeShortFid(self._CollectionIndex, nValue)
+    globalVariable_long = property(get_globalVariable_long, set_globalVariable_long)
     def get_climate(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 30)
@@ -2538,6 +2840,11 @@ class CELLRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 30)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 30, nValue)
     climate = property(get_climate, set_climate)
+    def get_climate_long(self):
+        return MakeLongFid(self._CollectionIndex,self.climate)
+    def set_climate_long(self, nValue):
+        self.climate = MakeShortFid(self._CollectionIndex, nValue)
+    climate_long = property(get_climate_long, set_climate_long)
     def get_waterHeight(self):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 31)
@@ -2555,9 +2862,17 @@ class CELLRecord(BaseRecord):
             return [cRecords[x].contents.value for x in range(0, numRecords)]
         return []
     def set_regions(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 32)
-        else: CBash.SetFIDFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 32, struct.pack('I' * len(nValue), *nValue), len(nValue))
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 32)
+        else:
+            length = len(nValue)
+            cRecords = (c_uint * length)(*nValue)
+            CBash.SetFIDFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 32, cRecords, length)
     regions = property(get_regions, set_regions)
+    def get_regions_long(self):
+        return [MakeLongFid(self._CollectionIndex,fid) for fid in self.regions]
+    def set_regions_long(self, nValue):
+        self.regions = [MakeShortFid(self._CollectionIndex,fid) for fid in nValue]
+    regions_long = property(get_regions_long, set_regions_long)
     def get_posX(self):
         CBash.ReadFIDField.restype = POINTER(c_int)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 33)
@@ -2585,6 +2900,11 @@ class CELLRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 35)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 35, nValue)
     water = property(get_water, set_water)
+    def get_water_long(self):
+        return MakeLongFid(self._CollectionIndex,self.water)
+    def set_water_long(self, nValue):
+        self.water = MakeShortFid(self._CollectionIndex, nValue)
+    water_long = property(get_water_long, set_water_long)
     @property
     def ACHR(self):
         numSubRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 36)
@@ -2734,11 +3054,11 @@ class CELLRecord(BaseRecord):
 class CLASRecord(BaseRecord):
     _Type = 'CLAS'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyCLASRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopyCLASRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return CLASRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopyCLASRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopyCLASRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return CLASRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def get_full(self):
@@ -2896,7 +3216,7 @@ class CLASRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused1(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 23)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 23)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 23, struct.pack('2B', *nValue), 2)
     unused1 = property(get_unused1, set_unused1)
     def get_IsPlayable(self):
@@ -3034,11 +3354,11 @@ class CLASRecord(BaseRecord):
 class CLMTRecord(BaseRecord):
     _Type = 'CLMT'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyCLMTRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopyCLMTRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return CLMTRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopyCLMTRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopyCLMTRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return CLMTRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     class Weather(object):
@@ -3056,6 +3376,11 @@ class CLMTRecord(BaseRecord):
             if nValue is None: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 1)
             else: CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 1, nValue)
         weather = property(get_weather, set_weather)
+        def get_weather_long(self):
+            return MakeLongFid(self._CollectionIndex,self.weather)
+        def set_weather_long(self, nValue):
+            self.weather = MakeShortFid(self._CollectionIndex, nValue)
+        weather_long = property(get_weather_long, set_weather_long)
         def get_chance(self):
             CBash.ReadFIDListField.restype = POINTER(c_int)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 2)
@@ -3074,10 +3399,13 @@ class CLMTRecord(BaseRecord):
         if(numRecords > 0): return [self.Weather(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
         return []
     def set_weathers(self, nWeathers):
-        if nWeathers is None or nWeathers == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 6)
+        if nWeathers is None or not len(nWeathers): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 6)
         else:
             diffLength = len(nWeathers) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 6)
-            nValues = [(nWeather.weather, nWeather.chance) for nWeather in nWeathers]
+            if isinstance(nWeathers[0], tuple):
+                nValues = nWeathers
+            else:
+                nValues = [(nWeather.weather_long, nWeather.chance) for nWeather in nWeathers]
             while(diffLength < 0):
                 CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 6)
                 diffLength += 1
@@ -3085,8 +3413,11 @@ class CLMTRecord(BaseRecord):
                 CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 6)
                 diffLength -= 1
             for oWeather, nValue in zip(self.weathers, nValues):
-                oWeather.weather, oWeather.chance = nValue
+                oWeather.weather_long, oWeather.chance = nValue
     weathers = property(get_weathers, set_weathers)
+    def get_weathers_list(self):
+        return [(weather.weather_long, weather.chance) for weather in self.weathers]
+    weathers_list = property(get_weathers_list, set_weathers)
     def get_sunPath(self):
         CBash.ReadFIDField.restype = c_char_p
         return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
@@ -3125,7 +3456,7 @@ class CLMTRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_modt_p(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         else:
             length = len(nValue)
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 11, struct.pack('B' * length, *nValue), length)
@@ -3191,11 +3522,11 @@ class CLMTRecord(BaseRecord):
 class CLOTRecord(BaseRecord):
     _Type = 'CLOT'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyCLOTRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopyCLOTRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return CLOTRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopyCLOTRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopyCLOTRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return CLOTRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def get_full(self):
@@ -3214,6 +3545,11 @@ class CLOTRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 7, c_uint(nValue))
     script = property(get_script, set_script)
+    def get_script_long(self):
+        return MakeLongFid(self._CollectionIndex,self.script)
+    def set_script_long(self, nValue):
+        self.script = MakeShortFid(self._CollectionIndex, nValue)
+    script_long = property(get_script_long, set_script_long)
     def get_enchantment(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
@@ -3223,6 +3559,11 @@ class CLOTRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 8, c_uint(nValue))
     enchantment = property(get_enchantment, set_enchantment)
+    def get_enchantment_long(self):
+        return MakeLongFid(self._CollectionIndex,self.enchantment)
+    def set_enchantment_long(self, nValue):
+        self.enchantment = MakeShortFid(self._CollectionIndex, nValue)
+    enchantment_long = property(get_enchantment_long, set_enchantment_long)
     def get_enchantPoints(self):
         CBash.ReadFIDField.restype = POINTER(c_ushort)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
@@ -3245,7 +3586,7 @@ class CLOTRecord(BaseRecord):
         return Model(self._CollectionIndex, self._ModName, self._recordID, 11)
     def set_maleBody(self, nValue):
         thisModel = self.maleBody
-        if nValue is None: 
+        if nValue is None:
             thisModel.modPath = None
             thisModel.modb = None
             thisModel.modt_p = None
@@ -3258,7 +3599,7 @@ class CLOTRecord(BaseRecord):
         return Model(self._CollectionIndex, self._ModName, self._recordID, 14)
     def set_maleWorld(self, nValue):
         thisModel = self.maleWorld
-        if nValue is None: 
+        if nValue is None:
             thisModel.modPath = None
             thisModel.modb = None
             thisModel.modt_p = None
@@ -3278,7 +3619,7 @@ class CLOTRecord(BaseRecord):
         return Model(self._CollectionIndex, self._ModName, self._recordID, 18)
     def set_femaleBody(self, nValue):
         thisModel = self.femaleBody
-        if nValue is None: 
+        if nValue is None:
             thisModel.modPath = None
             thisModel.modb = None
             thisModel.modt_p = None
@@ -3291,7 +3632,7 @@ class CLOTRecord(BaseRecord):
         return Model(self._CollectionIndex, self._ModName, self._recordID, 21)
     def set_femaleWorld(self, nValue):
         thisModel = self.femaleWorld
-        if nValue is None: 
+        if nValue is None:
             thisModel.modPath = None
             thisModel.modb = None
             thisModel.modt_p = None
@@ -3477,6 +3818,11 @@ class CLOTRecord(BaseRecord):
             else: self.flags = 0x00400000
         elif self.flags: self.flags &= ~0x00400000
     IsNonPlayable = property(get_IsNonPlayable, set_IsNonPlayable)
+    def get_IsPlayable(self):
+        return not self.IsNonPlayable
+    def set_IsPlayable(self, nValue):
+        self.IsNonPlayable = not nValue
+    IsPlayable = property(get_IsPlayable, set_IsPlayable)
     copyattrs = BaseRecord.baseattrs + ['full','script','enchantment','enchantPoints',
                                         'flags','maleBody','maleWorld','maleIconPath',
                                         'femaleBody','femaleWorld','femaleIconPath',
@@ -3485,18 +3831,18 @@ class CLOTRecord(BaseRecord):
 class CONTRecord(BaseRecord):
     _Type = 'CONT'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyCONTRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopyCONTRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return CONTRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopyCONTRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopyCONTRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return CONTRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
-    def mergeFilter(self,modFile,modSet):
+    def mergeFilter(self,modSet):
         """Filter out items that don't come from specified modSet.
         Filters items."""
-        mapper = modFile.MakeLongFID
-        self.items = [x for x in self.items if mapper(x.item)[0] in modSet]
+        self.items = [x for x in self.items if (x.item_long)[0] in modSet]
+
     def newItemsElement(self):
         listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 11)
         if(listIndex == -1): return None
@@ -3532,7 +3878,7 @@ class CONTRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_modt_p(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         else:
             length = len(nValue)
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 9, struct.pack('B' * length, *nValue), length)
@@ -3546,18 +3892,23 @@ class CONTRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 10, c_uint(nValue))
     script = property(get_script, set_script)
+    def get_script_long(self):
+        return MakeLongFid(self._CollectionIndex,self.script)
+    def set_script_long(self, nValue):
+        self.script = MakeShortFid(self._CollectionIndex, nValue)
+    script_long = property(get_script_long, set_script_long)
     def get_items(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 11)
         if(numRecords > 0): return [Item(self._CollectionIndex, self._ModName, self._recordID, 11, x) for x in range(0, numRecords)]
         return []
     def set_items(self, nItems):
-        if nItems is None or nItems == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
+        if nItems is None or not len(nItems): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         else:
             diffLength = len(nItems) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 11)
             if isinstance(nItems[0], tuple):
                 nValues = nItems
             else:
-                nValues = [(item.item, item.count) for item in nItems]
+                nValues = [(item.item_long, item.count) for item in nItems]
             while(diffLength < 0):
                 CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 11)
                 diffLength += 1
@@ -3565,8 +3916,11 @@ class CONTRecord(BaseRecord):
                 CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 11)
                 diffLength -= 1
             for oItem, nValue in zip(self.items, nValues):
-                oItem.item, oItem.count = nValue
+                oItem.item_long, oItem.count = nValue
     items = property(get_items, set_items)
+    def get_items_list(self):
+        return [(item.item_long, item.count) for item in self.items]
+    items_list = property(get_items_list, set_items)
     def get_flags(self):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
@@ -3594,6 +3948,11 @@ class CONTRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 14)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 14, c_uint(nValue))
     soundOpen = property(get_soundOpen, set_soundOpen)
+    def get_soundOpen_long(self):
+        return MakeLongFid(self._CollectionIndex,self.soundOpen)
+    def set_soundOpen_long(self, nValue):
+        self.soundOpen = MakeShortFid(self._CollectionIndex, nValue)
+    soundOpen_long = property(get_soundOpen_long, set_soundOpen_long)
     def get_soundClose(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 15)
@@ -3603,6 +3962,11 @@ class CONTRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 15)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 15, c_uint(nValue))
     soundClose = property(get_soundClose, set_soundClose)
+    def get_soundClose_long(self):
+        return MakeLongFid(self._CollectionIndex,self.soundClose)
+    def set_soundClose_long(self, nValue):
+        self.soundClose = MakeShortFid(self._CollectionIndex, nValue)
+    soundClose_long = property(get_soundClose_long, set_soundClose_long)
     def get_IsRespawn(self):
         return self.flags != None and (self.flags & 0x00000001) != 0
     def set_IsRespawn(self, nValue):
@@ -3618,20 +3982,20 @@ class CONTRecord(BaseRecord):
 class CREARecord(BaseRecord):
     _Type = 'CREA'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyCREARecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopyCREARecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return CREARecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopyCREARecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopyCREARecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return CREARecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
-    def mergeFilter(self,modFile,modSet):
+    def mergeFilter(self,modSet):
         """Filter out items that don't come from specified modSet.
         Filters spells, factions and items."""
-        mapper = modFile.MakeLongFID
-        self.spells = [x for x in self.spells if mapper(x)[0] in modSet]
-        self.factions = [x for x in self.factions if mapper(x.faction)[0] in modSet]
-        self.items = [x for x in self.items if mapper(x.item)[0] in modSet]
+        self.spells_long = [x for x in self.spells_long if x[0] in modSet]
+        self.factions = [x for x in self.factions if x.faction_long[0] in modSet]
+        self.items = [x for x in self.items if x.item_long[0] in modSet]
+
     class Sound(object):
         def __init__(self, CollectionIndex, ModName, recordID, subField, listIndex):
             self._CollectionIndex = CollectionIndex
@@ -3657,6 +4021,11 @@ class CREARecord(BaseRecord):
             if nValue is None: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2)
             else: CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2, nValue)
         sound = property(get_sound, set_sound)
+        def get_sound_long(self):
+            return MakeLongFid(self._CollectionIndex,self.sound)
+        def set_sound_long(self, nValue):
+            self.sound = MakeShortFid(self._CollectionIndex, nValue)
+        sound_long = property(get_sound_long, set_sound_long)
         def get_chance(self):
             CBash.ReadFIDListField.restype = POINTER(c_ubyte)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3)
@@ -3709,7 +4078,7 @@ class CREARecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_modt_p(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         else:
             length = len(nValue)
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 9, struct.pack('B' * length, *nValue), length)
@@ -3722,9 +4091,17 @@ class CREARecord(BaseRecord):
             return [cRecords[x].contents.value for x in range(0, numRecords)]
         return []
     def set_spells(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
-        else: CBash.SetFIDFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 10, struct.pack('I' * len(nValue), *nValue), len(nValue))
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
+        else:
+            length = len(nValue)
+            cRecords = (c_uint * length)(*nValue)
+            CBash.SetFIDFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 10, cRecords, length)
     spells = property(get_spells, set_spells)
+    def get_spells_long(self):
+        return [MakeLongFid(self._CollectionIndex,fid) for fid in self.spells]
+    def set_spells_long(self, nValue):
+        self.spells = [MakeShortFid(self._CollectionIndex,fid) for fid in nValue]
+    spells_long = property(get_spells_long, set_spells_long)
     def get_bodyParts(self):
         numRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 11)
         if(numRecords > 0):
@@ -3733,7 +4110,7 @@ class CREARecord(BaseRecord):
             return [string_at(cRecords[x]) for x in range(0, numRecords)]
         return []
     def set_bodyParts(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         else:
             length = len(nValue)
             cRecords = (c_char_p * length)(*nValue)
@@ -3747,7 +4124,7 @@ class CREARecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_nift_p(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
         else:
             length = len(nValue)
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 12, struct.pack('B' * length, *nValue), length)
@@ -3820,13 +4197,13 @@ class CREARecord(BaseRecord):
         if(numRecords > 0): return [Faction(self._CollectionIndex, self._ModName, self._recordID, 20, x) for x in range(0, numRecords)]
         return []
     def set_factions(self, nFactions):
-        if nFactions is None or nFactions == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 20)
+        if nFactions is None or not len(nFactions): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 20)
         else:
             diffLength = len(nFactions) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 20)
             if isinstance(nFactions[0], tuple):
                 nValues = nFactions
             else:
-                nValues = [(faction.faction,faction.rank,faction.unused1) for faction in nFactions]
+                nValues = [(faction.faction_long,faction.rank,faction.unused1) for faction in nFactions]
             while(diffLength < 0):
                 CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 20)
                 diffLength += 1
@@ -3834,8 +4211,11 @@ class CREARecord(BaseRecord):
                 CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 20)
                 diffLength -= 1
             for oFaction, nValue in zip(self.factions, nValues):
-                oFaction.faction, oFaction.rank, oFaction.unused1 = nValue
+                oFaction.faction_long, oFaction.rank, oFaction.unused1 = nValue
     factions = property(get_factions, set_factions)
+    def get_factions_list(self):
+        return [(faction.faction_long,faction.rank,None) for faction in self.factions]
+    factions_list = property(get_factions_list, set_factions)
     def get_deathItem(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 21)
@@ -3845,6 +4225,11 @@ class CREARecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 21)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 21, nValue)
     deathItem = property(get_deathItem, set_deathItem)
+    def get_deathItem_long(self):
+        return MakeLongFid(self._CollectionIndex,self.deathItem)
+    def set_deathItem_long(self, nValue):
+        self.deathItem = MakeShortFid(self._CollectionIndex, nValue)
+    deathItem_long = property(get_deathItem_long, set_deathItem_long)
     def get_script(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 22)
@@ -3854,18 +4239,23 @@ class CREARecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 22)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 22, nValue)
     script = property(get_script, set_script)
+    def get_script_long(self):
+        return MakeLongFid(self._CollectionIndex,self.script)
+    def set_script_long(self, nValue):
+        self.script = MakeShortFid(self._CollectionIndex, nValue)
+    script_long = property(get_script_long, set_script_long)
     def get_items(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 23)
         if(numRecords > 0): return [Item(self._CollectionIndex, self._ModName, self._recordID, 23, x) for x in range(0, numRecords)]
         return []
     def set_items(self, nItems):
-        if nItems is None or nItems == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 23)
+        if nItems is None or not len(nItems): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 23)
         else:
             diffLength = len(nItems) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 23)
             if isinstance(nItems[0], tuple):
                 nValues = nItems
             else:
-                nValues = [(item.item, item.count) for item in nItems]
+                nValues = [(item.item_long, item.count) for item in nItems]
             while(diffLength < 0):
                 CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 23)
                 diffLength += 1
@@ -3873,8 +4263,11 @@ class CREARecord(BaseRecord):
                 CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 23)
                 diffLength -= 1
             for oItem, nValue in zip(self.items, nValues):
-                oItem.item, oItem.count = nValue
+                oItem.item_long, oItem.count = nValue
     items = property(get_items, set_items)
+    def get_items_list(self):
+        return [(item.item_long, item.count) for item in self.items]
+    items_list = property(get_items_list, set_items)
     def get_aggression(self):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 24)
@@ -3946,7 +4339,7 @@ class CREARecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused1(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 31)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 31)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 31, struct.pack('2B', *nValue), 2)
     unused1 = property(get_unused1, set_unused1)
     def get_aiPackages(self):
@@ -3957,9 +4350,17 @@ class CREARecord(BaseRecord):
             return [cRecords[x].contents.value for x in range(0, numRecords)]
         return []
     def set_aiPackages(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 32)
-        else: CBash.SetFIDFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 32, struct.pack('I' * len(nValue), *nValue), len(nValue))
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 32)
+        else:
+            length = len(nValue)
+            cRecords = (c_uint * length)(*nValue)
+            CBash.SetFIDFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 32, cRecords, length)
     aiPackages = property(get_aiPackages, set_aiPackages)
+    def get_aiPackages_long(self):
+        return [MakeLongFid(self._CollectionIndex,fid) for fid in self.aiPackages]
+    def set_aiPackages_long(self, nValue):
+        self.aiPackages = [MakeShortFid(self._CollectionIndex,fid) for fid in nValue]
+    aiPackages_long = property(get_aiPackages_long, set_aiPackages_long)
     def get_animations(self):
         numRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 33)
         if(numRecords > 0):
@@ -3968,7 +4369,7 @@ class CREARecord(BaseRecord):
             return [string_at(cRecords[x]) for x in range(0, numRecords)]
         return []
     def set_animations(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 33)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 33)
         else:
             length = len(nValue)
             cRecords = (c_char_p * length)(*nValue)
@@ -4027,7 +4428,7 @@ class CREARecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused2(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 39)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 39)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 39, struct.pack('B', *nValue), 1)
     unused2 = property(get_unused2, set_unused2)
     def get_health(self):
@@ -4047,7 +4448,7 @@ class CREARecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused3(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 41)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 41)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 41, struct.pack('2B', *nValue), 2)
     unused3 = property(get_unused3, set_unused3)
     def get_attackDamage(self):
@@ -4149,6 +4550,11 @@ class CREARecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 52)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 52, nValue)
     combatStyle = property(get_combatStyle, set_combatStyle)
+    def get_combatStyle_long(self):
+        return MakeLongFid(self._CollectionIndex,self.combatStyle)
+    def set_combatStyle_long(self, nValue):
+        self.combatStyle = MakeShortFid(self._CollectionIndex, nValue)
+    combatStyle_long = property(get_combatStyle_long, set_combatStyle_long)
     def get_turningSpeed(self):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 53)
@@ -4185,6 +4591,11 @@ class CREARecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 56)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 56, nValue)
     inheritsSoundsFrom = property(get_inheritsSoundsFrom, set_inheritsSoundsFrom)
+    def get_inheritsSoundsFrom_long(self):
+        return MakeLongFid(self._CollectionIndex,self.inheritsSoundsFrom)
+    def set_inheritsSoundsFrom_long(self, nValue):
+        self.inheritsSoundsFrom = MakeShortFid(self._CollectionIndex, nValue)
+    inheritsSoundsFrom_long = property(get_inheritsSoundsFrom_long, set_inheritsSoundsFrom_long)
     def get_bloodSprayPath(self):
         CBash.ReadFIDField.restype = c_char_p
         return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 57)
@@ -4204,10 +4615,13 @@ class CREARecord(BaseRecord):
         if(numRecords > 0): return [self.Sound(self._CollectionIndex, self._ModName, self._recordID, 59, x) for x in range(0, numRecords)]
         return []
     def set_sounds(self, nSounds):
-        if nSounds is None or nSounds == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 59)
+        if nSounds is None or not len(nSounds): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 59)
         else:
             diffLength = len(nSounds) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 59)
-            nValues = [(nSound.type, nSound.sound, nSound.chance) for nSound in nSounds]
+            if isinstance(nSounds[0], tuple):
+                nValues = nSounds
+            else:
+                nValues = [(nSound.type, nSound.sound_long, nSound.chance) for nSound in nSounds]
             while(diffLength < 0):
                 CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 59)
                 diffLength += 1
@@ -4215,8 +4629,11 @@ class CREARecord(BaseRecord):
                 CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 59)
                 diffLength -= 1
             for oSound, nValue in zip(self.sounds, nValues):
-                oSound.type, oSound.sound, oSound.chance = nValue
+                oSound.type, oSound.sound_long, oSound.chance = nValue
     sounds = property(get_sounds, set_sounds)
+    def get_sounds_list(self):
+        return [(sound.type, sound.sound_long, sound.chance) for sound in self.sounds]
+    sounds_list = property(get_sounds_list, set_sounds)
     def get_IsBiped(self):
         return self.flags != None and (self.flags & 0x00000001) != 0
     def set_IsBiped(self, nValue):
@@ -4614,11 +5031,11 @@ class CREARecord(BaseRecord):
 class CSTYRecord(BaseRecord):
     _Type = 'CSTY'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyCSTYRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopyCSTYRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return CSTYRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopyCSTYRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopyCSTYRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return CSTYRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def get_dodgeChance(self):
@@ -4647,7 +5064,7 @@ class CSTYRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused1(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 8, struct.pack('2B', *nValue), 2)
     unused1 = property(get_unused1, set_unused1)
     def get_lrTimerMin(self):
@@ -4748,7 +5165,7 @@ class CSTYRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused2(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 19)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 19)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 19, struct.pack('2B', *nValue), 2)
     unused2 = property(get_unused2, set_unused2)
     def get_atkBRecoil(self):
@@ -4795,7 +5212,7 @@ class CSTYRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused3(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 24)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 24)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 24, struct.pack('3B', *nValue), 3)
     unused3 = property(get_unused3, set_unused3)
     def get_pAtkBRecoil(self):
@@ -4869,7 +5286,7 @@ class CSTYRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused4(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 32)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 32)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 32, struct.pack('3B', *nValue), 3)
     unused4 = property(get_unused4, set_unused4)
     def get_holdTimerMin(self):
@@ -4916,7 +5333,7 @@ class CSTYRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused5(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 37)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 37)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 37, struct.pack('2B', *nValue), 2)
     unused5 = property(get_unused5, set_unused5)
     def get_rMultOpt(self):
@@ -4999,7 +5416,7 @@ class CSTYRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused6(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 46)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 46)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 46, struct.pack('3B', *nValue), 3)
     unused6 = property(get_unused6, set_unused6)
     def get_rushMult(self):
@@ -5300,16 +5717,16 @@ class CSTYRecord(BaseRecord):
 class DIALRecord(BaseRecord):
     _Type = 'DIAL'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyDIALRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopyDIALRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return DIALRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopyDIALRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopyDIALRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return DIALRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def createINFORecord(self):
         FID = CBash.CreateINFORecord(self._CollectionIndex, self._ModName, self._recordID)
-        if(FID): return INFORecord(self._CollectionIndex, self._ModName, FID)
+        if(FID): return INFORecord(self._CollectionIndex, self._ModName, FID, self._recordID)
         return None
     def get_quests(self):
         numRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 6)
@@ -5319,9 +5736,17 @@ class DIALRecord(BaseRecord):
             return [cRecords[x].contents.value for x in range(0, numRecords)]
         return []
     def set_quests(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 6)
-        else: CBash.SetFIDFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 6, struct.pack('I' * len(nValue), *nValue), len(nValue))
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 6)
+        else:
+            length = len(nValue)
+            cRecords = (c_uint * length)(*nValue)
+            CBash.SetFIDFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 6, cRecords, length)
     quests = property(get_quests, set_quests)
+    def get_quests_long(self):
+        return [MakeLongFid(self._CollectionIndex,fid) for fid in self.quests]
+    def set_quests_long(self, nValue):
+        self.quests = [MakeShortFid(self._CollectionIndex,fid) for fid in nValue]
+    quests_long = property(get_quests_long, set_quests_long)
     def get_removedQuests(self):
         numRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 7)
         if(numRecords > 0):
@@ -5330,9 +5755,17 @@ class DIALRecord(BaseRecord):
             return [cRecords[x].contents.value for x in range(0, numRecords)]
         return []
     def set_removedQuests(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
-        else: CBash.SetFIDFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 7, struct.pack('I' * len(nValue), *nValue), len(nValue))
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
+        else:
+            length = len(nValue)
+            cRecords = (c_uint * length)(*nValue)
+            CBash.SetFIDFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 7, cRecords, length)
     removedQuests = property(get_removedQuests, set_removedQuests)
+    def get_removedQuests_long(self):
+        return [MakeLongFid(self._CollectionIndex,fid) for fid in self.removedQuests]
+    def set_removedQuests_long(self, nValue):
+        self.removedQuests = [MakeShortFid(self._CollectionIndex,fid) for fid in nValue]
+    removedQuests_long = property(get_removedQuests_long, set_removedQuests_long)
     def get_full(self):
         CBash.ReadFIDField.restype = c_char_p
         return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
@@ -5355,7 +5788,7 @@ class DIALRecord(BaseRecord):
         if(numSubRecords > 0):
             cRecords = (POINTER(c_uint) * numSubRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 10, byref(cRecords))
-            return [INFORecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
+            return [INFORecord(self._CollectionIndex, self._ModName, x.contents.value, self._recordID) for x in cRecords]
         return []
     def get_IsTopic(self):
         return (self.dialType == 0)
@@ -5404,11 +5837,11 @@ class DIALRecord(BaseRecord):
 class DOORRecord(BaseRecord):
     _Type = 'DOOR'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyDOORRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopyDOORRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return DOORRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopyDOORRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopyDOORRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return DOORRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def get_full(self):
@@ -5442,7 +5875,7 @@ class DOORRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_modt_p(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         else:
             length = len(nValue)
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 9, struct.pack('B' * length, *nValue), length)
@@ -5456,6 +5889,11 @@ class DOORRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 10, c_uint(nValue))
     script = property(get_script, set_script)
+    def get_script_long(self):
+        return MakeLongFid(self._CollectionIndex,self.script)
+    def set_script_long(self, nValue):
+        self.script = MakeShortFid(self._CollectionIndex, nValue)
+    script_long = property(get_script_long, set_script_long)
     def get_soundOpen(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
@@ -5465,6 +5903,11 @@ class DOORRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 11, c_uint(nValue))
     soundOpen = property(get_soundOpen, set_soundOpen)
+    def get_soundOpen_long(self):
+        return MakeLongFid(self._CollectionIndex,self.soundOpen)
+    def set_soundOpen_long(self, nValue):
+        self.soundOpen = MakeShortFid(self._CollectionIndex, nValue)
+    soundOpen_long = property(get_soundOpen_long, set_soundOpen_long)
     def get_soundClose(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
@@ -5474,6 +5917,11 @@ class DOORRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 12, c_uint(nValue))
     soundClose = property(get_soundClose, set_soundClose)
+    def get_soundClose_long(self):
+        return MakeLongFid(self._CollectionIndex,self.soundClose)
+    def set_soundClose_long(self, nValue):
+        self.soundClose = MakeShortFid(self._CollectionIndex, nValue)
+    soundClose_long = property(get_soundClose_long, set_soundClose_long)
     def get_soundLoop(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
@@ -5483,6 +5931,11 @@ class DOORRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 13, c_uint(nValue))
     soundLoop = property(get_soundLoop, set_soundLoop)
+    def get_soundLoop_long(self):
+        return MakeLongFid(self._CollectionIndex,self.soundLoop)
+    def set_soundLoop_long(self, nValue):
+        self.soundLoop = MakeShortFid(self._CollectionIndex, nValue)
+    soundLoop_long = property(get_soundLoop_long, set_soundLoop_long)
     def get_flags(self):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 14)
@@ -5500,12 +5953,17 @@ class DOORRecord(BaseRecord):
             return [cRecords[x].contents.value for x in range(0, numRecords)]
         return []
     def set_destinations(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 15)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 15)
         else:
             length = len(nValue)
             cRecords = (c_uint * length)(*nValue)
             CBash.SetFIDFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 15, cRecords, length)
     destinations = property(get_destinations, set_destinations)
+    def get_destinations_long(self):
+        return [MakeLongFid(self._CollectionIndex,fid) for fid in self.destinations]
+    def set_destinations_long(self, nValue):
+        self.destinations = [MakeShortFid(self._CollectionIndex,fid) for fid in nValue]
+    destinations_long = property(get_destinations_long, set_destinations_long)
     def get_IsOblivionGate(self):
         return self.flags != None and (self.flags & 0x00000001) != 0
     def set_IsOblivionGate(self, nValue):
@@ -5543,11 +6001,11 @@ class DOORRecord(BaseRecord):
 class EFSHRecord(BaseRecord):
     _Type = 'EFSH'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyEFSHRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopyEFSHRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return EFSHRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopyEFSHRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopyEFSHRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return EFSHRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def get_fillTexture(self):
@@ -5581,7 +6039,7 @@ class EFSHRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused1(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 9, struct.pack('3B', *nValue), 3)
     unused1 = property(get_unused1, set_unused1)
     def get_memSBlend(self):
@@ -5646,7 +6104,7 @@ class EFSHRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused2(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 16)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 16)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 16, struct.pack('B', *nValue), 1)
     unused2 = property(get_unused2, set_unused2)
     def get_fillAIn(self):
@@ -5765,7 +6223,7 @@ class EFSHRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused3(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 29)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 29)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 29, struct.pack('B', *nValue), 1)
     unused3 = property(get_unused3, set_unused3)
     def get_edgeAIn(self):
@@ -6091,7 +6549,7 @@ class EFSHRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused4(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 65)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 65)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 65, struct.pack('B', *nValue), 1)
     unused4 = property(get_unused4, set_unused4)
     def get_key2Red(self):
@@ -6129,7 +6587,7 @@ class EFSHRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused5(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 69)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 69)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 69, struct.pack('B', *nValue), 1)
     unused5 = property(get_unused5, set_unused5)
     def get_key3Red(self):
@@ -6167,7 +6625,7 @@ class EFSHRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused6(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 73)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 73)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 73, struct.pack('B', *nValue), 1)
     unused6 = property(get_unused6, set_unused6)
     def get_key1A(self):
@@ -6273,11 +6731,11 @@ class EFSHRecord(BaseRecord):
 class ENCHRecord(BaseRecord):
     _Type = 'ENCH'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyENCHRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopyENCHRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return ENCHRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopyENCHRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopyENCHRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return ENCHRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def newEffectsElement(self):
@@ -6335,7 +6793,7 @@ class ENCHRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused1(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 11, struct.pack('3B', *nValue), 3)
     unused1 = property(get_unused1, set_unused1)
     def get_effects(self):
@@ -6343,10 +6801,15 @@ class ENCHRecord(BaseRecord):
         if(numRecords > 0): return [Effect(self._CollectionIndex, self._ModName, self._recordID, 12, x) for x in range(0, numRecords)]
         return []
     def set_effects(self, nEffects):
-        if nEffects is None or nEffects == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
+        if nEffects is None or not len(nEffects): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
         else:
             diffLength = len(nEffects) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 12)
-            nValues = [(nVar.name0, nVar.name, nVar.magnitude, nVar.area, nVar.duration, nVar.recipient, nVar.actorValue, nVar.script, nVar.school, nVar.visual, nVar.flags, nVar.unused1, nVar.full) for nVar in nVars]
+            if isinstance(nEffects[0], tuple):
+                nValues = nEffects
+            else:
+                nValues = [(nEffect.name0, nEffect.name, nEffect.magnitude, nEffect.area, nEffect.duration,
+                            nEffect.recipient, nEffect.actorValue, nEffect.script_long, nEffect.school,
+                            nEffect.visual, nEffect.flags, nEffect.unused1, nEffect.full) for nEffect in nEffects]
             while(diffLength < 0):
                 CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 12)
                 diffLength += 1
@@ -6354,8 +6817,13 @@ class ENCHRecord(BaseRecord):
                 CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 12)
                 diffLength -= 1
             for oEffect, nValue in zip(self.effects, nValues):
-                oEffect.index, oEffect.unused1, oEffect.flags, oEffect.unused2, oEffect.name = nValue
+                oEffect.name0, oEffect.name, oEffect.magnitude, oEffect.area, oEffect.duration, oEffect.recipient, oEffect.actorValue, oEffect.script_long, oEffect.school, oEffect.visual, oEffect.flags, oEffect.unused1, oEffect.full = nValue
     effects = property(get_effects, set_effects)
+    def get_effects_list(self):
+        return [(effect.name0, effect.name, effect.magnitude, effect.area, effect.duration,
+                 effect.recipient, effect.actorValue, effect.script_long, effect.school,
+                 effect.visual, effect.flags, None, effect.full) for effect in self.effects]
+    effects_list = property(get_effects_list, set_effects)
     def get_IsNoAutoCalc(self):
         return self.flags != None and (self.flags & 0x00000001) != 0
     def set_IsNoAutoCalc(self, nValue):
@@ -6393,11 +6861,11 @@ class ENCHRecord(BaseRecord):
 class EYESRecord(BaseRecord):
     _Type = 'EYES'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyEYESRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopyEYESRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return EYESRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopyEYESRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopyEYESRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return EYESRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def get_full(self):
@@ -6436,37 +6904,13 @@ class EYESRecord(BaseRecord):
 class FACTRecord(BaseRecord):
     _Type = 'FACT'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyFACTRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopyFACTRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return FACTRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopyFACTRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopyFACTRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return FACTRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
-    class Relation(object):
-        def __init__(self, CollectionIndex, ModName, recordID, listIndex):
-            self._CollectionIndex = CollectionIndex
-            self._ModName = ModName
-            self._recordID = recordID
-            self._listIndex = listIndex
-        def get_faction(self):
-            CBash.ReadFIDListField.restype = POINTER(c_uint)
-            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 1)
-            if(retValue): return retValue.contents.value
-            return None
-        def set_faction(self, nValue):
-            if nValue is None: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 1)
-            else: CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 1, nValue)
-        faction = property(get_faction, set_faction)
-        def get_mod(self):
-            CBash.ReadFIDListField.restype = POINTER(c_int)
-            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 2)
-            if(retValue): return retValue.contents.value
-            return None
-        def set_mod(self, nValue):
-            if nValue is None: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 2)
-            else: CBash.SetFIDListFieldI(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 2, nValue)
-        mod = property(get_mod, set_mod)
     class Rank(object):
         def __init__(self, CollectionIndex, ModName, recordID, listIndex):
             self._CollectionIndex = CollectionIndex
@@ -6506,7 +6950,7 @@ class FACTRecord(BaseRecord):
     def newRelationsElement(self):
         listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 7)
         if(listIndex == -1): return None
-        return self.Relation(self._CollectionIndex, self._ModName, self._recordID, listIndex)
+        return Relation(self._CollectionIndex, self._ModName, self._recordID, 7, listIndex)
     def newRanksElement(self):
         listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 10)
         if(listIndex == -1): return None
@@ -6520,13 +6964,16 @@ class FACTRecord(BaseRecord):
     full = property(get_full, set_full)
     def get_relations(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 7)
-        if(numRecords > 0): return [self.Relation(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
+        if(numRecords > 0): return [Relation(self._CollectionIndex, self._ModName, self._recordID, 7, x) for x in range(0, numRecords)]
         return []
     def set_relations(self, nRelations):
-        if nRelations is None or nRelations == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
+        if nRelations is None or not len(nRelations): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
         else:
             diffLength = len(nRelations) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 7)
-            nValues = [(relation.faction,relation.mod) for relation in nRelations]
+            if isinstance(nRelations[0], tuple):
+                nValues = nRelations
+            else:
+                nValues = [(relation.faction_long,relation.mod) for relation in nRelations]
             while(diffLength < 0):
                 CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 7)
                 diffLength += 1
@@ -6534,8 +6981,11 @@ class FACTRecord(BaseRecord):
                 CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 7)
                 diffLength -= 1
             for oRelation, nValue in zip(self.relations, nValues):
-                oRelation.faction, oRelation.mod = nValue
+                oRelation.faction_long, oRelation.mod = nValue
     relations = property(get_relations, set_relations)
+    def get_relations_list(self):
+        return [(relation.faction_long,relation.mod) for relation in self.relations]
+    relations_list = property(get_relations_list, set_relations)
     def get_flags(self):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
@@ -6559,10 +7009,13 @@ class FACTRecord(BaseRecord):
         if(numRecords > 0): return [self.Rank(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
         return []
     def set_ranks(self, nRanks):
-        if nRanks is None or nRanks == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
+        if nRanks is None or not len(nRanks): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
         else:
             diffLength = len(nRanks) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 10)
-            nValues = [(nRank.rank, nRank.male, nRank.female, nRank.insigniaPath) for nRank in nRanks]
+            if isinstance(nRanks[0], tuple):
+                nValues = nRanks
+            else:
+                nValues = [(nRank.rank, nRank.male, nRank.female, nRank.insigniaPath) for nRank in nRanks]
             while(diffLength < 0):
                 CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 10)
                 diffLength += 1
@@ -6572,6 +7025,9 @@ class FACTRecord(BaseRecord):
             for oRank, nValue in zip(self.ranks, nValues):
                 oRank.rank, oRank.male, oRank.female, oRank.insigniaPath = nValue
     ranks = property(get_ranks, set_ranks)
+    def get_ranks_list(self):
+        return [(rank.rank, rank.male, rank.female, rank.insigniaPath) for rank in self.ranks]
+    ranks_list = property(get_ranks_list, set_ranks)
     def get_IsHiddenFromPC(self):
         return self.flags != None and (self.flags & 0x00000001) != 0
     def set_IsHiddenFromPC(self, nValue):
@@ -6601,11 +7057,11 @@ class FACTRecord(BaseRecord):
 class FLORRecord(BaseRecord):
     _Type = 'FLOR'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyFLORRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopyFLORRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return FLORRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopyFLORRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopyFLORRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return FLORRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def get_full(self):
@@ -6639,7 +7095,7 @@ class FLORRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_modt_p(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         else:
             length = len(nValue)
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 9, struct.pack('B' * length, *nValue), length)
@@ -6653,6 +7109,11 @@ class FLORRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 10, nValue)
     script = property(get_script, set_script)
+    def get_script_long(self):
+        return MakeLongFid(self._CollectionIndex,self.script)
+    def set_script_long(self, nValue):
+        self.script = MakeShortFid(self._CollectionIndex, nValue)
+    script_long = property(get_script_long, set_script_long)
     def get_ingredient(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
@@ -6662,6 +7123,11 @@ class FLORRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 11, nValue)
     ingredient = property(get_ingredient, set_ingredient)
+    def get_ingredient_long(self):
+        return MakeLongFid(self._CollectionIndex,self.ingredient)
+    def set_ingredient_long(self, nValue):
+        self.ingredient = MakeShortFid(self._CollectionIndex, nValue)
+    ingredient_long = property(get_ingredient_long, set_ingredient_long)
     def get_spring(self):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
@@ -6705,11 +7171,11 @@ class FLORRecord(BaseRecord):
 class FURNRecord(BaseRecord):
     _Type = 'FURN'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyFURNRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopyFURNRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return FURNRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopyFURNRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopyFURNRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return FURNRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def get_full(self):
@@ -6743,7 +7209,7 @@ class FURNRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_modt_p(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         else:
             length = len(nValue)
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 9, struct.pack('B' * length, *nValue), length)
@@ -6757,6 +7223,11 @@ class FURNRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 10, c_uint(nValue))
     script = property(get_script, set_script)
+    def get_script_long(self):
+        return MakeLongFid(self._CollectionIndex,self.script)
+    def set_script_long(self, nValue):
+        self.script = MakeShortFid(self._CollectionIndex, nValue)
+    script_long = property(get_script_long, set_script_long)
     def get_flags(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
@@ -7031,11 +7502,11 @@ class FURNRecord(BaseRecord):
 class GLOBRecord(BaseRecord):
     _Type = 'GLOB'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyGLOBRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopyGLOBRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return GLOBRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopyGLOBRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopyGLOBRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return GLOBRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def get_format(self):
@@ -7061,11 +7532,11 @@ class GLOBRecord(BaseRecord):
 class GRASRecord(BaseRecord):
     _Type = 'GRAS'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyGRASRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopyGRASRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return GRASRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopyGRASRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopyGRASRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return GRASRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def get_modPath(self):
@@ -7092,7 +7563,7 @@ class GRASRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_modt_p(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         else:
             length = len(nValue)
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 8, struct.pack('B' * length, *nValue), length)
@@ -7132,7 +7603,7 @@ class GRASRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused1(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 12, struct.pack('B', *nValue), 1)
     unused1 = property(get_unused1, set_unused1)
     def get_waterDistance(self):
@@ -7152,7 +7623,7 @@ class GRASRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused2(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 14)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 14)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 14, struct.pack('2B', *nValue), 2)
     unused2 = property(get_unused2, set_unused2)
     def get_waterOp(self):
@@ -7217,7 +7688,7 @@ class GRASRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused3(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 21)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 21)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 21, struct.pack('3B', *nValue), 3)
     unused3 = property(get_unused3, set_unused3)
     def get_IsVLighting(self):
@@ -7252,11 +7723,11 @@ class GRASRecord(BaseRecord):
 class HAIRRecord(BaseRecord):
     _Type = 'HAIR'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyHAIRRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopyHAIRRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return HAIRRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopyHAIRRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopyHAIRRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return HAIRRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def get_full(self):
@@ -7290,7 +7761,7 @@ class HAIRRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_modt_p(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         else:
             length = len(nValue)
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 9, struct.pack('B' * length, *nValue), length)
@@ -7358,11 +7829,11 @@ class HAIRRecord(BaseRecord):
 class IDLERecord(BaseRecord):
     _Type = 'IDLE'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyIDLERecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopyIDLERecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return IDLERecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopyIDLERecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopyIDLERecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return IDLERecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def newConditionsElement(self):
@@ -7393,7 +7864,7 @@ class IDLERecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_modt_p(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         else:
             length = len(nValue)
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 8, struct.pack('B' * length, *nValue), length)
@@ -7403,10 +7874,14 @@ class IDLERecord(BaseRecord):
         if(numRecords > 0): return [Condition(self._CollectionIndex, self._ModName, self._recordID, 9, x) for x in range(0, numRecords)]
         return []
     def set_conditions(self, nConditions):
-        if nConditions is None or nConditions == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
+        if nConditions is None or not len(nConditions): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         else:
             diffLength = len(nConditions) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 9)
-            nValues = [(nCondition.operType, nCondition.unused1, nCondition.compValue, nCondition.ifunc, nCondition.param1, nCondition.param2, nCondition.unused2) for nCondition in nConditions]
+            if isinstance(nConditions[0], tuple):
+                nValues = nConditions
+            else:
+                nValues = [(nCondition.operType, nCondition.unused1, nCondition.compValue, nCondition.ifunc,
+                            nCondition.param1_long, nCondition.param2_long, nCondition.unused2) for nCondition in nConditions]
             while(diffLength < 0):
                 CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 9)
                 diffLength += 1
@@ -7414,8 +7889,11 @@ class IDLERecord(BaseRecord):
                 CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 9)
                 diffLength -= 1
             for oCondition, nValue in zip(self.conditions, nValues):
-                oCondition.operType, oCondition.unused1, oCondition.compValue, oCondition.ifunc, oCondition.param1, oCondition.param2, oCondition.unused2 = nValue
+                oCondition.operType, oCondition.unused1, oCondition.compValue, oCondition.ifunc, oCondition.param1_long, oCondition.param2_long, oCondition.unused2 = nValue
     conditions = property(get_conditions, set_conditions)
+    def get_conditions_list(self):
+        return [(condition.operType, None, condition.compValue, condition.ifunc, condition.param1_long, condition.param2_long, None) for condition in self.conditions]
+    conditions_list = property(get_conditions_list, set_conditions)
     def get_group(self):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
@@ -7434,6 +7912,11 @@ class IDLERecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 11, nValue)
     parent = property(get_parent, set_parent)
+    def get_parent_long(self):
+        return MakeLongFid(self._CollectionIndex,self.parent)
+    def set_parent_long(self, nValue):
+        self.parent = MakeShortFid(self._CollectionIndex, nValue)
+    parent_long = property(get_parent_long, set_parent_long)
     def get_prevId(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
@@ -7443,6 +7926,11 @@ class IDLERecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 12, nValue)
     prevId = property(get_prevId, set_prevId)
+    def get_prevId_long(self):
+        return MakeLongFid(self._CollectionIndex,self.prevId)
+    def set_prevId_long(self, nValue):
+        self.prevId = MakeShortFid(self._CollectionIndex, nValue)
+    prevId_long = property(get_prevId_long, set_prevId_long)
     def get_IsLowerBody(self):
         return ((self.group & 0x0F) == 0x00000000)
     def set_IsLowerBody(self, nValue):
@@ -7532,13 +8020,20 @@ class IDLERecord(BaseRecord):
 
 class INFORecord(BaseRecord):
     _Type = 'INFO'
+    def __init__(self, CollectionIndex, ModName, recordID, parentID = 0):
+        BaseRecord.__init__(self, CollectionIndex, ModName, recordID)
+        self._parentID = parentID
     def CopyAsOverride(self, targetDIAL):
-        FID = CBash.CopyINFORecord(self._CollectionIndex, self._ModName, self._recordID, targetDIAL._ModName, targetDIAL._recordID, c_bool(True))
-        if(FID): return INFORecord(self._CollectionIndex, targetDIAL._ModName, FID)
+        if isinstance(targetDIAL, CBashModFile): targetID = self._parentID
+        else: targetID = targetDIAL._recordID
+        FID = CBash.CopyINFORecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetID, 1)
+        if(FID): return INFORecord(self._CollectionIndex, targetDIAL._ModName, FID, targetID)
         return None
     def CopyAsNew(self, targetDIAL):
-        FID = CBash.CopyINFORecord(self._CollectionIndex, self._ModName, self._recordID, targetDIAL._ModName, targetDIAL._recordID, c_bool(False))
-        if(FID): return INFORecord(self._CollectionIndex, targetDIAL._ModName, FID)
+        if isinstance(targetDIAL, CBashModFile): targetID = self._parentID
+        else: targetID = targetDIAL._recordID
+        FID = CBash.CopyINFORecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetID, 0)
+        if(FID): return INFORecord(self._CollectionIndex, targetDIAL._ModName, FID, targetID)
         return None
     def DeleteRecord(self, parent):
         CBash.DeleteRecord(self._CollectionIndex, self._ModName, self._recordID, parent._recordID)
@@ -7575,7 +8070,7 @@ class INFORecord(BaseRecord):
                 return [cRecords.contents[x] for x in range(0, numRecords)]
             return []
         def set_unused1(self, nValue):
-            if nValue is None or nValue == []: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 3)
+            if nValue is None or not len(nValue): CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 3)
             else: CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 3, nValue)
         unused1 = property(get_unused1, set_unused1)
         def get_responseNum(self):
@@ -7595,7 +8090,7 @@ class INFORecord(BaseRecord):
                 return [cRecords.contents[x] for x in range(0, numRecords)]
             return []
         def set_unused2(self, nValue):
-            if nValue is None or nValue == []: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5)
+            if nValue is None or not len(nValue): CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5)
             else: CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, nValue)
         unused2 = property(get_unused2, set_unused2)
         def get_responseText(self):
@@ -7654,32 +8149,6 @@ class INFORecord(BaseRecord):
             if (nValue == True): self.emotionType = 6
             elif(self.get_IsSurprise()): self.IsNeutral = True
         IsSurprise = property(get_IsSurprise, set_IsSurprise)
-    class Reference(object):
-        def __init__(self, CollectionIndex, ModName, recordID, listIndex):
-            self._CollectionIndex = CollectionIndex
-            self._ModName = ModName
-            self._recordID = recordID
-            self._listIndex = listIndex
-        def get_reference(self):
-            CBash.ReadFIDListField.restype = POINTER(c_uint)
-            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 24, self._listIndex, 1)
-            if(retValue): return retValue.contents.value
-            return None
-        def set_reference(self, nValue):
-            if nValue is None: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 24, self._listIndex, 1)
-            else: CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 24, self._listIndex, 1, nValue)
-        reference = property(get_reference, set_reference)
-        def get_IsSCRO(self):
-            CBash.ReadFIDListField.restype = POINTER(c_bool)
-            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 24, self._listIndex, 2)
-            if(retValue): return retValue.contents.value
-            return None
-        def set_IsSCRO(self, nValue):
-            if isinstance(nValue, bool):
-                if(nValue): CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 24, self._listIndex, 2, 1)
-                else: CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 24, self._listIndex, 2, 0)
-            else: CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 24, self._listIndex, 2, nValue)
-        IsSCRO = property(get_IsSCRO, set_IsSCRO)
     def newResponsesElement(self):
         listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 13)
         if(listIndex == -1): return None
@@ -7691,7 +8160,7 @@ class INFORecord(BaseRecord):
     def newReferencesElement(self):
         listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 24)
         if(listIndex == -1): return None
-        return self.Reference(self._CollectionIndex, self._ModName, self._recordID, listIndex)
+        return Reference(self._CollectionIndex, self._ModName, self._recordID, 24, listIndex)
     def get_dialType(self):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 6)
@@ -7718,7 +8187,7 @@ class INFORecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused1(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 8, struct.pack('B', *nValue), 1)
     unused1 = property(get_unused1, set_unused1)
     def get_quest(self):
@@ -7730,6 +8199,11 @@ class INFORecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 9, nValue)
     quest = property(get_quest, set_quest)
+    def get_quest_long(self):
+        return MakeLongFid(self._CollectionIndex,self.quest)
+    def set_quest_long(self, nValue):
+        self.quest = MakeShortFid(self._CollectionIndex, nValue)
+    quest_long = property(get_quest_long, set_quest_long)
     def get_topic(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
@@ -7739,6 +8213,11 @@ class INFORecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 10, nValue)
     topic = property(get_topic, set_topic)
+    def get_topic_long(self):
+        return MakeLongFid(self._CollectionIndex,self.topic)
+    def set_topic_long(self, nValue):
+        self.topic = MakeShortFid(self._CollectionIndex, nValue)
+    topic_long = property(get_topic_long, set_topic_long)
     def get_prevInfo(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
@@ -7748,6 +8227,11 @@ class INFORecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 11, nValue)
     prevInfo = property(get_prevInfo, set_prevInfo)
+    def get_prevInfo_long(self):
+        return MakeLongFid(self._CollectionIndex,self.prevInfo)
+    def set_prevInfo_long(self, nValue):
+        self.prevInfo = MakeShortFid(self._CollectionIndex, nValue)
+    prevInfo_long = property(get_prevInfo_long, set_prevInfo_long)
     def get_addTopics(self):
         numRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 12)
         if(numRecords > 0):
@@ -7756,18 +8240,29 @@ class INFORecord(BaseRecord):
             return [cRecords[x].contents.value for x in range(0, numRecords)]
         return []
     def set_addTopics(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
-        else: CBash.SetFIDFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 12, struct.pack('I' * len(nValue), *nValue), len(nValue))
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
+        else:
+            length = len(nValue)
+            cRecords = (c_uint * length)(*nValue)
+            CBash.SetFIDFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 12, cRecords, length)
     addTopics = property(get_addTopics, set_addTopics)
+    def get_addTopics_long(self):
+        return [MakeLongFid(self._CollectionIndex,fid) for fid in self.addTopics]
+    def set_addTopics_long(self, nValue):
+        self.addTopics = [MakeShortFid(self._CollectionIndex,fid) for fid in nValue]
+    addTopics_long = property(get_addTopics_long, set_addTopics_long)
     def get_responses(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 13)
         if(numRecords > 0): return [self.Response(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
         return []
     def set_responses(self, nResponses):
-        if nResponses is None or nResponses == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
+        if nResponses is None or not len(nResponses): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
         else:
             diffLength = len(nResponses) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 13)
-            nValues = [(nResponse.emotionType, nResponse.emotionValue, nResponse.unused1, nResponse.responseNum, nResponse.unused2, nResponse.responseText, nResponse.actorNotes) for nResponse in nResponses]
+            if isinstance(nResponses[0], tuple):
+                nValues = nResponses
+            else:
+                nValues = [(nResponse.emotionType, nResponse.emotionValue, nResponse.unused1, nResponse.responseNum, nResponse.unused2, nResponse.responseText, nResponse.actorNotes) for nResponse in nResponses]
             while(diffLength < 0):
                 CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 13)
                 diffLength += 1
@@ -7777,15 +8272,23 @@ class INFORecord(BaseRecord):
             for oResponse, nValue in zip(self.responses, nValues):
                 oResponse.emotionType, oResponse.emotionValue, oResponse.unused1, oResponse.responseNum, oResponse.unused2, oResponse.responseText, oResponse.actorNotes = nValue
     responses = property(get_responses, set_responses)
+    def get_responses_list(self):
+        return [(response.emotionType, response.emotionValue, None,
+                 response.responseNum, None, response.responseText, response.actorNotes) for response in self.responses]
+    responses_list = property(get_responses_list, set_responses)
     def get_conditions(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 14)
         if(numRecords > 0): return [Condition(self._CollectionIndex, self._ModName, self._recordID, 14, x) for x in range(0, numRecords)]
         return []
     def set_conditions(self, nConditions):
-        if nConditions is None or nConditions == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 14)
+        if nConditions is None or not len(nConditions): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 14)
         else:
             diffLength = len(nConditions) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 14)
-            nValues = [(nCondition.operType, nCondition.unused1, nCondition.compValue, nCondition.ifunc, nCondition.param1, nCondition.param2, nCondition.unused2) for nCondition in nConditions]
+            if isinstance(nConditions[0], tuple):
+                nValues = nConditions
+            else:
+                nValues = [(nCondition.operType, nCondition.unused1, nCondition.compValue, nCondition.ifunc,
+                            nCondition.param1_long, nCondition.param2_long, nCondition.unused2) for nCondition in nConditions]
             while(diffLength < 0):
                 CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 14)
                 diffLength += 1
@@ -7793,8 +8296,11 @@ class INFORecord(BaseRecord):
                 CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 14)
                 diffLength -= 1
             for oCondition, nValue in zip(self.conditions, nValues):
-                oCondition.operType, oCondition.unused1, oCondition.compValue, oCondition.ifunc, oCondition.param1, oCondition.param2, oCondition.unused2 = nValue
+                oCondition.operType, oCondition.unused1, oCondition.compValue, oCondition.ifunc, oCondition.param1_long, oCondition.param2_long, oCondition.unused2 = nValue
     conditions = property(get_conditions, set_conditions)
+    def get_conditions_list(self):
+        return [(condition.operType, None, condition.compValue, condition.ifunc, condition.param1_long, condition.param2_long, None) for condition in self.conditions]
+    conditions_list = property(get_conditions_list, set_conditions)
     def get_choices(self):
         numRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 15)
         if(numRecords > 0):
@@ -7803,9 +8309,17 @@ class INFORecord(BaseRecord):
             return [cRecords[x].contents.value for x in range(0, numRecords)]
         return []
     def set_choices(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 15)
-        else: CBash.SetFIDFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 15, struct.pack('I' * len(nValue), *nValue), len(nValue))
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 15)
+        else:
+            length = len(nValue)
+            cRecords = (c_uint * length)(*nValue)
+            CBash.SetFIDFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 15, cRecords, length)
     choices = property(get_choices, set_choices)
+    def get_choices_long(self):
+        return [MakeLongFid(self._CollectionIndex,fid) for fid in self.choices]
+    def set_choices_long(self, nValue):
+        self.choices = [MakeShortFid(self._CollectionIndex,fid) for fid in nValue]
+    choices_long = property(get_choices_long, set_choices_long)
     def get_linksFrom(self):
         numRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 16)
         if(numRecords > 0):
@@ -7814,9 +8328,17 @@ class INFORecord(BaseRecord):
             return [cRecords[x].contents.value for x in range(0, numRecords)]
         return []
     def set_linksFrom(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 16)
-        else: CBash.SetFIDFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 16, struct.pack('I' * len(nValue), *nValue), len(nValue))
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 16)
+        else:
+            length = len(nValue)
+            cRecords = (c_uint * length)(*nValue)
+            CBash.SetFIDFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 16, cRecords, length)
     linksFrom = property(get_linksFrom, set_linksFrom)
+    def get_linksFrom_long(self):
+        return [MakeLongFid(self._CollectionIndex,fid) for fid in self.linksFrom]
+    def set_linksFrom_long(self, nValue):
+        self.linksFrom = [MakeShortFid(self._CollectionIndex,fid) for fid in nValue]
+    linksFrom_long = property(get_linksFrom_long, set_linksFrom_long)
     def get_unused2(self):
         numRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 17)
         if(numRecords > 0):
@@ -7825,7 +8347,7 @@ class INFORecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused2(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 17)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 17)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 17, struct.pack('4B', *nValue), 4)
     unused2 = property(get_unused2, set_unused2)
     def get_numRefs(self):
@@ -7872,7 +8394,7 @@ class INFORecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_compiled_p(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 22)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 22)
         else:
             length = len(nValue)
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 22, struct.pack('B' * length, *nValue), length)
@@ -7886,13 +8408,16 @@ class INFORecord(BaseRecord):
     scriptText = property(get_scriptText, set_scriptText)
     def get_references(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 24)
-        if(numRecords > 0): return [self.Reference(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
+        if(numRecords > 0): return [Reference(self._CollectionIndex, self._ModName, self._recordID, 24, x) for x in range(0, numRecords)]
         return []
     def set_references(self, nReferences):
-        if nReferences is None or nReferences == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 24)
+        if nReferences is None or not len(nReferences): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 24)
         else:
             diffLength = len(nReferences) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 24)
-            nValues = [(nReference.reference,nReference.IsSCRO) for nReference in nReferences]
+            if isinstance(nReferences[0], tuple):
+                nValues = nReferences
+            else:
+                nValues = [(nReference.reference_long,nReference.IsSCRO) for nReference in nReferences]
             while(diffLength < 0):
                 CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 24)
                 diffLength += 1
@@ -7900,8 +8425,11 @@ class INFORecord(BaseRecord):
                 CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 24)
                 diffLength -= 1
             for oReference, nValue in zip(self.references, nValues):
-                oReference.reference, oReference.IsSCRO = nValue
+                oReference.reference_long, oReference.IsSCRO = nValue
     references = property(get_references, set_references)
+    def get_references_list(self):
+        return [(reference.reference_long,reference.IsSCRO) for reference in self.references]
+    references_list = property(get_references_list, set_references)
     def get_IsTopic(self):
         return (self.dialType == 0)
     def set_IsTopic(self, nValue):
@@ -8001,11 +8529,11 @@ class INFORecord(BaseRecord):
 class INGRRecord(BaseRecord):
     _Type = 'INGR'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyINGRRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopyINGRRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return INGRRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopyINGRRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopyINGRRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return INGRRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def newEffectsElement(self):
@@ -8043,7 +8571,7 @@ class INGRRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_modt_p(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         else:
             length = len(nValue)
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 9, struct.pack('B' * length, *nValue), length)
@@ -8064,6 +8592,11 @@ class INGRRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 11, c_uint(nValue))
     script = property(get_script, set_script)
+    def get_script_long(self):
+        return MakeLongFid(self._CollectionIndex,self.script)
+    def set_script_long(self, nValue):
+        self.script = MakeShortFid(self._CollectionIndex, nValue)
+    script_long = property(get_script_long, set_script_long)
     def get_weight(self):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
@@ -8099,7 +8632,7 @@ class INGRRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused1(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 15)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 15)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 15, struct.pack('3B', *nValue), 3)
     unused1 = property(get_unused1, set_unused1)
     def get_effects(self):
@@ -8107,10 +8640,15 @@ class INGRRecord(BaseRecord):
         if(numRecords > 0): return [Effect(self._CollectionIndex, self._ModName, self._recordID, 16, x) for x in range(0, numRecords)]
         return []
     def set_effects(self, nEffects):
-        if nEffects is None or nEffects == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 16)
+        if nEffects is None or not len(nEffects): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 16)
         else:
             diffLength = len(nEffects) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 16)
-            nValues = [(nEffect.name0, nEffect.name, nEffect.magnitude, nEffect.area, nEffect.duration, nEffect.recipient, nEffect.actorValue, nEffect.script, nEffect.school, nEffect.visual, nEffect.flags, nEffect.unused1, nEffect.full) for nEffect in nEffects]
+            if isinstance(nEffects[0], tuple):
+                nValues = nEffects
+            else:
+                nValues = [(nEffect.name0, nEffect.name, nEffect.magnitude, nEffect.area, nEffect.duration,
+                            nEffect.recipient, nEffect.actorValue, nEffect.script_long, nEffect.school,
+                            nEffect.visual, nEffect.flags, nEffect.unused1, nEffect.full) for nEffect in nEffects]
             while(diffLength < 0):
                 CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 16)
                 diffLength += 1
@@ -8118,8 +8656,13 @@ class INGRRecord(BaseRecord):
                 CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 16)
                 diffLength -= 1
             for oEffect, nValue in zip(self.effects, nValues):
-                oEffect.name0, oEffect.name, oEffect.magnitude, oEffect.area, oEffect.duration, oEffect.recipient, oEffect.actorValue, oEffect.script, oEffect.school, oEffect.visual, oEffect.flags, oEffect.unused1, oEffect.full = nValue
+                oEffect.name0, oEffect.name, oEffect.magnitude, oEffect.area, oEffect.duration, oEffect.recipient, oEffect.actorValue, oEffect.script_long, oEffect.school, oEffect.visual, oEffect.flags, oEffect.unused1, oEffect.full = nValue
     effects = property(get_effects, set_effects)
+    def get_effects_list(self):
+        return [(effect.name0, effect.name, effect.magnitude, effect.area, effect.duration,
+                 effect.recipient, effect.actorValue, effect.script_long, effect.school,
+                 effect.visual, effect.flags, None, effect.full) for effect in self.effects]
+    effects_list = property(get_effects_list, set_effects)
     def get_IsNoAutoCalc(self):
         return self.flags != None and (self.flags & 0x00000001) != 0
     def set_IsNoAutoCalc(self, nValue):
@@ -8143,11 +8686,11 @@ class INGRRecord(BaseRecord):
 class MISCRecord(BaseRecord):
     _Type = 'MISC'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyMISCRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopyMISCRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return MISCRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopyMISCRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopyMISCRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return MISCRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def get_full(self):
@@ -8181,7 +8724,7 @@ class MISCRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_modt_p(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         else:
             length = len(nValue)
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 9, struct.pack('B' * length, *nValue), length)
@@ -8202,6 +8745,11 @@ class MISCRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 11, c_uint(nValue))
     script = property(get_script, set_script)
+    def get_script_long(self):
+        return MakeLongFid(self._CollectionIndex,self.script)
+    def set_script_long(self, nValue):
+        self.script = MakeShortFid(self._CollectionIndex, nValue)
+    script_long = property(get_script_long, set_script_long)
     def get_value(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
@@ -8226,11 +8774,11 @@ class MISCRecord(BaseRecord):
 class KEYMRecord(MISCRecord):
     _Type = 'KEYM'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyKEYMRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopyKEYMRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return KEYMRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopyKEYMRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopyKEYMRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return KEYMRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
 
@@ -8242,13 +8790,13 @@ class LANDRecord(BaseRecord):
     def CopyAsOverride(self, targetCELL):
         if isinstance(targetCELL, CBashModFile): targetID = self._parentID
         else: targetID = targetCELL._recordID
-        FID = CBash.CopyLANDRecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetID, c_bool(True))
+        FID = CBash.CopyLANDRecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetID, 1)
         if(FID): return LANDRecord(self._CollectionIndex, targetCELL._ModName, FID, targetID)
         return None
     def CopyAsNew(self, targetCELL):
         if isinstance(targetCELL, CBashModFile): targetID = self._parentID
         else: targetID = targetCELL._recordID
-        FID = CBash.CopyLANDRecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetID, c_bool(False))
+        FID = CBash.CopyLANDRecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetID, 0)
         if(FID): return LANDRecord(self._CollectionIndex, targetCELL._ModName, FID, targetID)
         return None
     def DeleteRecord(self):
@@ -8371,7 +8919,7 @@ class LANDRecord(BaseRecord):
                 return [cRecords.contents[x] for x in range(0, numRecords)]
             return []
         def set_unused1(self, nValue):
-            if nValue is None or nValue == []: return
+            if nValue is None or not len(nValue): return
             CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3, struct.pack('B', *nValue), 1)
         unused1 = property(get_unused1, set_unused1)
         def get_layer(self):
@@ -8408,7 +8956,7 @@ class LANDRecord(BaseRecord):
                     return [cRecords.contents[x] for x in range(0, numRecords)]
                 return []
             def set_unused1(self, nValue):
-                if nValue is None or nValue == []: return
+                if nValue is None or not len(nValue): return
                 CBash.SetFIDListX2FieldR(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 2, struct.pack('2B', *nValue), 2)
             unused1 = property(get_unused1, set_unused1)
             def get_opacity(self):
@@ -8456,7 +9004,7 @@ class LANDRecord(BaseRecord):
                 return [cRecords.contents[x] for x in range(0, numRecords)]
             return []
         def set_unused1(self, nValue):
-            if nValue is None or nValue == []: return
+            if nValue is None or not len(nValue): return
             CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3, struct.pack('B', *nValue), 1)
         unused1 = property(get_unused1, set_unused1)
         def get_layer(self):
@@ -8473,7 +9021,7 @@ class LANDRecord(BaseRecord):
             if(numRecords > 0): return [self.Opacity(self._CollectionIndex, self._ModName, self._recordID, self._listIndex, x) for x in range(0, numRecords)]
             return []
         def set_opacities(self, nOpacities):
-            if nOpacities is None or nOpacities == []: return
+            if nOpacities is None or not len(nOpacities): return
             diffLength = len(nOpacities) - CBash.GetFIDListX2Size(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 5)
             nValues = [(nOpacity.position, nOpacity.unused1, nOpacity.opacity) for nOpacity in nOpacities]
             while(diffLength < 0):
@@ -8745,7 +9293,7 @@ class LANDRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_data(self, nValue):
-        if nValue is None or nValue == []: return
+        if nValue is None or not len(nValue): return
         length = len(nValue)
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 6, struct.pack('B' * length, *nValue), length)
     data = property(get_data, set_data)
@@ -8786,7 +9334,7 @@ class LANDRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused1(self, nValue):
-        if nValue is None or nValue == []: return
+        if nValue is None or not len(nValue): return
         CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 10, struct.pack('3B', *nValue), 3)
     unused1 = property(get_unused1, set_unused1)
     def get_colors(self):
@@ -8804,7 +9352,7 @@ class LANDRecord(BaseRecord):
         if(numRecords > 0): return [self.BaseTexture(self._CollectionIndex, self._ModName, self._recordID, 12, x) for x in range(0, numRecords)]
         return []
     def set_baseTextures(self, nBaseTextures):
-        if nBaseTextures is None or nBaseTextures == []: return
+        if nBaseTextures is None or not len(nBaseTextures): return
         diffLength = len(nBaseTextures) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 12)
         nValues = [(nBaseTexture.texture, nBaseTexture.quadrant, nBaseTexture.unused1, nBaseTexture.layer) for nBaseTexture in nBaseTextures]
         while(diffLength < 0):
@@ -8821,7 +9369,7 @@ class LANDRecord(BaseRecord):
         if(numRecords > 0): return [self.AlphaLayer(self._CollectionIndex, self._ModName, self._recordID, 13, x) for x in range(0, numRecords)]
         return []
     def set_alphaLayers(self, nAlphaLayers):
-        if nAlphaLayers is None or nAlphaLayers == []: return
+        if nAlphaLayers is None or not len(nAlphaLayers): return
         diffLength = len(nAlphaLayers) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 13)
         nValues = [(nAlphaLayer.texture, nAlphaLayer.quadrant, nAlphaLayer.unused1, nAlphaLayer.layer,
                   [(nOpacity.position, nOpacity.unused1, nOpacity.opacity) for nOpacity in nAlphaLayer.opacities]) for nAlphaLayer in nAlphaLayers]
@@ -8851,7 +9399,7 @@ class LANDRecord(BaseRecord):
         if(numRecords > 0): return [self.BaseTexture(self._CollectionIndex, self._ModName, self._recordID, 14, x) for x in range(0, numRecords)]
         return []
     def set_vertexTextures(self, nVertexTextures):
-        if nVertexTextures is None or nVertexTextures == []: return
+        if nVertexTextures is None or not len(nVertexTextures): return
         diffLength = len(nVertexTextures) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 14)
         nValues = [nVertexTexture.texture for nVertexTexture in nVertexTextures]
         while(diffLength < 0):
@@ -8885,11 +9433,11 @@ class LANDRecord(BaseRecord):
 class LIGHRecord(BaseRecord):
     _Type = 'LIGH'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyLIGHRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopyLIGHRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return LIGHRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopyLIGHRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopyLIGHRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return LIGHRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def get_modPath(self):
@@ -8916,7 +9464,7 @@ class LIGHRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_modt_p(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         else:
             length = len(nValue)
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 8, struct.pack('B' * length, *nValue), length)
@@ -8930,6 +9478,11 @@ class LIGHRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 9, c_uint(nValue))
     script = property(get_script, set_script)
+    def get_script_long(self):
+        return MakeLongFid(self._CollectionIndex,self.script)
+    def set_script_long(self, nValue):
+        self.script = MakeShortFid(self._CollectionIndex, nValue)
+    script_long = property(get_script_long, set_script_long)
     def get_full(self):
         CBash.ReadFIDField.restype = c_char_p
         return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
@@ -8997,7 +9550,7 @@ class LIGHRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused1(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 17)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 17)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 17, struct.pack('B', *nValue), 1)
     unused1 = property(get_unused1, set_unused1)
     def get_flags(self):
@@ -9063,6 +9616,11 @@ class LIGHRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 24)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 24, c_uint(nValue))
     sound = property(get_sound, set_sound)
+    def get_sound_long(self):
+        return MakeLongFid(self._CollectionIndex,self.sound)
+    def set_sound_long(self, nValue):
+        self.sound = MakeShortFid(self._CollectionIndex, nValue)
+    sound_long = property(get_sound_long, set_sound_long)
     def get_IsDynamic(self):
         return self.flags != None and (self.flags & 0x00000001) != 0
     def set_IsDynamic(self, nValue):
@@ -9152,11 +9710,11 @@ class LIGHRecord(BaseRecord):
 class LSCRRecord(BaseRecord):
     _Type = 'LSCR'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyLSCRRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopyLSCRRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return LSCRRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopyLSCRRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopyLSCRRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return LSCRRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     class Location(object):
@@ -9174,6 +9732,11 @@ class LSCRRecord(BaseRecord):
             if nValue is None: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 8, self._listIndex, 1)
             else: CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 8, self._listIndex, 1, nValue)
         direct = property(get_direct, set_direct)
+        def get_direct_long(self):
+            return MakeLongFid(self._CollectionIndex,self.direct)
+        def set_direct_long(self, nValue):
+            self.direct = MakeShortFid(self._CollectionIndex, nValue)
+        direct_long = property(get_direct_long, set_direct_long)
         def get_indirect(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 8, self._listIndex, 2)
@@ -9183,6 +9746,11 @@ class LSCRRecord(BaseRecord):
             if nValue is None: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 8, self._listIndex, 2)
             else: CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 8, self._listIndex, 2, nValue)
         indirect = property(get_indirect, set_indirect)
+        def get_indirect_long(self):
+            return MakeLongFid(self._CollectionIndex,self.indirect)
+        def set_indirect_long(self, nValue):
+            self.indirect = MakeShortFid(self._CollectionIndex, nValue)
+        indirect_long = property(get_indirect_long, set_indirect_long)
         def get_gridY(self):
             CBash.ReadFIDListField.restype = POINTER(c_short)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 8, self._listIndex, 3)
@@ -9224,10 +9792,13 @@ class LSCRRecord(BaseRecord):
         if(numRecords > 0): return [self.Location(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
         return []
     def set_locations(self, nLocations):
-        if nLocations is None or nLocations == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
+        if nLocations is None or not len(nLocations): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         else:
             diffLength = len(nLocations) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 8)
-            nValues = [(nLocation.direct, nLocation.indirect, nLocation.gridY, nLocation.gridX) for nLocation in nLocations]
+            if isinstance(nLocations[0], tuple):
+                nValues = nLocations
+            else:
+                nValues = [(nLocation.direct_long, nLocation.indirect_long, nLocation.gridY, nLocation.gridX) for nLocation in nLocations]
             while(diffLength < 0):
                 CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 8)
                 diffLength += 1
@@ -9235,18 +9806,21 @@ class LSCRRecord(BaseRecord):
                 CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 8)
                 diffLength -= 1
             for oLocation, nValue in zip(self.locations, nValues):
-                oLocation.direct, oLocation.indirect, oLocation.gridY, oLocation.gridX = nValue
+                oLocation.direct_long, oLocation.indirect_long, oLocation.gridY, oLocation.gridX = nValue
     locations = property(get_locations, set_locations)
+    def get_locations_list(self):
+        return [(location.direct_long, location.indirect_long, location.gridY, location.gridX) for location in self.locations]
+    locations_list = property(get_locations_list, set_locations)
     copyattrs = BaseRecord.baseattrs + ['iconPath','text','locations']
 
 class LTEXRecord(BaseRecord):
     _Type = 'LTEX'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyLTEXRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopyLTEXRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return LTEXRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopyLTEXRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopyLTEXRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return LTEXRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def get_iconPath(self):
@@ -9300,12 +9874,17 @@ class LTEXRecord(BaseRecord):
             return [cRecords[x].contents.value for x in range(0, numRecords)]
         return []
     def set_grass(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         else:
             length = len(nValue)
             cRecords = (c_uint * length)(*nValue)
             CBash.SetFIDFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 11, cRecords, length)
     grass = property(get_grass, set_grass)
+    def get_grass_long(self):
+        return [MakeLongFid(self._CollectionIndex,fid) for fid in self.grass]
+    def set_grass_long(self, nValue):
+        self.grass = [MakeShortFid(self._CollectionIndex,fid) for fid in nValue]
+    grass_long = property(get_grass_long, set_grass_long)
     def get_IsStone(self):
         return self.flags != None and (self.flags & 0x00000001) != 0
     def set_IsStone(self, nValue):
@@ -9430,17 +10009,16 @@ class LTEXRecord(BaseRecord):
 
 class LVLRecord(BaseRecord):
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyLVLRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopyLVLRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return LVLRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopyLVLRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopyLVLRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return LVLRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
-    def mergeFilter(self,modFile,modSet):
+    def mergeFilter(self,modSet):
         """Filter out items that don't come from specified modSet."""
-        mapper = modFile.MakeLongFID
-        self.entries = [entry for entry in self.entries if mapper(entry.listId)[0] in modSet]
+        self.entries = [entry for entry in self.entries if entry.listId_long[0] in modSet]
 
     class Entry(object):
         def __init__(self, CollectionIndex, ModName, recordID, subField, listIndex):
@@ -9455,8 +10033,8 @@ class LVLRecord(BaseRecord):
             if(retValue): return retValue.contents.value
             return None
         def set_level(self, nValue):
-            if nValue is None: return
-            CBash.SetFIDListFieldS(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1, c_short(nValue))
+            if nValue is None: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1)
+            else: CBash.SetFIDListFieldS(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 1, c_short(nValue))
         level = property(get_level, set_level)
         def get_unused1(self):
             numRecords = CBash.GetFIDListArraySize(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2)
@@ -9466,8 +10044,8 @@ class LVLRecord(BaseRecord):
                 return [cRecords.contents[x] for x in range(0, numRecords)]
             return []
         def set_unused1(self, nValue):
-            if nValue is None or nValue == []: return
-            CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2, struct.pack('2B', *nValue), 2)
+            if nValue is None or not len(nValue): CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2)
+            else: CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 2, struct.pack('2B', *nValue), 2)
         unused1 = property(get_unused1, set_unused1)
         def get_listId(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
@@ -9475,17 +10053,22 @@ class LVLRecord(BaseRecord):
             if(retValue): return retValue.contents.value
             return None
         def set_listId(self, nValue):
-            if nValue is None: return
-            CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3, nValue)
+            if nValue is None: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3)
+            else: CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 3, nValue)
         listId = property(get_listId, set_listId)
+        def get_listId_long(self):
+            return MakeLongFid(self._CollectionIndex,self.listId)
+        def set_listId_long(self, nValue):
+            self.listId = MakeShortFid(self._CollectionIndex, nValue)
+        listId_long = property(get_listId_long, set_listId_long)
         def get_count(self):
             CBash.ReadFIDListField.restype = POINTER(c_short)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 4)
             if(retValue): return retValue.contents.value
             return None
         def set_count(self, nValue):
-            if nValue is None: return
-            CBash.SetFIDListFieldS(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 4, c_short(nValue))
+            if nValue is None: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 4)
+            else: CBash.SetFIDListFieldS(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 4, c_short(nValue))
         count = property(get_count, set_count)
         def get_unused2(self):
             numRecords = CBash.GetFIDListArraySize(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 5)
@@ -9495,8 +10078,8 @@ class LVLRecord(BaseRecord):
                 return [cRecords.contents[x] for x in range(0, numRecords)]
             return []
         def set_unused2(self, nValue):
-            if nValue is None or nValue == []: return
-            CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 5, struct.pack('2B', *nValue), 2)
+            if nValue is None or not len(nValue): CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 5)
+            else: CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, self._subField, self._listIndex, 5, struct.pack('2B', *nValue), 2)
         unused2 = property(get_unused2, set_unused2)
     def newEntriesElement(self):
         listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 10)
@@ -9515,7 +10098,7 @@ class LVLRecord(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
         if(retValue): return retValue.contents.value
-        return None
+        return 0
     def set_flags(self, nValue):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
         else: CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 7, c_ubyte(nValue))
@@ -9524,24 +10107,24 @@ class LVLRecord(BaseRecord):
         return None
     def set_script(self, nValue):
         return
-    script = property(get_script, set_script)
+    script_long = script = property(get_script, set_script)
     def get_template(self):
         return None
     def set_template(self, nValue):
         return
-    template = property(get_template, set_template)
+    template_long = template = property(get_template, set_template)
     def get_entries(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 10)
         if(numRecords > 0): return [self.Entry(self._CollectionIndex, self._ModName, self._recordID, 10, x) for x in range(0, numRecords)]
         return []
     def set_entries(self, nEntries):
-        if nEntries is None or nEntries == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
+        if nEntries is None or not len(nEntries): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
         else:
             diffLength = len(nEntries) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 10)
             if isinstance(nEntries[0], tuple):
                 nValues = nEntries
             else:
-                nValues = [(nEntry.level, nEntry.unused1, nEntry.listId, nEntry.count, nEntry.unused2) for nEntry in nEntries]
+                nValues = [(nEntry.level, nEntry.unused1, nEntry.listId_long, nEntry.count, nEntry.unused2) for nEntry in nEntries]
             while(diffLength < 0):
                 CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 10)
                 diffLength += 1
@@ -9549,9 +10132,12 @@ class LVLRecord(BaseRecord):
                 CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 10)
                 diffLength -= 1
             for oEntry, nValue in zip(self.entries, nValues):
-                oEntry.level, oEntry.unused1, oEntry.listId, oEntry.count, oEntry.unused2 = nValue
+                oEntry.level, oEntry.unused1, oEntry.listId_long, oEntry.count, oEntry.unused2 = nValue
     entries = property(get_entries, set_entries)
-    
+    def get_entries_list(self):
+        return [(entry.level, None, entry.listId_long, entry.count, None) for entry in self.entries]
+    entries_list = property(get_entries_list, set_entries)
+
     def get_IsCalcFromAllLevels(self):
         return self.flags != None and (self.flags & 0x00000001) != 0 or (chanceNone & 0x00000080) != 0
     def set_IsCalcFromAllLevels(self, nValue):
@@ -9583,11 +10169,11 @@ class LVLRecord(BaseRecord):
 class LVLCRecord(LVLRecord):
     _Type = 'LVLC'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyLVLCRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopyLVLCRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return LVLCRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopyLVLCRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopyLVLCRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return LVLCRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def get_script(self):
@@ -9599,6 +10185,11 @@ class LVLCRecord(LVLRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 8, nValue)
     script = property(get_script, set_script)
+    def get_script_long(self):
+        return MakeLongFid(self._CollectionIndex,self.script)
+    def set_script_long(self, nValue):
+        self.script = MakeShortFid(self._CollectionIndex, nValue)
+    script_long = property(get_script_long, set_script_long)
     def get_template(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
@@ -9608,38 +10199,43 @@ class LVLCRecord(LVLRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 9, nValue)
     template = property(get_template, set_template)
+    def get_template_long(self):
+        return MakeLongFid(self._CollectionIndex,self.template)
+    def set_template_long(self, nValue):
+        self.template = MakeShortFid(self._CollectionIndex, nValue)
+    template_long = property(get_template_long, set_template_long)
     copyattrs = LVLRecord.copyattrs + ['script','template']
 
 class LVLIRecord(LVLRecord):
     _Type = 'LVLI'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyLVLIRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopyLVLIRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return LVLIRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopyLVLIRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopyLVLIRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return LVLIRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
 
 class LVSPRecord(LVLRecord):
     _Type = 'LVSP'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyLVSPRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopyLVSPRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return LVSPRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopyLVSPRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopyLVSPRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return LVSPRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
 
 class MGEFRecord(BaseRecord):
     _Type = 'MGEF'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyMGEFRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopyMGEFRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return MGEFRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopyMGEFRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopyMGEFRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return MGEFRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def get_full(self):
@@ -9687,7 +10283,7 @@ class MGEFRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_modt_p(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         else:
             length = len(nValue)
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 11, struct.pack('B' * length, *nValue), length)
@@ -9719,6 +10315,11 @@ class MGEFRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 14)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 14, c_uint(nValue))
     associated = property(get_associated, set_associated)
+    def get_associated_long(self):
+        return MakeLongFid(self._CollectionIndex,self.associated)
+    def set_associated_long(self, nValue):
+        self.associated = MakeShortFid(self._CollectionIndex, nValue)
+    associated_long = property(get_associated_long, set_associated_long)
     def get_school(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 15)
@@ -9754,7 +10355,7 @@ class MGEFRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused1(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 18)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 18)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 18, struct.pack('2B', *nValue), 2)
     unused1 = property(get_unused1, set_unused1)
     def get_light(self):
@@ -9766,6 +10367,11 @@ class MGEFRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 19)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 19, c_uint(nValue))
     light = property(get_light, set_light)
+    def get_light_long(self):
+        return MakeLongFid(self._CollectionIndex,self.light)
+    def set_light_long(self, nValue):
+        self.light = MakeShortFid(self._CollectionIndex, nValue)
+    light_long = property(get_light_long, set_light_long)
     def get_projectileSpeed(self):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 20)
@@ -9784,6 +10390,11 @@ class MGEFRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 21)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 21, c_uint(nValue))
     effectShader = property(get_effectShader, set_effectShader)
+    def get_effectShader_long(self):
+        return MakeLongFid(self._CollectionIndex,self.effectShader)
+    def set_effectShader_long(self, nValue):
+        self.effectShader = MakeShortFid(self._CollectionIndex, nValue)
+    effectShader_long = property(get_effectShader_long, set_effectShader_long)
     def get_enchantEffect(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 22)
@@ -9793,6 +10404,11 @@ class MGEFRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 22)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 22, c_uint(nValue))
     enchantEffect = property(get_enchantEffect, set_enchantEffect)
+    def get_enchantEffect_long(self):
+        return MakeLongFid(self._CollectionIndex,self.enchantEffect)
+    def set_enchantEffect_long(self, nValue):
+        self.enchantEffect = MakeShortFid(self._CollectionIndex, nValue)
+    enchantEffect_long = property(get_enchantEffect_long, set_enchantEffect_long)
     def get_castingSound(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 23)
@@ -9802,6 +10418,11 @@ class MGEFRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 23)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 23, c_uint(nValue))
     castingSound = property(get_castingSound, set_castingSound)
+    def get_castingSound_long(self):
+        return MakeLongFid(self._CollectionIndex,self.castingSound)
+    def set_castingSound_long(self, nValue):
+        self.castingSound = MakeShortFid(self._CollectionIndex, nValue)
+    castingSound_long = property(get_castingSound_long, set_castingSound_long)
     def get_boltSound(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 24)
@@ -9811,6 +10432,11 @@ class MGEFRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 24)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 24, c_uint(nValue))
     boltSound = property(get_boltSound, set_boltSound)
+    def get_boltSound_long(self):
+        return MakeLongFid(self._CollectionIndex,self.boltSound)
+    def set_boltSound_long(self, nValue):
+        self.boltSound = MakeShortFid(self._CollectionIndex, nValue)
+    boltSound_long = property(get_boltSound_long, set_boltSound_long)
     def get_hitSound(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 25)
@@ -9820,6 +10446,11 @@ class MGEFRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 25)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 25, c_uint(nValue))
     hitSound = property(get_hitSound, set_hitSound)
+    def get_hitSound_long(self):
+        return MakeLongFid(self._CollectionIndex,self.hitSound)
+    def set_hitSound_long(self, nValue):
+        self.hitSound = MakeShortFid(self._CollectionIndex, nValue)
+    hitSound_long = property(get_hitSound_long, set_hitSound_long)
     def get_areaSound(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 26)
@@ -9829,6 +10460,11 @@ class MGEFRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 26)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 26, c_uint(nValue))
     areaSound = property(get_areaSound, set_areaSound)
+    def get_areaSound_long(self):
+        return MakeLongFid(self._CollectionIndex,self.areaSound)
+    def set_areaSound_long(self, nValue):
+        self.areaSound = MakeShortFid(self._CollectionIndex, nValue)
+    areaSound_long = property(get_areaSound_long, set_areaSound_long)
     def get_cefEnchantment(self):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 27)
@@ -9855,7 +10491,7 @@ class MGEFRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_counterEffects(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 29)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 29)
         else: CBash.SetFIDFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 29, struct.pack('I' * len(nValue), *nValue), len(nValue))
     counterEffects = property(get_counterEffects, set_counterEffects)
     def get_IsHostile(self):
@@ -10070,20 +10706,20 @@ class MGEFRecord(BaseRecord):
 class NPC_Record(BaseRecord):
     _Type = 'NPC_'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyNPC_Record(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopyNPC_Record(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return NPC_Record(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopyNPC_Record(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopyNPC_Record(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return NPC_Record(self._CollectionIndex, targetMod._ModName, FID)
         return None
-    def mergeFilter(self,modFile,modSet):
+    def mergeFilter(self,modSet):
         """Filter out items that don't come from specified modSet.
         Filters spells, factions and items."""
-        mapper = modFile.MakeLongFID
-        self.spells = [x for x in self.spells if mapper(x)[0] in modSet]
-        self.factions = [x for x in self.factions if mapper(x.faction)[0] in modSet]
-        self.items = [x for x in self.items if mapper(x.item)[0] in modSet]
+        self.spells_long = [x for x in self.spells_long if x[0] in modSet]
+        self.factions = [x for x in self.factions if x.faction_long[0] in modSet]
+        self.items = [x for x in self.items if x.item_long[0] in modSet]
+
     def newFactionsElement(self):
         listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 17)
         if(listIndex == -1): return None
@@ -10123,7 +10759,7 @@ class NPC_Record(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_modt_p(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         else:
             length = len(nValue)
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 9, struct.pack('B' * length, *nValue), length)
@@ -10196,13 +10832,13 @@ class NPC_Record(BaseRecord):
         if(numRecords > 0): return [Faction(self._CollectionIndex, self._ModName, self._recordID, 17, x) for x in range(0, numRecords)]
         return []
     def set_factions(self, nFactions):
-        if nFactions is None or nFactions == []:  CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 17)
+        if nFactions is None or not len(nFactions):  CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 17)
         else:
             diffLength = len(nFactions) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 17)
             if isinstance(nFactions[0], tuple):
                 nValues = nFactions
             else:
-                nValues = [(faction.faction,faction.rank,faction.unused1) for faction in nFactions]
+                nValues = [(faction.faction_long,faction.rank,faction.unused1) for faction in nFactions]
             while(diffLength < 0):
                 CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 17)
                 diffLength += 1
@@ -10210,8 +10846,11 @@ class NPC_Record(BaseRecord):
                 CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 17)
                 diffLength -= 1
             for oFaction, nValue in zip(self.factions, nValues):
-                oFaction.faction, oFaction.rank, oFaction.unused1 = nValue
+                oFaction.faction_long, oFaction.rank, oFaction.unused1 = nValue
     factions = property(get_factions, set_factions)
+    def get_factions_list(self):
+        return [(faction.faction_long,faction.rank,None) for faction in self.factions]
+    factions_list = property(get_factions_list, set_factions)
     def get_deathItem(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 18)
@@ -10221,6 +10860,11 @@ class NPC_Record(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID,  18)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 18, nValue)
     deathItem = property(get_deathItem, set_deathItem)
+    def get_deathItem_long(self):
+        return MakeLongFid(self._CollectionIndex,self.deathItem)
+    def set_deathItem_long(self, nValue):
+        self.deathItem = MakeShortFid(self._CollectionIndex, nValue)
+    deathItem_long = property(get_deathItem_long, set_deathItem_long)
     def get_race(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 19)
@@ -10230,6 +10874,11 @@ class NPC_Record(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID,  19)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 19, nValue)
     race = property(get_race, set_race)
+    def get_race_long(self):
+        return MakeLongFid(self._CollectionIndex,self.race)
+    def set_race_long(self, nValue):
+        self.race = MakeShortFid(self._CollectionIndex, nValue)
+    race_long = property(get_race_long, set_race_long)
     def get_spells(self):
         numRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 20)
         if(numRecords > 0):
@@ -10238,9 +10887,17 @@ class NPC_Record(BaseRecord):
             return [cRecords[x].contents.value for x in range(0, numRecords)]
         return []
     def set_spells(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 20)
-        else: CBash.SetFIDFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 20, struct.pack('I' * len(nValue), *nValue), len(nValue))
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 20)
+        else:
+            length = len(nValue)
+            cRecords = (c_uint * length)(*nValue)
+            CBash.SetFIDFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 20, cRecords, length)
     spells = property(get_spells, set_spells)
+    def get_spells_long(self):
+        return [MakeLongFid(self._CollectionIndex,fid) for fid in self.spells]
+    def set_spells_long(self, nValue):
+        self.spells = [MakeShortFid(self._CollectionIndex,fid) for fid in nValue]
+    spells_long = property(get_spells_long, set_spells_long)
     def get_script(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 21)
@@ -10250,18 +10907,23 @@ class NPC_Record(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID,  21)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 21, nValue)
     script = property(get_script, set_script)
+    def get_script_long(self):
+        return MakeLongFid(self._CollectionIndex,self.script)
+    def set_script_long(self, nValue):
+        self.script = MakeShortFid(self._CollectionIndex, nValue)
+    script_long = property(get_script_long, set_script_long)
     def get_items(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 22)
         if(numRecords > 0): return [Item(self._CollectionIndex, self._ModName, self._recordID, 22, x) for x in range(0, numRecords)]
         return []
     def set_items(self, nItems):
-        if nItems is None or nItems == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 22)
+        if nItems is None or not len(nItems): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 22)
         else:
             diffLength = len(nItems) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 22)
             if isinstance(nItems[0], tuple):
                 nValues = nItems
             else:
-                nValues = [(item.item, item.count) for item in nItems]
+                nValues = [(item.item_long, item.count) for item in nItems]
             while(diffLength < 0):
                 CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 22)
                 diffLength += 1
@@ -10269,8 +10931,11 @@ class NPC_Record(BaseRecord):
                 CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 22)
                 diffLength -= 1
             for oItem, nValue in zip(self.items, nValues):
-                oItem.item, oItem.count = nValue
+                oItem.item_long, oItem.count = nValue
     items = property(get_items, set_items)
+    def get_items_list(self):
+        return [(item.item_long, item.count) for item in self.items]
+    items_list = property(get_items_list, set_items)
     def get_aggression(self):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 23)
@@ -10342,7 +11007,7 @@ class NPC_Record(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused1(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID,  30)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID,  30)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 30, struct.pack('2B', *nValue), 2)
     unused1 = property(get_unused1, set_unused1)
     def get_aiPackages(self):
@@ -10353,9 +11018,17 @@ class NPC_Record(BaseRecord):
             return [cRecords[x].contents.value for x in range(0, numRecords)]
         return []
     def set_aiPackages(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 31)
-        else: CBash.SetFIDFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 31, struct.pack('I' * len(nValue), *nValue), len(nValue))
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 31)
+        else:
+            length = len(nValue)
+            cRecords = (c_uint * length)(*nValue)
+            CBash.SetFIDFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 31, cRecords, length)
     aiPackages = property(get_aiPackages, set_aiPackages)
+    def get_aiPackages_long(self):
+        return [MakeLongFid(self._CollectionIndex,fid) for fid in self.aiPackages]
+    def set_aiPackages_long(self, nValue):
+        self.aiPackages = [MakeShortFid(self._CollectionIndex,fid) for fid in nValue]
+    aiPackages_long = property(get_aiPackages_long, set_aiPackages_long)
     def get_animations(self):
         numRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 32)
         if(numRecords > 0):
@@ -10364,7 +11037,7 @@ class NPC_Record(BaseRecord):
             return [string_at(cRecords[x]) for x in range(0, numRecords)]
         return []
     def set_animations(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 32)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 32)
         else:
             length = len(nValue)
             cRecords = (c_char_p * length)(*nValue)
@@ -10379,6 +11052,11 @@ class NPC_Record(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID,  33)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 33, nValue)
     iclass = property(get_iclass, set_iclass)
+    def get_iclass_long(self):
+        return MakeLongFid(self._CollectionIndex,self.iclass)
+    def set_iclass_long(self, nValue):
+        self.iclass = MakeShortFid(self._CollectionIndex, nValue)
+    iclass_long = property(get_iclass_long, set_iclass_long)
     def get_armorer(self):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 34)
@@ -10585,7 +11263,7 @@ class NPC_Record(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused2(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID,  56)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID,  56)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 56, struct.pack('2B', *nValue), 2)
     unused2 = property(get_unused2, set_unused2)
     def get_strength(self):
@@ -10664,11 +11342,16 @@ class NPC_Record(BaseRecord):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 65)
         if(retValue): return retValue.contents.value
-        return []
+        return None
     def set_hair(self, nValue):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID,  65)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 65, nValue)
     hair = property(get_hair, set_hair)
+    def get_hair_long(self):
+        return MakeLongFid(self._CollectionIndex,self.hair)
+    def set_hair_long(self, nValue):
+        self.hair = MakeShortFid(self._CollectionIndex, nValue)
+    hair_long = property(get_hair_long, set_hair_long)
     def get_hairLength(self):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 66)
@@ -10687,6 +11370,11 @@ class NPC_Record(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID,  67)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 67, nValue)
     eye = property(get_eye, set_eye)
+    def get_eye_long(self):
+        return MakeLongFid(self._CollectionIndex,self.eye)
+    def set_eye_long(self, nValue):
+        self.eye = MakeShortFid(self._CollectionIndex, nValue)
+    eye_long = property(get_eye_long, set_eye_long)
     def get_hairRed(self):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 68)
@@ -10722,7 +11410,7 @@ class NPC_Record(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused3(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID,  71)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID,  71)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 71, struct.pack('B', *nValue), 1)
     unused3 = property(get_unused3, set_unused3)
     def get_combatStyle(self):
@@ -10734,6 +11422,11 @@ class NPC_Record(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID,  72)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 72, nValue)
     combatStyle = property(get_combatStyle, set_combatStyle)
+    def get_combatStyle_long(self):
+        return MakeLongFid(self._CollectionIndex,self.combatStyle)
+    def set_combatStyle_long(self, nValue):
+        self.combatStyle = MakeShortFid(self._CollectionIndex, nValue)
+    combatStyle_long = property(get_combatStyle_long, set_combatStyle_long)
     def get_fggs_p(self):
         numRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 73)
         if(numRecords > 0):
@@ -10742,7 +11435,7 @@ class NPC_Record(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_fggs_p(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID,  73)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID,  73)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 73, struct.pack('200B', *nValue), 200)
     fggs_p = property(get_fggs_p, set_fggs_p)
     def get_fgga_p(self):
@@ -10753,7 +11446,7 @@ class NPC_Record(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_fgga_p(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID,  74)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID,  74)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 74, struct.pack('120B', *nValue), 120)
     fgga_p = property(get_fgga_p, set_fgga_p)
     def get_fgts_p(self):
@@ -10764,7 +11457,7 @@ class NPC_Record(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_fgts_p(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID,  75)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID,  75)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 75, struct.pack('200B', *nValue), 200)
     fgts_p = property(get_fgts_p, set_fgts_p)
     def get_fnam(self):
@@ -11018,11 +11711,11 @@ class NPC_Record(BaseRecord):
 class PACKRecord(BaseRecord):
     _Type = 'PACK'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyPACKRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopyPACKRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return PACKRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopyPACKRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopyPACKRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return PACKRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def newConditionsElement(self):
@@ -11055,7 +11748,7 @@ class PACKRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused1(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 8, struct.pack('3B', *nValue), 3)
     unused1 = property(get_unused1, set_unused1)
     def get_locType(self):
@@ -11076,6 +11769,11 @@ class PACKRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 10, nValue)
     locId = property(get_locId, set_locId)
+    def get_locId_long(self):
+        return MakeLongFid(self._CollectionIndex,self.locId)
+    def set_locId_long(self, nValue):
+        self.locId = MakeShortFid(self._CollectionIndex, nValue)
+    locId_long = property(get_locId_long, set_locId_long)
     def get_locRadius(self):
         CBash.ReadFIDField.restype = POINTER(c_int)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
@@ -11148,6 +11846,11 @@ class PACKRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 18)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 18, nValue)
     targetId = property(get_targetId, set_targetId)
+    def get_targetId_long(self):
+        return MakeLongFid(self._CollectionIndex,self.targetId)
+    def set_targetId_long(self, nValue):
+        self.targetId = MakeShortFid(self._CollectionIndex, nValue)
+    targetId_long = property(get_targetId_long, set_targetId_long)
     def get_targetCount(self):
         CBash.ReadFIDField.restype = POINTER(c_int)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 19)
@@ -11162,10 +11865,14 @@ class PACKRecord(BaseRecord):
         if(numRecords > 0): return [Condition(self._CollectionIndex, self._ModName, self._recordID, 20, x) for x in range(0, numRecords)]
         return []
     def set_conditions(self, nConditions):
-        if nConditions is None or nConditions == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 20)
+        if nConditions is None or not len(nConditions): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 20)
         else:
             diffLength = len(nConditions) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 20)
-            nValues = [(nCondition.operType, nCondition.unused1, nCondition.compValue, nCondition.ifunc, nCondition.param1, nCondition.param2, nCondition.unused2) for nCondition in nConditions]
+            if isinstance(nConditions[0], tuple):
+                nValues = nConditions
+            else:
+                nValues = [(nCondition.operType, nCondition.unused1, nCondition.compValue, nCondition.ifunc,
+                            nCondition.param1_long, nCondition.param2_long, nCondition.unused2) for nCondition in nConditions]
             while(diffLength < 0):
                 CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 20)
                 diffLength += 1
@@ -11173,8 +11880,11 @@ class PACKRecord(BaseRecord):
                 CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 20)
                 diffLength -= 1
             for oCondition, nValue in zip(self.conditions, nValues):
-                oCondition.operType, oCondition.unused1, oCondition.compValue, oCondition.ifunc, oCondition.param1, oCondition.param2, oCondition.unused2 = nValue
+                oCondition.operType, oCondition.unused1, oCondition.compValue, oCondition.ifunc, oCondition.param1_long, oCondition.param2_long, oCondition.unused2 = nValue
     conditions = property(get_conditions, set_conditions)
+    def get_conditions_list(self):
+        return [(condition.operType, None, condition.compValue, condition.ifunc, condition.param1_long, condition.param2_long, None) for condition in self.conditions]
+    conditions_list = property(get_conditions_list, set_conditions)
     def get_IsOffersServices(self):
         return self.flags != None and (self.flags & 0x00000001) != 0
     def set_IsOffersServices(self, nValue):
@@ -11491,71 +12201,18 @@ class PGRDRecord(BaseRecord):
     def CopyAsOverride(self, targetCELL):
         if isinstance(targetCELL, CBashModFile): targetID = self._parentID
         else: targetID = targetCELL._recordID
-        FID = CBash.CopyPGRDRecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetID, c_bool(True))
+        FID = CBash.CopyPGRDRecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetID, 1)
         if(FID): return PGRDRecord(self._CollectionIndex, targetCELL._ModName, FID, targetID)
         return None
     def CopyAsNew(self, targetCELL):
         if isinstance(targetCELL, CBashModFile): targetID = self._parentID
         else: targetID = targetCELL._recordID
-        FID = CBash.CopyPGRDRecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetID, c_bool(False))
+        FID = CBash.CopyPGRDRecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetID, 0)
         if(FID): return PGRDRecord(self._CollectionIndex, targetCELL._ModName, FID, targetID)
         return None
     def DeleteRecord(self):
         CBash.DeleteRecord(self._CollectionIndex, self._ModName, self._recordID, self._parentID)
         return
-    class PGRPRecord(object):
-        def __init__(self, CollectionIndex, ModName, recordID, listIndex):
-            self._CollectionIndex = CollectionIndex
-            self._ModName = ModName
-            self._recordID = recordID
-            self._listIndex = listIndex
-        def get_x(self):
-            CBash.ReadFIDListField.restype = POINTER(c_float)
-            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 1)
-            if(retValue): return round(retValue.contents.value,6)
-            return None
-        def set_x(self, nValue):
-            if nValue is None: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 1)
-            else: CBash.SetFIDListFieldF(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 1, c_float(round(nValue,6)))
-        x = property(get_x, set_x)
-        def get_y(self):
-            CBash.ReadFIDListField.restype = POINTER(c_float)
-            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 2)
-            if(retValue): return round(retValue.contents.value,6)
-            return None
-        def set_y(self, nValue):
-            if nValue is None: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 2)
-            else: CBash.SetFIDListFieldF(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 2, c_float(round(nValue,6)))
-        y = property(get_y, set_y)
-        def get_z(self):
-            CBash.ReadFIDListField.restype = POINTER(c_float)
-            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 3)
-            if(retValue): return round(retValue.contents.value,6)
-            return None
-        def set_z(self, nValue):
-            if nValue is None: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 3)
-            else: CBash.SetFIDListFieldF(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 3, c_float(round(nValue,6)))
-        z = property(get_z, set_z)
-        def get_connections(self):
-            CBash.ReadFIDListField.restype = POINTER(c_ubyte)
-            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 4)
-            if(retValue): return retValue.contents.value
-            return None
-        def set_connections(self, nValue):
-            if nValue is None: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 4)
-            else: CBash.SetFIDListFieldUC(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 4, c_ubyte(nValue))
-        connections = property(get_connections, set_connections)
-        def get_unused1(self):
-            numRecords = CBash.GetFIDListArraySize(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 5)
-            if(numRecords > 0):
-                cRecords = POINTER(c_ubyte * numRecords)()
-                CBash.GetFIDListArray(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 5, byref(cRecords))
-                return [cRecords.contents[x] for x in range(0, numRecords)]
-            return []
-        def set_unused1(self, nValue):
-            if nValue is None or nValue == []: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 5)
-            else: CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, 7, self._listIndex, 5, struct.pack('3B', *nValue), 3)
-        unused1 = property(get_unused1, set_unused1)
     class PGRIRecord(object):
         def __init__(self, CollectionIndex, ModName, recordID, listIndex):
             self._CollectionIndex = CollectionIndex
@@ -11579,13 +12236,13 @@ class PGRDRecord(BaseRecord):
                 return [cRecords.contents[x] for x in range(0, numRecords)]
             return []
         def set_unused1(self, nValue):
-            if nValue is None or nValue == []: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 10, self._listIndex, 2)
+            if nValue is None or not len(nValue): CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 10, self._listIndex, 2)
             else: CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, 10, self._listIndex, 2, struct.pack('2B', *nValue), 2)
         unused1 = property(get_unused1, set_unused1)
         def get_x(self):
             CBash.ReadFIDListField.restype = POINTER(c_float)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 10, self._listIndex, 3)
-            if(retValue): return round(retValue.contents.value,6)                
+            if(retValue): return round(retValue.contents.value,6)
             return None
         def set_x(self, nValue):
             if nValue is None: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 10, self._listIndex, 3)
@@ -11624,6 +12281,11 @@ class PGRDRecord(BaseRecord):
             if nValue is None: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 11, self._listIndex, 1)
             else: CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 11, self._listIndex, 1, nValue)
         reference = property(get_reference, set_reference)
+        def get_reference_long(self):
+            return MakeLongFid(self._CollectionIndex,self.reference)
+        def set_reference_long(self, nValue):
+            self.reference = MakeShortFid(self._CollectionIndex, nValue)
+        reference_long = property(get_reference_long, set_reference_long)
         def get_points(self):
             numRecords = CBash.GetFIDListArraySize(self._CollectionIndex, self._ModName, self._recordID, 11, self._listIndex, 2)
             if(numRecords > 0):
@@ -11632,13 +12294,13 @@ class PGRDRecord(BaseRecord):
                 return [cRecords.contents[x] for x in range(0, numRecords)]
             return []
         def set_points(self, nValues):
-            if nValues is None or nValues == []: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 11, self._listIndex, 2)
+            if nValues is None or not len(nValues): CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 11, self._listIndex, 2)
             else: CBash.SetFIDListFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 11, self._listIndex, 2, struct.pack('I' * len(nValues), *nValues), len(nValues))
         points = property(get_points, set_points)
     def newPGRPElement(self):
         listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 7)
         if(listIndex == -1): return None
-        return self.PGRPRecord(self._CollectionIndex, self._ModName, self._recordID, listIndex)
+        return PGRPRecord(self._CollectionIndex, self._ModName, self._recordID, listIndex)
     def newPGRIElement(self):
         listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 10)
         if(listIndex == -1): return None
@@ -11658,13 +12320,16 @@ class PGRDRecord(BaseRecord):
     count = property(get_count, set_count)
     def get_PGRP(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 7)
-        if(numRecords > 0): return [self.PGRPRecord(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
+        if(numRecords > 0): return [PGRPRecord(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
         return []
     def set_PGRP(self, nPGRP):
-        if nPGRP is None or nPGRP == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
+        if nPGRP is None or not len(nPGRP): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
         else:
             diffLength = len(nPGRP) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 7)
-            nValues = [(nPGRPRecord.x, nPGRPRecord.y, nPGRPRecord.z, nPGRPRecord.connections, nPGRPRecord.unused1) for nPGRPRecord in nPGRP]
+            if isinstance(nPGRP[0], tuple):
+                nValues = nPGRP
+            else:
+                nValues = [(nPGRPRecord.x, nPGRPRecord.y, nPGRPRecord.z, nPGRPRecord.connections, nPGRPRecord.unused1) for nPGRPRecord in nPGRP]
             while(diffLength < 0):
                 CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 7)
                 diffLength += 1
@@ -11674,6 +12339,9 @@ class PGRDRecord(BaseRecord):
             for oPGRPRecord, nValue in zip(self.PGRP, nValues):
                 oPGRPRecord.x, oPGRPRecord.y, oPGRPRecord.z, oPGRPRecord.connections, oPGRPRecord.unused1 = nValue
     PGRP = property(get_PGRP, set_PGRP)
+    def get_PGRP_list(self):
+        return [(PGRP.x, PGRP.y, PGRP.z, PGRP.connections, None) for PGRP in self.PGRP]
+    PGRP_list = property(get_PGRP_list, set_PGRP)
     def get_PGAG(self):
         numRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 8)
         if(numRecords > 0):
@@ -11682,7 +12350,7 @@ class PGRDRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_PGAG(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         else:
             length = len(nValue)
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 8, struct.pack('B' * length, *nValue), length)
@@ -11695,7 +12363,7 @@ class PGRDRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_PGRR(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         else:
             length = len(nValue)
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 9, struct.pack('B' * length, *nValue), length)
@@ -11705,10 +12373,13 @@ class PGRDRecord(BaseRecord):
         if(numRecords > 0): return [self.PGRIRecord(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
         return []
     def set_PGRI(self, nPGRI):
-        if nPGRI is None or nPGRI == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
+        if nPGRI is None or not len(nPGRI): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
         else:
             diffLength = len(nPGRI) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 10)
-            nValues = [(nPGRIRecord.point, nPGRIRecord.unused1, nPGRIRecord.x, nPGRIRecord.y, nPGRIRecord.z) for nPGRIRecord in nPGRI]
+            if isinstance(nPGRP[0], tuple):
+                nValues = nPGRP
+            else:
+                nValues = [(nPGRIRecord.point, nPGRIRecord.unused1, nPGRIRecord.x, nPGRIRecord.y, nPGRIRecord.z) for nPGRIRecord in nPGRI]
             while(diffLength < 0):
                 CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 10)
                 diffLength += 1
@@ -11718,15 +12389,21 @@ class PGRDRecord(BaseRecord):
             for oPGRIRecord, nValue in zip(self.PGRI, nValues):
                 oPGRIRecord.point, oPGRIRecord.unused1, oPGRIRecord.x, oPGRIRecord.y, oPGRIRecord.z = nValue
     PGRI = property(get_PGRI, set_PGRI)
+    def get_PGRI_list(self):
+        return [(PGRI.point, None, PGRI.x, PGRI.y, PGRI.z) for PGRI in self.PGRI]
+    PGRI_list = property(get_PGRI_list, set_PGRI)
     def get_PGRL(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 11)
         if(numRecords > 0): return [self.PGRLRecord(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
         return []
     def set_PGRL(self, nPGRL):
-        if nPGRL is None or nPGRL == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
+        if nPGRL is None or not len(nPGRL): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         else:
             diffLength = len(nPGRL) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 11)
-            nValues = [(nPGRLRecord.reference, nPGRLRecord.points) for nPGRLRecord in nPGRL]
+            if isinstance(nPGRL[0], tuple):
+                nValues = nPGRL
+            else:
+                nValues = [(nPGRLRecord.reference, nPGRLRecord.points) for nPGRLRecord in nPGRL]
             while(diffLength < 0):
                 CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 11)
                 diffLength += 1
@@ -11736,16 +12413,19 @@ class PGRDRecord(BaseRecord):
             for oPGRLRecord, nValue in zip(self.PGRL, nValues):
                 oPGRLRecord.reference, oPGRLRecord.points = nValue
     PGRL = property(get_PGRL, set_PGRL)
+    def get_PGRL_list(self):
+        return [(PGRL.reference_long, PGRL.points) for PGRL in self.PGRL]
+    PGRL_list = property(get_PGRL_list, set_PGRL)
     copyattrs = BaseRecord.baseattrs + ['count','PGRP','PGAG','PGRR','PGRI','PGRL']
 
 class QUSTRecord(BaseRecord):
     _Type = 'QUST'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyQUSTRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopyQUSTRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return QUSTRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopyQUSTRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopyQUSTRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return QUSTRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     class Stage(object):
@@ -11806,6 +12486,15 @@ class QUSTRecord(BaseRecord):
                     if nValue is None: CBash.DeleteFIDListX3Field(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 2, self._listX3Index, 5)
                     else: CBash.SetFIDListX3FieldUI(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 2, self._listX3Index, 5, nValue)
                 param1 = property(get_param1, set_param1)
+                def get_param1_long(self):
+                    if self.ifunc in bush.fid1Conditions:
+                        return MakeLongFid(self._CollectionIndex,self.param1)
+                    return self.param1
+                def set_param1_long(self, nValue):
+                    if self.ifunc in bush.fid1Conditions:
+                        self.param1 = MakeShortFid(self._CollectionIndex, nValue)
+                    else: self.param1 = nValue        
+                param1_long = property(get_param1_long, set_param1_long)
                 def get_param2(self):
                     CBash.ReadFIDListX3Field.restype = POINTER(c_uint)
                     retValue = CBash.ReadFIDListX3Field(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 2, self._listX3Index, 6)
@@ -11815,6 +12504,15 @@ class QUSTRecord(BaseRecord):
                     if nValue is None: CBash.DeleteFIDListX3Field(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 2, self._listX3Index, 6)
                     else: CBash.SetFIDListX3FieldUI(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 2, self._listX3Index, 6, nValue)
                 param2 = property(get_param2, set_param2)
+                def get_param2_long(self):
+                    if self.ifunc in bush.fid2Conditions:
+                        return MakeLongFid(self._CollectionIndex,self.param2)
+                    return self.param2
+                def set_param2_long(self, nValue):
+                    if self.ifunc in bush.fid2Conditions:
+                        self.param2 = MakeShortFid(self._CollectionIndex, nValue)
+                    else: self.param2 = nValue        
+                param2_long = property(get_param2_long, set_param2_long)
                 def get_unused2(self):
                     numRecords = CBash.GetFIDListX3ArraySize(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 2, self._listX3Index, 7)
                     if(numRecords > 0):
@@ -11952,10 +12650,19 @@ class QUSTRecord(BaseRecord):
                     if nValue is None: CBash.DeleteFIDListX3Field(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 11, self._listX3Index, 1)
                     else: CBash.SetFIDListX3FieldUI(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 11, self._listX3Index, 1, nValue)
                 reference = property(get_reference, set_reference)
+                def get_reference_long(self):
+                    if self.IsSCRO:
+                        return MakeLongFid(self._CollectionIndex,self.reference)
+                    return self.reference
+                def set_reference_long(self, nValue):
+                    if self.IsSCRO:
+                        self.reference = MakeShortFid(self._CollectionIndex, nValue)
+                    else: self.reference = nValue            
+                reference_long = property(get_reference_long, set_reference_long)
                 def get_IsSCRO(self):
-                    CBash.ReadFIDListX3Field.restype = POINTER(c_bool)
+                    CBash.ReadFIDListX3Field.restype = POINTER(c_uint)
                     retValue = CBash.ReadFIDListX3Field(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 11, self._listX3Index, 2)
-                    if(retValue): return retValue.contents.value
+                    if(retValue): return bool(retValue.contents.value)
                     return None
                 def set_IsSCRO(self, nValue):
                     if isinstance(nValue, bool):
@@ -11997,10 +12704,13 @@ class QUSTRecord(BaseRecord):
                     return [self.Condition(self._CollectionIndex, self._ModName, self._recordID, self._listIndex, self._listX2Index, x) for x in range(0, numRecords)]
                 return []
             def set_conditions(self, nConditions):
-                if nConditions is None or nConditions == []: CBash.DeleteFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 2)
+                if nConditions is None or not len(nConditions): CBash.DeleteFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 2)
                 else:
                     diffLength = len(nConditions) - CBash.GetFIDListX3Size(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 2)
-                    nValues = [(nCondition.operType, nCondition.unused1, nCondition.compValue, nCondition.ifunc, nCondition.param1, nCondition.param2, nCondition.unused2) for nCondition in nConditions]
+                    if isinstance(nConditions[0], tuple):
+                        nValues = nConditions
+                    else:
+                        nValues = [(nCondition.operType, nCondition.unused1, nCondition.compValue, nCondition.ifunc, nCondition.param1_long, nCondition.param2_long, nCondition.unused2) for nCondition in nConditions]
                     while(diffLength < 0):
                         CBash.DeleteFIDListX3Element(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 2)
                         diffLength += 1
@@ -12008,8 +12718,11 @@ class QUSTRecord(BaseRecord):
                         CBash.CreateFIDListX3Element(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 2)
                         diffLength -= 1
                     for oCondition, nValue in zip(self.conditions, nValues):
-                        oCondition.operType, oCondition.unused1, oCondition.compValue, oCondition.ifunc, oCondition.param1, oCondition.param2, oCondition.unused2 = nValue
+                        oCondition.operType, oCondition.unused1, oCondition.compValue, oCondition.ifunc, oCondition.param1_long, oCondition.param2_long, oCondition.unused2 = nValue
             conditions = property(get_conditions, set_conditions)
+            def get_conditions_list(self):
+                return [(condition.operType, None, condition.compValue, condition.ifunc, condition.param1_long, condition.param2_long, None) for condition in self.conditions]
+            conditions_list = property(get_conditions_list, set_conditions)
             def get_text(self):
                 CBash.ReadFIDListX2Field.restype = c_char_p
                 return CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 3)
@@ -12025,7 +12738,7 @@ class QUSTRecord(BaseRecord):
                     return [cRecords.contents[x] for x in range(0, numRecords)]
                 return []
             def set_unused1(self, nValue):
-                if nValue is None or nValue == []: CBash.DeleteFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 4)
+                if nValue is None or not len(nValue): CBash.DeleteFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 4)
                 else: CBash.SetFIDListX2FieldR(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 4, struct.pack('4B', *nValue), 4)
             unused1 = property(get_unused1, set_unused1)
             def get_numRefs(self):
@@ -12072,7 +12785,7 @@ class QUSTRecord(BaseRecord):
                     return [cRecords.contents[x] for x in range(0, numRecords)]
                 return []
             def set_compiled_p(self, nValue):
-                if nValue is None or nValue == []: CBash.DeleteFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 9)
+                if nValue is None or not len(nValue): CBash.DeleteFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 9)
                 else:
                     length = len(nValue)
                     CBash.SetFIDListX2FieldR(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 9, struct.pack('B' * length, *nValue), length)
@@ -12090,10 +12803,13 @@ class QUSTRecord(BaseRecord):
                     return [self.Reference(self._CollectionIndex, self._ModName, self._recordID, self._listIndex, self._listX2Index, x) for x in range(0, numRecords)]
                 return []
             def set_references(self, nReferences):
-                if nReferences is None or nReferences == []: CBash.DeleteFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 11)
+                if nReferences is None or not len(nReferences): CBash.DeleteFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 11)
                 else:
                     diffLength = len(nReferences) - CBash.GetFIDListX3Size(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 11)
-                    nValues = [(nReference.reference,nReference.IsSCRO) for nReference in nReferences]
+                    if isinstance(nReferences[0], tuple):
+                        nValues = nReferences
+                    else:
+                        nValues = [(nReference.reference_long,nReference.IsSCRO) for nReference in nReferences]
                     while(diffLength < 0):
                         CBash.DeleteFIDListX3Element(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 11)
                         diffLength += 1
@@ -12101,8 +12817,11 @@ class QUSTRecord(BaseRecord):
                         CBash.CreateFIDListX3Element(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2, self._listX2Index, 11)
                         diffLength -= 1
                     for oReference, nValue in zip(self.references, nValues):
-                        oReference.reference, oReference.IsSCRO = nValue
+                        oReference.reference_long, oReference.IsSCRO = nValue
             references = property(get_references, set_references)
+            def get_references_list(self):
+                return [(reference.reference_long,reference.IsSCRO) for reference in self.references]
+            references_list = property(get_references_list, set_references)
             def get_IsCompletes(self):
                 return self.flags != None and (self.flags & 0x00000001) != 0
             def set_IsCompletes(self, nValue):
@@ -12134,14 +12853,15 @@ class QUSTRecord(BaseRecord):
             if(numRecords > 0): return [self.Entry(self._CollectionIndex, self._ModName, self._recordID, self._listIndex, x) for x in range(0, numRecords)]
             return []
         def set_entries(self, nEntries):
-            if nEntries is None or nEntries == []: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2)
+            if nEntries is None or not len(nEntries): CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2)
             else:
                 diffLength = len(nEntries) - CBash.GetFIDListX2Size(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2)
-                nValues = [(nEntry.flags,
-                            [(nCondition.operType, nCondition.unused1, nCondition.compValue, nCondition.ifunc,
-                              nCondition.param1, nCondition.param2, nCondition.unused2) for nCondition in nEntry.conditions],
-                            nEntry.text, nEntry.unused1, nEntry.numRefs, nEntry.compiledSize, nEntry.lastIndex, nEntry.scriptType, nEntry.compiled_p, nEntry.scriptText,
-                            [(nReference.reference, nReference.IsSCRO) for nReference in nEntry.references]) for nEntry in nEntries]
+                if isinstance(nEntries[0], tuple):
+                    nValues = nEntries
+                else:
+                    nValues = [(nEntry.flags, nEntry.conditions_list, nEntry.text, nEntry.unused1, nEntry.numRefs, nEntry.compiledSize,
+                                nEntry.lastIndex, nEntry.scriptType, nEntry.compiled_p, nEntry.scriptText,
+                                nEntry.references_list) for nEntry in nEntries]
                 while(diffLength < 0):
                     CBash.DeleteFIDListX2Element(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2)
                     diffLength += 1
@@ -12149,34 +12869,13 @@ class QUSTRecord(BaseRecord):
                     CBash.CreateFIDListX2Element(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2)
                     diffLength -= 1
                 for oEntry, nValue in zip(self.entries, nValues):
-                    nEntry.flags = nValue[0]
-                    diffLength = len(nValue[1]) - CBash.GetFIDListX3Size(self._CollectionIndex, self._ModName, self._recordID, 12, oEntry._listIndex, 2, oEntry._listX2Index, 2)
-                    while(diffLength < 0):
-                        CBash.DeleteFIDListX3Element(self._CollectionIndex, self._ModName, self._recordID, 12, oEntry._listIndex, 2, oEntry.listX2Index, 2)
-                        diffLength += 1
-                    while(diffLength > 0):
-                        CBash.CreateFIDListX3Element(self._CollectionIndex, self._ModName, self._recordID, 12, oEntry._listIndex, 2, oEntry.listX2Index, 2)
-                        diffLength -= 1
-                    for oCondition, condValue in zip(oEntry.conditions, nValue[1]):
-                        oCondition.operType, oCondition.unused1, oCondition.compValue, oCondition.ifunc, oCondition.param1, oCondition.param2, oCondition.unused2 = condValue
-                    nEntry.text = nValue[2]
-                    nEntry.unused1 = nValue[3]
-                    nEntry.numRefs = nValue[4]
-                    nEntry.compiledSize = nValue[5]
-                    nEntry.lastIndex = nValue[6]
-                    nEntry.scriptType = nValue[7]
-                    nEntry.compiled_p = nValue[8]
-                    nEntry.scriptText = nValue[9]
-                    diffLength = len(nValue[10]) - CBash.GetFIDListX3Size(self._CollectionIndex, self._ModName, self._recordID, 12, oEntry._listIndex, 2, oEntry._listX2Index, 11)
-                    while(diffLength < 0):
-                        CBash.DeleteFIDListX3Element(self._CollectionIndex, self._ModName, self._recordID, 12, oEntry._listIndex, 2, oEntry.listX2Index, 11)
-                        diffLength += 1
-                    while(diffLength > 0):
-                        CBash.CreateFIDListX3Element(self._CollectionIndex, self._ModName, self._recordID, 12, oEntry._listIndex, 2, oEntry.listX2Index, 11)
-                        diffLength -= 1
-                    for oReference, refValue in zip(oEntry.references, nValue[10]):
-                        oReference.reference, oReference.IsSCRO = refValue
+                    oEntry.flags, oEntry.conditions_list, oEntry.text, oEntry.unused1, oEntry.numRefs, oEntry.compiledSize, oEntry.lastIndex, oEntry.scriptType, oEntry.compiled_p, oEntry.scriptText, oEntry.references_list = nValue
         entries = property(get_entries, set_entries)
+        def get_entries_list(self):
+            return [(entry.flags, entry.conditions_list, entry.text, None, entry.numRefs, entry.compiledSize,
+                     entry.lastIndex, entry.scriptType, entry.compiled_p, entry.scriptText,
+                     entry.references_list) for entry in self.entries]
+        entries_list = property(get_entries_list, set_entries)
     class Target(object):
         class Condition(object):
             def __init__(self, CollectionIndex, ModName, recordID, listIndex, listX2Index):
@@ -12202,7 +12901,7 @@ class QUSTRecord(BaseRecord):
                     return [cRecords.contents[x] for x in range(0, numRecords)]
                 return []
             def set_unused1(self, nValue):
-                if nValue is None or nValue == []: CBash.DeleteFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 4, self._listX2Index, 2)
+                if nValue is None or not len(nValue): CBash.DeleteFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 4, self._listX2Index, 2)
                 else: CBash.SetFIDListX2FieldR(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 4, self._listX2Index, 2, struct.pack('3B', *nValue), 3)
             unused1 = property(get_unused1, set_unused1)
             def get_compValue(self):
@@ -12232,6 +12931,15 @@ class QUSTRecord(BaseRecord):
                 if nValue is None: CBash.DeleteFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 4, self._listX2Index, 5)
                 else: CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 4, self._listX2Index, 5, nValue)
             param1 = property(get_param1, set_param1)
+            def get_param1_long(self):
+                if self.ifunc in bush.fid1Conditions:
+                    return MakeLongFid(self._CollectionIndex,self.param1)
+                return self.param1
+            def set_param1_long(self, nValue):
+                if self.ifunc in bush.fid1Conditions:
+                    self.param1 = MakeShortFid(self._CollectionIndex, nValue)
+                else: self.param1 = nValue        
+            param1_long = property(get_param1_long, set_param1_long)
             def get_param2(self):
                 CBash.ReadFIDListX2Field.restype = POINTER(c_uint)
                 retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 4, self._listX2Index, 6)
@@ -12241,6 +12949,15 @@ class QUSTRecord(BaseRecord):
                 if nValue is None: CBash.DeleteFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 4, self._listX2Index, 6)
                 else: CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 4, self._listX2Index, 6, nValue)
             param2 = property(get_param2, set_param2)
+            def get_param2_long(self):
+                if self.ifunc in bush.fid2Conditions:
+                    return MakeLongFid(self._CollectionIndex,self.param2)
+                return self.param2
+            def set_param2_long(self, nValue):
+                if self.ifunc in bush.fid2Conditions:
+                    self.param2 = MakeShortFid(self._CollectionIndex, nValue)
+                else: self.param2 = nValue        
+            param2_long = property(get_param2_long, set_param2_long)
             def get_unused2(self):
                 numRecords = CBash.GetFIDListX2ArraySize(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 4, self._listX2Index, 7)
                 if(numRecords > 0):
@@ -12249,7 +12966,7 @@ class QUSTRecord(BaseRecord):
                     return [cRecords.contents[x] for x in range(0, numRecords)]
                 return []
             def set_unused2(self, nValue):
-                if nValue is None or nValue == []: CBash.DeleteFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 4, self._listX2Index, 7)
+                if nValue is None or not len(nValue): CBash.DeleteFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 4, self._listX2Index, 7)
                 else: CBash.SetFIDListX2FieldR(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 4, self._listX2Index, 7, struct.pack('4B', *nValue), 4)
             unused2 = property(get_unused2, set_unused2)
             def get_IsEqual(self):
@@ -12377,6 +13094,11 @@ class QUSTRecord(BaseRecord):
             if nValue is None: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 1)
             else: CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 1, nValue)
         targetId = property(get_targetId, set_targetId)
+        def get_targetId_long(self):
+            return MakeLongFid(self._CollectionIndex,self.targetId)
+        def set_targetId_long(self, nValue):
+            self.targetId = MakeShortFid(self._CollectionIndex, nValue)
+        targetId_long = property(get_targetId_long, set_targetId_long)
         def get_flags(self):
             CBash.ReadFIDListField.restype = POINTER(c_ubyte)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 2)
@@ -12394,7 +13116,7 @@ class QUSTRecord(BaseRecord):
                 return [cRecords.contents[x] for x in range(0, numRecords)]
             return []
         def set_unused1(self, nValue):
-            if nValue is None or nValue == []: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 3)
+            if nValue is None or not len(nValue): CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 3)
             else: CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 3, struct.pack('3B', *nValue), 3)
         unused1 = property(get_unused1, set_unused1)
         def get_conditions(self):
@@ -12402,10 +13124,13 @@ class QUSTRecord(BaseRecord):
             if(numRecords > 0): return [self.Condition(self._CollectionIndex, self._ModName, self._recordID, self._listIndex, x) for x in range(0, numRecords)]
             return []
         def set_conditions(self, nConditions):
-            if nConditions is None or nConditions == []: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 4)
+            if nConditions is None or not len(nConditions): CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 4)
             else:
                 diffLength = len(nConditions) - CBash.GetFIDListX2Size(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 4)
-                nValues = [(nCondition.operType, nCondition.unused1, nCondition.compValue, nCondition.ifunc, nCondition.param1, nCondition.param2, nCondition.unused2) for nCondition in nConditions]
+                if isinstance(nConditions[0], tuple):
+                    nValues = nConditions
+                else:
+                    nValues = [(nCondition.operType, nCondition.unused1, nCondition.compValue, nCondition.ifunc, nCondition.param1_long, nCondition.param2_long, nCondition.unused2) for nCondition in nConditions]
                 while(diffLength < 0):
                     CBash.DeleteFIDListX2Element(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 4)
                     diffLength += 1
@@ -12413,8 +13138,11 @@ class QUSTRecord(BaseRecord):
                     CBash.CreateFIDListX2Element(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 4)
                     diffLength -= 1
                 for oCondition, nValue in zip(self.conditions, nValues):
-                    oCondition.operType, oCondition.unused1, oCondition.compValue, oCondition.ifunc, oCondition.param1, oCondition.param2, oCondition.unused2 = nValue
+                    oCondition.operType, oCondition.unused1, oCondition.compValue, oCondition.ifunc, oCondition.param1_long, oCondition.param2_long, oCondition.unused2 = nValue
         conditions = property(get_conditions, set_conditions)
+        def get_conditions_list(self):
+            return [(condition.operType, None, condition.compValue, condition.ifunc, condition.param1_long, condition.param2_long, None) for condition in self.conditions]
+        conditions_list = property(get_conditions_list, set_conditions)
         def get_IsIgnoresLocks(self):
             return self.flags != None and (self.flags & 0x00000001) != 0
         def set_IsIgnoresLocks(self, nValue):
@@ -12444,6 +13172,11 @@ class QUSTRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 6)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 6, nValue)
     script = property(get_script, set_script)
+    def get_script_long(self):
+        return MakeLongFid(self._CollectionIndex,self.script)
+    def set_script_long(self, nValue):
+        self.script = MakeShortFid(self._CollectionIndex, nValue)
+    script_long = property(get_script_long, set_script_long)
     def get_full(self):
         CBash.ReadFIDField.restype = c_char_p
         return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
@@ -12481,10 +13214,13 @@ class QUSTRecord(BaseRecord):
         if(numRecords > 0): return [Condition(self._CollectionIndex, self._ModName, self._recordID, 11, x) for x in range(0, numRecords)]
         return []
     def set_conditions(self, nConditions):
-        if nConditions is None or nConditions == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
+        if nConditions is None or not len(nConditions): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         else:
             diffLength = len(nConditions) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 11)
-            nValues = [(nCondition.operType, nCondition.unused1, nCondition.compValue, nCondition.ifunc, nCondition.param1, nCondition.param2, nCondition.unused2) for nCondition in nConditions]
+            if isinstance(nConditions[0], tuple):
+                nValues = nConditions
+            else:
+                nValues = [(nCondition.operType, nCondition.unused1, nCondition.compValue, nCondition.ifunc, nCondition.param1_long, nCondition.param2_long, nCondition.unused2) for nCondition in nConditions]
             while(diffLength < 0):
                 CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 11)
                 diffLength += 1
@@ -12492,22 +13228,23 @@ class QUSTRecord(BaseRecord):
                 CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 11)
                 diffLength -= 1
             for oCondition, nValue in zip(self.conditions, nValues):
-                oCondition.operType, oCondition.unused1, oCondition.compValue, oCondition.ifunc, oCondition.param1, oCondition.param2, oCondition.unused2 = nValue
+                oCondition.operType, oCondition.unused1, oCondition.compValue, oCondition.ifunc, oCondition.param1_long, oCondition.param2_long, oCondition.unused2 = nValue
     conditions = property(get_conditions, set_conditions)
+    def get_conditions_list(self):
+        return [(condition.operType, None, condition.compValue, condition.ifunc, condition.param1_long, condition.param2_long, None) for condition in self.conditions]
+    conditions_list = property(get_conditions_list, set_conditions)
     def get_stages(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 12)
         if(numRecords > 0): return [self.Stage(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
         return []
     def set_stages(self, nStages):
-        if nStages is None or nStages == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
+        if nStages is None or not len(nStages): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
         else:
             diffLength = len(nStages) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 12)
-            nValues = [(nStage.stage,
-                      [(nEntry.flags,
-                      [(nCondition.operType, nCondition.unused1, nCondition.compValue, nCondition.ifunc,
-                      nCondition.param1, nCondition.param2, nCondition.unused2) for nCondition in nEntry.conditions],
-                      nEntry.text, nEntry.unused1, nEntry.numRefs, nEntry.compiledSize, nEntry.lastIndex, nEntry.scriptType, nEntry.compiled_p, nEntry.scriptText,
-                      [(nReference.reference, nReference.IsSCRO) for nReference in nEntry.references]) for nEntry in nStage.entries]) for nStage in nStages]
+            if isinstance(nStages[0], tuple):
+                nValues = nStages
+            else:
+                nValues = [(nStage.stage, nStage.entries_list) for nStage in nStages]
             while(diffLength < 0):
                 CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 12)
                 diffLength += 1
@@ -12515,46 +13252,23 @@ class QUSTRecord(BaseRecord):
                 CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 12)
                 diffLength -= 1
             for oStage, nValue in zip(self.stages, nValues):
-                oStage.stage = nValue[0]
-                for oEntry, eValue in zip(oStage.entries, nValue[1]):
-                    nEntry.flags = eValue[0]
-                    diffLength = len(eValue[1]) - CBash.GetFIDListX3Size(self._CollectionIndex, self._ModName, self._recordID, 12, oEntry._listIndex, 2, oEntry._listX2Index, 2)
-                    while(diffLength < 0):
-                        CBash.DeleteFIDListX3Element(self._CollectionIndex, self._ModName, self._recordID, 12, oEntry._listIndex, 2, oEntry._listX2Index, 2)
-                        diffLength += 1
-                    while(diffLength > 0):
-                        CBash.CreateFIDListX3Element(self._CollectionIndex, self._ModName, self._recordID, 12, oEntry._listIndex, 2, oEntry._listX2Index, 2)
-                        diffLength -= 1
-                    for oCondition, condValue in zip(oEntry.conditions, eValue[1]):
-                        oCondition.operType, oCondition.unused1, oCondition.compValue, oCondition.ifunc, oCondition.param1, oCondition.param2, oCondition.unused2 = condValue
-                    nEntry.text = eValue[2]
-                    nEntry.unused1 = eValue[3]
-                    nEntry.numRefs = eValue[4]
-                    nEntry.compiledSize = eValue[5]
-                    nEntry.lastIndex = eValue[6]
-                    nEntry.scriptType = eValue[7]
-                    nEntry.compiled_p = eValue[8]
-                    nEntry.scriptText = eValue[9]
-                    diffLength = len(eValue[10]) - CBash.GetFIDListX3Size(self._CollectionIndex, self._ModName, self._recordID, 12, oEntry._listIndex, 2, oEntry._listX2Index, 11)
-                    while(diffLength < 0):
-                        CBash.DeleteFIDListX3Element(self._CollectionIndex, self._ModName, self._recordID, 12, oEntry._listIndex, 2, oEntry._listX2Index, 11)
-                        diffLength += 1
-                    while(diffLength > 0):
-                        CBash.CreateFIDListX3Element(self._CollectionIndex, self._ModName, self._recordID, 12, oEntry._listIndex, 2, oEntry._listX2Index, 11)
-                        diffLength -= 1
-                    for oReference, refValue in zip(oEntry.references, eValue[10]):
-                        oReference.reference, oReference.IsSCRO = refValue
+                oStage.stage, oStage.entries_list = nValue
     stages = property(get_stages, set_stages)
+    def get_stages_list(self):
+        return [(stage.stage, stage.entries_list) for stage in self.stages]
+    stages_list = property(get_stages_list, set_stages)
     def get_targets(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 13)
         if(numRecords > 0): return [self.Target(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
         return []
     def set_targets(self, nTargets):
-        if nTargets is None or nTargets == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
+        if nTargets is None or not len(nTargets): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
         else:
             diffLength = len(nTargets) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 13)
-            nValues = [(nTarget.targetId, nTarget.flags, nTarget.unused1,
-                      [(nCondition.operType, nCondition.unused1, nCondition.compValue, nCondition.ifunc, nCondition.param1, nCondition.param2, nCondition.unused2) for nCondition in nTarget.conditions]) for nTarget in nTargets]
+            if isinstance(nTargets[0], tuple):
+                nValues = nTargets
+            else:
+                nValues = [(nTarget.targetId, nTarget.flags, nTarget.unused1, nTarget.conditions_list) for nTarget in nTargets]
             while(diffLength < 0):
                 CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 13)
                 diffLength += 1
@@ -12562,19 +13276,11 @@ class QUSTRecord(BaseRecord):
                 CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 13)
                 diffLength -= 1
             for oTarget, nValue in zip(self.targets, nValues):
-                oTarget.targetId = nValue[0]
-                oTarget.flags = nValue[1]
-                oTarget.unused1 = nValue[2]
-                diffLength = len(nValue[3]) - CBash.GetFIDListX2Size(self._CollectionIndex, self._ModName, self._recordID, 13, oTarget._listIndex, 4)
-                while(diffLength < 0):
-                    CBash.DeleteFIDListX2Element(self._CollectionIndex, self._ModName, self._recordID, 13, oTarget._listIndex, 4)
-                    diffLength += 1
-                while(diffLength > 0):
-                    CBash.CreateFIDListX2Element(self._CollectionIndex, self._ModName, self._recordID, 13, oTarget._listIndex, 4)
-                    diffLength -= 1
-                for oCondition, eValue in zip(oTarget.conditions, nValue[3]):
-                    oCondition.operType, oCondition.unused1, oCondition.compValue, oCondition.ifunc, oCondition.param1, oCondition.param2, oCondition.unused2 = eValue
+                oTarget.targetId, oTarget.flags, oTarget.unused1, oTarget.conditions_list = nValue
     targets = property(get_targets, set_targets)
+    def get_targets_list(self):
+        return [(target.targetId, target.flags, target.unused1, target.conditions_list) for target in self.targets]
+    targets_list = property(get_targets_list, set_targets)
     def get_IsStartEnabled(self):
         return self.flags != None and (self.flags & 0x00000001) != 0
     def set_IsStartEnabled(self, nValue):
@@ -12605,37 +13311,13 @@ class QUSTRecord(BaseRecord):
 class RACERecord(BaseRecord):
     _Type = 'RACE'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyRACERecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopyRACERecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return RACERecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopyRACERecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopyRACERecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return RACERecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
-    class Relation(object):
-        def __init__(self, CollectionIndex, ModName, recordID, listIndex):
-            self._CollectionIndex = CollectionIndex
-            self._ModName = ModName
-            self._recordID = recordID
-            self._listIndex = listIndex
-        def get_faction(self):
-            CBash.ReadFIDListField.restype = POINTER(c_uint)
-            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 9, self._listIndex, 1)
-            if(retValue): return retValue.contents.value
-            return None
-        def set_faction(self, nValue):
-            if nValue is None: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 9, self._listIndex, 1)
-            else: CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 9, self._listIndex, 1, nValue)
-        faction = property(get_faction, set_faction)
-        def get_mod(self):
-            CBash.ReadFIDListField.restype = POINTER(c_int)
-            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 9, self._listIndex, 2)
-            if(retValue): return retValue.contents.value
-            return None
-        def set_mod(self, nValue):
-            if nValue is None: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 9, self._listIndex, 2)
-            else: CBash.SetFIDListFieldI(self._CollectionIndex, self._ModName, self._recordID, 9, self._listIndex, 2, nValue)
-        mod = property(get_mod, set_mod)
     class RaceModel(object):
         def __init__(self, CollectionIndex, ModName, recordID, listIndex):
             self._CollectionIndex = CollectionIndex
@@ -12673,7 +13355,7 @@ class RACERecord(BaseRecord):
                 return [cRecords.contents[x] for x in range(0, numRecords)]
             return []
         def set_modt_p(self, nValue):
-            if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 3)
+            if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 3)
             else:
                 length = len(nValue)
                 CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 3, struct.pack('B' * length, *nValue), length)
@@ -12682,7 +13364,7 @@ class RACERecord(BaseRecord):
     def newRelationsElement(self):
         listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 9)
         if(listIndex == -1): return None
-        return self.Relation(self._CollectionIndex, self._ModName, self._recordID, listIndex)
+        return self.Relation(self._CollectionIndex, self._ModName, self._recordID, 9, listIndex)
     def get_full(self):
         CBash.ReadFIDField.restype = c_char_p
         return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 6)
@@ -12705,21 +13387,29 @@ class RACERecord(BaseRecord):
             return [cRecords[x].contents.value for x in range(0, numRecords)]
         return []
     def set_spells(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         else:
             length = len(nValue)
             cRecords = (c_uint * length)(*nValue)
             CBash.SetFIDFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 8, cRecords, length)
     spells = property(get_spells, set_spells)
+    def get_spells_long(self):
+        return [MakeLongFid(self._CollectionIndex,fid) for fid in self.spells]
+    def set_spells_long(self, nValue):
+        self.spells = [MakeShortFid(self._CollectionIndex,fid) for fid in nValue]
+    spells_long = property(get_spells_long, set_spells_long)
     def get_relations(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 9)
-        if(numRecords > 0): return [self.Relation(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
+        if(numRecords > 0): return [Relation(self._CollectionIndex, self._ModName, self._recordID, 9, x) for x in range(0, numRecords)]
         return []
     def set_relations(self, nRelations):
-        if nRelations is None or nRelations == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
+        if nRelations is None or not len(nRelations): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         else:
             diffLength = len(nRelations) - len(self.relations)
-            nValues = [(relation.faction,relation.mod) for relation in nRelations]
+            if isinstance(nRelations[0], tuple):
+                nValues = nRelations
+            else:
+                nValues = [(relation.faction_long,relation.mod) for relation in nRelations]
             while(diffLength < 0):
                 CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 9)
                 diffLength += 1
@@ -12727,8 +13417,11 @@ class RACERecord(BaseRecord):
                 CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 9)
                 diffLength -= 1
             for oRelation, nValue in zip(self.relations, nValues):
-                oRelation.faction, oRelation.mod = nValue
+                oRelation.faction_long, oRelation.mod = nValue
     relations = property(get_relations, set_relations)
+    def get_relations_list(self):
+        return [(relation.faction_long,relation.mod) for relation in self.relations]
+    relations_list = property(get_relations_list, set_relations)
     def get_skill1(self):
         CBash.ReadFIDField.restype = POINTER(c_byte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
@@ -12863,7 +13556,7 @@ class RACERecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused1(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 24)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 24)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 24, struct.pack('2B', *nValue), 2)
     unused1 = property(get_unused1, set_unused1)
     def get_maleHeight(self):
@@ -12920,6 +13613,11 @@ class RACERecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 30)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 30, c_uint(nValue))
     maleVoice = property(get_maleVoice, set_maleVoice)
+    def get_maleVoice_long(self):
+        return MakeLongFid(self._CollectionIndex,self.maleVoice)
+    def set_maleVoice_long(self, nValue):
+        self.maleVoice = MakeShortFid(self._CollectionIndex, nValue)
+    maleVoice_long = property(get_maleVoice_long, set_maleVoice_long)
     def get_femaleVoice(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 31)
@@ -12929,6 +13627,11 @@ class RACERecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 31)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 31, c_uint(nValue))
     femaleVoice = property(get_femaleVoice, set_femaleVoice)
+    def get_femaleVoice_long(self):
+        return MakeLongFid(self._CollectionIndex,self.femaleVoice)
+    def set_femaleVoice_long(self, nValue):
+        self.femaleVoice = MakeShortFid(self._CollectionIndex, nValue)
+    femaleVoice_long = property(get_femaleVoice_long, set_femaleVoice_long)
     def get_defaultHairMale(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 32)
@@ -12938,6 +13641,11 @@ class RACERecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 32)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 32, c_uint(nValue))
     defaultHairMale = property(get_defaultHairMale, set_defaultHairMale)
+    def get_defaultHairMale_long(self):
+        return MakeLongFid(self._CollectionIndex,self.defaultHairMale)
+    def set_defaultHairMale_long(self, nValue):
+        self.defaultHairMale = MakeShortFid(self._CollectionIndex, nValue)
+    defaultHairMale_long = property(get_defaultHairMale_long, set_defaultHairMale_long)
     def get_defaultHairFemale(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 33)
@@ -12947,6 +13655,11 @@ class RACERecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 33)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 33, c_uint(nValue))
     defaultHairFemale = property(get_defaultHairFemale, set_defaultHairFemale)
+    def get_defaultHairFemale_long(self):
+        return MakeLongFid(self._CollectionIndex,self.defaultHairFemale)
+    def set_defaultHairFemale_long(self, nValue):
+        self.defaultHairFemale = MakeShortFid(self._CollectionIndex, nValue)
+    defaultHairFemale_long = property(get_defaultHairFemale_long, set_defaultHairFemale_long)
     def get_defaultHairColor(self):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 34)
@@ -13357,12 +14070,17 @@ class RACERecord(BaseRecord):
             return [cRecords[x].contents.value for x in range(0, numRecords)]
         return []
     def set_hairs(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 105)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 105)
         else:
             length = len(nValue)
             cRecords = (c_uint * length)(*nValue)
             CBash.SetFIDFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 105, cRecords, length)
     hairs = property(get_hairs, set_hairs)
+    def get_hairs_long(self):
+        return [MakeLongFid(self._CollectionIndex,fid) for fid in self.hairs]
+    def set_hairs_long(self, nValue):
+        self.hairs = [MakeShortFid(self._CollectionIndex,fid) for fid in nValue]
+    hairs_long = property(get_hairs_long, set_hairs_long)
     def get_eyes(self):
         numRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 106)
         if(numRecords > 0):
@@ -13371,12 +14089,17 @@ class RACERecord(BaseRecord):
             return [cRecords[x].contents.value for x in range(0, numRecords)]
         return []
     def set_eyes(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 106)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 106)
         else:
             length = len(nValue)
             cRecords = (c_uint * length)(*nValue)
             CBash.SetFIDFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 106, cRecords, length)
     eyes = property(get_eyes, set_eyes)
+    def get_eyes_long(self):
+        return [MakeLongFid(self._CollectionIndex,fid) for fid in self.eyes]
+    def set_eyes_long(self, nValue):
+        self.eyes = [MakeShortFid(self._CollectionIndex,fid) for fid in nValue]
+    eyes_long = property(get_eyes_long, set_eyes_long)
     def get_fggs_p(self):
         numRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 107)
         if(numRecords > 0):
@@ -13385,7 +14108,7 @@ class RACERecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_fggs_p(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 107)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 107)
         else:
             length = len(nValue)
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 107, struct.pack('B' * length, *nValue), length)
@@ -13398,7 +14121,7 @@ class RACERecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_fgga_p(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 108)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 108)
         else:
             length = len(nValue)
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 108, struct.pack('B' * length, *nValue), length)
@@ -13411,7 +14134,7 @@ class RACERecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_fgts_p(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 109)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 109)
         else:
             length = len(nValue)
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 109, struct.pack('B' * length, *nValue), length)
@@ -13424,7 +14147,7 @@ class RACERecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_snam(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 110)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 110)
         else:
             length = len(nValue)
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 110, struct.pack('B' * length, *nValue), length)
@@ -13466,13 +14189,13 @@ class REFRRecord(BaseRecord):
     def CopyAsOverride(self, targetCELL):
         if isinstance(targetCELL, CBashModFile): targetID = self._parentID
         else: targetID = targetCELL._recordID
-        FID = CBash.CopyREFRRecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetID, c_bool(True))
+        FID = CBash.CopyREFRRecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetID, 1)
         if(FID): return REFRRecord(self._CollectionIndex, targetCELL._ModName, FID, targetID)
         return None
     def CopyAsNew(self, targetCELL):
         if isinstance(targetCELL, CBashModFile): targetID = self._parentID
         else: targetID = targetCELL._recordID
-        FID = CBash.CopyREFRRecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetID, c_bool(False))
+        FID = CBash.CopyREFRRecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetID, 0)
         if(FID): return REFRRecord(self._CollectionIndex, targetCELL._ModName, FID, targetID)
         return None
     def DeleteRecord(self):
@@ -13487,6 +14210,11 @@ class REFRRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 6)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 6, nValue)
     base = property(get_base, set_base)
+    def get_base_long(self):
+        return MakeLongFid(self._CollectionIndex,self.base)
+    def set_base_long(self, nValue):
+        self.base = MakeShortFid(self._CollectionIndex, nValue)
+    base_long = property(get_base_long, set_base_long)
     def get_destinationFormID(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
@@ -13496,6 +14224,11 @@ class REFRRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 7, nValue)
     destinationFormID = property(get_destinationFormID, set_destinationFormID)
+    def get_destinationFormID_long(self):
+        return MakeLongFid(self._CollectionIndex,self.destinationFormID)
+    def set_destinationFormID_long(self, nValue):
+        self.destinationFormID = MakeShortFid(self._CollectionIndex, nValue)
+    destinationFormID_long = property(get_destinationFormID_long, set_destinationFormID_long)
     def get_destinationPosX(self):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
@@ -13567,7 +14300,7 @@ class REFRRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused1(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 15)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 15)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 15, struct.pack('3B', *nValue), 3)
     unused1 = property(get_unused1, set_unused1)
     def get_lockKey(self):
@@ -13579,6 +14312,11 @@ class REFRRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 16)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 16, nValue)
     lockKey = property(get_lockKey, set_lockKey)
+    def get_lockKey_long(self):
+        return MakeLongFid(self._CollectionIndex,self.lockKey)
+    def set_lockKey_long(self, nValue):
+        self.lockKey = MakeShortFid(self._CollectionIndex, nValue)
+    lockKey_long = property(get_lockKey_long, set_lockKey_long)
     def get_unused2(self):
         numRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 17)
         if(numRecords > 0):
@@ -13587,7 +14325,7 @@ class REFRRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused2(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 17)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 17)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 17, struct.pack('4B', *nValue), 4)
     unused2 = property(get_unused2, set_unused2)
     def get_lockFlags(self):
@@ -13607,7 +14345,7 @@ class REFRRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused3(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 19)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 19)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 19, struct.pack('3B', *nValue), 3)
     unused3 = property(get_unused3, set_unused3)
     def get_owner(self):
@@ -13619,6 +14357,11 @@ class REFRRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 20)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 20, nValue)
     owner = property(get_owner, set_owner)
+    def get_owner_long(self):
+        return MakeLongFid(self._CollectionIndex,self.owner)
+    def set_owner_long(self, nValue):
+        self.owner = MakeShortFid(self._CollectionIndex, nValue)
+    owner_long = property(get_owner_long, set_owner_long)
     def get_rank(self):
         CBash.ReadFIDField.restype = POINTER(c_int)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 21)
@@ -13637,6 +14380,11 @@ class REFRRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 22)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 22, nValue)
     globalVariable = property(get_globalVariable, set_globalVariable)
+    def get_globalVariable_long(self):
+        return MakeLongFid(self._CollectionIndex,self.globalVariable)
+    def set_globalVariable_long(self, nValue):
+        self.globalVariable = MakeShortFid(self._CollectionIndex, nValue)
+    globalVariable_long = property(get_globalVariable_long, set_globalVariable_long)
     def get_parent(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 23)
@@ -13646,6 +14394,11 @@ class REFRRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 23)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 23, nValue)
     parent = property(get_parent, set_parent)
+    def get_parent_long(self):
+        return MakeLongFid(self._CollectionIndex,self.parent)
+    def set_parent_long(self, nValue):
+        self.parent = MakeShortFid(self._CollectionIndex, nValue)
+    parent_long = property(get_parent_long, set_parent_long)
     def get_parentFlags(self):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 24)
@@ -13663,7 +14416,7 @@ class REFRRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused4(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 25)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 25)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 25, struct.pack('3B', *nValue), 3)
     unused4 = property(get_unused4, set_unused4)
     def get_targetFormID(self):
@@ -13675,6 +14428,11 @@ class REFRRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 26)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 26, nValue)
     targetFormID = property(get_targetFormID, set_targetFormID)
+    def get_targetFormID_long(self):
+        return MakeLongFid(self._CollectionIndex,self.targetFormID)
+    def set_targetFormID_long(self, nValue):
+        self.targetFormID = MakeShortFid(self._CollectionIndex, nValue)
+    targetFormID_long = property(get_targetFormID_long, set_targetFormID_long)
     def get_seed(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 27)
@@ -13747,6 +14505,11 @@ class REFRRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 33)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 33, nValue)
     unknownXPCIFormID = property(get_unknownXPCIFormID, set_unknownXPCIFormID)
+    def get_unknownXPCIFormID_long(self):
+        return MakeLongFid(self._CollectionIndex,self.unknownXPCIFormID)
+    def set_unknownXPCIFormID_long(self, nValue):
+        self.unknownXPCIFormID = MakeShortFid(self._CollectionIndex, nValue)
+    unknownXPCIFormID_long = property(get_unknownXPCIFormID_long, set_unknownXPCIFormID_long)
     def get_unknownXPCIString(self):
         CBash.ReadFIDField.restype = c_char_p
         return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 34)
@@ -13772,6 +14535,11 @@ class REFRRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 36)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 36, nValue)
     unknownXRTMFormID = property(get_unknownXRTMFormID, set_unknownXRTMFormID)
+    def get_unknownXRTMFormID_long(self):
+        return MakeLongFid(self._CollectionIndex,self.unknownXRTMFormID)
+    def set_unknownXRTMFormID_long(self, nValue):
+        self.unknownXRTMFormID = MakeShortFid(self._CollectionIndex, nValue)
+    unknownXRTMFormID_long = property(get_unknownXRTMFormID_long, set_unknownXRTMFormID_long)
     def get_actionFlags(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 37)
@@ -13823,7 +14591,7 @@ class REFRRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_markerUnused(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 42)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 42)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 42, struct.pack('B', *nValue), 1)
     markerUnused = property(get_markerUnused, set_markerUnused)
     def get_scale(self):
@@ -14103,11 +14871,11 @@ class REFRRecord(BaseRecord):
 class REGNRecord(BaseRecord):
     _Type = 'REGN'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyREGNRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopyREGNRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return REGNRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopyREGNRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopyREGNRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return REGNRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     class Area(object):
@@ -14160,10 +14928,13 @@ class REGNRecord(BaseRecord):
             if(numRecords > 0): return [self.Points(self._CollectionIndex, self._ModName, self._recordID, self._listIndex, x) for x in range(0, numRecords)]
             return []
         def set_points(self, nPoints):
-            if nPoints is None or nPoints == []: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2)
+            if nPoints is None or not len(nPoints): CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2)
             else:
                 diffLength = len(nPoints) - CBash.GetFIDListX2Size(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2)
-                nValues = [(nPoint.posX, nPoint.posY) for nPoint in nPoints]
+                if isinstance(nPoints[0], tuple):
+                    nValues = nPoints
+                else:
+                    nValues = [(nPoint.posX, nPoint.posY) for nPoint in nPoints]
                 while(diffLength < 0):
                     CBash.DeleteFIDListX2Element(self._CollectionIndex, self._ModName, self._recordID, 12, self._listIndex, 2)
                     diffLength += 1
@@ -14173,6 +14944,9 @@ class REGNRecord(BaseRecord):
                 for oPoint, nValue in zip(self.points, nValues):
                     oPoint.posX, oPoint.posY = nValue
         points = property(get_points, set_points)
+        def get_points_list(self):
+            return [(point.posX, point.posY) for point in self.points]
+        points_list = property(get_points_list, set_points)
     class Entry(object):
         class Object(object):
             def __init__(self, CollectionIndex, ModName, recordID, listIndex, listX2Index):
@@ -14190,6 +14964,11 @@ class REGNRecord(BaseRecord):
                 if nValue is None: CBash.DeleteFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 1)
                 else: CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 1, nValue)
             objectId = property(get_objectId, set_objectId)
+            def get_objectId_long(self):
+                return MakeLongFid(self._CollectionIndex,self.objectId)
+            def set_objectId_long(self, nValue):
+                self.objectId = MakeShortFid(self._CollectionIndex, nValue)
+            objectId_long = property(get_objectId_long, set_objectId_long)
             def get_parentIndex(self):
                 CBash.ReadFIDListX2Field.restype = POINTER(c_ushort)
                 retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 2)
@@ -14207,7 +14986,7 @@ class REGNRecord(BaseRecord):
                     return [cRecords.contents[x] for x in range(0, numRecords)]
                 return []
             def set_unused1(self, nValue):
-                if nValue is None or nValue == []: CBash.DeleteFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 3)
+                if nValue is None or not len(nValue): CBash.DeleteFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 3)
                 else: CBash.SetFIDListX2FieldR(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 3, struct.pack('2B', *nValue), 2)
             unused1 = property(get_unused1, set_unused1)
             def get_density(self):
@@ -14281,7 +15060,7 @@ class REGNRecord(BaseRecord):
                     return [cRecords.contents[x] for x in range(0, numRecords)]
                 return []
             def set_unk1(self, nValue):
-                if nValue is None or nValue == []: CBash.DeleteFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 11)
+                if nValue is None or not len(nValue): CBash.DeleteFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 11)
                 else: CBash.SetFIDListX2FieldR(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 11, struct.pack('4B', *nValue), 4)
             unk1 = property(get_unk1, set_unk1)
             def get_maxHeight(self):
@@ -14355,7 +15134,7 @@ class REGNRecord(BaseRecord):
                     return [cRecords.contents[x] for x in range(0, numRecords)]
                 return []
             def set_unused2(self, nValue):
-                if nValue is None or nValue == []: CBash.DeleteFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 19)
+                if nValue is None or not len(nValue): CBash.DeleteFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 19)
                 else: CBash.SetFIDListX2FieldR(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 19, struct.pack('2B', *nValue), 2)
             unused2 = property(get_unused2, set_unused2)
             def get_unk2(self):
@@ -14366,7 +15145,7 @@ class REGNRecord(BaseRecord):
                     return [cRecords.contents[x] for x in range(0, numRecords)]
                 return []
             def set_unk2(self, nValue):
-                if nValue is None or nValue == []: CBash.DeleteFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 20)
+                if nValue is None or not len(nValue): CBash.DeleteFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 20)
                 else: CBash.SetFIDListX2FieldR(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5, self._listX2Index, 20, struct.pack('4B', *nValue), 4)
             unk2 = property(get_unk2, set_unk2)
             def get_IsConformToSlope(self):
@@ -14450,6 +15229,11 @@ class REGNRecord(BaseRecord):
                 if nValue is None: CBash.DeleteFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 8, self._listX2Index, 1)
                 else: CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 8, self._listX2Index, 1, nValue)
             grass = property(get_grass, set_grass)
+            def get_grass_long(self):
+                return MakeLongFid(self._CollectionIndex,self.grass)
+            def set_grass_long(self, nValue):
+                self.grass = MakeShortFid(self._CollectionIndex, nValue)
+            grass_long = property(get_grass_long, set_grass_long)
             def get_unk1(self):
                 numRecords = CBash.GetFIDListX2ArraySize(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 8, self._listX2Index, 2)
                 if(numRecords > 0):
@@ -14458,7 +15242,7 @@ class REGNRecord(BaseRecord):
                     return [cRecords.contents[x] for x in range(0, numRecords)]
                 return []
             def set_unk1(self, nValue):
-                if nValue is None or nValue == []: CBash.DeleteFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 8, self._listX2Index, 2)
+                if nValue is None or not len(nValue): CBash.DeleteFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 8, self._listX2Index, 2)
                 else: CBash.SetFIDListX2FieldR(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 8, self._listX2Index, 2, struct.pack('4B', *nValue), 4)
             unk1 = property(get_unk1, set_unk1)
         class Sound(object):
@@ -14477,6 +15261,11 @@ class REGNRecord(BaseRecord):
                 if nValue is None: CBash.DeleteFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 10, self._listX2Index, 1)
                 else: CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 10, self._listX2Index, 1, nValue)
             sound = property(get_sound, set_sound)
+            def get_sound_long(self):
+                return MakeLongFid(self._CollectionIndex,self.sound)
+            def set_sound_long(self, nValue):
+                self.sound = MakeShortFid(self._CollectionIndex, nValue)
+            sound_long = property(get_sound_long, set_sound_long)
             def get_flags(self):
                 CBash.ReadFIDListX2Field.restype = POINTER(c_uint)
                 retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 10, self._listX2Index, 2)
@@ -14495,7 +15284,6 @@ class REGNRecord(BaseRecord):
                 if nValue is None: CBash.DeleteFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 10, self._listX2Index, 3)
                 else: CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 10, self._listX2Index, 3, nValue)
             chance = property(get_chance, set_chance)
-
             def get_IsPleasant(self):
                 return self.flags != None and (self.flags & 0x00000001) != 0
             def set_IsPleasant(self, nValue):
@@ -14544,6 +15332,11 @@ class REGNRecord(BaseRecord):
                 if nValue is None: CBash.DeleteFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 11, self._listX2Index, 1)
                 else: CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 11, self._listX2Index, 1, nValue)
             weather = property(get_weather, set_weather)
+            def get_weather_long(self):
+                return MakeLongFid(self._CollectionIndex,self.weather)
+            def set_weather_long(self, nValue):
+                self.weather = MakeShortFid(self._CollectionIndex, nValue)
+            weather_long = property(get_weather_long, set_weather_long)
             def get_chance(self):
                 CBash.ReadFIDListX2Field.restype = POINTER(c_uint)
                 retValue = CBash.ReadFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 11, self._listX2Index, 2)
@@ -14553,7 +15346,6 @@ class REGNRecord(BaseRecord):
                 if nValue is None: CBash.DeleteFIDListX2Field(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 11, self._listX2Index, 2)
                 else: CBash.SetFIDListX2FieldUI(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 11, self._listX2Index, 2, nValue)
             chance = property(get_chance, set_chance)
-
         def __init__(self, CollectionIndex, ModName, recordID, listIndex):
             self._CollectionIndex = CollectionIndex
             self._ModName = ModName
@@ -14611,7 +15403,7 @@ class REGNRecord(BaseRecord):
                 return [cRecords.contents[x] for x in range(0, numRecords)]
             return []
         def set_unused1(self, nValue):
-            if nValue is None or nValue == []: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 4)
+            if nValue is None or not len(nValue): CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 4)
             else: CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 4, struct.pack('2B', *nValue), 2)
         unused1 = property(get_unused1, set_unused1)
         def get_objects(self):
@@ -14619,10 +15411,13 @@ class REGNRecord(BaseRecord):
             if(numRecords > 0): return [self.Object(self._CollectionIndex, self._ModName, self._recordID, self._listIndex, x) for x in range(0, numRecords)]
             return []
         def set_objects(self, nObjects):
-            if nObjects is None or nObjects == []: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5)
+            if nObjects is None or not len(nObjects): CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5)
             else:
                 diffLength = len(nObjects) - CBash.GetFIDListX2Size(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 5)
-                nValues = [(nObject.objectId, nObject.parentIndex, nObject.unused1, nObject.density, nObject.clustering,
+                if isinstance(nObjects[0], tuple):
+                    nValues = nObjects
+                else:
+                    nValues = [(nObject.objectId, nObject.parentIndex, nObject.unused1, nObject.density, nObject.clustering,
                             nObject.minSlope, nObject.maxSlope, nObject.flags, nObject.radiusWRTParent, nObject.radius,
                             nObject.unk1, nObject.maxHeight, nObject.sink, nObject.sinkVar, nObject.sizeVar,
                             nObject.angleVarX, nObject.angleVarY, nObject.angleVarZ, nObject.unused2, nObject.unk2) for nObject in nObjects]
@@ -14635,6 +15430,12 @@ class REGNRecord(BaseRecord):
                 for oObject, nValue in zip(self.objects, nValues):
                     oObject.objectId, oObject.parentIndex, oObject.unused1, oObject.density, oObject.clustering, oObject.minSlope, oObject.maxSlope, oObject.flags, oObject.radiusWRTParent, oObject.radius, oObject.unk1, oObject.maxHeight, oObject.sink, oObject.sinkVar, oObject.sizeVar,oObject.angleVarX, oObject.angleVarY, oObject.angleVarZ, oObject.unused2, oObject.unk2 = nValue
         objects = property(get_objects, set_objects)
+        def get_objects_list(self):
+            return [(object.objectId, object.parentIndex, None, object.density, object.clustering,
+                     object.minSlope, object.maxSlope, object.flags, object.radiusWRTParent, object.radius,
+                     object.unk1, object.maxHeight, object.sink, object.sinkVar, object.sizeVar,
+                     object.angleVarX, object.angleVarY, object.angleVarZ, None, object.unk2) for object in self.objects]
+        objects_list = property(get_objects_list, set_objects)
         def get_mapName(self):
             CBash.ReadFIDListField.restype = c_char_p
             return CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 6)
@@ -14654,10 +15455,13 @@ class REGNRecord(BaseRecord):
             if(numRecords > 0): return [self.Grass(self._CollectionIndex, self._ModName, self._recordID, self._listIndex, x) for x in range(0, numRecords)]
             return []
         def set_grasses(self, nGrasses):
-            if nGrasses is None or nGrasses == []: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 8)
+            if nGrasses is None or not len(nGrasses): CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 8)
             else:
                 diffLength = len(nGrasses) - CBash.GetFIDListX2Size(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 8)
-                nValues = [(nGrass.grass, nGrass.unk1) for nGrass in nGrasses]
+                if isinstance(nGrasses[0], tuple):
+                    nValues = nGrasses
+                else:
+                    nValues = [(nGrass.grass_long, nGrass.unk1) for nGrass in nGrasses]
                 while(diffLength < 0):
                     CBash.DeleteFIDListX2Element(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 8)
                     diffLength += 1
@@ -14665,8 +15469,11 @@ class REGNRecord(BaseRecord):
                     CBash.CreateFIDListX2Element(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 8)
                     diffLength -= 1
                 for oGrass, nValue in zip(self.grasses, nValues):
-                    oGrass.grass, oGrass.unk1 = nValue
+                    oGrass.grass_long, oGrass.unk1 = nValue
         grasses = property(get_grasses, set_grasses)
+        def get_grasses_list(self):
+            return [(grass.grass_long, grass.unk1) for grass in self.grasses]
+        grasses_list = property(get_grasses_list, set_grasses)
         def get_musicType(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 9)
@@ -14681,10 +15488,13 @@ class REGNRecord(BaseRecord):
             if(numRecords > 0): return [self.Sound(self._CollectionIndex, self._ModName, self._recordID, self._listIndex, x) for x in range(0, numRecords)]
             return []
         def set_sounds(self, nSounds):
-            if nSounds is None or nSounds == []: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 10)
+            if nSounds is None or not len(nSounds): CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 10)
             else:
                 diffLength = len(nSounds) - CBash.GetFIDListX2Size(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 10)
-                nValues = [(nSound.sound, nSound.flags, nSound.chance) for nSound in nSounds]
+                if isinstance(nSounds[0], tuple):
+                    nValues = nSounds
+                else:
+                    nValues = [(nSound.sound_long, nSound.flags, nSound.chance) for nSound in nSounds]
                 while(diffLength < 0):
                     CBash.DeleteFIDListX2Element(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 10)
                     diffLength += 1
@@ -14692,17 +15502,23 @@ class REGNRecord(BaseRecord):
                     CBash.CreateFIDListX2Element(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 10)
                     diffLength -= 1
                 for oSound, nValue in zip(self.sounds, nValues):
-                    oSound.sound, oSound.flags, oSound.chance = nValue
+                    oSound.sound_long, oSound.flags, oSound.chance = nValue
         sounds = property(get_sounds, set_sounds)
+        def get_sounds_list(self):
+            return [(sound.sound_long, sound.flags, sound.chance) for sound in self.sounds]
+        sounds_list = property(get_sounds_list, set_sounds)
         def get_weathers(self):
             numRecords = CBash.GetFIDListX2Size(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 11)
             if(numRecords > 0): return [self.Weather(self._CollectionIndex, self._ModName, self._recordID, self._listIndex, x) for x in range(0, numRecords)]
             return []
         def set_weathers(self, nWeathers):
-            if nWeathers is None or nWeathers == []: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 11)
+            if nWeathers is None or not len(nWeathers): CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 11)
             else:
                 diffLength = len(nWeathers) - CBash.GetFIDListX2Size(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 11)
-                nValues = [(nWeather.weather, nWeather.chance) for nWeather in nWeathers]
+                if isinstance(nWeathers[0], tuple):
+                    nValues = nWeathers
+                else:
+                    nValues = [(nWeather.weather_long, nWeather.chance) for nWeather in nWeathers]
                 while(diffLength < 0):
                     CBash.DeleteFIDListX2Element(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 11)
                     diffLength += 1
@@ -14710,8 +15526,11 @@ class REGNRecord(BaseRecord):
                     CBash.CreateFIDListX2Element(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 11)
                     diffLength -= 1
                 for oWeather, nValue in zip(self.weathers, nValues):
-                    oWeather.weather, oWeather.chance = nValue
+                    oWeather.weather_long, oWeather.chance = nValue
         weathers = property(get_weathers, set_weathers)
+        def get_weathers_list(self):
+            return [(weather.weather_long, weather.chance) for weather in self.weathers]
+        weathers_list = property(get_weathers_list, set_weathers)
         def get_IsOverride(self):
             return self.flags != None and (self.flags & 0x00000001) != 0
         def set_IsOverride(self, nValue):
@@ -14824,7 +15643,7 @@ class REGNRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused1(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 10, struct.pack('B', *nValue), 1)
     unused1 = property(get_unused1, set_unused1)
     def get_worldspace(self):
@@ -14836,15 +15655,23 @@ class REGNRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 11, nValue)
     worldspace = property(get_worldspace, set_worldspace)
+    def get_worldspace_long(self):
+        return MakeLongFid(self._CollectionIndex,self.worldspace)
+    def set_worldspace_long(self, nValue):
+        self.worldspace = MakeShortFid(self._CollectionIndex, nValue)
+    worldspace_long = property(get_worldspace_long, set_worldspace_long)
     def get_areas(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 12)
         if(numRecords > 0): return [self.Area(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
         return []
     def set_areas(self, nAreas):
-        if nAreas is None or nAreas == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
+        if nAreas is None or not len(nAreas): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
         else:
             diffLength = len(nAreas) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 12)
-            nValues = [(nArea.edgeFalloff, [(nPoint.posX, nPoint.posY) for nPoint in nArea.points]) for nArea in nAreas]
+            if isinstance(nAreas[0], tuple):
+                nValues = nAreas
+            else:
+                nValues = [(nArea.edgeFalloff, nArea.points_list) for nArea in nAreas]
             while(diffLength < 0):
                 CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 12)
                 diffLength += 1
@@ -14852,36 +15679,24 @@ class REGNRecord(BaseRecord):
                 CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 12)
                 diffLength -= 1
             for oArea, nValue in zip(self.areas, nValues):
-                oArea.edgeFalloff = nValue[0]
-                diffLength = len(nValue[1]) - CBash.GetFIDListX2Size(self._CollectionIndex, self._ModName, self._recordID, 12, oArea._listIndex, 2)
-                while(diffLength < 0):
-                    CBash.DeleteFIDListX2Element(self._CollectionIndex, self._ModName, self._recordID, 12, oArea._listIndex, 2)
-                    diffLength += 1
-                while(diffLength > 0):
-                    CBash.CreateFIDListX2Element(self._CollectionIndex, self._ModName, self._recordID, 12, oArea._listIndex, 2)
-                    diffLength -= 1
-                for oPoint, posValue in zip(oArea.points, nValue[1]):
-                    oPoint.posX, oPoint.posY = posValue
+                oArea.edgeFalloff, oArea.points_list = nValue
     areas = property(get_areas, set_areas)
+    def get_areas_list(self):
+        return [(area.edgeFalloff, area.points_list) for area in self.areas]
+    areas_list = property(get_areas_list, set_areas)
     def get_entries(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 13)
         if(numRecords > 0): return [self.Entry(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
         return []
     def set_entries(self, nEntries):
-        if nEntries is None or nEntries == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
+        if nEntries is None or not len(nEntries): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
         else:
             diffLength = len(nEntries) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 13)
-            nValues = [(nEntry.entryType, nEntry.flags, nEntry.priority, nEntry.unused1,
-                        [(nObject.objectId, nObject.subField, nObject.unused1, nObject.density,
-                          nObject.clustering, nObject.minSlope, nObject.maxSlope, nObject.flags,
-                          nObject.radiusWRTParent, nObject.radius, nObject.unk1, nObject.maxHeight,
-                          nObject.sink, nObject.sinkVar, nObject.sizeVar, nObject.angleVarX,
-                          nObject.angleVarY, nObject.angleVarZ, nObject.unused2, nObject.unk2) for nObject in nEntry.objects],
-                        nEntry.mapName, nEntry.iconPath,
-                        [(nGrass.grass, nGrass.unk1) for nGrass in nEntry.grasses],
-                        nEntry.musicType,
-                        [(nSound.sound, nSound.flags, nSound.chance) for nSound in nEntry.sounds],
-                        [(nWeather.weather, nWeather.chance) for nWeather in nEntry.weathers]) for nEntry in nEntries]
+            if isinstance(nEntries[0], tuple):
+                nValues = nEntries
+            else:
+                nValues = [(nEntry.entryType, nEntry.flags, nEntry.priority, nEntry.unused1, nEntry.objects_list, nEntry.mapName, nEntry.iconPath,
+                            nEntry.grasses_list, nEntry.musicType, nEntry.sounds_list, nEntry.weathers_list) for nEntry in nEntries]
             while(diffLength < 0):
                 CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 13)
                 diffLength += 1
@@ -14889,54 +15704,11 @@ class REGNRecord(BaseRecord):
                 CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 13)
                 diffLength -= 1
             for oEntry, nValue in zip(self.entries, nValues):
-                nEntry.entryType = nValue[0]
-                nEntry.flags = nValue[1]
-                nEntry.priority = nValue[2]
-                nEntry.unused1 = nValue[3]
-                diffLength = len(nValue[4]) - CBash.GetFIDListX2Size(self._CollectionIndex, self._ModName, self._recordID, 13, oEntry._listIndex, 5)
-                while(diffLength < 0):
-                    CBash.DeleteFIDListX2Element(self._CollectionIndex, self._ModName, self._recordID, 13, oEntry._listIndex, 5)
-                    diffLength += 1
-                while(diffLength > 0):
-                    CBash.CreateFIDListX2Element(self._CollectionIndex, self._ModName, self._recordID, 13, oEntry._listIndex, 5)
-                    diffLength -= 1
-                for oObject, objValue in zip(oEntry.objects, nValue[4]):
-                    oObject.objectId, oObject.subField, oObject.unused1, oObject.density,
-                    oObject.clustering, oObject.minSlope, oObject.maxSlope, oObject.flags,
-                    oObject.radiusWRTParent, oObject.radius, oObject.unk1, oObject.maxHeight,
-                    oObject.sink, oObject.sinkVar, oObject.sizeVar, oObject.angleVarX,
-                    oObject.angleVarY, oObject.angleVarZ, oObject.unused2, oObject.unk2 = objValue
-                nEntry.mapName = nValue[5]
-                nEntry.iconPath = nValue[6]
-                diffLength = len(nValue[7]) - CBash.GetFIDListX2Size(self._CollectionIndex, self._ModName, self._recordID, 13, oEntry._listIndex, 8)
-                while(diffLength < 0):
-                    CBash.DeleteFIDListX2Element(self._CollectionIndex, self._ModName, self._recordID, 13, oEntry._listIndex, 8)
-                    diffLength += 1
-                while(diffLength > 0):
-                    CBash.CreateFIDListX2Element(self._CollectionIndex, self._ModName, self._recordID, 13, oEntry._listIndex, 8)
-                    diffLength -= 1
-                for oGrass, grassValue in zip(oEntry.grasses, nValue[7]):
-                    oGrass.grass, oGrass.unk1 = grassValue
-                nEntry.musicType = nValue[8]
-                diffLength = len(nValue[9]) - CBash.GetFIDListX2Size(self._CollectionIndex, self._ModName, self._recordID, 13, oEntry._listIndex, 10)
-                while(diffLength < 0):
-                    CBash.DeleteFIDListX2Element(self._CollectionIndex, self._ModName, self._recordID, 13, oEntry._listIndex, 10)
-                    diffLength += 1
-                while(diffLength > 0):
-                    CBash.CreateFIDListX2Element(self._CollectionIndex, self._ModName, self._recordID, 13, oEntry._listIndex, 10)
-                    diffLength -= 1
-                for oSound, soundValue in zip(oEntry.sounds, nValue[9]):
-                    oSound.sound, oSound.flags, oSound.chance = soundValue
-                diffLength = len(nValue[10]) - CBash.GetFIDListX2Size(self._CollectionIndex, self._ModName, self._recordID, 13, oEntry._listIndex, 11)
-                while(diffLength < 0):
-                    CBash.DeleteFIDListX2Element(self._CollectionIndex, self._ModName, self._recordID, 13, oEntry._listIndex, 11)
-                    diffLength += 1
-                while(diffLength > 0):
-                    CBash.CreateFIDListX2Element(self._CollectionIndex, self._ModName, self._recordID, 13, oEntry._listIndex, 11)
-                    diffLength -= 1
-                for oWeather, weatherValue in zip(oEntry.weathers, nValue[10]):
-                    oWeather.weather, oWeather.chance = weatherValue
+                oEntry.entryType, oEntry.flags, oEntry.priority, oEntry.unused1, oEntry.objects_list, oEntry.mapName, oEntry.iconPath, oEntry.grasses_list, oEntry.musicType, oEntry.sounds_list, oEntry.weathers_list = nValue
     entries = property(get_entries, set_entries)
+    def get_entries_list(self):
+        return [(entry.entryType, entry.flags, entry.priority, None, entry.objects_list, entry.mapName, entry.iconPath, entry.grasses_list, entry.musicType, entry.sounds_list, entry.weathers_list) for entry in self.entries]
+    entries_list = property(get_entries_list, set_entries)
     copyattrs = BaseRecord.baseattrs + ['iconPath','mapRed','mapGreen','mapBlue','worldspace','areas','entries']
 
 class ROADRecord(BaseRecord):
@@ -14947,71 +15719,18 @@ class ROADRecord(BaseRecord):
     def CopyAsOverride(self, targetWRLD):
         if isinstance(targetWRLD, CBashModFile): targetID = self._parentID
         else: targetID = targetWRLD._recordID
-        FID = CBash.CopyROADRecord(self._CollectionIndex, self._ModName, self._recordID, targetWRLD._ModName, targetID, c_bool(True))
+        FID = CBash.CopyROADRecord(self._CollectionIndex, self._ModName, self._recordID, targetWRLD._ModName, targetID, 1)
         if(FID): return ROADRecord(self._CollectionIndex, targetWRLD._ModName, FID, targetID)
         return None
     def CopyAsNew(self, targetWRLD):
         if isinstance(targetWRLD, CBashModFile): targetID = self._parentID
         else: targetID = targetWRLD._recordID
-        FID = CBash.CopyROADRecord(self._CollectionIndex, self._ModName, self._recordID, targetWRLD._ModName, targetID, c_bool(False))
+        FID = CBash.CopyROADRecord(self._CollectionIndex, self._ModName, self._recordID, targetWRLD._ModName, targetID, 0)
         if(FID): return ROADRecord(self._CollectionIndex, targetWRLD._ModName, FID, targetID)
         return None
     def DeleteRecord(self):
         CBash.DeleteRecord(self._CollectionIndex, self._ModName, self._recordID, self._parentID)
         return
-    class PGRPRecord(object):
-        def __init__(self, CollectionIndex, ModName, recordID, listIndex):
-            self._CollectionIndex = CollectionIndex
-            self._ModName = ModName
-            self._recordID = recordID
-            self._listIndex = listIndex
-        def get_x(self):
-            CBash.ReadFIDListField.restype = POINTER(c_float)
-            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 1)
-            if(retValue): return round(retValue.contents.value,6)
-            return None
-        def set_x(self, nValue):
-            if nValue is None: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 1)
-            else: CBash.SetFIDListFieldF(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 1, c_float(round(nValue,6)))
-        x = property(get_x, set_x)
-        def get_y(self):
-            CBash.ReadFIDListField.restype = POINTER(c_float)
-            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 2)
-            if(retValue): return round(retValue.contents.value,6)
-            return None
-        def set_y(self, nValue):
-            if nValue is None: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 2)
-            else: CBash.SetFIDListFieldF(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 2, c_float(round(nValue,6)))
-        y = property(get_y, set_y)
-        def get_z(self):
-            CBash.ReadFIDListField.restype = POINTER(c_float)
-            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 3)
-            if(retValue): return round(retValue.contents.value,6)
-            return None
-        def set_z(self, nValue):
-            if nValue is None: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 3)
-            else: CBash.SetFIDListFieldF(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 3, c_float(round(nValue,6)))
-        z = property(get_z, set_z)
-        def get_connections(self):
-            CBash.ReadFIDListField.restype = POINTER(c_ubyte)
-            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 4)
-            if(retValue): return retValue.contents.value
-            return None
-        def set_connections(self, nValue):
-            if nValue is None: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 4)
-            else: CBash.SetFIDListFieldUC(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 4, c_ubyte(nValue))
-        connections = property(get_connections, set_connections)
-        def get_unused1(self):
-            numRecords = CBash.GetFIDListArraySize(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 5)
-            if(numRecords > 0):
-                cRecords = POINTER(c_ubyte * numRecords)()
-                CBash.GetFIDListArray(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 5, byref(cRecords))
-                return [cRecords.contents[x] for x in range(0, numRecords)]
-            return []
-        def set_unused1(self, nValue):
-            if nValue is None or nValue == []: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 5)
-            else: CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, 6, self._listIndex, 5, struct.pack('3B', *nValue), 3)
-        unused1 = property(get_unused1, set_unused1)
     class PGRRRecord(object):
         def __init__(self, CollectionIndex, ModName, recordID, listIndex):
             self._CollectionIndex = CollectionIndex
@@ -15048,20 +15767,23 @@ class ROADRecord(BaseRecord):
     def newPGRPElement(self):
         listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 6)
         if(listIndex == -1): return None
-        return self.PGRPRecord(self._CollectionIndex, self._ModName, self._recordID, listIndex)
+        return PGRPRecord(self._CollectionIndex, self._ModName, self._recordID, listIndex)
     def newPGRRElement(self):
         listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 7)
         if(listIndex == -1): return None
         return self.PGRRRecord(self._CollectionIndex, self._ModName, self._recordID, listIndex)
     def get_PGRP(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 6)
-        if(numRecords > 0): return [self.PGRPRecord(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
+        if(numRecords > 0): return [PGRPRecord(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
         return []
     def set_PGRP(self, nPGRP):
-        if nPGRP is None or nPGRP == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 6)
+        if nPGRP is None or not len(nPGRP): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 6)
         else:
             diffLength = len(nPGRP) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 6)
-            nValues = [(nPGRPRecord.x, nPGRPRecord.y, nPGRPRecord.z, nPGRPRecord.connections, nPGRPRecord.unused1) for nPGRPRecord in nPGRP]
+            if isinstance(nPGRP[0], tuple):
+                nValues = nPGRP
+            else:
+                nValues = [(nPGRPRecord.x, nPGRPRecord.y, nPGRPRecord.z, nPGRPRecord.connections, nPGRPRecord.unused1) for nPGRPRecord in nPGRP]
             while(diffLength < 0):
                 CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 6)
                 diffLength += 1
@@ -15071,15 +15793,21 @@ class ROADRecord(BaseRecord):
             for oPGRPRecord, nValue in zip(self.PGRP, nValues):
                 oPGRPRecord.x, oPGRPRecord.y, oPGRPRecord.z, oPGRPRecord.connections, oPGRPRecord.unused1 = nValue
     PGRP = property(get_PGRP, set_PGRP)
+    def get_PGRP_list(self):
+        return [(PGRP.x, PGRP.y, PGRP.z, PGRP.connections, None) for PGRP in self.PGRP]
+    PGRP_list = property(get_PGRP_list, set_PGRP)
     def get_PGRR(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 7)
         if(numRecords > 0): return [self.PGRRRecord(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
         return []
     def set_PGRR(self, nPGRR):
-        if nPGRR is None or nPGRR == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
+        if nPGRR is None or not len(nPGRR): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
         else:
             diffLength = len(nPGRR) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 7)
-            nValues = [(nPGRRRecord.x, nPGRRRecord.y, nPGRRRecord.z) for nPGRRRecord in nPGRR]
+            if isinstance(nPGRR[0], tuple):
+                nValues = nPGRR
+            else:
+                nValues = [(nPGRRRecord.x, nPGRRRecord.y, nPGRRRecord.z) for nPGRRRecord in nPGRR]
             while(diffLength < 0):
                 CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 7)
                 diffLength += 1
@@ -15089,16 +15817,19 @@ class ROADRecord(BaseRecord):
             for oPGRRRecord, nValue in zip(self.PGRR, nValues):
                 oPGRRRecord.x, oPGRRRecord.y, oPGRRRecord.z = nValue
     PGRR = property(get_PGRR, set_PGRR)
+    def get_PGRR_list(self):
+        return [(PGRR.x, PGRR.y, PGRR.z) for PGRR in self.PGRR]
+    PGRR_list = property(get_PGRR_list, set_PGRR)
     copyattrs = BaseRecord.baseattrs + ['PGRP','PGRR']
 
 class SBSPRecord(BaseRecord):
     _Type = 'SBSP'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopySBSPRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopySBSPRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return SBSPRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopySBSPRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopySBSPRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return SBSPRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def get_sizeX(self):
@@ -15133,11 +15864,11 @@ class SBSPRecord(BaseRecord):
 class SCPTRecord(BaseRecord):
     _Type = 'SCPT'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopySCPTRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopySCPTRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return SCPTRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopySCPTRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopySCPTRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return SCPTRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     class Var(object):
@@ -15163,7 +15894,7 @@ class SCPTRecord(BaseRecord):
                 return [cRecords.contents[x] for x in range(0, numRecords)]
             return []
         def set_unused1(self, nValue):
-            if nValue is None or nValue == []: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 2)
+            if nValue is None or not len(nValue): CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 2)
             else: CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 2, struct.pack('12B', *nValue), 12)
         unused1 = property(get_unused1, set_unused1)
         def get_flags(self):
@@ -15183,7 +15914,7 @@ class SCPTRecord(BaseRecord):
                 return [cRecords.contents[x] for x in range(0, numRecords)]
             return []
         def set_unused2(self, nValue):
-            if nValue is None or nValue == []: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 4)
+            if nValue is None or not len(nValue): CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 4)
             else: CBash.SetFIDListFieldR(self._CollectionIndex, self._ModName, self._recordID, 13, self._listIndex, 4, struct.pack('7B', *nValue), 7)
         unused2 = property(get_unused2, set_unused2)
         def get_name(self):
@@ -15201,32 +15932,6 @@ class SCPTRecord(BaseRecord):
                 else: self.flags = 0x00000001
             elif self.flags: self.flags &= ~0x00000001
         IsLongOrShort = property(get_IsLongOrShort, set_IsLongOrShort)
-    class Reference(object):
-        def __init__(self, CollectionIndex, ModName, recordID, listIndex):
-            self._CollectionIndex = CollectionIndex
-            self._ModName = ModName
-            self._recordID = recordID
-            self._listIndex = listIndex
-        def get_reference(self):
-            CBash.ReadFIDListField.restype = POINTER(c_uint)
-            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 14, self._listIndex, 1)
-            if(retValue): return retValue.contents.value
-            return None
-        def set_reference(self, nValue):
-            if nValue is None: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 14, self._listIndex, 1)
-            else: CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 14, self._listIndex, 1, nValue)
-        reference = property(get_reference, set_reference)
-        def get_IsSCRO(self):
-            CBash.ReadFIDListField.restype = POINTER(c_bool)
-            retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 14, self._listIndex, 2)
-            if(retValue): return retValue.contents.value
-            return None
-        def set_IsSCRO(self, nValue):
-            if isinstance(nValue, bool):
-                if(nValue): CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 14, self._listIndex, 2, 1)
-                else: CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 14, self._listIndex, 2, 0)
-            else: CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 14, self._listIndex, 2, nValue)
-        IsSCRO = property(get_IsSCRO, set_IsSCRO)
     def newVarsElement(self):
         listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 13)
         if(listIndex == -1): return None
@@ -15234,7 +15939,7 @@ class SCPTRecord(BaseRecord):
     def newReferencesElement(self):
         listIndex = CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 14)
         if(listIndex == -1): return None
-        return self.Reference(self._CollectionIndex, self._ModName, self._recordID, listIndex)
+        return self.Reference(self._CollectionIndex, self._ModName, self._recordID, 14, listIndex)
     def get_unused1(self):
         numRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 6)
         if(numRecords > 0):
@@ -15243,7 +15948,7 @@ class SCPTRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused1(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 6)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 6)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 6, struct.pack('2B', *nValue), 2)
     unused1 = property(get_unused1, set_unused1)
     def get_numRefs(self):
@@ -15290,7 +15995,7 @@ class SCPTRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_compiled_p(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 11, struct.pack('B' * len(nValue), *nValue), len(nValue))
     compiled_p = property(get_compiled_p, set_compiled_p)
     def get_scriptText(self):
@@ -15305,10 +16010,13 @@ class SCPTRecord(BaseRecord):
         if(numRecords > 0): return [self.Var(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
         return []
     def set_vars(self, nVars):
-        if nVars is None or nVars == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
+        if nVars is None or not len(nVars): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
         else:
             diffLength = len(nVars) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 13)
-            nValues = [(nVar.index, nVar.unused1, nVar.flags, nVar.unused2, nVar.name) for nVar in nVars]
+            if isinstance(nVars[0], tuple):
+                nValues = nVars
+            else:
+                nValues = [(nVar.index, nVar.unused1, nVar.flags, nVar.unused2, nVar.name) for nVar in nVars]
             while(diffLength < 0):
                 CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 13)
                 diffLength += 1
@@ -15318,15 +16026,21 @@ class SCPTRecord(BaseRecord):
             for oVar, nValue in zip(self.vars, nValues):
                 oVar.index, oVar.unused1, oVar.flags, oVar.unused2, oVar.name = nValue
     vars = property(get_vars, set_vars)
+    def get_vars_list(self):
+        return [(var.index, None, var.flags, None, var.name) for var in self.vars]
+    vars_list = property(get_vars_list, set_vars)
     def get_references(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 14)
-        if(numRecords > 0): return [self.Reference(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
+        if(numRecords > 0): return [Reference(self._CollectionIndex, self._ModName, self._recordID, 14, x) for x in range(0, numRecords)]
         return []
     def set_references(self, nReferences):
-        if nReferences is None or nReferences == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 14)
+        if nReferences is None or not len(nReferences): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 14)
         else:
             diffLength = len(nReferences) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 14)
-            nValues = [(nReference.reference,nReference.IsSCRO) for nReference in nReferences]
+            if isinstance(nReferences[0], tuple):
+                nValues = nReferences
+            else:
+                nValues = [(nReference.reference_long,nReference.IsSCRO) for nReference in nReferences]
             while(diffLength < 0):
                 CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 14)
                 diffLength += 1
@@ -15334,18 +16048,21 @@ class SCPTRecord(BaseRecord):
                 CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 14)
                 diffLength -= 1
             for oReference, nValue in zip(self.references, nValues):
-                oReference.reference, oReference.IsSCRO = nValue
+                oReference.reference_long, oReference.IsSCRO = nValue
     references = property(get_references, set_references)
+    def get_references_list(self):
+        return [(reference.reference_long,reference.IsSCRO) for reference in self.references]
+    references_list = property(get_references_list, set_references)
     copyattrs = BaseRecord.baseattrs + ['numRefs','compiledSize','lastIndex','scriptType','compiled_p','scriptText','vars','references']
 
 class SGSTRecord(BaseRecord):
     _Type = 'SGST'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopySGSTRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopySGSTRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return SGSTRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopySGSTRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopySGSTRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return SGSTRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def newEffectsElement(self):
@@ -15383,7 +16100,7 @@ class SGSTRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_modt_p(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         else:
             length = len(nValue)
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 9, struct.pack('B' * length, *nValue), length)
@@ -15404,23 +16121,37 @@ class SGSTRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 11, c_uint(nValue))
     script = property(get_script, set_script)
+    def get_script_long(self):
+        return MakeLongFid(self._CollectionIndex,self.script)
+    def set_script_long(self, nValue):
+        self.script = MakeShortFid(self._CollectionIndex, nValue)
+    script_long = property(get_script_long, set_script_long)
     def get_effects(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 12)
         if(numRecords > 0): return [Effect(self._CollectionIndex, self._ModName, self._recordID, 12, x) for x in range(0, numRecords)]
         return []
     def set_effects(self, nEffects):
-        if nEffects is None or nEffects == []: return
-        diffLength = len(nEffects) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 12)
-        nValues = [(nEffect.name0, nEffect.name, nEffect.magnitude, nEffect.area, nEffect.duration, nEffect.recipient, nEffect.actorValue, nEffect.script, nEffect.school, nEffect.visual, nEffect.flags, nEffect.unused1, nEffect.full) for nEffect in nEffects]
-        while(diffLength < 0):
-            CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 12)
-            diffLength += 1
-        while(diffLength > 0):
-            CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 12)
-            diffLength -= 1
-        for oEffect, nValue in zip(self.effects, nValues):
-            oEffect.name0, oEffect.name, oEffect.magnitude, oEffect.area, oEffect.duration, oEffect.recipient, oEffect.actorValue, oEffect.script, oEffect.school, oEffect.visual, oEffect.flags, oEffect.unused1, oEffect.full = nValue
+        if nEffects is None or not len(nEffects): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
+        else:
+            diffLength = len(nEffects) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 12)
+            if isinstance(nEffects[0], tuple):
+                nValues = nEffects
+            else:
+                nValues = [(nEffect.name0, nEffect.name, nEffect.magnitude, nEffect.area, nEffect.duration, nEffect.recipient, nEffect.actorValue, nEffect.script_long, nEffect.school, nEffect.visual, nEffect.flags, nEffect.unused1, nEffect.full) for nEffect in nEffects]
+            while(diffLength < 0):
+                CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 12)
+                diffLength += 1
+            while(diffLength > 0):
+                CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 12)
+                diffLength -= 1
+            for oEffect, nValue in zip(self.effects, nValues):
+                oEffect.name0, oEffect.name, oEffect.magnitude, oEffect.area, oEffect.duration, oEffect.recipient, oEffect.actorValue, oEffect.script_long, oEffect.school, oEffect.visual, oEffect.flags, oEffect.unused1, oEffect.full = nValue
     effects = property(get_effects, set_effects)
+    def get_effects_list(self):
+        return [(effect.name0, effect.name, effect.magnitude, effect.area, effect.duration,
+                 effect.recipient, effect.actorValue, effect.script_long, effect.school,
+                 effect.visual, effect.flags, None, effect.full) for effect in self.effects]
+    effects_list = property(get_effects_list, set_effects)
     def get_uses(self):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
@@ -15455,11 +16186,11 @@ class SGSTRecord(BaseRecord):
 class SKILRecord(BaseRecord):
     _Type = 'SKIL'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopySKILRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopySKILRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return SKILRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopySKILRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopySKILRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return SKILRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def get_skill(self):
@@ -15566,11 +16297,11 @@ class SKILRecord(BaseRecord):
 class SLGMRecord(BaseRecord):
     _Type = 'SLGM'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopySLGMRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopySLGMRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return SLGMRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopySLGMRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopySLGMRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return SLGMRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def get_full(self):
@@ -15604,7 +16335,7 @@ class SLGMRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_modt_p(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         else:
             length = len(nValue)
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 9, struct.pack('B' * length, *nValue), length)
@@ -15625,6 +16356,11 @@ class SLGMRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 11, c_uint(nValue))
     script = property(get_script, set_script)
+    def get_script_long(self):
+        return MakeLongFid(self._CollectionIndex,self.script)
+    def set_script_long(self, nValue):
+        self.script = MakeShortFid(self._CollectionIndex, nValue)
+    script_long = property(get_script_long, set_script_long)
     def get_value(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
@@ -15740,11 +16476,11 @@ class SLGMRecord(BaseRecord):
 class SOUNRecord(BaseRecord):
     _Type = 'SOUN'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopySOUNRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopySOUNRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return SOUNRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopySOUNRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopySOUNRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return SOUNRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def get_soundFile(self):
@@ -15807,7 +16543,7 @@ class SOUNRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused2(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 12, struct.pack('2B', *nValue), 2)
     unused2 = property(get_unused2, set_unused2)
     def get_staticAtten(self):
@@ -15908,11 +16644,11 @@ class SOUNRecord(BaseRecord):
 class SPELRecord(BaseRecord):
     _Type = 'SPEL'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopySPELRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopySPELRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return SPELRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopySPELRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopySPELRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return SPELRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def newEffectsElement(self):
@@ -15970,7 +16706,7 @@ class SPELRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused1(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 11, struct.pack('3B', *nValue), 3)
     unused1 = property(get_unused1, set_unused1)
     def get_effects(self):
@@ -15978,10 +16714,13 @@ class SPELRecord(BaseRecord):
         if(numRecords > 0): return [Effect(self._CollectionIndex, self._ModName, self._recordID, 12, x) for x in range(0, numRecords)]
         return []
     def set_effects(self, nEffects):
-        if nEffects is None or nEffects == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
+        if nEffects is None or not len(nEffects): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
         else:
             diffLength = len(nEffects) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 12)
-            nValues = [(nVar.name0, nVar.name, nVar.magnitude, nVar.area, nVar.duration, nVar.recipient, nVar.actorValue, nVar.script, nVar.school, nVar.visual, nVar.flags, nVar.unused1, nVar.full) for nVar in nVars]
+            if isinstance(nEffects[0], tuple):
+                nValues = nEffects
+            else:
+                nValues = [(nEffect.name0, nEffect.name, nEffect.magnitude, nEffect.area, nEffect.duration, nEffect.recipient, nEffect.actorValue, nEffect.script_long, nEffect.school, nEffect.visual, nEffect.flags, nEffect.unused1, nEffect.full) for nEffect in nEffects]
             while(diffLength < 0):
                 CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 12)
                 diffLength += 1
@@ -15989,8 +16728,13 @@ class SPELRecord(BaseRecord):
                 CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 12)
                 diffLength -= 1
             for oEffect, nValue in zip(self.effects, nValues):
-                oEffect.index, oEffect.unused1, oEffect.flags, oEffect.unused2, oEffect.name = nValue
+                oEffect.name0, oEffect.name, oEffect.magnitude, oEffect.area, oEffect.duration, oEffect.recipient, oEffect.actorValue, oEffect.script_long, oEffect.school, oEffect.visual, oEffect.flags, oEffect.unused1, oEffect.full = nValue
     effects = property(get_effects, set_effects)
+    def get_effects_list(self):
+        return [(effect.name0, effect.name, effect.magnitude, effect.area, effect.duration,
+                 effect.recipient, effect.actorValue, effect.script_long, effect.school,
+                 effect.visual, effect.flags, None, effect.full) for effect in self.effects]
+    effects_list = property(get_effects_list, set_effects)
     def get_IsManualCost(self):
         return self.flags != None and (self.flags & 0x00000001) != 0
     def set_IsManualCost(self, nValue):
@@ -16118,19 +16862,19 @@ class SPELRecord(BaseRecord):
 class STATRecord(BaseRecord):
     _Type = 'STAT'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopySTATRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopySTATRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return STATRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopySTATRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopySTATRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return STATRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def get_modPath(self):
         CBash.ReadFIDField.restype = c_char_p
         return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 6)
     def set_modPath(self, nValue):
-        if nValue is None: return
-        CBash.SetFIDFieldStr(self._CollectionIndex, self._ModName, self._recordID, 6, nValue)
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 6)
+        else: CBash.SetFIDFieldStr(self._CollectionIndex, self._ModName, self._recordID, 6, nValue)
     modPath = property(get_modPath, set_modPath)
     def get_modb(self):
         CBash.ReadFIDField.restype = POINTER(c_float)
@@ -16138,8 +16882,8 @@ class STATRecord(BaseRecord):
         if(retValue): return round(retValue.contents.value,6)
         return None
     def set_modb(self, nValue):
-        if nValue is None: return
-        CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 7, c_float(round(nValue,6)))
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
+        else: CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 7, c_float(round(nValue,6)))
     modb = property(get_modb, set_modb)
     def get_modt_p(self):
         numRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 8)
@@ -16149,20 +16893,21 @@ class STATRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_modt_p(self, nValue):
-        if nValue is None or nValue == []: return
-        length = len(nValue)
-        CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 8, struct.pack('B' * length, *nValue), length)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
+        else:
+            length = len(nValue)
+            CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 8, struct.pack('B' * length, *nValue), length)
     modt_p = property(get_modt_p, set_modt_p)
     copyattrs = BaseRecord.baseattrs + ['modPath','modb','modt_p']
 
 class TREERecord(BaseRecord):
     _Type = 'TREE'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyTREERecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopyTREERecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return TREERecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopyTREERecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopyTREERecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return TREERecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def get_modPath(self):
@@ -16189,7 +16934,7 @@ class TREERecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_modt_p(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         else:
             length = len(nValue)
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 8, struct.pack('B' * length, *nValue), length)
@@ -16209,7 +16954,7 @@ class TREERecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_speedTree(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
         else: CBash.SetFIDFieldUIA(self._CollectionIndex, self._ModName, self._recordID, 10, struct.pack('I' * len(nValue), *nValue), len(nValue))
     speedTree = property(get_speedTree, set_speedTree)
     def get_curvature(self):
@@ -16311,11 +17056,11 @@ class TREERecord(BaseRecord):
 class WATRRecord(BaseRecord):
     _Type = 'WATR'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyWATRRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopyWATRRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return WATRRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopyWATRRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopyWATRRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return WATRRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def get_texture(self):
@@ -16359,6 +17104,11 @@ class WATRRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 10, nValue)
     sound = property(get_sound, set_sound)
+    def get_sound_long(self):
+        return MakeLongFid(self._CollectionIndex,self.sound)
+    def set_sound_long(self, nValue):
+        self.sound = MakeShortFid(self._CollectionIndex, nValue)
+    sound_long = property(get_sound_long, set_sound_long)
     def get_windVelocity(self):
         CBash.ReadFIDField.restype = POINTER(c_float)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
@@ -16493,7 +17243,7 @@ class WATRRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused1(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 25)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 25)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 25, struct.pack('B', *nValue), 1)
     unused1 = property(get_unused1, set_unused1)
     def get_deepRed(self):
@@ -16531,7 +17281,7 @@ class WATRRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused2(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 29)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 29)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 29, struct.pack('B', *nValue), 1)
     unused2 = property(get_unused2, set_unused2)
     def get_reflRed(self):
@@ -16569,7 +17319,7 @@ class WATRRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused3(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 33)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 33)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 33, struct.pack('B', *nValue), 1)
     unused3 = property(get_unused3, set_unused3)
     def get_blend(self):
@@ -16589,7 +17339,7 @@ class WATRRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_unused4(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 35)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 35)
         else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 35, struct.pack('3B', *nValue), 3)
     unused4 = property(get_unused4, set_unused4)
     def get_rainForce(self):
@@ -16700,6 +17450,11 @@ class WATRRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 47)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 47, nValue)
     dayWater = property(get_dayWater, set_dayWater)
+    def get_dayWater_long(self):
+        return MakeLongFid(self._CollectionIndex,self.dayWater)
+    def set_dayWater_long(self, nValue):
+        self.dayWater = MakeShortFid(self._CollectionIndex, nValue)
+    dayWater_long = property(get_dayWater_long, set_dayWater_long)
     def get_nightWater(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 48)
@@ -16709,6 +17464,11 @@ class WATRRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 48)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 48, nValue)
     nightWater = property(get_nightWater, set_nightWater)
+    def get_nightWater_long(self):
+        return MakeLongFid(self._CollectionIndex,self.nightWater)
+    def set_nightWater_long(self, nValue):
+        self.nightWater = MakeShortFid(self._CollectionIndex, nValue)
+    nightWater_long = property(get_nightWater_long, set_nightWater_long)
     def get_underWater(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 49)
@@ -16718,6 +17478,11 @@ class WATRRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 49)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 49, nValue)
     underWater = property(get_underWater, set_underWater)
+    def get_underWater_long(self):
+        return MakeLongFid(self._CollectionIndex,self.underWater)
+    def set_underWater_long(self, nValue):
+        self.underWater = MakeShortFid(self._CollectionIndex, nValue)
+    underWater_long = property(get_underWater_long, set_underWater_long)
     def get_IsCausesDamage(self):
         return self.flags != None and (self.flags & 0x00000001) != 0
     def set_IsCausesDamage(self, nValue):
@@ -16749,11 +17514,11 @@ class WATRRecord(BaseRecord):
 class WEAPRecord(BaseRecord):
     _Type = 'WEAP'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyWEAPRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopyWEAPRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return WEAPRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopyWEAPRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopyWEAPRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return WEAPRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def get_full(self):
@@ -16787,7 +17552,7 @@ class WEAPRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_modt_p(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         else:
             length = len(nValue)
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 9, struct.pack('B' * length, *nValue), length)
@@ -16808,6 +17573,11 @@ class WEAPRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 11)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 11, c_uint(nValue))
     script = property(get_script, set_script)
+    def get_script_long(self):
+        return MakeLongFid(self._CollectionIndex,self.script)
+    def set_script_long(self, nValue):
+        self.script = MakeShortFid(self._CollectionIndex, nValue)
+    script_long = property(get_script_long, set_script_long)
     def get_enchantment(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
@@ -16817,6 +17587,11 @@ class WEAPRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 12)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 12, nValue)
     enchantment = property(get_enchantment, set_enchantment)
+    def get_enchantment_long(self):
+        return MakeLongFid(self._CollectionIndex,self.enchantment)
+    def set_enchantment_long(self, nValue):
+        self.enchantment = MakeShortFid(self._CollectionIndex, nValue)
+    enchantment_long = property(get_enchantment_long, set_enchantment_long)
     def get_enchantPoints(self):
         CBash.ReadFIDField.restype = POINTER(c_ushort)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
@@ -16957,20 +17732,20 @@ class WEAPRecord(BaseRecord):
 class WRLDRecord(BaseRecord):
     _Type = 'WRLD'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyWRLDRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopyWRLDRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return WRLDRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopyWRLDRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopyWRLDRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return WRLDRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def createWorldCELLRecord(self):
-        FID = CBash.CreateCELLRecord(self._CollectionIndex, self._ModName, self._recordID, c_bool(True))
-        if(FID): return CELLRecord(self._CollectionIndex, self._ModName, FID, self._recordID)
+        FID = CBash.CreateCELLRecord(self._CollectionIndex, self._ModName, self._recordID, 1)
+        if(FID): return CELLRecord(self._CollectionIndex, self._ModName, FID, 1)
         return None
     def createCELLRecord(self):
-        FID = CBash.CreateCELLRecord(self._CollectionIndex, self._ModName, self._recordID, c_bool(False))
-        if(FID): return CELLRecord(self._CollectionIndex, self._ModName, FID, self._recordID)
+        FID = CBash.CreateCELLRecord(self._CollectionIndex, self._ModName, self._recordID, 0)
+        if(FID): return CELLRecord(self._CollectionIndex, self._ModName, FID, 0)
         return None
     def createROADRecord(self):
         FID = CBash.CreateROADRecord(self._CollectionIndex, self._ModName, self._recordID)
@@ -16992,6 +17767,11 @@ class WRLDRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 7, nValue)
     parent = property(get_parent, set_parent)
+    def get_parent_long(self):
+        return MakeLongFid(self._CollectionIndex,self.parent)
+    def set_parent_long(self, nValue):
+        self.parent = MakeShortFid(self._CollectionIndex, nValue)
+    parent_long = property(get_parent_long, set_parent_long)
     def get_climate(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
@@ -17001,6 +17781,11 @@ class WRLDRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 8, nValue)
     climate = property(get_climate, set_climate)
+    def get_climate_long(self):
+        return MakeLongFid(self._CollectionIndex,self.climate)
+    def set_climate_long(self, nValue):
+        self.climate = MakeShortFid(self._CollectionIndex, nValue)
+    climate_long = property(get_climate_long, set_climate_long)
     def get_water(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
@@ -17010,6 +17795,11 @@ class WRLDRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 9, nValue)
     water = property(get_water, set_water)
+    def get_water_long(self):
+        return MakeLongFid(self._CollectionIndex,self.water)
+    def set_water_long(self, nValue):
+        self.water = MakeShortFid(self._CollectionIndex, nValue)
+    water_long = property(get_water_long, set_water_long)
     def get_mapPath(self):
         CBash.ReadFIDField.restype = c_char_p
         return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
@@ -17125,6 +17915,11 @@ class WRLDRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 22)
         else: CBash.SetFIDFieldUI(self._CollectionIndex, self._ModName, self._recordID, 22, nValue)
     sound = property(get_sound, set_sound)
+    def get_sound_long(self):
+        return MakeLongFid(self._CollectionIndex,self.sound)
+    def set_sound_long(self, nValue):
+        self.sound = MakeShortFid(self._CollectionIndex, nValue)
+    sound_long = property(get_sound_long, set_sound_long)
     def get_ofst_p(self):
         numRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 23)
         if(numRecords > 0):
@@ -17133,7 +17928,7 @@ class WRLDRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_ofst_p(self, nValue):
-        if nValue is None or nValue == []: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 23)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 23)
         else:
             length = len(nValue)
             CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 23, struct.pack('B' * length, *nValue), length)
@@ -17145,7 +17940,8 @@ class WRLDRecord(BaseRecord):
         return None
     def set_ROAD(self, nROAD):
         curROAD = self.ROAD
-        if nROAD is None and curROAD is not None: curROAD.DeleteRecord()
+        if nROAD is None:
+            if curROAD is not None: curROAD.DeleteRecord()
         else:
             if(curROAD == None):
                 curROAD = self.createROADRecord()
@@ -17155,10 +17951,10 @@ class WRLDRecord(BaseRecord):
     def get_CELL(self):
         CBash.ReadFIDField.restype = POINTER(c_uint)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 25)
-        if(retValue): return CELLRecord(self._CollectionIndex, self._ModName, retValue.contents.value, self._recordID)
+        if(retValue): return CELLRecord(self._CollectionIndex, self._ModName, retValue.contents.value, 1)
         return None
     def set_CELL(self, nCELL):
-    	curCELL = self.CELL
+        curCELL = self.CELL
         if nCELL is None and curCELL is not None: curCELL.DeleteRecord()
         else:
             if(curCELL == None):
@@ -17172,7 +17968,7 @@ class WRLDRecord(BaseRecord):
         if(numSubRecords > 0):
             cRecords = (POINTER(c_uint) * numSubRecords)()
             CBash.GetFIDFieldArray(self._CollectionIndex, self._ModName, self._recordID, 26, byref(cRecords))
-            return [CELLRecord(self._CollectionIndex, self._ModName, x.contents.value, self._recordID) for x in cRecords]
+            return [CELLRecord(self._CollectionIndex, self._ModName, x.contents.value, 0) for x in cRecords]
         return []
     def get_IsSmallWorld(self):
         return self.flags != None and (self.flags & 0x00000001) != 0
@@ -17244,11 +18040,11 @@ class WRLDRecord(BaseRecord):
 class WTHRRecord(BaseRecord):
     _Type = 'WTHR'
     def CopyAsOverride(self, targetMod):
-        FID = CBash.CopyWTHRRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(True))
+        FID = CBash.CopyWTHRRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 1)
         if(FID): return WTHRRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     def CopyAsNew(self, targetMod):
-        FID = CBash.CopyWTHRRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, c_bool(False))
+        FID = CBash.CopyWTHRRecord(self._CollectionIndex, self._ModName, self._recordID, targetMod._ModName, 0)
         if(FID): return WTHRRecord(self._CollectionIndex, targetMod._ModName, FID)
         return None
     class WTHRColor(object):
@@ -17263,8 +18059,8 @@ class WTHRRecord(BaseRecord):
             if(retValue): return retValue.contents.value
             return None
         def set_riseRed(self, nValue):
-            if nValue is None: return
-            CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._listIndex, c_ubyte(nValue))
+            if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, self._listIndex)
+            else: CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._listIndex, c_ubyte(nValue))
         riseRed = property(get_riseRed, set_riseRed)
         def get_riseGreen(self):
             CBash.ReadFIDField.restype = POINTER(c_ubyte)
@@ -17272,8 +18068,8 @@ class WTHRRecord(BaseRecord):
             if(retValue): return retValue.contents.value
             return None
         def set_riseGreen(self, nValue):
-            if nValue is None: return
-            CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 1, c_ubyte(nValue))
+            if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 1)
+            else: CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 1, c_ubyte(nValue))
         riseGreen = property(get_riseGreen, set_riseGreen)
         def get_riseBlue(self):
             CBash.ReadFIDField.restype = POINTER(c_ubyte)
@@ -17281,8 +18077,8 @@ class WTHRRecord(BaseRecord):
             if(retValue): return retValue.contents.value
             return None
         def set_riseBlue(self, nValue):
-            if nValue is None: return
-            CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 2, c_ubyte(nValue))
+            if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 2)
+            else: CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 2, c_ubyte(nValue))
         riseBlue = property(get_riseBlue, set_riseBlue)
         def get_unused1(self):
             numRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 3)
@@ -17292,8 +18088,8 @@ class WTHRRecord(BaseRecord):
                 return [cRecords.contents[x] for x in range(0, numRecords)]
             return []
         def set_unused1(self, nValue):
-            if nValue is None or nValue == []: return
-            CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 3, struct.pack('B', *nValue), 1)
+            if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 3)
+            else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 3, struct.pack('B', *nValue), 1)
         unused1 = property(get_unused1, set_unused1)
         def get_dayRed(self):
             CBash.ReadFIDField.restype = POINTER(c_ubyte)
@@ -17301,8 +18097,8 @@ class WTHRRecord(BaseRecord):
             if(retValue): return retValue.contents.value
             return None
         def set_dayRed(self, nValue):
-            if nValue is None: return
-            CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 4, c_ubyte(nValue))
+            if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 4)
+            else: CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 4, c_ubyte(nValue))
         dayRed = property(get_dayRed, set_dayRed)
         def get_dayGreen(self):
             CBash.ReadFIDField.restype = POINTER(c_ubyte)
@@ -17310,8 +18106,8 @@ class WTHRRecord(BaseRecord):
             if(retValue): return retValue.contents.value
             return None
         def set_dayGreen(self, nValue):
-            if nValue is None: return
-            CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 5, c_ubyte(nValue))
+            if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 5)
+            else: CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 5, c_ubyte(nValue))
         dayGreen = property(get_dayGreen, set_dayGreen)
         def get_dayBlue(self):
             CBash.ReadFIDField.restype = POINTER(c_ubyte)
@@ -17319,8 +18115,8 @@ class WTHRRecord(BaseRecord):
             if(retValue): return retValue.contents.value
             return None
         def set_dayBlue(self, nValue):
-            if nValue is None: return
-            CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 6, c_ubyte(nValue))
+            if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 6)
+            else: CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 6, c_ubyte(nValue))
         dayBlue = property(get_dayBlue, set_dayBlue)
         def get_unused2(self):
             numRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 7)
@@ -17330,8 +18126,8 @@ class WTHRRecord(BaseRecord):
                 return [cRecords.contents[x] for x in range(0, numRecords)]
             return []
         def set_unused2(self, nValue):
-            if nValue is None or nValue == []: return
-            CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 7, struct.pack('B', *nValue), 1)
+            if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 7)
+            else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 7, struct.pack('B', *nValue), 1)
         unused2 = property(get_unused2, set_unused2)
         def get_setRed(self):
             CBash.ReadFIDField.restype = POINTER(c_ubyte)
@@ -17339,8 +18135,8 @@ class WTHRRecord(BaseRecord):
             if(retValue): return retValue.contents.value
             return None
         def set_setRed(self, nValue):
-            if nValue is None: return
-            CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 8, c_ubyte(nValue))
+            if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 8)
+            else: CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 8, c_ubyte(nValue))
         setRed = property(get_setRed, set_setRed)
         def get_setGreen(self):
             CBash.ReadFIDField.restype = POINTER(c_ubyte)
@@ -17348,8 +18144,8 @@ class WTHRRecord(BaseRecord):
             if(retValue): return retValue.contents.value
             return None
         def set_setGreen(self, nValue):
-            if nValue is None: return
-            CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 9, c_ubyte(nValue))
+            if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 9)
+            else: CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 9, c_ubyte(nValue))
         setGreen = property(get_setGreen, set_setGreen)
         def get_setBlue(self):
             CBash.ReadFIDField.restype = POINTER(c_ubyte)
@@ -17357,8 +18153,8 @@ class WTHRRecord(BaseRecord):
             if(retValue): return retValue.contents.value
             return None
         def set_setBlue(self, nValue):
-            if nValue is None: return
-            CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 10, c_ubyte(nValue))
+            if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 10)
+            else: CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 10, c_ubyte(nValue))
         setBlue = property(get_setBlue, set_setBlue)
         def get_unused3(self):
             numRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 11)
@@ -17368,8 +18164,8 @@ class WTHRRecord(BaseRecord):
                 return [cRecords.contents[x] for x in range(0, numRecords)]
             return []
         def set_unused3(self, nValue):
-            if nValue is None or nValue == []: return
-            CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 11, struct.pack('B', *nValue), 1)
+            if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 11)
+            else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 11, struct.pack('B', *nValue), 1)
         unused3 = property(get_unused3, set_unused3)
         def get_nightRed(self):
             CBash.ReadFIDField.restype = POINTER(c_ubyte)
@@ -17377,8 +18173,8 @@ class WTHRRecord(BaseRecord):
             if(retValue): return retValue.contents.value
             return None
         def set_nightRed(self, nValue):
-            if nValue is None: return
-            CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 12, c_ubyte(nValue))
+            if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 12)
+            else: CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 12, c_ubyte(nValue))
         nightRed = property(get_nightRed, set_nightRed)
         def get_nightGreen(self):
             CBash.ReadFIDField.restype = POINTER(c_ubyte)
@@ -17386,8 +18182,8 @@ class WTHRRecord(BaseRecord):
             if(retValue): return retValue.contents.value
             return None
         def set_nightGreen(self, nValue):
-            if nValue is None: return
-            CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 13, c_ubyte(nValue))
+            if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 13)
+            else: CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 13, c_ubyte(nValue))
         nightGreen = property(get_nightGreen, set_nightGreen)
         def get_nightBlue(self):
             CBash.ReadFIDField.restype = POINTER(c_ubyte)
@@ -17395,8 +18191,8 @@ class WTHRRecord(BaseRecord):
             if(retValue): return retValue.contents.value
             return None
         def set_nightBlue(self, nValue):
-            if nValue is None: return
-            CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 14, c_ubyte(nValue))
+            if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 14)
+            else: CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 14, c_ubyte(nValue))
         nightBlue = property(get_nightBlue, set_nightBlue)
         def get_unused4(self):
             numRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 15)
@@ -17406,8 +18202,8 @@ class WTHRRecord(BaseRecord):
                 return [cRecords.contents[x] for x in range(0, numRecords)]
             return []
         def set_unused4(self, nValue):
-            if nValue is None or nValue == []: return
-            CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 15, struct.pack('B', *nValue), 1)
+            if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 15)
+            else: CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, self._listIndex + 15, struct.pack('B', *nValue), 1)
         unused4 = property(get_unused4, set_unused4)
     class Sound(object):
         def __init__(self, CollectionIndex, ModName, recordID, listIndex):
@@ -17421,17 +18217,22 @@ class WTHRRecord(BaseRecord):
             if(retValue): return retValue.contents.value
             return None
         def set_sound(self, nValue):
-            if nValue is None: return
-            CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 204, self._listIndex, 1, nValue)
+            if nValue is None: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 204, self._listIndex, 1)
+            else: CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 204, self._listIndex, 1, nValue)
         sound = property(get_sound, set_sound)
+        def get_sound_long(self):
+            return MakeLongFid(self._CollectionIndex,self.sound)
+        def set_sound_long(self, nValue):
+            self.sound = MakeShortFid(self._CollectionIndex, nValue)
+        sound_long = property(get_sound_long, set_sound_long)
         def get_type(self):
             CBash.ReadFIDListField.restype = POINTER(c_uint)
             retValue = CBash.ReadFIDListField(self._CollectionIndex, self._ModName, self._recordID, 204, self._listIndex, 2)
             if(retValue): return retValue.contents.value
             return None
         def set_type(self, nValue):
-            if nValue is None: return
-            CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 204, self._listIndex, 2, nValue)
+            if nValue is None: CBash.DeleteFIDListField(self._CollectionIndex, self._ModName, self._recordID, 204, self._listIndex, 2)
+            else: CBash.SetFIDListFieldUI(self._CollectionIndex, self._ModName, self._recordID, 204, self._listIndex, 2, nValue)
         type = property(get_type, set_type)
         def get_IsDefault(self):
             return (self.type == 0)
@@ -17465,22 +18266,22 @@ class WTHRRecord(BaseRecord):
         CBash.ReadFIDField.restype = c_char_p
         return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 6)
     def set_lowerLayer(self, nValue):
-        if nValue is None: return
-        CBash.SetFIDFieldStr(self._CollectionIndex, self._ModName, self._recordID, 6, nValue)
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 6)
+        else: CBash.SetFIDFieldStr(self._CollectionIndex, self._ModName, self._recordID, 6, nValue)
     lowerLayer = property(get_lowerLayer, set_lowerLayer)
     def get_upperLayer(self):
         CBash.ReadFIDField.restype = c_char_p
         return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
     def set_upperLayer(self, nValue):
-        if nValue is None: return
-        CBash.SetFIDFieldStr(self._CollectionIndex, self._ModName, self._recordID, 7, nValue)
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 7)
+        else: CBash.SetFIDFieldStr(self._CollectionIndex, self._ModName, self._recordID, 7, nValue)
     upperLayer = property(get_upperLayer, set_upperLayer)
     def get_modPath(self):
         CBash.ReadFIDField.restype = c_char_p
         return CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
     def set_modPath(self, nValue):
-        if nValue is None: return
-        CBash.SetFIDFieldStr(self._CollectionIndex, self._ModName, self._recordID, 8, nValue)
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 8)
+        else: CBash.SetFIDFieldStr(self._CollectionIndex, self._ModName, self._recordID, 8, nValue)
     modPath = property(get_modPath, set_modPath)
     def get_modb(self):
         CBash.ReadFIDField.restype = POINTER(c_float)
@@ -17488,8 +18289,8 @@ class WTHRRecord(BaseRecord):
         if(retValue): return round(retValue.contents.value,6)
         return None
     def set_modb(self, nValue):
-        if nValue is None: return
-        CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 9, c_float(round(nValue,6)))
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 9)
+        else: CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 9, c_float(round(nValue,6)))
     modb = property(get_modb, set_modb)
     def get_modt_p(self):
         numRecords = CBash.GetFIDFieldArraySize(self._CollectionIndex, self._ModName, self._recordID, 10)
@@ -17499,15 +18300,16 @@ class WTHRRecord(BaseRecord):
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def set_modt_p(self, nValue):
-        if nValue is None or nValue == []: return
-        length = len(nValue)
-        CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 10, struct.pack('B' * length, *nValue), length)
+        if nValue is None or not len(nValue): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 10)
+        else:
+            length = len(nValue)
+            CBash.SetFIDFieldR(self._CollectionIndex, self._ModName, self._recordID, 10, struct.pack('B' * length, *nValue), length)
     modt_p = property(get_modt_p, set_modt_p)
     def get_upperSky(self):
         return self.WTHRColor(self._CollectionIndex, self._ModName, self._recordID, 11)
     def set_upperSky(self, nValue):
-        if nValue is None: return
-        if not (isinstance(nValue, self.WTHRColor)): return
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 205)
+        elif not (isinstance(nValue, self.WTHRColor)): return
         thisColor = self.upperSky
         thisModel.riseRed = nValue.riseRed
         thisModel.riseGreen = nValue.riseGreen
@@ -17529,8 +18331,8 @@ class WTHRRecord(BaseRecord):
     def get_fog(self):
         return self.WTHRColor(self._CollectionIndex, self._ModName, self._recordID, 27)
     def set_fog(self, nValue):
-        if nValue is None: return
-        if not (isinstance(nValue, self.WTHRColor)): return
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 206)
+        elif not (isinstance(nValue, self.WTHRColor)): return
         thisColor = self.fog
         thisModel.riseRed = nValue.riseRed
         thisModel.riseGreen = nValue.riseGreen
@@ -17552,8 +18354,8 @@ class WTHRRecord(BaseRecord):
     def get_lowerClouds(self):
         return self.WTHRColor(self._CollectionIndex, self._ModName, self._recordID, 43)
     def set_lowerClouds(self, nValue):
-        if nValue is None: return
-        if not (isinstance(nValue, self.WTHRColor)): return
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 207)
+        elif not (isinstance(nValue, self.WTHRColor)): return
         thisColor = self.lowerClouds
         thisModel.riseRed = nValue.riseRed
         thisModel.riseGreen = nValue.riseGreen
@@ -17575,8 +18377,8 @@ class WTHRRecord(BaseRecord):
     def get_ambient(self):
         return self.WTHRColor(self._CollectionIndex, self._ModName, self._recordID, 59)
     def set_ambient(self, nValue):
-        if nValue is None: return
-        if not (isinstance(nValue, self.WTHRColor)): return
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 208)
+        elif not (isinstance(nValue, self.WTHRColor)): return
         thisColor = self.ambient
         thisModel.riseRed = nValue.riseRed
         thisModel.riseGreen = nValue.riseGreen
@@ -17598,8 +18400,8 @@ class WTHRRecord(BaseRecord):
     def get_sunlight(self):
         return self.WTHRColor(self._CollectionIndex, self._ModName, self._recordID, 75)
     def set_sunlight(self, nValue):
-        if nValue is None: return
-        if not (isinstance(nValue, self.WTHRColor)): return
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 209)
+        elif not (isinstance(nValue, self.WTHRColor)): return
         thisColor = self.sunlight
         thisModel.riseRed = nValue.riseRed
         thisModel.riseGreen = nValue.riseGreen
@@ -17621,8 +18423,8 @@ class WTHRRecord(BaseRecord):
     def get_sun(self):
         return self.WTHRColor(self._CollectionIndex, self._ModName, self._recordID, 91)
     def set_sun(self, nValue):
-        if nValue is None: return
-        if not (isinstance(nValue, self.WTHRColor)): return
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 210)
+        elif not (isinstance(nValue, self.WTHRColor)): return
         thisColor = self.sun
         thisModel.riseRed = nValue.riseRed
         thisModel.riseGreen = nValue.riseGreen
@@ -17644,8 +18446,8 @@ class WTHRRecord(BaseRecord):
     def get_stars(self):
         return self.WTHRColor(self._CollectionIndex, self._ModName, self._recordID, 107)
     def set_stars(self, nValue):
-        if nValue is None: return
-        if not (isinstance(nValue, self.WTHRColor)): return
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 211)
+        elif not (isinstance(nValue, self.WTHRColor)): return
         thisColor = self.stars
         thisModel.riseRed = nValue.riseRed
         thisModel.riseGreen = nValue.riseGreen
@@ -17667,8 +18469,8 @@ class WTHRRecord(BaseRecord):
     def get_lowerSky(self):
         return self.WTHRColor(self._CollectionIndex, self._ModName, self._recordID, 123)
     def set_lowerSky(self, nValue):
-        if nValue is None: return
-        if not (isinstance(nValue, self.WTHRColor)): return
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 212)
+        elif not (isinstance(nValue, self.WTHRColor)): return
         thisColor = self.lowerSky
         thisModel.riseRed = nValue.riseRed
         thisModel.riseGreen = nValue.riseGreen
@@ -17690,8 +18492,8 @@ class WTHRRecord(BaseRecord):
     def get_horizon(self):
         return self.WTHRColor(self._CollectionIndex, self._ModName, self._recordID, 139)
     def set_horizon(self, nValue):
-        if nValue is None: return
-        if not (isinstance(nValue, self.WTHRColor)): return
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 213)
+        elif not (isinstance(nValue, self.WTHRColor)): return
         thisColor = self.horizon
         thisModel.riseRed = nValue.riseRed
         thisModel.riseGreen = nValue.riseGreen
@@ -17713,8 +18515,8 @@ class WTHRRecord(BaseRecord):
     def get_upperClouds(self):
         return self.WTHRColor(self._CollectionIndex, self._ModName, self._recordID, 155)
     def set_upperClouds(self, nValue):
-        if nValue is None: return
-        if not (isinstance(nValue, self.WTHRColor)): return
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 214)
+        elif not (isinstance(nValue, self.WTHRColor)): return
         thisColor = self.upperClouds
         thisModel.riseRed = nValue.riseRed
         thisModel.riseGreen = nValue.riseGreen
@@ -17739,8 +18541,8 @@ class WTHRRecord(BaseRecord):
         if(retValue): return round(retValue.contents.value,6)
         return None
     def set_fogDayNear(self, nValue):
-        if nValue is None: return
-        CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 171, c_float(round(nValue,6)))
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 171)
+        else: CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 171, c_float(round(nValue,6)))
     fogDayNear = property(get_fogDayNear, set_fogDayNear)
     def get_fogDayFar(self):
         CBash.ReadFIDField.restype = POINTER(c_float)
@@ -17748,8 +18550,8 @@ class WTHRRecord(BaseRecord):
         if(retValue): return round(retValue.contents.value,6)
         return None
     def set_fogDayFar(self, nValue):
-        if nValue is None: return
-        CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 172, c_float(round(nValue,6)))
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 172)
+        else: CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 172, c_float(round(nValue,6)))
     fogDayFar = property(get_fogDayFar, set_fogDayFar)
     def get_fogNightNear(self):
         CBash.ReadFIDField.restype = POINTER(c_float)
@@ -17757,8 +18559,8 @@ class WTHRRecord(BaseRecord):
         if(retValue): return round(retValue.contents.value,6)
         return None
     def set_fogNightNear(self, nValue):
-        if nValue is None: return
-        CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 173, c_float(round(nValue,6)))
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 173)
+        else: CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 173, c_float(round(nValue,6)))
     fogNightNear = property(get_fogNightNear, set_fogNightNear)
     def get_fogNightFar(self):
         CBash.ReadFIDField.restype = POINTER(c_float)
@@ -17766,8 +18568,8 @@ class WTHRRecord(BaseRecord):
         if(retValue): return round(retValue.contents.value,6)
         return None
     def set_fogNightFar(self, nValue):
-        if nValue is None: return
-        CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 174, c_float(round(nValue,6)))
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 174)
+        else: CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 174, c_float(round(nValue,6)))
     fogNightFar = property(get_fogNightFar, set_fogNightFar)
     def get_eyeAdaptSpeed(self):
         CBash.ReadFIDField.restype = POINTER(c_float)
@@ -17775,8 +18577,8 @@ class WTHRRecord(BaseRecord):
         if(retValue): return round(retValue.contents.value,6)
         return None
     def set_eyeAdaptSpeed(self, nValue):
-        if nValue is None: return
-        CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 175, c_float(round(nValue,6)))
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 175)
+        else: CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 175, c_float(round(nValue,6)))
     eyeAdaptSpeed = property(get_eyeAdaptSpeed, set_eyeAdaptSpeed)
     def get_blurRadius(self):
         CBash.ReadFIDField.restype = POINTER(c_float)
@@ -17784,8 +18586,8 @@ class WTHRRecord(BaseRecord):
         if(retValue): return round(retValue.contents.value,6)
         return None
     def set_blurRadius(self, nValue):
-        if nValue is None: return
-        CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 176, c_float(round(nValue,6)))
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 176)
+        else: CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 176, c_float(round(nValue,6)))
     blurRadius = property(get_blurRadius, set_blurRadius)
     def get_blurPasses(self):
         CBash.ReadFIDField.restype = POINTER(c_float)
@@ -17793,8 +18595,8 @@ class WTHRRecord(BaseRecord):
         if(retValue): return round(retValue.contents.value,6)
         return None
     def set_blurPasses(self, nValue):
-        if nValue is None: return
-        CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 177, c_float(round(nValue,6)))
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 177)
+        else: CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 177, c_float(round(nValue,6)))
     blurPasses = property(get_blurPasses, set_blurPasses)
     def get_emissiveMult(self):
         CBash.ReadFIDField.restype = POINTER(c_float)
@@ -17802,8 +18604,8 @@ class WTHRRecord(BaseRecord):
         if(retValue): return round(retValue.contents.value,6)
         return None
     def set_emissiveMult(self, nValue):
-        if nValue is None: return
-        CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 178, c_float(round(nValue,6)))
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 178)
+        else: CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 178, c_float(round(nValue,6)))
     emissiveMult = property(get_emissiveMult, set_emissiveMult)
     def get_targetLum(self):
         CBash.ReadFIDField.restype = POINTER(c_float)
@@ -17811,8 +18613,8 @@ class WTHRRecord(BaseRecord):
         if(retValue): return round(retValue.contents.value,6)
         return None
     def set_targetLum(self, nValue):
-        if nValue is None: return
-        CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 179, c_float(round(nValue,6)))
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 179)
+        else: CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 179, c_float(round(nValue,6)))
     targetLum = property(get_targetLum, set_targetLum)
     def get_upperLumClamp(self):
         CBash.ReadFIDField.restype = POINTER(c_float)
@@ -17820,8 +18622,8 @@ class WTHRRecord(BaseRecord):
         if(retValue): return round(retValue.contents.value,6)
         return None
     def set_upperLumClamp(self, nValue):
-        if nValue is None: return
-        CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 180, c_float(round(nValue,6)))
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 180)
+        else: CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 180, c_float(round(nValue,6)))
     upperLumClamp = property(get_upperLumClamp, set_upperLumClamp)
     def get_brightScale(self):
         CBash.ReadFIDField.restype = POINTER(c_float)
@@ -17829,8 +18631,8 @@ class WTHRRecord(BaseRecord):
         if(retValue): return round(retValue.contents.value,6)
         return None
     def set_brightScale(self, nValue):
-        if nValue is None: return
-        CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 181, c_float(round(nValue,6)))
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 181)
+        else: CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 181, c_float(round(nValue,6)))
     brightScale = property(get_brightScale, set_brightScale)
     def get_brightClamp(self):
         CBash.ReadFIDField.restype = POINTER(c_float)
@@ -17838,8 +18640,8 @@ class WTHRRecord(BaseRecord):
         if(retValue): return round(retValue.contents.value,6)
         return None
     def set_brightClamp(self, nValue):
-        if nValue is None: return
-        CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 182, c_float(round(nValue,6)))
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 182)
+        else: CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 182, c_float(round(nValue,6)))
     brightClamp = property(get_brightClamp, set_brightClamp)
     def get_lumRampNoTex(self):
         CBash.ReadFIDField.restype = POINTER(c_float)
@@ -17847,8 +18649,8 @@ class WTHRRecord(BaseRecord):
         if(retValue): return round(retValue.contents.value,6)
         return None
     def set_lumRampNoTex(self, nValue):
-        if nValue is None: return
-        CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 183, c_float(round(nValue,6)))
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 183)
+        else: CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 183, c_float(round(nValue,6)))
     lumRampNoTex = property(get_lumRampNoTex, set_lumRampNoTex)
     def get_lumRampMin(self):
         CBash.ReadFIDField.restype = POINTER(c_float)
@@ -17856,8 +18658,8 @@ class WTHRRecord(BaseRecord):
         if(retValue): return round(retValue.contents.value,6)
         return None
     def set_lumRampMin(self, nValue):
-        if nValue is None: return
-        CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 184, c_float(round(nValue,6)))
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 184)
+        else: CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 184, c_float(round(nValue,6)))
     lumRampMin = property(get_lumRampMin, set_lumRampMin)
     def get_lumRampMax(self):
         CBash.ReadFIDField.restype = POINTER(c_float)
@@ -17865,8 +18667,8 @@ class WTHRRecord(BaseRecord):
         if(retValue): return round(retValue.contents.value,6)
         return None
     def set_lumRampMax(self, nValue):
-        if nValue is None: return
-        CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 185, c_float(round(nValue,6)))
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 185)
+        else: CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 185, c_float(round(nValue,6)))
     lumRampMax = property(get_lumRampMax, set_lumRampMax)
     def get_sunlightDimmer(self):
         CBash.ReadFIDField.restype = POINTER(c_float)
@@ -17874,8 +18676,8 @@ class WTHRRecord(BaseRecord):
         if(retValue): return round(retValue.contents.value,6)
         return None
     def set_sunlightDimmer(self, nValue):
-        if nValue is None: return
-        CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 186, c_float(round(nValue,6)))
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 186)
+        else: CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 186, c_float(round(nValue,6)))
     sunlightDimmer = property(get_sunlightDimmer, set_sunlightDimmer)
     def get_grassDimmer(self):
         CBash.ReadFIDField.restype = POINTER(c_float)
@@ -17883,8 +18685,8 @@ class WTHRRecord(BaseRecord):
         if(retValue): return round(retValue.contents.value,6)
         return None
     def set_grassDimmer(self, nValue):
-        if nValue is None: return
-        CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 187, c_float(round(nValue,6)))
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 187)
+        else: CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 187, c_float(round(nValue,6)))
     grassDimmer = property(get_grassDimmer, set_grassDimmer)
     def get_treeDimmer(self):
         CBash.ReadFIDField.restype = POINTER(c_float)
@@ -17892,8 +18694,8 @@ class WTHRRecord(BaseRecord):
         if(retValue): return round(retValue.contents.value,6)
         return None
     def set_treeDimmer(self, nValue):
-        if nValue is None: return
-        CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 188, c_float(round(nValue,6)))
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 188)
+        else: CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 188, c_float(round(nValue,6)))
     treeDimmer = property(get_treeDimmer, set_treeDimmer)
     def get_windSpeed(self):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
@@ -17901,8 +18703,8 @@ class WTHRRecord(BaseRecord):
         if(retValue): return retValue.contents.value
         return None
     def set_windSpeed(self, nValue):
-        if nValue is None: return
-        CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 189, c_ubyte(nValue))
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 189)
+        else: CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 189, c_ubyte(nValue))
     windSpeed = property(get_windSpeed, set_windSpeed)
     def get_lowerCloudSpeed(self):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
@@ -17910,8 +18712,8 @@ class WTHRRecord(BaseRecord):
         if(retValue): return retValue.contents.value
         return None
     def set_lowerCloudSpeed(self, nValue):
-        if nValue is None: return
-        CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 190, c_ubyte(nValue))
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 190)
+        else: CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 190, c_ubyte(nValue))
     lowerCloudSpeed = property(get_lowerCloudSpeed, set_lowerCloudSpeed)
     def get_upperCloudSpeed(self):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
@@ -17919,8 +18721,8 @@ class WTHRRecord(BaseRecord):
         if(retValue): return retValue.contents.value
         return None
     def set_upperCloudSpeed(self, nValue):
-        if nValue is None: return
-        CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 191, c_ubyte(nValue))
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 191)
+        else: CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 191, c_ubyte(nValue))
     upperCloudSpeed = property(get_upperCloudSpeed, set_upperCloudSpeed)
     def get_transDelta(self):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
@@ -17928,8 +18730,8 @@ class WTHRRecord(BaseRecord):
         if(retValue): return retValue.contents.value
         return None
     def set_transDelta(self, nValue):
-        if nValue is None: return
-        CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 192, c_ubyte(nValue))
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 192)
+        else: CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 192, c_ubyte(nValue))
     transDelta = property(get_transDelta, set_transDelta)
     def get_sunGlare(self):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
@@ -17937,8 +18739,8 @@ class WTHRRecord(BaseRecord):
         if(retValue): return retValue.contents.value
         return None
     def set_sunGlare(self, nValue):
-        if nValue is None: return
-        CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 193, c_ubyte(nValue))
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 193)
+        else: CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 193, c_ubyte(nValue))
     sunGlare = property(get_sunGlare, set_sunGlare)
     def get_sunDamage(self):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
@@ -17946,8 +18748,8 @@ class WTHRRecord(BaseRecord):
         if(retValue): return retValue.contents.value
         return None
     def set_sunDamage(self, nValue):
-        if nValue is None: return
-        CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 194, c_ubyte(nValue))
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 194)
+        else: CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 194, c_ubyte(nValue))
     sunDamage = property(get_sunDamage, set_sunDamage)
     def get_rainFadeIn(self):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
@@ -17955,8 +18757,8 @@ class WTHRRecord(BaseRecord):
         if(retValue): return retValue.contents.value
         return None
     def set_rainFadeIn(self, nValue):
-        if nValue is None: return
-        CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 195, c_ubyte(nValue))
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 195)
+        else: CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 195, c_ubyte(nValue))
     rainFadeIn = property(get_rainFadeIn, set_rainFadeIn)
     def get_rainFadeOut(self):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
@@ -17964,8 +18766,8 @@ class WTHRRecord(BaseRecord):
         if(retValue): return retValue.contents.value
         return None
     def set_rainFadeOut(self, nValue):
-        if nValue is None: return
-        CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 196, c_ubyte(nValue))
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 196)
+        else: CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 196, c_ubyte(nValue))
     rainFadeOut = property(get_rainFadeOut, set_rainFadeOut)
     def get_boltFadeIn(self):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
@@ -17973,8 +18775,8 @@ class WTHRRecord(BaseRecord):
         if(retValue): return retValue.contents.value
         return None
     def set_boltFadeIn(self, nValue):
-        if nValue is None: return
-        CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 197, c_ubyte(nValue))
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 197)
+        else: CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 197, c_ubyte(nValue))
     boltFadeIn = property(get_boltFadeIn, set_boltFadeIn)
     def get_boltFadeOut(self):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
@@ -17982,8 +18784,8 @@ class WTHRRecord(BaseRecord):
         if(retValue): return retValue.contents.value
         return None
     def set_boltFadeOut(self, nValue):
-        if nValue is None: return
-        CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 198, c_ubyte(nValue))
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 198)
+        else: CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 198, c_ubyte(nValue))
     boltFadeOut = property(get_boltFadeOut, set_boltFadeOut)
     def get_boltFrequency(self):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
@@ -17991,8 +18793,8 @@ class WTHRRecord(BaseRecord):
         if(retValue): return retValue.contents.value
         return None
     def set_boltFrequency(self, nValue):
-        if nValue is None: return
-        CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 199, c_ubyte(nValue))
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 199)
+        else: CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 199, c_ubyte(nValue))
     boltFrequency = property(get_boltFrequency, set_boltFrequency)
     def get_weatherType(self):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
@@ -18000,8 +18802,8 @@ class WTHRRecord(BaseRecord):
         if(retValue): return retValue.contents.value
         return None
     def set_weatherType(self, nValue):
-        if nValue is None: return
-        CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 200, c_ubyte(nValue))
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 200)
+        else: CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 200, c_ubyte(nValue))
     weatherType = property(get_weatherType, set_weatherType)
     def get_boltRed(self):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
@@ -18009,8 +18811,8 @@ class WTHRRecord(BaseRecord):
         if(retValue): return retValue.contents.value
         return None
     def set_boltRed(self, nValue):
-        if nValue is None: return
-        CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 201, c_ubyte(nValue))
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 201)
+        else: CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 201, c_ubyte(nValue))
     boltRed = property(get_boltRed, set_boltRed)
     def get_boltGreen(self):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
@@ -18018,8 +18820,8 @@ class WTHRRecord(BaseRecord):
         if(retValue): return retValue.contents.value
         return None
     def set_boltGreen(self, nValue):
-        if nValue is None: return
-        CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 202, c_ubyte(nValue))
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 202)
+        else: CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 202, c_ubyte(nValue))
     boltGreen = property(get_boltGreen, set_boltGreen)
     def get_boltBlue(self):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
@@ -18027,26 +18829,33 @@ class WTHRRecord(BaseRecord):
         if(retValue): return retValue.contents.value
         return None
     def set_boltBlue(self, nValue):
-        if nValue is None: return
-        CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 203, c_ubyte(nValue))
+        if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 203)
+        else: CBash.SetFIDFieldUC(self._CollectionIndex, self._ModName, self._recordID, 203, c_ubyte(nValue))
     boltBlue = property(get_boltBlue, set_boltBlue)
     def get_sounds(self):
         numRecords = CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 204)
         if(numRecords > 0): return [self.Sound(self._CollectionIndex, self._ModName, self._recordID, x) for x in range(0, numRecords)]
         return []
     def set_sounds(self, nSounds):
-        if nSounds is None or nSounds == []: return
-        diffLength = len(nSounds) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 204)
-        nValues = [(nSound.sound, nSound.type) for nSound in nSounds]
-        while(diffLength < 0):
-            CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 204)
-            diffLength += 1
-        while(diffLength > 0):
-            CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 204)
-            diffLength -= 1
-        for oSound, nValue in zip(self.sounds, nValues):
-            oSound.sound, oSound.type = nValue
+        if nSounds is None or not len(nSounds): CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 204)
+        else:
+            diffLength = len(nSounds) - CBash.GetFIDListSize(self._CollectionIndex, self._ModName, self._recordID, 204)
+            if isinstance(nSounds[0], tuple):
+                nValues = nSounds
+            else:
+                nValues = [(nSound.sound_long, nSound.type) for nSound in nSounds]
+            while(diffLength < 0):
+                CBash.DeleteFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 204)
+                diffLength += 1
+            while(diffLength > 0):
+                CBash.CreateFIDListElement(self._CollectionIndex, self._ModName, self._recordID, 204)
+                diffLength -= 1
+            for oSound, nValue in zip(self.sounds, nValues):
+                oSound.sound_long, oSound.type = nValue
     sounds = property(get_sounds, set_sounds)
+    def get_sounds_list(self):
+        return [(sound.sound_long, sound.type) for sound in self.sounds]
+    sounds_list = property(get_sounds_list, set_sounds)
     def get_IsNone(self):
         return self.IsPleasant == False and self.IsCloudy == False and self.IsRainy == False and self.IsSnow == False
     def set_IsNone(self, nValue):
@@ -18150,25 +18959,46 @@ class WTHRRecord(BaseRecord):
                                         'weatherType','boltRed','boltGreen','boltBlue','sounds']
 
 
+#Helper functions
+validTypes = set(['GMST','GLOB','CLAS','FACT','HAIR','EYES','RACE',
+                  'SOUN','SKIL','MGEF','SCPT','LTEX','ENCH','SPEL',
+                  'BSGN','ACTI','APPA','ARMO','BOOK','CLOT','CONT',
+                  'DOOR','INGR','LIGH','MISC','STAT','GRAS','TREE',
+                  'FLOR','FURN','WEAP','AMMO','NPC_','CREA','LVLC',
+                  'SLGM','KEYM','ALCH','SBSP','SGST','LVLI','WTHR',
+                  'CLMT','REGN','WRLD','CELL','ACHR','ACRE','REFR',
+                  'PGRD','LAND','ROAD','DIAL','INFO','QUST','IDLE',
+                  'PACK','CSTY','LSCR','LVSP','ANIO','WATR','EFSH'])
+type_record = dict([('BASE',BaseRecord),('GMST',GMSTRecord),('GLOB',GLOBRecord),('CLAS',CLASRecord),
+                ('FACT',FACTRecord),('HAIR',HAIRRecord),('EYES',EYESRecord),
+                ('RACE',RACERecord),('SOUN',SOUNRecord),('SKIL',SKILRecord),
+                ('MGEF',MGEFRecord),('SCPT',SCPTRecord),('LTEX',LTEXRecord),
+                ('ENCH',ENCHRecord),('SPEL',SPELRecord),('BSGN',BSGNRecord),
+                ('ACTI',ACTIRecord),('APPA',APPARecord),('ARMO',ARMORecord),
+                ('BOOK',BOOKRecord),('CLOT',CLOTRecord),('CONT',CONTRecord),
+                ('DOOR',DOORRecord),('INGR',INGRRecord),('LIGH',LIGHRecord),
+                ('MISC',MISCRecord),('STAT',STATRecord),('GRAS',GRASRecord),
+                ('TREE',TREERecord),('FLOR',FLORRecord),('FURN',FURNRecord),
+                ('WEAP',WEAPRecord),('AMMO',AMMORecord),('NPC_',NPC_Record),
+                ('CREA',CREARecord),('LVLC',LVLCRecord),('SLGM',SLGMRecord),
+                ('KEYM',KEYMRecord),('ALCH',ALCHRecord),('SBSP',SBSPRecord),
+                ('SGST',SGSTRecord),('LVLI',LVLIRecord),('WTHR',WTHRRecord),
+                ('CLMT',CLMTRecord),('REGN',REGNRecord),('WRLD',WRLDRecord),
+                ('CELL',CELLRecord),('ACHR',ACHRRecord),('ACRE',ACRERecord),
+                ('REFR',REFRRecord),('PGRD',PGRDRecord),('LAND',LANDRecord),
+                ('ROAD',ROADRecord),('DIAL',DIALRecord),('INFO',INFORecord),
+                ('QUST',QUSTRecord),('IDLE',IDLERecord),('PACK',PACKRecord),
+                ('CSTY',CSTYRecord),('LSCR',LSCRRecord),('LVSP',LVSPRecord),
+                ('ANIO',ANIORecord),('WATR',WATRRecord),('EFSH',EFSHRecord)])
 class CBashModFile(object):
     def __init__(self, CollectionIndex, ModName=None):
         self._CollectionIndex = CollectionIndex
         self._ModName = ModName
         self.GName = GPath(ModName)
-    def MakeLongFid(self, fid):
-        if(fid == None): return (None,None)
-        masterIndex = int(fid >> 24)
-        object = int(fid & 0xFFFFFFL)
-        master = CBash.GetModName(self._CollectionIndex, masterIndex)
-        return (GPath(master),object)
-    def MakeShortFid(self, longFid):
-        if not isinstance(longFid, tuple): return longFid
-        fid = CBash.GetCorrectedFID(self._CollectionIndex, longFid[0].s, longFid[1])
-        if(fid == 0): return None
-        return fid
     def UpdateReferences(self, origFid, newFid):
-        if not isinstance(origFid, int): return 0
-        if not isinstance(newFid, int): return 0
+        origFid = MakeShortFid(self._CollectionIndex, origFid)
+        newFid = MakeShortFid(self._CollectionIndex, newFid)
+        if not (origFid or newFid): return 0
         return CBash.UpdateAllReferences(self._CollectionIndex, self._ModName, origFid, newFid)
     def CleanMasters(self):
         return CBash.CleanMasters(self._CollectionIndex, self._ModName)
@@ -18351,8 +19181,8 @@ class CBashModFile(object):
         if(FID): return REGNRecord(self._CollectionIndex, self._ModName, FID)
         return None
     def createCELLRecord(self):
-        FID = CBash.CreateCELLRecord(self._CollectionIndex, self._ModName, 0, c_bool(False))
-        if(FID): return CELLRecord(self._CollectionIndex, self._ModName, FID)
+        FID = CBash.CreateCELLRecord(self._CollectionIndex, self._ModName, 0, 0)
+        if(FID): return CELLRecord(self._CollectionIndex, self._ModName, FID, 0)
         return None
     def createWRLDRecord(self):
         FID = CBash.CreateWRLDRecord(self._CollectionIndex, self._ModName)
@@ -18400,9 +19230,9 @@ class CBashModFile(object):
         return None
 
     def safeSave(self):
-        return CBash.SafeSaveMod(self._CollectionIndex, self._ModName, c_bool(False))
+        return CBash.SafeSaveMod(self._CollectionIndex, self._ModName, 0)
     def safeCloseSave(self):
-        return CBash.SafeSaveMod(self._CollectionIndex, self._ModName, c_bool(True))
+        return CBash.SafeSaveMod(self._CollectionIndex, self._ModName, 1)
     @property
     def TES4(self):
         return TES4Record(self._CollectionIndex, self._ModName)
@@ -18765,7 +19595,7 @@ class CBashModFile(object):
         if(numRecords > 0):
             cRecords = (POINTER(c_uint) * numRecords)()
             CBash.GetCELLRecords(self._CollectionIndex, self._ModName, cRecords)
-            return [CELLRecord(self._CollectionIndex, self._ModName, x.contents.value) for x in cRecords]
+            return [CELLRecord(self._CollectionIndex, self._ModName, x.contents.value, 0) for x in cRecords]
         return []
     @property
     def WRLD(self):
@@ -18861,84 +19691,84 @@ class CBashModFile(object):
         cells = self.CELL
         for world in self.WRLD:
             cell = world.CELL
-            if(cell): cells = cells + [cell]
-            cells = cells + world.CELLS
+            if(cell): cells += [cell]
+            cells += world.CELLS
         return cells
     @property
     def INFOS(self):
         infos = []
         for dial in self.DIAL:
-            infos = infos + dial.INFO
+            infos += dial.INFO
         return infos
     @property
     def ACHRS(self):
         achrs = []
         for cell in self.CELL:
-            achrs = achrs + cell.ACHR
+            achrs += cell.ACHR
         for world in self.WRLD:
             cell = world.CELL
-            if(cell): achrs = achrs + cell.ACHR
+            if(cell): achrs += cell.ACHR
             for cell in world.CELLS:
-                achrs = achrs + cell.ACHR
+                achrs += cell.ACHR
         return achrs
     @property
     def ACRES(self):
         acres = []
         for cell in self.CELL:
-            acres = acres + cell.ACRE
+            acres += cell.ACRE
         for world in self.WRLD:
             cell = world.CELL
-            if(cell): acres = acres + cell.ACRE
+            if(cell): acres += cell.ACRE
             for cell in world.CELLS:
-                acres = acres + cell.ACRE
+                acres += cell.ACRE
         return acres
     @property
     def REFRS(self):
         refrs = []
         for cell in self.CELL:
-            refrs = refrs + cell.REFR
+            refrs += cell.REFR
         for world in self.WRLD:
             cell = world.CELL
-            if(cell): refrs = refrs + cell.REFR
+            if(cell): refrs += cell.REFR
             for cell in world.CELLS:
-                refrs = refrs + cell.REFR
+                refrs += cell.REFR
         return refrs
     @property
     def PGRDS(self):
         pgrds = []
         for cell in self.CELL:
             pgrd = cell.PGRD
-            if(pgrd): pgrds = pgrds + [pgrd]
+            if(pgrd): pgrds += [pgrd]
         for world in self.WRLD:
             cell = world.CELL
             if(cell):
                 pgrd = cell.PGRD
-                if(pgrd): pgrds = pgrds + [pgrd]
+                if(pgrd): pgrds += [pgrd]
             for cell in world.CELLS:
                 pgrd = cell.PGRD
-                if(pgrd): pgrds = pgrds + [pgrd]
+                if(pgrd): pgrds += [pgrd]
         return pgrds
     @property
     def LANDS(self):
         lands = []
         for cell in self.CELL:
             land = cell.LAND
-            if(land): lands = lands + [land]
+            if(land): lands += [land]
         for world in self.WRLD:
             cell = world.CELL
             if(cell):
                 land = cell.LAND
-                if(land): lands = lands + [land]
+                if(land): lands += [land]
             for cell in world.CELLS:
                 land = cell.LAND
-                if(land): lands = lands + [land]
+                if(land): lands += [land]
         return lands
     @property
     def ROADS(self):
         roads = []
         for world in self.WRLD:
             road = world.ROAD
-            if(road): roads = roads + [road]
+            if(road): roads.append(road)
         return roads
     @property
     def tops(self):
@@ -18975,11 +19805,8 @@ class CBashModFile(object):
                      ("PACK", self.PACK),("CSTY", self.CSTY),("LSCR", self.LSCR),("LVSP", self.LVSP),
                      ("ANIO", self.ANIO),("WATR", self.WATR),("EFSH", self.EFSH)))
 
-
-
 class Collection:
     """Collection of esm/esp's."""
-
     def __init__(self, recordID=None, ModsPath="."):
         if recordID:
             self._CollectionIndex = recordID
@@ -18987,20 +19814,40 @@ class Collection:
             self._CollectionIndex = CBash.NewCollection(ModsPath)
         self._ModIndex = -1
         CBash.GetModName.restype = c_char_p
+        CBash.ModIsFake.restype = c_uint
 
     def addMod(self, ModName, CreateIfNotExist=False):
         if(CBash.AddMod(self._CollectionIndex, ModName, CreateIfNotExist) != -1):
             return CBashModFile(self._CollectionIndex, ModName)
         return None
+
     def addMergeMod(self, ModName):
         if(CBash.AddMergeMod(self._CollectionIndex, ModName) != -1):
             return CBashModFile(self._CollectionIndex, ModName)
         return None
+
     def minimalLoad(self, LoadMasters=False):
         CBash.MinimalLoad(self._CollectionIndex, LoadMasters)
 
     def fullLoad(self, LoadMasters=False):
         CBash.FullLoad(self._CollectionIndex, LoadMasters)
+
+    def LookupRecords(self, recordID):
+        if isinstance(recordID, basestring):
+            GetNumConflicts = CBash.GetNumGMSTConflicts
+            GetConflicts = CBash.GetGMSTConflicts
+        else:
+            GetNumConflicts = CBash.GetNumFIDConflicts
+            GetConflicts = CBash.GetFIDConflicts
+            recordID = MakeShortFid(self._CollectionIndex,recordID)
+        numRecords = GetNumConflicts(self._CollectionIndex, recordID)
+        if(numRecords > 0):
+            cModNames = (POINTER(c_char_p) * numRecords)()
+            GetConflicts(self._CollectionIndex, recordID, cModNames)
+            testRecord = BaseRecord(self._CollectionIndex, string_at(cModNames[0]), recordID)
+            RecordType = type_record[testRecord.recType]
+            return [RecordType(self._CollectionIndex, string_at(cModNames[x]), recordID) for x in range(0, numRecords)]
+        return []
 
     def UpdateReferences(self, origFid, newFid):
         if not isinstance(origFid, int): return 0
@@ -19027,18 +19874,22 @@ class Collection:
         return CBash.GetNumMods(self._CollectionIndex)
 
     def next(self):
-        self._ModIndex = self._ModIndex + 1
-        if self._ModIndex >= CBash.GetNumMods(self._CollectionIndex):
-            raise StopIteration
-        return CBashModFile(self._CollectionIndex, CBash.GetModName(self._CollectionIndex, self._ModIndex))
+        self._ModIndex += 1
+        name = CBash.GetModName(self._CollectionIndex, self._ModIndex)
+        if name:
+            if CBash.ModIsFake(self._CollectionIndex, self._ModIndex):
+                return self.next()
+            return CBashModFile(self._CollectionIndex, name)
+        raise StopIteration
 
     def __getitem__(self, ModIndex):
         if(ModIndex < 0):
             ModIndex = CBash.GetNumMods(self._CollectionIndex) + ModIndex + 1
-        if(ModIndex < 0 or ModIndex >= CBash.GetNumMods(self._CollectionIndex)):
-            raise IndexError
+        name = CBash.GetModName(self._CollectionIndex, ModIndex)
+        if name:
+            return CBashModFile(self._CollectionIndex, name)
         else:
-            return CBashModFile(self._CollectionIndex, CBash.GetModName(self._CollectionIndex, ModIndex))
+            raise IndexError
 
     def getChangedMods(self):
         return CBash.GetChangedMods(self._CollectionIndex)

@@ -100,6 +100,8 @@ int CELLRecord::GetOtherFieldType(const unsigned int Field)
             return SUBRECORD_FIELD;
         case 40: //LAND
             return SUBRECORD_FIELD;
+        case 41: //Parent
+            return PARENTRECORD_FIELD;
         default:
             return UNKNOWN_FIELD;
         }
@@ -224,6 +226,10 @@ void * CELLRecord::GetOtherField(const unsigned int Field)
         case 40: //LAND
             if(LAND != NULL)
                 return &LAND->formID;
+            return NULL;
+        case 41: //Parent
+            if(Parent != NULL)
+                return &Parent->formID;
             return NULL;
         default:
             return NULL;
