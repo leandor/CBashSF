@@ -78,6 +78,8 @@ int MGEFRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
             case eESCE:
                 if(subSize % sizeof(unsigned int) == 0)
                     {
+                    if(subSize == 0)
+                        break;
                     ESCE.resize(subSize / sizeof(unsigned int));
                     _readBuffer(&ESCE[0], buffer, subSize, curPos);
                     }
