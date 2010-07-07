@@ -162,6 +162,7 @@ class CELLRecord : public Record
             fHasWater           = 0x00000002,
             fInvertFastTravel   = 0x00000004,
             fForceHideLand      = 0x00000008,
+            //fIsOblivionInterior = 0x00000008, //From OBSE, unconfirmed
             fPublicPlace        = 0x00000020,
             fHandChanged        = 0x00000040,
             fBehaveLikeExterior = 0x00000080
@@ -181,7 +182,7 @@ class CELLRecord : public Record
         SubRecord<GENFID> XCCM;
         SubRecord<CELLXCLW> XCLW;
         std::vector<unsigned int> XCLR;
-        SubRecord<CELLXCLC> XCLC;
+        SemiOptSubRecord<CELLXCLC> XCLC;
         SubRecord<GENFID> XCWT;
         std::vector<ACHRRecord *> ACHR;
         std::vector<ACRERecord *> ACRE;

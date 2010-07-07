@@ -407,7 +407,8 @@ unsigned int Collection::GetNumACHRRecords(char *ModName, unsigned int parentFID
             curRecord->Read(curModFile->FormIDHandler);
             ResolveGrid(curRecord->DATA.value.posX, curRecord->DATA.value.posY, gridX, gridY);
             curRecord->Unload();
-            if(gridX == parentRecord->XCLC.value.posX && gridY == parentRecord->XCLC.value.posY)
+            parentRecord->XCLC.Load();
+            if(gridX == parentRecord->XCLC->posX && gridY == parentRecord->XCLC->posY)
                 {
                 //For easier use later on, go ahead and move it to the parent cell.
                 //It will get moved back later during the save process if need be.
@@ -448,7 +449,8 @@ unsigned int Collection::GetNumACRERecords(char *ModName, unsigned int parentFID
             curRecord->Read(curModFile->FormIDHandler);
             ResolveGrid(curRecord->DATA.value.posX, curRecord->DATA.value.posY, gridX, gridY);
             curRecord->Unload();
-            if(gridX == parentRecord->XCLC.value.posX && gridY == parentRecord->XCLC.value.posY)
+            parentRecord->XCLC.Load();
+            if(gridX == parentRecord->XCLC->posX && gridY == parentRecord->XCLC->posY)
                 {
                 //For easier use later on, go ahead and move it to the parent cell.
                 //It will get moved back later during the save process if need be.
@@ -489,7 +491,8 @@ unsigned int Collection::GetNumREFRRecords(char *ModName, unsigned int parentFID
             curRecord->Read(curModFile->FormIDHandler);
             ResolveGrid(curRecord->DATA.value.posX, curRecord->DATA.value.posY, gridX, gridY);
             curRecord->Unload();
-            if(gridX == parentRecord->XCLC.value.posX && gridY == parentRecord->XCLC.value.posY)
+            parentRecord->XCLC.Load();
+            if(gridX == parentRecord->XCLC->posX && gridY == parentRecord->XCLC->posY)
                 {
                 //For easier use later on, go ahead and move it to the parent cell.
                 //It will get moved back later during the save process if need be.

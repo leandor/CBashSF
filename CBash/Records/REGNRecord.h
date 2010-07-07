@@ -601,7 +601,7 @@ class REGNRecord : public Record
             {
             ReqSubRecord<REGNRDAT> RDAT;
             std::vector<REGNRDOT> RDOT;
-            ISTRING RDMP;
+            STRING RDMP;
             STRING ICON;
             std::vector<REGNRDGS> RDGS;
             OptSubRecord<REGNRDMD> RDMD;

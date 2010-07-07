@@ -350,6 +350,7 @@ class CREARecord : public Record
             fIsNoLowLevel      = 0x00000200,
             fIsNoBloodSpray    = 0x00000800,
             fIsNoBloodDecal    = 0x00001000,
+            //fIsSummonable      = 0x00004000, //OBSE
             fIsNoHead          = 0x00008000,
             fIsNoRightArm      = 0x00010000,
             fIsNoLeftArm       = 0x00020000,

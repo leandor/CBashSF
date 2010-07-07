@@ -94,7 +94,7 @@ class REFRRecord : public Record
             unsigned char level, unused1[3];
             unsigned int key;
             unsigned char unused2[4], flags, unused3[3];
-            REFRXLOC():level(0), key(0), flags(0)
+            REFRXLOC():level(0xFF), key(0), flags(0) //Level actually defaults to 0, but this makes it write out if set to 0
                 {
                 memset(&unused1, 0x00, 3);
                 memset(&unused2, 0x00, 4);
@@ -154,7 +154,7 @@ class REFRRecord : public Record
                 unsigned char offset;
                 };
             bool isOffset;
-            REFRXSED():seed(0) {}
+            REFRXSED():seed(0),isOffset(true) {}
             #ifdef _DEBUG
             void Debug(int debugLevel, size_t &indentation)
                 {
@@ -411,11 +411,11 @@ class REFRRecord : public Record
         STRING EDID;
         ReqSubRecord<GENFID> NAME;
         OptSubRecord<REFRXTEL> XTEL;
-        OptSubRecord<REFRXLOC> XLOC;
+        SemiOptSubRecord<REFRXLOC> XLOC;
         OptSubRecord<GENXOWN> Ownership;
         OptSubRecord<GENXESP> XESP;
         OptSubRecord<GENFID> XTRG;
-        OptSubRecord<REFRXSED> XSED;
+        SemiOptSubRecord<REFRXSED> XSED;
         OptSubRecord<GENXLOD> XLOD;
         OptSubRecord<REFRXCHG> XCHG;
         OptSubRecord<REFRXHLT> XHLT;

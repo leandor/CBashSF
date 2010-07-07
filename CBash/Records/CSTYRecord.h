@@ -350,7 +350,7 @@ class CSTYRecord : public Record
             };
         enum flagsBFlags
             {
-            fIsDoNotAcquire       = 0x00000001
+            fIsDoNotAcquire       = 0x00000001 //OBSE, ignored?
             };
         STRING EDID;
         ReqSubRecord<CSTYCSTD> CSTD;

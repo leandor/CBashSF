@@ -208,13 +208,13 @@ void * CELLRecord::GetOtherField(const unsigned int Field)
         case 31: //waterHeight
             return &XCLW.value.waterHeight;
         case 33: //posX
-            if(!IsInterior())
-                return &XCLC.value.posX;
+            if(!IsInterior() & XCLC.IsLoaded())
+                return &XCLC->posX;
             else
                 return NULL;
         case 34: //posY
-            if(!IsInterior())
-                return &XCLC.value.posY;
+            if(!IsInterior() & XCLC.IsLoaded())
+                return &XCLC->posY;
             else
                 return NULL;
         case 35: //water
@@ -454,14 +454,14 @@ void CELLRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
         case 33: //posX
             if(IsInterior())
                 return;
-            XCLC.value.posX = FieldValue;
-            XCLC.isLoaded = true;
+            XCLC.Load();
+            XCLC->posX = FieldValue;
             break;
         case 34: //posY
             if(IsInterior())
                 return;
-            XCLC.value.posY = FieldValue;
-            XCLC.isLoaded = true;
+            XCLC.Load();
+            XCLC->posY = FieldValue;
             break;
         default:
             return;
@@ -634,12 +634,12 @@ int CELLRecord::DeleteField(const unsigned int Field)
             XCLR.clear();
             break;
         case 33: //posX
-            if(!IsInterior())
-                XCLC.value.posX = defaultXCLC.posX;
+            if(!IsInterior() && XCLC.IsLoaded())
+                XCLC->posX = defaultXCLC.posX;
             break;
         case 34: //posY
-            if(!IsInterior())
-                XCLC.value.posY = defaultXCLC.posY;
+            if(!IsInterior() && XCLC.IsLoaded())
+                XCLC->posY = defaultXCLC.posY;
             break;
         case 35: //water
             XCWT.Unload();

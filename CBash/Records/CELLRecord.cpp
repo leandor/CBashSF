@@ -201,7 +201,7 @@ int CELLRecord::WriteRecord(_FileHandler &SaveHandler)
     //    SaveHandler.writeSubRecord(eXCLR, NULL, 0);
 
     if(XCLC.IsLoaded() && !IsInterior())
-        SaveHandler.writeSubRecord(eXCLC, &XCLC.value, XCLC.GetSize());
+        SaveHandler.writeSubRecord(eXCLC, XCLC.value, XCLC.GetSize());
     if(XCWT.IsLoaded())
         SaveHandler.writeSubRecord(eXCWT, &XCWT.value, XCWT.GetSize());
     return -1;

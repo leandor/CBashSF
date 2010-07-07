@@ -1199,16 +1199,17 @@ class GRUPRecords<WRLDRecord>
                             {
                             curCELLRecord->LAND->recData = ReadHandler.getBuffer(ReadHandler.tell());
                             FormIDHandler.ExpandFormID(curCELLRecord->LAND->formID);
+                            curCELLRecord->XCLC.Load();
                             if(FullLoad)
                                 {
                                 Threads.schedule(boost::bind(&Record::Read, curCELLRecord->LAND, boost::ref(FormIDHandler)));
-                                GridXY_LAND[curCELLRecord->XCLC.value.posX][curCELLRecord->XCLC.value.posY] = curCELLRecord->LAND;
+                                GridXY_LAND[curCELLRecord->XCLC->posX][curCELLRecord->XCLC->posY] = curCELLRecord->LAND;
                                 //curCELLRecord->LAND->Read(fileBuffer, FormIDHandler);
                                 }
                             else //Parent CELL is not loaded, so load temporarily for indexing
                                 {
                                 curCELLRecord->Read(FormIDHandler);
-                                GridXY_LAND[curCELLRecord->XCLC.value.posX][curCELLRecord->XCLC.value.posY] = curCELLRecord->LAND;
+                                GridXY_LAND[curCELLRecord->XCLC->posX][curCELLRecord->XCLC->posY] = curCELLRecord->LAND;
                                 curCELLRecord->Unload();
                                 }
                             }
@@ -1336,10 +1337,11 @@ class GRUPRecords<WRLDRecord>
                 for(unsigned int y = 0; y < Records[x]->CELLS.size(); ++y)
                     if(Records[x]->CELLS[y]->LAND != NULL)
                         {
-                        Records[x]->CELLS[y]->LAND->NorthLand = GridXY_LAND[Records[x]->CELLS[y]->XCLC.value.posX][Records[x]->CELLS[y]->XCLC.value.posY + 1];
-                        Records[x]->CELLS[y]->LAND->SouthLand = GridXY_LAND[Records[x]->CELLS[y]->XCLC.value.posX][Records[x]->CELLS[y]->XCLC.value.posY - 1];
-                        Records[x]->CELLS[y]->LAND->EastLand = GridXY_LAND[Records[x]->CELLS[y]->XCLC.value.posX + 1][Records[x]->CELLS[y]->XCLC.value.posY];
-                        Records[x]->CELLS[y]->LAND->WestLand = GridXY_LAND[Records[x]->CELLS[y]->XCLC.value.posX - 1][Records[x]->CELLS[y]->XCLC.value.posY];
+                        Records[x]->CELLS[y]->XCLC.Load();
+                        Records[x]->CELLS[y]->LAND->NorthLand = GridXY_LAND[Records[x]->CELLS[y]->XCLC->posX][Records[x]->CELLS[y]->XCLC->posY + 1];
+                        Records[x]->CELLS[y]->LAND->SouthLand = GridXY_LAND[Records[x]->CELLS[y]->XCLC->posX][Records[x]->CELLS[y]->XCLC->posY - 1];
+                        Records[x]->CELLS[y]->LAND->EastLand = GridXY_LAND[Records[x]->CELLS[y]->XCLC->posX + 1][Records[x]->CELLS[y]->XCLC->posY];
+                        Records[x]->CELLS[y]->LAND->WestLand = GridXY_LAND[Records[x]->CELLS[y]->XCLC->posX - 1][Records[x]->CELLS[y]->XCLC->posY];
                         }
             return true;
             }
@@ -1766,8 +1768,9 @@ class GRUPRecords<WRLDRecord>
                             FixedPersistent.push_back(curCell->REFR[y]);
 
                     curCell->Read(FormIDHandler);
-                    gridX = (int)floor(curCell->XCLC.value.posX / 8.0);
-                    gridY = (int)floor(curCell->XCLC.value.posY / 8.0);
+                    curCell->XCLC.Load();
+                    gridX = (int)floor(curCell->XCLC->posX / 8.0);
+                    gridY = (int)floor(curCell->XCLC->posY / 8.0);
                     if(curCell->recData != NULL)
                         curCell->Unload();
                     SubBlockIndex = (gridX << 16 & 0xFFFF0000) | (gridY & 0x0000FFFF);
@@ -1784,9 +1787,7 @@ class GRUPRecords<WRLDRecord>
                     curWorld->CELL->Parent = curWorld;
                     curWorld->CELL->IsHasWater(true);
                     curWorld->CELL->IsPersistent(true);
-                    curWorld->CELL->XCLC.value.posX = 0;
-                    curWorld->CELL->XCLC.value.posY = 0;
-                    curWorld->CELL->XCLC.isLoaded = true;
+                    curWorld->CELL->XCLC.Load();
                     }
 
                 if(curWorld->ROAD != NULL || curWorld->CELL != NULL || curWorld->CELLS.size() > 0)

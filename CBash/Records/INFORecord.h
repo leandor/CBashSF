@@ -274,7 +274,7 @@ class INFORecord : public Record
         ReqSubRecord<INFODATA> DATA;
         ReqSubRecord<GENFID> QSTI;
         OptSubRecord<GENFID> TPIC;
-        OptSubRecord<GENFID> PNAM;
+        SemiOptSubRecord<GENFID> PNAM;
         std::vector<unsigned int *> NAME;
         std::vector<INFOResponse *> Responses;
         std::vector<ReqSubRecord<GENCTDA> *> CTDA;

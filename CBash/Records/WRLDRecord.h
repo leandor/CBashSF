@@ -142,7 +142,7 @@ class WRLDRecord : public Record
 
         STRING ICON;
 
-        OptSubRecord<WRLDMNAM> MNAM;
+        SemiOptSubRecord<WRLDMNAM> MNAM;
         ReqSubRecord<GENFLAG> DATA;
 
         ReqSubRecord<WRLDUNK> NAM0;

@@ -1088,7 +1088,7 @@ struct GENRANK
 struct GENXOWN
     {
     ReqSubRecord<GENFID> XOWN;
-    OptSubRecord<GENRANK> XRNK;
+    SemiOptSubRecord<GENRANK> XRNK;
     OptSubRecord<GENFID> XGLB;
     #ifdef _DEBUG
     void Debug(char *name, int debugLevel, size_t &indentation)
@@ -1359,6 +1359,7 @@ class Record
         enum headerFlags
             {
             fIsESM                  = 0x00000001,
+            //fIsTaken              = 0x00000002, //From OBSE, unconfirmed, requires fIsDeleted also be set
             fIsDeleted              = 0x00000020,
             fIsBorderRegion         = 0x00000040,
             fTurnOffFire            = 0x00000080,
@@ -1366,6 +1367,7 @@ class Record
             fIsQuestOrPersistent    = 0x00000400,
             fIsInitiallyDisabled    = 0x00000800,
             fIsIgnored              = 0x00001000,
+            //fIsTemporary            = 0x00004000, //From OBSE, unconfirmed
             fIsVisibleWhenDistant   = 0x00008000,
             fIsDangerousOrOffLimits = 0x00020000,
             fIsCompressed           = 0x00040000,
