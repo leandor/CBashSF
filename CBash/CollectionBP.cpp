@@ -3794,14 +3794,16 @@ unsigned int Collection::CopyCELLRecord(char *ModName, unsigned int srcRecordFID
         {
         //See if the parent world record already exists
         LookupRecord(destModName, destParentFID, destMod, destParentRecord);
-        if(destParentRecord == NULL || (isWorldCELL > 0 && destParentRecord->CELL != NULL))
+        if(destParentRecord == NULL)
             {
             //If it doesn't, try and create it.
             destParentFID = CopyWRLDRecord(ModName, destParentFID, destModName, asOverride);
             LookupRecord(destModName, destParentFID, destMod, destParentRecord);
-            if(destParentRecord == NULL || (isWorldCELL > 0 && destParentRecord->CELL != NULL))
+            if(destParentRecord == NULL)
                 return 0;
             }
+        if(isWorldCELL > 0 && destParentRecord->CELL != NULL)
+            return destParentRecord->CELL->formID;
         }
     else
         {

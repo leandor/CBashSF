@@ -56,13 +56,33 @@ bool sortLoad(ModFile *lhs, ModFile *rhs)
     //Non-existent esps retain their relative load order
     //Existing esps sort by modified date
     //New esps load last
-    if(!lhs->IsNewFile() && stat(lhs->FileName, &lbuf) < 0)
+    //if(stat(lhs->FileName, &lbuf) < 0)
+    //    {
+    //    if(stat(rhs->FileName, &rbuf) < 0)
+    //        return false;
+    //    return true;
+    //    }
+    //if(stat(rhs->FileName, &rbuf) < 0)
+    //    return false;
+    //if(lhs->IsNewFile())
+    //    printf("New mod: %s\n", lhs->FileName);
+    //if(rhs->IsNewFile())
+    //    printf("New mod: %s\n", rhs->FileName);
+    if(lhs->IsNewFile())
         {
-        if(!rhs->IsNewFile() && stat(rhs->FileName, &rbuf) < 0)
+        if(rhs->IsNewFile())
+            return true;
+        return false;
+        }
+    if(rhs->IsNewFile())
+        return false;
+    if(stat(lhs->FileName, &lbuf) < 0)
+        {
+        if(stat(rhs->FileName, &rbuf) < 0 )
             return false;
         return true;
         }
-    if(!rhs->IsNewFile() && stat(rhs->FileName, &rbuf) < 0)
+    if(stat(rhs->FileName, &rbuf) < 0)
         return false;
     return lbuf.st_mtime < rbuf.st_mtime;
     }
@@ -90,7 +110,7 @@ int Collection::AddMod(const char *ModName, bool MergeMod, bool ScanMod, bool Cr
         {
         char *FileName = new char[strlen(ModName)+1];
         strcpy_s(FileName, strlen(ModName)+1, ModName);
-        ModFiles.push_back(new ModFile(FileName, MergeMod, ScanMod, !exists, DummyLoad));
+        ModFiles.push_back(new ModFile(FileName, MergeMod, ScanMod, CreateIfNotExist && !exists, DummyLoad));
         return 0;
         }
     else
@@ -534,7 +554,7 @@ int Collection::Load(const bool &LoadMasters, const bool &FullLoad)
             curModFile->Load(ReadThreads, FullLoad);
             //printf("End Index\n");
             }
-        //printf("\nEnd Load\n\n");
+        //printf("End Load\n\n");
         isLoaded = true;
         }
     catch(std::exception& e)
@@ -1189,7 +1209,7 @@ int Collection::IsWinning(char *ModName, unsigned int recordFID, bool ignoreScan
         {
         //std::partial_sort(sortedConflicts.begin(), sortedConflicts.end(), sortLoad);
         std::sort(sortedConflicts.begin(), sortedConflicts.end(), sortLoad);
-        isWinning = _stricmp(sortedConflicts[0]->FileName, ModName) == 0;
+        isWinning = _stricmp(sortedConflicts[sortedConflicts.size() - 1]->FileName, ModName) == 0;
         sortedConflicts.clear();
         }
     return isWinning;
@@ -1210,7 +1230,7 @@ int Collection::IsWinning(char *ModName, char *recordEDID, bool ignoreScanned)
         {
         //std::partial_sort(sortedConflicts.begin(), sortedConflicts.end(), sortLoad);
         std::sort(sortedConflicts.begin(), sortedConflicts.end(), sortLoad);
-        isWinning = _stricmp(sortedConflicts[0]->FileName, ModName) == 0;
+        isWinning = _stricmp(sortedConflicts[sortedConflicts.size() - 1]->FileName, ModName) == 0;
         sortedConflicts.clear();
         }
     return isWinning;

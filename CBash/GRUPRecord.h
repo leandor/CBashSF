@@ -1151,7 +1151,8 @@ class GRUPRecords<WRLDRecord>
                             {
                             curCELLRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
                             if(FullLoad)
-                                Threads.schedule(boost::bind(&Record::Read, curCELLRecord, boost::ref(FormIDHandler)));
+                                curCELLRecord->Read(FormIDHandler); //Can't thread this due to LAND's needing access to XCLC for indexing
+                                //Threads.schedule(boost::bind(&Record::Read, curCELLRecord, boost::ref(FormIDHandler)));
                             if(!FormIDHandler.NewTypes.count(recordType) && FormIDHandler.IsNewRecord(curCELLRecord->formID))
                                 FormIDHandler.NewTypes.insert(recordType);
                             switch(lastGRUP)
@@ -1222,17 +1223,16 @@ class GRUPRecords<WRLDRecord>
                         if(ret.second == true)
                             {
                             curCELLRecord->LAND->recData = ReadHandler.getBuffer(ReadHandler.tell());
+                            curCELLRecord->Read(FormIDHandler); //may already be loaded, but just to be sure.
                             curCELLRecord->XCLC.Load();
+                            GridXY_LAND[curCELLRecord->XCLC->posX][curCELLRecord->XCLC->posY] = curCELLRecord->LAND;
                             if(FullLoad)
                                 {
                                 Threads.schedule(boost::bind(&Record::Read, curCELLRecord->LAND, boost::ref(FormIDHandler)));
-                                GridXY_LAND[curCELLRecord->XCLC->posX][curCELLRecord->XCLC->posY] = curCELLRecord->LAND;
                                 //curCELLRecord->LAND->Read(fileBuffer, FormIDHandler);
                                 }
                             else //Parent CELL is not loaded, so load temporarily for indexing
                                 {
-                                curCELLRecord->Read(FormIDHandler);
-                                GridXY_LAND[curCELLRecord->XCLC->posX][curCELLRecord->XCLC->posY] = curCELLRecord->LAND;
                                 curCELLRecord->Unload();
                                 }
                             if(!FormIDHandler.NewTypes.count(recordType) && FormIDHandler.IsNewRecord(curCELLRecord->LAND->formID))
