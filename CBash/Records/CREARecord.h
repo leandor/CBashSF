@@ -414,8 +414,8 @@ class CREARecord : public Record
         ReqSubRecord<CREABNAM> BNAM;
         ReqSubRecord<CREAWNAM> WNAM;
         OptSubRecord<GENFID> CSCR;
-        ISTRING NAM0;
-        ISTRING NAM1;
+        STRING NAM0;
+        STRING NAM1;
         std::vector<CREASound *> Sounds;
 
         CREARecord(bool newRecord=false):Record(newRecord) {}

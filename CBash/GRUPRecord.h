@@ -30,7 +30,6 @@ GPL License and Copyright Notice ============================================
 #include <vector>
 #include <math.h>
 #include <boost/threadpool.hpp>
-#include <set>
 
 //#include "mmgr.h"
 
@@ -47,22 +46,20 @@ class GRUPRecords
             for(unsigned int p = 0;p < Records.size(); p++)
                 delete Records[p];
             }
-        bool Skim(boost::threadpool::pool &Threads, _FileHandler &ReadHandler, _FormIDHandler &FormIDHandler, const bool &FullLoad, const unsigned long &gSize, std::set<unsigned int> &UsedFormIDs)
+        bool Skim(boost::threadpool::pool &Threads, _FileHandler &ReadHandler, _FormIDHandler &FormIDHandler, const bool &FullLoad, const unsigned long &gSize, boost::unordered_set<unsigned int> &UsedFormIDs)
             {
-            //ReadHandler.set_used(gSize - 20);
-            //return false;
             if(SkimmedGRUP || gSize == 0)
                 return false;
             SkimmedGRUP = true;
             T * curRecord = NULL;
+            unsigned long recordType = 0;
             unsigned long gEnd = ReadHandler.tell() + gSize - 20;
             unsigned long recordSize = 0;
-            std::pair<std::set<unsigned int>::iterator,bool> ret;
+            std::pair<boost::unordered_set<unsigned int>::iterator,bool> ret;
 
             while(ReadHandler.tell() < gEnd){
-                //printf("tell:%u, gEnd:%u\n", ReadHandler.tell(), gEnd);
                 curRecord = new T();
-                ReadHandler.set_used(4); //Skip type field
+                ReadHandler.read(&recordType, 4);
                 ReadHandler.read(&recordSize, 4);
                 ReadHandler.read(&curRecord->flags, 4);
                 ReadHandler.read(&curRecord->formID, 4);
@@ -79,6 +76,8 @@ class GRUPRecords
                     curRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
                     if(FullLoad)
                         Threads.schedule(boost::bind(&Record::Read, curRecord, boost::ref(FormIDHandler)));
+                    if(recordType != eGMST && !FormIDHandler.NewTypes.count(recordType) && FormIDHandler.IsNewRecord(curRecord->formID))
+                        FormIDHandler.NewTypes.insert(recordType);
                     Records.push_back(curRecord);
                     }
                 else
@@ -87,9 +86,9 @@ class GRUPRecords
                     delete curRecord;
                     }
                 ReadHandler.set_used(recordSize);
-                //return false;
                 };
-            //printf("End GMST\n");
+            if(Records.size())
+                FormIDHandler.IsEmpty = false;
             return true;
             }
         bool Read(_FormIDHandler &FormIDHandler)
@@ -201,17 +200,17 @@ class GRUPRecords<DIALRecord>
             for(unsigned int p = 0;p < Records.size(); p++)
                 delete Records[p];
             }
-        bool Skim(boost::threadpool::pool &Threads, _FileHandler &ReadHandler, _FormIDHandler &FormIDHandler, const bool &FullLoad, const unsigned long &gSize, std::set<unsigned int> &UsedFormIDs)
+        bool Skim(boost::threadpool::pool &Threads, _FileHandler &ReadHandler, _FormIDHandler &FormIDHandler, const bool &FullLoad, const unsigned long &gSize, boost::unordered_set<unsigned int> &UsedFormIDs)
             {
             if(SkimmedGRUP || gSize == 0)
                 return false;
             SkimmedGRUP = true;
             DIALRecord * curDIALRecord = NULL;
             INFORecord * curINFORecord = NULL;
-            unsigned int recordType = 0;
+            unsigned long recordType = 0;
             unsigned long gEnd = ReadHandler.tell() + gSize - 20;
             unsigned long recordSize = 0;
-            std::pair<std::set<unsigned int>::iterator,bool> ret;
+            std::pair<boost::unordered_set<unsigned int>::iterator,bool> ret;
 
             while(ReadHandler.tell() < gEnd){
                 ReadHandler.read(&recordType, 4);
@@ -223,6 +222,7 @@ class GRUPRecords<DIALRecord>
                         ReadHandler.read(&curDIALRecord->flags, 4);
                         ReadHandler.read(&curDIALRecord->formID, 4);
                         ReadHandler.read(&curDIALRecord->flagsUnk, 4);
+                        FormIDHandler.ExpandFormID(curDIALRecord->formID);
                         ret = UsedFormIDs.insert(curDIALRecord->formID);
                         if(curDIALRecord->IsLoaded())
                             printf("Flag used!!!!\n");
@@ -232,9 +232,10 @@ class GRUPRecords<DIALRecord>
                         if(ret.second == true)
                             {
                             curDIALRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
-                            FormIDHandler.ExpandFormID(curDIALRecord->formID);
                             if(FullLoad)
                                 Threads.schedule(boost::bind(&Record::Read, curDIALRecord, boost::ref(FormIDHandler)));
+                            if(!FormIDHandler.NewTypes.count(recordType) && FormIDHandler.IsNewRecord(curDIALRecord->formID))
+                                FormIDHandler.NewTypes.insert(recordType);
                             Records.push_back(curDIALRecord);
                             }
                         else
@@ -253,6 +254,7 @@ class GRUPRecords<DIALRecord>
                         ReadHandler.read(&curINFORecord->flags, 4);
                         ReadHandler.read(&curINFORecord->formID, 4);
                         ReadHandler.read(&curINFORecord->flagsUnk, 4);
+                        FormIDHandler.ExpandFormID(curINFORecord->formID);
                         ret = UsedFormIDs.insert(curINFORecord->formID);
                         if(curINFORecord->IsLoaded())
                             printf("Flag used!!!!\n");
@@ -262,9 +264,10 @@ class GRUPRecords<DIALRecord>
                         if(ret.second == true)
                             {
                             curINFORecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
-                            FormIDHandler.ExpandFormID(curINFORecord->formID);
                             if(FullLoad)
                                 Threads.schedule(boost::bind(&Record::Read, curINFORecord, boost::ref(FormIDHandler)));
+                            if(!FormIDHandler.NewTypes.count(recordType) && FormIDHandler.IsNewRecord(curINFORecord->formID))
+                                FormIDHandler.NewTypes.insert(recordType);
                             curDIALRecord->INFO.push_back(curINFORecord);
                             }
                         else
@@ -280,6 +283,8 @@ class GRUPRecords<DIALRecord>
                         break;
                     }
                 };
+            if(Records.size())
+                FormIDHandler.IsEmpty = false;
             return true;
             }
         bool Read(_FormIDHandler &FormIDHandler)
@@ -471,7 +476,7 @@ class GRUPRecords<CELLRecord>
             for(unsigned int p = 0;p < Records.size(); p++)
                 delete Records[p];
             }
-        bool Skim(boost::threadpool::pool &Threads, _FileHandler &ReadHandler, _FormIDHandler &FormIDHandler, const bool &FullLoad, const unsigned long &gSize, std::set<unsigned int> &UsedFormIDs)
+        bool Skim(boost::threadpool::pool &Threads, _FileHandler &ReadHandler, _FormIDHandler &FormIDHandler, const bool &FullLoad, const unsigned long &gSize, boost::unordered_set<unsigned int> &UsedFormIDs)
             {
             if(SkimmedGRUP || gSize == 0)
                 return false;
@@ -480,10 +485,10 @@ class GRUPRecords<CELLRecord>
             ACHRRecord *curACHRRecord = NULL;
             ACRERecord *curACRERecord = NULL;
             REFRRecord *curREFRRecord = NULL;
-            unsigned int recordType = 0;
+            unsigned long recordType = 0;
             unsigned long gEnd = ReadHandler.tell() + gSize - 20;
             unsigned long recordSize = 0;
-            std::pair<std::set<unsigned int>::iterator,bool> ret;
+            std::pair<boost::unordered_set<unsigned int>::iterator,bool> ret;
 
             while(ReadHandler.tell() < gEnd){
                 ReadHandler.read(&recordType, 4);
@@ -495,6 +500,7 @@ class GRUPRecords<CELLRecord>
                         ReadHandler.read(&curCELLRecord->flags, 4);
                         ReadHandler.read(&curCELLRecord->formID, 4);
                         ReadHandler.read(&curCELLRecord->flagsUnk, 4);
+                        FormIDHandler.ExpandFormID(curCELLRecord->formID);
                         ret = UsedFormIDs.insert(curCELLRecord->formID);
                         if(curCELLRecord->IsLoaded())
                             printf("Flag used!!!!\n");
@@ -504,9 +510,10 @@ class GRUPRecords<CELLRecord>
                         if(ret.second == true)
                             {
                             curCELLRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
-                            FormIDHandler.ExpandFormID(curCELLRecord->formID);
                             if(FullLoad)
                                 Threads.schedule(boost::bind(&Record::Read, curCELLRecord, boost::ref(FormIDHandler)));
+                            if(!FormIDHandler.NewTypes.count(recordType) && FormIDHandler.IsNewRecord(curCELLRecord->formID))
+                                FormIDHandler.NewTypes.insert(recordType);
                             Records.push_back(curCELLRecord);
                             }
                         else
@@ -524,6 +531,7 @@ class GRUPRecords<CELLRecord>
                         ReadHandler.read(&curACHRRecord->flags, 4);
                         ReadHandler.read(&curACHRRecord->formID, 4);
                         ReadHandler.read(&curACHRRecord->flagsUnk, 4);
+                        FormIDHandler.ExpandFormID(curACHRRecord->formID);
                         ret = UsedFormIDs.insert(curACHRRecord->formID);
                         if(curACHRRecord->IsLoaded())
                             printf("Flag used!!!!\n");
@@ -533,9 +541,10 @@ class GRUPRecords<CELLRecord>
                         if(ret.second == true)
                             {
                             curACHRRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
-                            FormIDHandler.ExpandFormID(curACHRRecord->formID);
                             if(FullLoad)
                                 Threads.schedule(boost::bind(&Record::Read, curACHRRecord, boost::ref(FormIDHandler)));
+                            if(!FormIDHandler.NewTypes.count(recordType) && FormIDHandler.IsNewRecord(curACHRRecord->formID))
+                                FormIDHandler.NewTypes.insert(recordType);
                             curCELLRecord->ACHR.push_back(curACHRRecord);
                             }
                         else
@@ -550,6 +559,7 @@ class GRUPRecords<CELLRecord>
                         ReadHandler.read(&curACRERecord->flags, 4);
                         ReadHandler.read(&curACRERecord->formID, 4);
                         ReadHandler.read(&curACRERecord->flagsUnk, 4);
+                        FormIDHandler.ExpandFormID(curACRERecord->formID);
                         ret = UsedFormIDs.insert(curACRERecord->formID);
                         if(curACRERecord->IsLoaded())
                             printf("Flag used!!!!\n");
@@ -559,9 +569,10 @@ class GRUPRecords<CELLRecord>
                         if(ret.second == true)
                             {
                             curACRERecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
-                            FormIDHandler.ExpandFormID(curACRERecord->formID);
                             if(FullLoad)
                                 Threads.schedule(boost::bind(&Record::Read, curACRERecord, boost::ref(FormIDHandler)));
+                            if(!FormIDHandler.NewTypes.count(recordType) && FormIDHandler.IsNewRecord(curACRERecord->formID))
+                                FormIDHandler.NewTypes.insert(recordType);
                             curCELLRecord->ACRE.push_back(curACRERecord);
                             }
                         else
@@ -576,6 +587,7 @@ class GRUPRecords<CELLRecord>
                         ReadHandler.read(&curREFRRecord->flags, 4);
                         ReadHandler.read(&curREFRRecord->formID, 4);
                         ReadHandler.read(&curREFRRecord->flagsUnk, 4);
+                        FormIDHandler.ExpandFormID(curREFRRecord->formID);
                         ret = UsedFormIDs.insert(curREFRRecord->formID);
                         if(curREFRRecord->IsLoaded())
                             printf("Flag used!!!!\n");
@@ -585,9 +597,10 @@ class GRUPRecords<CELLRecord>
                         if(ret.second == true)
                             {
                             curREFRRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
-                            FormIDHandler.ExpandFormID(curREFRRecord->formID);
                             if(FullLoad)
                                 Threads.schedule(boost::bind(&Record::Read, curREFRRecord, boost::ref(FormIDHandler)));
+                            if(!FormIDHandler.NewTypes.count(recordType) && FormIDHandler.IsNewRecord(curREFRRecord->formID))
+                                FormIDHandler.NewTypes.insert(recordType);
                             curCELLRecord->REFR.push_back(curREFRRecord);
                             }
                         else
@@ -603,6 +616,7 @@ class GRUPRecords<CELLRecord>
                         ReadHandler.read(&curCELLRecord->PGRD->flags, 4);
                         ReadHandler.read(&curCELLRecord->PGRD->formID, 4);
                         ReadHandler.read(&curCELLRecord->PGRD->flagsUnk, 4);
+                        FormIDHandler.ExpandFormID(curCELLRecord->PGRD->formID);
                         ret = UsedFormIDs.insert(curCELLRecord->PGRD->formID);
                         if(curCELLRecord->PGRD->IsLoaded())
                             printf("Flag used!!!!\n");
@@ -612,9 +626,10 @@ class GRUPRecords<CELLRecord>
                         if(ret.second == true)
                             {
                             curCELLRecord->PGRD->recData = ReadHandler.getBuffer(ReadHandler.tell());
-                            FormIDHandler.ExpandFormID(curCELLRecord->PGRD->formID);
                             if(FullLoad)
                                 Threads.schedule(boost::bind(&Record::Read, curCELLRecord->PGRD, boost::ref(FormIDHandler)));
+                            if(!FormIDHandler.NewTypes.count(recordType) && FormIDHandler.IsNewRecord(curCELLRecord->PGRD->formID))
+                                FormIDHandler.NewTypes.insert(recordType);
                             }
                         else
                             {
@@ -630,6 +645,8 @@ class GRUPRecords<CELLRecord>
                         break;
                     }
                 };
+            if(Records.size())
+                FormIDHandler.IsEmpty = false;
             return true;
             }
         bool Read(_FormIDHandler &FormIDHandler)
@@ -1066,7 +1083,7 @@ class GRUPRecords<WRLDRecord>
             for(unsigned int p = 0;p < Records.size(); p++)
                 delete Records[p];
             }
-        bool Skim(boost::threadpool::pool &Threads, _FileHandler &ReadHandler, _FormIDHandler &FormIDHandler, const bool &FullLoad, const unsigned long &gSize, std::set<unsigned int> &UsedFormIDs)
+        bool Skim(boost::threadpool::pool &Threads, _FileHandler &ReadHandler, _FormIDHandler &FormIDHandler, const bool &FullLoad, const unsigned long &gSize, boost::unordered_set<unsigned int> &UsedFormIDs)
             {
             if(SkimmedGRUP || gSize == 0)
                 return false;
@@ -1079,10 +1096,10 @@ class GRUPRecords<WRLDRecord>
             REFRRecord *curREFRRecord = NULL;
             std::map<int, std::map<int, LANDRecord *> > GridXY_LAND;
             unsigned int lastGRUP = 0;
-            unsigned int recordType = 0;
+            unsigned long recordType = 0;
             unsigned long gEnd = ReadHandler.tell() + gSize - 20;
             unsigned long recordSize = 0;
-            std::pair<std::set<unsigned int>::iterator,bool> ret;
+            std::pair<boost::unordered_set<unsigned int>::iterator,bool> ret;
 
             while(ReadHandler.tell() < gEnd){
                 ReadHandler.read(&recordType, 4);
@@ -1094,6 +1111,7 @@ class GRUPRecords<WRLDRecord>
                         ReadHandler.read(&curWRLDRecord->flags, 4);
                         ReadHandler.read(&curWRLDRecord->formID, 4);
                         ReadHandler.read(&curWRLDRecord->flagsUnk, 4);
+                        FormIDHandler.ExpandFormID(curWRLDRecord->formID);
                         ret = UsedFormIDs.insert(curWRLDRecord->formID);
                         if(curWRLDRecord->IsLoaded())
                             printf("Flag used!!!!\n");
@@ -1103,9 +1121,10 @@ class GRUPRecords<WRLDRecord>
                         if(ret.second == true)
                             {
                             curWRLDRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
-                            FormIDHandler.ExpandFormID(curWRLDRecord->formID);
                             if(FullLoad)
                                 Threads.schedule(boost::bind(&Record::Read, curWRLDRecord, boost::ref(FormIDHandler)));
+                            if(!FormIDHandler.NewTypes.count(recordType) && FormIDHandler.IsNewRecord(curWRLDRecord->formID))
+                                FormIDHandler.NewTypes.insert(recordType);
                             Records.push_back(curWRLDRecord);
                             }
                         else
@@ -1121,6 +1140,7 @@ class GRUPRecords<WRLDRecord>
                         ReadHandler.read(&curCELLRecord->flags, 4);
                         ReadHandler.read(&curCELLRecord->formID, 4);
                         ReadHandler.read(&curCELLRecord->flagsUnk, 4);
+                        FormIDHandler.ExpandFormID(curCELLRecord->formID);
                         ret = UsedFormIDs.insert(curCELLRecord->formID);
                         if(curCELLRecord->IsLoaded())
                             printf("Flag used!!!!\n");
@@ -1130,9 +1150,10 @@ class GRUPRecords<WRLDRecord>
                         if(ret.second == true)
                             {
                             curCELLRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
-                            FormIDHandler.ExpandFormID(curCELLRecord->formID);
                             if(FullLoad)
                                 Threads.schedule(boost::bind(&Record::Read, curCELLRecord, boost::ref(FormIDHandler)));
+                            if(!FormIDHandler.NewTypes.count(recordType) && FormIDHandler.IsNewRecord(curCELLRecord->formID))
+                                FormIDHandler.NewTypes.insert(recordType);
                             switch(lastGRUP)
                                 {
                                 case eWorld:
@@ -1162,6 +1183,7 @@ class GRUPRecords<WRLDRecord>
                         ReadHandler.read(&curWRLDRecord->ROAD->flags, 4);
                         ReadHandler.read(&curWRLDRecord->ROAD->formID, 4);
                         ReadHandler.read(&curWRLDRecord->ROAD->flagsUnk, 4);
+                        FormIDHandler.ExpandFormID(curWRLDRecord->ROAD->formID);
                         ret = UsedFormIDs.insert(curWRLDRecord->ROAD->formID);
                         if(curWRLDRecord->ROAD->IsLoaded())
                             printf("Flag used!!!!\n");
@@ -1171,9 +1193,10 @@ class GRUPRecords<WRLDRecord>
                         if(ret.second == true)
                             {
                             curWRLDRecord->ROAD->recData = ReadHandler.getBuffer(ReadHandler.tell());
-                            FormIDHandler.ExpandFormID(curWRLDRecord->ROAD->formID);
                             if(FullLoad)
                                 Threads.schedule(boost::bind(&Record::Read, curWRLDRecord->ROAD, boost::ref(FormIDHandler)));
+                            if(!FormIDHandler.NewTypes.count(recordType) && FormIDHandler.IsNewRecord(curWRLDRecord->ROAD->formID))
+                                FormIDHandler.NewTypes.insert(recordType);
                             }
                         else
                             {
@@ -1189,6 +1212,7 @@ class GRUPRecords<WRLDRecord>
                         ReadHandler.read(&curCELLRecord->LAND->flags, 4);
                         ReadHandler.read(&curCELLRecord->LAND->formID, 4);
                         ReadHandler.read(&curCELLRecord->LAND->flagsUnk, 4);
+                        FormIDHandler.ExpandFormID(curCELLRecord->LAND->formID);
                         ret = UsedFormIDs.insert(curCELLRecord->LAND->formID);
                         if(curCELLRecord->LAND->IsLoaded())
                             printf("Flag used!!!!\n");
@@ -1198,7 +1222,6 @@ class GRUPRecords<WRLDRecord>
                         if(ret.second == true)
                             {
                             curCELLRecord->LAND->recData = ReadHandler.getBuffer(ReadHandler.tell());
-                            FormIDHandler.ExpandFormID(curCELLRecord->LAND->formID);
                             curCELLRecord->XCLC.Load();
                             if(FullLoad)
                                 {
@@ -1212,6 +1235,8 @@ class GRUPRecords<WRLDRecord>
                                 GridXY_LAND[curCELLRecord->XCLC->posX][curCELLRecord->XCLC->posY] = curCELLRecord->LAND;
                                 curCELLRecord->Unload();
                                 }
+                            if(!FormIDHandler.NewTypes.count(recordType) && FormIDHandler.IsNewRecord(curCELLRecord->LAND->formID))
+                                FormIDHandler.NewTypes.insert(recordType);
                             }
                         else
                             {
@@ -1227,6 +1252,7 @@ class GRUPRecords<WRLDRecord>
                         ReadHandler.read(&curCELLRecord->PGRD->flags, 4);
                         ReadHandler.read(&curCELLRecord->PGRD->formID, 4);
                         ReadHandler.read(&curCELLRecord->PGRD->flagsUnk, 4);
+                        FormIDHandler.ExpandFormID(curCELLRecord->PGRD->formID);
                         ret = UsedFormIDs.insert(curCELLRecord->PGRD->formID);
                         if(curCELLRecord->PGRD->IsLoaded())
                             printf("Flag used!!!!\n");
@@ -1236,9 +1262,10 @@ class GRUPRecords<WRLDRecord>
                         if(ret.second == true)
                             {
                             curCELLRecord->PGRD->recData = ReadHandler.getBuffer(ReadHandler.tell());
-                            FormIDHandler.ExpandFormID(curCELLRecord->PGRD->formID);
                             if(FullLoad)
                                 Threads.schedule(boost::bind(&Record::Read, curCELLRecord->PGRD, boost::ref(FormIDHandler)));
+                            if(!FormIDHandler.NewTypes.count(recordType) && FormIDHandler.IsNewRecord(curCELLRecord->PGRD->formID))
+                                FormIDHandler.NewTypes.insert(recordType);
                             }
                         else
                             {
@@ -1253,6 +1280,7 @@ class GRUPRecords<WRLDRecord>
                         ReadHandler.read(&curACHRRecord->flags, 4);
                         ReadHandler.read(&curACHRRecord->formID, 4);
                         ReadHandler.read(&curACHRRecord->flagsUnk, 4);
+                        FormIDHandler.ExpandFormID(curACHRRecord->formID);
                         ret = UsedFormIDs.insert(curACHRRecord->formID);
                         if(curACHRRecord->IsLoaded())
                             printf("Flag used!!!!\n");
@@ -1262,9 +1290,10 @@ class GRUPRecords<WRLDRecord>
                         if(ret.second == true)
                             {
                             curACHRRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
-                            FormIDHandler.ExpandFormID(curACHRRecord->formID);
                             if(FullLoad)
                                 Threads.schedule(boost::bind(&Record::Read, curACHRRecord, boost::ref(FormIDHandler)));
+                            if(!FormIDHandler.NewTypes.count(recordType) && FormIDHandler.IsNewRecord(curACHRRecord->formID))
+                                FormIDHandler.NewTypes.insert(recordType);
                             curCELLRecord->ACHR.push_back(curACHRRecord);
                             }
                         else
@@ -1279,6 +1308,7 @@ class GRUPRecords<WRLDRecord>
                         ReadHandler.read(&curACRERecord->flags, 4);
                         ReadHandler.read(&curACRERecord->formID, 4);
                         ReadHandler.read(&curACRERecord->flagsUnk, 4);
+                        FormIDHandler.ExpandFormID(curACRERecord->formID);
                         ret = UsedFormIDs.insert(curACRERecord->formID);
                         if(curACRERecord->IsLoaded())
                             printf("Flag used!!!!\n");
@@ -1288,9 +1318,10 @@ class GRUPRecords<WRLDRecord>
                         if(ret.second == true)
                             {
                             curACRERecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
-                            FormIDHandler.ExpandFormID(curACRERecord->formID);
                             if(FullLoad)
                                 Threads.schedule(boost::bind(&Record::Read, curACRERecord, boost::ref(FormIDHandler)));
+                            if(!FormIDHandler.NewTypes.count(recordType) && FormIDHandler.IsNewRecord(curACRERecord->formID))
+                                FormIDHandler.NewTypes.insert(recordType);
                             curCELLRecord->ACRE.push_back(curACRERecord);
                             }
                         else
@@ -1305,6 +1336,7 @@ class GRUPRecords<WRLDRecord>
                         ReadHandler.read(&curREFRRecord->flags, 4);
                         ReadHandler.read(&curREFRRecord->formID, 4);
                         ReadHandler.read(&curREFRRecord->flagsUnk, 4);
+                        FormIDHandler.ExpandFormID(curREFRRecord->formID);
                         ret = UsedFormIDs.insert(curREFRRecord->formID);
                         if(curREFRRecord->IsLoaded())
                             printf("Flag used!!!!\n");
@@ -1314,9 +1346,10 @@ class GRUPRecords<WRLDRecord>
                         if(ret.second == true)
                             {
                             curREFRRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
-                            FormIDHandler.ExpandFormID(curREFRRecord->formID);
                             if(FullLoad)
                                 Threads.schedule(boost::bind(&Record::Read, curREFRRecord, boost::ref(FormIDHandler)));
+                            if(!FormIDHandler.NewTypes.count(recordType) && FormIDHandler.IsNewRecord(curREFRRecord->formID))
+                                FormIDHandler.NewTypes.insert(recordType);
                             curCELLRecord->REFR.push_back(curREFRRecord);
                             }
                         else
@@ -1343,6 +1376,8 @@ class GRUPRecords<WRLDRecord>
                         Records[x]->CELLS[y]->LAND->EastLand = GridXY_LAND[Records[x]->CELLS[y]->XCLC->posX + 1][Records[x]->CELLS[y]->XCLC->posY];
                         Records[x]->CELLS[y]->LAND->WestLand = GridXY_LAND[Records[x]->CELLS[y]->XCLC->posX - 1][Records[x]->CELLS[y]->XCLC->posY];
                         }
+            if(Records.size())
+                FormIDHandler.IsEmpty = false;
             return true;
             }
         bool Read(_FormIDHandler &FormIDHandler)

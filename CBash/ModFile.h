@@ -88,9 +88,9 @@ class ModFile
     {
     private:
         _FileHandler ReadHandler;
-        bool IsOpen, LoadedGRUPs, IsDummy;
+        bool IsOpen, LoadedGRUPs, IsDummy, IsNew;
     public:
-        bool IsMerge;
+        bool IsMerge, IsScan;
         _FormIDHandler FormIDHandler;
         char *FileName;
         TES4Record TES4;
@@ -152,11 +152,12 @@ class ModFile
         GRUPRecords<WATRRecord> WATR;
         GRUPRecords<EFSHRecord> EFSH;
 
-        ModFile(char *ModName, bool newFile=false, bool MergeMod=false, bool DummyLoad=false):IsOpen(newFile), LoadedGRUPs(newFile), IsMerge(MergeMod), IsDummy(DummyLoad),
-                                                                         FileName(ModName), TES4(DummyLoad || newFile),
+        ModFile(char *ModName, bool MergeMod=false, bool ScanMod=false, bool CreateFile=false, bool DummyLoad=false):IsOpen(CreateFile),
+                                                                         LoadedGRUPs(CreateFile), IsMerge(MergeMod), IsScan(ScanMod),
+                                                                         IsDummy(DummyLoad), IsNew(CreateFile), FileName(ModName), TES4(DummyLoad || CreateFile),
                                                                          FormIDHandler(ModName, TES4.MAST, TES4.HEDR.value.nextObject)
             {
-            if(newFile || IsDummy)
+            if(CreateFile || IsDummy)
                 TES4.IsESM(_stricmp(".esm",ModName + strlen(ModName)-4) == 0);
             }
         ~ModFile()
@@ -170,6 +171,8 @@ class ModFile
         int Load(boost::threadpool::pool &Threads, const bool &FullLoad);
         unsigned int UpdateReferences(unsigned int origFormID, unsigned int newFormID);
         bool IsFake() {return IsDummy;}
+        bool IsEmpty() {return FormIDHandler.IsEmpty;}
+        bool IsNewFile() {return IsNew;}
         int CleanMasters();
         int Unload();
         int Save(_FileHandler &SaveHandler, bool CloseMod);

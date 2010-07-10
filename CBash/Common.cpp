@@ -99,7 +99,6 @@ void _FormIDHandler::SetLoadOrder(std::vector<char *> &cLoadOrder)
 unsigned int _FormIDHandler::NextExpandedFID()
     {
     //0x00FFFFFF is the highest formID that can be used.
-    //Bug: Doesn't check if formID is already used. Shouldn't be a problem except when it rolls over
     if(nextObject >= 0x01000000)
         nextObject = OBJECT_ID_START;
     return (ExpandedIndex << 24) | ++nextObject;
@@ -250,6 +249,20 @@ bool _FormIDHandler::UsesMaster(const unsigned int *&recordFID, const unsigned c
 bool _FormIDHandler::UsesMaster(const unsigned int &recordFID, const unsigned char &MASTIndex)
     {
     return (ExpandIndex[MASTIndex] == (recordFID >> 24));
+    }
+
+bool _FormIDHandler::IsNewRecord(const unsigned int *&recordFID)
+    {
+    //if((*recordFID >> 24) >= ExpandedIndex)
+    //    printf("%02X - %08X - %02X\n", (*recordFID >> 24), *recordFID, ExpandedIndex);
+    return ((*recordFID >> 24) >= ExpandedIndex);
+    }
+
+bool _FormIDHandler::IsNewRecord(const unsigned int &recordFID)
+    {
+    //if((recordFID >> 24) >= ExpandedIndex)
+    //    printf("%02X - %08X - %02X\n", (recordFID >> 24), recordFID, ExpandedIndex);
+    return ((recordFID >> 24) >= ExpandedIndex);
     }
 
 bool FileExists(const char *FileName)

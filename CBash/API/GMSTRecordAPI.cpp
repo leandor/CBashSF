@@ -97,7 +97,7 @@ void GMSTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     unsigned int nSize;
     switch(Field)
         {
-        //case 5: //eid, unsettable due to conflicts with GMST_ModFile_Record
+        //case 5: //eid, unsettable due to conflicts with EDID_ModFile_Record
             //It invalidates the keys. Would have to erase original entry, set new entry.
             //But, it would have to be done at the collection level.
             //EDID.Copy(FieldValue);

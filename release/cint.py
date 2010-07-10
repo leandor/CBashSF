@@ -50,7 +50,10 @@ class Model(object):
     def __init__(self, CollectionIndex, ModName, recordID, listIndex):
         self._CollectionIndex = CollectionIndex
         self._ModName = ModName
-        self.GName = GPath(ModName)
+        if ModName[-6:] == '.ghost':
+            self.GName = GPath(ModName[:-6])
+        else:
+            self.GName = GPath(ModName)
         self._recordID = recordID
         self._listIndex = listIndex
     def get_modPath(self):
@@ -86,7 +89,10 @@ class Item(object):
     def __init__(self, CollectionIndex, ModName, recordID, subField, listIndex):
         self._CollectionIndex = CollectionIndex
         self._ModName = ModName
-        self.GName = GPath(ModName)
+        if ModName[-6:] == '.ghost':
+            self.GName = GPath(ModName[:-6])
+        else:
+            self.GName = GPath(ModName)
         self._recordID = recordID
         self._subField = subField
         self._listIndex = listIndex
@@ -117,7 +123,10 @@ class Condition(object):
     def __init__(self, CollectionIndex, ModName, recordID, subField, listIndex):
         self._CollectionIndex = CollectionIndex
         self._ModName = ModName
-        self.GName = GPath(ModName)
+        if ModName[-6:] == '.ghost':
+            self.GName = GPath(ModName[:-6])
+        else:
+            self.GName = GPath(ModName)
         self._recordID = recordID
         self._subField = subField
         self._listIndex = listIndex
@@ -317,7 +326,10 @@ class Reference(object):
     def __init__(self, CollectionIndex, ModName, recordID, subField, listIndex):
         self._CollectionIndex = CollectionIndex
         self._ModName = ModName
-        self.GName = GPath(ModName)
+        if ModName[-6:] == '.ghost':
+            self.GName = GPath(ModName[:-6])
+        else:
+            self.GName = GPath(ModName)
         self._recordID = recordID
         self._subField = subField
         self._listIndex = listIndex
@@ -354,7 +366,10 @@ class Effect(object):
     def __init__(self, CollectionIndex, ModName, recordID, subField, listIndex):
         self._CollectionIndex = CollectionIndex
         self._ModName = ModName
-        self.GName = GPath(ModName)
+        if ModName[-6:] == '.ghost':
+            self.GName = GPath(ModName[:-6])
+        else:
+            self.GName = GPath(ModName)
         self._recordID = recordID
         self._subField = subField
         self._listIndex = listIndex
@@ -494,7 +509,10 @@ class Faction(object):
     def __init__(self, CollectionIndex, ModName, recordID, subField, listIndex):
         self._CollectionIndex = CollectionIndex
         self._ModName = ModName
-        self.GName = GPath(ModName)
+        if ModName[-6:] == '.ghost':
+            self.GName = GPath(ModName[:-6])
+        else:
+            self.GName = GPath(ModName)
         self._recordID = recordID
         self._subField = subField
         self._listIndex = listIndex
@@ -536,7 +554,10 @@ class Relation(object):
     def __init__(self, CollectionIndex, ModName, recordID, subField, listIndex):
         self._CollectionIndex = CollectionIndex
         self._ModName = ModName
-        self.GName = GPath(ModName)
+        if ModName[-6:] == '.ghost':
+            self.GName = GPath(ModName[:-6])
+        else:
+            self.GName = GPath(ModName)
         self._recordID = recordID
         self._subField = subField
         self._listIndex = listIndex
@@ -622,7 +643,10 @@ class BaseRecord(object):
     def __init__(self, CollectionIndex, ModName, recordID):
         self._CollectionIndex = CollectionIndex
         self._ModName = ModName
-        self.GName = GPath(ModName)
+        if ModName[-6:] == '.ghost':
+            self.GName = GPath(ModName[:-6])
+        else:
+            self.GName = GPath(ModName)
         self._recordID = recordID
     def LoadRecord(self):
         CBash.LoadRecord(self._CollectionIndex, self._ModName, self._recordID)
@@ -644,13 +668,35 @@ class BaseRecord(object):
         newFid = MakeShortFid(self._CollectionIndex, newFid)
         if not (origFid or newFid): return 0
         return CBash.UpdateReferences(self._CollectionIndex, self._ModName, self._recordID, origFid, newFid)
-    def Conflicts(self):
-        numRecords = CBash.GetNumFIDConflicts(self._CollectionIndex, self._recordID)
+    def IsWinning(self, ignoreScanned=True):
+        """Returns true if the record is the last to load.
+           If ignoreScanned is True, scanned records will never be considered winning.
+           More efficient than running Conflicts() and checking the first value."""
+        return bool(CBash.IsFIDWinning(self._CollectionIndex, self._ModName, self._recordID, c_int(ignoreScanned)))
+
+    def Conflicts(self, ignoreScanned=True):
+        numRecords = CBash.GetNumFIDConflicts(self._CollectionIndex, self._recordID, c_int(ignoreScanned))
         if(numRecords > 1):
             cModNames = (POINTER(c_char_p) * numRecords)()
-            CBash.GetFIDConflicts(self._CollectionIndex, self._recordID, cModNames)
+            CBash.GetFIDConflicts(self._CollectionIndex, self._recordID, c_int(ignoreScanned), cModNames)
             return [self.__class__(self._CollectionIndex, string_at(cModNames[x]), self._recordID) for x in range(0, numRecords)]
         return []
+    def ConflictDetails(self, attrs=None, ignoreScanned=True):
+        conflicting = {}
+        attrs = attrs or self.copyattrs
+##        recordMod = CBashModFile(self._CollectionIndex, self._ModName)
+        recordMasters = set(CBashModFile(self._CollectionIndex, self._ModName).TES4.masters)
+        #sort oldest to newest rather than newest to oldest
+        conflicts = self.Conflicts(ignoreScanned)
+##        parentRecords = reversed([parent for parent in conflicts if parent._ModName in recordMasters])
+        #Less pythonic, but optimized for better speed.
+        #Equivalent to commented out code.
+        conflicting.update([(attr,reduce(getattr, attr.split('.'), self)) for parentRecord in reversed([parent for parent in conflicts if parent._ModName in recordMasters]) for attr in attrs if reduce(getattr, attr.split('.'), self) != reduce(getattr, attr.split('.'), parentRecord)])
+##        for parentRecord in parentRecords:
+##            for attr in attrs:
+##                if getattr_deep(self,attr) != getattr_deep(parentRecord,attr):
+##                    conflicting[attr] = getattr_deep(self,attr)
+        return conflicting
     def mergeFilter(self,modSet):
         """This method is called by the bashed patch mod merger. The intention is
         to allow a record to be filtered according to the specified modSet. E.g.
@@ -807,7 +853,10 @@ class TES4Record(object):
     def __init__(self, CollectionIndex, ModName):
         self._CollectionIndex = CollectionIndex
         self._ModName = ModName
-        self.GName = GPath(ModName)
+        if ModName[-6:] == '.ghost':
+            self.GName = GPath(ModName[:-6])
+        else:
+            self.GName = GPath(ModName)
     def UnloadRecord(self):
         pass
     @property
@@ -930,7 +979,10 @@ class GMSTRecord(object):
     def __init__(self, CollectionIndex, ModName, recordID):
         self._CollectionIndex = CollectionIndex
         self._ModName = ModName
-        self.GName = GPath(ModName)
+        if ModName[-6:] == '.ghost':
+            self.GName = GPath(ModName[:-6])
+        else:
+            self.GName = GPath(ModName)
         self._recordID = recordID
     def UnloadRecord(self):
         pass
@@ -941,11 +993,18 @@ class GMSTRecord(object):
         return 0
     def UpdateReferences(self, origFid, newFid):
         return 0
-    def Conflicts(self):
-        numRecords = CBash.GetNumGMSTConflicts(self._CollectionIndex, self._recordID)
+
+    def IsWinning(self, ignoreScanned=True):
+        """Returns true if the record is the last to load.
+           If ignoreScanned is True, scanned records will never be considered winning.
+           More efficient than running Conflicts() and checking the first value."""
+        return bool(CBash.IsGMSTWinning(self._CollectionIndex, self._ModName, self._recordID, c_int(ignoreScanned)))
+
+    def Conflicts(self, ignoreScanned=True):
+        numRecords = CBash.GetNumGMSTConflicts(self._CollectionIndex, self._recordID, c_int(ignoreScanned))
         if(numRecords > 1):
             cModNames = (POINTER(c_char_p) * numRecords)()
-            CBash.GetGMSTConflicts(self._CollectionIndex, self._recordID, cModNames)
+            CBash.GetGMSTConflicts(self._CollectionIndex, self._recordID, c_int(ignoreScanned), cModNames)
             return [GMSTRecord(self._CollectionIndex, string_at(cModNames[x]), self._recordID) for x in range(0, numRecords)]
         return []
     def CopyAsOverride(self, targetMod):
@@ -8026,13 +8085,13 @@ class INFORecord(BaseRecord):
     def CopyAsOverride(self, targetDIAL):
         if isinstance(targetDIAL, CBashModFile): targetID = self._parentID
         else: targetID = targetDIAL._recordID
-        FID = CBash.CopyINFORecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetID, 1)
+        FID = CBash.CopyINFORecord(self._CollectionIndex, self._ModName, self._recordID, targetDIAL._ModName, targetID, 1)
         if(FID): return INFORecord(self._CollectionIndex, targetDIAL._ModName, FID, targetID)
         return None
     def CopyAsNew(self, targetDIAL):
         if isinstance(targetDIAL, CBashModFile): targetID = self._parentID
         else: targetID = targetDIAL._recordID
-        FID = CBash.CopyINFORecord(self._CollectionIndex, self._ModName, self._recordID, targetCELL._ModName, targetID, 0)
+        FID = CBash.CopyINFORecord(self._CollectionIndex, self._ModName, self._recordID, targetDIAL._ModName, targetID, 0)
         if(FID): return INFORecord(self._CollectionIndex, targetDIAL._ModName, FID, targetID)
         return None
     def DeleteRecord(self, parent):
@@ -18994,7 +19053,23 @@ class CBashModFile(object):
     def __init__(self, CollectionIndex, ModName=None):
         self._CollectionIndex = CollectionIndex
         self._ModName = ModName
-        self.GName = GPath(ModName)
+        if ModName[-6:] == '.ghost':
+            self.GName = GPath(ModName[:-6])
+        else:
+            self.GName = GPath(ModName)
+    def HasRecord(self,recordID):
+        if isinstance(recordID, basestring): TestRecord = GMSTRecord
+        else: TestRecord = BaseRecord
+        return TestRecord(self._CollectionIndex, self._ModName, recordID).fid
+    def IsEmpty(self):
+        return CBash.IsModEmpty(self._CollectionIndex, self._ModName)
+    def GetNewRecordTypes(self):
+        numRecords = CBash.GetNumNewRecordTypes(self._CollectionIndex, self._ModName)
+        if(numRecords > 0):
+            cRecords = (POINTER(c_char * 4) * numRecords)()
+            CBash.GetNewRecordTypes(self._CollectionIndex, self._ModName, cRecords)
+            return [cRecord.contents.value for cRecord in cRecords if cRecord]
+        return []
     def UpdateReferences(self, origFid, newFid):
         origFid = MakeShortFid(self._CollectionIndex, origFid)
         newFid = MakeShortFid(self._CollectionIndex, newFid)
@@ -19816,15 +19891,26 @@ class Collection:
         CBash.GetModName.restype = c_char_p
         CBash.ModIsFake.restype = c_uint
 
-    def addMod(self, ModName, CreateIfNotExist=False):
-        if(CBash.AddMod(self._CollectionIndex, ModName, CreateIfNotExist) != -1):
+    def addMod(self, ModName, Merge=False, Scan=False, CreateIfNotExist=False):
+        mergeFlag  = 0x1
+        scanFlag   = 0x2
+        createFlag = 0x4
+        flags = 0
+        if Merge:
+            flags |= mergeFlag
+        elif Scan:
+            flags |= scanFlag
+        elif CreateIfNotExist:
+            flags |= createFlag
+        if(CBash.AddMod(self._CollectionIndex, ModName, flags) != -1):
             return CBashModFile(self._CollectionIndex, ModName)
         return None
 
     def addMergeMod(self, ModName):
-        if(CBash.AddMergeMod(self._CollectionIndex, ModName) != -1):
-            return CBashModFile(self._CollectionIndex, ModName)
-        return None
+        return self.addMod(ModName, Merge=True)
+
+    def addScanMod(self, ModName):
+        return self.addMod(ModName, Scan=True)
 
     def minimalLoad(self, LoadMasters=False):
         CBash.MinimalLoad(self._CollectionIndex, LoadMasters)
@@ -19832,7 +19918,7 @@ class Collection:
     def fullLoad(self, LoadMasters=False):
         CBash.FullLoad(self._CollectionIndex, LoadMasters)
 
-    def LookupRecords(self, recordID):
+    def LookupRecords(self, recordID, ignoreScanned=True):
         if isinstance(recordID, basestring):
             GetNumConflicts = CBash.GetNumGMSTConflicts
             GetConflicts = CBash.GetGMSTConflicts
@@ -19840,10 +19926,10 @@ class Collection:
             GetNumConflicts = CBash.GetNumFIDConflicts
             GetConflicts = CBash.GetFIDConflicts
             recordID = MakeShortFid(self._CollectionIndex,recordID)
-        numRecords = GetNumConflicts(self._CollectionIndex, recordID)
+        numRecords = GetNumConflicts(self._CollectionIndex, recordID, c_int(ignoreScanned))
         if(numRecords > 0):
             cModNames = (POINTER(c_char_p) * numRecords)()
-            GetConflicts(self._CollectionIndex, recordID, cModNames)
+            GetConflicts(self._CollectionIndex, recordID, c_int(ignoreScanned), cModNames)
             testRecord = BaseRecord(self._CollectionIndex, string_at(cModNames[0]), recordID)
             RecordType = type_record[testRecord.recType]
             return [RecordType(self._CollectionIndex, string_at(cModNames[x]), recordID) for x in range(0, numRecords)]
@@ -19854,7 +19940,7 @@ class Collection:
         if not isinstance(newFid, int): return 0
         count = 0
         for modFile in self:
-            count = count + modFile.UpdateReferences(origFid, newFid)
+            count += modFile.UpdateReferences(origFid, newFid)
         return count
 
     def Unload(self):
@@ -19888,8 +19974,7 @@ class Collection:
         name = CBash.GetModName(self._CollectionIndex, ModIndex)
         if name:
             return CBashModFile(self._CollectionIndex, name)
-        else:
-            raise IndexError
+        raise IndexError
 
     def getChangedMods(self):
         return CBash.GetChangedMods(self._CollectionIndex)

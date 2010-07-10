@@ -30,7 +30,7 @@ GPL License and Copyright Notice ============================================
 #include <errno.h>
 #include <exception>
 #include <vector>
-#include <list>
+#include <boost/unordered_set.hpp>
 #include <map>
 #include <boost/interprocess/file_mapping.hpp>
 #include <boost/interprocess/mapped_region.hpp>
@@ -75,6 +75,13 @@ class Ex_INVALIDINDEX : public std::exception
     public:
         const char * __CLR_OR_THIS_CALL what() const
             {return "Invalid Index";}
+    };
+
+class Ex_INVALIDFORMID : public std::exception
+    {
+    public:
+        const char * __CLR_OR_THIS_CALL what() const
+            {return "Invalid FormID";}
     };
 
 typedef unsigned int * FormID;
@@ -890,9 +897,14 @@ class _FormIDHandler
         unsigned char CollapsedIndex;
         bool bMastersChanged;
     public:
+        bool IsEmpty;
+        
+        boost::unordered_set<unsigned int> NewTypes;
         std::vector<char *> LoadOrder;
         unsigned char ExpandedIndex;
-        _FormIDHandler(char *cFileName, std::vector<STRING> &cMAST, unsigned int &cNextObject):FileName(cFileName), MAST(cMAST), nextObject(cNextObject), ExpandedIndex(0), CollapsedIndex(0), bMastersChanged(false) {}
+        _FormIDHandler(char *cFileName, std::vector<STRING> &cMAST, unsigned int &cNextObject):FileName(cFileName), MAST(cMAST), nextObject(cNextObject),
+                                                                                               ExpandedIndex(0), CollapsedIndex(0), bMastersChanged(false),
+                                                                                               IsEmpty(true) {}
         ~_FormIDHandler() {}
         void SetLoadOrder(std::vector<char *> &cLoadOrder);
         unsigned int NextExpandedFID();
@@ -909,6 +921,8 @@ class _FormIDHandler
         bool MastersChanged();
         bool UsesMaster(const unsigned int *&recordFID, const unsigned char &MASTIndex);
         bool UsesMaster(const unsigned int &recordFID, const unsigned char &MASTIndex);
+        bool IsNewRecord(const unsigned int *&recordFID);
+        bool IsNewRecord(const unsigned int &recordFID);
     };
 
 bool FileExists(const char *FileName);

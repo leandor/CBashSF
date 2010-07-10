@@ -23,7 +23,6 @@ GPL License and Copyright Notice ============================================
 #include "ModFile.h"
 #include "Common.h"
 #include "BaseRecord.h"
-#include <set>
 
 int ModFile::Open()
     {
@@ -127,7 +126,7 @@ int ModFile::Load(boost::threadpool::pool &Threads, const bool &FullLoad)
     LoadedGRUPs = true;
     unsigned long GRUPSize;
     unsigned long GRUPLabel;
-    std::set<unsigned int> UsedFormIDs;
+    boost::unordered_set<unsigned int> UsedFormIDs;
     //printf("%u\n", __LINE__);
     while(!ReadHandler.eof()){
         //printf("%u\n", __LINE__);

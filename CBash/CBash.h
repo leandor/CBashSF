@@ -34,10 +34,13 @@ extern "C" __declspec(dllexport) unsigned int GetRevision();
 extern "C" __declspec(dllexport) int NewCollection(const char *ModsPath);
 extern "C" __declspec(dllexport) int DeleteCollection(const unsigned int CollectionIndex);
 ////////////////////////////////////////////////////////////////////////
-extern "C" __declspec(dllexport) int AddMod(const unsigned int CollectionIndex, const char *ModName, bool CreateIfNotExist);
-extern "C" __declspec(dllexport) int AddMergeMod(const unsigned int CollectionIndex, const char *ModName);
+extern "C" __declspec(dllexport) int AddMod(const unsigned int CollectionIndex, const char *ModName, unsigned int OptionFlags);
 extern "C" __declspec(dllexport) int MinimalLoad(const unsigned int CollectionIndex, const bool LoadMasters);
 extern "C" __declspec(dllexport) int FullLoad(const unsigned int CollectionIndex, const bool LoadMasters);
+////////////////////////////////////////////////////////////////////////
+extern "C" __declspec(dllexport) int IsModEmpty(const unsigned int CollectionIndex, char *ModName);
+extern "C" __declspec(dllexport) unsigned int GetNumNewRecordTypes(const unsigned int CollectionIndex, char *ModName);
+extern "C" __declspec(dllexport) void GetNewRecordTypes(const unsigned int CollectionIndex, char *ModName, unsigned int const **RecordTypes);
 ////////////////////////////////////////////////////////////////////////
 extern "C" __declspec(dllexport) int CleanMasters(const unsigned int CollectionIndex, char *ModName);
 extern "C" __declspec(dllexport) int SafeSaveMod(const unsigned int CollectionIndex, char *ModName, bool CloseMod);
@@ -61,10 +64,12 @@ extern "C" __declspec(dllexport) unsigned int UpdateAllReferences(const unsigned
 extern "C" __declspec(dllexport) unsigned int GetNumReferences(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, unsigned int referenceFormID);
 extern "C" __declspec(dllexport) unsigned int UpdateReferences(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, unsigned int origFormID, unsigned int newFormID);
 ////////////////////////////////////////////////////////////////////////
-extern "C" __declspec(dllexport) int GetNumFIDConflicts(const unsigned int CollectionIndex, unsigned int recordFID);
-extern "C" __declspec(dllexport) void GetFIDConflicts(const unsigned int CollectionIndex, unsigned int recordFID, char **ModNames);
-extern "C" __declspec(dllexport) int GetNumGMSTConflicts(const unsigned int CollectionIndex, char *recordEDID);
-extern "C" __declspec(dllexport) void GetGMSTConflicts(const unsigned int CollectionIndex, char *recordEDID, char **ModNames);
+extern "C" __declspec(dllexport) int IsFIDWinning(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, bool ignoreScanned);
+extern "C" __declspec(dllexport) int IsGMSTWinning(const unsigned int CollectionIndex, char *ModName, char *recordEDID, bool ignoreScanned);
+extern "C" __declspec(dllexport) int GetNumFIDConflicts(const unsigned int CollectionIndex, unsigned int recordFID, bool ignoreScanned);
+extern "C" __declspec(dllexport) void GetFIDConflicts(const unsigned int CollectionIndex, unsigned int recordFID, bool ignoreScanned, char **ModNames);
+extern "C" __declspec(dllexport) int GetNumGMSTConflicts(const unsigned int CollectionIndex, char *recordEDID, bool ignoreScanned);
+extern "C" __declspec(dllexport) void GetGMSTConflicts(const unsigned int CollectionIndex, char *recordEDID, bool ignoreScanned, char **ModNames);
 ////////////////////////////////////////////////////////////////////////
 //ADD
 extern "C" __declspec(dllexport) unsigned int GetNumGMSTRecords(const unsigned int CollectionIndex, char *ModName);
@@ -429,65 +434,65 @@ extern "C" __declspec(dllexport) int DeleteFIDListX3Field(const unsigned int Col
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 //ADD
-extern "C" __declspec(dllexport) int StartGLOBIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartCLASIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartFACTIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartHAIRIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartEYESIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartRACEIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartSOUNIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartSKILIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartMGEFIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartSCPTIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartLTEXIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartENCHIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartSPELIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartBSGNIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartACTIIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartAPPAIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartARMOIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartBOOKIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartCLOTIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartCONTIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartDOORIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartINGRIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartLIGHIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartMISCIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartSTATIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartGRASIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartTREEIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartFLORIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartFURNIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartWEAPIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartAMMOIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartNPC_Iterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartCREAIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartLVLCIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartSLGMIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartKEYMIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartALCHIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartSBSPIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartSGSTIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartLVLIIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartWTHRIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartCLMTIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartREGNIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartCELLIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartWRLDIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartDIALIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartQUSTIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartIDLEIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartPACKIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartCSTYIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartLSCRIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartLVSPIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartANIOIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartWATRIterator(const unsigned int CollectionIndex);
-extern "C" __declspec(dllexport) int StartEFSHIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartGLOBIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartCLASIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartFACTIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartHAIRIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartEYESIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartRACEIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartSOUNIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartSKILIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartMGEFIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartSCPTIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartLTEXIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartENCHIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartSPELIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartBSGNIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartACTIIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartAPPAIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartARMOIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartBOOKIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartCLOTIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartCONTIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartDOORIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartINGRIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartLIGHIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartMISCIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartSTATIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartGRASIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartTREEIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartFLORIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartFURNIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartWEAPIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartAMMOIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartNPC_Iterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartCREAIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartLVLCIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartSLGMIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartKEYMIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartALCHIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartSBSPIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartSGSTIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartLVLIIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartWTHRIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartCLMTIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartREGNIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartCELLIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartWRLDIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartDIALIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartQUSTIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartIDLEIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartPACKIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartCSTYIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartLSCRIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartLVSPIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartANIOIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartWATRIterator(const unsigned int CollectionIndex);
+//extern "C" __declspec(dllexport) int StartEFSHIterator(const unsigned int CollectionIndex);
 ////////////////////////////////////////////////////////////////////////
-extern "C" __declspec(dllexport) long long IncrementIterator(const unsigned int IteratorID);
-extern "C" __declspec(dllexport) unsigned int IteratorAtEnd(const unsigned int IteratorID);
-extern "C" __declspec(dllexport) void StopIterator(const unsigned int IteratorID);
+//extern "C" __declspec(dllexport) long long IncrementIterator(const unsigned int IteratorID);
+//extern "C" __declspec(dllexport) unsigned int IteratorAtEnd(const unsigned int IteratorID);
+//extern "C" __declspec(dllexport) void StopIterator(const unsigned int IteratorID);
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 #ifdef _DEBUG

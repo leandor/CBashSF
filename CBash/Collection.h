@@ -23,12 +23,12 @@ GPL License and Copyright Notice ============================================
 // Collection.h
 #include "ModFile.h"
 #include <vector>
-#include <list>
 #include <map>
 
 #ifndef NUMTHREADS
 #define NUMTHREADS    boost::thread::hardware_concurrency()
 #endif
+
 
 struct sameStr
     {
@@ -37,6 +37,15 @@ struct sameStr
         return _stricmp( s1, s2 ) < 0;
         }
     };
+
+typedef std::multimap<unsigned int, std::pair<ModFile *, Record *> >   FID_Map;
+typedef std::multimap<char *, std::pair<ModFile *, Record *>, sameStr> EDID_Map;
+
+typedef FID_Map::iterator FID_Iterator;
+typedef EDID_Map::iterator EDID_Iterator;
+
+typedef std::pair<FID_Iterator, FID_Iterator> FID_Range;
+typedef std::pair<EDID_Iterator, EDID_Iterator> EDID_Range;
 
 class Collection
     {
@@ -47,8 +56,8 @@ class Collection
         //std::vector<int> LoadRecordTypes;
         bool isLoaded;
     public:
-        std::multimap<char *, std::pair<ModFile *, Record *>, sameStr> GMST_ModFile_Record;
-        std::multimap<unsigned int, std::pair<ModFile *, Record *> > FID_ModFile_Record;
+        EDID_Map EDID_ModFile_Record;
+        FID_Map FID_ModFile_Record;
 
         Collection(const char *ModsPath):ModsDir(NULL), isLoaded(false)
             {
@@ -63,14 +72,19 @@ class Collection
             }
 
         bool IsModAdded(const char *ModName);
-        int AddMod(const char *ModName, bool CreateIfNotExist=false, bool MergeMod=false, bool DummyLoad=false);
+        int AddMod(const char *ModName, bool MergeMod=false, bool ScanMod=false, bool CreateIfNotExist=false, bool DummyLoad=false);
+
+        int IsEmpty(char *ModName);
+        unsigned int GetNumNewRecordTypes(char *ModName);
+        void GetNewRecordTypes(char *ModName, unsigned int const **RecordTypes);
+
         int CleanMasters(char *ModName);
         int SafeSaveMod(char *ModName, bool CloseMod=false);
 
         void IndexRecords(ModFile *curModFile);
         void IndexRecords();
         int Load(const bool &LoadMasters, const bool &FullLoad);
-        unsigned int NextFreeExpandedFID(ModFile *curModFile);
+        unsigned int NextFreeExpandedFID(ModFile *curModFile, unsigned int depth = 0);
         int RemoveIndex(Record *curRecord, char *ModName);
         int LoadRecord(char *ModName, unsigned int recordFID);
         int UnloadRecord(char *ModName, unsigned int recordFID);
@@ -82,30 +96,25 @@ class Collection
         int Close();
 
         template <class T>
-        std::multimap<unsigned int, std::pair<ModFile *, Record *> >::iterator LookupRecord(char *ModName, unsigned int &recordFID, ModFile *&curModFile, T *&curRecord)
+        FID_Iterator LookupRecord(char *ModName, unsigned int &recordFID, ModFile *&curModFile, T *&curRecord)
             {
-            if(ModName == NULL || recordFID == 0)
-                {curModFile = NULL; curRecord = NULL; return FID_ModFile_Record.end();}
+            curRecord = NULL;
+            curModFile = NULL;
 
-            std::multimap<unsigned int, std::pair<ModFile *, Record *> >::iterator it = FID_ModFile_Record.find(recordFID);
-
-            if(it == FID_ModFile_Record.end())
-                {curModFile = NULL; curRecord = NULL; return FID_ModFile_Record.end();}
-
-            unsigned int count = (unsigned int)FID_ModFile_Record.count(recordFID);
-            for(unsigned int x = 0; x < count;++it, ++x)
-                if(_stricmp(it->second.first->FileName, ModName) == 0)
+            FID_Range range = FID_ModFile_Record.equal_range(recordFID);
+            for(; range.first != range.second; ++range.first)
+                if(_stricmp(range.first->second.first->FileName, ModName) == 0)
                     {
-                    curModFile = it->second.first;
+                    curModFile = range.first->second.first;
                     break;
                     }
 
             if(curModFile == NULL)
-                {curRecord = NULL; return FID_ModFile_Record.end();}
-            curRecord = (T *)it->second.second;
-            return it;
+                return FID_ModFile_Record.end();
+            curRecord = (T *)range.first->second.second;
+            return range.first;
             }
-        std::multimap<char *, std::pair<ModFile *, Record *>, sameStr>::iterator LookupGMSTRecord(char *ModName, char *recordEDID, ModFile *&curModFile, GMSTRecord *&curRecord);
+        EDID_Iterator LookupGMSTRecord(char *ModName, char *recordEDID, ModFile *&curModFile, GMSTRecord *&curRecord);
 
         CELLRecord *LookupWorldCELL(ModFile *&curModFile, CELLRecord *&curCELL);
         void ResolveGrid(const float &posX, const float &posY, int &gridX, int &gridY);
@@ -121,11 +130,14 @@ class Collection
         unsigned int UpdateReferences(char *ModName, unsigned int recordFID, unsigned int origFormID, unsigned int newFormID);
         int GetModIndex(const char *ModName);
 
-        int GetNumFIDConflicts(unsigned int recordFID);
-        void GetFIDConflicts(unsigned int recordFID, char **ModNames);
+        int IsWinning(char *ModName, unsigned int recordFID, bool ignoreScanned);
+        int IsWinning(char *ModName, char *recordEDID, bool ignoreScanned);
+        
+        int GetNumFIDConflicts(unsigned int recordFID, bool ignoreScanned);
+        void GetFIDConflicts(unsigned int recordFID, bool ignoreScanned, char **ModNames);
 
-        int GetNumGMSTConflicts(char *recordEDID);
-        void GetGMSTConflicts(char *recordEDID, char **ModNames);
+        int GetNumGMSTConflicts(char *recordEDID, bool ignoreScanned);
+        void GetGMSTConflicts(char *recordEDID, bool ignoreScanned, char **ModNames);
         
         //ADD DEFINITIONS HERE
         unsigned int GetNumGMSTRecords(char *ModName);
@@ -669,25 +681,25 @@ class Collection
         #endif
     };
 
-class Iterator
-    {
-    protected:
-        unsigned int recordType;
-        std::multimap<unsigned int, std::pair<ModFile *, Record *> >::iterator it;
-        std::multimap<unsigned int, std::pair<ModFile *, Record *> >::iterator end;
-    public:
-        Iterator(Collection *nCollection, unsigned int recType):recordType(recType), it(nCollection->FID_ModFile_Record.begin()), end(nCollection->FID_ModFile_Record.end()) {}
-        ~Iterator() {}
-        long long IncrementIterator()
-            {
-            unsigned int formID;
-            for(;it != end;it++)
-                if(it->second.second->GetType() == recordType)
-                    {
-                    formID = it->second.second->formID;
-                    it++;
-                    return formID;
-                    }
-            return -1;
-            }
-    };
+//class Iterator
+//    {
+//    protected:
+//        unsigned int recordType;
+//        FID_Iterator it;
+//        FID_Iterator end;
+//    public:
+//        Iterator(Collection *nCollection, unsigned int recType):recordType(recType), it(nCollection->FID_ModFile_Record.begin()), end(nCollection->FID_ModFile_Record.end()) {}
+//        ~Iterator() {}
+//        long long IncrementIterator()
+//            {
+//            unsigned int formID;
+//            for(;it != end;it++)
+//                if(it->second.second->GetType() == recordType)
+//                    {
+//                    formID = it->second.second->formID;
+//                    it++;
+//                    return formID;
+//                    }
+//            return -1;
+//            }
+//    };

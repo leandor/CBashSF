@@ -1198,17 +1198,19 @@ unsigned int Collection::CreateGMSTRecord(char *ModName, char *recordEDID)
     GMSTRecord *curRecord = NULL;
     //Check and see if the GMST already exists
     LookupGMSTRecord(ModName, recordEDID, curModFile, curRecord);
+
     if(curModFile != NULL || curRecord != NULL)
         return 0;
 
     curModFile = LookupModFile(ModName);
+
     if(curModFile == NULL)
         return 0;
 
     unsigned int newRecordFID = NextFreeExpandedFID(curModFile);
     curRecord = new GMSTRecord(newRecordFID, recordEDID);
     curModFile->GMST.Records.push_back(curRecord);
-    GMST_ModFile_Record.insert(std::make_pair(curRecord->EDID.value,std::make_pair(curModFile,curRecord)));
+    EDID_ModFile_Record.insert(std::make_pair(curRecord->EDID.value,std::make_pair(curModFile,curRecord)));
     return newRecordFID;
     }
 
@@ -1238,7 +1240,7 @@ unsigned int Collection::CopyGMSTRecord(char *ModName, char *srcRecordEDID, char
     destMod->GMST.Records.push_back(copyRecord);
     //Add any master as necessary, and register the formID
     copyRecord->AddMasters(destMod->FormIDHandler);
-    GMST_ModFile_Record.insert(std::make_pair(copyRecord->EDID.value, std::make_pair(destMod, copyRecord)));
+    EDID_ModFile_Record.insert(std::make_pair(copyRecord->EDID.value, std::make_pair(destMod, copyRecord)));
     return 1;
     }
 
@@ -2094,7 +2096,7 @@ unsigned int Collection::CreateEFSHRecord(char *ModName)
 unsigned int Collection::CopyFIDRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride)
     {
     return 0;
-    //std::multimap<unsigned int, std::pair<ModFile *, Record *> >::iterator it;
+    //FID_Iterator it;
     //it = FID_ModFile_Record.find(srcRecordFID);
     //Return if the srcRecordFID isn't found
     //if(it == FID_ModFile_Record.end())

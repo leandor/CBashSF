@@ -26,7 +26,7 @@ GPL License and Copyright Notice ============================================
 //#include "mmgr.h"
 
 static std::vector<Collection *> Collections;
-static std::vector<Iterator *> Iterators;
+//static std::vector<Iterator *> Iterators;
 
 unsigned int GetMajor()
     {
@@ -43,13 +43,13 @@ unsigned int GetRevision()
     return REVISION_VERSION;
     }
 ////////////////////////////////////////////////////////////////////////
-void Validate(const char *ModsPath)
+void ValidatePointer(const void *testPointer)
     {
-    if(ModsPath == NULL)
+    if(testPointer == NULL)
         throw Ex_NULL();
     }
 
-void Validate(const unsigned int CollectionIndex)
+void ValidateCollection(const unsigned int CollectionIndex)
     {
     if(CollectionIndex >= Collections.size())
         throw Ex_INVALIDINDEX();
@@ -57,11 +57,17 @@ void Validate(const unsigned int CollectionIndex)
         throw Ex_INVALIDINDEX();
     }
 
+void ValidateFID(const unsigned int recordFID)
+    {
+    if(recordFID == 0)
+        throw Ex_INVALIDFORMID();
+    }
+
 int NewCollection(const char *ModsPath)
     {
     try
         {
-        Validate(ModsPath);
+        ValidatePointer(ModsPath);
         for(unsigned int p = 0; p < Collections.size(); ++p)
             {
             if(Collections[p] == NULL)
@@ -89,7 +95,7 @@ int DeleteCollection(const unsigned int CollectionIndex)
     {
     try
         {
-        Validate(CollectionIndex);
+        ValidateCollection(CollectionIndex);
         Close(CollectionIndex);
         delete Collections[CollectionIndex];
         Collections[CollectionIndex] = NULL;
@@ -118,14 +124,21 @@ int DeleteCollection(const unsigned int CollectionIndex)
     }
 
 ////////////////////////////////////////////////////////////////////////
-int AddMod(const unsigned int CollectionIndex, const char *ModName, bool CreateIfNotExist)
+int AddMod(const unsigned int CollectionIndex, const char *ModName, unsigned int OptionFlags)
     {
+    enum optionFlags
+        {
+        fIsMerge             = 0x00000001,
+        fIsScan              = 0x00000002,
+        fIsCreateIfNotExist  = 0x00000004
+        };
+
     int status = 0;
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
-        status = Collections[CollectionIndex]->AddMod(ModName, CreateIfNotExist, false);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        status = Collections[CollectionIndex]->AddMod(ModName, (OptionFlags & fIsMerge) != 0, (OptionFlags & fIsScan) != 0, (OptionFlags & fIsCreateIfNotExist) != 0, false);
         }
     catch(std::exception &ex)
         {
@@ -140,34 +153,12 @@ int AddMod(const unsigned int CollectionIndex, const char *ModName, bool CreateI
     return status;
     }
 
-int AddMergeMod(const unsigned int CollectionIndex, const char *ModName)
-    {
-    int status = 0;
-    try
-        {
-        Validate(CollectionIndex);
-        Validate(ModName);
-        status = Collections[CollectionIndex]->AddMod(ModName, false, true);
-        }
-    catch(std::exception &ex)
-        {
-        printf("Error adding merge mod:%s\n  %s\n", ModName, ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("Error adding merge mod:%s\n  Unhandled Exception\n", ModName);
-        return -1;
-        }
-    return status;
-    }
-
 int MinimalLoad(const unsigned int CollectionIndex, const bool LoadMasters)
     {
     try
         {
         //printf("MinimalLoad: %u\n", CollectionIndex);
-        Validate(CollectionIndex);
+        ValidateCollection(CollectionIndex);
         Collections[CollectionIndex]->Load(LoadMasters, false);
         Collections[CollectionIndex]->IndexRecords();
         }
@@ -189,7 +180,7 @@ int FullLoad(const unsigned int CollectionIndex, const bool LoadMasters)
     try
         {
         //printf("FullLoad: %u\n", CollectionIndex);
-        Validate(CollectionIndex);
+        ValidateCollection(CollectionIndex);
         Collections[CollectionIndex]->Load(LoadMasters, true);
         Collections[CollectionIndex]->IndexRecords();
         }
@@ -207,12 +198,73 @@ int FullLoad(const unsigned int CollectionIndex, const bool LoadMasters)
     }
 
 ////////////////////////////////////////////////////////////////////////
+int IsModEmpty(const unsigned int CollectionIndex, char *ModName)
+    {
+    try
+        {
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        return Collections[CollectionIndex]->IsEmpty(ModName);
+        }
+    catch(std::exception &ex)
+        {
+        printf("IsModEmpty: Error\n  %s\n", ex.what());
+        return 0;
+        }
+    catch(...)
+        {
+        printf("IsModEmpty: Error\n  Unhandled Exception\n");
+        return 0;
+        }
+    return 0;
+    }
+
+unsigned int GetNumNewRecordTypes(const unsigned int CollectionIndex, char *ModName)
+    {
+    try
+        {
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        return Collections[CollectionIndex]->GetNumNewRecordTypes(ModName);
+        }
+    catch(std::exception &ex)
+        {
+        printf("GetNumNewRecordTypes: Error\n  %s\n", ex.what());
+        return 0;
+        }
+    catch(...)
+        {
+        printf("GetNumNewRecordTypes: Error\n  Unhandled Exception\n");
+        return 0;
+        }
+    return 0;
+    }
+
+void GetNewRecordTypes(const unsigned int CollectionIndex, char *ModName, unsigned int const **RecordTypes)
+    {
+    try
+        {
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        Collections[CollectionIndex]->GetNewRecordTypes(ModName, RecordTypes);
+        }
+    catch(std::exception &ex)
+        {
+        printf("GetNewRecordTypes: Error\n  %s\n", ex.what());
+        }
+    catch(...)
+        {
+        printf("GetNewRecordTypes: Error\n  Unhandled Exception\n");
+        }
+    return;
+    }
+////////////////////////////////////////////////////////////////////////
 int CleanMasters(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CleanMasters(ModName);
         }
     catch(std::exception &ex)
@@ -232,8 +284,8 @@ int SafeSaveMod(const unsigned int CollectionIndex, char *curFileName, bool Clos
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(curFileName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(curFileName);
         Collections[CollectionIndex]->SafeSaveMod(curFileName, CloseMod);
         if(CloseMod)
             DeleteCollection(CollectionIndex);
@@ -255,8 +307,8 @@ int LoadRecord(const unsigned int CollectionIndex, char *ModName, unsigned int r
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->LoadRecord(ModName, recordFID);
         }
     catch(std::exception &ex)
@@ -276,8 +328,8 @@ int UnloadRecord(const unsigned int CollectionIndex, char *ModName, unsigned int
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->UnloadRecord(ModName, recordFID);
         }
     catch(std::exception &ex)
@@ -297,8 +349,8 @@ int UnloadModFile(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->UnloadModFile(ModName);
         }
     catch(std::exception &ex)
@@ -318,7 +370,7 @@ int UnloadAll(const unsigned int CollectionIndex)
     {
     try
         {
-        Validate(CollectionIndex);
+        ValidateCollection(CollectionIndex);
         Collections[CollectionIndex]->UnloadAll();
         }
     catch(std::exception &ex)
@@ -338,8 +390,8 @@ int DeleteRecord(const unsigned int CollectionIndex, char *ModName, unsigned int
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->DeleteRecord(ModName, recordFID, parentFID);
         }
     catch(std::exception &ex)
@@ -359,8 +411,9 @@ int DeleteGMSTRecord(const unsigned int CollectionIndex, char *ModName, char *re
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(recordEDID);
         Collections[CollectionIndex]->DeleteGMSTRecord(ModName, recordEDID);
         }
     catch(std::exception &ex)
@@ -380,7 +433,7 @@ int Close(const unsigned int CollectionIndex)
     {
     try
         {
-        Validate(CollectionIndex);
+        ValidateCollection(CollectionIndex);
         Collections[CollectionIndex]->Close();
         }
     catch(std::exception &ex)
@@ -401,7 +454,7 @@ unsigned int GetNumMods(const unsigned int CollectionIndex)
     {
     try
         {
-        Validate(CollectionIndex);
+        ValidateCollection(CollectionIndex);
         return Collections[CollectionIndex]->GetNumMods();
         }
     catch(std::exception &ex)
@@ -421,7 +474,7 @@ void GetMods(const unsigned int CollectionIndex, char **ModNames)
     {
     try
         {
-        Validate(CollectionIndex);
+        ValidateCollection(CollectionIndex);
         Collections[CollectionIndex]->GetMods(ModNames);
         }
     catch(std::exception &ex)
@@ -441,8 +494,8 @@ unsigned int SetRecordFormID(const unsigned int CollectionIndex, char *ModName, 
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->SetRecordFormID(ModName, recordFID, FieldValue);
         }
     catch(std::exception &ex)
@@ -463,7 +516,7 @@ char * GetModName(const unsigned int CollectionIndex, const unsigned int iIndex)
     {
     try
         {
-        Validate(CollectionIndex);
+        ValidateCollection(CollectionIndex);
         return Collections[CollectionIndex]->GetModName(iIndex);
         }
     catch(std::exception &ex)
@@ -483,7 +536,7 @@ unsigned int ModIsFake(const unsigned int CollectionIndex, const unsigned int iI
     {
     try
         {
-        Validate(CollectionIndex);
+        ValidateCollection(CollectionIndex);
         return Collections[CollectionIndex]->ModIsFake(iIndex);
         }
     catch(std::exception &ex)
@@ -503,8 +556,8 @@ unsigned int GetCorrectedFID(const unsigned int CollectionIndex, char *ModName, 
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetCorrectedFID(ModName, recordObjectID);
         }
     catch(std::exception &ex)
@@ -524,8 +577,8 @@ unsigned int UpdateAllReferences(const unsigned int CollectionIndex, char *ModNa
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->UpdateReferences(ModName, origFormID, newFormID);
         }
     catch(std::exception &ex)
@@ -545,8 +598,8 @@ unsigned int GetNumReferences(const unsigned int CollectionIndex, char *ModName,
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumReferences(ModName, recordFID, referenceFormID);
         }
     catch(std::exception &ex)
@@ -566,8 +619,8 @@ unsigned int UpdateReferences(const unsigned int CollectionIndex, char *ModName,
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->UpdateReferences(ModName, recordFID, origFormID, newFormID);
         }
     catch(std::exception &ex)
@@ -583,12 +636,55 @@ unsigned int UpdateReferences(const unsigned int CollectionIndex, char *ModName,
     return 0;
     }
 ////////////////////////////////////////////////////////////////////////
-int GetNumFIDConflicts(const unsigned int CollectionIndex, unsigned int recordFID)
+int IsFIDWinning(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, bool ignoreScanned)
     {
     try
         {
-        Validate(CollectionIndex);
-        return Collections[CollectionIndex]->GetNumFIDConflicts(recordFID);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        return Collections[CollectionIndex]->IsWinning(ModName, recordFID, ignoreScanned);
+        }
+    catch(std::exception &ex)
+        {
+        printf("IsFIDWinning: Error\n  %s\n", ex.what());
+        return 0;
+        }
+    catch(...)
+        {
+        printf("IsFIDWinning: Error\n  Unhandled Exception\n");
+        return 0;
+        }
+    return 0;
+    }
+
+int IsGMSTWinning(const unsigned int CollectionIndex, char *ModName, char *recordEDID, bool ignoreScanned)
+    {
+    try
+        {
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(recordEDID);
+        return Collections[CollectionIndex]->IsWinning(ModName, recordEDID, ignoreScanned);
+        }
+    catch(std::exception &ex)
+        {
+        printf("IsGMSTWinning: Error\n  %s\n", ex.what());
+        return 0;
+        }
+    catch(...)
+        {
+        printf("IsGMSTWinning: Error\n  Unhandled Exception\n");
+        return 0;
+        }
+    return 0;
+    }
+
+int GetNumFIDConflicts(const unsigned int CollectionIndex, unsigned int recordFID, bool ignoreScanned)
+    {
+    try
+        {
+        ValidateCollection(CollectionIndex);
+        return Collections[CollectionIndex]->GetNumFIDConflicts(recordFID, ignoreScanned);
         }
     catch(std::exception &ex)
         {
@@ -603,12 +699,12 @@ int GetNumFIDConflicts(const unsigned int CollectionIndex, unsigned int recordFI
     return 0;
     }
 
-void GetFIDConflicts(const unsigned int CollectionIndex, unsigned int recordFID, char **ModNames)
+void GetFIDConflicts(const unsigned int CollectionIndex, unsigned int recordFID, bool ignoreScanned, char **ModNames)
     {
     try
         {
-        Validate(CollectionIndex);
-        Collections[CollectionIndex]->GetFIDConflicts(recordFID, ModNames);
+        ValidateCollection(CollectionIndex);
+        Collections[CollectionIndex]->GetFIDConflicts(recordFID, ignoreScanned, ModNames);
         return;
         }
     catch(std::exception &ex)
@@ -623,14 +719,14 @@ void GetFIDConflicts(const unsigned int CollectionIndex, unsigned int recordFID,
         }
     return;
     }
-    
-int GetNumGMSTConflicts(const unsigned int CollectionIndex, char *recordEDID)
+
+int GetNumGMSTConflicts(const unsigned int CollectionIndex, char *recordEDID, bool ignoreScanned)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(recordEDID);
-        return Collections[CollectionIndex]->GetNumGMSTConflicts(recordEDID);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(recordEDID);
+        return Collections[CollectionIndex]->GetNumGMSTConflicts(recordEDID, ignoreScanned);
         }
     catch(std::exception &ex)
         {
@@ -645,13 +741,13 @@ int GetNumGMSTConflicts(const unsigned int CollectionIndex, char *recordEDID)
     return 0;
     }
 
-void GetGMSTConflicts(const unsigned int CollectionIndex, char *recordEDID, char **ModNames)
+void GetGMSTConflicts(const unsigned int CollectionIndex, char *recordEDID, bool ignoreScanned, char **ModNames)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(recordEDID);
-        Collections[CollectionIndex]->GetGMSTConflicts(recordEDID, ModNames);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(recordEDID);
+        Collections[CollectionIndex]->GetGMSTConflicts(recordEDID, ignoreScanned, ModNames);
         return;
         }
     catch(std::exception &ex)
@@ -671,8 +767,8 @@ unsigned int GetNumGMSTRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumGMSTRecords(ModName);
         }
     catch(std::exception &ex)
@@ -692,8 +788,8 @@ unsigned int GetNumGLOBRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumGLOBRecords(ModName);
         }
     catch(std::exception &ex)
@@ -713,8 +809,8 @@ unsigned int GetNumCLASRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumCLASRecords(ModName);
         }
     catch(std::exception &ex)
@@ -734,8 +830,8 @@ unsigned int GetNumFACTRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumFACTRecords(ModName);
         }
     catch(std::exception &ex)
@@ -755,8 +851,8 @@ unsigned int GetNumHAIRRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumHAIRRecords(ModName);
         }
     catch(std::exception &ex)
@@ -776,8 +872,8 @@ unsigned int GetNumEYESRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumEYESRecords(ModName);
         }
     catch(std::exception &ex)
@@ -797,8 +893,8 @@ unsigned int GetNumRACERecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumRACERecords(ModName);
         }
     catch(std::exception &ex)
@@ -818,8 +914,8 @@ unsigned int GetNumSOUNRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumSOUNRecords(ModName);
         }
     catch(std::exception &ex)
@@ -839,8 +935,8 @@ unsigned int GetNumSKILRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumSKILRecords(ModName);
         }
     catch(std::exception &ex)
@@ -860,8 +956,8 @@ unsigned int GetNumMGEFRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumMGEFRecords(ModName);
         }
     catch(std::exception &ex)
@@ -881,8 +977,8 @@ unsigned int GetNumSCPTRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumSCPTRecords(ModName);
         }
     catch(std::exception &ex)
@@ -902,8 +998,8 @@ unsigned int GetNumLTEXRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumLTEXRecords(ModName);
         }
     catch(std::exception &ex)
@@ -923,8 +1019,8 @@ unsigned int GetNumENCHRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumENCHRecords(ModName);
         }
     catch(std::exception &ex)
@@ -944,8 +1040,8 @@ unsigned int GetNumSPELRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumSPELRecords(ModName);
         }
     catch(std::exception &ex)
@@ -965,8 +1061,8 @@ unsigned int GetNumBSGNRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumBSGNRecords(ModName);
         }
     catch(std::exception &ex)
@@ -986,8 +1082,8 @@ unsigned int GetNumACTIRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumACTIRecords(ModName);
         }
     catch(std::exception &ex)
@@ -1007,8 +1103,8 @@ unsigned int GetNumAPPARecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumAPPARecords(ModName);
         }
     catch(std::exception &ex)
@@ -1028,8 +1124,8 @@ unsigned int GetNumARMORecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumARMORecords(ModName);
         }
     catch(std::exception &ex)
@@ -1049,8 +1145,8 @@ unsigned int GetNumBOOKRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumBOOKRecords(ModName);
         }
     catch(std::exception &ex)
@@ -1070,8 +1166,8 @@ unsigned int GetNumCLOTRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumCLOTRecords(ModName);
         }
     catch(std::exception &ex)
@@ -1091,8 +1187,8 @@ unsigned int GetNumCONTRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumCONTRecords(ModName);
         }
     catch(std::exception &ex)
@@ -1112,8 +1208,8 @@ unsigned int GetNumDOORRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumDOORRecords(ModName);
         }
     catch(std::exception &ex)
@@ -1133,8 +1229,8 @@ unsigned int GetNumINGRRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumINGRRecords(ModName);
         }
     catch(std::exception &ex)
@@ -1154,8 +1250,8 @@ unsigned int GetNumLIGHRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumLIGHRecords(ModName);
         }
     catch(std::exception &ex)
@@ -1175,8 +1271,8 @@ unsigned int GetNumMISCRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumMISCRecords(ModName);
         }
     catch(std::exception &ex)
@@ -1196,8 +1292,8 @@ unsigned int GetNumSTATRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumSTATRecords(ModName);
         }
     catch(std::exception &ex)
@@ -1217,8 +1313,8 @@ unsigned int GetNumGRASRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumGRASRecords(ModName);
         }
     catch(std::exception &ex)
@@ -1238,8 +1334,8 @@ unsigned int GetNumTREERecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumTREERecords(ModName);
         }
     catch(std::exception &ex)
@@ -1259,8 +1355,8 @@ unsigned int GetNumFLORRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumFLORRecords(ModName);
         }
     catch(std::exception &ex)
@@ -1280,8 +1376,8 @@ unsigned int GetNumFURNRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumFURNRecords(ModName);
         }
     catch(std::exception &ex)
@@ -1301,8 +1397,8 @@ unsigned int GetNumWEAPRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumWEAPRecords(ModName);
         }
     catch(std::exception &ex)
@@ -1322,8 +1418,8 @@ unsigned int GetNumAMMORecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumAMMORecords(ModName);
         }
     catch(std::exception &ex)
@@ -1343,8 +1439,8 @@ unsigned int GetNumNPC_Records(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumNPC_Records(ModName);
         }
     catch(std::exception &ex)
@@ -1364,8 +1460,8 @@ unsigned int GetNumCREARecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumCREARecords(ModName);
         }
     catch(std::exception &ex)
@@ -1385,8 +1481,8 @@ unsigned int GetNumLVLCRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumLVLCRecords(ModName);
         }
     catch(std::exception &ex)
@@ -1406,8 +1502,8 @@ unsigned int GetNumSLGMRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumSLGMRecords(ModName);
         }
     catch(std::exception &ex)
@@ -1427,8 +1523,8 @@ unsigned int GetNumKEYMRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumKEYMRecords(ModName);
         }
     catch(std::exception &ex)
@@ -1448,8 +1544,8 @@ unsigned int GetNumALCHRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumALCHRecords(ModName);
         }
     catch(std::exception &ex)
@@ -1469,8 +1565,8 @@ unsigned int GetNumSBSPRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumSBSPRecords(ModName);
         }
     catch(std::exception &ex)
@@ -1490,8 +1586,8 @@ unsigned int GetNumSGSTRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumSGSTRecords(ModName);
         }
     catch(std::exception &ex)
@@ -1511,8 +1607,8 @@ unsigned int GetNumLVLIRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumLVLIRecords(ModName);
         }
     catch(std::exception &ex)
@@ -1532,8 +1628,8 @@ unsigned int GetNumWTHRRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumWTHRRecords(ModName);
         }
     catch(std::exception &ex)
@@ -1553,8 +1649,8 @@ unsigned int GetNumCLMTRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumCLMTRecords(ModName);
         }
     catch(std::exception &ex)
@@ -1574,8 +1670,8 @@ unsigned int GetNumREGNRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumREGNRecords(ModName);
         }
     catch(std::exception &ex)
@@ -1595,8 +1691,8 @@ unsigned int GetNumCELLRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumCELLRecords(ModName);
         }
     catch(std::exception &ex)
@@ -1616,8 +1712,8 @@ unsigned int GetNumACHRRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumACHRRecords(ModName, parentFID);
         }
     catch(std::exception &ex)
@@ -1637,8 +1733,8 @@ unsigned int GetNumACRERecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumACRERecords(ModName, parentFID);
         }
     catch(std::exception &ex)
@@ -1658,8 +1754,8 @@ unsigned int GetNumREFRRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumREFRRecords(ModName, parentFID);
         }
     catch(std::exception &ex)
@@ -1679,8 +1775,8 @@ unsigned int GetNumWRLDRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumWRLDRecords(ModName);
         }
     catch(std::exception &ex)
@@ -1700,8 +1796,8 @@ unsigned int GetNumDIALRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumDIALRecords(ModName);
         }
     catch(std::exception &ex)
@@ -1721,8 +1817,8 @@ unsigned int GetNumQUSTRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumQUSTRecords(ModName);
         }
     catch(std::exception &ex)
@@ -1742,8 +1838,8 @@ unsigned int GetNumIDLERecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumIDLERecords(ModName);
         }
     catch(std::exception &ex)
@@ -1763,8 +1859,8 @@ unsigned int GetNumPACKRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumPACKRecords(ModName);
         }
     catch(std::exception &ex)
@@ -1784,8 +1880,8 @@ unsigned int GetNumCSTYRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumCSTYRecords(ModName);
         }
     catch(std::exception &ex)
@@ -1805,8 +1901,8 @@ unsigned int GetNumLSCRRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumLSCRRecords(ModName);
         }
     catch(std::exception &ex)
@@ -1826,8 +1922,8 @@ unsigned int GetNumLVSPRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumLVSPRecords(ModName);
         }
     catch(std::exception &ex)
@@ -1847,8 +1943,8 @@ unsigned int GetNumANIORecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumANIORecords(ModName);
         }
     catch(std::exception &ex)
@@ -1868,8 +1964,8 @@ unsigned int GetNumWATRRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumWATRRecords(ModName);
         }
     catch(std::exception &ex)
@@ -1889,8 +1985,8 @@ unsigned int GetNumEFSHRecords(const unsigned int CollectionIndex, char *ModName
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetNumEFSHRecords(ModName);
         }
     catch(std::exception &ex)
@@ -1912,8 +2008,8 @@ int GetTES4FieldType(const unsigned int CollectionIndex, char *ModName, const un
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetTES4FieldType(ModName, Field);
         }
     catch(std::exception &ex)
@@ -1933,8 +2029,8 @@ unsigned int GetTES4FieldArraySize(const unsigned int CollectionIndex, char *Mod
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetTES4FieldArraySize(ModName, Field);
         }
     catch(std::exception &ex)
@@ -1954,8 +2050,8 @@ void GetTES4FieldArray(const unsigned int CollectionIndex, char *ModName, const 
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetTES4FieldArray(ModName, Field, FieldValues);
         }
     catch(std::exception &ex)
@@ -1975,8 +2071,8 @@ void * ReadTES4Field(const unsigned int CollectionIndex, char *ModName, const un
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->ReadTES4Field(ModName, Field);
         }
     catch(std::exception &ex)
@@ -1997,8 +2093,9 @@ int SetTES4FieldStr(const unsigned int CollectionIndex, char *ModName, const uns
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(FieldValue);
         Collections[CollectionIndex]->SetTES4Field(ModName, Field, FieldValue);
         }
     catch(std::exception &ex)
@@ -2018,8 +2115,8 @@ int SetTES4FieldStrA(const unsigned int CollectionIndex, char *ModName, const un
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->SetTES4Field(ModName, Field, FieldValue, nSize);
         }
     catch(...)
@@ -2036,8 +2133,8 @@ int SetTES4FieldUI(const unsigned int CollectionIndex, char *ModName, const unsi
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->SetTES4Field(ModName, Field, FieldValue);
         }
     catch(std::exception &ex)
@@ -2057,8 +2154,8 @@ int SetTES4FieldF(const unsigned int CollectionIndex, char *ModName, const unsig
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->SetTES4Field(ModName, Field, FieldValue);
         }
     catch(std::exception &ex)
@@ -2078,8 +2175,9 @@ int SetTES4FieldR(const unsigned int CollectionIndex, char *ModName, const unsig
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(FieldValue);
         Collections[CollectionIndex]->SetTES4Field(ModName, Field, FieldValue, nSize);
         }
     catch(...)
@@ -2097,8 +2195,8 @@ int DeleteTES4Field(const unsigned int CollectionIndex, char *ModName, const uns
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->DeleteTES4Field(ModName, Field);
         }
     catch(std::exception &ex)
@@ -2119,8 +2217,8 @@ void GetGMSTRecords(const unsigned int CollectionIndex, char *ModName, char **Re
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetGMSTRecords(ModName, RecordEIDs);
         }
     catch(std::exception &ex)
@@ -2140,9 +2238,9 @@ int GetGMSTFieldType(const unsigned int CollectionIndex, char *ModName, char *re
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
-        Validate(recordEDID);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(recordEDID);
         return Collections[CollectionIndex]->GetGMSTFieldType(ModName, recordEDID, Field);
         }
     catch(std::exception &ex)
@@ -2162,9 +2260,9 @@ void * ReadGMSTField(const unsigned int CollectionIndex, char *ModName, char *re
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
-        Validate(recordEDID);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(recordEDID);
         return Collections[CollectionIndex]->ReadGMSTField(ModName, recordEDID, Field);
         }
     catch(std::exception &ex)
@@ -2185,9 +2283,9 @@ unsigned int CreateGMSTRecord(const unsigned int CollectionIndex, char *ModName,
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
-        Validate(recordEDID);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(recordEDID);
         return Collections[CollectionIndex]->CreateGMSTRecord(ModName, recordEDID);
         }
     catch(std::exception &ex)
@@ -2207,9 +2305,9 @@ unsigned int CopyGMSTRecord(const unsigned int CollectionIndex, char *ModName, c
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
-        Validate(recordEDID);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(recordEDID);
         return Collections[CollectionIndex]->CopyGMSTRecord(ModName, recordEDID, destModName);
         }
     catch(std::exception &ex)
@@ -2230,9 +2328,10 @@ int SetGMSTFieldStr(const unsigned int CollectionIndex, char *ModName, char *rec
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
-        Validate(recordEDID);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(recordEDID);
+        ValidatePointer(FieldValue);
         Collections[CollectionIndex]->SetGMSTField(ModName, recordEDID, Field, FieldValue);
         }
     catch(std::exception &ex)
@@ -2252,9 +2351,9 @@ int SetGMSTFieldI(const unsigned int CollectionIndex, char *ModName, char *recor
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
-        Validate(recordEDID);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(recordEDID);
         Collections[CollectionIndex]->SetGMSTField(ModName, recordEDID, Field, FieldValue);
         }
     catch(std::exception &ex)
@@ -2274,9 +2373,9 @@ int SetGMSTFieldUI(const unsigned int CollectionIndex, char *ModName, char *reco
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
-        Validate(recordEDID);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(recordEDID);
         Collections[CollectionIndex]->SetGMSTField(ModName, recordEDID, Field, FieldValue);
         }
     catch(std::exception &ex)
@@ -2296,9 +2395,9 @@ int SetGMSTFieldF(const unsigned int CollectionIndex, char *ModName, char *recor
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
-        Validate(recordEDID);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(recordEDID);
         Collections[CollectionIndex]->SetGMSTField(ModName, recordEDID, Field, FieldValue);
         }
     catch(std::exception &ex)
@@ -2313,14 +2412,14 @@ int SetGMSTFieldF(const unsigned int CollectionIndex, char *ModName, char *recor
         }
     return 0;
     }
-    
+
 int DeleteGMSTField(const unsigned int CollectionIndex, char *ModName, char *recordEDID, const unsigned int Field)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
-        Validate(recordEDID);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(recordEDID);
         Collections[CollectionIndex]->DeleteGMSTField(ModName, recordEDID, Field);
         }
     catch(std::exception &ex)
@@ -2342,8 +2441,8 @@ unsigned int GetGLOBRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetGLOBRecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -2363,8 +2462,8 @@ unsigned int GetCLASRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetCLASRecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -2384,8 +2483,8 @@ unsigned int GetFACTRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetFACTRecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -2405,8 +2504,8 @@ unsigned int GetHAIRRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetHAIRRecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -2426,8 +2525,8 @@ unsigned int GetEYESRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetEYESRecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -2447,8 +2546,8 @@ unsigned int GetRACERecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetRACERecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -2468,8 +2567,8 @@ unsigned int GetSOUNRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetSOUNRecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -2489,8 +2588,8 @@ unsigned int GetSKILRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetSKILRecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -2510,8 +2609,8 @@ unsigned int GetMGEFRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetMGEFRecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -2531,8 +2630,8 @@ unsigned int GetSCPTRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetSCPTRecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -2552,8 +2651,8 @@ unsigned int GetLTEXRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetLTEXRecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -2573,8 +2672,8 @@ unsigned int GetENCHRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetENCHRecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -2594,8 +2693,8 @@ unsigned int GetSPELRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetSPELRecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -2615,8 +2714,8 @@ unsigned int GetBSGNRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetBSGNRecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -2636,8 +2735,8 @@ unsigned int GetACTIRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetACTIRecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -2657,8 +2756,8 @@ unsigned int GetAPPARecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetAPPARecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -2678,8 +2777,8 @@ unsigned int GetARMORecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetARMORecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -2699,8 +2798,8 @@ unsigned int GetBOOKRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetBOOKRecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -2720,8 +2819,8 @@ unsigned int GetCLOTRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetCLOTRecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -2741,8 +2840,8 @@ unsigned int GetCONTRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetCONTRecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -2762,8 +2861,8 @@ unsigned int GetDOORRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetDOORRecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -2783,8 +2882,8 @@ unsigned int GetINGRRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetINGRRecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -2804,8 +2903,8 @@ unsigned int GetLIGHRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetLIGHRecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -2825,8 +2924,8 @@ unsigned int GetMISCRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetMISCRecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -2846,8 +2945,8 @@ unsigned int GetSTATRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetSTATRecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -2867,8 +2966,8 @@ unsigned int GetGRASRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetGRASRecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -2888,8 +2987,8 @@ unsigned int GetTREERecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetTREERecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -2909,8 +3008,8 @@ unsigned int GetFLORRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetFLORRecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -2930,8 +3029,8 @@ unsigned int GetFURNRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetFURNRecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -2951,8 +3050,8 @@ unsigned int GetWEAPRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetWEAPRecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -2972,8 +3071,8 @@ unsigned int GetAMMORecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetAMMORecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -2993,8 +3092,8 @@ unsigned int GetNPC_Records(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetNPC_Records(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -3014,8 +3113,8 @@ unsigned int GetCREARecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetCREARecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -3035,8 +3134,8 @@ unsigned int GetLVLCRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetLVLCRecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -3056,8 +3155,8 @@ unsigned int GetSLGMRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetSLGMRecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -3077,8 +3176,8 @@ unsigned int GetKEYMRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetKEYMRecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -3098,8 +3197,8 @@ unsigned int GetALCHRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetALCHRecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -3119,8 +3218,8 @@ unsigned int GetSBSPRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetSBSPRecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -3140,8 +3239,8 @@ unsigned int GetSGSTRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetSGSTRecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -3161,8 +3260,8 @@ unsigned int GetLVLIRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetLVLIRecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -3182,8 +3281,8 @@ unsigned int GetWTHRRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetWTHRRecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -3203,8 +3302,8 @@ unsigned int GetCLMTRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetCLMTRecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -3224,8 +3323,8 @@ unsigned int GetREGNRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetREGNRecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -3245,8 +3344,8 @@ unsigned int GetCELLRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetCELLRecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -3266,8 +3365,8 @@ unsigned int GetACHRRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetACHRRecords(ModName, parentFID, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -3287,8 +3386,8 @@ unsigned int GetACRERecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetACRERecords(ModName, parentFID, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -3308,8 +3407,8 @@ unsigned int GetREFRRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetREFRRecords(ModName, parentFID, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -3329,8 +3428,8 @@ unsigned int GetWRLDRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetWRLDRecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -3350,8 +3449,8 @@ unsigned int GetDIALRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetDIALRecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -3371,8 +3470,8 @@ unsigned int GetQUSTRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetQUSTRecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -3392,8 +3491,8 @@ unsigned int GetIDLERecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetIDLERecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -3413,8 +3512,8 @@ unsigned int GetPACKRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetPACKRecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -3434,8 +3533,8 @@ unsigned int GetCSTYRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetCSTYRecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -3455,8 +3554,8 @@ unsigned int GetLSCRRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetLSCRRecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -3476,8 +3575,8 @@ unsigned int GetLVSPRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetLVSPRecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -3497,8 +3596,8 @@ unsigned int GetANIORecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetANIORecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -3518,8 +3617,8 @@ unsigned int GetWATRRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetWATRRecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -3539,8 +3638,8 @@ unsigned int GetEFSHRecords(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->GetEFSHRecords(ModName, RecordFIDs);
         }
     catch(std::exception &ex)
@@ -3561,8 +3660,8 @@ int GetFIDFieldType(const unsigned int CollectionIndex, char *ModName, unsigned 
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetFIDFieldType(ModName, recordFID, Field);
         }
     catch(std::exception &ex)
@@ -3582,8 +3681,8 @@ int GetFIDListFieldType(const unsigned int CollectionIndex, char *ModName, unsig
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetFIDListFieldType(ModName, recordFID, subField, listField);
         }
     catch(std::exception &ex)
@@ -3603,8 +3702,8 @@ int GetFIDListX2FieldType(const unsigned int CollectionIndex, char *ModName, uns
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetFIDListX2FieldType(ModName, recordFID, subField, listField, listX2Field);
         }
     catch(std::exception &ex)
@@ -3624,8 +3723,8 @@ int GetFIDListX3FieldType(const unsigned int CollectionIndex, char *ModName, uns
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetFIDListX3FieldType(ModName, recordFID, subField, listField, listX2Field, listX3Field);
         }
     catch(std::exception &ex)
@@ -3645,8 +3744,8 @@ unsigned int GetFIDFieldArraySize(const unsigned int CollectionIndex, char *ModN
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetFIDFieldArraySize(ModName, recordFID, Field);
         }
     catch(std::exception &ex)
@@ -3665,8 +3764,8 @@ unsigned int GetFIDListArraySize(const unsigned int CollectionIndex, char *ModNa
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetFIDListArraySize(ModName, recordFID, subField, listIndex, listField);
         }
     catch(std::exception &ex)
@@ -3685,8 +3784,8 @@ unsigned int GetFIDListX2ArraySize(const unsigned int CollectionIndex, char *Mod
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetFIDListX2ArraySize(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field);
         }
     catch(std::exception &ex)
@@ -3705,8 +3804,8 @@ unsigned int GetFIDListX3ArraySize(const unsigned int CollectionIndex, char *Mod
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetFIDListX3ArraySize(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field);
         }
     catch(std::exception &ex)
@@ -3726,8 +3825,8 @@ unsigned int GetFIDListSize(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetFIDListSize(ModName, recordFID, Field);
         }
     catch(std::exception &ex)
@@ -3746,8 +3845,8 @@ unsigned int GetFIDListX2Size(const unsigned int CollectionIndex, char *ModName,
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetFIDListX2Size(ModName, recordFID, subField, listIndex, listField);
         }
     catch(std::exception &ex)
@@ -3766,8 +3865,8 @@ unsigned int GetFIDListX3Size(const unsigned int CollectionIndex, char *ModName,
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetFIDListX3Size(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field);
         }
     catch(std::exception &ex)
@@ -3787,8 +3886,8 @@ void GetFIDFieldArray(const unsigned int CollectionIndex, char *ModName, unsigne
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetFIDFieldArray(ModName, recordFID, Field, FieldValues);
         }
     catch(std::exception &ex)
@@ -3807,8 +3906,8 @@ void GetFIDListArray(const unsigned int CollectionIndex, char *ModName, unsigned
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetFIDListArray(ModName, recordFID, subField, listIndex, listField, FieldValues);
         }
     catch(std::exception &ex)
@@ -3827,8 +3926,8 @@ void GetFIDListX2Array(const unsigned int CollectionIndex, char *ModName, unsign
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetFIDListX2Array(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, FieldValues);
         }
     catch(std::exception &ex)
@@ -3847,8 +3946,8 @@ void GetFIDListX3Array(const unsigned int CollectionIndex, char *ModName, unsign
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->GetFIDListX3Array(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValues);
         }
     catch(std::exception &ex)
@@ -3868,8 +3967,8 @@ void * ReadFIDField(const unsigned int CollectionIndex, char *ModName, unsigned 
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->ReadFIDField(ModName, recordFID, Field);
         }
     catch(std::exception &ex)
@@ -3889,8 +3988,8 @@ void * ReadFIDListField(const unsigned int CollectionIndex, char *ModName, unsig
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->ReadFIDListField(ModName, recordFID, subField, listIndex, listField);
         }
     catch(std::exception &ex)
@@ -3910,8 +4009,8 @@ void * ReadFIDListX2Field(const unsigned int CollectionIndex, char *ModName, uns
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->ReadFIDListX2Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field);
         }
     catch(std::exception &ex)
@@ -3931,8 +4030,8 @@ void * ReadFIDListX3Field(const unsigned int CollectionIndex, char *ModName, uns
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->ReadFIDListX3Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field);
         }
     catch(std::exception &ex)
@@ -3953,8 +4052,8 @@ unsigned int CreateGLOBRecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateGLOBRecord(ModName);
         }
     catch(std::exception &ex)
@@ -3974,8 +4073,8 @@ unsigned int CreateCLASRecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateCLASRecord(ModName);
         }
     catch(std::exception &ex)
@@ -3995,8 +4094,8 @@ unsigned int CreateFACTRecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateFACTRecord(ModName);
         }
     catch(std::exception &ex)
@@ -4016,8 +4115,8 @@ unsigned int CreateHAIRRecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateHAIRRecord(ModName);
         }
     catch(std::exception &ex)
@@ -4037,8 +4136,8 @@ unsigned int CreateEYESRecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateEYESRecord(ModName);
         }
     catch(std::exception &ex)
@@ -4058,8 +4157,8 @@ unsigned int CreateRACERecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateRACERecord(ModName);
         }
     catch(std::exception &ex)
@@ -4079,8 +4178,8 @@ unsigned int CreateSOUNRecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateSOUNRecord(ModName);
         }
     catch(std::exception &ex)
@@ -4100,8 +4199,8 @@ unsigned int CreateSKILRecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateSKILRecord(ModName);
         }
     catch(std::exception &ex)
@@ -4121,8 +4220,8 @@ unsigned int CreateMGEFRecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateMGEFRecord(ModName);
         }
     catch(std::exception &ex)
@@ -4142,8 +4241,8 @@ unsigned int CreateSCPTRecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateSCPTRecord(ModName);
         }
     catch(std::exception &ex)
@@ -4163,8 +4262,8 @@ unsigned int CreateLTEXRecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateLTEXRecord(ModName);
         }
     catch(std::exception &ex)
@@ -4184,8 +4283,8 @@ unsigned int CreateENCHRecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateENCHRecord(ModName);
         }
     catch(std::exception &ex)
@@ -4205,8 +4304,8 @@ unsigned int CreateSPELRecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateSPELRecord(ModName);
         }
     catch(std::exception &ex)
@@ -4226,8 +4325,8 @@ unsigned int CreateBSGNRecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateBSGNRecord(ModName);
         }
     catch(std::exception &ex)
@@ -4247,8 +4346,8 @@ unsigned int CreateACTIRecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateACTIRecord(ModName);
         }
     catch(std::exception &ex)
@@ -4268,8 +4367,8 @@ unsigned int CreateAPPARecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateAPPARecord(ModName);
         }
     catch(std::exception &ex)
@@ -4289,8 +4388,8 @@ unsigned int CreateARMORecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateARMORecord(ModName);
         }
     catch(std::exception &ex)
@@ -4310,8 +4409,8 @@ unsigned int CreateBOOKRecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateBOOKRecord(ModName);
         }
     catch(std::exception &ex)
@@ -4331,8 +4430,8 @@ unsigned int CreateCLOTRecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateCLOTRecord(ModName);
         }
     catch(std::exception &ex)
@@ -4352,8 +4451,8 @@ unsigned int CreateCONTRecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateCONTRecord(ModName);
         }
     catch(std::exception &ex)
@@ -4373,8 +4472,8 @@ unsigned int CreateDOORRecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateDOORRecord(ModName);
         }
     catch(std::exception &ex)
@@ -4394,8 +4493,8 @@ unsigned int CreateINGRRecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateINGRRecord(ModName);
         }
     catch(std::exception &ex)
@@ -4415,8 +4514,8 @@ unsigned int CreateLIGHRecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateLIGHRecord(ModName);
         }
     catch(std::exception &ex)
@@ -4436,8 +4535,8 @@ unsigned int CreateMISCRecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateMISCRecord(ModName);
         }
     catch(std::exception &ex)
@@ -4457,8 +4556,8 @@ unsigned int CreateSTATRecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateSTATRecord(ModName);
         }
     catch(std::exception &ex)
@@ -4478,8 +4577,8 @@ unsigned int CreateGRASRecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateGRASRecord(ModName);
         }
     catch(std::exception &ex)
@@ -4499,8 +4598,8 @@ unsigned int CreateTREERecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateTREERecord(ModName);
         }
     catch(std::exception &ex)
@@ -4520,8 +4619,8 @@ unsigned int CreateFLORRecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateFLORRecord(ModName);
         }
     catch(std::exception &ex)
@@ -4541,8 +4640,8 @@ unsigned int CreateFURNRecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateFURNRecord(ModName);
         }
     catch(std::exception &ex)
@@ -4562,8 +4661,8 @@ unsigned int CreateWEAPRecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateWEAPRecord(ModName);
         }
     catch(std::exception &ex)
@@ -4583,8 +4682,8 @@ unsigned int CreateAMMORecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateAMMORecord(ModName);
         }
     catch(std::exception &ex)
@@ -4604,8 +4703,8 @@ unsigned int CreateNPC_Record(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateNPC_Record(ModName);
         }
     catch(std::exception &ex)
@@ -4625,8 +4724,8 @@ unsigned int CreateCREARecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateCREARecord(ModName);
         }
     catch(std::exception &ex)
@@ -4646,8 +4745,8 @@ unsigned int CreateLVLCRecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateLVLCRecord(ModName);
         }
     catch(std::exception &ex)
@@ -4667,8 +4766,8 @@ unsigned int CreateSLGMRecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateSLGMRecord(ModName);
         }
     catch(std::exception &ex)
@@ -4688,8 +4787,8 @@ unsigned int CreateKEYMRecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateKEYMRecord(ModName);
         }
     catch(std::exception &ex)
@@ -4709,8 +4808,8 @@ unsigned int CreateALCHRecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateALCHRecord(ModName);
         }
     catch(std::exception &ex)
@@ -4730,8 +4829,8 @@ unsigned int CreateSBSPRecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateSBSPRecord(ModName);
         }
     catch(std::exception &ex)
@@ -4751,8 +4850,8 @@ unsigned int CreateSGSTRecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateSGSTRecord(ModName);
         }
     catch(std::exception &ex)
@@ -4772,8 +4871,8 @@ unsigned int CreateLVLIRecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateLVLIRecord(ModName);
         }
     catch(std::exception &ex)
@@ -4793,8 +4892,8 @@ unsigned int CreateWTHRRecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateWTHRRecord(ModName);
         }
     catch(std::exception &ex)
@@ -4814,8 +4913,8 @@ unsigned int CreateCLMTRecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateCLMTRecord(ModName);
         }
     catch(std::exception &ex)
@@ -4835,8 +4934,8 @@ unsigned int CreateREGNRecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateREGNRecord(ModName);
         }
     catch(std::exception &ex)
@@ -4856,8 +4955,8 @@ unsigned int CreateCELLRecord(const unsigned int CollectionIndex, char *ModName,
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateCELLRecord(ModName, parentFID, isWorldCELL);
         }
     catch(std::exception &ex)
@@ -4877,8 +4976,8 @@ unsigned int CreateACHRRecord(const unsigned int CollectionIndex, char *ModName,
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateACHRRecord(ModName, parentFID);
         }
     catch(std::exception &ex)
@@ -4898,8 +4997,8 @@ unsigned int CreateACRERecord(const unsigned int CollectionIndex, char *ModName,
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateACRERecord(ModName, parentFID);
         }
     catch(std::exception &ex)
@@ -4919,8 +5018,8 @@ unsigned int CreateREFRRecord(const unsigned int CollectionIndex, char *ModName,
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateREFRRecord(ModName, parentFID);
         }
     catch(std::exception &ex)
@@ -4940,8 +5039,8 @@ unsigned int CreatePGRDRecord(const unsigned int CollectionIndex, char *ModName,
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreatePGRDRecord(ModName, parentFID);
         }
     catch(std::exception &ex)
@@ -4961,8 +5060,8 @@ unsigned int CreateWRLDRecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateWRLDRecord(ModName);
         }
     catch(std::exception &ex)
@@ -4982,8 +5081,8 @@ unsigned int CreateROADRecord(const unsigned int CollectionIndex, char *ModName,
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateROADRecord(ModName, parentFID);
         }
     catch(std::exception &ex)
@@ -5003,8 +5102,8 @@ unsigned int CreateLANDRecord(const unsigned int CollectionIndex, char *ModName,
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateLANDRecord(ModName, parentFID);
         }
     catch(std::exception &ex)
@@ -5024,8 +5123,8 @@ unsigned int CreateDIALRecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateDIALRecord(ModName);
         }
     catch(std::exception &ex)
@@ -5045,8 +5144,8 @@ unsigned int CreateINFORecord(const unsigned int CollectionIndex, char *ModName,
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateINFORecord(ModName, parentFID);
         }
     catch(std::exception &ex)
@@ -5066,8 +5165,8 @@ unsigned int CreateQUSTRecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateQUSTRecord(ModName);
         }
     catch(std::exception &ex)
@@ -5087,8 +5186,8 @@ unsigned int CreateIDLERecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateIDLERecord(ModName);
         }
     catch(std::exception &ex)
@@ -5108,8 +5207,8 @@ unsigned int CreatePACKRecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreatePACKRecord(ModName);
         }
     catch(std::exception &ex)
@@ -5129,8 +5228,8 @@ unsigned int CreateCSTYRecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateCSTYRecord(ModName);
         }
     catch(std::exception &ex)
@@ -5150,8 +5249,8 @@ unsigned int CreateLSCRRecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateLSCRRecord(ModName);
         }
     catch(std::exception &ex)
@@ -5171,8 +5270,8 @@ unsigned int CreateLVSPRecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateLVSPRecord(ModName);
         }
     catch(std::exception &ex)
@@ -5192,8 +5291,8 @@ unsigned int CreateANIORecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateANIORecord(ModName);
         }
     catch(std::exception &ex)
@@ -5213,8 +5312,8 @@ unsigned int CreateWATRRecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateWATRRecord(ModName);
         }
     catch(std::exception &ex)
@@ -5234,8 +5333,8 @@ unsigned int CreateEFSHRecord(const unsigned int CollectionIndex, char *ModName)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateEFSHRecord(ModName);
         }
     catch(std::exception &ex)
@@ -5256,8 +5355,9 @@ unsigned int CopyFIDRecord(const unsigned int CollectionIndex, char *ModName, un
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyFIDRecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -5277,8 +5377,9 @@ unsigned int CopyGLOBRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyGLOBRecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -5298,8 +5399,9 @@ unsigned int CopyCLASRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyCLASRecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -5319,8 +5421,9 @@ unsigned int CopyFACTRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyFACTRecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -5340,8 +5443,9 @@ unsigned int CopyHAIRRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyHAIRRecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -5361,8 +5465,9 @@ unsigned int CopyEYESRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyEYESRecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -5382,8 +5487,9 @@ unsigned int CopyRACERecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyRACERecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -5403,8 +5509,9 @@ unsigned int CopySOUNRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopySOUNRecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -5424,8 +5531,9 @@ unsigned int CopySKILRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopySKILRecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -5445,8 +5553,9 @@ unsigned int CopyMGEFRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyMGEFRecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -5466,8 +5575,9 @@ unsigned int CopySCPTRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopySCPTRecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -5487,8 +5597,9 @@ unsigned int CopyLTEXRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyLTEXRecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -5508,8 +5619,9 @@ unsigned int CopyENCHRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyENCHRecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -5529,8 +5641,9 @@ unsigned int CopySPELRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopySPELRecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -5550,8 +5663,9 @@ unsigned int CopyBSGNRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyBSGNRecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -5571,8 +5685,9 @@ unsigned int CopyACTIRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyACTIRecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -5592,8 +5707,9 @@ unsigned int CopyAPPARecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyAPPARecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -5613,8 +5729,9 @@ unsigned int CopyARMORecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyARMORecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -5634,8 +5751,9 @@ unsigned int CopyBOOKRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyBOOKRecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -5655,8 +5773,9 @@ unsigned int CopyCLOTRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyCLOTRecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -5676,8 +5795,9 @@ unsigned int CopyCONTRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyCONTRecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -5697,8 +5817,9 @@ unsigned int CopyDOORRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyDOORRecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -5718,8 +5839,9 @@ unsigned int CopyINGRRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyINGRRecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -5739,8 +5861,9 @@ unsigned int CopyLIGHRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyLIGHRecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -5760,8 +5883,9 @@ unsigned int CopyMISCRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyMISCRecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -5781,8 +5905,9 @@ unsigned int CopySTATRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopySTATRecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -5802,8 +5927,9 @@ unsigned int CopyGRASRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyGRASRecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -5823,8 +5949,9 @@ unsigned int CopyTREERecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyTREERecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -5844,8 +5971,9 @@ unsigned int CopyFLORRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyFLORRecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -5865,8 +5993,9 @@ unsigned int CopyFURNRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyFURNRecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -5886,8 +6015,9 @@ unsigned int CopyWEAPRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyWEAPRecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -5907,8 +6037,9 @@ unsigned int CopyAMMORecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyAMMORecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -5928,8 +6059,9 @@ unsigned int CopyNPC_Record(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyNPC_Record(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -5949,8 +6081,9 @@ unsigned int CopyCREARecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyCREARecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -5970,8 +6103,9 @@ unsigned int CopyLVLCRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyLVLCRecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -5991,8 +6125,9 @@ unsigned int CopySLGMRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopySLGMRecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -6012,8 +6147,9 @@ unsigned int CopyKEYMRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyKEYMRecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -6033,8 +6169,9 @@ unsigned int CopyALCHRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyALCHRecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -6054,8 +6191,9 @@ unsigned int CopySBSPRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopySBSPRecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -6075,8 +6213,9 @@ unsigned int CopySGSTRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopySGSTRecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -6096,8 +6235,9 @@ unsigned int CopyLVLIRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyLVLIRecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -6117,8 +6257,9 @@ unsigned int CopyWTHRRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyWTHRRecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -6138,8 +6279,9 @@ unsigned int CopyCLMTRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyCLMTRecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -6159,8 +6301,9 @@ unsigned int CopyREGNRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyREGNRecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -6180,8 +6323,9 @@ unsigned int CopyCELLRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyCELLRecord(ModName, srcRecordFID, destModName, destParentFID, asOverride, isWorldCELL);
         }
     catch(std::exception &ex)
@@ -6201,8 +6345,9 @@ unsigned int CopyACHRRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyACHRRecord(ModName, srcRecordFID, destModName, destParentFID, asOverride);
         }
     catch(std::exception &ex)
@@ -6222,8 +6367,9 @@ unsigned int CopyACRERecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyACRERecord(ModName, srcRecordFID, destModName, destParentFID, asOverride);
         }
     catch(std::exception &ex)
@@ -6243,8 +6389,9 @@ unsigned int CopyREFRRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyREFRRecord(ModName, srcRecordFID, destModName, destParentFID, asOverride);
         }
     catch(std::exception &ex)
@@ -6264,8 +6411,9 @@ unsigned int CopyPGRDRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyPGRDRecord(ModName, srcRecordFID, destModName, destParentFID, asOverride);
         }
     catch(std::exception &ex)
@@ -6285,8 +6433,9 @@ unsigned int CopyWRLDRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyWRLDRecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -6306,8 +6455,9 @@ unsigned int CopyROADRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyROADRecord(ModName, srcRecordFID, destModName, destParentFID, asOverride);
         }
     catch(std::exception &ex)
@@ -6327,8 +6477,9 @@ unsigned int CopyLANDRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyLANDRecord(ModName, srcRecordFID, destModName, destParentFID, asOverride);
         }
     catch(std::exception &ex)
@@ -6348,8 +6499,9 @@ unsigned int CopyDIALRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyDIALRecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -6369,8 +6521,9 @@ unsigned int CopyINFORecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyINFORecord(ModName, srcRecordFID, destModName, destParentFID, asOverride);
         }
     catch(std::exception &ex)
@@ -6390,8 +6543,9 @@ unsigned int CopyQUSTRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyQUSTRecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -6411,8 +6565,9 @@ unsigned int CopyIDLERecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyIDLERecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -6432,8 +6587,9 @@ unsigned int CopyPACKRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyPACKRecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -6453,8 +6609,9 @@ unsigned int CopyCSTYRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyCSTYRecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -6474,8 +6631,9 @@ unsigned int CopyLSCRRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyLSCRRecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -6495,8 +6653,9 @@ unsigned int CopyLVSPRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyLVSPRecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -6516,8 +6675,9 @@ unsigned int CopyANIORecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyANIORecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -6537,8 +6697,9 @@ unsigned int CopyWATRRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyWATRRecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -6558,8 +6719,9 @@ unsigned int CopyEFSHRecord(const unsigned int CollectionIndex, char *ModName, u
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(destModName);
         return Collections[CollectionIndex]->CopyEFSHRecord(ModName, srcRecordFID, destModName, asOverride);
         }
     catch(std::exception &ex)
@@ -6580,8 +6742,8 @@ int SetFIDFieldC(const unsigned int CollectionIndex, char *ModName, unsigned int
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->SetFIDField(ModName, recordFID, Field, FieldValue);
         }
     catch(std::exception &ex)
@@ -6601,8 +6763,8 @@ int SetFIDFieldUC(const unsigned int CollectionIndex, char *ModName, unsigned in
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->SetFIDField(ModName, recordFID, Field, FieldValue);
         }
     catch(std::exception &ex)
@@ -6622,8 +6784,9 @@ int SetFIDFieldStr(const unsigned int CollectionIndex, char *ModName, unsigned i
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(FieldValue);
         Collections[CollectionIndex]->SetFIDField(ModName, recordFID, Field, FieldValue);
         }
     catch(std::exception &ex)
@@ -6643,8 +6806,9 @@ int SetFIDFieldStrA(const unsigned int CollectionIndex, char *ModName, unsigned 
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(FieldValue);
         Collections[CollectionIndex]->SetFIDField(ModName, recordFID, Field, FieldValue, nSize);
         }
     catch(...)
@@ -6661,8 +6825,8 @@ int SetFIDFieldS(const unsigned int CollectionIndex, char *ModName, unsigned int
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->SetFIDField(ModName, recordFID, Field, FieldValue);
         }
     catch(std::exception &ex)
@@ -6682,8 +6846,8 @@ int SetFIDFieldUS(const unsigned int CollectionIndex, char *ModName, unsigned in
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->SetFIDField(ModName, recordFID, Field, FieldValue);
         }
     catch(std::exception &ex)
@@ -6703,8 +6867,8 @@ int SetFIDFieldI(const unsigned int CollectionIndex, char *ModName, unsigned int
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->SetFIDField(ModName, recordFID, Field, FieldValue);
         }
     catch(std::exception &ex)
@@ -6724,8 +6888,8 @@ int SetFIDFieldUI(const unsigned int CollectionIndex, char *ModName, unsigned in
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->SetFIDField(ModName, recordFID, Field, FieldValue);
         }
     catch(std::exception &ex)
@@ -6745,8 +6909,8 @@ int SetFIDFieldUIA(const unsigned int CollectionIndex, char *ModName, unsigned i
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->SetFIDField(ModName, recordFID, Field, FieldValue, nSize);
         }
     catch(...)
@@ -6764,8 +6928,8 @@ int SetFIDFieldF(const unsigned int CollectionIndex, char *ModName, unsigned int
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->SetFIDField(ModName, recordFID, Field, FieldValue);
         }
     catch(std::exception &ex)
@@ -6785,8 +6949,9 @@ int SetFIDFieldR(const unsigned int CollectionIndex, char *ModName, unsigned int
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(FieldValue);
         Collections[CollectionIndex]->SetFIDField(ModName, recordFID, Field, FieldValue, nSize);
         }
     catch(...)
@@ -6799,13 +6964,13 @@ int SetFIDFieldR(const unsigned int CollectionIndex, char *ModName, unsigned int
         }
     return 0;
     }
-    
+
 int DeleteFIDField(const unsigned int CollectionIndex, char *ModName, unsigned int recordFID, const unsigned int Field)
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->DeleteFIDField(ModName, recordFID, Field);
         }
     catch(std::exception &ex)
@@ -6825,8 +6990,8 @@ int CreateFIDListElement(const unsigned int CollectionIndex, char *ModName, unsi
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateFIDListElement(ModName, recordFID, subField);
         }
     catch(std::exception &ex)
@@ -6845,8 +7010,8 @@ int CreateFIDListX2Element(const unsigned int CollectionIndex, char *ModName, un
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateFIDListX2Element(ModName, recordFID, subField, listIndex, listField);
         }
     catch(std::exception &ex)
@@ -6865,8 +7030,8 @@ int CreateFIDListX3Element(const unsigned int CollectionIndex, char *ModName, un
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->CreateFIDListX3Element(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field);
         }
     catch(std::exception &ex)
@@ -6886,8 +7051,8 @@ int DeleteFIDListElement(const unsigned int CollectionIndex, char *ModName, unsi
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->DeleteFIDListElement(ModName, recordFID, subField);
         }
     catch(std::exception &ex)
@@ -6906,8 +7071,8 @@ int DeleteFIDListX2Element(const unsigned int CollectionIndex, char *ModName, un
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->DeleteFIDListX2Element(ModName, recordFID, subField, listIndex, listField);
         }
     catch(std::exception &ex)
@@ -6926,8 +7091,8 @@ int DeleteFIDListX3Element(const unsigned int CollectionIndex, char *ModName, un
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         return Collections[CollectionIndex]->DeleteFIDListX3Element(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field);
         }
     catch(std::exception &ex)
@@ -6947,8 +7112,8 @@ int SetFIDListFieldC (const unsigned int CollectionIndex, char *ModName, unsigne
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->SetFIDListField(ModName, recordFID, subField, listIndex, listField, FieldValue);
         }
     catch(std::exception &ex)
@@ -6967,8 +7132,8 @@ int SetFIDListFieldUC(const unsigned int CollectionIndex, char *ModName, unsigne
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->SetFIDListField(ModName, recordFID, subField, listIndex, listField, FieldValue);
         }
     catch(std::exception &ex)
@@ -6987,8 +7152,9 @@ int SetFIDListFieldStr (const unsigned int CollectionIndex, char *ModName, unsig
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(FieldValue);
         Collections[CollectionIndex]->SetFIDListField(ModName, recordFID, subField, listIndex, listField, FieldValue);
         }
     catch(std::exception &ex)
@@ -7007,8 +7173,8 @@ int SetFIDListFieldStrA(const unsigned int CollectionIndex, char *ModName, unsig
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->SetFIDListField(ModName, recordFID, subField, listIndex, listField, FieldValue, nSize);
         }
     catch(...)
@@ -7024,8 +7190,8 @@ int SetFIDListFieldS (const unsigned int CollectionIndex, char *ModName, unsigne
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->SetFIDListField(ModName, recordFID, subField, listIndex, listField, FieldValue);
         }
     catch(std::exception &ex)
@@ -7044,8 +7210,8 @@ int SetFIDListFieldUS(const unsigned int CollectionIndex, char *ModName, unsigne
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->SetFIDListField(ModName, recordFID, subField, listIndex, listField, FieldValue);
         }
     catch(std::exception &ex)
@@ -7064,8 +7230,8 @@ int SetFIDListFieldI (const unsigned int CollectionIndex, char *ModName, unsigne
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->SetFIDListField(ModName, recordFID, subField, listIndex, listField, FieldValue);
         }
     catch(std::exception &ex)
@@ -7084,8 +7250,8 @@ int SetFIDListFieldUI(const unsigned int CollectionIndex, char *ModName, unsigne
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->SetFIDListField(ModName, recordFID, subField, listIndex, listField, FieldValue);
         }
     catch(std::exception &ex)
@@ -7105,8 +7271,8 @@ int SetFIDListFieldUIA(const unsigned int CollectionIndex, char *ModName, unsign
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->SetFIDListField(ModName, recordFID, subField, listIndex, listField, FieldValue, nSize);
         }
     catch(...)
@@ -7123,8 +7289,8 @@ int SetFIDListFieldF (const unsigned int CollectionIndex, char *ModName, unsigne
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->SetFIDListField(ModName, recordFID, subField, listIndex, listField, FieldValue);
         }
     catch(std::exception &ex)
@@ -7144,8 +7310,9 @@ int SetFIDListFieldR (const unsigned int CollectionIndex, char *ModName, unsigne
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(FieldValue);
         Collections[CollectionIndex]->SetFIDListField(ModName, recordFID, subField, listIndex, listField, FieldValue, nSize);
         }
     catch(...)
@@ -7163,8 +7330,8 @@ int DeleteFIDListField(const unsigned int CollectionIndex, char *ModName, unsign
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->DeleteFIDListField(ModName, recordFID, subField, listIndex, listField);
         }
     catch(std::exception &ex)
@@ -7184,8 +7351,8 @@ int SetFIDListX2FieldC (const unsigned int CollectionIndex, char *ModName, unsig
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->SetFIDListX2Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, FieldValue);
         }
     catch(std::exception &ex)
@@ -7204,8 +7371,8 @@ int SetFIDListX2FieldUC(const unsigned int CollectionIndex, char *ModName, unsig
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->SetFIDListX2Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, FieldValue);
         }
     catch(std::exception &ex)
@@ -7224,8 +7391,9 @@ int SetFIDListX2FieldStr (const unsigned int CollectionIndex, char *ModName, uns
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(FieldValue);
         Collections[CollectionIndex]->SetFIDListX2Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, FieldValue);
         }
     catch(std::exception &ex)
@@ -7244,8 +7412,8 @@ int SetFIDListX2FieldStrA(const unsigned int CollectionIndex, char *ModName, uns
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->SetFIDListX2Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, FieldValue, nSize);
         }
     catch(...)
@@ -7261,8 +7429,8 @@ int SetFIDListX2FieldS (const unsigned int CollectionIndex, char *ModName, unsig
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->SetFIDListX2Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, FieldValue);
         }
     catch(std::exception &ex)
@@ -7281,8 +7449,8 @@ int SetFIDListX2FieldUS(const unsigned int CollectionIndex, char *ModName, unsig
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->SetFIDListX2Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, FieldValue);
         }
     catch(std::exception &ex)
@@ -7301,8 +7469,8 @@ int SetFIDListX2FieldI (const unsigned int CollectionIndex, char *ModName, unsig
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->SetFIDListX2Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, FieldValue);
         }
     catch(std::exception &ex)
@@ -7322,8 +7490,8 @@ int SetFIDListX2FieldUI(const unsigned int CollectionIndex, char *ModName, unsig
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->SetFIDListX2Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, FieldValue);
         }
     catch(std::exception &ex)
@@ -7343,8 +7511,8 @@ int SetFIDListX2FieldF (const unsigned int CollectionIndex, char *ModName, unsig
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->SetFIDListX2Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, FieldValue);
         }
     catch(std::exception &ex)
@@ -7364,8 +7532,9 @@ int SetFIDListX2FieldR (const unsigned int CollectionIndex, char *ModName, unsig
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(FieldValue);
         Collections[CollectionIndex]->SetFIDListX2Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, FieldValue, nSize);
         }
     catch(...)
@@ -7383,8 +7552,8 @@ int DeleteFIDListX2Field(const unsigned int CollectionIndex, char *ModName, unsi
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->DeleteFIDListX2Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field);
         }
     catch(std::exception &ex)
@@ -7404,8 +7573,8 @@ int SetFIDListX3FieldC (const unsigned int CollectionIndex, char *ModName, unsig
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->SetFIDListX3Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValue);
         }
     catch(std::exception &ex)
@@ -7424,8 +7593,8 @@ int SetFIDListX3FieldUC(const unsigned int CollectionIndex, char *ModName, unsig
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->SetFIDListX3Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValue);
         }
     catch(std::exception &ex)
@@ -7444,8 +7613,9 @@ int SetFIDListX3FieldStr (const unsigned int CollectionIndex, char *ModName, uns
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(FieldValue);
         Collections[CollectionIndex]->SetFIDListX3Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValue);
         }
     catch(std::exception &ex)
@@ -7464,8 +7634,8 @@ int SetFIDListX3FieldStrA(const unsigned int CollectionIndex, char *ModName, uns
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->SetFIDListX3Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValue, nSize);
         }
     catch(...)
@@ -7481,8 +7651,8 @@ int SetFIDListX3FieldS (const unsigned int CollectionIndex, char *ModName, unsig
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->SetFIDListX3Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValue);
         }
     catch(std::exception &ex)
@@ -7501,8 +7671,8 @@ int SetFIDListX3FieldUS(const unsigned int CollectionIndex, char *ModName, unsig
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->SetFIDListX3Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValue);
         }
     catch(std::exception &ex)
@@ -7521,8 +7691,8 @@ int SetFIDListX3FieldI (const unsigned int CollectionIndex, char *ModName, unsig
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->SetFIDListX3Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValue);
         }
     catch(std::exception &ex)
@@ -7542,8 +7712,8 @@ int SetFIDListX3FieldUI(const unsigned int CollectionIndex, char *ModName, unsig
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->SetFIDListX3Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValue);
         }
     catch(std::exception &ex)
@@ -7563,8 +7733,8 @@ int SetFIDListX3FieldF (const unsigned int CollectionIndex, char *ModName, unsig
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->SetFIDListX3Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValue);
         }
     catch(std::exception &ex)
@@ -7584,8 +7754,9 @@ int SetFIDListX3FieldR (const unsigned int CollectionIndex, char *ModName, unsig
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
+        ValidatePointer(FieldValue);
         Collections[CollectionIndex]->SetFIDListX3Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValue, nSize);
         }
     catch(...)
@@ -7603,8 +7774,8 @@ int DeleteFIDListX3Field(const unsigned int CollectionIndex, char *ModName, unsi
     {
     try
         {
-        Validate(CollectionIndex);
-        Validate(ModName);
+        ValidateCollection(CollectionIndex);
+        ValidatePointer(ModName);
         Collections[CollectionIndex]->DeleteFIDListX3Field(ModName, recordFID, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field);
         }
     catch(std::exception &ex)
@@ -7622,1150 +7793,1150 @@ int DeleteFIDListX3Field(const unsigned int CollectionIndex, char *ModName, unsi
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 //ADD
-int StartGLOBIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eGLOB));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartGLOBIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartGLOBIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartCLASIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eCLAS));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartCLASIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartCLASIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartFACTIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eFACT));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartFACTIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartFACTIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartHAIRIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eHAIR));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartHAIRIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartHAIRIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartEYESIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eEYES));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartEYESIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartEYESIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartRACEIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eRACE));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartRACEIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartRACEIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartSOUNIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eSOUN));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartSOUNIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartSOUNIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartSKILIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eSKIL));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartSKILIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartSKILIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartMGEFIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eMGEF));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartMGEFIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartMGEFIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartSCPTIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eSCPT));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartSCPTIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartSCPTIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartLTEXIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eLTEX));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartLTEXIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartLTEXIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartENCHIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eENCH));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartENCHIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartENCHIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartSPELIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eSPEL));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartSPELIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartSPELIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartBSGNIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eBSGN));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartBSGNIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartBSGNIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartACTIIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eACTI));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartACTIIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartACTIIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartAPPAIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eAPPA));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartAPPAIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartAPPAIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartARMOIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eARMO));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartARMOIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartARMOIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartBOOKIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eBOOK));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartBOOKIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartBOOKIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartCLOTIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eCLOT));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartCLOTIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartCLOTIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartCONTIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eCONT));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartCONTIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartCONTIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartDOORIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eDOOR));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartDOORIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartDOORIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartINGRIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eINGR));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartINGRIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartINGRIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartLIGHIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eLIGH));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartLIGHIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartLIGHIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartMISCIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eMISC));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartMISCIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartMISCIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartSTATIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eSTAT));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartSTATIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartSTATIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartGRASIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eGRAS));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartGRASIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartGRASIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartTREEIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eTREE));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartTREEIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartTREEIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartFLORIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eFLOR));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartFLORIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartFLORIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartFURNIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eFURN));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartFURNIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartFURNIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartWEAPIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eWEAP));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartWEAPIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartWEAPIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartAMMOIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eAMMO));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartAMMOIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartAMMOIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartNPC_Iterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eNPC_));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartNPC_Iterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartNPC_Iterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartCREAIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eCREA));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartCREAIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartCREAIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartLVLCIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eLVLC));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartLVLCIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartLVLCIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartSLGMIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eSLGM));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartSLGMIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartSLGMIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartKEYMIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eKEYM));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartKEYMIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartKEYMIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartALCHIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eALCH));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartALCHIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartALCHIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartSBSPIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eSBSP));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartSBSPIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartSBSPIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartSGSTIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eSGST));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartSGSTIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartSGSTIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartLVLIIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eLVLI));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartLVLIIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartLVLIIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartWTHRIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eWTHR));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartWTHRIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartWTHRIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartCLMTIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eCLMT));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartCLMTIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartCLMTIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartREGNIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eREGN));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartREGNIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartREGNIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartCELLIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eCELL));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartCELLIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartCELLIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartWRLDIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eWRLD));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartWRLDIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartWRLDIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartDIALIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eDIAL));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartDIALIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartDIALIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartQUSTIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eQUST));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartQUSTIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartQUSTIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartIDLEIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eIDLE));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartIDLEIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartIDLEIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartPACKIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], ePACK));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartPACKIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartPACKIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartCSTYIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eCSTY));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartCSTYIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartCSTYIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartLSCRIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eLSCR));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartLSCRIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartLSCRIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartLVSPIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eLVSP));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartLVSPIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartLVSPIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartANIOIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eANIO));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartANIOIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartANIOIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartWATRIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eWATR));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartWATRIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartWATRIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
-int StartEFSHIterator(const unsigned int CollectionIndex)
-    {
-    try
-        {
-        Validate(CollectionIndex);
-        Iterators.push_back(new Iterator(Collections[CollectionIndex], eEFSH));
-        }
-    catch(std::exception &ex)
-        {
-        printf("StartEFSHIterator: Error\n  %s\n", ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("StartEFSHIterator: Error\n  Unhandled Exception\n");
-        return -1;
-        }
-    return (unsigned int)Iterators.size() - 1;
-    }
-
+//int StartGLOBIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eGLOB));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartGLOBIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartGLOBIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartCLASIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eCLAS));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartCLASIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartCLASIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartFACTIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eFACT));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartFACTIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartFACTIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartHAIRIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eHAIR));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartHAIRIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartHAIRIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartEYESIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eEYES));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartEYESIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartEYESIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartRACEIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eRACE));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartRACEIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartRACEIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartSOUNIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eSOUN));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartSOUNIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartSOUNIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartSKILIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eSKIL));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartSKILIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartSKILIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartMGEFIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eMGEF));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartMGEFIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartMGEFIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartSCPTIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eSCPT));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartSCPTIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartSCPTIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartLTEXIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eLTEX));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartLTEXIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartLTEXIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartENCHIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eENCH));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartENCHIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartENCHIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartSPELIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eSPEL));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartSPELIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartSPELIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartBSGNIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eBSGN));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartBSGNIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartBSGNIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartACTIIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eACTI));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartACTIIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartACTIIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartAPPAIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eAPPA));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartAPPAIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartAPPAIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartARMOIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eARMO));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartARMOIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartARMOIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartBOOKIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eBOOK));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartBOOKIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartBOOKIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartCLOTIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eCLOT));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartCLOTIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartCLOTIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartCONTIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eCONT));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartCONTIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartCONTIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartDOORIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eDOOR));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartDOORIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartDOORIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartINGRIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eINGR));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartINGRIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartINGRIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartLIGHIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eLIGH));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartLIGHIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartLIGHIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartMISCIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eMISC));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartMISCIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartMISCIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartSTATIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eSTAT));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartSTATIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartSTATIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartGRASIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eGRAS));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartGRASIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartGRASIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartTREEIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eTREE));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartTREEIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartTREEIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartFLORIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eFLOR));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartFLORIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartFLORIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartFURNIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eFURN));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartFURNIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartFURNIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartWEAPIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eWEAP));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartWEAPIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartWEAPIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartAMMOIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eAMMO));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartAMMOIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartAMMOIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartNPC_Iterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eNPC_));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartNPC_Iterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartNPC_Iterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartCREAIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eCREA));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartCREAIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartCREAIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartLVLCIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eLVLC));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartLVLCIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartLVLCIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartSLGMIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eSLGM));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartSLGMIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartSLGMIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartKEYMIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eKEYM));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartKEYMIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartKEYMIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartALCHIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eALCH));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartALCHIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartALCHIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartSBSPIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eSBSP));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartSBSPIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartSBSPIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartSGSTIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eSGST));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartSGSTIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartSGSTIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartLVLIIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eLVLI));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartLVLIIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartLVLIIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartWTHRIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eWTHR));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartWTHRIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartWTHRIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartCLMTIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eCLMT));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartCLMTIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartCLMTIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartREGNIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eREGN));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartREGNIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartREGNIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartCELLIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eCELL));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartCELLIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartCELLIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartWRLDIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eWRLD));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartWRLDIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartWRLDIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartDIALIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eDIAL));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartDIALIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartDIALIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartQUSTIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eQUST));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartQUSTIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartQUSTIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartIDLEIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eIDLE));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartIDLEIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartIDLEIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartPACKIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], ePACK));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartPACKIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartPACKIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartCSTYIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eCSTY));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartCSTYIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartCSTYIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartLSCRIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eLSCR));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartLSCRIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartLSCRIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartLVSPIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eLVSP));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartLVSPIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartLVSPIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartANIOIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eANIO));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartANIOIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartANIOIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartWATRIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eWATR));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartWATRIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartWATRIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
+//int StartEFSHIterator(const unsigned int CollectionIndex)
+//    {
+//    try
+//        {
+//        ValidateCollection(CollectionIndex);
+//        Iterators.push_back(new Iterator(Collections[CollectionIndex], eEFSH));
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StartEFSHIterator: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("StartEFSHIterator: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return (unsigned int)Iterators.size() - 1;
+//    }
+//
 ////////////////////////////////////////////////////////////////////////
-long long IncrementIterator(const unsigned int IteratorID)
-    {
-    try
-        {
-        if(IteratorID < Iterators.size())
-            return Iterators[IteratorID]->IncrementIterator();
-        else
-            throw 1;
-        }
-    catch(std::exception &ex)
-        {
-        printf("IncrementIterator: Error\n  %s\n", ex.what());
-        return 0;
-        }
-    catch(...)
-        {
-        printf("IncrementIterator: Error\n  Unhandled Exception\n");
-        return 0;
-        }
-    return 0;
-    }
-
-void StopIterator(const unsigned int IteratorID)
-    {
-    try
-        {
-        if(IteratorID < Iterators.size())
-            Iterators.erase(Iterators.begin() + IteratorID);
-        else
-            throw 1;
-        }
-    catch(std::exception &ex)
-        {
-        printf("StopIterator: Error\n  %s\n", ex.what());
-        return;
-        }
-    catch(...)
-        {
-        printf("StopIterator: Error\n  Unhandled Exception\n");
-        return;
-        }
-    return;
-    }
+//long long IncrementIterator(const unsigned int IteratorID)
+//    {
+//    try
+//        {
+//        if(IteratorID < Iterators.size())
+//            return Iterators[IteratorID]->IncrementIterator();
+//        else
+//            throw 1;
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("IncrementIterator: Error\n  %s\n", ex.what());
+//        return 0;
+//        }
+//    catch(...)
+//        {
+//        printf("IncrementIterator: Error\n  Unhandled Exception\n");
+//        return 0;
+//        }
+//    return 0;
+//    }
+//
+//void StopIterator(const unsigned int IteratorID)
+//    {
+//    try
+//        {
+//        if(IteratorID < Iterators.size())
+//            Iterators.erase(Iterators.begin() + IteratorID);
+//        else
+//            throw 1;
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("StopIterator: Error\n  %s\n", ex.what());
+//        return;
+//        }
+//    catch(...)
+//        {
+//        printf("StopIterator: Error\n  Unhandled Exception\n");
+//        return;
+//        }
+//    return;
+//    }
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 #ifdef _DEBUG
