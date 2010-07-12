@@ -133,8 +133,9 @@ void _FormIDHandler::UpdateFormIDLookup()
                 }
             }
         }
-    MAST = sortedMAST;
-
+    //MAST = sortedMAST;
+    MAST.clear();
+    MAST.resize(sortedMAST.size());
     for(unsigned char p = 0; p < CollapsedIndex; ++p)
         {
         MAST[p] = sortedMAST[p];
