@@ -5,7 +5,9 @@ try:
     from bolt import GPath
     import bush
 except:
-    pass
+    def GPath(obj):
+        return obj
+
 if(exists(".\\CBash.dll")):
     CBash = CDLL("CBash.dll")
 else:
@@ -19048,7 +19050,8 @@ type_record = dict([('BASE',BaseRecord),('GMST',GMSTRecord),('GLOB',GLOBRecord),
                 ('ROAD',ROADRecord),('DIAL',DIALRecord),('INFO',INFORecord),
                 ('QUST',QUSTRecord),('IDLE',IDLERecord),('PACK',PACKRecord),
                 ('CSTY',CSTYRecord),('LSCR',LSCRRecord),('LVSP',LVSPRecord),
-                ('ANIO',ANIORecord),('WATR',WATRRecord),('EFSH',EFSHRecord)])
+                ('ANIO',ANIORecord),('WATR',WATRRecord),('EFSH',EFSHRecord),
+                (None,None),('',None)])
 class CBashModFile(object):
     def __init__(self, CollectionIndex, ModName=None):
         self._CollectionIndex = CollectionIndex
@@ -19061,6 +19064,17 @@ class CBashModFile(object):
         if isinstance(recordID, basestring): TestRecord = GMSTRecord
         else: TestRecord = BaseRecord
         return TestRecord(self._CollectionIndex, self._ModName, recordID).fid
+    def LookupRecord(self, recordID):
+        if isinstance(recordID, basestring):
+            RecordType = GMSTRecord
+        else:
+            recordID = MakeShortFid(self._CollectionIndex,recordID)
+            RecordType = BaseRecord
+        testRecord = RecordType(self._CollectionIndex, self._ModName, recordID)
+        RecordType = type_record[testRecord.recType]
+        if RecordType:
+            return RecordType(self._CollectionIndex, self._ModName, recordID)
+        return None
     def IsEmpty(self):
         return CBash.IsModEmpty(self._CollectionIndex, self._ModName)
     def GetNewRecordTypes(self):
@@ -19922,15 +19936,17 @@ class Collection:
         if isinstance(recordID, basestring):
             GetNumConflicts = CBash.GetNumGMSTConflicts
             GetConflicts = CBash.GetGMSTConflicts
+            RecordType = GMSTRecord
         else:
             GetNumConflicts = CBash.GetNumFIDConflicts
             GetConflicts = CBash.GetFIDConflicts
             recordID = MakeShortFid(self._CollectionIndex,recordID)
+            RecordType = BaseRecord
         numRecords = GetNumConflicts(self._CollectionIndex, recordID, c_int(ignoreScanned))
         if(numRecords > 0):
             cModNames = (POINTER(c_char_p) * numRecords)()
             GetConflicts(self._CollectionIndex, recordID, c_int(ignoreScanned), cModNames)
-            testRecord = BaseRecord(self._CollectionIndex, string_at(cModNames[0]), recordID)
+            testRecord = RecordType(self._CollectionIndex, string_at(cModNames[0]), recordID)
             RecordType = type_record[testRecord.recType]
             return [RecordType(self._CollectionIndex, string_at(cModNames[x]), recordID) for x in range(0, numRecords)]
         return []

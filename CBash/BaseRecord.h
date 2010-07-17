@@ -1382,7 +1382,7 @@ class Record
         unsigned int flags, formID, flagsUnk;
 
         Record(bool newRecord=false):flags(0), formID(0), flagsUnk(0), recData(NULL) {IsLoaded(newRecord);}
-        Record(const unsigned int &newFormID):flags(0), formID(newFormID), flagsUnk(_fIsLoaded), recData(NULL) {}
+        Record(const unsigned int &newFormID):flags(_fIsLoaded), formID(newFormID), flagsUnk(0), recData(NULL) {}
 
         virtual ~Record() {}
         #ifdef _DEBUG
@@ -1432,7 +1432,6 @@ class Record
         virtual void SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue) {return;}
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue)
             {
-            bool loaded;
             switch(Field)
                 {
                 case 2: //flags1
@@ -1443,9 +1442,7 @@ class Record
                 //    FormIDHandler.AddMaster(formID);
                 //    return;
                 case 4: //flags2
-                    loaded = IsLoaded();
                     flagsUnk = FieldValue;
-                    IsLoaded(loaded);
                     return;
                 default:
                     SetOtherField(FormIDHandler, Field, FieldValue);
@@ -1754,17 +1751,19 @@ class Record
             }
         void SetHeaderFlagMask(unsigned int Mask)
             {
+            bool loaded = IsLoaded();
             flags = Mask;
+            IsLoaded(loaded);
             }
         bool IsLoaded()
             {
-            return (flagsUnk & _fIsLoaded) != 0;
+            return (flags & _fIsLoaded) != 0;
             }
         void IsLoaded(bool value)
             {
             if(value)
-                flagsUnk |= _fIsLoaded;
+                flags |= _fIsLoaded;
             else
-                flagsUnk &= ~_fIsLoaded;
+                flags &= ~_fIsLoaded;
             }
     };

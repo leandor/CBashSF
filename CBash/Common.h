@@ -970,8 +970,8 @@ class _FileHandler
     };
 
 enum API_FieldTypes {
-    UNKNOWN_FIELD = -1,
-    JUNK_FIELD = 0,
+    UNKNOWN_FIELD = 0,
+    JUNK_FIELD,
     INT_FIELD,
     FLOAT_FIELD,
     STRING_FIELD,

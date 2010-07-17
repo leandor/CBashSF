@@ -52,7 +52,7 @@ int ModFile::LoadTES4()
     ReadHandler.read(&TES4.formID, 4);
     ReadHandler.read(&TES4.flagsUnk, 4);
     if(TES4.IsLoaded())
-        printf("Flag used!!!!: %08X\n", TES4.flagsUnk);
+        printf("_fIsLoaded Flag used!!!!: %08X\n", TES4.flags);
     TES4.recData = ReadHandler.getBuffer(20);
     TES4.Read(FormIDHandler);
     ReadHandler.set_used(TES4.GetSize());

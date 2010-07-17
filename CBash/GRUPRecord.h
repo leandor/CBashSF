@@ -67,7 +67,7 @@ class GRUPRecords
                 FormIDHandler.ExpandFormID(curRecord->formID);
                 ret = UsedFormIDs.insert(curRecord->formID);
                 if(curRecord->IsLoaded())
-                    printf("Flag used!!!!\n");
+                    printf("_fIsLoaded Flag used!!!! %s - %08X\n", curRecord->GetStrType(), curRecord->formID);
                 if((curRecord->flags & 0x4000) != 0)
                     printf("0x4000 used: %08X!!!!\n", curRecord->formID);
                 //Make sure the formID is unique within the mod
@@ -225,7 +225,7 @@ class GRUPRecords<DIALRecord>
                         FormIDHandler.ExpandFormID(curDIALRecord->formID);
                         ret = UsedFormIDs.insert(curDIALRecord->formID);
                         if(curDIALRecord->IsLoaded())
-                            printf("Flag used!!!!\n");
+                            printf("_fIsLoaded Flag used!!!!\n %s - %08X\n", curDIALRecord->GetStrType(), curDIALRecord->formID);
                         if((curDIALRecord->flags & 0x4000) != 0)
                             printf("0x4000 used: %08X!!!!\n", curDIALRecord->formID);
                         //Make sure the formID is unique within the mod
@@ -257,7 +257,7 @@ class GRUPRecords<DIALRecord>
                         FormIDHandler.ExpandFormID(curINFORecord->formID);
                         ret = UsedFormIDs.insert(curINFORecord->formID);
                         if(curINFORecord->IsLoaded())
-                            printf("Flag used!!!!\n");
+                            printf("_fIsLoaded Flag used!!!!\n %s - %08X\n", curINFORecord->GetStrType(), curINFORecord->formID);
                         if((curINFORecord->flags & 0x4000) != 0)
                             printf("0x4000 used: %08X!!!!\n", curINFORecord->formID);
                         //Make sure the formID is unique within the mod
@@ -503,7 +503,7 @@ class GRUPRecords<CELLRecord>
                         FormIDHandler.ExpandFormID(curCELLRecord->formID);
                         ret = UsedFormIDs.insert(curCELLRecord->formID);
                         if(curCELLRecord->IsLoaded())
-                            printf("Flag used!!!!\n");
+                            printf("_fIsLoaded Flag used!!!!\n %s - %08X\n", curCELLRecord->GetStrType(), curCELLRecord->formID);
                         if((curCELLRecord->flags & 0x4000) != 0)
                             printf("0x4000 used: %08X!!!!\n", curCELLRecord->formID);
                         //Make sure the formID is unique within the mod
@@ -534,7 +534,7 @@ class GRUPRecords<CELLRecord>
                         FormIDHandler.ExpandFormID(curACHRRecord->formID);
                         ret = UsedFormIDs.insert(curACHRRecord->formID);
                         if(curACHRRecord->IsLoaded())
-                            printf("Flag used!!!!\n");
+                            printf("_fIsLoaded Flag used!!!!\n %s - %08X\n", curACHRRecord->GetStrType(), curACHRRecord->formID);
                         if((curACHRRecord->flags & 0x4000) != 0)
                             printf("0x4000 used: %08X!!!!\n", curACHRRecord->formID);
                         //Make sure the formID is unique within the mod
@@ -562,7 +562,7 @@ class GRUPRecords<CELLRecord>
                         FormIDHandler.ExpandFormID(curACRERecord->formID);
                         ret = UsedFormIDs.insert(curACRERecord->formID);
                         if(curACRERecord->IsLoaded())
-                            printf("Flag used!!!!\n");
+                            printf("_fIsLoaded Flag used!!!!\n %s - %08X\n", curACRERecord->GetStrType(), curACRERecord->formID);
                         if((curACRERecord->flags & 0x4000) != 0)
                             printf("0x4000 used: %08X!!!!\n", curACRERecord->formID);
                         //Make sure the formID is unique within the mod
@@ -590,7 +590,7 @@ class GRUPRecords<CELLRecord>
                         FormIDHandler.ExpandFormID(curREFRRecord->formID);
                         ret = UsedFormIDs.insert(curREFRRecord->formID);
                         if(curREFRRecord->IsLoaded())
-                            printf("Flag used!!!!\n");
+                            printf("_fIsLoaded Flag used!!!!\n %s - %08X\n", curREFRRecord->GetStrType(), curREFRRecord->formID);
                         if((curREFRRecord->flags & 0x4000) != 0)
                             printf("0x4000 used: %08X!!!!\n", curREFRRecord->formID);
                         //Make sure the formID is unique within the mod
@@ -619,7 +619,7 @@ class GRUPRecords<CELLRecord>
                         FormIDHandler.ExpandFormID(curCELLRecord->PGRD->formID);
                         ret = UsedFormIDs.insert(curCELLRecord->PGRD->formID);
                         if(curCELLRecord->PGRD->IsLoaded())
-                            printf("Flag used!!!!\n");
+                            printf("_fIsLoaded Flag used!!!!\n %s - %08X\n", curCELLRecord->PGRD->GetStrType(), curCELLRecord->PGRD->formID);
                         if((curCELLRecord->PGRD->flags & 0x4000) != 0)
                             printf("0x4000 used: %08X!!!!\n", curCELLRecord->PGRD->formID);
                         //Make sure the formID is unique within the mod
@@ -1114,7 +1114,7 @@ class GRUPRecords<WRLDRecord>
                         FormIDHandler.ExpandFormID(curWRLDRecord->formID);
                         ret = UsedFormIDs.insert(curWRLDRecord->formID);
                         if(curWRLDRecord->IsLoaded())
-                            printf("Flag used!!!!\n");
+                            printf("_fIsLoaded Flag used!!!!\n %s - %08X\n", curWRLDRecord->GetStrType(), curWRLDRecord->formID);
                         if((curWRLDRecord->flags & 0x4000) != 0)
                             printf("0x4000 used: %08X!!!!\n", curWRLDRecord->formID);
                         //Make sure the formID is unique within the mod
@@ -1143,7 +1143,7 @@ class GRUPRecords<WRLDRecord>
                         FormIDHandler.ExpandFormID(curCELLRecord->formID);
                         ret = UsedFormIDs.insert(curCELLRecord->formID);
                         if(curCELLRecord->IsLoaded())
-                            printf("Flag used!!!!\n");
+                            printf("_fIsLoaded Flag used!!!!\n %s - %08X\n", curCELLRecord->GetStrType(), curCELLRecord->formID);
                         if((curCELLRecord->flags & 0x4000) != 0)
                             printf("0x4000 used: %08X!!!!\n", curCELLRecord->formID);
                         //Make sure the formID is unique within the mod
@@ -1187,7 +1187,7 @@ class GRUPRecords<WRLDRecord>
                         FormIDHandler.ExpandFormID(curWRLDRecord->ROAD->formID);
                         ret = UsedFormIDs.insert(curWRLDRecord->ROAD->formID);
                         if(curWRLDRecord->ROAD->IsLoaded())
-                            printf("Flag used!!!!\n");
+                            printf("_fIsLoaded Flag used!!!!\n %s - %08X\n", curWRLDRecord->ROAD->GetStrType(), curWRLDRecord->ROAD->formID);
                         if((curWRLDRecord->ROAD->flags & 0x4000) != 0)
                             printf("0x4000 used: %08X!!!!\n", curWRLDRecord->ROAD->formID);
                         //Make sure the formID is unique within the mod
@@ -1216,7 +1216,7 @@ class GRUPRecords<WRLDRecord>
                         FormIDHandler.ExpandFormID(curCELLRecord->LAND->formID);
                         ret = UsedFormIDs.insert(curCELLRecord->LAND->formID);
                         if(curCELLRecord->LAND->IsLoaded())
-                            printf("Flag used!!!!\n");
+                            printf("_fIsLoaded Flag used!!!!\n %s - %08X\n", curCELLRecord->LAND->GetStrType(), curCELLRecord->LAND->formID);
                         if((curCELLRecord->LAND->flags & 0x4000) != 0)
                             printf("0x4000 used: %08X!!!!\n", curCELLRecord->LAND->formID);
                         //Make sure the formID is unique within the mod
@@ -1255,7 +1255,7 @@ class GRUPRecords<WRLDRecord>
                         FormIDHandler.ExpandFormID(curCELLRecord->PGRD->formID);
                         ret = UsedFormIDs.insert(curCELLRecord->PGRD->formID);
                         if(curCELLRecord->PGRD->IsLoaded())
-                            printf("Flag used!!!!\n");
+                            printf("_fIsLoaded Flag used!!!!\n %s - %08X\n", curCELLRecord->PGRD->GetStrType(), curCELLRecord->PGRD->formID);
                         if((curCELLRecord->PGRD->flags & 0x4000) != 0)
                             printf("0x4000 used: %08X!!!!\n", curCELLRecord->PGRD->formID);
                         //Make sure the formID is unique within the mod
@@ -1283,7 +1283,7 @@ class GRUPRecords<WRLDRecord>
                         FormIDHandler.ExpandFormID(curACHRRecord->formID);
                         ret = UsedFormIDs.insert(curACHRRecord->formID);
                         if(curACHRRecord->IsLoaded())
-                            printf("Flag used!!!!\n");
+                            printf("_fIsLoaded Flag used!!!!\n %s - %08X\n", curACHRRecord->GetStrType(), curACHRRecord->formID);
                         if((curACHRRecord->flags & 0x4000) != 0)
                             printf("0x4000 used: %08X!!!!\n", curACHRRecord->formID);
                         //Make sure the formID is unique within the mod
@@ -1311,7 +1311,7 @@ class GRUPRecords<WRLDRecord>
                         FormIDHandler.ExpandFormID(curACRERecord->formID);
                         ret = UsedFormIDs.insert(curACRERecord->formID);
                         if(curACRERecord->IsLoaded())
-                            printf("Flag used!!!!\n");
+                            printf("_fIsLoaded Flag used!!!!\n %s - %08X\n", curACRERecord->GetStrType(), curACRERecord->formID);
                         if((curACRERecord->flags & 0x4000) != 0)
                             printf("0x4000 used: %08X!!!!\n", curACRERecord->formID);
                         //Make sure the formID is unique within the mod
@@ -1339,7 +1339,7 @@ class GRUPRecords<WRLDRecord>
                         FormIDHandler.ExpandFormID(curREFRRecord->formID);
                         ret = UsedFormIDs.insert(curREFRRecord->formID);
                         if(curREFRRecord->IsLoaded())
-                            printf("Flag used!!!!\n");
+                            printf("_fIsLoaded Flag used!!!!\n %s - %08X\n", curREFRRecord->GetStrType(), curREFRRecord->formID);
                         if((curREFRRecord->flags & 0x4000) != 0)
                             printf("0x4000 used: %08X!!!!\n", curREFRRecord->formID);
                         //Make sure the formID is unique within the mod

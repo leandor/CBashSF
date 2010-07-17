@@ -274,7 +274,7 @@ def TestDeleteRecord():
 
 def TestMinimalLoad():
     Current = Collection()
-    modFile = Current.addMod("bgBalancingEVCore.esp")
+    modFile = Current.addMod("Oblivion_1.1.esm")
     Current.minimalLoad(LoadMasters=False)
     
 ##    newMod.safeSave()
