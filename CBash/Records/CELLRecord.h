@@ -176,7 +176,7 @@ class CELLRecord : public Record
         STRING EDID;
         STRING FULL;
         ReqSubRecord<GENFLAG> DATA;
-        OptSubRecord<CELLXCLL> XCLL;
+        SemiOptSubRecord<CELLXCLL> XCLL;
         SubRecord<GENFLAG> XCMT;
         OptSubRecord<GENXOWN> Ownership;
         SubRecord<GENFID> XCCM;

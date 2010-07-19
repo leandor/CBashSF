@@ -29,15 +29,15 @@ int INFORecord::CreateListElement(const unsigned int subField)
     ReqSubRecord<GENSCR_> *curSCR_ = NULL;
     switch(subField)
         {
-        case 13: //responses
+        case 12: //responses
             curResponse = new INFOResponse;
             Responses.push_back(curResponse);
             return (int)Responses.size() - 1;
-        case 14: //conditions
+        case 13: //conditions
             curCTDA = new ReqSubRecord<GENCTDA>;
             CTDA.push_back(curCTDA);
             return (int)CTDA.size() - 1;
-        case 24: //references
+        case 23: //references
             curSCR_ = new ReqSubRecord<GENSCR_>;
             SCR_.push_back(curSCR_);
             return (int)SCR_.size() - 1;
@@ -53,17 +53,17 @@ int INFORecord::DeleteListElement(const unsigned int subField)
     ReqSubRecord<GENSCR_> *curSCR_ = NULL;
     switch(subField)
         {
-        case 13: //responses
+        case 12: //responses
             curResponse = Responses.back();
             delete curResponse;
             Responses.pop_back();
             return (int)Responses.size() - 1;
-        case 14: //conditions
+        case 13: //conditions
             curCTDA = CTDA.back();
             delete curCTDA;
             CTDA.pop_back();
             return (int)CTDA.size() - 1;
-        case 24: //references
+        case 23: //references
             curSCR_ = SCR_.back();
             delete curSCR_;
             SCR_.pop_back();
@@ -78,42 +78,40 @@ int INFORecord::GetOtherFieldType(const unsigned int Field)
     switch(Field)
         {
         case 6: //dialType
-            return UBYTE_FIELD;
+            return USHORT_FIELD;
         case 7: //flags
             return UBYTE_FIELD;
-        case 8: //unused1
-            return BYTES_FIELD;
-        case 9: //quest
+        case 8: //quest
             return FID_FIELD;
-        case 10: //topic
+        case 9: //topic
             return FID_FIELD;
-        case 11: //prevInfo
+        case 10: //prevInfo
             return FID_FIELD;
-        case 12: //addTopics
+        case 11: //addTopics
             return FIDARRAY_FIELD;
-        case 13: //responses
+        case 12: //responses
             return LIST_FIELD;
-        case 14: //conditions
+        case 13: //conditions
             return LIST_FIELD;
-        case 15: //choices
+        case 14: //choices
             return FIDARRAY_FIELD;
-        case 16: //linksFrom
+        case 15: //linksFrom
             return FIDARRAY_FIELD;
-        case 17: //unused2
+        case 16: //unused1
             return BYTES_FIELD;
-        case 18: //numRefs
+        case 17: //numRefs
             return UINT_FIELD;
-        case 19: //compiledSize
+        case 18: //compiledSize
             return UINT_FIELD;
-        case 20: //lastIndex
+        case 19: //lastIndex
             return UINT_FIELD;
-        case 21: //scriptType
+        case 20: //scriptType
             return UINT_FIELD;
-        case 22: //compiled_p
+        case 21: //compiled_p
             return BYTES_FIELD;
-        case 23: //scriptText
+        case 22: //scriptText
             return STRING_FIELD;
-        case 24: //references
+        case 23: //references
             return LIST_FIELD;
         default:
             return UNKNOWN_FIELD;
@@ -128,25 +126,25 @@ void * INFORecord::GetOtherField(const unsigned int Field)
             return &DATA.value.dialType;
         case 7: //flags
             return &DATA.value.flags;
-        case 9: //quest
+        case 8: //quest
             return &QSTI.value.fid;
-        case 10: //topic
+        case 9: //topic
             if(TPIC.IsLoaded())
                 return &TPIC->fid;
             return NULL;
-        case 11: //prevInfo
+        case 10: //prevInfo
             if(PNAM.IsLoaded())
                 return &PNAM->fid;
             return NULL;
-        case 18: //numRefs
+        case 17: //numRefs
             return &SCHR.value.numRefs;
-        case 19: //compiledSize
+        case 18: //compiledSize
             return &SCHR.value.compiledSize;
-        case 20: //lastIndex
+        case 19: //lastIndex
             return &SCHR.value.lastIndex;
-        case 21: //scriptType
+        case 20: //scriptType
             return &SCHR.value.scriptType;
-        case 23: //scriptText
+        case 22: //scriptText
             return SCTX.value;
         default:
             return NULL;
@@ -157,7 +155,7 @@ int INFORecord::GetListFieldType(const unsigned int subField, const unsigned int
     {
     switch(subField)
         {
-        case 13: //responses
+        case 12: //responses
             switch(listField)
                 {
                 case 1: //emotionType
@@ -177,7 +175,7 @@ int INFORecord::GetListFieldType(const unsigned int subField, const unsigned int
                 default:
                     return UNKNOWN_FIELD;
                 }
-        case 14: //conditions
+        case 13: //conditions
             switch(listField)
                 {
                 case 1: //operType
@@ -197,7 +195,7 @@ int INFORecord::GetListFieldType(const unsigned int subField, const unsigned int
                 default:
                     return UNKNOWN_FIELD;
                 }
-        case 24: //references
+        case 23: //references
             switch(listField)
                 {
                 case 1: //reference
@@ -216,11 +214,11 @@ unsigned int INFORecord::GetListSize(const unsigned int Field)
     {
     switch(Field)
         {
-        case 13: //responses
+        case 12: //responses
             return (unsigned int)Responses.size();
-        case 14: //conditions
+        case 13: //conditions
             return (unsigned int)CTDA.size();
-        case 24: //references
+        case 23: //references
             return (unsigned int)SCR_.size();
         default:
             return 0;
@@ -231,7 +229,7 @@ unsigned int INFORecord::GetListArraySize(const unsigned int subField, const uns
     {
     switch(subField)
         {
-        case 13: //responses
+        case 12: //responses
             switch(listField)
                 {
                 case 3: //unused1
@@ -241,7 +239,7 @@ unsigned int INFORecord::GetListArraySize(const unsigned int subField, const uns
                 default:
                     return 0;
                 }
-        case 14: //conditions
+        case 13: //conditions
             switch(listField)
                 {
                 case 2: //unused1
@@ -260,17 +258,15 @@ unsigned int INFORecord::GetFieldArraySize(const unsigned int Field)
     {
     switch(Field)
         {
-        case 8: //unused1
-            return 1;
-        case 12: //addTopics
+        case 11: //addTopics
             return (unsigned int)NAME.size();
-        case 15: //choices
+        case 14: //choices
             return (unsigned int)TCLT.size();
-        case 16: //linksFrom
+        case 15: //linksFrom
             return (unsigned int)TCLF.size();
-        case 17: //unused2
+        case 16: //unused1
             return 4;
-        case 22: //compiled_p
+        case 21: //compiled_p
             return SCDA.size;
         default:
             return 0;
@@ -281,25 +277,22 @@ void INFORecord::GetFieldArray(const unsigned int Field, void **FieldValues)
     {
     switch(Field)
         {
-        case 8: //unused1
-            *FieldValues = &DATA.value.unused1;
-            return;
-        case 12: //addTopics
+        case 11: //addTopics
             for(unsigned int p = 0;p < NAME.size();p++)
                 FieldValues[p] = NAME[p];
             return;
-        case 15: //choices
+        case 14: //choices
             for(unsigned int p = 0;p < TCLT.size();p++)
                 FieldValues[p] = TCLT[p];
             return;
-        case 16: //linksFrom
+        case 15: //linksFrom
             for(unsigned int p = 0;p < TCLF.size();p++)
                 FieldValues[p] = TCLF[p];
             return;
-        case 17: //unused2
+        case 16: //unused1
             *FieldValues = &SCHR.value.unused1[0];
             return;
-        case 22: //compiled_p
+        case 21: //compiled_p
             *FieldValues = SCDA.value;
             return;
         default:
@@ -312,7 +305,7 @@ void INFORecord::GetListArray(const unsigned int subField, const unsigned int li
     {
     switch(subField)
         {
-        case 13: //responses
+        case 12: //responses
             if(listIndex >= Responses.size())
                 {
                 *FieldValues = NULL;
@@ -330,7 +323,7 @@ void INFORecord::GetListArray(const unsigned int subField, const unsigned int li
                     *FieldValues = NULL;
                     return;
                 }
-        case 14: //conditions
+        case 13: //conditions
             if(listIndex >= CTDA.size())
                 {
                 *FieldValues = NULL;
@@ -358,7 +351,7 @@ void * INFORecord::GetListField(const unsigned int subField, const unsigned int 
     {
     switch(subField)
         {
-        case 13: //responses
+        case 12: //responses
             if(listIndex >= Responses.size())
                 return NULL;
             switch(listField)
@@ -376,7 +369,7 @@ void * INFORecord::GetListField(const unsigned int subField, const unsigned int 
                 default:
                     return NULL;
                 }
-        case 14: //conditions
+        case 13: //conditions
             if(listIndex >= CTDA.size())
                 return NULL;
             switch(listField)
@@ -394,7 +387,7 @@ void * INFORecord::GetListField(const unsigned int subField, const unsigned int 
                 default:
                     return NULL;
                 }
-        case 24: //references
+        case 23: //references
             if(listIndex >= SCR_.size())
                 return NULL;
             switch(listField)
@@ -415,8 +408,21 @@ void INFORecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     {
     switch(Field)
         {
-        case 23: //scriptText
+        case 22: //scriptText
             SCTX.Copy(FieldValue);
+            break;
+        default:
+            return;
+        }
+    return;
+    }
+
+void INFORecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned short FieldValue)
+    {
+    switch(Field)
+        {
+        case 6: //dialType
+            DATA.value.dialType = FieldValue;
             break;
         default:
             return;
@@ -428,9 +434,6 @@ void INFORecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     {
     switch(Field)
         {
-        case 6: //dialType
-            DATA.value.dialType = FieldValue;
-            break;
         case 7: //flags
             DATA.value.flags = FieldValue;
             break;
@@ -444,12 +447,7 @@ void INFORecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     {
     switch(Field)
         {
-        case 8: //unused1
-            if(nSize != 1)
-                return;
-            DATA.value.unused1 = FieldValue[0];
-            break;
-        case 17: //unused2
+        case 16: //unused1
             if(nSize != 4)
                 return;
             SCHR.value.unused1[0] = FieldValue[0];
@@ -457,7 +455,7 @@ void INFORecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
             SCHR.value.unused1[2] = FieldValue[2];
             SCHR.value.unused1[3] = FieldValue[3];
             break;
-        case 22: //compiled_p
+        case 21: //compiled_p
             SCDA.Copy(FieldValue, nSize);
             break;
         default:
@@ -470,30 +468,30 @@ void INFORecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
     {
     switch(Field)
         {
-        case 9: //quest
+        case 8: //quest
             QSTI.value.fid = FieldValue;
             FormIDHandler.AddMaster(QSTI.value.fid);
             break;
-        case 10: //topic
+        case 9: //topic
             TPIC.Load();
             TPIC->fid = FieldValue;
             FormIDHandler.AddMaster(TPIC->fid);
             break;
-        case 11: //prevInfo
+        case 10: //prevInfo
             PNAM.Load();
             PNAM->fid = FieldValue;
             FormIDHandler.AddMaster(PNAM->fid);
             break;
-        case 18: //numRefs
+        case 17: //numRefs
             SCHR.value.numRefs = FieldValue;
             break;
-        case 19: //compiledSize
+        case 18: //compiledSize
             SCHR.value.compiledSize = FieldValue;
             break;
-        case 20: //lastIndex
+        case 19: //lastIndex
             SCHR.value.lastIndex = FieldValue;
             break;
-        case 21: //scriptType
+        case 20: //scriptType
             SCHR.value.scriptType = FieldValue;
             break;
         default:
@@ -506,7 +504,7 @@ void INFORecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     {
     switch(Field)
         {
-        case 12: //addTopics
+        case 11: //addTopics
             NAME.clear();
             if(nSize)
                 {
@@ -518,7 +516,7 @@ void INFORecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
                     }
                 }
             break;
-        case 15: //choices
+        case 14: //choices
             TCLT.clear();
             if(nSize)
                 {
@@ -530,7 +528,7 @@ void INFORecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
                     }
                 }
             break;
-        case 16: //linksFrom
+        case 15: //linksFrom
             TCLF.clear();
             if(nSize)
                 {
@@ -554,7 +552,7 @@ void INFORecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     std::map<unsigned int, std::pair<unsigned int,unsigned int>>::const_iterator curCTDAFunction;
     switch(subField)
         {
-        case 13: //responses
+        case 12: //responses
             if(listIndex >= Responses.size())
                 return;
             switch(listField)
@@ -566,7 +564,7 @@ void INFORecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
                     return;
                 }
             break;
-        case 14: //conditions
+        case 13: //conditions
             if(listIndex >= CTDA.size())
                 return;
             switch(listField)
@@ -615,7 +613,7 @@ void INFORecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
                     return;
                 }
             break;
-        case 24: //references
+        case 23: //references
             if(listIndex >= SCR_.size())
                 return;
             switch(listField)
@@ -653,7 +651,7 @@ void INFORecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     {
     switch(subField)
         {
-        case 13: //responses
+        case 12: //responses
             if(listIndex >= Responses.size())
                 return;
             switch(listField)
@@ -675,7 +673,7 @@ void INFORecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     {
     switch(subField)
         {
-        case 13: //responses
+        case 12: //responses
             if(listIndex >= Responses.size())
                 return;
             switch(listField)
@@ -699,7 +697,7 @@ void INFORecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
                     return;
                 }
             break;
-        case 14: //conditions
+        case 13: //conditions
             if(listIndex >= CTDA.size())
                 return;
             switch(listField)
@@ -733,7 +731,7 @@ void INFORecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     {
     switch(subField)
         {
-        case 13: //responses
+        case 12: //responses
             if(listIndex >= Responses.size())
                 return;
             switch(listField)
@@ -745,7 +743,7 @@ void INFORecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
                     return;
                 }
             break;
-        case 14: //conditions
+        case 13: //conditions
             if(listIndex >= CTDA.size())
                 return;
             switch(listField)
@@ -767,7 +765,7 @@ void INFORecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     {
     switch(subField)
         {
-        case 13: //responses
+        case 12: //responses
             if(listIndex >= Responses.size())
                 return;
             switch(listField)
@@ -792,7 +790,7 @@ void INFORecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     {
     switch(subField)
         {
-        case 14: //conditions
+        case 13: //conditions
             if(listIndex >= CTDA.size())
                 return;
             switch(listField)
@@ -826,73 +824,70 @@ int INFORecord::DeleteField(const unsigned int Field)
         case 7: //flags
             DATA.value.flags = defaultDATA.flags;
             break;
-        case 8: //unused1
-            DATA.value.unused1 = defaultDATA.unused1;
-            break;
-        case 9: //quest
+        case 8: //quest
             QSTI.Unload();
             break;
-        case 10: //topic
+        case 9: //topic
             TPIC.Unload();
             break;
-        case 11: //prevInfo
+        case 10: //prevInfo
             PNAM.Unload();
             break;
-        case 12: //addTopics
+        case 11: //addTopics
             nSize = (unsigned int)NAME.size();
             for(unsigned int x = 0; x < nSize; x++)
                 delete NAME[x];
             NAME.clear();
             break;
-        case 13: //responses
+        case 12: //responses
             nSize = (unsigned int)Responses.size();
             for(unsigned int x = 0; x < nSize; x++)
                 delete Responses[x];
             Responses.clear();
             break;
-        case 14: //conditions
+        case 13: //conditions
             nSize = (unsigned int)CTDA.size();
             for(unsigned int x = 0; x < nSize; x++)
                 delete CTDA[x];
             CTDA.clear();
             break;
-        case 15: //choices
+        case 14: //choices
             nSize = (unsigned int)TCLT.size();
             for(unsigned int x = 0; x < nSize; x++)
                 delete TCLT[x];
             TCLT.clear();
             break;
-        case 16: //linksFrom
+        case 15: //linksFrom
             nSize = (unsigned int)TCLF.size();
             for(unsigned int x = 0; x < nSize; x++)
                 delete TCLF[x];
             TCLF.clear();
             break;
-        case 17: //unused2
+        case 16: //unused1
             SCHR.value.unused1[0] = defaultSCHR.unused1[0];
             SCHR.value.unused1[1] = defaultSCHR.unused1[1];
             SCHR.value.unused1[2] = defaultSCHR.unused1[2];
             SCHR.value.unused1[3] = defaultSCHR.unused1[3];
             break;
-        case 18: //numRefs
+        case 17: //numRefs
             SCHR.value.numRefs = defaultSCHR.numRefs;
             break;
-        case 19: //compiledSize
+        case 18: //compiledSize
             SCHR.value.compiledSize = defaultSCHR.compiledSize;
             break;
-        case 20: //lastIndex
+        case 19: //lastIndex
             SCHR.value.lastIndex = defaultSCHR.lastIndex;
             break;
-        case 21: //scriptType
+        case 20: //scriptType
             SCHR.value.scriptType = defaultSCHR.scriptType;
             break;
-        case 22: //compiled_p
+        case 21: //compiled_p
             SCDA.Unload();
             break;
-        case 23: //scriptText
+        case 22: //scriptText
             SCTX.Unload();
             break;
-        case 24: //references
+        case 23: //references
             nSize = (unsigned int)SCR_.size();
             for(unsigned int x = 0; x < nSize; x++)
                 delete SCR_[x];
@@ -912,7 +907,7 @@ int INFORecord::DeleteListField(const unsigned int subField, const unsigned int 
     GENSCR_ defaultSCR_;
     switch(subField)
         {
-        case 13: //responses
+        case 12: //responses
             if(listIndex >= Responses.size())
                 return 0;
             switch(listField)
@@ -947,7 +942,7 @@ int INFORecord::DeleteListField(const unsigned int subField, const unsigned int 
                     return 0;
                 }
             break;
-        case 14: //conditions
+        case 13: //conditions
             if(listIndex >= CTDA.size())
                 return 0;
             switch(listField)
@@ -982,7 +977,7 @@ int INFORecord::DeleteListField(const unsigned int subField, const unsigned int 
                     return 0;
                 }
             break;
-        case 24: //references
+        case 23: //references
             if(listIndex >= SCR_.size())
                 return 0;
             switch(listField)

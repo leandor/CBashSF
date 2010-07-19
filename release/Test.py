@@ -7957,7 +7957,6 @@ def TestDIAL():
             print "  flags2 :", info.flags2
             print "  dialType     :", info.dialType
             print "  flags        :", info.flags
-            print "  unused1      :", info.unused1
             print "  quest        :", PrintFormID(info.quest)
             print "  topic        :", PrintFormID(info.topic)
             print "  prevInfo     :", PrintFormID(info.prevInfo)
@@ -7995,7 +7994,7 @@ def TestDIAL():
             for linksFrom in info.linksFrom:
                 print "    ", PrintFormID(linksFrom)
 
-            print "  unused2      :", info.unused2
+            print "  unused1      :", info.unused1
             print "  numRefs      :", info.numRefs
             print "  compiledSize :", info.compiledSize
             print "  lastIndex    :", info.lastIndex
@@ -8033,7 +8032,6 @@ def TestDIAL():
 
     newInfo.dialType = 1
     newInfo.flags = 2
-    newInfo.unused1 = [1]
     newInfo.quest = 7
     newInfo.topic = 10
     newInfo.prevInfo = 15
@@ -8111,7 +8109,7 @@ def TestDIAL():
     newInfo.linksFrom = [0x0D, 0x0E, 0x0F]
 
 
-    newInfo.unused2 = [2,3,4,5]
+    newInfo.unused1 = [2,3,4,5]
     newInfo.numRefs = 15
     newInfo.compiledSize = 3
     newInfo.lastIndex = 4
@@ -8141,7 +8139,6 @@ def TestDIAL():
 
     newInfo.dialType = 1
     newInfo.flags = 2
-    newInfo.unused1 = [1]
     newInfo.quest = 7
     newInfo.topic = 10
     newInfo.prevInfo = 15
@@ -8225,7 +8222,6 @@ def TestDIAL():
 
     newInfo.dialType = 1
     newInfo.flags = 2
-    newInfo.unused1 = [1]
     newInfo.quest = 7
     newInfo.topic = 10
     newInfo.prevInfo = 15
@@ -8303,7 +8299,7 @@ def TestDIAL():
     newInfo.linksFrom = [0x0D, 0x0E, 0x0F]
 
 
-    newInfo.unused2 = [2,3,4,5]
+    newInfo.unused1 = [2,3,4,5]
     newInfo.numRefs = 15
     newInfo.compiledSize = 3
     newInfo.lastIndex = 4
@@ -8348,7 +8344,6 @@ def TestDIAL():
 
         print "  dialType     :", info.dialType
         print "  flags        :", info.flags
-        print "  unused1      :", info.unused1
         print "  quest        :", PrintFormID(info.quest)
         print "  topic        :", PrintFormID(info.topic)
         print "  prevInfo     :", PrintFormID(info.prevInfo)
@@ -8386,7 +8381,7 @@ def TestDIAL():
         for linksFrom in info.linksFrom:
             print "    ", PrintFormID(linksFrom)
 
-        print "  unused2      :", info.unused2
+        print "  unused1      :", info.unused1
         print "  numRefs      :", info.numRefs
         print "  compiledSize :", info.compiledSize
         print "  lastIndex    :", info.lastIndex

@@ -51,8 +51,9 @@ class INFORecord : public Record
 
         struct INFODATA
             {
-            unsigned char dialType, flags, unused1;
-            INFODATA():dialType(0), flags(0), unused1(0x02) {}
+            unsigned short dialType;
+            unsigned char flags;
+            INFODATA():dialType(0), flags(0) {}
             #ifdef _DEBUG
             void Debug(int debugLevel, size_t &indentation)
                 {
@@ -65,11 +66,6 @@ class INFORecord : public Record
                         {
                         PrintIndent(indentation);
                         printf("flags    = %u\n", flags);
-                        }
-                    if(debugLevel > 5)
-                        {
-                        PrintIndent(indentation);
-                        printf("unused1  = %02X\n", unused1);
                         }
                     indentation -= 2;
                     }
@@ -263,12 +259,13 @@ class INFORecord : public Record
             };
         enum flagsFlags
             {
-            fIsGoodbye      = 0x00000001,
-            fIsRandom       = 0x00000002,
-            fIsSayOnce      = 0x00000004,
-            fIsInfoRefusal  = 0x00000010,
-            fIsRandomEnd    = 0x00000020,
-            fIsRunForRumors = 0x00000040
+            fIsGoodbye        = 0x00000001,
+            fIsRandom         = 0x00000002,
+            fIsSayOnce        = 0x00000004,
+            fIsRunImmediately = 0x00000008,
+            fIsInfoRefusal    = 0x00000010,
+            fIsRandomEnd      = 0x00000020,
+            fIsRunForRumors   = 0x00000040
             };
         STRING EDID;
         ReqSubRecord<INFODATA> DATA;
@@ -441,6 +438,7 @@ class INFORecord : public Record
         void GetListArray(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, void **FieldValues);
         void * GetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue);
+        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned short FieldValue);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue);
         void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
         void SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue);
@@ -578,6 +576,17 @@ class INFORecord : public Record
                 DATA.value.flags |= fIsSayOnce;
             else
                 DATA.value.flags &= ~fIsSayOnce;
+            }
+        bool IsRunImmediately()
+            {
+            return (DATA.value.flags & fIsRunImmediately) != 0;
+            }
+        void IsRunImmediately(bool value)
+            {
+            if(value)
+                DATA.value.flags |= fIsRunImmediately;
+            else
+                DATA.value.flags &= ~fIsRunImmediately;
             }
         bool IsInfoRefusal()
             {
