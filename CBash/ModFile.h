@@ -89,6 +89,7 @@ class ModFile
     private:
         _FileHandler ReadHandler;
         bool IsOpen, LoadedGRUPs, IsDummy, IsNew;
+        time_t ModTime;
     public:
         bool IsMerge, IsScan;
         _FormIDHandler FormIDHandler;
@@ -157,12 +158,69 @@ class ModFile
                                                                          IsDummy(DummyLoad), IsNew(CreateFile), FileName(ModName), TES4(DummyLoad || CreateFile),
                                                                          FormIDHandler(ModName, TES4.MAST, TES4.HEDR.value.nextObject)
             {
+            struct stat buf;
+            if(stat(FileName, &buf) < 0)
+                ModTime = 0;
+            else
+                ModTime = buf.st_mtime;
+
             if(CreateFile || IsDummy)
                 TES4.IsESM(_stricmp(".esm",ModName + strlen(ModName)-4) == 0);
             }
         ~ModFile()
             {
             delete []FileName;
+            }
+        bool operator <(ModFile &other)
+            {
+            if(TES4.IsESM())
+                {
+                if(other.TES4.IsESM())
+                    {
+                    if(ModTime == 0)
+                        {
+                        if(other.ModTime == 0)
+                            return true;
+                        return false;
+                        }
+                    if(other.ModTime == 0)
+                        return true;
+                    return ModTime < other.ModTime;
+                    }
+                return true;
+                }
+            if(other.TES4.IsESM())
+                return false;
+            //Esp's sort after esp's
+            //Non-existent esps sort before existing esps
+            //Non-existent esps retain their relative load order
+            //Existing esps sort by modified date
+            //New esps load last
+            //if(lhs->IsNewFile())
+            //    printf("New mod: %s\n", lhs->FileName);
+            //if(rhs->IsNewFile())
+            //    printf("New mod: %s\n", rhs->FileName);
+            if(IsNew)
+                {
+                if(other.IsNewFile())
+                    return true;
+                return false;
+                }
+            if(other.IsNewFile())
+                return false;
+            if(ModTime == 0)
+                {
+                if(other.ModTime == 0)
+                    return false;
+                return true;
+                }
+            if(other.ModTime == 0)
+                return false;
+            return ModTime < other.ModTime;
+            }
+        bool operator >(ModFile &other)
+            {
+            return !(*this < other);
             }
 
         int Open();

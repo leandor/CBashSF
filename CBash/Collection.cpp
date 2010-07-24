@@ -25,67 +25,80 @@ GPL License and Copyright Notice ============================================
 #include <sys/utime.h>
 #include <boost/threadpool.hpp>
 
-bool sortLoad(ModFile *lhs, ModFile *rhs)
+//template<typename ItemType>
+//void MergeSort(ItemType* srcArray, ItemType* helpArray, unsigned int size)
+//{
+//    ItemType* src = srcArray;
+//    ItemType* dst = helpArray;
+//
+//    for(unsigned bSize = 2; bSize < size*2; bSize *= 2)
+//    {
+//        unsigned dstInd = 0;
+//        for(unsigned bInd = 0; bInd < size; bInd += bSize)
+//        {
+//            unsigned sbInd1 = bInd, sbInd1e = bInd+bSize/2;
+//            if(sbInd1e > size) sbInd1e = size;
+//            unsigned sbInd2 = sbInd1e, sbInd2e = bInd+bSize;
+//            if(sbInd2e > size) sbInd2e = size;
+//            while(sbInd1 < sbInd1e && sbInd2 < sbInd2e)
+//            {
+//                if(src[sbInd1] < src[sbInd2])
+//                    dst[dstInd++] = src[sbInd1++];
+//                else
+//                    dst[dstInd++] = src[sbInd2++];
+//            }
+//            while(sbInd1 < sbInd1e) dst[dstInd++] = src[sbInd1++];
+//            while(sbInd2 < sbInd2e) dst[dstInd++] = src[sbInd2++];
+//        }
+//        ItemType* tmp = src; src = dst; dst = tmp;
+//    }
+//    if(src == helpArray)
+//    {
+//        for(unsigned i = 0; i < size; ++i)
+//            dst[i] = src[i];
+//    }
+//}
+
+bool compMod(ModFile *lhs, ModFile *rhs)
     {
-    struct stat lbuf, rbuf;
-    //Esm's sort before esp's
-    //Non-existent esms sort after existing esms
-    //Non-existent esms retain their relative load order
-    //Existing esms sort by modified date
-    //New esms at end of esms
-    if(lhs->TES4.IsESM())
-        {
-        if(rhs->TES4.IsESM())
-            {
-            if(stat(lhs->FileName, &lbuf) < 0)
-                {
-                if(stat(rhs->FileName, &rbuf) < 0)
-                    return true;
-                return false;
-                }
-            if(stat(rhs->FileName, &rbuf) < 0)
-                return true;
-            return lbuf.st_mtime < rbuf.st_mtime;
-            }
-        return true;
-        }
-    if(rhs->TES4.IsESM())
-        return false;
-    //Esp's sort after esp's
-    //Non-existent esps sort before existing esps
-    //Non-existent esps retain their relative load order
-    //Existing esps sort by modified date
-    //New esps load last
-    //if(stat(lhs->FileName, &lbuf) < 0)
-    //    {
-    //    if(stat(rhs->FileName, &rbuf) < 0)
-    //        return false;
-    //    return true;
-    //    }
-    //if(stat(rhs->FileName, &rbuf) < 0)
-    //    return false;
-    //if(lhs->IsNewFile())
-    //    printf("New mod: %s\n", lhs->FileName);
-    //if(rhs->IsNewFile())
-    //    printf("New mod: %s\n", rhs->FileName);
-    if(lhs->IsNewFile())
-        {
-        if(rhs->IsNewFile())
-            return true;
-        return false;
-        }
-    if(rhs->IsNewFile())
-        return false;
-    if(stat(lhs->FileName, &lbuf) < 0)
-        {
-        if(stat(rhs->FileName, &rbuf) < 0 )
-            return false;
-        return true;
-        }
-    if(stat(rhs->FileName, &rbuf) < 0)
-        return false;
-    return lbuf.st_mtime < rbuf.st_mtime;
+    return *lhs < *rhs;
     }
+
+////Insertion sort
+//void sortMods(std::vector<ModFile *> &ModFiles)
+//    {
+//    ModFile *Temp = NULL;
+//    int x = 0;
+//    int numMods = (int)ModFiles.size();
+//    for (int count = 0; count < numMods; count++)
+//        {
+//        x = count;
+//        for(int index = count + 1; index < numMods; index++)
+//            if(*ModFiles[index] < *ModFiles[x])
+//                x = index;
+//        if(x > count)
+//            std::swap(ModFiles[x], ModFiles[count]);
+//        }
+//    }
+
+////Insertion sort
+//void sortMods(std::vector<ModFile *> &ModFiles)
+//    {
+//    ModFile *Temp;
+//    int x = 0;
+//    int numMods = (int)ModFiles.size();
+//    for (int count = 1; count < numMods; ++count)
+//        {
+//        x = count;
+//        while(x > 0 && *ModFiles[x - 1] > *ModFiles[x])
+//            {
+//            Temp = ModFiles[x];
+//            ModFiles[x] = ModFiles[x - 1];
+//            ModFiles[x - 1] = Temp;
+//            x--;
+//            }
+//        }
+//    }
 
 bool Collection::IsModAdded(const char *ModName)
     {
@@ -523,14 +536,24 @@ int Collection::Load(const bool &LoadMasters, const bool &FullLoad)
                         Preloading = (AddMod(curModFile->TES4.MAST[x].value, false, false, false, !LoadMasters) == 0 || Preloading);
                 }
             }while(Preloading);
-        std::sort(ModFiles.begin(), ModFiles.end(), sortLoad);
+        //printf("Before Sort\n");
+        //for(unsigned int p = 0; p < (unsigned int)ModFiles.size(); ++p)
+        //    printf("%02X: %s\n", p, ModFiles[p]->FileName);
+            
+        std::_Insertion_sort(ModFiles.begin(),ModFiles.end(),compMod);
+        //sortMods(ModFiles);
+        //std::sort(ModFiles.begin(), ModFiles.end());
+        //printf("\n\n");
+        //printf("After Sort\n");
+        //for(unsigned int p = 0; p < (unsigned int)ModFiles.size(); ++p)
+        //    printf("%02X: %s\n", p, ModFiles[p]->FileName);
         //LoadOrder.resize(ModFiles.size());
         LoadOrder.clear();
         for(unsigned int p = 0; p < (unsigned int)ModFiles.size(); ++p)
             if(!ModFiles[p]->IsMerge && !ModFiles[p]->IsScan)
                 LoadOrder.push_back(ModFiles[p]->FileName);
-        //    else
-        //        printf("Merge - %s\n", ModFiles[p]->FileName);
+            //else
+            //    printf("Merge - %s\n", ModFiles[p]->FileName);
         //printf("\n\n");
 
         //for(unsigned int p = 0; p < (unsigned int)LoadOrder.size(); ++p)
@@ -1208,7 +1231,9 @@ int Collection::IsWinning(char *ModName, unsigned int recordFID, bool ignoreScan
     if(sortedConflicts.size())
         {
         //std::partial_sort(sortedConflicts.begin(), sortedConflicts.end(), sortLoad);
-        std::sort(sortedConflicts.begin(), sortedConflicts.end(), sortLoad);
+        //sortMods(sortedConflicts);
+        std::_Insertion_sort(sortedConflicts.begin(), sortedConflicts.end(),compMod);
+        //std::sort(sortedConflicts.begin(), sortedConflicts.end(), sortLoad);
         isWinning = _stricmp(sortedConflicts[sortedConflicts.size() - 1]->FileName, ModName) == 0;
         sortedConflicts.clear();
         }
@@ -1229,7 +1254,9 @@ int Collection::IsWinning(char *ModName, char *recordEDID, bool ignoreScanned)
     if(sortedConflicts.size())
         {
         //std::partial_sort(sortedConflicts.begin(), sortedConflicts.end(), sortLoad);
-        std::sort(sortedConflicts.begin(), sortedConflicts.end(), sortLoad);
+        //sortMods(sortedConflicts);
+        std::_Insertion_sort(sortedConflicts.begin(), sortedConflicts.end(),compMod);
+        //std::sort(sortedConflicts.begin(), sortedConflicts.end(), sortLoad);
         isWinning = _stricmp(sortedConflicts[sortedConflicts.size() - 1]->FileName, ModName) == 0;
         sortedConflicts.clear();
         }
@@ -1260,7 +1287,9 @@ void Collection::GetFIDConflicts(unsigned int recordFID, bool ignoreScanned, cha
     for(; range.first != range.second; ++range.first)
         if(!(ignoreScanned && range.first->second.first->IsScan))
             sortedConflicts.push_back(range.first->second.first);
-    std::sort(sortedConflicts.begin(), sortedConflicts.end(), sortLoad);
+    //std::sort(sortedConflicts.begin(), sortedConflicts.end(), sortLoad);
+    //sortMods(sortedConflicts);
+    std::_Insertion_sort(sortedConflicts.begin(), sortedConflicts.end(),compMod);
     unsigned int x = 0;
     for(int y = (int)sortedConflicts.size() - 1; y >= 0; --y, ++x)
         ModNames[x] = sortedConflicts[y]->FileName;
@@ -1291,7 +1320,9 @@ void Collection::GetGMSTConflicts(char *recordEDID, bool ignoreScanned, char **M
     for(; range.first != range.second; ++range.first)
         if(!(ignoreScanned && range.first->second.first->IsScan))
             sortedConflicts.push_back(range.first->second.first);
-    std::sort(sortedConflicts.begin(), sortedConflicts.end(), sortLoad);
+    //std::sort(sortedConflicts.begin(), sortedConflicts.end(), sortLoad);
+    //sortMods(sortedConflicts);
+    std::_Insertion_sort(sortedConflicts.begin(), sortedConflicts.end(),compMod);
     unsigned int x = 0;
     for(int y = (int)sortedConflicts.size() - 1; y >= 0; --y, ++x)
         ModNames[x] = sortedConflicts[y]->FileName;

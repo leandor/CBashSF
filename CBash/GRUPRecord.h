@@ -65,6 +65,12 @@ class GRUPRecords
                 ReadHandler.read(&curRecord->formID, 4);
                 ReadHandler.read(&curRecord->flagsUnk, 4);
                 FormIDHandler.ExpandFormID(curRecord->formID);
+                if(curRecord->formID >> 24 == 0xFF)
+                    {
+                    delete curRecord;
+                    ReadHandler.set_used(recordSize);
+                    continue;
+                    }
                 ret = UsedFormIDs.insert(curRecord->formID);
                 if(curRecord->IsLoaded())
                     printf("_fIsLoaded Flag used!!!! %s - %08X\n", curRecord->GetStrType(), curRecord->formID);
@@ -223,6 +229,12 @@ class GRUPRecords<DIALRecord>
                         ReadHandler.read(&curDIALRecord->formID, 4);
                         ReadHandler.read(&curDIALRecord->flagsUnk, 4);
                         FormIDHandler.ExpandFormID(curDIALRecord->formID);
+                        if(curDIALRecord->formID >> 24 == 0xFF)
+                            {
+                            delete curDIALRecord;
+                            ReadHandler.set_used(recordSize);
+                            continue;
+                            }
                         ret = UsedFormIDs.insert(curDIALRecord->formID);
                         if(curDIALRecord->IsLoaded())
                             printf("_fIsLoaded Flag used!!!!\n %s - %08X\n", curDIALRecord->GetStrType(), curDIALRecord->formID);
@@ -255,6 +267,12 @@ class GRUPRecords<DIALRecord>
                         ReadHandler.read(&curINFORecord->formID, 4);
                         ReadHandler.read(&curINFORecord->flagsUnk, 4);
                         FormIDHandler.ExpandFormID(curINFORecord->formID);
+                        if(curINFORecord->formID >> 24 == 0xFF)
+                            {
+                            delete curINFORecord;
+                            ReadHandler.set_used(recordSize);
+                            continue;
+                            }
                         ret = UsedFormIDs.insert(curINFORecord->formID);
                         if(curINFORecord->IsLoaded())
                             printf("_fIsLoaded Flag used!!!!\n %s - %08X\n", curINFORecord->GetStrType(), curINFORecord->formID);
@@ -501,6 +519,12 @@ class GRUPRecords<CELLRecord>
                         ReadHandler.read(&curCELLRecord->formID, 4);
                         ReadHandler.read(&curCELLRecord->flagsUnk, 4);
                         FormIDHandler.ExpandFormID(curCELLRecord->formID);
+                        if(curCELLRecord->formID >> 24 == 0xFF)
+                            {
+                            delete curCELLRecord;
+                            ReadHandler.set_used(recordSize);
+                            continue;
+                            }
                         ret = UsedFormIDs.insert(curCELLRecord->formID);
                         if(curCELLRecord->IsLoaded())
                             printf("_fIsLoaded Flag used!!!!\n %s - %08X\n", curCELLRecord->GetStrType(), curCELLRecord->formID);
@@ -532,6 +556,12 @@ class GRUPRecords<CELLRecord>
                         ReadHandler.read(&curACHRRecord->formID, 4);
                         ReadHandler.read(&curACHRRecord->flagsUnk, 4);
                         FormIDHandler.ExpandFormID(curACHRRecord->formID);
+                        if(curACHRRecord->formID >> 24 == 0xFF)
+                            {
+                            delete curACHRRecord;
+                            ReadHandler.set_used(recordSize);
+                            continue;
+                            }
                         ret = UsedFormIDs.insert(curACHRRecord->formID);
                         if(curACHRRecord->IsLoaded())
                             printf("_fIsLoaded Flag used!!!!\n %s - %08X\n", curACHRRecord->GetStrType(), curACHRRecord->formID);
@@ -560,6 +590,12 @@ class GRUPRecords<CELLRecord>
                         ReadHandler.read(&curACRERecord->formID, 4);
                         ReadHandler.read(&curACRERecord->flagsUnk, 4);
                         FormIDHandler.ExpandFormID(curACRERecord->formID);
+                        if(curACRERecord->formID >> 24 == 0xFF)
+                            {
+                            delete curACRERecord;
+                            ReadHandler.set_used(recordSize);
+                            continue;
+                            }
                         ret = UsedFormIDs.insert(curACRERecord->formID);
                         if(curACRERecord->IsLoaded())
                             printf("_fIsLoaded Flag used!!!!\n %s - %08X\n", curACRERecord->GetStrType(), curACRERecord->formID);
@@ -588,6 +624,12 @@ class GRUPRecords<CELLRecord>
                         ReadHandler.read(&curREFRRecord->formID, 4);
                         ReadHandler.read(&curREFRRecord->flagsUnk, 4);
                         FormIDHandler.ExpandFormID(curREFRRecord->formID);
+                        if(curREFRRecord->formID >> 24 == 0xFF)
+                            {
+                            delete curREFRRecord;
+                            ReadHandler.set_used(recordSize);
+                            continue;
+                            }
                         ret = UsedFormIDs.insert(curREFRRecord->formID);
                         if(curREFRRecord->IsLoaded())
                             printf("_fIsLoaded Flag used!!!!\n %s - %08X\n", curREFRRecord->GetStrType(), curREFRRecord->formID);
@@ -617,6 +659,13 @@ class GRUPRecords<CELLRecord>
                         ReadHandler.read(&curCELLRecord->PGRD->formID, 4);
                         ReadHandler.read(&curCELLRecord->PGRD->flagsUnk, 4);
                         FormIDHandler.ExpandFormID(curCELLRecord->PGRD->formID);
+                        if(curCELLRecord->PGRD->formID >> 24 == 0xFF)
+                            {
+                            delete curCELLRecord->PGRD;
+                            curCELLRecord->PGRD = NULL;
+                            ReadHandler.set_used(recordSize);
+                            continue;
+                            }
                         ret = UsedFormIDs.insert(curCELLRecord->PGRD->formID);
                         if(curCELLRecord->PGRD->IsLoaded())
                             printf("_fIsLoaded Flag used!!!!\n %s - %08X\n", curCELLRecord->PGRD->GetStrType(), curCELLRecord->PGRD->formID);
@@ -1112,6 +1161,12 @@ class GRUPRecords<WRLDRecord>
                         ReadHandler.read(&curWRLDRecord->formID, 4);
                         ReadHandler.read(&curWRLDRecord->flagsUnk, 4);
                         FormIDHandler.ExpandFormID(curWRLDRecord->formID);
+                        if(curWRLDRecord->formID >> 24 == 0xFF)
+                            {
+                            delete curWRLDRecord;
+                            ReadHandler.set_used(recordSize);
+                            continue;
+                            }
                         ret = UsedFormIDs.insert(curWRLDRecord->formID);
                         if(curWRLDRecord->IsLoaded())
                             printf("_fIsLoaded Flag used!!!!\n %s - %08X\n", curWRLDRecord->GetStrType(), curWRLDRecord->formID);
@@ -1141,6 +1196,12 @@ class GRUPRecords<WRLDRecord>
                         ReadHandler.read(&curCELLRecord->formID, 4);
                         ReadHandler.read(&curCELLRecord->flagsUnk, 4);
                         FormIDHandler.ExpandFormID(curCELLRecord->formID);
+                        if(curCELLRecord->formID >> 24 == 0xFF)
+                            {
+                            delete curCELLRecord;
+                            ReadHandler.set_used(recordSize);
+                            continue;
+                            }
                         ret = UsedFormIDs.insert(curCELLRecord->formID);
                         if(curCELLRecord->IsLoaded())
                             printf("_fIsLoaded Flag used!!!!\n %s - %08X\n", curCELLRecord->GetStrType(), curCELLRecord->formID);
@@ -1185,6 +1246,13 @@ class GRUPRecords<WRLDRecord>
                         ReadHandler.read(&curWRLDRecord->ROAD->formID, 4);
                         ReadHandler.read(&curWRLDRecord->ROAD->flagsUnk, 4);
                         FormIDHandler.ExpandFormID(curWRLDRecord->ROAD->formID);
+                        if(curWRLDRecord->ROAD->formID >> 24 == 0xFF)
+                            {
+                            delete curWRLDRecord->ROAD;
+                            curWRLDRecord->ROAD = NULL;
+                            ReadHandler.set_used(recordSize);
+                            continue;
+                            }
                         ret = UsedFormIDs.insert(curWRLDRecord->ROAD->formID);
                         if(curWRLDRecord->ROAD->IsLoaded())
                             printf("_fIsLoaded Flag used!!!!\n %s - %08X\n", curWRLDRecord->ROAD->GetStrType(), curWRLDRecord->ROAD->formID);
@@ -1214,6 +1282,13 @@ class GRUPRecords<WRLDRecord>
                         ReadHandler.read(&curCELLRecord->LAND->formID, 4);
                         ReadHandler.read(&curCELLRecord->LAND->flagsUnk, 4);
                         FormIDHandler.ExpandFormID(curCELLRecord->LAND->formID);
+                        if(curCELLRecord->LAND->formID >> 24 == 0xFF)
+                            {
+                            delete curCELLRecord->LAND;
+                            curCELLRecord->LAND = NULL;
+                            ReadHandler.set_used(recordSize);
+                            continue;
+                            }
                         ret = UsedFormIDs.insert(curCELLRecord->LAND->formID);
                         if(curCELLRecord->LAND->IsLoaded())
                             printf("_fIsLoaded Flag used!!!!\n %s - %08X\n", curCELLRecord->LAND->GetStrType(), curCELLRecord->LAND->formID);
@@ -1253,6 +1328,13 @@ class GRUPRecords<WRLDRecord>
                         ReadHandler.read(&curCELLRecord->PGRD->formID, 4);
                         ReadHandler.read(&curCELLRecord->PGRD->flagsUnk, 4);
                         FormIDHandler.ExpandFormID(curCELLRecord->PGRD->formID);
+                        if(curCELLRecord->PGRD->formID >> 24 == 0xFF)
+                            {
+                            delete curCELLRecord->PGRD;
+                            curCELLRecord->PGRD = NULL;
+                            ReadHandler.set_used(recordSize);
+                            continue;
+                            }
                         ret = UsedFormIDs.insert(curCELLRecord->PGRD->formID);
                         if(curCELLRecord->PGRD->IsLoaded())
                             printf("_fIsLoaded Flag used!!!!\n %s - %08X\n", curCELLRecord->PGRD->GetStrType(), curCELLRecord->PGRD->formID);
@@ -1281,6 +1363,12 @@ class GRUPRecords<WRLDRecord>
                         ReadHandler.read(&curACHRRecord->formID, 4);
                         ReadHandler.read(&curACHRRecord->flagsUnk, 4);
                         FormIDHandler.ExpandFormID(curACHRRecord->formID);
+                        if(curACHRRecord->formID >> 24 == 0xFF)
+                            {
+                            delete curACHRRecord;
+                            ReadHandler.set_used(recordSize);
+                            continue;
+                            }
                         ret = UsedFormIDs.insert(curACHRRecord->formID);
                         if(curACHRRecord->IsLoaded())
                             printf("_fIsLoaded Flag used!!!!\n %s - %08X\n", curACHRRecord->GetStrType(), curACHRRecord->formID);
@@ -1309,6 +1397,12 @@ class GRUPRecords<WRLDRecord>
                         ReadHandler.read(&curACRERecord->formID, 4);
                         ReadHandler.read(&curACRERecord->flagsUnk, 4);
                         FormIDHandler.ExpandFormID(curACRERecord->formID);
+                        if(curACRERecord->formID >> 24 == 0xFF)
+                            {
+                            delete curACRERecord;
+                            ReadHandler.set_used(recordSize);
+                            continue;
+                            }
                         ret = UsedFormIDs.insert(curACRERecord->formID);
                         if(curACRERecord->IsLoaded())
                             printf("_fIsLoaded Flag used!!!!\n %s - %08X\n", curACRERecord->GetStrType(), curACRERecord->formID);
@@ -1337,6 +1431,12 @@ class GRUPRecords<WRLDRecord>
                         ReadHandler.read(&curREFRRecord->formID, 4);
                         ReadHandler.read(&curREFRRecord->flagsUnk, 4);
                         FormIDHandler.ExpandFormID(curREFRRecord->formID);
+                        if(curREFRRecord->formID >> 24 == 0xFF)
+                            {
+                            delete curREFRRecord;
+                            ReadHandler.set_used(recordSize);
+                            continue;
+                            }
                         ret = UsedFormIDs.insert(curREFRRecord->formID);
                         if(curREFRRecord->IsLoaded())
                             printf("_fIsLoaded Flag used!!!!\n %s - %08X\n", curREFRRecord->GetStrType(), curREFRRecord->formID);
