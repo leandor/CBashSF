@@ -449,7 +449,6 @@ class Collection
                     return;
 
                 curModFile->TES4.SetField(curModFile->FormIDHandler, Field, FieldValue, nSize);
-                curModFile->TES4.recData = NULL;
                 return;
                 }
             catch(...)
@@ -469,7 +468,6 @@ class Collection
                     return;
 
                 ((Record *)&curModFile->TES4)->SetField(curModFile->FormIDHandler, Field, FieldValue);
-                curModFile->TES4.recData = NULL;
                 return;
                 }
             catch(...)

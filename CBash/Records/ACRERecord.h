@@ -34,6 +34,7 @@ class ACRERecord : public Record
             eXRNK = 0x4B4E5258,
             eXGLB = 0x424C4758,
 
+            eXLOD = 0x444F4C58,
             eXESP = 0x50534558,
             eXRGD = 0x44475258,
             eXSCL = 0x4C435358,
@@ -47,6 +48,7 @@ class ACRERecord : public Record
         STRING EDID;
         ReqSubRecord<GENFID> NAME;
         OptSubRecord<GENXOWN> Ownership;
+        OptSubRecord<GENXLOD> XLOD;
         OptSubRecord<GENXESP> XESP;
         RAWBYTES XRGD;
         OptSubRecord<GENXSCL> XSCL;
@@ -70,6 +72,7 @@ class ACRERecord : public Record
                 Ownership->XRNK = srcRecord->Ownership->XRNK;
                 Ownership->XGLB = srcRecord->Ownership->XGLB;
                 }
+            XLOD = srcRecord->XLOD;
             XESP = srcRecord->XESP;
             XRGD = srcRecord->XRGD;
             XSCL = srcRecord->XSCL;
@@ -83,6 +86,7 @@ class ACRERecord : public Record
             EDID.Unload();
             NAME.Unload();
             Ownership.Unload();
+            XLOD.Unload();
             XESP.Unload();
             XRGD.Unload();
             XSCL.Unload();

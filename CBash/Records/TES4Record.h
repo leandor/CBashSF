@@ -41,7 +41,7 @@ class TES4Record : public Record
             unsigned int numRecords, nextObject;
             TES4HEDR(float nVersion, unsigned int nNumRecords, unsigned int nNextObject):
                 version(nVersion),numRecords(nNumRecords),nextObject(nNextObject) {}
-            TES4HEDR():version(0.8f),numRecords(0),nextObject(OBJECT_ID_START) {}
+            TES4HEDR():version(0.8f),numRecords(0),nextObject(END_HARDCODED_IDS) {}
             #ifdef _DEBUG
             void Debug(int debugLevel, unsigned int &indentation)
                 {

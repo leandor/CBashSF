@@ -34,27 +34,33 @@ int ACRERecord::GetOtherFieldType(const unsigned int Field)
             return INT_FIELD;
         case 9: //globalVariable
             return FID_FIELD;
-        case 10: //parent
+        case 10: //lod1
+            return FLOAT_FIELD;
+        case 11: //lod2
+            return FLOAT_FIELD;
+        case 12: //lod3
+            return FLOAT_FIELD;
+        case 13: //parent
             return FID_FIELD;
-        case 11: //parentFlags
+        case 14: //parentFlags
             return UBYTE_FIELD;
-        case 12: //unused1
+        case 15: //unused1
             return BYTES_FIELD;
-        case 13: //xrgd_p
+        case 16: //xrgd_p
             return BYTES_FIELD;
-        case 14: //scale
+        case 17: //scale
             return FLOAT_FIELD;
-        case 15: //posX
+        case 18: //posX
             return FLOAT_FIELD;
-        case 16: //posY
+        case 19: //posY
             return FLOAT_FIELD;
-        case 17: //posZ
+        case 20: //posZ
             return FLOAT_FIELD;
-        case 18: //rotX
+        case 21: //rotX
             return FLOAT_FIELD;
-        case 19: //rotY
+        case 22: //rotY
             return FLOAT_FIELD;
-        case 20: //rotZ
+        case 23: //rotZ
             return FLOAT_FIELD;
         default:
             return UNKNOWN_FIELD;
@@ -81,29 +87,41 @@ void * ACRERecord::GetOtherField(const unsigned int Field)
             if(Ownership.IsLoaded() && Ownership->XGLB.IsLoaded())
                 return &Ownership->XGLB->fid;
             return NULL;
-        case 10: //parent
+        case 10: //lod1
+            if(XLOD.IsLoaded())
+                return &XLOD->lod1;
+            return NULL;
+        case 11: //lod2
+            if(XLOD.IsLoaded())
+                return &XLOD->lod2;
+            return NULL;
+        case 12: //lod3
+            if(XLOD.IsLoaded())
+                return &XLOD->lod3;
+            return NULL;
+        case 13: //parent
             if(XESP.IsLoaded())
                 return &XESP->parent;
             return NULL;
-        case 11: //parentFlags
+        case 14: //parentFlags
             if(XESP.IsLoaded())
                 return &XESP->flags;
             return NULL;
-        case 14: //scale
+        case 17: //scale
             if(XSCL.IsLoaded())
                 return &XSCL->scale;
             return NULL;
-        case 15: //posX
+        case 18: //posX
             return &DATA.value.posX;
-        case 16: //posY
+        case 19: //posY
             return &DATA.value.posY;
-        case 17: //posZ
+        case 20: //posZ
             return &DATA.value.posZ;
-        case 18: //rotX
+        case 21: //rotX
             return &DATA.value.rotX;
-        case 19: //rotY
+        case 22: //rotY
             return &DATA.value.rotY;
-        case 20: //rotZ
+        case 23: //rotZ
             return &DATA.value.rotZ;
         default:
             return NULL;
@@ -113,11 +131,11 @@ unsigned int ACRERecord::GetFieldArraySize(const unsigned int Field)
     {
     switch(Field)
         {
-        case 12: //unused1
+        case 15: //unused1
             if(XESP.IsLoaded())
                 return 3;
             return 0;
-        case 13: //xrgd_p
+        case 16: //xrgd_p
             return XRGD.size;
         default:
             return 0;
@@ -128,13 +146,13 @@ void ACRERecord::GetFieldArray(const unsigned int Field, void **FieldValues)
     {
     switch(Field)
         {
-        case 12: //unused1
+        case 15: //unused1
             if(XESP.IsLoaded())
                 *FieldValues = &XESP->unused1[0];
             else
                 *FieldValues = NULL;
             return;
-        case 13: //xrgd_p
+        case 16: //xrgd_p
             *FieldValues = XRGD.value;
             return;
         default:
@@ -175,7 +193,7 @@ void ACRERecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
             Ownership->XGLB->fid = FieldValue;
             FormIDHandler.AddMaster(Ownership->XGLB->fid);
             break;
-        case 10: //parent
+        case 13: //parent
             XESP.Load();
             XESP->parent = FieldValue;
             FormIDHandler.AddMaster(XESP->parent);
@@ -205,7 +223,7 @@ void ACRERecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     {
     switch(Field)
         {
-        case 11: //parentFlags
+        case 14: //parentFlags
             XESP.Load();
             XESP->flags = FieldValue;
             break;
@@ -219,7 +237,7 @@ void ACRERecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     {
     switch(Field)
         {
-        case 12: //unused1
+        case 15: //unused1
             if(nSize != 3)
                 return;
             XESP.Load();
@@ -227,7 +245,7 @@ void ACRERecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
             XESP->unused1[1] = FieldValue[1];
             XESP->unused1[2] = FieldValue[2];
             break;
-        case 13: //xrgd_p
+        case 16: //xrgd_p
             XRGD.Copy(FieldValue, nSize);
             break;
         default:
@@ -240,26 +258,38 @@ void ACRERecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     {
     switch(Field)
         {
-        case 14: //scale
+        case 10: //lod1
+            XLOD.Load();
+            XLOD->lod1 = FieldValue;
+            break;
+        case 11: //lod2
+            XLOD.Load();
+            XLOD->lod2 = FieldValue;
+            break;
+        case 12: //lod3
+            XLOD.Load();
+            XLOD->lod3 = FieldValue;
+            break;
+        case 17: //scale
             XSCL.Load();
             XSCL->scale = FieldValue;
             break;
-        case 15: //posX
+        case 18: //posX
             DATA.value.posX = FieldValue;
             break;
-        case 16: //posY
+        case 19: //posY
             DATA.value.posY = FieldValue;
             break;
-        case 17: //posZ
+        case 20: //posZ
             DATA.value.posZ = FieldValue;
             break;
-        case 18: //rotX
+        case 21: //rotX
             DATA.value.rotX = FieldValue;
             break;
-        case 19: //rotY
+        case 22: //rotY
             DATA.value.rotY = FieldValue;
             break;
-        case 20: //rotZ
+        case 23: //rotZ
             DATA.value.rotZ = FieldValue;
             break;
         default:
@@ -270,6 +300,7 @@ void ACRERecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
 
 int ACRERecord::DeleteField(const unsigned int Field)
     {
+    GENXLOD defaultXLOD;
     GENXESP defaultXESP;
     GENPOSDATA defaultDATA;
     switch(Field)
@@ -292,15 +323,27 @@ int ACRERecord::DeleteField(const unsigned int Field)
             if(Ownership.IsLoaded())
                 Ownership->XGLB.Unload();
             break;
-        case 10: //parent
+        case 10: //lod1
+            if(XLOD.IsLoaded())
+                XLOD->lod1 = defaultXLOD.lod1;
+            break;
+        case 11: //lod2
+            if(XLOD.IsLoaded())
+                XLOD->lod2 = defaultXLOD.lod2;
+            break;
+        case 12: //lod3
+            if(XLOD.IsLoaded())
+                XLOD->lod3 = defaultXLOD.lod3;
+            break;
+        case 13: //parent
             if(XESP.IsLoaded())
                 XESP->parent = defaultXESP.parent;
             break;
-        case 11: //parentFlags
+        case 14: //parentFlags
             if(XESP.IsLoaded())
                 XESP->flags = defaultXESP.flags;
             break;
-        case 12: //unused1
+        case 15: //unused1
             if(XESP.IsLoaded())
                 {
                 XESP->unused1[0] = defaultXESP.unused1[0];
@@ -308,28 +351,28 @@ int ACRERecord::DeleteField(const unsigned int Field)
                 XESP->unused1[2] = defaultXESP.unused1[2];
                 }
             break;
-        case 13: //xrgd_p
+        case 16: //xrgd_p
             XRGD.Unload();
             break;
-        case 14: //scale
+        case 17: //scale
             XSCL.Unload();
             break;
-        case 15: //posX
+        case 18: //posX
             DATA.value.posX = defaultDATA.posX;
             break;
-        case 16: //posY
+        case 19: //posY
             DATA.value.posY = defaultDATA.posY;
             break;
-        case 17: //posZ
+        case 20: //posZ
             DATA.value.posZ = defaultDATA.posZ;
             break;
-        case 18: //rotX
+        case 21: //rotX
             DATA.value.rotX = defaultDATA.rotX;
             break;
-        case 19: //rotY
+        case 22: //rotY
             DATA.value.rotY = defaultDATA.rotY;
             break;
-        case 20: //rotZ
+        case 23: //rotZ
             DATA.value.rotZ = defaultDATA.rotZ;
             break;
         default:

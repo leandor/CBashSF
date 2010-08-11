@@ -65,6 +65,9 @@ int ACRERecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 Ownership.Load();
                 Ownership->XGLB.Read(buffer, subSize, curPos);
                 break;
+            case eXLOD:
+                XLOD.Read(buffer, subSize, curPos);
+                break;
             case eXESP:
                 XESP.Read(buffer, subSize, curPos);
                 break;
@@ -115,6 +118,9 @@ unsigned int ACRERecord::GetSize(bool forceCalc)
             TotSize += Ownership->XGLB.GetSize() + 6;
         }
 
+    if(XLOD.IsLoaded())
+        TotSize += XLOD.GetSize() + 6;
+
     if(XESP.IsLoaded())
         TotSize += XESP.GetSize() + 6;
 
@@ -153,6 +159,9 @@ int ACRERecord::WriteRecord(_FileHandler &SaveHandler)
             SaveHandler.writeSubRecord(eXGLB, Ownership->XGLB.value, Ownership->XGLB.GetSize());
         }
 
+    if(XLOD.IsLoaded())
+        SaveHandler.writeSubRecord(eXLOD, XLOD.value, XLOD.GetSize());
+
     if(XESP.IsLoaded())
         SaveHandler.writeSubRecord(eXESP, XESP.value, XESP.GetSize());
 
@@ -182,6 +191,8 @@ void ACRERecord::Debug(int debugLevel)
     NAME.Debug("NAME", debugLevel, indentation);
 
     Ownership.Debug("Ownership", debugLevel, indentation);
+
+    XLOD.Debug("XLOD", debugLevel, indentation);
 
     XESP.Debug("XESP", debugLevel, indentation);
 

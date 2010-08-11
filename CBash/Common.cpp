@@ -100,7 +100,7 @@ unsigned int _FormIDHandler::NextExpandedFID()
     {
     //0x00FFFFFF is the highest formID that can be used.
     if(nextObject >= 0x01000000)
-        nextObject = OBJECT_ID_START;
+        nextObject = END_HARDCODED_IDS;
     return (ExpandedIndex << 24) | ++nextObject;
     }
 
@@ -190,8 +190,8 @@ void _FormIDHandler::CreateFormIDLookup(const unsigned char expandedIndex)
 void _FormIDHandler::AddMaster(unsigned int &recordFID)
     {
     unsigned int modIndex = recordFID >> 24;
-    //If formID is not set, or the formID belongs to the mod, or if the master is already present, do nothing
-    if((recordFID == 0) || (modIndex == ExpandedIndex) || (CollapseIndex[modIndex] != CollapsedIndex))
+    //If formID is not set, or the formID belongs to the engine, or the formID belongs to the mod, or if the master is already present, do nothing
+    if((recordFID == 0) || (recordFID < END_HARDCODED_IDS) || (modIndex == ExpandedIndex) || (CollapseIndex[modIndex] != CollapsedIndex))
         return;
     //If the modIndex doesn't match to a loaded mod, it gets assigned to the mod that it is in.
     if(modIndex >= LoadOrder.size())
@@ -215,8 +215,8 @@ void _FormIDHandler::AddMaster(unsigned int &recordFID)
 void _FormIDHandler::AddMaster(unsigned int *&recordFID)
     {
     unsigned int modIndex = *recordFID >> 24;
-    //If formID is not set, or the formID belongs to the mod, or if the master is already present, do nothing
-    if((*recordFID == 0) || (modIndex == ExpandedIndex) || (CollapseIndex[modIndex] != CollapsedIndex))
+    //If formID is not set, or the formID belongs to the engine, or the formID belongs to the mod, or if the master is already present, do nothing
+    if((*recordFID == 0) || (*recordFID < END_HARDCODED_IDS) || (modIndex == ExpandedIndex) || (CollapseIndex[modIndex] != CollapsedIndex))
         return;
     //If the modIndex doesn't match to a loaded mod, it gets assigned to the mod that it is in.
     if(modIndex >= LoadOrder.size())
@@ -244,11 +244,15 @@ bool _FormIDHandler::MastersChanged()
 
 bool _FormIDHandler::UsesMaster(const unsigned int *&recordFID, const unsigned char &MASTIndex)
     {
+    if(*recordFID < END_HARDCODED_IDS) //Any formID <= 0x800 is hardcoded in the engine and doesn't 'belong' to a mod.
+        return false;
     return (ExpandIndex[MASTIndex] == (*recordFID >> 24));
     }
 
 bool _FormIDHandler::UsesMaster(const unsigned int &recordFID, const unsigned char &MASTIndex)
     {
+    if(recordFID < END_HARDCODED_IDS) //Any formID <= 0x800 is hardcoded in the engine and doesn't 'belong' to a mod.
+        return false;
     return (ExpandIndex[MASTIndex] == (recordFID >> 24));
     }
 
@@ -985,6 +989,243 @@ Function_NameType PACKTargetType_NameInit[] =
     Function_NameType(2,"Object type")
     };
 
+Function_NameType HardCodedFormID_EDIDInit[] =
+    {
+    Function_NameType(0x0001,"DoorMarker"),
+    Function_NameType(0x0002,"TravelMarker"),
+    Function_NameType(0x0003,"NorthMarker"),
+    Function_NameType(0x0004,"PrisonMarker"),
+    Function_NameType(0x0005,"DivineMarker"),
+    Function_NameType(0x0006,"TempleMarker"),
+    Function_NameType(0x0007,"Player"),
+    Function_NameType(0x000A,"Lockpick"),
+    Function_NameType(0x000B,"SkeletonKey"),
+    Function_NameType(0x000C,"RepairHammer"),
+    Function_NameType(0x000E,"LootBag"),
+    Function_NameType(0x000F,"Gold001"),
+    Function_NameType(0x0010,"MapMarker"),
+    Function_NameType(0x0011,"StolenGoods"),
+    Function_NameType(0x0012,"HorseMarker"),
+    Function_NameType(0x0013,"CreatureFaction"),
+    Function_NameType(0x0014,"PlayerRef"),
+    Function_NameType(0x0015,"JailPants"),
+    Function_NameType(0x0016,"JailShoes"),
+    Function_NameType(0x0017,"JailShirt"),
+    Function_NameType(0x0018,"DefaultWater"),
+    Function_NameType(0x0019,"VampireRace"),
+    Function_NameType(0x001A,"eyeReanimate"),
+    Function_NameType(0x001E,"FlameNode0"),
+    Function_NameType(0x001F,"FlameNode1"),
+    Function_NameType(0x0020,"FlameNode2"),
+    Function_NameType(0x0021,"FlameNode3"),
+    Function_NameType(0x0022,"FlameNode4"),
+    Function_NameType(0x0023,"FlameNode5"),
+    Function_NameType(0x0024,"FlameNode6"),
+    Function_NameType(0x0025,"FlameNode7"),
+    Function_NameType(0x0026,"FlameNode8"),
+    Function_NameType(0x0027,"FlameNode9"),
+    Function_NameType(0x0028,"FlameNode10"),
+    Function_NameType(0x0029,"FlameNode11"),
+    Function_NameType(0x002A,"FlameNode12"),
+    Function_NameType(0x002B,"FlameNode13"),
+    Function_NameType(0x002C,"FlameNode14"),
+    Function_NameType(0x002D,"FlameNode15"),
+    Function_NameType(0x002E,"FlameNode16"),
+    Function_NameType(0x002F,"FlameNode17"),
+    Function_NameType(0x0030,"FlameNode18"),
+    Function_NameType(0x0031,"FlameNode19"),
+    Function_NameType(0x0032,"FlameNode20"),
+    Function_NameType(0x0034,"XMarkerHeading"),
+    Function_NameType(0x0035,"GameYear"),
+    Function_NameType(0x0036,"GameMonth"),
+    Function_NameType(0x0037,"GameDay"),
+    Function_NameType(0x0038,"GameHour"),
+    Function_NameType(0x0039,"GameDaysPassed"),
+    Function_NameType(0x003A,"TimeScale"),
+    Function_NameType(0x003B,"XMarker"),
+    Function_NameType(0x003C,"Tamriel"),
+    Function_NameType(0x003D,"SkillArmorer"),
+    Function_NameType(0x003E,"SkillAthletics"),
+    Function_NameType(0x003F,"SkillBlade"),
+    Function_NameType(0x0040,"SkillBlock"),
+    Function_NameType(0x0041,"SkillBlunt"),
+    Function_NameType(0x0042,"SkillHandToHand"),
+    Function_NameType(0x0043,"SkillHeavyArmor"),
+    Function_NameType(0x0044,"SkillAlchemy"),
+    Function_NameType(0x0045,"SkillAlteration"),
+    Function_NameType(0x0046,"SkillConjuration"),
+    Function_NameType(0x0047,"SkillDestruction"),
+    Function_NameType(0x0048,"SkillIllusion"),
+    Function_NameType(0x0049,"SkillMysticism"),
+    Function_NameType(0x004A,"SkillRestoration"),
+    Function_NameType(0x004B,"SkillAcrobatics"),
+    Function_NameType(0x004C,"SkillLightArmor"),
+    Function_NameType(0x004D,"SkillMarksman"),
+    Function_NameType(0x004E,"SkillMercantile"),
+    Function_NameType(0x004F,"SkillSecurity"),
+    Function_NameType(0x0050,"SkillSneak"),
+    Function_NameType(0x0051,"SkillSpeechcraft"),
+    Function_NameType(0x0064,"FurnitureMarker01"),
+    Function_NameType(0x0065,"FurnitureMarker02"),
+    Function_NameType(0x0066,"FurnitureMarker03"),
+    Function_NameType(0x0067,"FurnitureMarker04"),
+    Function_NameType(0x0068,"FurnitureMarker05"),
+    Function_NameType(0x0069,"FurnitureMarker06"),
+    Function_NameType(0x006A,"FurnitureMarker07"),
+    Function_NameType(0x006B,"FurnitureMarker08"),
+    Function_NameType(0x006C,"FurnitureMarker09"),
+    Function_NameType(0x006D,"FurnitureMarker10"),
+    Function_NameType(0x006E,"FurnitureMarker11"),
+    Function_NameType(0x006F,"FurnitureMarker12"),
+    Function_NameType(0x0070,"FurnitureMarker13"),
+    Function_NameType(0x0071,"FurnitureMarker14"),
+    Function_NameType(0x0072,"FurnitureMarker15"),
+    Function_NameType(0x0073,"FurnitureMarker16"),
+    Function_NameType(0x0074,"FurnitureMarker17"),
+    Function_NameType(0x0075,"FurnitureMarker18"),
+    Function_NameType(0x0076,"FurnitureMarker19"),
+    Function_NameType(0x0077,"FurnitureMarker20"),
+    Function_NameType(0x00AA,"ADMIREHATE"),
+    Function_NameType(0x00AB,"ADMIRELOVE"),
+    Function_NameType(0x00AC,"ADMIRELIKE"),
+    Function_NameType(0x00AD,"ADMIREDISLIKE"),
+    Function_NameType(0x00AE,"COERCEHATE"),
+    Function_NameType(0x00AF,"COERCELOVE"),
+    Function_NameType(0x00B0,"COERCELIKE"),
+    Function_NameType(0x00B1,"COERCEDISLIKE"),
+    Function_NameType(0x00B2,"BOASTHATE"),
+    Function_NameType(0x00B3,"BOASTLOVE"),
+    Function_NameType(0x00B4,"BOASTLIKE"),
+    Function_NameType(0x00B5,"BOASTDISLIKE"),
+    Function_NameType(0x00B6,"JOKEHATE"),
+    Function_NameType(0x00B7,"JOKELOVE"),
+    Function_NameType(0x00B8,"JOKELIKE"),
+    Function_NameType(0x00B9,"JOKEDISLIKE"),
+    Function_NameType(0x00BA,"BRIBE"),
+    Function_NameType(0x00BB,"PERSUASIONENTER"),
+    Function_NameType(0x00BC,"PERSUASIONEXIT"),
+    Function_NameType(0x00C8,"GREETING"),
+    Function_NameType(0x00D2,"HELLO"),
+    Function_NameType(0x00D3,"ANY"),
+    Function_NameType(0x00D4,"GOODBYE"),
+    Function_NameType(0x00D5,"IdleChatter"),
+    Function_NameType(0x00D6,"SPELLHELP"),
+    Function_NameType(0x00D7,"INFOGENERAL"),
+    Function_NameType(0x00DC,"Attack"),
+    Function_NameType(0x00DD,"Hit"),
+    Function_NameType(0x00DE,"Flee"),
+    Function_NameType(0x00DF,"Steal"),
+    Function_NameType(0x00E0,"Trespass"),
+    Function_NameType(0x00E1,"Yield"),
+    Function_NameType(0x00E2,"AcceptYield"),
+    Function_NameType(0x00E3,"Pickpocket"),
+    Function_NameType(0x00E4,"Assault"),
+    Function_NameType(0x00E5,"Murder"),
+    Function_NameType(0x00E6,"PowerAttack"),
+    Function_NameType(0x00E7,"AssaultNoCrime"),
+    Function_NameType(0x00E8,"MurderNoCrime"),
+    Function_NameType(0x00E9,"PickpocketNoCrime"),
+    Function_NameType(0x00EA,"StealNoCrime"),
+    Function_NameType(0x00EB,"TrespassNoCrime"),
+    Function_NameType(0x00F0,"AdmireSuccess"),
+    Function_NameType(0x00F1,"AdmireFail"),
+    Function_NameType(0x00F2,"AdmireNeutral"),
+    Function_NameType(0x00F3,"TauntSuccess"),
+    Function_NameType(0x00F4,"TauntFail"),
+    Function_NameType(0x00F5,"TauntNeutral"),
+    Function_NameType(0x00F6,"BoastSuccess"),
+    Function_NameType(0x00F7,"BoastFail"),
+    Function_NameType(0x00F8,"BoastNeutral"),
+    Function_NameType(0x00F9,"JokeSuccess"),
+    Function_NameType(0x00FA,"JokeFail"),
+    Function_NameType(0x00FB,"JokeNeutral"),
+    Function_NameType(0x00FC,"BribeSuccess"),
+    Function_NameType(0x00FD,"BribeFail"),
+    Function_NameType(0x00FE,"DemandSuccess"),
+    Function_NameType(0x00FF,"DemandFail"),
+    Function_NameType(0x0100,"DemandNoMoney"),
+    Function_NameType(0x0101,"DemandNoMoreCircle"),
+    Function_NameType(0x0102,"BribeNoMoreCircle"),
+    Function_NameType(0x0103,"BribeNoMoney"),
+    Function_NameType(0x0104,"Noticed"),
+    Function_NameType(0x0105,"Seen"),
+    Function_NameType(0x0106,"Unseen"),
+    Function_NameType(0x0107,"Lost"),
+    Function_NameType(0x010E,"ServiceRefusal"),
+    Function_NameType(0x010F,"BarterStart"),
+    Function_NameType(0x0110,"BarterFail"),
+    Function_NameType(0x0111,"Repair"),
+    Function_NameType(0x0112,"Travel"),
+    Function_NameType(0x0113,"Training"),
+    Function_NameType(0x0114,"BarterBuyItem"),
+    Function_NameType(0x0115,"BarterSellItem"),
+    Function_NameType(0x0116,"BarterExit"),
+    Function_NameType(0x0117,"BarterStolen"),
+    Function_NameType(0x0118,"InfoRefusal"),
+    Function_NameType(0x0119,"Idle"),
+    Function_NameType(0x011A,"ObserveCombat"),
+    Function_NameType(0x011B,"Corpse"),
+    Function_NameType(0x011C,"TimeToGo"),
+    Function_NameType(0x011D,"RepairExit"),
+    Function_NameType(0x0120,"Recharge"),
+    Function_NameType(0x0121,"RechargeExit"),
+    Function_NameType(0x0124,"TrainingExit"),
+    Function_NameType(0x012C,"MagicFailureSoundAlteration"),
+    Function_NameType(0x012D,"MagicFailureSoundConjuration"),
+    Function_NameType(0x012E,"MagicFailureSoundDestruction"),
+    Function_NameType(0x012F,"MagicFailureSoundIllusion"),
+    Function_NameType(0x0130,"MagicFailureSoundMysticism"),
+    Function_NameType(0x0131,"MagicFailureSoundRestoration"),
+    Function_NameType(0x0136,"DefaultPlayerSpell"),
+    Function_NameType(0x0137,"DefaultMarksmanParalyzeSpell"),
+    Function_NameType(0x0138,"MagicEnchantDrawSoundAlteration"),
+    Function_NameType(0x0139,"MagicEnchantDrawSoundConjuration"),
+    Function_NameType(0x013A,"MagicEnchantDrawSoundDestruction"),
+    Function_NameType(0x013B,"MagicEnchantDrawSoundIllusion"),
+    Function_NameType(0x013C,"MagicEnchantDrawSoundMysticism"),
+    Function_NameType(0x013D,"MagicEnchantDrawSoundRestoration"),
+    Function_NameType(0x013E,"MagicEnchantHitSoundAlteration"),
+    Function_NameType(0x013F,"MagicEnchantHitSoundConjuration"),
+    Function_NameType(0x0140,"MagicEnchantHitSoundDestruction"),
+    Function_NameType(0x0141,"MagicEnchantHitSoundIllusion"),
+    Function_NameType(0x0142,"MagicEnchantHitSoundMysticism"),
+    Function_NameType(0x0143,"MagicEnchantHitSoundRestoration"),
+    Function_NameType(0x0144,"effectAbsorb"),
+    Function_NameType(0x0145,"effectReflect"),
+    Function_NameType(0x0146,"LifeDetected"),
+    Function_NameType(0x015E,"DefaultWeather"),
+    Function_NameType(0x015F,"DefaultClimate"),
+    Function_NameType(0x0191,"WelkyndStone"),
+    Function_NameType(0x0192,"BlackSoulGem"),
+    Function_NameType(0x0193,"AzuraStone"),
+    Function_NameType(0x0194,"VarlaStone"),
+    Function_NameType(0x0212,"FootSoundDirt"),
+    Function_NameType(0x0213,"FootSoundGrass"),
+    Function_NameType(0x0214,"FootSoundStone"),
+    Function_NameType(0x0215,"FootSoundWater"),
+    Function_NameType(0x0216,"FootSoundWood"),
+    Function_NameType(0x0217,"FootSoundHeavyArmor"),
+    Function_NameType(0x0218,"FootSoundLightArmor"),
+    Function_NameType(0x0219,"FootSoundEarthLand"),
+    Function_NameType(0x021A,"FootSoundGrassLand"),
+    Function_NameType(0x021B,"FootSoundMetalLand"),
+    Function_NameType(0x021C,"FootSoundStoneLand"),
+    Function_NameType(0x021D,"FootSoundWaterLand"),
+    Function_NameType(0x021E,"FootSoundWoodLand"),
+    Function_NameType(0x021F,"FSTSnow"),
+    Function_NameType(0x0220,"FSTSnowLand"),
+    Function_NameType(0x0221,"FSTEarthSneak"),
+    Function_NameType(0x0222,"FSTGrassSneak"),
+    Function_NameType(0x0223,"FSTMetalSneak"),
+    Function_NameType(0x0224,"FSTSnowSneak"),
+    Function_NameType(0x0225,"FSTStoneSneak"),
+    Function_NameType(0x0226,"FSTWaterSneak"),
+    Function_NameType(0x0227,"FSTWoodSneak"),
+    Function_NameType(0x0228,"FSTArmorLightSneak"),
+    Function_NameType(0x0229,"FSTArmorHeavySneak"),
+    Function_NameType(0x022B,"FSTMetal")
+    };
+
 const std::map<unsigned int, std::pair<unsigned int,unsigned int>> Function_Arguments(Function_ArgumentsInit, Function_ArgumentsInit + sizeof(Function_ArgumentsInit) / sizeof(Function_ArgumentsInit[0]));
 
 const std::map<unsigned int, char *> Function_Name(Function_NameInit, Function_NameInit + sizeof(Function_NameInit) / sizeof(Function_NameInit[0]));
@@ -993,3 +1234,4 @@ const std::map<unsigned int, char *> IDLEGroup_Name(IDLEGroup_NameInit, IDLEGrou
 const std::map<unsigned int, char *> PACKAIType_Name(PACKAIType_NameInit, PACKAIType_NameInit + sizeof(PACKAIType_NameInit) / sizeof(PACKAIType_NameInit[0]));
 const std::map<unsigned int, char *> PACKLocType_Name(PACKLocType_NameInit, PACKLocType_NameInit + sizeof(PACKLocType_NameInit) / sizeof(PACKLocType_NameInit[0]));
 const std::map<unsigned int, char *> PACKTargetType_Name(PACKTargetType_NameInit, PACKTargetType_NameInit + sizeof(PACKTargetType_NameInit) / sizeof(PACKTargetType_NameInit[0]));
+const std::map<unsigned int, char *> HardCodedFormID_EDID(HardCodedFormID_EDIDInit, HardCodedFormID_EDIDInit + sizeof(HardCodedFormID_EDIDInit) / sizeof(HardCodedFormID_EDIDInit[0]));

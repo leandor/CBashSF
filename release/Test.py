@@ -18,11 +18,8 @@ def TestCopyAttrs():
 def TestCleanMasters():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestCleanMasters.esp", True)
-    Current.minimalLoad(LoadMasters=False)
-    record = newMod.createMISCRecord()
-    record.fid = 0x01001555
-    record.fid = 0x00001452
+    newMod = Current.addMod("Speedy Disrobe OBSE.esp")
+    Current.minimalLoad(LoadMasters=True)
     print newMod.CleanMasters()
     newMod.safeSave()
 
@@ -274,10 +271,10 @@ def TestDeleteRecord():
 
 def TestMinimalLoad():
     Current = Collection()
-    modFile = Current.addMod("Oblivion_1.1.esm")
-    Current.minimalLoad(LoadMasters=False)
+    modFile = Current.addMod("GTAesgaard.esp")
+    Current.minimalLoad(LoadMasters=True)
     
-##    newMod.safeSave()
+    modFile.safeSave()
 
 def TestFullLoad():
     Current = Collection()
@@ -10683,9 +10680,9 @@ from timeit import Timer
 ##phonenumber = raw_input("!")
 
 ##TestCopyAttrs()
-##TestCleanMasters()
+TestCleanMasters()
 ##TestFullLoad()
-TestMinimalLoad()
+##TestMinimalLoad()
 ##TestLoadMasters()
 ##TestDeleteRecord()
 ##TestReadWriteAll()

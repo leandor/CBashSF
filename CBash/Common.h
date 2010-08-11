@@ -47,8 +47,8 @@ GPL License and Copyright Notice ============================================
 #define BUFFERSIZE    65536
 #endif
 
-#ifndef OBJECT_ID_START
-#define OBJECT_ID_START    0x00000800
+#ifndef END_HARDCODED_IDS
+#define END_HARDCODED_IDS    0x00000800
 #endif
 
 #ifndef MAJOR_VERSION
@@ -95,6 +95,9 @@ extern const std::map<unsigned int, char *> IDLEGroup_Name;
 extern const std::map<unsigned int, char *> PACKAIType_Name;
 extern const std::map<unsigned int, char *> PACKLocType_Name;
 extern const std::map<unsigned int, char *> PACKTargetType_Name;
+extern const std::map<unsigned int, char *> HardCodedFormID_EDID;
+
+
 
 inline void _readBuffer(void *_DstBuf, const unsigned char *_SrcBuf, const unsigned int &_MaxCharCount, unsigned int &_BufPos)
     {

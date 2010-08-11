@@ -1144,13 +1144,25 @@ class GRUPRecords<WRLDRecord>
             ACRERecord *curACRERecord = NULL;
             REFRRecord *curREFRRecord = NULL;
             std::map<int, std::map<int, LANDRecord *> > GridXY_LAND;
-            unsigned int lastGRUP = 0;
+            std::vector<std::pair<unsigned int, unsigned int>> GRUPs;
+            std::pair<unsigned int, unsigned int> GRUP_Size;
             unsigned long recordType = 0;
             unsigned long gEnd = ReadHandler.tell() + gSize - 20;
+            GRUP_Size.first = eTop;
+            GRUP_Size.second = gEnd;
+            GRUPs.push_back(GRUP_Size);
             unsigned long recordSize = 0;
             std::pair<boost::unordered_set<unsigned int>::iterator,bool> ret;
 
             while(ReadHandler.tell() < gEnd){
+                //Better tracking of the last GRUP
+                //Mainly fixes cases where the world cell isn't located before the cell blocks
+                //One example of this is Windfall.esp
+                while(ReadHandler.tell() >= GRUP_Size.second)
+                    {
+                    GRUPs.pop_back();
+                    GRUP_Size = GRUPs.back();
+                    };
                 ReadHandler.read(&recordType, 4);
                 ReadHandler.read(&recordSize, 4);
                 switch(recordType)
@@ -1216,7 +1228,7 @@ class GRUPRecords<WRLDRecord>
                                 //Threads.schedule(boost::bind(&Record::Read, curCELLRecord, boost::ref(FormIDHandler)));
                             if(!FormIDHandler.NewTypes.count(recordType) && FormIDHandler.IsNewRecord(curCELLRecord->formID))
                                 FormIDHandler.NewTypes.insert(recordType);
-                            switch(lastGRUP)
+                            switch(GRUP_Size.first)
                                 {
                                 case eWorld:
                                     delete curWRLDRecord->CELL;
@@ -1236,8 +1248,10 @@ class GRUPRecords<WRLDRecord>
                         break;
                     case eGRUP: //All GRUPs will be recreated from scratch on write (saves memory)
                         ReadHandler.set_used(4);
-                        ReadHandler.read(&lastGRUP, 4);
+                        ReadHandler.read(&GRUP_Size.first, 4);
                         ReadHandler.set_used(4);
+                        GRUP_Size.second = ReadHandler.tell() + recordSize - 20;
+                        GRUPs.push_back(GRUP_Size);
                         break;
                     case eROAD:
                         delete curWRLDRecord->ROAD;

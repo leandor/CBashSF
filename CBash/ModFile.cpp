@@ -56,6 +56,7 @@ int ModFile::LoadTES4()
     TES4.recData = ReadHandler.getBuffer(20);
     TES4.Read(FormIDHandler);
     ReadHandler.set_used(TES4.GetSize());
+    TES4.recData = NULL;
     return 1;
     }
 
@@ -496,6 +497,7 @@ unsigned int ModFile::UpdateReferences(unsigned int origFormID, unsigned int new
     //count += EFSH.UpdateReferences(origFormID, newFormID, FormIDHandler);
     return count;
     }
+
 int ModFile::CleanMasters()
     {
     unsigned int cleaned = 0;
@@ -563,18 +565,16 @@ int ModFile::CleanMasters()
         if(ANIO.CheckMasters(p, TempHandler)) continue;
         if(WATR.CheckMasters(p, TempHandler)) continue;
         if(EFSH.CheckMasters(p, TempHandler)) continue;
-        //printf("Removing: %s\n", TES4.MAST[p].value);
-        //Master not used, so remove it.
         ToRemove.push_back(p);
-        //TES4.MAST.erase(TES4.MAST.begin() + p);
-        //FormIDHandler.UpdateFormIDLookup();
-        //--p; //Keep the value from incrementing
         ++cleaned;
         }
     if(cleaned)
         {
         for(int p = (int)ToRemove.size() - 1; p >= 0; --p)
+            {
+            //printf("Removing: %s\n", TES4.MAST[p].value);
             TES4.MAST.erase(TES4.MAST.begin() + ToRemove[p]);
+            }
         FormIDHandler.UpdateFormIDLookup();
         }
     return cleaned;
