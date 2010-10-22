@@ -227,12 +227,11 @@ class ModFile
         int Close();
         int LoadTES4();
         int Load(boost::threadpool::pool &Threads, const bool &FullLoad);
-        unsigned int UpdateReferences(unsigned int origFormID, unsigned int newFormID);
         bool IsFake() {return IsDummy;}
         bool IsEmpty() {return FormIDHandler.IsEmpty;}
         bool IsNewFile() {return IsNew;}
         int CleanMasters();
-        int Unload();
+        unsigned int Unload();
         int Save(_FileHandler &SaveHandler, bool CloseMod);
         #ifdef _DEBUG
         void Debug(int debugLevel);

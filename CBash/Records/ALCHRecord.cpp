@@ -32,6 +32,7 @@ int ALCHRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
     unsigned int subSize = 0;
     unsigned int curPos = 0;
     GENEffect *newEffect = NULL;
+    bool bNoOBME = true;
     while(curPos < recSize){
         _readBuffer(&subType,buffer,4,curPos);
         switch(subType)
@@ -51,6 +52,10 @@ int ALCHRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
             {
             case eEDID:
                 EDID.Read(buffer, subSize, curPos);
+                break;
+            case eOBME:
+                OBME.Load();
+                OBME->OBME.Read(buffer, subSize, curPos);
                 break;
             case eFULL:
                 if(newEffect == NULL)
@@ -82,10 +87,18 @@ int ALCHRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
             case eENIT:
                 ENIT.Read(buffer, subSize, curPos);
                 break;
-            case eEFID:
+            case eEFME:
+                bNoOBME = false;
                 newEffect = new GENEffect;
+                newEffect->OBME.Load();
+                newEffect->OBME->EFME.Read(buffer, subSize, curPos);
+                break;
+            case eEFID:
+                if(bNoOBME)
+                    newEffect = new GENEffect;
                 newEffect->EFID.Read(buffer, subSize, curPos);
                 Effects.push_back(newEffect);
+                bNoOBME = true;
                 break;
             case eEFIT:
                 if(newEffect == NULL)
@@ -102,6 +115,24 @@ int ALCHRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                     Effects.push_back(newEffect);
                     }
                 newEffect->SCIT.Read(buffer, subSize, curPos);
+                break;
+            case eEFII:
+                if(newEffect == NULL)
+                    {
+                    newEffect = new GENEffect;
+                    Effects.push_back(newEffect);
+                    }
+                newEffect->OBME.Load();
+                newEffect->OBME->EFII.Read(buffer, subSize, curPos);
+                break;
+            case eEFIX:
+                if(newEffect == NULL)
+                    {
+                    newEffect = new GENEffect;
+                    Effects.push_back(newEffect);
+                    }
+                newEffect->OBME.Load();
+                newEffect->OBME->EFIX.Read(buffer, subSize, curPos);
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
@@ -126,6 +157,19 @@ unsigned int ALCHRecord::GetSize(bool forceCalc)
         cSize = EDID.GetSize();
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
+        }
+    if(OBME.IsLoaded())
+        {
+        if(OBME->OBME.IsLoaded())
+            TotSize += OBME->OBME.GetSize() + 6;
+        if(OBME->DATX.IsLoaded())
+            {
+            cSize = OBME->DATX.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        if(Effects.size())
+            TotSize += 6; //EFXX chunk
         }
     if(FULL.IsLoaded())
         {
@@ -174,6 +218,19 @@ unsigned int ALCHRecord::GetSize(bool forceCalc)
                 if(cSize > 65535) cSize += 10;
                 TotSize += cSize += 6;
                 }
+            if(Effects[p]->OBME.IsLoaded())
+                {
+                if(Effects[p]->OBME->EFME.IsLoaded())
+                    TotSize += Effects[p]->OBME->EFME.GetSize() + 6;
+                if(Effects[p]->OBME->EFII.IsLoaded())
+                    {
+                    cSize = Effects[p]->OBME->EFII.GetSize();
+                    if(cSize > 65535) cSize += 10;
+                    TotSize += cSize += 6;
+                    }
+                if(Effects[p]->OBME->EFIX.IsLoaded())
+                    TotSize += Effects[p]->OBME->EFIX.GetSize() + 6;
+                }
             }
     return TotSize;
     }
@@ -182,6 +239,8 @@ int ALCHRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
+    if(OBME.IsLoaded() && OBME->OBME.IsLoaded())
+        SaveHandler.writeSubRecord(eOBME, &OBME->OBME.value, OBME->OBME.GetSize());
     if(FULL.IsLoaded())
         SaveHandler.writeSubRecord(eFULL, FULL.value, FULL.GetSize());
     if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
@@ -203,6 +262,8 @@ int ALCHRecord::WriteRecord(_FileHandler &SaveHandler)
     if(Effects.size())
         for(unsigned int p = 0; p < Effects.size(); p++)
             {
+            if(Effects[p]->OBME.IsLoaded() && Effects[p]->OBME->EFME.IsLoaded())
+                SaveHandler.writeSubRecord(eEFME, &Effects[p]->OBME->EFME.value, Effects[p]->OBME->EFME.GetSize());
             if(Effects[p]->EFID.IsLoaded())
                 SaveHandler.writeSubRecord(eEFID, &Effects[p]->EFID.value, Effects[p]->EFID.GetSize());
             if(Effects[p]->EFIT.IsLoaded())
@@ -211,7 +272,15 @@ int ALCHRecord::WriteRecord(_FileHandler &SaveHandler)
                 SaveHandler.writeSubRecord(eSCIT, Effects[p]->SCIT.value, Effects[p]->SCIT.GetSize());
             if(Effects[p]->FULL.IsLoaded())
                 SaveHandler.writeSubRecord(eFULL, Effects[p]->FULL.value, Effects[p]->FULL.GetSize());
+            if(Effects[p]->OBME.IsLoaded() && Effects[p]->OBME->EFII.IsLoaded())
+                SaveHandler.writeSubRecord(eEFII, Effects[p]->OBME->EFII.value, Effects[p]->OBME->EFII.GetSize());
+            if(Effects[p]->OBME.IsLoaded() && Effects[p]->OBME->EFIX.IsLoaded())
+                SaveHandler.writeSubRecord(eEFIX, Effects[p]->OBME->EFIX.value, Effects[p]->OBME->EFIX.GetSize());
             }
+    if(Effects.size() && OBME.IsLoaded())
+        SaveHandler.writeSubRecord(eEFXX, NULL, 0);
+    if(OBME.IsLoaded() && OBME->DATX.IsLoaded())
+        SaveHandler.writeSubRecord(eDATX, OBME->DATX.value, OBME->DATX.GetSize());
     return -1;
     }
 

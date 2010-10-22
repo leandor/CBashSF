@@ -164,35 +164,35 @@ class NPC_Record : public Record
             #endif
             bool operator ==(const NPC_DATA &other) const
                 {
-                return (armorer == other.armorer && 
-                        athletics == other.athletics && 
-                        blade == other.blade && 
-                        block == other.block && 
-                        blunt == other.blunt && 
-                        h2h == other.h2h && 
-                        heavyArmor == other.heavyArmor && 
-                        alchemy == other.alchemy && 
-                        alteration == other.alteration && 
-                        conjuration == other.conjuration && 
-                        destruction == other.destruction && 
-                        illusion == other.illusion && 
-                        mysticism == other.mysticism && 
-                        restoration == other.restoration && 
-                        acrobatics == other.acrobatics && 
-                        lightArmor == other.lightArmor && 
-                        marksman == other.marksman && 
-                        mercantile == other.mercantile && 
-                        security == other.security && 
-                        sneak == other.sneak && 
-                        speechcraft == other.speechcraft && 
-                        health == other.health && 
-                        strength == other.strength && 
-                        intelligence == other.intelligence && 
-                        willpower == other.willpower && 
-                        agility == other.agility && 
-                        speed == other.speed && 
-                        endurance == other.endurance && 
-                        personality == other.personality && 
+                return (armorer == other.armorer &&
+                        athletics == other.athletics &&
+                        blade == other.blade &&
+                        block == other.block &&
+                        blunt == other.blunt &&
+                        h2h == other.h2h &&
+                        heavyArmor == other.heavyArmor &&
+                        alchemy == other.alchemy &&
+                        alteration == other.alteration &&
+                        conjuration == other.conjuration &&
+                        destruction == other.destruction &&
+                        illusion == other.illusion &&
+                        mysticism == other.mysticism &&
+                        restoration == other.restoration &&
+                        acrobatics == other.acrobatics &&
+                        lightArmor == other.lightArmor &&
+                        marksman == other.marksman &&
+                        mercantile == other.mercantile &&
+                        security == other.security &&
+                        sneak == other.sneak &&
+                        speechcraft == other.speechcraft &&
+                        health == other.health &&
+                        strength == other.strength &&
+                        intelligence == other.intelligence &&
+                        willpower == other.willpower &&
+                        agility == other.agility &&
+                        speed == other.speed &&
+                        endurance == other.endurance &&
+                        personality == other.personality &&
                         luck == other.luck);
                 }
             bool operator !=(const NPC_DATA &other) const
@@ -424,31 +424,32 @@ class NPC_Record : public Record
             FNAM.Unload();
             }
 
-        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
+        void VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
                 return;
             for(unsigned int x = 0; x < SNAM.size(); x++)
-                FormIDs.push_back(&SNAM[x]->value.faction);
+                op.Accept(SNAM[x]->value.faction);
             if(INAM.IsLoaded())
-                FormIDs.push_back(&INAM->fid);
+                op.Accept(INAM->fid);
             if(RNAM.IsLoaded())
-                FormIDs.push_back(&RNAM->fid);
+                op.Accept(RNAM->fid);
             for(unsigned int x = 0; x < SPLO.size(); x++)
-                FormIDs.push_back(SPLO[x]);
+                op.Accept(*SPLO[x]);
             if(SCRI.IsLoaded())
-                FormIDs.push_back(&SCRI->fid);
+                op.Accept(SCRI->fid);
             for(unsigned int x = 0; x < CNTO.size(); x++)
-                FormIDs.push_back(&CNTO[x]->value.item);
+                op.Accept(CNTO[x]->value.item);
             for(unsigned int x = 0; x < PKID.size(); x++)
-                FormIDs.push_back(PKID[x]);
-            FormIDs.push_back(&CNAM.value.fid);
+                op.Accept(*PKID[x]);
+            if(CNAM.IsLoaded())
+                op.Accept(CNAM.value.fid);
             if(HNAM.IsLoaded())
-                FormIDs.push_back(&HNAM->fid);
+                op.Accept(HNAM->fid);
             if(ENAM.IsLoaded())
-                FormIDs.push_back(&ENAM->fid);
+                op.Accept(ENAM->fid);
             if(ZNAM.IsLoaded())
-                FormIDs.push_back(&ZNAM->fid);
+                op.Accept(ZNAM->fid);
             }
 
         #ifdef _DEBUG
@@ -466,20 +467,20 @@ class NPC_Record : public Record
         unsigned int GetListArraySize(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
         void GetListArray(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, void **FieldValues);
         void * GetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned short FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, short FieldValue);
-        void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue);
-        void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue);
-        void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, int FieldValue);
-        void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue[], unsigned int nSize);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char **FieldValue, unsigned int nSize);
+        void SetField(const unsigned int Field, char *FieldValue);
+        void SetField(const unsigned int Field, float FieldValue);
+        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
+        void SetOtherField(const unsigned int Field, unsigned int FieldValue);
+        void SetField(const unsigned int Field, unsigned short FieldValue);
+        void SetField(const unsigned int Field, short FieldValue);
+        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue);
+        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue);
+        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, int FieldValue);
+        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize);
+        void SetField(const unsigned int Field, unsigned int FieldValue[], unsigned int nSize);
+        void SetField(const unsigned int Field, unsigned char FieldValue);
+        void SetField(const unsigned int Field, char FieldValue);
+        void SetField(const unsigned int Field, char **FieldValue, unsigned int nSize);
 
         int DeleteField(const unsigned int Field);
         int DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);

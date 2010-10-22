@@ -69,7 +69,7 @@ class QUSTRecord : public Record
             #endif
             bool operator ==(const QUSTDATA &other) const
                 {
-                return (flags == other.flags && 
+                return (flags == other.flags &&
                         priority == other.priority);
                 }
             bool operator !=(const QUSTDATA &other) const
@@ -137,12 +137,12 @@ class QUSTRecord : public Record
             #endif
             bool operator ==(const QUSTEntry &other) const
                 {
-                return (QSDT == other.QSDT && 
-                        CTDA == other.CTDA && 
-                        CNAM == other.CNAM && 
-                        SCHR == other.SCHR && 
-                        SCDA == other.SCDA && 
-                        SCTX == other.SCTX && 
+                return (QSDT == other.QSDT &&
+                        CTDA == other.CTDA &&
+                        CNAM == other.CNAM &&
+                        SCHR == other.SCHR &&
+                        SCDA == other.SCDA &&
+                        SCTX == other.SCTX &&
                         SCR_ == other.SCR_);
                 }
             bool operator !=(const QUSTEntry &other) const
@@ -236,7 +236,7 @@ class QUSTRecord : public Record
             #endif
             bool operator ==(const QUSTStage &other) const
                 {
-                return (INDX == other.INDX && 
+                return (INDX == other.INDX &&
                         Entries == other.Entries);
                 }
             bool operator !=(const QUSTStage &other) const
@@ -273,7 +273,7 @@ class QUSTRecord : public Record
             #endif
             bool operator ==(const QUSTQSTA &other) const
                 {
-                return (targetId == other.targetId && 
+                return (targetId == other.targetId &&
                         flags == other.flags);
                 }
             bool operator !=(const QUSTQSTA &other) const
@@ -316,7 +316,7 @@ class QUSTRecord : public Record
             #endif
             bool operator ==(const QUSTTarget &other) const
                 {
-                return (QSTA == other.QSTA && 
+                return (QSTA == other.QSTA &&
                         CTDA == other.CTDA);
                 }
             bool operator !=(const QUSTTarget &other) const
@@ -465,14 +465,14 @@ class QUSTRecord : public Record
             Targets.clear();
             }
 
-        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
+        void VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
                 return;
             std::pair<unsigned int, unsigned int> CTDAFunction;
             std::map<unsigned int, std::pair<unsigned int,unsigned int>>::const_iterator curCTDAFunction;
             if(SCRI.IsLoaded())
-                FormIDs.push_back(&SCRI->fid);
+                op.Accept(SCRI->fid);
             for(unsigned int x = 0; x < CTDA.size(); x++)
                 {
                 curCTDAFunction = Function_Arguments.find(CTDA[x]->value.ifunc);
@@ -480,9 +480,9 @@ class QUSTRecord : public Record
                     {
                     CTDAFunction = curCTDAFunction->second;
                     if(CTDAFunction.first == eFID)
-                        FormIDs.push_back(&CTDA[x]->value.param1);
+                        op.Accept(CTDA[x]->value.param1);
                     if(CTDAFunction.second == eFID)
-                        FormIDs.push_back(&CTDA[x]->value.param2);
+                        op.Accept(CTDA[x]->value.param2);
                     }
                 }
             for(unsigned int x = 0; x < Stages.size(); x++)
@@ -493,19 +493,19 @@ class QUSTRecord : public Record
                         {
                         curCTDAFunction = Function_Arguments.find(Stages[x]->Entries[y]->CTDA[p]->value.ifunc);
                         if(CTDAFunction.first == eFID)
-                            FormIDs.push_back(&Stages[x]->Entries[y]->CTDA[p]->value.param1);
+                            op.Accept(Stages[x]->Entries[y]->CTDA[p]->value.param1);
                         if(CTDAFunction.second == eFID)
-                            FormIDs.push_back(&Stages[x]->Entries[y]->CTDA[p]->value.param2);
+                            op.Accept(Stages[x]->Entries[y]->CTDA[p]->value.param2);
                         }
                     for(unsigned int p = 0; p < Stages[x]->Entries[y]->SCR_.size(); p++)
                         if(Stages[x]->Entries[y]->SCR_[p]->value.isSCRO)
-                            FormIDs.push_back(&Stages[x]->Entries[y]->SCR_[p]->value.reference);
+                            op.Accept(Stages[x]->Entries[y]->SCR_[p]->value.reference);
                     }
                 }
 
             for(unsigned int x = 0; x < Targets.size(); x++)
                 {
-                FormIDs.push_back(&Targets[x]->QSTA.value.targetId);
+                op.Accept(Targets[x]->QSTA.value.targetId);
                 for(unsigned int y = 0; y < Targets[x]->CTDA.size(); y++)
                     {
                     curCTDAFunction = Function_Arguments.find(Targets[x]->CTDA[y]->value.ifunc);
@@ -513,9 +513,9 @@ class QUSTRecord : public Record
                         {
                         CTDAFunction = curCTDAFunction->second;
                         if(CTDAFunction.first == eFID)
-                            FormIDs.push_back(&Targets[x]->CTDA[y]->value.param1);
+                            op.Accept(Targets[x]->CTDA[y]->value.param1);
                         if(CTDAFunction.second == eFID)
-                            FormIDs.push_back(&Targets[x]->CTDA[y]->value.param2);
+                            op.Accept(Targets[x]->CTDA[y]->value.param2);
                         }
                     }
                 }
@@ -548,23 +548,23 @@ class QUSTRecord : public Record
         void * GetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
         void * GetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field);
         void * GetListX3Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue);
-        void SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue);
-        void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue);
-        void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize);
-        void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, float FieldValue);
-        void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue);
-        void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned short FieldValue);
-        void SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned char FieldValue);
-        void SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, char *FieldValue);
-        void SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned int FieldValue);
-        void SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, float FieldValue);
-        void SetListX3Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, unsigned char FieldValue);
-        void SetListX3Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetListX3Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, float FieldValue);
-        void SetListX3Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, unsigned int FieldValue);
+        void SetField(const unsigned int Field, char *FieldValue);
+        void SetOtherField(const unsigned int Field, unsigned int FieldValue);
+        void SetField(const unsigned int Field, unsigned char FieldValue);
+        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue);
+        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize);
+        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, float FieldValue);
+        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue);
+        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned short FieldValue);
+        void SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned char FieldValue);
+        void SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, char *FieldValue);
+        void SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned char *FieldValue, unsigned int nSize);
+        void SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned int FieldValue);
+        void SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, float FieldValue);
+        void SetListX3Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, unsigned char FieldValue);
+        void SetListX3Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, unsigned char *FieldValue, unsigned int nSize);
+        void SetListX3Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, float FieldValue);
+        void SetListX3Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, unsigned int FieldValue);
 
         int DeleteField(const unsigned int Field);
         int DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);

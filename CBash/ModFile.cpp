@@ -54,7 +54,8 @@ int ModFile::LoadTES4()
     if(TES4.IsLoaded())
         printf("_fIsLoaded Flag used!!!!: %08X\n", TES4.flags);
     TES4.recData = ReadHandler.getBuffer(20);
-    TES4.Read(FormIDHandler);
+    RecordReader reader(FormIDHandler);
+    reader.Accept(TES4);
     ReadHandler.set_used(TES4.GetSize());
     TES4.recData = NULL;
     return 1;
@@ -433,76 +434,11 @@ int ModFile::Load(boost::threadpool::pool &Threads, const bool &FullLoad)
     return 1;
     }
 
-unsigned int ModFile::UpdateReferences(unsigned int origFormID, unsigned int newFormID)
-    {
-    unsigned int count = 0;
-    if(IsDummy)
-        return count;
-    //Commented out GRUPs don't contain any formIDs that could be updated.
-    //count += GMST.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    //count += GLOB.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    //count += CLAS.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += FACT.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    //count += HAIR.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    //count += EYES.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += RACE.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    //count += SOUN.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    //count += SKIL.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += MGEF.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += SCPT.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += LTEX.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += ENCH.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += SPEL.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += BSGN.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += ACTI.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += APPA.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += ARMO.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += BOOK.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += CLOT.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += CONT.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += DOOR.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += INGR.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += LIGH.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += MISC.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    //count += STAT.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    //count += GRAS.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    //count += TREE.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += FLOR.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += FURN.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += WEAP.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += AMMO.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += NPC_.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += CREA.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += LVLC.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += SLGM.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += KEYM.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += ALCH.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    //count += SBSP.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += SGST.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += LVLI.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += WTHR.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += CLMT.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += REGN.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += CELL.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += WRLD.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += DIAL.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += QUST.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += IDLE.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += PACK.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    //count += CSTY.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += LSCR.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += LVSP.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += ANIO.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    count += WATR.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    //count += EFSH.UpdateReferences(origFormID, newFormID, FormIDHandler);
-    return count;
-    }
-
 int ModFile::CleanMasters()
     {
     unsigned int cleaned = 0;
     _FormIDHandler TempHandler(FileName, TES4.MAST, TES4.HEDR.value.nextObject);
-    TempHandler.SetLoadOrder(FormIDHandler.LoadOrder);
+    TempHandler.SetLoadOrder(FormIDHandler.LoadOrder255);
     TempHandler.CreateFormIDLookup(FormIDHandler.ExpandedIndex);
     std::vector<int> ToRemove;
     ToRemove.reserve(TES4.MAST.size());
@@ -580,66 +516,68 @@ int ModFile::CleanMasters()
     return cleaned;
     }
 
-int ModFile::Unload()
+unsigned int ModFile::Unload()
     {
     //GMSTs are always loaded.
     //GMST.Unload();
-    GLOB.Unload();
-    CLAS.Unload();
-    FACT.Unload();
-    HAIR.Unload();
-    EYES.Unload();
-    RACE.Unload();
-    SOUN.Unload();
-    SKIL.Unload();
-    MGEF.Unload();
-    SCPT.Unload();
-    LTEX.Unload();
-    ENCH.Unload();
-    SPEL.Unload();
-    BSGN.Unload();
-    ACTI.Unload();
-    APPA.Unload();
-    ARMO.Unload();
-    BOOK.Unload();
-    CLOT.Unload();
-    CONT.Unload();
-    DOOR.Unload();
-    INGR.Unload();
-    LIGH.Unload();
-    MISC.Unload();
-    STAT.Unload();
-    GRAS.Unload();
-    TREE.Unload();
-    FLOR.Unload();
-    FURN.Unload();
-    WEAP.Unload();
-    AMMO.Unload();
-    NPC_.Unload();
-    CREA.Unload();
-    LVLC.Unload();
-    SLGM.Unload();
-    KEYM.Unload();
-    ALCH.Unload();
-    SBSP.Unload();
-    SGST.Unload();
-    LVLI.Unload();
-    WTHR.Unload();
-    CLMT.Unload();
-    REGN.Unload();
-    CELL.Unload();
-    WRLD.Unload();
-    DIAL.Unload();
-    QUST.Unload();
-    IDLE.Unload();
-    PACK.Unload();
-    CSTY.Unload();
-    LSCR.Unload();
-    LVSP.Unload();
-    ANIO.Unload();
-    WATR.Unload();
-    EFSH.Unload();
-    return 0;
+    RecordUnloader unloader;
+    GLOB.VisitRecords(unloader);
+    GLOB.VisitRecords(unloader);
+    CLAS.VisitRecords(unloader);
+    FACT.VisitRecords(unloader);
+    HAIR.VisitRecords(unloader);
+    EYES.VisitRecords(unloader);
+    RACE.VisitRecords(unloader);
+    SOUN.VisitRecords(unloader);
+    SKIL.VisitRecords(unloader);
+    MGEF.VisitRecords(unloader);
+    SCPT.VisitRecords(unloader);
+    LTEX.VisitRecords(unloader);
+    ENCH.VisitRecords(unloader);
+    SPEL.VisitRecords(unloader);
+    BSGN.VisitRecords(unloader);
+    ACTI.VisitRecords(unloader);
+    APPA.VisitRecords(unloader);
+    ARMO.VisitRecords(unloader);
+    BOOK.VisitRecords(unloader);
+    CLOT.VisitRecords(unloader);
+    CONT.VisitRecords(unloader);
+    DOOR.VisitRecords(unloader);
+    INGR.VisitRecords(unloader);
+    LIGH.VisitRecords(unloader);
+    MISC.VisitRecords(unloader);
+    STAT.VisitRecords(unloader);
+    GRAS.VisitRecords(unloader);
+    TREE.VisitRecords(unloader);
+    FLOR.VisitRecords(unloader);
+    FURN.VisitRecords(unloader);
+    WEAP.VisitRecords(unloader);
+    AMMO.VisitRecords(unloader);
+    NPC_.VisitRecords(unloader);
+    CREA.VisitRecords(unloader);
+    LVLC.VisitRecords(unloader);
+    SLGM.VisitRecords(unloader);
+    KEYM.VisitRecords(unloader);
+    ALCH.VisitRecords(unloader);
+    SBSP.VisitRecords(unloader);
+    SGST.VisitRecords(unloader);
+    LVLI.VisitRecords(unloader);
+    WTHR.VisitRecords(unloader);
+    CLMT.VisitRecords(unloader);
+    REGN.VisitRecords(unloader);
+    CELL.VisitRecords(unloader);
+    WRLD.VisitRecords(unloader);
+    DIAL.VisitRecords(unloader);
+    QUST.VisitRecords(unloader);
+    IDLE.VisitRecords(unloader);
+    PACK.VisitRecords(unloader);
+    CSTY.VisitRecords(unloader);
+    LSCR.VisitRecords(unloader);
+    LVSP.VisitRecords(unloader);
+    ANIO.VisitRecords(unloader);
+    WATR.VisitRecords(unloader);
+    EFSH.VisitRecords(unloader);
+    return unloader.GetCount();
     }
 
 int ModFile::Save(_FileHandler &SaveHandler, bool CloseMod)

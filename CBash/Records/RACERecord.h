@@ -68,7 +68,7 @@ class RACERecord : public Record
             RACESKILL(bool newRecord=false):value(-1), boost(0) {}
             bool operator ==(const RACESKILL &other) const
                 {
-                return (value == other.value && 
+                return (value == other.value &&
                         boost == other.boost);
                 }
             bool operator !=(const RACESKILL &other) const
@@ -131,17 +131,17 @@ class RACERecord : public Record
             #endif
             bool operator ==(const RACEDATA &other) const
                 {
-                return (skills[0] == other.skills[0] && 
-                        skills[1] == other.skills[1] && 
-                        skills[2] == other.skills[2] && 
-                        skills[3] == other.skills[3] && 
-                        skills[4] == other.skills[4] && 
-                        skills[5] == other.skills[5] && 
-                        skills[6] == other.skills[6] && 
-                        AlmostEqual(maleHeight,other.maleHeight,2) && 
-                        AlmostEqual(femaleHeight,other.femaleHeight,2) && 
-                        AlmostEqual(maleWeight,other.maleWeight,2) && 
-                        AlmostEqual(femaleWeight,other.femaleWeight,2) && 
+                return (skills[0] == other.skills[0] &&
+                        skills[1] == other.skills[1] &&
+                        skills[2] == other.skills[2] &&
+                        skills[3] == other.skills[3] &&
+                        skills[4] == other.skills[4] &&
+                        skills[5] == other.skills[5] &&
+                        skills[6] == other.skills[6] &&
+                        AlmostEqual(maleHeight,other.maleHeight,2) &&
+                        AlmostEqual(femaleHeight,other.femaleHeight,2) &&
+                        AlmostEqual(maleWeight,other.maleWeight,2) &&
+                        AlmostEqual(femaleWeight,other.femaleWeight,2) &&
                         flags == other.flags);
                 }
             bool operator !=(const RACEDATA &other) const
@@ -170,7 +170,7 @@ class RACERecord : public Record
             #endif
             bool operator ==(const RACEVNAM &other) const
                 {
-                return (maleVoice == other.maleVoice && 
+                return (maleVoice == other.maleVoice &&
                         femaleVoice == other.femaleVoice);
                 }
             bool operator !=(const RACEVNAM &other) const
@@ -199,7 +199,7 @@ class RACERecord : public Record
             #endif
             bool operator ==(const RACEDNAM &other) const
                 {
-                return (defaultHairMale == other.defaultHairMale && 
+                return (defaultHairMale == other.defaultHairMale &&
                         defaultHairFemale == other.defaultHairFemale);
                 }
             bool operator !=(const RACEDNAM &other) const
@@ -346,21 +346,21 @@ class RACERecord : public Record
             #endif
             bool operator ==(const RACEATTR &other) const
                 {
-                return (maleStrength == other.maleStrength && 
-                        maleIntelligence == other.maleIntelligence && 
-                        maleWillpower == other.maleWillpower && 
-                        maleAgility == other.maleAgility && 
-                        maleSpeed == other.maleSpeed && 
-                        maleEndurance == other.maleEndurance && 
-                        malePersonality == other.malePersonality && 
-                        maleLuck == other.maleLuck && 
-                        femaleStrength == other.femaleStrength && 
-                        femaleIntelligence == other.femaleIntelligence && 
-                        femaleWillpower == other.femaleWillpower && 
-                        femaleAgility == other.femaleAgility && 
-                        femaleSpeed == other.femaleSpeed && 
-                        femaleEndurance == other.femaleEndurance && 
-                        femalePersonality == other.femalePersonality && 
+                return (maleStrength == other.maleStrength &&
+                        maleIntelligence == other.maleIntelligence &&
+                        maleWillpower == other.maleWillpower &&
+                        maleAgility == other.maleAgility &&
+                        maleSpeed == other.maleSpeed &&
+                        maleEndurance == other.maleEndurance &&
+                        malePersonality == other.malePersonality &&
+                        maleLuck == other.maleLuck &&
+                        femaleStrength == other.femaleStrength &&
+                        femaleIntelligence == other.femaleIntelligence &&
+                        femaleWillpower == other.femaleWillpower &&
+                        femaleAgility == other.femaleAgility &&
+                        femaleSpeed == other.femaleSpeed &&
+                        femaleEndurance == other.femaleEndurance &&
+                        femalePersonality == other.femalePersonality &&
                         femaleLuck == other.femaleLuck);
                 }
             bool operator !=(const RACEATTR &other) const
@@ -396,9 +396,9 @@ class RACERecord : public Record
             #endif
             bool operator ==(const RACEMODEL &other) const
                 {
-                return (MODB == other.MODB && 
-                        MODL == other.MODL && 
-                        MODT == other.MODT && 
+                return (MODB == other.MODB &&
+                        MODL == other.MODL &&
+                        MODT == other.MODT &&
                         ICON == other.ICON);
                 }
             bool operator !=(const RACEMODEL &other) const
@@ -428,7 +428,7 @@ class RACERecord : public Record
             #endif
             bool operator ==(const RACESNAM &other) const
                 {
-                return (SNAM[0] == other.SNAM[0] && 
+                return (SNAM[0] == other.SNAM[0] &&
                         SNAM[1] == other.SNAM[1]);
                 }
             bool operator !=(const RACESNAM &other) const
@@ -699,22 +699,28 @@ class RACERecord : public Record
             SNAM.Unload();
             }
 
-        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
+        void VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
                 return;
             for(unsigned int x = 0; x < SPLO.size(); x++)
-                FormIDs.push_back(SPLO[x]);
+                op.Accept(*SPLO[x]);
             for(unsigned int x = 0; x < XNAM.size(); x++)
-                FormIDs.push_back(&XNAM[x]->value.faction);
-            FormIDs.push_back(&VNAM.value.femaleVoice);
-            FormIDs.push_back(&VNAM.value.maleVoice);
-            FormIDs.push_back(&DNAM.value.defaultHairFemale);
-            FormIDs.push_back(&DNAM.value.defaultHairMale);
+                op.Accept(XNAM[x]->value.faction);
+            if(VNAM.IsLoaded())
+                {
+                op.Accept(VNAM.value.femaleVoice);
+                op.Accept(VNAM.value.maleVoice);
+                }
+            if(DNAM.IsLoaded())
+                {
+                op.Accept(DNAM.value.defaultHairFemale);
+                op.Accept(DNAM.value.defaultHairMale);
+                }
             for(unsigned int x = 0; x < HNAM.size(); x++)
-                FormIDs.push_back(&HNAM[x]);
+                op.Accept(HNAM[x]);
             for(unsigned int x = 0; x < ENAM.size(); x++)
-                FormIDs.push_back(&ENAM[x]);
+                op.Accept(ENAM[x]);
             }
 
         #ifdef _DEBUG
@@ -730,15 +736,15 @@ class RACERecord : public Record
         int GetListFieldType(const unsigned int subField, const unsigned int listField);
         unsigned int GetListSize(const unsigned int Field);
         void * GetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue[], unsigned int nSize);
-        void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, int FieldValue);
-        void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue);
-        void SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue);
+        void SetField(const unsigned int Field, char *FieldValue);
+        void SetField(const unsigned int Field, unsigned int FieldValue[], unsigned int nSize);
+        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, int FieldValue);
+        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue);
+        void SetField(const unsigned int Field, char FieldValue);
+        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
+        void SetField(const unsigned int Field, float FieldValue);
+        void SetOtherField(const unsigned int Field, unsigned int FieldValue);
+        void SetField(const unsigned int Field, unsigned char FieldValue);
 
         int DeleteField(const unsigned int Field);
         int DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);

@@ -51,6 +51,17 @@ int MGEFRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
             case eEDID:
                 EDID.Read(buffer, subSize, curPos);
                 break;
+            case eOBME:
+                OBME.Load();
+                OBME->OBME.Read(buffer, subSize, curPos);
+                break;
+            case eEDDX:
+                OBME.Load();
+                OBME->EDDX.Load();
+                OBME->EDDX.value.mgefCode = *(unsigned int *)EDID.value;
+                EDID.Unload();
+                EDID.Read(buffer, subSize, curPos);
+                break;
             case eFULL:
                 FULL.Read(buffer, subSize, curPos);
                 break;
@@ -74,6 +85,10 @@ int MGEFRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 break;
             case eDATA:
                 DATA.Read(buffer, subSize, curPos);
+                break;
+            case eDATX:
+                OBME.Load();
+                OBME->DATX.Read(buffer, subSize, curPos);
                 break;
             case eESCE:
                 if(subSize % sizeof(unsigned int) == 0)
@@ -112,6 +127,19 @@ unsigned int MGEFRecord::GetSize(bool forceCalc)
         cSize = EDID.GetSize();
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
+        }
+    if(OBME.IsLoaded())
+        {
+        if(OBME->OBME.IsLoaded())
+            TotSize += OBME->OBME.GetSize() + 6;
+        if(OBME->EDDX.IsLoaded())
+            TotSize += OBME->EDDX.GetSize() + 7;
+        if(OBME->DATX.IsLoaded())
+            {
+            cSize = OBME->DATX.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
         }
     if(FULL.IsLoaded())
         {
@@ -162,26 +190,67 @@ unsigned int MGEFRecord::GetSize(bool forceCalc)
 
 int MGEFRecord::WriteRecord(_FileHandler &SaveHandler)
     {
-    if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
-    if(FULL.IsLoaded())
-        SaveHandler.writeSubRecord(eFULL, FULL.value, FULL.GetSize());
-    if(DESC.IsLoaded())
-        SaveHandler.writeSubRecord(eDESC, DESC.value, DESC.GetSize());
-    if(ICON.IsLoaded())
-        SaveHandler.writeSubRecord(eICON, ICON.value, ICON.GetSize());
-    if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
+    if(OBME.IsLoaded())
         {
-        SaveHandler.writeSubRecord(eMODL, MODL->MODL.value, MODL->MODL.GetSize());
-        if(MODL->MODB.IsLoaded())
-            SaveHandler.writeSubRecord(eMODB, &MODL->MODB.value, MODL->MODB.GetSize());
-        if(MODL->MODT.IsLoaded())
-            SaveHandler.writeSubRecord(eMODT, MODL->MODT.value, MODL->MODT.GetSize());
+        //EDDX and EDID are switched internally for consistency
+        //So EDDX is written as if it was the EDID chunk, and vice versa
+        //Hence the mismatched type in writeSubRecord
+        if(OBME->EDDX.IsLoaded())
+            {
+            //Add a null terminator to the mgefCode value
+            unsigned char mgefCode[5];
+            memcpy(&mgefCode[0], &OBME->EDDX.value, 4);
+            mgefCode[4] = 0;
+            SaveHandler.writeSubRecord(eEDID, &mgefCode, 5);
+            }
+        if(OBME->OBME.IsLoaded())
+            SaveHandler.writeSubRecord(eOBME, &OBME->OBME.value, OBME->OBME.GetSize());
+        if(EDID.IsLoaded())
+            SaveHandler.writeSubRecord(eEDDX, EDID.value, EDID.GetSize());
+        if(FULL.IsLoaded())
+            SaveHandler.writeSubRecord(eFULL, FULL.value, FULL.GetSize());
+        if(DESC.IsLoaded())
+            SaveHandler.writeSubRecord(eDESC, DESC.value, DESC.GetSize());
+        if(ICON.IsLoaded())
+            SaveHandler.writeSubRecord(eICON, ICON.value, ICON.GetSize());
+        if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
+            {
+            SaveHandler.writeSubRecord(eMODL, MODL->MODL.value, MODL->MODL.GetSize());
+            if(MODL->MODB.IsLoaded())
+                SaveHandler.writeSubRecord(eMODB, &MODL->MODB.value, MODL->MODB.GetSize());
+            if(MODL->MODT.IsLoaded())
+                SaveHandler.writeSubRecord(eMODT, MODL->MODT.value, MODL->MODT.GetSize());
+            }
+        if(DATA.IsLoaded())
+            SaveHandler.writeSubRecord(eDATA, &DATA.value, DATA.GetSize());
+        if(OBME->DATX.IsLoaded())
+            SaveHandler.writeSubRecord(eDATX, OBME->DATX.value, OBME->DATX.GetSize());
+        if(ESCE.size())
+            SaveHandler.writeSubRecord(eESCE, &ESCE[0], (unsigned int)ESCE.size() * sizeof(unsigned int));
         }
-    if(DATA.IsLoaded())
-        SaveHandler.writeSubRecord(eDATA, &DATA.value, DATA.GetSize());
-    if(ESCE.size())
-        SaveHandler.writeSubRecord(eESCE, &ESCE[0], (unsigned int)ESCE.size() * sizeof(unsigned int));
+    else
+        {
+        if(EDID.IsLoaded())
+            SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
+        if(FULL.IsLoaded())
+            SaveHandler.writeSubRecord(eFULL, FULL.value, FULL.GetSize());
+        if(DESC.IsLoaded())
+            SaveHandler.writeSubRecord(eDESC, DESC.value, DESC.GetSize());
+        if(ICON.IsLoaded())
+            SaveHandler.writeSubRecord(eICON, ICON.value, ICON.GetSize());
+        if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
+            {
+            SaveHandler.writeSubRecord(eMODL, MODL->MODL.value, MODL->MODL.GetSize());
+            if(MODL->MODB.IsLoaded())
+                SaveHandler.writeSubRecord(eMODB, &MODL->MODB.value, MODL->MODB.GetSize());
+            if(MODL->MODT.IsLoaded())
+                SaveHandler.writeSubRecord(eMODT, MODL->MODT.value, MODL->MODT.GetSize());
+            }
+        if(DATA.IsLoaded())
+            SaveHandler.writeSubRecord(eDATA, &DATA.value, DATA.GetSize());
+        if(ESCE.size())
+            SaveHandler.writeSubRecord(eESCE, &ESCE[0], (unsigned int)ESCE.size() * sizeof(unsigned int));
+        }
 
     return -1;
     }
@@ -198,6 +267,10 @@ void MGEFRecord::Debug(int debugLevel)
 
     EDID.Debug("EDID", debugLevel, indentation);
 
+    OBME.Debug("OBME", debugLevel, indentation);
+
+    EDDX.Debug("EDDX", debugLevel, indentation);
+
     FULL.Debug("FULL", debugLevel, indentation);
 
     DESC.Debug("DESC", debugLevel, indentation);
@@ -207,6 +280,8 @@ void MGEFRecord::Debug(int debugLevel)
     MODL.Debug("MODL", debugLevel, indentation);
 
     DATA.Debug("DATA", debugLevel, indentation);
+
+    DATX.Debug("DATX", debugLevel, indentation);
 
     if(ESCE.size())
         {

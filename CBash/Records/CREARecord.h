@@ -136,20 +136,20 @@ class CREARecord : public Record
             #endif
             bool operator ==(const CREADATA &other) const
                 {
-                return (creatureType == other.creatureType && 
-                        combat == other.combat && 
-                        magic == other.magic && 
-                        stealth == other.stealth && 
-                        soul == other.soul && 
-                        health == other.health && 
-                        attackDamage == other.attackDamage && 
-                        strength == other.strength && 
-                        intelligence == other.intelligence && 
-                        willpower == other.willpower && 
-                        agility == other.agility && 
-                        speed == other.speed && 
-                        endurance == other.endurance && 
-                        personality == other.personality && 
+                return (creatureType == other.creatureType &&
+                        combat == other.combat &&
+                        magic == other.magic &&
+                        stealth == other.stealth &&
+                        soul == other.soul &&
+                        health == other.health &&
+                        attackDamage == other.attackDamage &&
+                        strength == other.strength &&
+                        intelligence == other.intelligence &&
+                        willpower == other.willpower &&
+                        agility == other.agility &&
+                        speed == other.speed &&
+                        endurance == other.endurance &&
+                        personality == other.personality &&
                         luck == other.luck);
                 }
             bool operator !=(const CREADATA &other) const
@@ -327,8 +327,8 @@ class CREARecord : public Record
             #endif
             bool operator ==(const CREASound &other) const
                 {
-                return (CSDT == other.CSDT && 
-                        CSDI == other.CSDI && 
+                return (CSDT == other.CSDT &&
+                        CSDI == other.CSDI &&
                         CSDC == other.CSDC);
                 }
             bool operator !=(const CREASound &other) const
@@ -553,28 +553,28 @@ class CREARecord : public Record
             Sounds.clear();
             }
 
-        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
+        void VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
                 return;
             for(unsigned int x = 0; x < SPLO.size(); x++)
-                FormIDs.push_back(SPLO[x]);
+                op.Accept(*SPLO[x]);
             for(unsigned int x = 0; x < SNAM.size(); x++)
-                FormIDs.push_back(&SNAM[x]->value.faction);
+                op.Accept(SNAM[x]->value.faction);
             if(INAM.IsLoaded())
-                FormIDs.push_back(&INAM->fid);
+                op.Accept(INAM->fid);
             if(SCRI.IsLoaded())
-                FormIDs.push_back(&SCRI->fid);
+                op.Accept(SCRI->fid);
             for(unsigned int x = 0; x < CNTO.size(); x++)
-                FormIDs.push_back(&CNTO[x]->value.item);
+                op.Accept(CNTO[x]->value.item);
             for(unsigned int x = 0; x < PKID.size(); x++)
-                FormIDs.push_back(PKID[x]);
+                op.Accept(*PKID[x]);
             if(ZNAM.IsLoaded())
-                FormIDs.push_back(&ZNAM->fid);
+                op.Accept(ZNAM->fid);
             if(CSCR.IsLoaded())
-                FormIDs.push_back(&CSCR->fid);
+                op.Accept(CSCR->fid);
             for(unsigned int x = 0; x < Sounds.size(); x++)
-                FormIDs.push_back(&Sounds[x]->CSDI.value.fid);
+                op.Accept(Sounds[x]->CSDI.value.fid);
             }
 
         #ifdef _DEBUG
@@ -592,20 +592,20 @@ class CREARecord : public Record
         unsigned int GetListArraySize(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
         void GetListArray(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, void **FieldValues);
         void * GetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned short FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, short FieldValue);
-        void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue);
-        void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue);
-        void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, int FieldValue);
-        void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue[], unsigned int nSize);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char **FieldValue, unsigned int nSize);
+        void SetField(const unsigned int Field, char *FieldValue);
+        void SetField(const unsigned int Field, float FieldValue);
+        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
+        void SetOtherField(const unsigned int Field, unsigned int FieldValue);
+        void SetField(const unsigned int Field, unsigned short FieldValue);
+        void SetField(const unsigned int Field, short FieldValue);
+        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue);
+        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue);
+        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, int FieldValue);
+        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize);
+        void SetField(const unsigned int Field, unsigned int FieldValue[], unsigned int nSize);
+        void SetField(const unsigned int Field, unsigned char FieldValue);
+        void SetField(const unsigned int Field, char FieldValue);
+        void SetField(const unsigned int Field, char **FieldValue, unsigned int nSize);
 
         int DeleteField(const unsigned int Field);
         int DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);

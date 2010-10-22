@@ -1,5 +1,6 @@
 from ctypes import *
 import struct
+import math
 from os.path import exists
 try:
     from bolt import GPath
@@ -10,8 +11,8 @@ except:
         return obj
 
 CBash = None
-##if(exists(".\\CBash.dll")):
-##    CBash = CDLL("CBash.dll")
+if(exists(".\\CBash.dll")):
+    CBash = CDLL("CBash.dll")
 
 #Helper functions
 class PrintFormID(object):
@@ -54,8 +55,10 @@ class Model(object):
         self._ModName = ModName
         if ModName[-6:] == '.ghost':
             self.GName = GPath(ModName[:-6])
+            self._NormName = ModName[:-6]
         else:
             self.GName = GPath(ModName)
+            self._NormName = ModName
         self._recordID = recordID
         self._listIndex = listIndex
     def get_modPath(self):
@@ -93,8 +96,10 @@ class Item(object):
         self._ModName = ModName
         if ModName[-6:] == '.ghost':
             self.GName = GPath(ModName[:-6])
+            self._NormName = ModName[:-6]
         else:
             self.GName = GPath(ModName)
+            self._NormName = ModName
         self._recordID = recordID
         self._subField = subField
         self._listIndex = listIndex
@@ -127,8 +132,10 @@ class Condition(object):
         self._ModName = ModName
         if ModName[-6:] == '.ghost':
             self.GName = GPath(ModName[:-6])
+            self._NormName = ModName[:-6]
         else:
             self.GName = GPath(ModName)
+            self._NormName = ModName
         self._recordID = recordID
         self._subField = subField
         self._listIndex = listIndex
@@ -330,8 +337,10 @@ class Reference(object):
         self._ModName = ModName
         if ModName[-6:] == '.ghost':
             self.GName = GPath(ModName[:-6])
+            self._NormName = ModName[:-6]
         else:
             self.GName = GPath(ModName)
+            self._NormName = ModName
         self._recordID = recordID
         self._subField = subField
         self._listIndex = listIndex
@@ -370,8 +379,10 @@ class Effect(object):
         self._ModName = ModName
         if ModName[-6:] == '.ghost':
             self.GName = GPath(ModName[:-6])
+            self._NormName = ModName[:-6]
         else:
             self.GName = GPath(ModName)
+            self._NormName = ModName
         self._recordID = recordID
         self._subField = subField
         self._listIndex = listIndex
@@ -506,6 +517,24 @@ class Effect(object):
             else: self.flags = 0x00000001
         elif self.flags: self.flags &= ~0x00000001
     IsHostile = property(get_IsHostile, set_IsHostile)
+    def get_IsSelf(self):
+        return self.recipient != None and (self.recipient == 0)
+    def set_IsSelf(self, nValue):
+        if nValue: self.recipient = 0
+        else: self.recipient = 1
+    IsSelf = property(get_IsSelf, set_IsSelf)
+    def get_IsTouch(self):
+        return self.recipient != None and (self.recipient == 1)
+    def set_IsTouch(self, nValue):
+        if nValue: self.recipient = 1
+        else: self.recipient = 0
+    IsTouch = property(get_IsTouch, set_IsTouch)
+    def get_IsTarget(self):
+        return self.recipient != None and (self.recipient == 2)
+    def set_IsTarget(self, nValue):
+        if nValue: self.recipient = 2
+        else: self.recipient = 0
+    IsTarget = property(get_IsTarget, set_IsTarget)
 
 class Faction(object):
     def __init__(self, CollectionIndex, ModName, recordID, subField, listIndex):
@@ -513,8 +542,10 @@ class Faction(object):
         self._ModName = ModName
         if ModName[-6:] == '.ghost':
             self.GName = GPath(ModName[:-6])
+            self._NormName = ModName[:-6]
         else:
             self.GName = GPath(ModName)
+            self._NormName = ModName
         self._recordID = recordID
         self._subField = subField
         self._listIndex = listIndex
@@ -558,8 +589,10 @@ class Relation(object):
         self._ModName = ModName
         if ModName[-6:] == '.ghost':
             self.GName = GPath(ModName[:-6])
+            self._NormName = ModName[:-6]
         else:
             self.GName = GPath(ModName)
+            self._NormName = ModName
         self._recordID = recordID
         self._subField = subField
         self._listIndex = listIndex
@@ -647,8 +680,10 @@ class BaseRecord(object):
         self._ModName = ModName
         if ModName[-6:] == '.ghost':
             self.GName = GPath(ModName[:-6])
+            self._NormName = ModName[:-6]
         else:
             self.GName = GPath(ModName)
+            self._NormName = ModName
         self._recordID = recordID
     def LoadRecord(self):
         CBash.LoadRecord(self._CollectionIndex, self._ModName, self._recordID)
@@ -694,7 +729,8 @@ class BaseRecord(object):
         conflicts = self.Conflicts(ignoreScanned)
         #Less pythonic, but optimized for better speed.
         #Equivalent to commented out code.
-        parentRecords = [parent for parent in conflicts if parent._ModName in recordMasters].reverse()
+        parentRecords = [parent for parent in conflicts if parent._NormName in recordMasters]
+        parentRecords.reverse()
         if parentRecords:
             conflicting.update([(attr,reduce(getattr, attr.split('.'), self)) for parentRecord in parentRecords for attr in attrs if reduce(getattr, attr.split('.'), self) != reduce(getattr, attr.split('.'), parentRecord)])
         else: #is the first instance of the record
@@ -892,8 +928,10 @@ class TES4Record(object):
         self._ModName = ModName
         if ModName[-6:] == '.ghost':
             self.GName = GPath(ModName[:-6])
+            self._NormName = ModName[:-6]
         else:
             self.GName = GPath(ModName)
+            self._NormName = ModName
     def UnloadRecord(self):
         pass
     @property
@@ -1018,8 +1056,10 @@ class GMSTRecord(object):
         self._ModName = ModName
         if ModName[-6:] == '.ghost':
             self.GName = GPath(ModName[:-6])
+            self._NormName = ModName[:-6]
         else:
             self.GName = GPath(ModName)
+            self._NormName = ModName
         self._recordID = recordID
     def UnloadRecord(self):
         pass
@@ -1383,6 +1423,30 @@ class ACHRRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 24)
         else: CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 24, c_float(round(nValue,6)))
     rotZ = property(get_rotZ, set_rotZ)
+    def get_rotX_degrees(self):
+        retValue = self.rotX
+        if(retValue): return round(math.degrees(retValue),6)
+        return None
+    def set_rotX_degrees(self, nValue):
+        if nValue is None: self.rotX = None
+        else: self.rotX = math.radians(nValue)
+    rotX_degrees = property(get_rotX_degrees, set_rotX_degrees)
+    def get_rotY_degrees(self):
+        retValue = self.rotY
+        if(retValue): return round(math.degrees(retValue),6)
+        return None
+    def set_rotY_degrees(self, nValue):
+        if nValue is None: self.rotY = None
+        else: self.rotY = math.radians(nValue)
+    rotY_degrees = property(get_rotY_degrees, set_rotY_degrees)
+    def get_rotZ_degrees(self):
+        retValue = self.rotZ
+        if(retValue): return round(math.degrees(retValue),6)
+        return None
+    def set_rotZ_degrees(self, nValue):
+        if nValue is None: self.rotZ = None
+        else: self.rotZ = math.radians(nValue)
+    rotZ_degrees = property(get_rotZ_degrees, set_rotZ_degrees)
     def get_IsOppositeParent(self):
         return self.parentFlags != None and (self.parentFlags & 0x00000001) != 0
     def set_IsOppositeParent(self, nValue):
@@ -1604,6 +1668,30 @@ class ACRERecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 23)
         else: CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 23, c_float(round(nValue,6)))
     rotZ = property(get_rotZ, set_rotZ)
+    def get_rotX_degrees(self):
+        retValue = self.rotX
+        if(retValue): return round(math.degrees(retValue),6)
+        return None
+    def set_rotX_degrees(self, nValue):
+        if nValue is None: self.rotX = None
+        else: self.rotX = math.radians(nValue)
+    rotX_degrees = property(get_rotX_degrees, set_rotX_degrees)
+    def get_rotY_degrees(self):
+        retValue = self.rotY
+        if(retValue): return round(math.degrees(retValue),6)
+        return None
+    def set_rotY_degrees(self, nValue):
+        if nValue is None: self.rotY = None
+        else: self.rotY = math.radians(nValue)
+    rotY_degrees = property(get_rotY_degrees, set_rotY_degrees)
+    def get_rotZ_degrees(self):
+        retValue = self.rotZ
+        if(retValue): return round(math.degrees(retValue),6)
+        return None
+    def set_rotZ_degrees(self, nValue):
+        if nValue is None: self.rotZ = None
+        else: self.rotZ = math.radians(nValue)
+    rotZ_degrees = property(get_rotZ_degrees, set_rotZ_degrees)
     def get_IsOppositeParent(self):
         return self.parentFlags != None and (self.parentFlags & 0x00000001) != 0
     def set_IsOppositeParent(self, nValue):
@@ -14455,6 +14543,30 @@ class REFRRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 13)
         else: CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 13, c_float(round(nValue,6)))
     destinationRotZ = property(get_destinationRotZ, set_destinationRotZ)
+    def get_destinationRotX_degrees(self):
+        retValue = self.destinationRotX
+        if(retValue): return round(math.degrees(retValue),6)
+        return None
+    def set_destinationRotX_degrees(self, nValue):
+        if nValue is None: self.destinationRotX = None
+        else: self.destinationRotX = math.radians(nValue)
+    destinationRotX_degrees = property(get_destinationRotX_degrees, set_destinationRotX_degrees)
+    def get_destinationRotY_degrees(self):
+        retValue = self.destinationRotY
+        if(retValue): return round(math.degrees(retValue),6)
+        return None
+    def set_destinationRotY_degrees(self, nValue):
+        if nValue is None: self.destinationRotY = None
+        else: self.destinationRotY = math.radians(nValue)
+    destinationRotY_degrees = property(get_destinationRotY_degrees, set_destinationRotY_degrees)
+    def get_destinationRotZ_degrees(self):
+        retValue = self.destinationRotZ
+        if(retValue): return round(math.degrees(retValue),6)
+        return None
+    def set_destinationRotZ_degrees(self, nValue):
+        if nValue is None: self.destinationRotZ = None
+        else: self.destinationRotZ = math.radians(nValue)
+    destinationRotZ_degrees = property(get_destinationRotZ_degrees, set_destinationRotZ_degrees)
     def get_lockLevel(self):
         CBash.ReadFIDField.restype = POINTER(c_ubyte)
         retValue = CBash.ReadFIDField(self._CollectionIndex, self._ModName, self._recordID, 14)
@@ -14838,6 +14950,30 @@ class REFRRecord(BaseRecord):
         if nValue is None: CBash.DeleteFIDField(self._CollectionIndex, self._ModName, self._recordID, 50)
         else: CBash.SetFIDFieldF(self._CollectionIndex, self._ModName, self._recordID, 50, c_float(round(nValue,6)))
     rotZ = property(get_rotZ, set_rotZ)
+    def get_rotX_degrees(self):
+        retValue = self.rotX
+        if(retValue): return round(math.degrees(retValue),6)
+        return None
+    def set_rotX_degrees(self, nValue):
+        if nValue is None: self.rotX = None
+        else: self.rotX = math.radians(nValue)
+    rotX_degrees = property(get_rotX_degrees, set_rotX_degrees)
+    def get_rotY_degrees(self):
+        retValue = self.rotY
+        if(retValue): return round(math.degrees(retValue),6)
+        return None
+    def set_rotY_degrees(self, nValue):
+        if nValue is None: self.rotY = None
+        else: self.rotY = math.radians(nValue)
+    rotY_degrees = property(get_rotY_degrees, set_rotY_degrees)
+    def get_rotZ_degrees(self):
+        retValue = self.rotZ
+        if(retValue): return round(math.degrees(retValue),6)
+        return None
+    def set_rotZ_degrees(self, nValue):
+        if nValue is None: self.rotZ = None
+        else: self.rotZ = math.radians(nValue)
+    rotZ_degrees = property(get_rotZ_degrees, set_rotZ_degrees)
     def get_IsOppositeParent(self):
         return self.parentFlags != None and (self.parentFlags & 0x00000001) != 0
     def set_IsOppositeParent(self, nValue):
@@ -19168,11 +19304,13 @@ type_record = dict([('BASE',BaseRecord),('GMST',GMSTRecord),('GLOB',GLOBRecord),
 class CBashModFile(object):
     def __init__(self, CollectionIndex, ModName=None):
         self._CollectionIndex = CollectionIndex
-        self._ModName = ModName
+        self._ModName = str(ModName)
         if ModName[-6:] == '.ghost':
             self.GName = GPath(ModName[:-6])
+            self._NormName = ModName[:-6]
         else:
             self.GName = GPath(ModName)
+            self._NormName = ModName
     def HasRecord(self,recordID):
         if isinstance(recordID, basestring): TestRecord = GMSTRecord
         else: TestRecord = BaseRecord
@@ -20013,7 +20151,7 @@ class Collection:
         if recordID:
             self._CollectionIndex = recordID
         else:
-            self._CollectionIndex = CBash.NewCollection(ModsPath)
+            self._CollectionIndex = CBash.NewCollection(str(ModsPath))
         self._ModIndex = -1
         CBash.GetModName.restype = c_char_p
         CBash.ModIsFake.restype = c_uint
@@ -20029,8 +20167,8 @@ class Collection:
             flags |= scanFlag
         elif CreateIfNotExist:
             flags |= createFlag
-        if(CBash.AddMod(self._CollectionIndex, ModName, flags) != -1):
-            return CBashModFile(self._CollectionIndex, ModName)
+        if(CBash.AddMod(self._CollectionIndex, str(ModName), flags) != -1):
+            return CBashModFile(self._CollectionIndex, str(ModName))
         return None
 
     def addMergeMod(self, ModName):
@@ -20064,6 +20202,8 @@ class Collection:
             return [RecordType(self._CollectionIndex, string_at(cModNames[x]), recordID) for x in range(0, numRecords)]
         return []
 
+    def LookupModFile(self,ModName):
+        return CBashModFile(self._CollectionIndex, ModName)
     def UpdateReferences(self, origFid, newFid):
         if not isinstance(origFid, int): return 0
         if not isinstance(newFid, int): return 0
@@ -20109,7 +20249,7 @@ class Collection:
         return CBash.GetChangedMods(self._CollectionIndex)
 
     def safeSaveMod(self, ModName):
-        return CBash.SafeSaveMod(self._CollectionIndex, ModName)
+        return CBash.SafeSaveMod(self._CollectionIndex, str(ModName))
 
     def safeSaveAllChangedMods(self):
         return CBash.SafeSaveAllChangedMods(self._recordID)

@@ -108,20 +108,20 @@ class DOORRecord : public Record
             TNAM.clear();
             }
 
-        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
+        void VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
                 return;
             if(SCRI.IsLoaded())
-                FormIDs.push_back(&SCRI->fid);
+                op.Accept(SCRI->fid);
             if(SNAM.IsLoaded())
-                FormIDs.push_back(&SNAM->fid);
+                op.Accept(SNAM->fid);
             if(ANAM.IsLoaded())
-                FormIDs.push_back(&ANAM->fid);
+                op.Accept(ANAM->fid);
             if(BNAM.IsLoaded())
-                FormIDs.push_back(&BNAM->fid);
+                op.Accept(BNAM->fid);
             for(unsigned int x = 0; x < TNAM.size(); x++)
-                FormIDs.push_back(TNAM[x]);
+                op.Accept(*TNAM[x]);
             }
 
         #ifdef _DEBUG
@@ -132,12 +132,12 @@ class DOORRecord : public Record
         void * GetOtherField(const unsigned int Field);
         unsigned int GetFieldArraySize(const unsigned int Field);
         void GetFieldArray(const unsigned int Field, void **FieldValues);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue[], unsigned int nSize);
+        void SetField(const unsigned int Field, char *FieldValue);
+        void SetField(const unsigned int Field, float FieldValue);
+        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
+        void SetOtherField(const unsigned int Field, unsigned int FieldValue);
+        void SetField(const unsigned int Field, unsigned char FieldValue);
+        void SetField(const unsigned int Field, unsigned int FieldValue[], unsigned int nSize);
 
         int DeleteField(const unsigned int Field);
 

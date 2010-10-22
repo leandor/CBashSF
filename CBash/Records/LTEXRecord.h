@@ -59,8 +59,8 @@ class LTEXRecord : public Record
             #endif
             bool operator ==(const LTEXHNAM &other) const
                 {
-                return (flags == other.flags && 
-                        friction == other.friction && 
+                return (flags == other.flags &&
+                        friction == other.friction &&
                         restitution == other.restitution);
                 }
             bool operator !=(const LTEXHNAM &other) const
@@ -153,12 +153,12 @@ class LTEXRecord : public Record
             GNAM.clear();
             }
 
-        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
+        void VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
                 return;
             for(unsigned int x = 0; x < GNAM.size(); x++)
-                FormIDs.push_back(GNAM[x]);
+                op.Accept(*GNAM[x]);
             }
 
         #ifdef _DEBUG
@@ -169,9 +169,9 @@ class LTEXRecord : public Record
         void * GetOtherField(const unsigned int Field);
         unsigned int GetFieldArraySize(const unsigned int Field);
         void GetFieldArray(const unsigned int Field, void **FieldValues);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue[], unsigned int nSize);
+        void SetField(const unsigned int Field, char *FieldValue);
+        void SetField(const unsigned int Field, unsigned char FieldValue);
+        void SetField(const unsigned int Field, unsigned int FieldValue[], unsigned int nSize);
 
         int DeleteField(const unsigned int Field);
 

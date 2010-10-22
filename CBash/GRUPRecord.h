@@ -56,6 +56,8 @@ class GRUPRecords
             unsigned long gEnd = ReadHandler.tell() + gSize - 20;
             unsigned long recordSize = 0;
             std::pair<boost::unordered_set<unsigned int>::iterator,bool> ret;
+            FormIDResolver expander(FormIDHandler.ExpandTable);
+            RecordReader reader(FormIDHandler);
 
             while(ReadHandler.tell() < gEnd){
                 curRecord = new T();
@@ -64,7 +66,7 @@ class GRUPRecords
                 ReadHandler.read(&curRecord->flags, 4);
                 ReadHandler.read(&curRecord->formID, 4);
                 ReadHandler.read(&curRecord->flagsUnk, 4);
-                FormIDHandler.ExpandFormID(curRecord->formID);
+                expander.Accept(curRecord->formID);
                 if(curRecord->formID >> 24 == 0xFF)
                     {
                     delete curRecord;
@@ -81,7 +83,7 @@ class GRUPRecords
                     {
                     curRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
                     if(FullLoad)
-                        Threads.schedule(boost::bind(&Record::Read, curRecord, boost::ref(FormIDHandler)));
+                        Threads.schedule(boost::bind(&RecordReader::Accept, reader, boost::ref(*curRecord)));
                     if(recordType != eGMST && !FormIDHandler.NewTypes.count(recordType) && FormIDHandler.IsNewRecord(curRecord->formID))
                         FormIDHandler.NewTypes.insert(recordType);
                     Records.push_back(curRecord);
@@ -97,14 +99,6 @@ class GRUPRecords
                 FormIDHandler.IsEmpty = false;
             return true;
             }
-        bool Read(_FormIDHandler &FormIDHandler)
-            {
-            if(!SkimmedGRUP)
-                return false;
-            for(unsigned int p = 0; p < Records.size(); p++)
-                Records[p]->Read(FormIDHandler);
-            return true;
-            }
         void DeleteRecord(Record *curRecord)
             {
             std::vector<T *>::iterator it;
@@ -118,31 +112,28 @@ class GRUPRecords
             delete curRecord;
             Records.erase(it);
             }
-        unsigned int UpdateReferences(unsigned int origFormID, unsigned int newFormID, _FormIDHandler &FormIDHandler)
+        void VisitRecords(RecordOp &op)
             {
-            unsigned int count = 0;
+            T * curRecord = NULL;
             for(unsigned int p = 0; p < Records.size(); p++)
                 {
-                count += Records[p]->UpdateReferences(origFormID, newFormID, FormIDHandler);
+                curRecord = Records[p];
+                op.Accept(*curRecord);
                 }
-            return count;
-            }
-        int Unload()
-            {
-            for(unsigned int p = 0; p < Records.size(); p++)
-                if(Records[p]->recData != NULL)
-                    Records[p]->Unload();
-            return 0;
+            return;
             }
         bool CheckMasters(unsigned char MASTIndex, _FormIDHandler &FormIDHandler)
             {
+            FormIDMasterChecker checker(FormIDHandler.ExpandTable, MASTIndex);
+            RecordFormIDVisitor allChecker(FormIDHandler, checker);
             T *curRecord;
             for(unsigned int p = 0; p < Records.size(); p++)
                 {
                 curRecord = Records[p];
-                if(FormIDHandler.UsesMaster(curRecord->formID, MASTIndex))
+                if(checker.Accept(curRecord->formID))
                     return true;
-                if(curRecord->CheckMasters(MASTIndex, FormIDHandler))
+                allChecker.Accept(*curRecord);
+                if(allChecker.GetCount())
                     return true;
                 }
             return false;
@@ -217,6 +208,8 @@ class GRUPRecords<DIALRecord>
             unsigned long gEnd = ReadHandler.tell() + gSize - 20;
             unsigned long recordSize = 0;
             std::pair<boost::unordered_set<unsigned int>::iterator,bool> ret;
+            FormIDResolver expander(FormIDHandler.ExpandTable);
+            RecordReader reader(FormIDHandler);
 
             while(ReadHandler.tell() < gEnd){
                 ReadHandler.read(&recordType, 4);
@@ -228,7 +221,7 @@ class GRUPRecords<DIALRecord>
                         ReadHandler.read(&curDIALRecord->flags, 4);
                         ReadHandler.read(&curDIALRecord->formID, 4);
                         ReadHandler.read(&curDIALRecord->flagsUnk, 4);
-                        FormIDHandler.ExpandFormID(curDIALRecord->formID);
+                        expander.Accept(curDIALRecord->formID);
                         if(curDIALRecord->formID >> 24 == 0xFF)
                             {
                             delete curDIALRecord;
@@ -245,7 +238,7 @@ class GRUPRecords<DIALRecord>
                             {
                             curDIALRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
                             if(FullLoad)
-                                Threads.schedule(boost::bind(&Record::Read, curDIALRecord, boost::ref(FormIDHandler)));
+                                Threads.schedule(boost::bind(&RecordReader::Accept, reader, boost::ref(*curDIALRecord)));
                             if(!FormIDHandler.NewTypes.count(recordType) && FormIDHandler.IsNewRecord(curDIALRecord->formID))
                                 FormIDHandler.NewTypes.insert(recordType);
                             Records.push_back(curDIALRecord);
@@ -266,7 +259,7 @@ class GRUPRecords<DIALRecord>
                         ReadHandler.read(&curINFORecord->flags, 4);
                         ReadHandler.read(&curINFORecord->formID, 4);
                         ReadHandler.read(&curINFORecord->flagsUnk, 4);
-                        FormIDHandler.ExpandFormID(curINFORecord->formID);
+                        expander.Accept(curINFORecord->formID);
                         if(curINFORecord->formID >> 24 == 0xFF)
                             {
                             delete curINFORecord;
@@ -283,7 +276,7 @@ class GRUPRecords<DIALRecord>
                             {
                             curINFORecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
                             if(FullLoad)
-                                Threads.schedule(boost::bind(&Record::Read, curINFORecord, boost::ref(FormIDHandler)));
+                                Threads.schedule(boost::bind(&RecordReader::Accept, reader, boost::ref(*curINFORecord)));
                             if(!FormIDHandler.NewTypes.count(recordType) && FormIDHandler.IsNewRecord(curINFORecord->formID))
                                 FormIDHandler.NewTypes.insert(recordType);
                             curDIALRecord->INFO.push_back(curINFORecord);
@@ -303,20 +296,6 @@ class GRUPRecords<DIALRecord>
                 };
             if(Records.size())
                 FormIDHandler.IsEmpty = false;
-            return true;
-            }
-        bool Read(_FormIDHandler &FormIDHandler)
-            {
-            if(!SkimmedGRUP)
-                return false;
-            DIALRecord * curRecord = NULL;
-            for(unsigned int p = 0; p < Records.size(); p++)
-                {
-                curRecord = Records[p];
-                curRecord->Read(FormIDHandler);
-                for(unsigned int x = 0; x < curRecord->INFO.size(); ++x)
-                    curRecord->INFO[x]->Read(FormIDHandler);
-                }
             return true;
             }
         void DeleteRecord(Record *curParentRecord, Record *curRecord)
@@ -351,48 +330,41 @@ class GRUPRecords<DIALRecord>
                 }
             return;
             }
-        unsigned int UpdateReferences(unsigned int origFormID, unsigned int newFormID, _FormIDHandler &FormIDHandler)
+        void VisitRecords(RecordOp &op)
             {
-            unsigned int count = 0;
             DIALRecord * curRecord = NULL;
+            Record * curSubRecord = NULL;
             for(unsigned int p = 0; p < Records.size(); p++)
                 {
                 curRecord = Records[p];
-                count += curRecord->UpdateReferences(origFormID, newFormID, FormIDHandler);
+                op.Accept(*curRecord);
                 for(unsigned int x = 0; x < curRecord->INFO.size(); ++x)
-                    count += curRecord->INFO[x]->UpdateReferences(origFormID, newFormID, FormIDHandler);
+                    {
+                    curSubRecord = curRecord->INFO[x];
+                    op.Accept(*curSubRecord);
+                    }
                 }
-            return count;
-            }
-        int Unload()
-            {
-            DIALRecord * curRecord = NULL;
-            for(unsigned int p = 0; p < Records.size(); p++)
-                {
-                curRecord = Records[p];
-                for(unsigned int x = 0; x < curRecord->INFO.size(); ++x)
-                    if(curRecord->INFO[x]->recData != NULL)
-                        curRecord->INFO[x]->Unload();
-                if(curRecord->recData != NULL)
-                    curRecord->Unload();
-                }
-            return 0;
+            return;
             }
         unsigned int CheckMasters(unsigned char MASTIndex, _FormIDHandler &FormIDHandler)
             {
+            FormIDMasterChecker checker(FormIDHandler.ExpandTable, MASTIndex);
+            RecordFormIDVisitor allChecker(FormIDHandler, checker);
             DIALRecord * curRecord = NULL;
             for(unsigned int p = 0; p < Records.size(); p++)
                 {
                 curRecord = Records[p];
-                if(FormIDHandler.UsesMaster(curRecord->formID, MASTIndex))
+                if(checker.Accept(curRecord->formID))
                     return true;
-                if(curRecord->CheckMasters(MASTIndex, FormIDHandler))
+                allChecker.Accept(*curRecord);
+                if(allChecker.GetCount())
                     return true;
                 for(unsigned int x = 0; x < curRecord->INFO.size(); ++x)
                     {
-                    if(FormIDHandler.UsesMaster(curRecord->INFO[x]->formID, MASTIndex))
+                    if(checker.Accept(curRecord->INFO[x]->formID))
                         return true;
-                    if(curRecord->INFO[x]->CheckMasters(MASTIndex, FormIDHandler))
+                    allChecker.Accept(*curRecord->INFO[x]);
+                    if(allChecker.GetCount())
                         return true;
                     }
                 }
@@ -411,6 +383,7 @@ class GRUPRecords<DIALRecord>
             unsigned int TopLabel = eDIAL;
             unsigned int numINFORecords = 0;
             unsigned int parentFormID = 0;
+            FormIDResolver collapser(FormIDHandler.CollapseTable);
             DIALRecord *curRecord = NULL;
 
             //Top GRUP Header
@@ -430,7 +403,7 @@ class GRUPRecords<DIALRecord>
                 {
                 curRecord = Records[p];
                 parentFormID = curRecord->formID;
-                FormIDHandler.CollapseFormID(parentFormID);
+                collapser.Accept(parentFormID);
                 TopSize += curRecord->Write(SaveHandler, FormIDHandler);
 
                 numINFORecords = (unsigned int)curRecord->INFO.size();
@@ -507,6 +480,8 @@ class GRUPRecords<CELLRecord>
             unsigned long gEnd = ReadHandler.tell() + gSize - 20;
             unsigned long recordSize = 0;
             std::pair<boost::unordered_set<unsigned int>::iterator,bool> ret;
+            FormIDResolver expander(FormIDHandler.ExpandTable);
+            RecordReader reader(FormIDHandler);
 
             while(ReadHandler.tell() < gEnd){
                 ReadHandler.read(&recordType, 4);
@@ -518,7 +493,7 @@ class GRUPRecords<CELLRecord>
                         ReadHandler.read(&curCELLRecord->flags, 4);
                         ReadHandler.read(&curCELLRecord->formID, 4);
                         ReadHandler.read(&curCELLRecord->flagsUnk, 4);
-                        FormIDHandler.ExpandFormID(curCELLRecord->formID);
+                        expander.Accept(curCELLRecord->formID);
                         if(curCELLRecord->formID >> 24 == 0xFF)
                             {
                             delete curCELLRecord;
@@ -535,7 +510,7 @@ class GRUPRecords<CELLRecord>
                             {
                             curCELLRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
                             if(FullLoad)
-                                Threads.schedule(boost::bind(&Record::Read, curCELLRecord, boost::ref(FormIDHandler)));
+                                Threads.schedule(boost::bind(&RecordReader::Accept, reader, boost::ref(*curCELLRecord)));
                             if(!FormIDHandler.NewTypes.count(recordType) && FormIDHandler.IsNewRecord(curCELLRecord->formID))
                                 FormIDHandler.NewTypes.insert(recordType);
                             Records.push_back(curCELLRecord);
@@ -555,7 +530,7 @@ class GRUPRecords<CELLRecord>
                         ReadHandler.read(&curACHRRecord->flags, 4);
                         ReadHandler.read(&curACHRRecord->formID, 4);
                         ReadHandler.read(&curACHRRecord->flagsUnk, 4);
-                        FormIDHandler.ExpandFormID(curACHRRecord->formID);
+                        expander.Accept(curACHRRecord->formID);
                         if(curACHRRecord->formID >> 24 == 0xFF)
                             {
                             delete curACHRRecord;
@@ -572,7 +547,7 @@ class GRUPRecords<CELLRecord>
                             {
                             curACHRRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
                             if(FullLoad)
-                                Threads.schedule(boost::bind(&Record::Read, curACHRRecord, boost::ref(FormIDHandler)));
+                                Threads.schedule(boost::bind(&RecordReader::Accept, reader, boost::ref(*curACHRRecord)));
                             if(!FormIDHandler.NewTypes.count(recordType) && FormIDHandler.IsNewRecord(curACHRRecord->formID))
                                 FormIDHandler.NewTypes.insert(recordType);
                             curCELLRecord->ACHR.push_back(curACHRRecord);
@@ -589,7 +564,7 @@ class GRUPRecords<CELLRecord>
                         ReadHandler.read(&curACRERecord->flags, 4);
                         ReadHandler.read(&curACRERecord->formID, 4);
                         ReadHandler.read(&curACRERecord->flagsUnk, 4);
-                        FormIDHandler.ExpandFormID(curACRERecord->formID);
+                        expander.Accept(curACRERecord->formID);
                         if(curACRERecord->formID >> 24 == 0xFF)
                             {
                             delete curACRERecord;
@@ -606,7 +581,7 @@ class GRUPRecords<CELLRecord>
                             {
                             curACRERecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
                             if(FullLoad)
-                                Threads.schedule(boost::bind(&Record::Read, curACRERecord, boost::ref(FormIDHandler)));
+                                Threads.schedule(boost::bind(&RecordReader::Accept, reader, boost::ref(*curACRERecord)));
                             if(!FormIDHandler.NewTypes.count(recordType) && FormIDHandler.IsNewRecord(curACRERecord->formID))
                                 FormIDHandler.NewTypes.insert(recordType);
                             curCELLRecord->ACRE.push_back(curACRERecord);
@@ -623,7 +598,7 @@ class GRUPRecords<CELLRecord>
                         ReadHandler.read(&curREFRRecord->flags, 4);
                         ReadHandler.read(&curREFRRecord->formID, 4);
                         ReadHandler.read(&curREFRRecord->flagsUnk, 4);
-                        FormIDHandler.ExpandFormID(curREFRRecord->formID);
+                        expander.Accept(curREFRRecord->formID);
                         if(curREFRRecord->formID >> 24 == 0xFF)
                             {
                             delete curREFRRecord;
@@ -640,7 +615,7 @@ class GRUPRecords<CELLRecord>
                             {
                             curREFRRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
                             if(FullLoad)
-                                Threads.schedule(boost::bind(&Record::Read, curREFRRecord, boost::ref(FormIDHandler)));
+                                Threads.schedule(boost::bind(&RecordReader::Accept, reader, boost::ref(*curREFRRecord)));
                             if(!FormIDHandler.NewTypes.count(recordType) && FormIDHandler.IsNewRecord(curREFRRecord->formID))
                                 FormIDHandler.NewTypes.insert(recordType);
                             curCELLRecord->REFR.push_back(curREFRRecord);
@@ -658,7 +633,7 @@ class GRUPRecords<CELLRecord>
                         ReadHandler.read(&curCELLRecord->PGRD->flags, 4);
                         ReadHandler.read(&curCELLRecord->PGRD->formID, 4);
                         ReadHandler.read(&curCELLRecord->PGRD->flagsUnk, 4);
-                        FormIDHandler.ExpandFormID(curCELLRecord->PGRD->formID);
+                        expander.Accept(curCELLRecord->PGRD->formID);
                         if(curCELLRecord->PGRD->formID >> 24 == 0xFF)
                             {
                             delete curCELLRecord->PGRD;
@@ -676,7 +651,7 @@ class GRUPRecords<CELLRecord>
                             {
                             curCELLRecord->PGRD->recData = ReadHandler.getBuffer(ReadHandler.tell());
                             if(FullLoad)
-                                Threads.schedule(boost::bind(&Record::Read, curCELLRecord->PGRD, boost::ref(FormIDHandler)));
+                                Threads.schedule(boost::bind(&RecordReader::Accept, reader, boost::ref(*curCELLRecord->PGRD)));
                             if(!FormIDHandler.NewTypes.count(recordType) && FormIDHandler.IsNewRecord(curCELLRecord->PGRD->formID))
                                 FormIDHandler.NewTypes.insert(recordType);
                             }
@@ -696,26 +671,6 @@ class GRUPRecords<CELLRecord>
                 };
             if(Records.size())
                 FormIDHandler.IsEmpty = false;
-            return true;
-            }
-        bool Read(_FormIDHandler &FormIDHandler)
-            {
-            if(!SkimmedGRUP)
-                return false;
-            CELLRecord *curRecord = NULL;
-            for(unsigned int p = 0; p < Records.size(); p++)
-                {
-                curRecord = Records[p];
-                curRecord->Read(FormIDHandler);
-                for(unsigned int x = 0; x < curRecord->ACHR.size(); ++x)
-                    curRecord->ACHR[x]->Read(FormIDHandler);
-                for(unsigned int x = 0; x < curRecord->ACRE.size(); ++x)
-                    curRecord->ACRE[x]->Read(FormIDHandler);
-                for(unsigned int x = 0; x < curRecord->REFR.size(); ++x)
-                    curRecord->REFR[x]->Read(FormIDHandler);
-                if(curRecord->PGRD != NULL)
-                    curRecord->PGRD->Read(FormIDHandler);
-                }
             return true;
             }
         void DeleteRecord(Record *curParentRecord, Record *curRecord)
@@ -772,84 +727,80 @@ class GRUPRecords<CELLRecord>
                 }
             return;
             }
-        unsigned int UpdateReferences(unsigned int origFormID, unsigned int newFormID, _FormIDHandler &FormIDHandler)
+        void VisitRecords(RecordOp &op)
             {
-            unsigned int count = 0;
-            CELLRecord *curRecord = NULL;
+            CELLRecord * curRecord = NULL;
+            Record * curSubRecord = NULL;
             for(unsigned int p = 0; p < Records.size(); p++)
                 {
                 curRecord = Records[p];
-                count += curRecord->UpdateReferences(origFormID, newFormID, FormIDHandler);
+                op.Accept(*curRecord);
                 for(unsigned int x = 0; x < curRecord->ACHR.size(); ++x)
-                    count += curRecord->ACHR[x]->UpdateReferences(origFormID, newFormID, FormIDHandler);
+                    {
+                    curSubRecord = curRecord->ACHR[x];
+                    op.Accept(*curSubRecord);
+                    }
                 for(unsigned int x = 0; x < curRecord->ACRE.size(); ++x)
-                    count += curRecord->ACRE[x]->UpdateReferences(origFormID, newFormID, FormIDHandler);
+                    {
+                    curSubRecord = curRecord->ACRE[x];
+                    op.Accept(*curSubRecord);
+                    }
                 for(unsigned int x = 0; x < curRecord->REFR.size(); ++x)
-                    count += curRecord->REFR[x]->UpdateReferences(origFormID, newFormID, FormIDHandler);
+                    {
+                    curSubRecord = curRecord->REFR[x];
+                    op.Accept(*curSubRecord);
+                    }
                 if(curRecord->PGRD != NULL)
-                    count += curRecord->PGRD->UpdateReferences(origFormID, newFormID, FormIDHandler);
+                    {
+                    curSubRecord = curRecord->PGRD;
+                    op.Accept(*curSubRecord);
+                    }
                 }
-            return count;
-            }
-
-        int Unload()
-            {
-            CELLRecord *curRecord = NULL;
-            for(unsigned int p = 0; p < Records.size(); p++)
-                {
-                curRecord = Records[p];
-                for(unsigned int x = 0; x < curRecord->ACHR.size(); ++x)
-                    if(curRecord->ACHR[x]->recData != NULL)
-                        curRecord->ACHR[x]->Unload();
-                for(unsigned int x = 0; x < curRecord->ACRE.size(); ++x)
-                    if(curRecord->ACRE[x]->recData != NULL)
-                        curRecord->ACRE[x]->Unload();
-                for(unsigned int x = 0; x < curRecord->REFR.size(); ++x)
-                    if(curRecord->REFR[x]->recData != NULL)
-                        curRecord->REFR[x]->Unload();
-                if(curRecord->PGRD != NULL && curRecord->PGRD->recData != NULL)
-                    curRecord->PGRD->Unload();
-                if(curRecord->recData != NULL)
-                    curRecord->Unload();
-                }
-            return 0;
+            return;
             }
         bool CheckMasters(unsigned char MASTIndex, _FormIDHandler &FormIDHandler)
             {
+            FormIDMasterChecker checker(FormIDHandler.ExpandTable, MASTIndex);
+            RecordFormIDVisitor allChecker(FormIDHandler, checker);
             CELLRecord *curRecord = NULL;
             for(unsigned int p = 0; p < Records.size(); p++)
                 {
                 curRecord = Records[p];
-                if(FormIDHandler.UsesMaster(curRecord->formID, MASTIndex))
+                if(checker.Accept(curRecord->formID))
                     return true;
-                if(curRecord->CheckMasters(MASTIndex, FormIDHandler))
+                allChecker.Accept(*curRecord);
+                if(allChecker.GetCount())
                     return true;
                 for(unsigned int x = 0; x < curRecord->ACHR.size(); ++x)
                     {
-                    if(FormIDHandler.UsesMaster(curRecord->ACHR[x]->formID, MASTIndex))
+                    if(checker.Accept(curRecord->ACHR[x]->formID))
                         return true;
-                    if(curRecord->ACHR[x]->CheckMasters(MASTIndex, FormIDHandler))
+                    allChecker.Accept(*curRecord->ACHR[x]);
+                    if(allChecker.GetCount())
                         return true;
                     }
                 for(unsigned int x = 0; x < curRecord->ACRE.size(); ++x)
                     {
-                    if(FormIDHandler.UsesMaster(curRecord->ACRE[x]->formID, MASTIndex))
+                    if(checker.Accept(curRecord->ACRE[x]->formID))
                         return true;
-                    if(curRecord->ACRE[x]->CheckMasters(MASTIndex, FormIDHandler))
+                    allChecker.Accept(*curRecord->ACRE[x]);
+                    if(allChecker.GetCount())
                         return true;
                     }
                 for(unsigned int x = 0; x < curRecord->REFR.size(); ++x)
                     {
-                    if(FormIDHandler.UsesMaster(curRecord->REFR[x]->formID, MASTIndex))
+                    if(checker.Accept(curRecord->REFR[x]->formID))
                         return true;
-                    if(curRecord->REFR[x]->CheckMasters(MASTIndex, FormIDHandler))
+                    allChecker.Accept(*curRecord->REFR[x]);
+                    if(allChecker.GetCount())
                         return true;
                     }
                 if(curRecord->PGRD != NULL)
                     {
-                    if(FormIDHandler.UsesMaster(curRecord->PGRD->formID, MASTIndex))
+                    if(checker.Accept(curRecord->PGRD->formID))
                         return true;
-                    if(curRecord->PGRD->CheckMasters(MASTIndex, FormIDHandler))
+                    allChecker.Accept(*curRecord->PGRD);
+                    if(allChecker.GetCount())
                         return true;
                     }
                 }
@@ -881,6 +832,7 @@ class GRUPRecords<CELLRecord>
             unsigned int numChild = 0;
 
             unsigned int parentFormID = 0;
+            FormIDResolver collapser(FormIDHandler.CollapseTable);
             CELLRecord *curRecord = NULL;
             int ObjectID, BlockIndex, SubBlockIndex;
 
@@ -944,7 +896,7 @@ class GRUPRecords<CELLRecord>
                             {
                             curRecord = BlockedRecords[curBlock][curSubBlock][p];
                             parentFormID = curRecord->formID;
-                            FormIDHandler.CollapseFormID(parentFormID);
+                            collapser.Accept(parentFormID);
                             subBlockSize += curRecord->Write(SaveHandler, FormIDHandler);
                             //Place the PGRD, ACHR, ACRE, and REFR records into their proper GRUP
                             if(curRecord->PGRD != NULL)
@@ -1153,6 +1105,8 @@ class GRUPRecords<WRLDRecord>
             GRUPs.push_back(GRUP_Size);
             unsigned long recordSize = 0;
             std::pair<boost::unordered_set<unsigned int>::iterator,bool> ret;
+            FormIDResolver expander(FormIDHandler.ExpandTable);
+            RecordReader reader(FormIDHandler);
 
             while(ReadHandler.tell() < gEnd){
                 //Better tracking of the last GRUP
@@ -1172,7 +1126,7 @@ class GRUPRecords<WRLDRecord>
                         ReadHandler.read(&curWRLDRecord->flags, 4);
                         ReadHandler.read(&curWRLDRecord->formID, 4);
                         ReadHandler.read(&curWRLDRecord->flagsUnk, 4);
-                        FormIDHandler.ExpandFormID(curWRLDRecord->formID);
+                        expander.Accept(curWRLDRecord->formID);
                         if(curWRLDRecord->formID >> 24 == 0xFF)
                             {
                             delete curWRLDRecord;
@@ -1189,7 +1143,7 @@ class GRUPRecords<WRLDRecord>
                             {
                             curWRLDRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
                             if(FullLoad)
-                                Threads.schedule(boost::bind(&Record::Read, curWRLDRecord, boost::ref(FormIDHandler)));
+                                Threads.schedule(boost::bind(&RecordReader::Accept, reader, boost::ref(*curWRLDRecord)));
                             if(!FormIDHandler.NewTypes.count(recordType) && FormIDHandler.IsNewRecord(curWRLDRecord->formID))
                                 FormIDHandler.NewTypes.insert(recordType);
                             Records.push_back(curWRLDRecord);
@@ -1207,7 +1161,7 @@ class GRUPRecords<WRLDRecord>
                         ReadHandler.read(&curCELLRecord->flags, 4);
                         ReadHandler.read(&curCELLRecord->formID, 4);
                         ReadHandler.read(&curCELLRecord->flagsUnk, 4);
-                        FormIDHandler.ExpandFormID(curCELLRecord->formID);
+                        expander.Accept(curCELLRecord->formID);
                         if(curCELLRecord->formID >> 24 == 0xFF)
                             {
                             delete curCELLRecord;
@@ -1224,8 +1178,8 @@ class GRUPRecords<WRLDRecord>
                             {
                             curCELLRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
                             if(FullLoad)
-                                curCELLRecord->Read(FormIDHandler); //Can't thread this due to LAND's needing access to XCLC for indexing
-                                //Threads.schedule(boost::bind(&Record::Read, curCELLRecord, boost::ref(FormIDHandler)));
+                                reader.Accept(*curCELLRecord); //Can't thread this due to LAND's needing access to XCLC for indexing
+                                //Threads.schedule(boost::bind(&RecordReader::Accept, reader, boost::ref(*curCELLRecord)));
                             if(!FormIDHandler.NewTypes.count(recordType) && FormIDHandler.IsNewRecord(curCELLRecord->formID))
                                 FormIDHandler.NewTypes.insert(recordType);
                             switch(GRUP_Size.first)
@@ -1259,7 +1213,7 @@ class GRUPRecords<WRLDRecord>
                         ReadHandler.read(&curWRLDRecord->ROAD->flags, 4);
                         ReadHandler.read(&curWRLDRecord->ROAD->formID, 4);
                         ReadHandler.read(&curWRLDRecord->ROAD->flagsUnk, 4);
-                        FormIDHandler.ExpandFormID(curWRLDRecord->ROAD->formID);
+                        expander.Accept(curWRLDRecord->ROAD->formID);
                         if(curWRLDRecord->ROAD->formID >> 24 == 0xFF)
                             {
                             delete curWRLDRecord->ROAD;
@@ -1277,7 +1231,7 @@ class GRUPRecords<WRLDRecord>
                             {
                             curWRLDRecord->ROAD->recData = ReadHandler.getBuffer(ReadHandler.tell());
                             if(FullLoad)
-                                Threads.schedule(boost::bind(&Record::Read, curWRLDRecord->ROAD, boost::ref(FormIDHandler)));
+                                Threads.schedule(boost::bind(&RecordReader::Accept, reader, boost::ref(*curWRLDRecord->ROAD)));
                             if(!FormIDHandler.NewTypes.count(recordType) && FormIDHandler.IsNewRecord(curWRLDRecord->ROAD->formID))
                                 FormIDHandler.NewTypes.insert(recordType);
                             }
@@ -1295,7 +1249,7 @@ class GRUPRecords<WRLDRecord>
                         ReadHandler.read(&curCELLRecord->LAND->flags, 4);
                         ReadHandler.read(&curCELLRecord->LAND->formID, 4);
                         ReadHandler.read(&curCELLRecord->LAND->flagsUnk, 4);
-                        FormIDHandler.ExpandFormID(curCELLRecord->LAND->formID);
+                        expander.Accept(curCELLRecord->LAND->formID);
                         if(curCELLRecord->LAND->formID >> 24 == 0xFF)
                             {
                             delete curCELLRecord->LAND;
@@ -1312,12 +1266,12 @@ class GRUPRecords<WRLDRecord>
                         if(ret.second == true)
                             {
                             curCELLRecord->LAND->recData = ReadHandler.getBuffer(ReadHandler.tell());
-                            curCELLRecord->Read(FormIDHandler); //may already be loaded, but just to be sure.
+                            reader.Accept(*curCELLRecord); //may already be loaded, but just to be sure.
                             curCELLRecord->XCLC.Load();
                             GridXY_LAND[curCELLRecord->XCLC->posX][curCELLRecord->XCLC->posY] = curCELLRecord->LAND;
                             if(FullLoad)
                                 {
-                                Threads.schedule(boost::bind(&Record::Read, curCELLRecord->LAND, boost::ref(FormIDHandler)));
+                                Threads.schedule(boost::bind(&RecordReader::Accept, reader, boost::ref(*curCELLRecord->LAND)));
                                 //curCELLRecord->LAND->Read(fileBuffer, FormIDHandler);
                                 }
                             else //Parent CELL is not loaded, so load temporarily for indexing
@@ -1341,7 +1295,7 @@ class GRUPRecords<WRLDRecord>
                         ReadHandler.read(&curCELLRecord->PGRD->flags, 4);
                         ReadHandler.read(&curCELLRecord->PGRD->formID, 4);
                         ReadHandler.read(&curCELLRecord->PGRD->flagsUnk, 4);
-                        FormIDHandler.ExpandFormID(curCELLRecord->PGRD->formID);
+                        expander.Accept(curCELLRecord->PGRD->formID);
                         if(curCELLRecord->PGRD->formID >> 24 == 0xFF)
                             {
                             delete curCELLRecord->PGRD;
@@ -1359,7 +1313,7 @@ class GRUPRecords<WRLDRecord>
                             {
                             curCELLRecord->PGRD->recData = ReadHandler.getBuffer(ReadHandler.tell());
                             if(FullLoad)
-                                Threads.schedule(boost::bind(&Record::Read, curCELLRecord->PGRD, boost::ref(FormIDHandler)));
+                                Threads.schedule(boost::bind(&RecordReader::Accept, reader, boost::ref(*curCELLRecord->PGRD)));
                             if(!FormIDHandler.NewTypes.count(recordType) && FormIDHandler.IsNewRecord(curCELLRecord->PGRD->formID))
                                 FormIDHandler.NewTypes.insert(recordType);
                             }
@@ -1376,7 +1330,7 @@ class GRUPRecords<WRLDRecord>
                         ReadHandler.read(&curACHRRecord->flags, 4);
                         ReadHandler.read(&curACHRRecord->formID, 4);
                         ReadHandler.read(&curACHRRecord->flagsUnk, 4);
-                        FormIDHandler.ExpandFormID(curACHRRecord->formID);
+                        expander.Accept(curACHRRecord->formID);
                         if(curACHRRecord->formID >> 24 == 0xFF)
                             {
                             delete curACHRRecord;
@@ -1393,7 +1347,7 @@ class GRUPRecords<WRLDRecord>
                             {
                             curACHRRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
                             if(FullLoad)
-                                Threads.schedule(boost::bind(&Record::Read, curACHRRecord, boost::ref(FormIDHandler)));
+                                Threads.schedule(boost::bind(&RecordReader::Accept, reader, boost::ref(*curACHRRecord)));
                             if(!FormIDHandler.NewTypes.count(recordType) && FormIDHandler.IsNewRecord(curACHRRecord->formID))
                                 FormIDHandler.NewTypes.insert(recordType);
                             curCELLRecord->ACHR.push_back(curACHRRecord);
@@ -1410,7 +1364,7 @@ class GRUPRecords<WRLDRecord>
                         ReadHandler.read(&curACRERecord->flags, 4);
                         ReadHandler.read(&curACRERecord->formID, 4);
                         ReadHandler.read(&curACRERecord->flagsUnk, 4);
-                        FormIDHandler.ExpandFormID(curACRERecord->formID);
+                        expander.Accept(curACRERecord->formID);
                         if(curACRERecord->formID >> 24 == 0xFF)
                             {
                             delete curACRERecord;
@@ -1427,7 +1381,7 @@ class GRUPRecords<WRLDRecord>
                             {
                             curACRERecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
                             if(FullLoad)
-                                Threads.schedule(boost::bind(&Record::Read, curACRERecord, boost::ref(FormIDHandler)));
+                                Threads.schedule(boost::bind(&RecordReader::Accept, reader, boost::ref(*curACRERecord)));
                             if(!FormIDHandler.NewTypes.count(recordType) && FormIDHandler.IsNewRecord(curACRERecord->formID))
                                 FormIDHandler.NewTypes.insert(recordType);
                             curCELLRecord->ACRE.push_back(curACRERecord);
@@ -1444,7 +1398,7 @@ class GRUPRecords<WRLDRecord>
                         ReadHandler.read(&curREFRRecord->flags, 4);
                         ReadHandler.read(&curREFRRecord->formID, 4);
                         ReadHandler.read(&curREFRRecord->flagsUnk, 4);
-                        FormIDHandler.ExpandFormID(curREFRRecord->formID);
+                        expander.Accept(curREFRRecord->formID);
                         if(curREFRRecord->formID >> 24 == 0xFF)
                             {
                             delete curREFRRecord;
@@ -1461,7 +1415,7 @@ class GRUPRecords<WRLDRecord>
                             {
                             curREFRRecord->recData = ReadHandler.getBuffer(ReadHandler.tell());
                             if(FullLoad)
-                                Threads.schedule(boost::bind(&Record::Read, curREFRRecord, boost::ref(FormIDHandler)));
+                                Threads.schedule(boost::bind(&RecordReader::Accept, reader, boost::ref(*curREFRRecord)));
                             if(!FormIDHandler.NewTypes.count(recordType) && FormIDHandler.IsNewRecord(curREFRRecord->formID))
                                 FormIDHandler.NewTypes.insert(recordType);
                             curCELLRecord->REFR.push_back(curREFRRecord);
@@ -1492,51 +1446,6 @@ class GRUPRecords<WRLDRecord>
                         }
             if(Records.size())
                 FormIDHandler.IsEmpty = false;
-            return true;
-            }
-        bool Read(_FormIDHandler &FormIDHandler)
-            {
-            if(!SkimmedGRUP)
-                return false;
-            WRLDRecord *curWRLDRecord = NULL;
-            CELLRecord *curCELLRecord = NULL;
-            for(unsigned int p = 0; p < Records.size(); p++)
-                {
-                curWRLDRecord = Records[p];
-                curWRLDRecord->Read(FormIDHandler);
-                if(curWRLDRecord->ROAD != NULL)
-                    curWRLDRecord->ROAD->Read(FormIDHandler);
-                if(curWRLDRecord->CELL != NULL)
-                    {
-                    curCELLRecord = curWRLDRecord->CELL;
-                    curCELLRecord->Read(FormIDHandler);
-                    for(unsigned int y = 0; y < curCELLRecord->ACHR.size(); ++y)
-                        curCELLRecord->ACHR[y]->Read(FormIDHandler);
-                    for(unsigned int y = 0; y < curCELLRecord->ACRE.size(); ++y)
-                        curCELLRecord->ACRE[y]->Read(FormIDHandler);
-                    for(unsigned int y = 0; y < curCELLRecord->REFR.size(); ++y)
-                        curCELLRecord->REFR[y]->Read(FormIDHandler);
-                    if(curCELLRecord->PGRD != NULL)
-                        curCELLRecord->PGRD->Read(FormIDHandler);
-                    if(curCELLRecord->LAND != NULL)
-                        curCELLRecord->LAND->Read(FormIDHandler);
-                    }
-                for(unsigned int x = 0; x < curWRLDRecord->CELLS.size(); x++)
-                    {
-                    curCELLRecord = curWRLDRecord->CELLS[x];
-                    curCELLRecord->Read(FormIDHandler);
-                    for(unsigned int y = 0; y < curCELLRecord->ACHR.size(); ++y)
-                        curCELLRecord->ACHR[y]->Read(FormIDHandler);
-                    for(unsigned int y = 0; y < curCELLRecord->ACRE.size(); ++y)
-                        curCELLRecord->ACRE[y]->Read(FormIDHandler);
-                    for(unsigned int y = 0; y < curCELLRecord->REFR.size(); ++y)
-                        curCELLRecord->REFR[y]->Read(FormIDHandler);
-                    if(curCELLRecord->PGRD != NULL)
-                        curCELLRecord->PGRD->Read(FormIDHandler);
-                    if(curCELLRecord->LAND != NULL)
-                        curCELLRecord->LAND->Read(FormIDHandler);
-                    }
-                }
             return true;
             }
         void DeleteRecord(Record *curParentRecord, Record *curRecord)
@@ -1634,204 +1543,200 @@ class GRUPRecords<WRLDRecord>
                 }
             return;
             }
-        unsigned int UpdateReferences(unsigned int origFormID, unsigned int newFormID, _FormIDHandler &FormIDHandler)
+        void VisitRecords(RecordOp &op)
             {
-            unsigned int count = 0;
             WRLDRecord *curWRLDRecord = NULL;
             CELLRecord *curCELLRecord = NULL;
+            Record * curSubRecord = NULL;
             for(unsigned int p = 0; p < Records.size(); p++)
                 {
                 curWRLDRecord = Records[p];
-                count += curWRLDRecord->UpdateReferences(origFormID, newFormID, FormIDHandler);
+                op.Accept(*curWRLDRecord);
                 if(curWRLDRecord->ROAD != NULL)
-                    count += curWRLDRecord->ROAD->UpdateReferences(origFormID, newFormID, FormIDHandler);
+                    {
+                    curSubRecord = curWRLDRecord->ROAD;
+                    op.Accept(*curSubRecord);
+                    }
                 if(curWRLDRecord->CELL != NULL)
                     {
                     curCELLRecord = curWRLDRecord->CELL;
-                    count += curCELLRecord->UpdateReferences(origFormID, newFormID, FormIDHandler);
+                    op.Accept(*curCELLRecord);
                     for(unsigned int y = 0; y < curCELLRecord->ACHR.size(); ++y)
-                        count += curCELLRecord->ACHR[y]->UpdateReferences(origFormID, newFormID, FormIDHandler);
+                        {
+                        curSubRecord = curCELLRecord->ACHR[y];
+                        op.Accept(*curSubRecord);
+                        }
                     for(unsigned int y = 0; y < curCELLRecord->ACRE.size(); ++y)
-                        count += curCELLRecord->ACRE[y]->UpdateReferences(origFormID, newFormID, FormIDHandler);
+                        {
+                        curSubRecord = curCELLRecord->ACRE[y];
+                        op.Accept(*curSubRecord);
+                        }
                     for(unsigned int y = 0; y < curCELLRecord->REFR.size(); ++y)
-                        count += curCELLRecord->REFR[y]->UpdateReferences(origFormID, newFormID, FormIDHandler);
+                        {
+                        curSubRecord = curCELLRecord->REFR[y];
+                        op.Accept(*curSubRecord);
+                        }
                     if(curCELLRecord->PGRD != NULL)
-                        count += curCELLRecord->PGRD->UpdateReferences(origFormID, newFormID, FormIDHandler);
+                        {
+                        curSubRecord = curCELLRecord->PGRD;
+                        op.Accept(*curSubRecord);
+                        }
                     if(curCELLRecord->LAND != NULL)
-                        count += curCELLRecord->LAND->UpdateReferences(origFormID, newFormID, FormIDHandler);
+                        {
+                        curSubRecord = curCELLRecord->LAND;
+                        op.Accept(*curSubRecord);
+                        }
                     }
                 for(unsigned int x = 0; x < curWRLDRecord->CELLS.size(); x++)
                     {
                     curCELLRecord = curWRLDRecord->CELLS[x];
-                    count += curCELLRecord->UpdateReferences(origFormID, newFormID, FormIDHandler);
+                    op.Accept(*curCELLRecord);
                     for(unsigned int y = 0; y < curCELLRecord->ACHR.size(); ++y)
-                        count += curCELLRecord->ACHR[y]->UpdateReferences(origFormID, newFormID, FormIDHandler);
+                        {
+                        curSubRecord = curCELLRecord->ACHR[y];
+                        op.Accept(*curSubRecord);
+                        }
                     for(unsigned int y = 0; y < curCELLRecord->ACRE.size(); ++y)
-                        count += curCELLRecord->ACRE[y]->UpdateReferences(origFormID, newFormID, FormIDHandler);
+                        {
+                        curSubRecord = curCELLRecord->ACRE[y];
+                        op.Accept(*curSubRecord);
+                        }
                     for(unsigned int y = 0; y < curCELLRecord->REFR.size(); ++y)
-                        count += curCELLRecord->REFR[y]->UpdateReferences(origFormID, newFormID, FormIDHandler);
+                        {
+                        curSubRecord = curCELLRecord->REFR[y];
+                        op.Accept(*curSubRecord);
+                        }
                     if(curCELLRecord->PGRD != NULL)
-                        count += curCELLRecord->PGRD->UpdateReferences(origFormID, newFormID, FormIDHandler);
+                        {
+                        curSubRecord = curCELLRecord->PGRD;
+                        op.Accept(*curSubRecord);
+                        }
                     if(curCELLRecord->LAND != NULL)
-                        count += curCELLRecord->LAND->UpdateReferences(origFormID, newFormID, FormIDHandler);
+                        {
+                        curSubRecord = curCELLRecord->LAND;
+                        op.Accept(*curSubRecord);
+                        }
                     }
                 }
-            return count;
-            }
-
-        int Unload()
-            {
-            WRLDRecord *curWRLDRecord = NULL;
-            CELLRecord *curCELLRecord = NULL;
-            for(unsigned int p = 0; p < Records.size(); p++)
-                {
-                curWRLDRecord = Records[p];
-                if(curWRLDRecord->ROAD != NULL && curWRLDRecord->ROAD->recData != NULL)
-                    curWRLDRecord->ROAD->Unload();
-                if(curWRLDRecord->CELL != NULL)
-                    {
-                    curCELLRecord = curWRLDRecord->CELL;
-                    for(unsigned int y = 0; y < curCELLRecord->ACHR.size(); ++y)
-                        if(curCELLRecord->ACHR[y]->recData != NULL)
-                            curCELLRecord->ACHR[y]->Unload();
-                    for(unsigned int y = 0; y < curCELLRecord->ACRE.size(); ++y)
-                        if(curCELLRecord->ACRE[y]->recData != NULL)
-                            curCELLRecord->ACRE[y]->Unload();
-                    for(unsigned int y = 0; y < curCELLRecord->REFR.size(); ++y)
-                        if(curCELLRecord->REFR[y]->recData != NULL)
-                            curCELLRecord->REFR[y]->Unload();
-                    if(curCELLRecord->PGRD != NULL && curCELLRecord->PGRD->recData != NULL)
-                        curCELLRecord->PGRD->Unload();
-                    if(curCELLRecord->LAND != NULL && curCELLRecord->LAND->recData != NULL)
-                        curCELLRecord->LAND->Unload();
-                    if(curCELLRecord->recData != NULL)
-                        curCELLRecord->Unload();
-                    }
-                for(unsigned int x = 0; x < curWRLDRecord->CELLS.size(); x++)
-                    {
-                    curCELLRecord = curWRLDRecord->CELLS[x];
-                    for(unsigned int y = 0; y < curCELLRecord->ACHR.size(); ++y)
-                        if(curCELLRecord->ACHR[y]->recData != NULL)
-                            curCELLRecord->ACHR[y]->Unload();
-                    for(unsigned int y = 0; y < curCELLRecord->ACRE.size(); ++y)
-                        if(curCELLRecord->ACRE[y]->recData != NULL)
-                            curCELLRecord->ACRE[y]->Unload();
-                    for(unsigned int y = 0; y < curCELLRecord->REFR.size(); ++y)
-                        if(curCELLRecord->REFR[y]->recData != NULL)
-                            curCELLRecord->REFR[y]->Unload();
-                    if(curCELLRecord->PGRD != NULL && curCELLRecord->PGRD->recData != NULL)
-                        curCELLRecord->PGRD->Unload();
-                    if(curCELLRecord->LAND != NULL && curCELLRecord->LAND->recData != NULL)
-                        curCELLRecord->LAND->Unload();
-                    if(curCELLRecord->recData != NULL)
-                        curCELLRecord->Unload();
-                    }
-                if(curWRLDRecord->recData != NULL)
-                    curWRLDRecord->Unload();
-                }
-            return 0;
+            return;
             }
         bool CheckMasters(unsigned char MASTIndex, _FormIDHandler &FormIDHandler)
             {
+            FormIDMasterChecker checker(FormIDHandler.ExpandTable, MASTIndex);
+            RecordFormIDVisitor allChecker(FormIDHandler, checker);
             WRLDRecord *curWRLDRecord = NULL;
             CELLRecord *curCELLRecord = NULL;
             for(unsigned int p = 0; p < Records.size(); p++)
                 {
                 curWRLDRecord = Records[p];
-                if(FormIDHandler.UsesMaster(curWRLDRecord->formID, MASTIndex))
+                if(checker.Accept(curWRLDRecord->formID))
                     return true;
-                if(curWRLDRecord->CheckMasters(MASTIndex, FormIDHandler))
+                allChecker.Accept(*curWRLDRecord);
+                if(allChecker.GetCount())
                     return true;
                 if(curWRLDRecord->ROAD != NULL)
                     {
-                    if(FormIDHandler.UsesMaster(curWRLDRecord->ROAD->formID, MASTIndex))
+                    if(checker.Accept(curWRLDRecord->ROAD->formID))
                         return true;
-                    if(curWRLDRecord->ROAD->CheckMasters(MASTIndex, FormIDHandler))
+                    allChecker.Accept(*curWRLDRecord->ROAD);
+                    if(allChecker.GetCount())
                         return true;
                     }
                 if(curWRLDRecord->CELL != NULL)
                     {
                     curCELLRecord = curWRLDRecord->CELL;
-                    if(FormIDHandler.UsesMaster(curCELLRecord->formID, MASTIndex))
+                    if(checker.Accept(curCELLRecord->formID))
                         return true;
-                    if(curCELLRecord->CheckMasters(MASTIndex, FormIDHandler))
+                    allChecker.Accept(*curCELLRecord);
+                    if(allChecker.GetCount())
                         return true;
                     for(unsigned int y = 0; y < curCELLRecord->ACHR.size(); ++y)
                         {
-                        if(FormIDHandler.UsesMaster(curCELLRecord->ACHR[y]->formID, MASTIndex))
+                        if(checker.Accept(curCELLRecord->ACHR[y]->formID))
                             return true;
-                        if(curCELLRecord->ACHR[y]->CheckMasters(MASTIndex, FormIDHandler))
+                        allChecker.Accept(*curCELLRecord->ACHR[y]);
+                        if(allChecker.GetCount())
                             return true;
                         }
                     for(unsigned int y = 0; y < curCELLRecord->ACRE.size(); ++y)
                         {
-                        if(FormIDHandler.UsesMaster(curCELLRecord->ACRE[y]->formID, MASTIndex))
+                        if(checker.Accept(curCELLRecord->ACRE[y]->formID))
                             return true;
-                        if(curCELLRecord->ACRE[y]->CheckMasters(MASTIndex, FormIDHandler))
+                        allChecker.Accept(*curCELLRecord->ACRE[y]);
+                        if(allChecker.GetCount())
                             return true;
                         }
                     for(unsigned int y = 0; y < curCELLRecord->REFR.size(); ++y)
                         {
-                        if(FormIDHandler.UsesMaster(curCELLRecord->REFR[y]->formID, MASTIndex))
+                        if(checker.Accept(curCELLRecord->REFR[y]->formID))
                             return true;
-                        if(curCELLRecord->REFR[y]->CheckMasters(MASTIndex, FormIDHandler))
+                        allChecker.Accept(*curCELLRecord->REFR[y]);
+                        if(allChecker.GetCount())
                             return true;
                         }
                     if(curCELLRecord->PGRD != NULL)
                         {
-                        if(FormIDHandler.UsesMaster(curCELLRecord->PGRD->formID, MASTIndex))
+                        if(checker.Accept(curCELLRecord->PGRD->formID))
                             return true;
-                        if(curCELLRecord->PGRD->CheckMasters(MASTIndex, FormIDHandler))
+                        allChecker.Accept(*curCELLRecord->PGRD);
+                        if(allChecker.GetCount())
                             return true;
                         }
                     if(curCELLRecord->LAND != NULL)
                         {
-                        if(FormIDHandler.UsesMaster(curCELLRecord->LAND->formID, MASTIndex))
+                        if(checker.Accept(curCELLRecord->LAND->formID))
                             return true;
-                        if(curCELLRecord->LAND->CheckMasters(MASTIndex, FormIDHandler))
+                        allChecker.Accept(*curCELLRecord->LAND);
+                        if(allChecker.GetCount())
                             return true;
                         }
                     }
                 for(unsigned int x = 0; x < curWRLDRecord->CELLS.size(); x++)
                     {
                     curCELLRecord = curWRLDRecord->CELLS[x];
-                    if(FormIDHandler.UsesMaster(curCELLRecord->formID, MASTIndex))
+                    if(checker.Accept(curCELLRecord->formID))
                         return true;
-                    if(curCELLRecord->CheckMasters(MASTIndex, FormIDHandler))
+                    allChecker.Accept(*curCELLRecord);
+                    if(allChecker.GetCount())
                         return true;
                     for(unsigned int y = 0; y < curCELLRecord->ACHR.size(); ++y)
                         {
-                        if(FormIDHandler.UsesMaster(curCELLRecord->ACHR[y]->formID, MASTIndex))
+                        if(checker.Accept(curCELLRecord->ACHR[y]->formID))
                             return true;
-                        if(curCELLRecord->ACHR[y]->CheckMasters(MASTIndex, FormIDHandler))
+                        allChecker.Accept(*curCELLRecord->ACHR[y]);
+                        if(allChecker.GetCount())
                             return true;
                         }
                     for(unsigned int y = 0; y < curCELLRecord->ACRE.size(); ++y)
                         {
-                        if(FormIDHandler.UsesMaster(curCELLRecord->ACRE[y]->formID, MASTIndex))
+                        if(checker.Accept(curCELLRecord->ACRE[y]->formID))
                             return true;
-                        if(curCELLRecord->ACRE[y]->CheckMasters(MASTIndex, FormIDHandler))
+                        allChecker.Accept(*curCELLRecord->ACRE[y]);
+                        if(allChecker.GetCount())
                             return true;
                         }
                     for(unsigned int y = 0; y < curCELLRecord->REFR.size(); ++y)
                         {
-                        if(FormIDHandler.UsesMaster(curCELLRecord->REFR[y]->formID, MASTIndex))
+                        if(checker.Accept(curCELLRecord->REFR[y]->formID))
                             return true;
-                        if(curCELLRecord->REFR[y]->CheckMasters(MASTIndex, FormIDHandler))
+                        allChecker.Accept(*curCELLRecord->REFR[y]);
+                        if(allChecker.GetCount())
                             return true;
                         }
                     if(curCELLRecord->PGRD != NULL)
                         {
-                        if(FormIDHandler.UsesMaster(curCELLRecord->PGRD->formID, MASTIndex))
+                        if(checker.Accept(curCELLRecord->PGRD->formID))
                             return true;
-                        if(curCELLRecord->PGRD->CheckMasters(MASTIndex, FormIDHandler))
+                        allChecker.Accept(*curCELLRecord->PGRD);
+                        if(allChecker.GetCount())
                             return true;
                         }
                     if(curCELLRecord->LAND != NULL)
                         {
-                        if(FormIDHandler.UsesMaster(curCELLRecord->LAND->formID, MASTIndex))
+                        if(checker.Accept(curCELLRecord->LAND->formID))
                             return true;
-                        if(curCELLRecord->LAND->CheckMasters(MASTIndex, FormIDHandler))
+                        allChecker.Accept(*curCELLRecord->LAND);
+                        if(allChecker.GetCount())
                             return true;
                         }
                     }
@@ -1870,6 +1775,8 @@ class GRUPRecords<WRLDRecord>
             CELLRecord *curCell = NULL;
             unsigned int worldFormID = 0;
             unsigned int cellFormID = 0;
+            FormIDResolver collapser(FormIDHandler.CollapseTable);
+            RecordReader reader(FormIDHandler);
             int gridX, gridY;
             unsigned int BlockIndex, SubBlockIndex;
 
@@ -1895,7 +1802,7 @@ class GRUPRecords<WRLDRecord>
                 {
                 curWorld = Records[x];
                 worldFormID = curWorld->formID;
-                FormIDHandler.CollapseFormID(worldFormID);
+                collapser.Accept(worldFormID);
                 TopSize += curWorld->Write(SaveHandler, FormIDHandler);
 
                 numCellRecords = (unsigned int)curWorld->CELLS.size();
@@ -1916,7 +1823,7 @@ class GRUPRecords<WRLDRecord>
                         if(curCell->REFR[y]->IsPersistent())
                             FixedPersistent.push_back(curCell->REFR[y]);
 
-                    curCell->Read(FormIDHandler);
+                    reader.Accept(*curCell);
                     curCell->XCLC.Load();
                     gridX = (int)floor(curCell->XCLC->posX / 8.0);
                     gridY = (int)floor(curCell->XCLC->posY / 8.0);
@@ -1950,7 +1857,7 @@ class GRUPRecords<WRLDRecord>
                     SaveHandler.write(&stamp, 4);
                     ++formCount;
                     worldSize = 20;
-                    
+
                     if(curWorld->ROAD != NULL)
                         {
                         worldSize += curWorld->ROAD->Write(SaveHandler, FormIDHandler);
@@ -1966,7 +1873,7 @@ class GRUPRecords<WRLDRecord>
                         {
                         curCell = curWorld->CELL;
                         cellFormID = curCell->formID;
-                        FormIDHandler.CollapseFormID(cellFormID);
+                        collapser.Accept(cellFormID);
                         worldSize += curCell->Write(SaveHandler, FormIDHandler);
                         ++formCount;
 
@@ -2036,7 +1943,7 @@ class GRUPRecords<WRLDRecord>
 
                         if(VWD.size() || Temporary.size())
                             printf("Ignored %u VWD or Temporary records in the world cell: %08X", VWD.size() + Temporary.size(), worldFormID);
-                            
+
                         VWD.clear();
                         Temporary.clear();
 
@@ -2064,7 +1971,7 @@ class GRUPRecords<WRLDRecord>
                             SaveHandler.write(&stamp, 4);
                             ++formCount;
                             childSize = 20;
-                            
+
                             numChild = (unsigned int)Persistent.size();
                             for(unsigned int y = 0; y < numChild; ++y)
                                 {
@@ -2101,7 +2008,7 @@ class GRUPRecords<WRLDRecord>
                         SaveHandler.write(&stamp, 4);
                         ++formCount;
                         blockSize = 20;
-                        
+
                         for(std::map<unsigned int, std::vector<CELLRecord *> >::iterator curSubBlock = curBlock->second.begin(); curSubBlock != curBlock->second.end(); ++curSubBlock)
                             {
                             gType = eExteriorSubBlock;
@@ -2119,7 +2026,7 @@ class GRUPRecords<WRLDRecord>
                                 {
                                 curCell = curSubBlock->second[p];
                                 cellFormID = curCell->formID;
-                                FormIDHandler.CollapseFormID(cellFormID);
+                                collapser.Accept(cellFormID);
                                 subBlockSize += curCell->Write(SaveHandler, FormIDHandler);
                                 //Place the PGRD, ACHR, ACRE, and REFR records into their proper GRUP
 
@@ -2261,7 +2168,7 @@ class GRUPRecords<WRLDRecord>
             if(CloseMod)
                 Records.clear();
             SaveHandler.writeAt(TopSizePos, &TopSize, 4);
-                
+
             return formCount;
             }
 

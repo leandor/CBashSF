@@ -24,10 +24,10 @@ GPL License and Copyright Notice ============================================
 #include "BaseRecord.h"
 #include "zlib/zlib.h"
 
-int Record::Read(_FormIDHandler &FormIDHandler)
+bool Record::Read()
     {
     if(IsLoaded() || recData == NULL)
-        return -1;
+        return false;
     unsigned int recSize = GetSize();
     if (IsCompressed())
         {
@@ -45,79 +45,7 @@ int Record::Read(_FormIDHandler &FormIDHandler)
         }
     else
         ParseRecord(recData, recSize);
-    ExpandFormIDs(FormIDHandler);
-    return 0;
-    }
-
-void Record::ExpandFormIDs(_FormIDHandler &FormIDHandler)
-    {
-    std::vector<FormID> FormIDs;
-    GetReferencedFormIDs(FormIDs);
-    for(unsigned int x = 0; x < FormIDs.size(); ++x)
-        FormIDHandler.ExpandFormID(FormIDs[x]);
-    return;
-    }
-
-void Record::CollapseFormIDs(_FormIDHandler &FormIDHandler)
-    {
-    std::vector<FormID> FormIDs;
-    GetReferencedFormIDs(FormIDs);
-    for(unsigned int x = 0; x < FormIDs.size(); ++x)
-        FormIDHandler.CollapseFormID(FormIDs[x]);
-    return;
-    }
-
-
-void Record::AddMasters(_FormIDHandler &FormIDHandler)
-    {
-    FormIDHandler.AddMaster(formID);
-    std::vector<FormID> FormIDs;
-    GetReferencedFormIDs(FormIDs);
-    for(unsigned int x = 0; x < FormIDs.size(); ++x)
-        FormIDHandler.AddMaster(FormIDs[x]);
-    return;
-    }
-
-unsigned int Record::GetNumReferences(unsigned int referenceFormID, _FormIDHandler &FormIDHandler)
-    {
-    unsigned int count = 0;
-    std::vector<FormID> FormIDs;
-    Read(FormIDHandler);
-    GetReferencedFormIDs(FormIDs);
-    for(unsigned int x = 0; x < FormIDs.size(); ++x)
-        if(*FormIDs[x] == referenceFormID)
-            ++count;
-    return count;
-    }
-
-unsigned int Record::UpdateReferences(unsigned int origFormID, unsigned int newFormID, _FormIDHandler &FormIDHandler)
-    {
-    unsigned int count = 0;
-    std::vector<FormID> FormIDs;
-    Read(FormIDHandler);
-    GetReferencedFormIDs(FormIDs);
-    for(unsigned int x = 0; x < FormIDs.size(); ++x)
-        if(*FormIDs[x] == origFormID)
-            {
-            *FormIDs[x] = newFormID;
-            FormIDHandler.AddMaster(newFormID);
-            ++count;
-            }
-    if(count)
-        recData = NULL;
-    return count;
-    }
-
-bool Record::CheckMasters(unsigned int MASTIndex, _FormIDHandler &FormIDHandler)
-    {
-    unsigned int count = 0;
-    std::vector<FormID> FormIDs;
-    Read(FormIDHandler);
-    GetReferencedFormIDs(FormIDs);
-    for(unsigned int x = 0; x < FormIDs.size(); ++x)
-        if(FormIDHandler.UsesMaster(*FormIDs[x], MASTIndex))
-            return true;
-    return false;
+    return true;
     }
 
 unsigned int Record::Write(_FileHandler &SaveHandler, _FormIDHandler &FormIDHandler)
@@ -132,10 +60,12 @@ unsigned int Record::Write(_FileHandler &SaveHandler, _FormIDHandler &FormIDHand
         Unload();
         return recSize + 20;
         }
-    Read(FormIDHandler);
+    RecordReader reader(FormIDHandler);
+    reader.Accept(*this);
     recSize = GetSize(true);
-    FormIDHandler.CollapseFormID(formID);
-    CollapseFormIDs(FormIDHandler);
+    FormIDResolver collapser(FormIDHandler.CollapseTable);
+    collapser.Accept(formID);
+    VisitFormIDs(collapser);
 
     IsLoaded(false);
     unsigned int recType = GetType();
@@ -172,10 +102,10 @@ unsigned int Record::Write(_FileHandler &SaveHandler, _FormIDHandler &FormIDHand
         }
     else
         WriteRecord(SaveHandler);
-
-    FormIDHandler.ExpandFormID(formID);
+    FormIDResolver expander(FormIDHandler.ExpandTable);
+    expander.Accept(formID);
     if(recData == NULL)
-        ExpandFormIDs(FormIDHandler);
+        VisitFormIDs(expander);
     else
         Unload();
     return recSize + 20;

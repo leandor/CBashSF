@@ -43,38 +43,6 @@ bool AlmostEqual(float A, float B, int maxUlps)
     return false;
     }
 
-void _FormIDHandler::CollapseFormID(unsigned int &curFormID)
-    {
-    if(curFormID == 0)
-        return;
-    curFormID = (CollapseIndex[curFormID >> 24] << 24 ) | (curFormID & 0x00FFFFFF);
-    return;
-    }
-
-void _FormIDHandler::CollapseFormID(unsigned int *&curFormID)
-    {
-    if(*curFormID == 0)
-        return;
-    *curFormID = (CollapseIndex[*curFormID >> 24] << 24 ) | (*curFormID & 0x00FFFFFF);
-    return;
-    }
-
-void _FormIDHandler::ExpandFormID(unsigned int &curFormID)
-    {
-    if(curFormID == 0)
-        return;
-    curFormID = (ExpandIndex[curFormID >> 24] << 24 ) | (curFormID & 0x00FFFFFF);
-    return;
-    }
-
-void _FormIDHandler::ExpandFormID(unsigned int *&curFormID)
-    {
-    if(*curFormID == 0)
-        return;
-    *curFormID = (ExpandIndex[*curFormID >> 24] << 24 ) | (*curFormID & 0x00FFFFFF);
-    return;
-    }
-
 unsigned int _FormIDHandler::AssignToMod(unsigned int curFormID)
     {
     if(curFormID == 0)
@@ -92,7 +60,13 @@ unsigned int _FormIDHandler::AssignToMod(unsigned int *curFormID)
 
 void _FormIDHandler::SetLoadOrder(std::vector<char *> &cLoadOrder)
     {
-    LoadOrder = cLoadOrder;
+	if(cLoadOrder.size() > 0xFF)
+		{
+        printf("Error: Tried to set load order > 0xFF. Load order size = %i\n", cLoadOrder.size());
+		throw 1;
+        return;
+		}
+    LoadOrder255 = cLoadOrder;
     return;
     }
 
@@ -114,19 +88,19 @@ void _FormIDHandler::UpdateFormIDLookup()
 
     //The Collapsed lookup table has to be updated anytime the mod's masters change.
     //It also sorts the masters based on the load order
-    unsigned char numMods = (unsigned char)LoadOrder.size();
+    unsigned int numMods = (unsigned int)LoadOrder255.size();
     char *curMaster = NULL;
     CollapsedIndex = (unsigned char)MAST.size();
     for(unsigned char p = 0; p < 255; ++p)
-        CollapseIndex[p] = CollapsedIndex;
+        CollapseTable[p] = CollapsedIndex;
 
     std::vector<STRING> sortedMAST;
     sortedMAST.reserve(CollapsedIndex);
-    for(unsigned int x = 0; x < LoadOrder.size(); ++x)
+    for(unsigned int x = 0; x < LoadOrder255.size(); ++x)
         {
         for(unsigned char y = 0; y < CollapsedIndex; ++y)
             {
-            if(_stricmp(LoadOrder[x], MAST[y].value) == 0)
+            if(_stricmp(LoadOrder255[x], MAST[y].value) == 0)
                 {
                 sortedMAST.push_back(MAST[y]);
                 break;
@@ -140,10 +114,10 @@ void _FormIDHandler::UpdateFormIDLookup()
         {
         MAST[p] = sortedMAST[p];
         curMaster = MAST[p].value;
-        for(unsigned char y = 0; y < numMods; ++y)
-            if(_stricmp(LoadOrder[y], curMaster) == 0)
+        for(unsigned int y = 0; y < numMods; ++y)
+            if(_stricmp(LoadOrder255[y], curMaster) == 0)
                 {
-                CollapseIndex[y] = p;
+                CollapseTable[y] = p;
                 break;
                 }
         }
@@ -151,7 +125,7 @@ void _FormIDHandler::UpdateFormIDLookup()
     return;
     }
 
-void _FormIDHandler::CreateFormIDLookup(const unsigned char expandedIndex)
+void _FormIDHandler::CreateFormIDLookup(const unsigned int expandedIndex)
     {
     //Each ModFile maintains a formID resolution lookup table of valid modIndexs
     //both when expanded into a load order corrected format
@@ -163,74 +137,38 @@ void _FormIDHandler::CreateFormIDLookup(const unsigned char expandedIndex)
     //This allows records to be read even after a master has been added, and have the formID
     //be set to the proper load order corrected value.
     //This can only be done because the load order is finalized once the mods are loaded.
-    unsigned char numMods = (unsigned char)LoadOrder.size();
+
+    unsigned int numMods = (unsigned int)LoadOrder255.size();
     char *curMaster = NULL;
     CollapsedIndex = (unsigned char)MAST.size();
-    ExpandedIndex = expandedIndex;
+	if(expandedIndex > 0xFF)
+		ExpandedIndex = 0xFF;
+	else
+		ExpandedIndex = expandedIndex;
     for(unsigned char p = 0; p < 255; ++p)
         {
-        CollapseIndex[p] = CollapsedIndex;
-        ExpandIndex[p] = ExpandedIndex;
+        CollapseTable[p] = CollapsedIndex;
+        ExpandTable[p] = ExpandedIndex;
         }
 
     for(unsigned char p = 0; p < CollapsedIndex; ++p)
         {
         curMaster = MAST[p].value;
-        for(unsigned char y = 0; y < numMods; ++y)
-            if(_stricmp(LoadOrder[y], curMaster) == 0)
+        for(unsigned int y = 0; y < numMods; ++y)
+            if(_stricmp(LoadOrder255[y], curMaster) == 0)
                 {
-                ExpandIndex[p] = y;
-                CollapseIndex[y] = p;
+                ExpandTable[p] = y;
+                CollapseTable[y] = p;
                 break;
                 }
         }
     return;
     }
 
-void _FormIDHandler::AddMaster(unsigned int &recordFID)
+void _FormIDHandler::AddMaster(const char *curMaster)
     {
-    unsigned int modIndex = recordFID >> 24;
-    //If formID is not set, or the formID belongs to the engine, or the formID belongs to the mod, or if the master is already present, do nothing
-    if((recordFID == 0) || (recordFID < END_HARDCODED_IDS) || (modIndex == ExpandedIndex) || (CollapseIndex[modIndex] != CollapsedIndex))
-        return;
-    //If the modIndex doesn't match to a loaded mod, it gets assigned to the mod that it is in.
-    if(modIndex >= LoadOrder.size())
-        {
-        #ifdef _DEBUG
-        printf("Something's rotten in AddMasterFromFID. modIndex:%i, ModFiles.Size:%i\n", modIndex, LoadOrder.size());
-        #endif
-        CollapseFormID(recordFID);
-        ExpandFormID(recordFID);
-        return;
-        }
     //Add the master to the end, and update header size
-    //destMod->TES4.MAST.push_back(STRING(*curName));
-    MAST.push_back(STRING(LoadOrder[modIndex]));
-    bMastersChanged = true;
-    //Update the formID resolution lookup table
-    UpdateFormIDLookup();
-    return;
-    }
-
-void _FormIDHandler::AddMaster(unsigned int *&recordFID)
-    {
-    unsigned int modIndex = *recordFID >> 24;
-    //If formID is not set, or the formID belongs to the engine, or the formID belongs to the mod, or if the master is already present, do nothing
-    if((*recordFID == 0) || (*recordFID < END_HARDCODED_IDS) || (modIndex == ExpandedIndex) || (CollapseIndex[modIndex] != CollapsedIndex))
-        return;
-    //If the modIndex doesn't match to a loaded mod, it gets assigned to the mod that it is in.
-    if(modIndex >= LoadOrder.size())
-        {
-        #ifdef _DEBUG
-        printf("Something's rotten in AddMasterFromFID. modIndex:%i, ModFiles.Size:%i\n", modIndex, LoadOrder.size());
-        #endif
-        CollapseFormID(*recordFID);
-        ExpandFormID(*recordFID);
-        return;
-        }
-    //Add the master to the end, and update header size
-    //destMod->TES4.MAST.push_back(STRING(*curName));
-    MAST.push_back(STRING(LoadOrder[modIndex]));
+    MAST.push_back(STRING(curMaster));
     bMastersChanged = true;
     //Update the formID resolution lookup table
     UpdateFormIDLookup();
@@ -240,20 +178,6 @@ void _FormIDHandler::AddMaster(unsigned int *&recordFID)
 bool _FormIDHandler::MastersChanged()
     {
     return bMastersChanged;
-    }
-
-bool _FormIDHandler::UsesMaster(const unsigned int *&recordFID, const unsigned char &MASTIndex)
-    {
-    if(*recordFID < END_HARDCODED_IDS) //Any formID <= 0x800 is hardcoded in the engine and doesn't 'belong' to a mod.
-        return false;
-    return (ExpandIndex[MASTIndex] == (*recordFID >> 24));
-    }
-
-bool _FormIDHandler::UsesMaster(const unsigned int &recordFID, const unsigned char &MASTIndex)
-    {
-    if(recordFID < END_HARDCODED_IDS) //Any formID <= 0x800 is hardcoded in the engine and doesn't 'belong' to a mod.
-        return false;
-    return (ExpandIndex[MASTIndex] == (recordFID >> 24));
     }
 
 bool _FormIDHandler::IsNewRecord(const unsigned int *&recordFID)

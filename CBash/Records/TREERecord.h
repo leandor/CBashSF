@@ -75,13 +75,13 @@ class TREERecord : public Record
             #endif
             bool operator ==(const TREECNAM &other) const
                 {
-                return (AlmostEqual(curvature,other.curvature,2) && 
-                        AlmostEqual(minAngle,other.minAngle,2) && 
-                        AlmostEqual(maxAngle,other.maxAngle,2) && 
-                        AlmostEqual(branchDim,other.branchDim,2) && 
-                        AlmostEqual(leafDim,other.leafDim,2) && 
-                        shadowRadius == other.shadowRadius && 
-                        AlmostEqual(rockSpeed,other.rockSpeed,2) && 
+                return (AlmostEqual(curvature,other.curvature,2) &&
+                        AlmostEqual(minAngle,other.minAngle,2) &&
+                        AlmostEqual(maxAngle,other.maxAngle,2) &&
+                        AlmostEqual(branchDim,other.branchDim,2) &&
+                        AlmostEqual(leafDim,other.leafDim,2) &&
+                        shadowRadius == other.shadowRadius &&
+                        AlmostEqual(rockSpeed,other.rockSpeed,2) &&
                         AlmostEqual(rustleSpeed,other.rustleSpeed,2));
                 }
             bool operator !=(const TREECNAM &other) const
@@ -109,7 +109,7 @@ class TREERecord : public Record
             #endif
             bool operator ==(const TREEBNAM &other) const
                 {
-                return (AlmostEqual(widthBill,other.widthBill,2) && 
+                return (AlmostEqual(widthBill,other.widthBill,2) &&
                         AlmostEqual(heightBill,other.heightBill,2));
                 }
             bool operator !=(const TREEBNAM &other) const
@@ -166,11 +166,11 @@ class TREERecord : public Record
         void * GetOtherField(const unsigned int Field);
         unsigned int GetFieldArraySize(const unsigned int Field);
         void GetFieldArray(const unsigned int Field, void **FieldValues);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue[], unsigned int nSize);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, int FieldValue);
+        void SetField(const unsigned int Field, char *FieldValue);
+        void SetField(const unsigned int Field, float FieldValue);
+        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
+        void SetField(const unsigned int Field, unsigned int FieldValue[], unsigned int nSize);
+        void SetField(const unsigned int Field, int FieldValue);
 
         int DeleteField(const unsigned int Field);
 

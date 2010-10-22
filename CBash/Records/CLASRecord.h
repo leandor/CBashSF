@@ -104,19 +104,19 @@ class CLASRecord : public Record
             #endif
             bool operator ==(const CLASDATA &other) const
                 {
-                return (primary[0] == other.primary[0] && 
-                        primary[1] == other.primary[1] && 
-                        specialization == other.specialization && 
-                        major[0] == other.major[0] && 
-                        major[1] == other.major[1] && 
-                        major[2] == other.major[2] && 
-                        major[3] == other.major[3] && 
-                        major[4] == other.major[4] && 
-                        major[5] == other.major[5] && 
-                        major[6] == other.major[6] && 
-                        flags == other.flags && 
-                        services == other.services && 
-                        trainSkill == other.trainSkill && 
+                return (primary[0] == other.primary[0] &&
+                        primary[1] == other.primary[1] &&
+                        specialization == other.specialization &&
+                        major[0] == other.major[0] &&
+                        major[1] == other.major[1] &&
+                        major[2] == other.major[2] &&
+                        major[3] == other.major[3] &&
+                        major[4] == other.major[4] &&
+                        major[5] == other.major[5] &&
+                        major[6] == other.major[6] &&
+                        flags == other.flags &&
+                        services == other.services &&
+                        trainSkill == other.trainSkill &&
                         trainLevel == other.trainLevel);
                 }
             bool operator !=(const CLASDATA &other) const
@@ -185,12 +185,12 @@ class CLASRecord : public Record
         void * GetOtherField(const unsigned int Field);
         unsigned int GetFieldArraySize(const unsigned int Field);
         void GetFieldArray(const unsigned int Field, void **FieldValues);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, int FieldValue);
-        void SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
+        void SetField(const unsigned int Field, char *FieldValue);
+        void SetField(const unsigned int Field, int FieldValue);
+        void SetOtherField(const unsigned int Field, unsigned int FieldValue);
+        void SetField(const unsigned int Field, char FieldValue);
+        void SetField(const unsigned int Field, unsigned char FieldValue);
+        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
 
         int DeleteField(const unsigned int Field);
 

@@ -394,17 +394,18 @@ unsigned int Collection::GetNumACHRRecords(char *ModName, unsigned int parentFID
     if(curModFile == NULL || parentRecord == NULL)
         return 0;
     worldCELLRecord = LookupWorldCELL(curModFile, parentRecord);
+    RecordReader reader(curModFile->FormIDHandler);
 
     cSize += (unsigned int)parentRecord->ACHR.size();
     //There might be ACHR records in the World CELL if it exists
     if(worldCELLRecord != NULL)
         {
-        parentRecord->Read(curModFile->FormIDHandler);
+        reader.Accept(*parentRecord);
         for(unsigned int x = 0; x < worldCELLRecord->ACHR.size();)
             {
             curRecord = worldCELLRecord->ACHR[x];
             //Have to test each ACHR to see if it belongs to the cell. This is determined by its positioning.
-            curRecord->Read(curModFile->FormIDHandler);
+            reader.Accept(*curRecord);
             ResolveGrid(curRecord->DATA.value.posX, curRecord->DATA.value.posY, gridX, gridY);
             curRecord->Unload();
             parentRecord->XCLC.Load();
@@ -436,17 +437,18 @@ unsigned int Collection::GetNumACRERecords(char *ModName, unsigned int parentFID
     if(curModFile == NULL ||parentRecord == NULL)
         return 0;
     worldCELLRecord = LookupWorldCELL(curModFile, parentRecord);
+    RecordReader reader(curModFile->FormIDHandler);
 
     cSize += (unsigned int)parentRecord->ACRE.size();
     //There might be ACRE records in the World CELL if it exists
     if(worldCELLRecord != NULL)
         {
-        parentRecord->Read(curModFile->FormIDHandler);
+        reader.Accept(*parentRecord);
         for(unsigned int x = 0; x < worldCELLRecord->ACRE.size();)
             {
             curRecord = worldCELLRecord->ACRE[x];
             //Have to test each ACRE to see if it belongs to the cell. This is determined by its positioning.
-            curRecord->Read(curModFile->FormIDHandler);
+            reader.Accept(*curRecord);
             ResolveGrid(curRecord->DATA.value.posX, curRecord->DATA.value.posY, gridX, gridY);
             curRecord->Unload();
             parentRecord->XCLC.Load();
@@ -478,17 +480,18 @@ unsigned int Collection::GetNumREFRRecords(char *ModName, unsigned int parentFID
     if(curModFile == NULL ||parentRecord == NULL)
         return 0;
     worldCELLRecord = LookupWorldCELL(curModFile, parentRecord);
+    RecordReader reader(curModFile->FormIDHandler);
 
     cSize += (unsigned int)parentRecord->REFR.size();
     //There might be REFR records in the World CELL if it exists
     if(worldCELLRecord != NULL)
         {
-        parentRecord->Read(curModFile->FormIDHandler);
+        reader.Accept(*parentRecord);
         for(unsigned int x = 0; x < worldCELLRecord->REFR.size();)
             {
             curRecord = worldCELLRecord->REFR[x];
             //Have to test each REFR to see if it belongs to the cell. This is determined by its positioning.
-            curRecord->Read(curModFile->FormIDHandler);
+            reader.Accept(*curRecord);
             ResolveGrid(curRecord->DATA.value.posX, curRecord->DATA.value.posY, gridX, gridY);
             curRecord->Unload();
             parentRecord->XCLC.Load();
@@ -1233,13 +1236,16 @@ unsigned int Collection::CopyGMSTRecord(char *ModName, char *srcRecordEDID, char
     LookupGMSTRecord(ModName, srcRecordEDID, srcMod, srcRecord);
     if(srcMod == NULL || srcRecord == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
     //Ensure the record has been fully read
-    srcRecord->Read(srcMod->FormIDHandler);
+    reader.Accept(*srcRecord);
     copyRecord = new GMSTRecord(srcRecord);
     destMod->GMST.Records.push_back(copyRecord);
     //Add any master as necessary, and register the formID
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
     EDID_ModFile_Record.insert(std::make_pair(copyRecord->EDID.value, std::make_pair(destMod, copyRecord)));
     return 1;
     }
@@ -2289,12 +2295,16 @@ unsigned int Collection::CopyGLOBRecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new GLOBRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->GLOB.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -2324,12 +2334,16 @@ unsigned int Collection::CopyCLASRecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new CLASRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->CLAS.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -2359,12 +2373,16 @@ unsigned int Collection::CopyFACTRecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new FACTRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->FACT.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -2394,12 +2412,16 @@ unsigned int Collection::CopyHAIRRecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new HAIRRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->HAIR.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -2429,12 +2451,16 @@ unsigned int Collection::CopyEYESRecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new EYESRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->EYES.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -2464,12 +2490,16 @@ unsigned int Collection::CopyRACERecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new RACERecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->RACE.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -2499,12 +2529,16 @@ unsigned int Collection::CopySOUNRecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new SOUNRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->SOUN.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -2534,12 +2568,16 @@ unsigned int Collection::CopySKILRecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new SKILRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->SKIL.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -2569,12 +2607,16 @@ unsigned int Collection::CopyMGEFRecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new MGEFRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->MGEF.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -2604,12 +2646,16 @@ unsigned int Collection::CopySCPTRecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new SCPTRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->SCPT.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -2639,12 +2685,16 @@ unsigned int Collection::CopyLTEXRecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new LTEXRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->LTEX.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -2674,12 +2724,16 @@ unsigned int Collection::CopyENCHRecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new ENCHRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->ENCH.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -2709,12 +2763,16 @@ unsigned int Collection::CopySPELRecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new SPELRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->SPEL.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -2744,12 +2802,16 @@ unsigned int Collection::CopyBSGNRecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new BSGNRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->BSGN.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -2779,12 +2841,16 @@ unsigned int Collection::CopyACTIRecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new ACTIRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->ACTI.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -2814,12 +2880,16 @@ unsigned int Collection::CopyAPPARecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new APPARecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->APPA.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -2849,12 +2919,16 @@ unsigned int Collection::CopyARMORecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new ARMORecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->ARMO.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -2884,12 +2958,16 @@ unsigned int Collection::CopyBOOKRecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new BOOKRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->BOOK.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -2919,12 +2997,16 @@ unsigned int Collection::CopyCLOTRecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new CLOTRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->CLOT.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -2954,12 +3036,16 @@ unsigned int Collection::CopyCONTRecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new CONTRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->CONT.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -2989,12 +3075,16 @@ unsigned int Collection::CopyDOORRecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new DOORRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->DOOR.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -3024,12 +3114,16 @@ unsigned int Collection::CopyINGRRecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new INGRRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->INGR.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -3059,12 +3153,16 @@ unsigned int Collection::CopyLIGHRecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new LIGHRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->LIGH.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -3094,12 +3192,16 @@ unsigned int Collection::CopyMISCRecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new MISCRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->MISC.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -3129,12 +3231,16 @@ unsigned int Collection::CopySTATRecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new STATRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->STAT.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -3164,12 +3270,16 @@ unsigned int Collection::CopyGRASRecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new GRASRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->GRAS.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -3199,12 +3309,16 @@ unsigned int Collection::CopyTREERecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new TREERecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->TREE.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -3234,12 +3348,16 @@ unsigned int Collection::CopyFLORRecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new FLORRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->FLOR.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -3269,12 +3387,16 @@ unsigned int Collection::CopyFURNRecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new FURNRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->FURN.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -3304,12 +3426,16 @@ unsigned int Collection::CopyWEAPRecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new WEAPRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->WEAP.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -3339,12 +3465,16 @@ unsigned int Collection::CopyAMMORecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new AMMORecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->AMMO.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -3373,12 +3503,16 @@ unsigned int Collection::CopyNPC_Record(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new NPC_Record(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->NPC_.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -3408,12 +3542,16 @@ unsigned int Collection::CopyCREARecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new CREARecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->CREA.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -3443,12 +3581,16 @@ unsigned int Collection::CopyLVLCRecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new LVLCRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->LVLC.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -3478,12 +3620,16 @@ unsigned int Collection::CopySLGMRecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new SLGMRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->SLGM.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -3513,12 +3659,16 @@ unsigned int Collection::CopyKEYMRecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new KEYMRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->KEYM.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -3548,12 +3698,16 @@ unsigned int Collection::CopyALCHRecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new ALCHRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->ALCH.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -3583,12 +3737,16 @@ unsigned int Collection::CopySBSPRecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new SBSPRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->SBSP.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -3618,12 +3776,16 @@ unsigned int Collection::CopySGSTRecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new SGSTRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->SGST.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -3653,12 +3815,16 @@ unsigned int Collection::CopyLVLIRecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new LVLIRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->LVLI.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -3688,12 +3854,16 @@ unsigned int Collection::CopyWTHRRecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new WTHRRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->WTHR.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -3723,12 +3893,16 @@ unsigned int Collection::CopyCLMTRecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new CLMTRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->CLMT.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -3758,12 +3932,16 @@ unsigned int Collection::CopyREGNRecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new REGNRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->REGN.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -3819,12 +3997,16 @@ unsigned int Collection::CopyCELLRecord(char *ModName, unsigned int srcRecordFID
 
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new CELLRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     copyRecord->IsInterior(!hasParent);
     if(hasParent)
@@ -3864,12 +4046,16 @@ unsigned int Collection::CopyACHRRecord(char *ModName, unsigned int srcRecordFID
     LookupRecord(destModName, destParentFID, destMod, destParentRecord);
     if(destMod == NULL || destParentRecord == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new ACHRRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destParentRecord->ACHR.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -3899,12 +4085,16 @@ unsigned int Collection::CopyACRERecord(char *ModName, unsigned int srcRecordFID
     LookupRecord(destModName, destParentFID, destMod, destParentRecord);
     if(destMod == NULL || destParentRecord == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new ACRERecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destParentRecord->ACRE.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -3934,12 +4124,16 @@ unsigned int Collection::CopyREFRRecord(char *ModName, unsigned int srcRecordFID
     LookupRecord(destModName, destParentFID, destMod, destParentRecord);
     if(destMod == NULL || destParentRecord == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new REFRRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destParentRecord->REFR.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -3969,12 +4163,16 @@ unsigned int Collection::CopyPGRDRecord(char *ModName, unsigned int srcRecordFID
     LookupRecord(destModName, destParentFID, destMod, destParentRecord);
     if(destMod == NULL || destParentRecord == NULL || destParentRecord->PGRD != NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new PGRDRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destParentRecord->PGRD = copyRecord;
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -4003,12 +4201,16 @@ unsigned int Collection::CopyWRLDRecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new WRLDRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->WRLD.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -4039,12 +4241,16 @@ unsigned int Collection::CopyROADRecord(char *ModName, unsigned int srcRecordFID
 
     if(destMod == NULL || destParentRecord == NULL || destParentRecord->ROAD != NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new ROADRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destParentRecord->ROAD = copyRecord;
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -4076,12 +4282,16 @@ unsigned int Collection::CopyLANDRecord(char *ModName, unsigned int srcRecordFID
 
     if(destMod == NULL || destParentRecord == NULL || destParentRecord->LAND != NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new LANDRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destParentRecord->LAND = copyRecord;
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -4111,12 +4321,16 @@ unsigned int Collection::CopyDIALRecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new DIALRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->DIAL.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -4147,12 +4361,16 @@ unsigned int Collection::CopyINFORecord(char *ModName, unsigned int srcRecordFID
     LookupRecord(destModName, destParentFID, destMod, destParentRecord);
     if(destMod == NULL || destParentRecord == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new INFORecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destParentRecord->INFO.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -4182,12 +4400,16 @@ unsigned int Collection::CopyQUSTRecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new QUSTRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->QUST.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -4217,12 +4439,16 @@ unsigned int Collection::CopyIDLERecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new IDLERecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->IDLE.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -4252,12 +4478,16 @@ unsigned int Collection::CopyPACKRecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new PACKRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->PACK.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -4287,12 +4517,16 @@ unsigned int Collection::CopyCSTYRecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new CSTYRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->CSTY.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -4322,12 +4556,16 @@ unsigned int Collection::CopyLSCRRecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new LSCRRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->LSCR.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -4357,12 +4595,16 @@ unsigned int Collection::CopyLVSPRecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new LVSPRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->LVSP.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -4392,12 +4634,16 @@ unsigned int Collection::CopyANIORecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new ANIORecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->ANIO.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -4427,12 +4673,16 @@ unsigned int Collection::CopyWATRRecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new WATRRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->WATR.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));
@@ -4462,12 +4712,16 @@ unsigned int Collection::CopyEFSHRecord(char *ModName, unsigned int srcRecordFID
     destMod = LookupModFile(destModName);
     if(destMod == NULL || srcMod == destMod)
         return 0;
+    RecordReader reader(srcMod->FormIDHandler);
 
-    srcRecord->Read(srcMod->FormIDHandler);
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
     copyRecord = new EFSHRecord(srcRecord);
     if(!asOverride)
         copyRecord->formID = NextFreeExpandedFID(destMod);
-    copyRecord->AddMasters(destMod->FormIDHandler);
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
 
     destMod->EFSH.Records.push_back(copyRecord);
     FID_ModFile_Record.insert(std::make_pair(copyRecord->formID,std::make_pair(destMod,copyRecord)));

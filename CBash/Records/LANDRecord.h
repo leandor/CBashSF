@@ -61,8 +61,8 @@ class LANDRecord : public Record
             #endif
             bool operator ==(const LANDNORMALS &other) const
                 {
-                return (x == other.x && 
-                        y == other.y && 
+                return (x == other.x &&
+                        y == other.y &&
                         z == other.z);
                 }
             bool operator !=(const LANDNORMALS &other) const
@@ -201,8 +201,8 @@ class LANDRecord : public Record
             #endif
             bool operator ==(const LANDCOLORS &other) const
                 {
-                return (red == other.red && 
-                        green == other.green && 
+                return (red == other.red &&
+                        green == other.green &&
                         blue == other.blue);
                 }
             bool operator !=(const LANDCOLORS &other) const
@@ -288,8 +288,8 @@ class LANDRecord : public Record
             #endif
             bool operator ==(const LANDGENTXT &other) const
                 {
-                return (texture == other.texture && 
-                        quadrant == other.quadrant && 
+                return (texture == other.texture &&
+                        quadrant == other.quadrant &&
                         layer == other.layer);
                 }
             bool operator !=(const LANDGENTXT &other) const
@@ -328,7 +328,7 @@ class LANDRecord : public Record
             #endif
             bool operator ==(const LANDVTXT &other) const
                 {
-                return (position == other.position && 
+                return (position == other.position &&
                         AlmostEqual(opacity,other.opacity,2));
                 }
             bool operator !=(const LANDVTXT &other) const
@@ -355,7 +355,7 @@ class LANDRecord : public Record
             #endif
             bool operator ==(const LANDLAYERS &other) const
                 {
-                return (ATXT == other.ATXT && 
+                return (ATXT == other.ATXT &&
                         VTXT == other.VTXT);
                 }
             bool operator !=(const LANDLAYERS &other) const
@@ -502,18 +502,18 @@ class LANDRecord : public Record
         void GetListX2Array(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, void **FieldValues);
         void * GetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
         void * GetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue);
-        void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue);
-        void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize);
-        void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, short FieldValue);
-        void SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned char FieldValue);
-        void SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, char FieldValue);
-        void SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned short FieldValue);
-        void SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, float FieldValue);
-        void SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned int FieldValue);
+        void SetField(const unsigned int Field, float FieldValue);
+        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
+        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue);
+        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue);
+        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize);
+        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, short FieldValue);
+        void SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned char FieldValue);
+        void SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, char FieldValue);
+        void SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned short FieldValue);
+        void SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned char *FieldValue, unsigned int nSize);
+        void SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, float FieldValue);
+        void SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned int FieldValue);
 
         unsigned char CalcQuadrant(const unsigned int &row, const unsigned int &column);
         unsigned int CalcPosition(const unsigned int &curQuadrant, const unsigned int &row, const unsigned int &column);

@@ -111,6 +111,25 @@ char * PrintFormID(FormID curFormID);
 char * PrintFormID(unsigned int curFormID);
 #endif
 
+//template <class T>
+//class ArrayVisitor
+//    {
+//    private:
+//        const std::vector<T> &VisitedArray;
+//    public:
+//        ArrayVisitor(const std::vector<T> &cVisitedArray):VisitedArray(cVisitedArray) {}
+//
+//        template <class Op>
+//        void Visit(Op& op) const
+//            {
+//            for(unsigned int x = 0; x < VisitedArray.size(); ++x)
+//                op.Accept(VisitedArray[x]);
+//	        }
+//    };
+//
+
+//typedef ArrayVisitor<FormID> FormIDVisitor;
+
 bool AlmostEqual(float A, float B, int maxUlps);
 
 //Base record field. Vestigial.
@@ -164,7 +183,7 @@ struct SubRecord
         }
     bool operator ==(const SubRecord<T> &other) const
         {
-        return (value == other.value && 
+        return (value == other.value &&
                 isLoaded == other.isLoaded);
         }
     bool operator !=(const SubRecord<T> &other) const
@@ -891,19 +910,18 @@ struct RAWBYTES
 
 class _FormIDHandler
     {
-    private:
+    public:
         char *FileName;
         std::vector<STRING> &MAST;
         unsigned int &nextObject;
-        unsigned char ExpandIndex[255];
-        unsigned char CollapseIndex[255];
         unsigned char CollapsedIndex;
         bool bMastersChanged;
-    public:
+        unsigned char ExpandTable[255];
+        unsigned char CollapseTable[255];
         bool IsEmpty;
-        
+
         boost::unordered_set<unsigned int> NewTypes;
-        std::vector<char *> LoadOrder;
+        std::vector<char *> LoadOrder255;
         unsigned char ExpandedIndex;
         _FormIDHandler(char *cFileName, std::vector<STRING> &cMAST, unsigned int &cNextObject):FileName(cFileName), MAST(cMAST), nextObject(cNextObject),
                                                                                                ExpandedIndex(0), CollapsedIndex(0), bMastersChanged(false),
@@ -911,19 +929,12 @@ class _FormIDHandler
         ~_FormIDHandler() {}
         void SetLoadOrder(std::vector<char *> &cLoadOrder);
         unsigned int NextExpandedFID();
-        void CreateFormIDLookup(const unsigned char expandedIndex);
+        void CreateFormIDLookup(const unsigned int expandedIndex);
         void UpdateFormIDLookup();
-        void CollapseFormID(unsigned int &curFormID);
-        void CollapseFormID(unsigned int *&curFormID);
-        void ExpandFormID(unsigned int &curFormID);
-        void ExpandFormID(unsigned int *&curFormID);
         unsigned int AssignToMod(unsigned int curFormID);
         unsigned int AssignToMod(unsigned int *curFormID);
-        void AddMaster(unsigned int &curFormID);
-        void AddMaster(unsigned int *&curFormID);
+        void AddMaster(const char *curMaster);
         bool MastersChanged();
-        bool UsesMaster(const unsigned int *&recordFID, const unsigned char &MASTIndex);
-        bool UsesMaster(const unsigned int &recordFID, const unsigned char &MASTIndex);
         bool IsNewRecord(const unsigned int *&recordFID);
         bool IsNewRecord(const unsigned int &recordFID);
     };

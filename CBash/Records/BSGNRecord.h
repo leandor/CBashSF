@@ -75,12 +75,12 @@ class BSGNRecord : public Record
             SPLO.clear();
             }
 
-        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
+        void VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
                 return;
             for(unsigned int x = 0; x < SPLO.size(); x++)
-                FormIDs.push_back(SPLO[x]);
+                op.Accept(*SPLO[x]);
             }
 
         #ifdef _DEBUG
@@ -91,8 +91,8 @@ class BSGNRecord : public Record
         void * GetOtherField(const unsigned int Field);
         unsigned int GetFieldArraySize(const unsigned int Field);
         void GetFieldArray(const unsigned int Field, void **FieldValues);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue[], unsigned int nSize);
+        void SetField(const unsigned int Field, char *FieldValue);
+        void SetField(const unsigned int Field, unsigned int FieldValue[], unsigned int nSize);
 
         int DeleteField(const unsigned int Field);
 

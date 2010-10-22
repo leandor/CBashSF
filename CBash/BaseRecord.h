@@ -136,9 +136,9 @@ struct GENSCHR
     #endif
     bool operator ==(const GENSCHR& other) const
         {
-        return (numRefs == other.numRefs && 
-                compiledSize == other.compiledSize && 
-                lastIndex == other.lastIndex && 
+        return (numRefs == other.numRefs &&
+                compiledSize == other.compiledSize &&
+                lastIndex == other.lastIndex &&
                 scriptType == other.scriptType);
         }
     bool operator !=(const GENSCHR &other) const
@@ -172,7 +172,7 @@ struct GENSCR_
     #endif
     bool operator ==(const GENSCR_& other) const
         {
-        return (reference == other.reference && 
+        return (reference == other.reference &&
                 isSCRO == other.isSCRO);
         }
     bool operator !=(const GENSCR_ &other) const
@@ -210,7 +210,7 @@ struct GENEFID
 struct GENEFIT
     {
     unsigned int name, magnitude, area, duration, recipient;
-    int actorValue;
+    unsigned int actorValue;
     GENEFIT():name(0), magnitude(0), area(0), duration(0),
         recipient(0), actorValue(0) {}
     #ifdef _DEBUG
@@ -237,11 +237,11 @@ struct GENEFIT
     #endif
     bool operator ==(const GENEFIT& other) const
         {
-        return (name == other.name && 
-                magnitude == other.magnitude && 
-                area == other.area && 
-                duration == other.duration && 
-                recipient == other.recipient && 
+        return (name == other.name &&
+                magnitude == other.magnitude &&
+                area == other.area &&
+                duration == other.duration &&
+                recipient == other.recipient &&
                 actorValue == other.actorValue);
         }
     bool operator !=(const GENEFIT &other) const
@@ -286,12 +286,138 @@ struct GENSCIT
     #endif
     bool operator ==(const GENSCIT& other) const
         {
-        return (script == other.script && 
-                school == other.school && 
-                visual == other.visual && 
+        return (script == other.script &&
+                school == other.school &&
+                visual == other.visual &&
                 flags == other.flags);
         }
     bool operator !=(const GENSCIT &other) const
+        {
+        return !(*this == other);
+        }
+    };
+
+struct OBMEEFME
+    {
+    unsigned char recordVersion, betaVersion, minorVersion, majorVersion;
+    unsigned char efitParamInfo;
+    unsigned char efixParamInfo;
+    unsigned char reserved[0xA];
+    OBMEEFME():recordVersion(0), betaVersion(0), minorVersion(0), majorVersion(0), efitParamInfo(0), efixParamInfo(0)
+        {
+        memset(&reserved, 0x00, 0xA);
+        }
+    #ifdef _DEBUG
+    void Debug(int debugLevel, size_t &indentation)
+        {
+        if(debugLevel > 3)
+            {
+            indentation += 2;
+            PrintIndent(indentation);
+            printf("recordVersion = %i\n", recordVersion);
+            printf("betaVersion   = %i\n", betaVersion);
+            printf("minorVersion  = %i\n", minorVersion);
+            printf("majorVersion  = %i\n", majorVersion);
+
+            printf("efitParamInfo = %i\n", efitParamInfo);
+            printf("efixParamInfo = %i\n", efixParamInfo);
+            if(debugLevel > 5)
+                {
+                PrintIndent(indentation);
+                printf("reserved = ");
+                for(unsigned int x = 0; x < 0xA; x++)
+                    printf("%c", reserved[x]);
+                pritnf("\n");
+                }
+            indentation -= 2;
+            }
+        }
+    #endif
+    bool operator ==(const OBMEEFME &other) const
+        {
+        return (recordVersion == other.recordVersion &&
+                betaVersion == other.betaVersion &&
+                minorVersion == other.minorVersion &&
+                majorVersion == other.majorVersion &&
+                efitParamInfo == other.efitParamInfo &&
+                efixParamInfo == other.efixParamInfo &&
+                reserved == other.reserved);
+        }
+    bool operator !=(const OBMEEFME &other) const
+        {
+        return !(*this == other);
+        }
+    };
+
+struct OBMEEFIX
+    {
+    unsigned int efixOverrideMask;
+    unsigned int efixFlags;
+    float baseCost;
+    unsigned int resistAV;
+    unsigned char reserved[0x10];
+    OBMEEFIX():efixOverrideMask(0), efixFlags(0), baseCost(0.0), resistAV(0)
+        {
+        memset(&reserved, 0x00, 0x10);
+        }
+    #ifdef _DEBUG
+    void Debug(int debugLevel, size_t &indentation)
+        {
+        if(debugLevel > 3)
+            {
+            indentation += 2;
+            PrintIndent(indentation);
+            printf("efixOverrideMask = %i\n", efixOverrideMask);
+            printf("efixFlags        = %i\n", efixFlags);
+            printf("baseCost         = %f\n", baseCost);
+            printf("resistAV         = %i\n", resistAV);
+
+            if(debugLevel > 5)
+                {
+                PrintIndent(indentation);
+                printf("reserved = ");
+                for(unsigned int x = 0; x < 0x10; x++)
+                    printf("%c", reserved[x]);
+                pritnf("\n");
+                }
+            indentation -= 2;
+            }
+        }
+    #endif
+    bool operator ==(const OBMEEFIX &other) const
+        {
+        return (efixOverrideMask == other.efixOverrideMask &&
+                efixFlags == other.efixFlags &&
+                AlmostEqual(baseCost,other.baseCost,2) &&
+                resistAV == other.resistAV &&
+                reserved == other.reserved);
+        }
+    bool operator !=(const OBMEEFIX &other) const
+        {
+        return !(*this == other);
+        }
+    };
+
+struct OBMEEffect
+    {
+    ReqSubRecord<OBMEEFME> EFME;
+    STRING EFII;
+    OptSubRecord<OBMEEFIX> EFIX;
+    #ifdef _DEBUG
+    void Debug(int debugLevel, size_t &indentation)
+        {
+        EFME.Debug("EFME", debugLevel, indentation);
+        EFII.Debug("EFII", debugLevel, indentation);
+        EFIX.Debug("EFIX", debugLevel, indentation);
+        }
+    #endif
+    bool operator ==(const OBMEEffect& other) const
+        {
+        return (EFME == other.EFME &&
+                EFII == other.EFII &&
+                EFIX == other.EFIX);
+        }
+    bool operator !=(const OBMEEffect &other) const
         {
         return !(*this == other);
         }
@@ -303,9 +429,16 @@ struct GENEffect
     ReqSubRecord<GENEFIT> EFIT;
     OptSubRecord<GENSCIT> SCIT;
     STRING FULL;
+    OptSubRecord<OBMEEffect> OBME;
     enum SCITFlags
         {
         fIsHostile = 0x00000001
+        };
+    enum eRanges
+        {
+        eRangeSelf    = 0,
+        eRangeTouch   = 1,
+        eRangeTarget  = 2
         };
     #ifdef _DEBUG
     void Debug(int debugLevel, size_t &indentation)
@@ -314,14 +447,16 @@ struct GENEffect
         EFIT.Debug("EFIT", debugLevel, indentation);
         SCIT.Debug("SCIT", debugLevel, indentation);
         FULL.Debug("FULL", debugLevel, indentation);
+        OBME.Debug("OBME", debugLevel, indentation);
         }
     #endif
     bool operator ==(const GENEffect& other) const
         {
-        return (EFID == other.EFID && 
-                EFIT == other.EFIT && 
-                SCIT == other.SCIT && 
-                FULL == other.FULL);
+        return (EFID == other.EFID &&
+                EFIT == other.EFIT &&
+                SCIT == other.SCIT &&
+                FULL == other.FULL &&
+                OBME == other.OBME);
         }
     bool operator !=(const GENEffect &other) const
         {
@@ -352,6 +487,47 @@ struct GENEffect
         {
         if(!SCIT.IsLoaded()) return;
         SCIT->flags = Mask;
+        }
+    bool IsRangeSelf()
+        {
+        return (EFIT.value.recipient == eRangeSelf);
+        }
+    void IsRangeSelf(bool value)
+        {
+        if(value)
+            EFIT.value.recipient = eRangeSelf;
+        else
+            EFIT.value.recipient = eRangeTouch;
+        }
+    bool IsRangeTouch()
+        {
+        return (EFIT.value.recipient == eRangeTouch);
+        }
+    void IsRangeTouch(bool value)
+        {
+        if(value)
+            EFIT.value.recipient = eRangeTouch;
+        else
+            EFIT.value.recipient = eRangeSelf;
+        }
+    bool IsRangeTarget()
+        {
+        return (EFIT.value.recipient == eRangeTarget);
+        }
+    void IsRangeTarget(bool value)
+        {
+        if(value)
+            EFIT.value.recipient = eRangeTarget;
+        else
+            EFIT.value.recipient = eRangeSelf;
+        }
+    bool IsRange(unsigned int Mask)
+        {
+        return (EFIT.value.recipient == Mask);
+        }
+    void SetRange(unsigned int Mask)
+        {
+        EFIT.value.recipient = Mask;
         }
     };
 
@@ -468,7 +644,7 @@ struct GENENIT
     #endif
     bool operator ==(const GENENIT &other) const
         {
-        return (value == other.value && 
+        return (value == other.value &&
                 flags == other.flags);
         }
     bool operator !=(const GENENIT &other) const
@@ -498,7 +674,7 @@ struct GENVALUEWEIGHT
     #endif
     bool operator ==(const GENVALUEWEIGHT &other) const
         {
-        return (value == other.value && 
+        return (value == other.value &&
                 AlmostEqual(weight,other.weight,2));
         }
     bool operator !=(const GENVALUEWEIGHT &other) const
@@ -573,11 +749,11 @@ struct GENACBS
     bool operator ==(const GENACBS &other) const
         {
         return (flags == other.flags &&
-                baseSpell == other.baseSpell && 
-                fatigue == other.fatigue && 
-                barterGold == other.barterGold && 
-                level == other.level && 
-                calcMin == other.calcMin && 
+                baseSpell == other.baseSpell &&
+                fatigue == other.fatigue &&
+                barterGold == other.barterGold &&
+                level == other.level &&
+                calcMin == other.calcMin &&
                 calcMax == other.calcMax);
         }
     bool operator !=(const GENACBS &other) const
@@ -668,11 +844,11 @@ struct GENAIDT
     bool operator ==(const GENAIDT &other) const
         {
         return (aggression == other.aggression &&
-                confidence == other.confidence && 
-                energyLevel == other.energyLevel && 
-                responsibility == other.responsibility && 
-                flags == other.flags && 
-                trainSkill == other.trainSkill && 
+                confidence == other.confidence &&
+                energyLevel == other.energyLevel &&
+                responsibility == other.responsibility &&
+                flags == other.flags &&
+                trainSkill == other.trainSkill &&
                 trainLevel == other.trainLevel);
         }
     bool operator !=(const GENAIDT &other) const
@@ -988,8 +1164,8 @@ struct GENCLR
     #endif
     bool operator ==(const GENCLR &other) const
         {
-        return (red == other.red && 
-                green == other.green && 
+        return (red == other.red &&
+                green == other.green &&
                 blue == other.blue);
         }
     bool operator !=(const GENCLR &other) const
@@ -1049,8 +1225,8 @@ struct GENMODEL
     #endif
     bool operator ==(const GENMODEL &other) const
         {
-        return (MODB == other.MODB && 
-                MODL == other.MODL && 
+        return (MODB == other.MODB &&
+                MODL == other.MODL &&
                 MODT == other.MODT);
         }
     bool operator !=(const GENMODEL &other) const
@@ -1110,8 +1286,8 @@ struct GENXOWN
     #endif
     bool operator ==(const GENXOWN &other) const
         {
-        return (XOWN == other.XOWN && 
-                XRNK == other.XRNK && 
+        return (XOWN == other.XOWN &&
+                XRNK == other.XRNK &&
                 XGLB == other.XGLB);
         }
     bool operator !=(const GENXOWN &other) const
@@ -1143,7 +1319,7 @@ struct GENXPCI
     #endif
     bool operator ==(const GENXPCI &other) const
         {
-        return (XPCI == other.XPCI && 
+        return (XPCI == other.XPCI &&
                 FULL == other.FULL);
         }
     bool operator !=(const GENXPCI &other) const
@@ -1174,8 +1350,8 @@ struct GENXLOD
     #endif
     bool operator ==(const GENXLOD &other) const
         {
-        return (AlmostEqual(lod1,other.lod1,2) && 
-                AlmostEqual(lod2,other.lod2,2) && 
+        return (AlmostEqual(lod1,other.lod1,2) &&
+                AlmostEqual(lod2,other.lod2,2) &&
                 AlmostEqual(lod3,other.lod3,2)
                 );
         }
@@ -1217,7 +1393,7 @@ struct GENXESP
     #endif
     bool operator ==(const GENXESP &other) const
         {
-        return (parent == other.parent && 
+        return (parent == other.parent &&
                 flags == other.flags);
         }
     bool operator !=(const GENXESP &other) const
@@ -1288,11 +1464,11 @@ struct GENPOSDATA
     #endif
     bool operator ==(const GENPOSDATA &other) const
         {
-        return (AlmostEqual(posX,other.posX,2) && 
-                AlmostEqual(posY,other.posY,2) && 
-                AlmostEqual(posZ,other.posZ,2) && 
-                AlmostEqual(rotX,other.rotX,2) && 
-                AlmostEqual(rotY,other.rotY,2) && 
+        return (AlmostEqual(posX,other.posX,2) &&
+                AlmostEqual(posY,other.posY,2) &&
+                AlmostEqual(posZ,other.posZ,2) &&
+                AlmostEqual(rotX,other.rotX,2) &&
+                AlmostEqual(rotY,other.rotY,2) &&
                 AlmostEqual(rotZ,other.rotZ,2)
                 );
         }
@@ -1339,9 +1515,9 @@ struct GENPGRP
     #endif
     bool operator ==(const GENPGRP &other) const
         {
-        return (AlmostEqual(x,other.x,2) && 
-                AlmostEqual(y,other.y,2) && 
-                AlmostEqual(z,other.z,2) && 
+        return (AlmostEqual(x,other.x,2) &&
+                AlmostEqual(y,other.y,2) &&
+                AlmostEqual(z,other.z,2) &&
                 connections == other.connections);
         }
     bool operator !=(const GENPGRP &other) const
@@ -1349,6 +1525,248 @@ struct GENPGRP
         return !(*this == other);
         }
     };
+
+struct MAGICOBME
+    {
+    unsigned char recordVersion, betaVersion, minorVersion, majorVersion;
+    unsigned char reserved[0x1C];
+    MAGICOBME():recordVersion(0), betaVersion(0), minorVersion(0), majorVersion(0)
+        {
+        memset(&reserved, 0x00, 0x1C);
+        }
+    #ifdef _DEBUG
+    void Debug(int debugLevel, size_t &indentation)
+        {
+        if(debugLevel > 3)
+            {
+            indentation += 2;
+            PrintIndent(indentation);
+            printf("recordVersion = %i\n", recordVersion);
+            printf("betaVersion = %i\n", betaVersion);
+            printf("minorVersion = %i\n", minorVersion);
+            printf("majorVersion = %i\n", majorVersion);
+
+            if(debugLevel > 5)
+                {
+                PrintIndent(indentation);
+                printf("reserved = ");
+                for(unsigned int x = 0; x < 0x1C; x++)
+                    printf("%c", reserved[x]);
+                pritnf("\n");
+                }
+            indentation -= 2;
+            }
+        }
+    #endif
+    bool operator ==(const MAGICOBME &other) const
+        {
+        return (recordVersion == other.recordVersion &&
+                betaVersion == other.betaVersion &&
+                minorVersion == other.minorVersion &&
+                majorVersion == other.majorVersion &&
+                reserved == other.reserved);
+        }
+    bool operator !=(const MAGICOBME &other) const
+        {
+        return !(*this == other);
+        }
+    };
+
+struct OBMEMAGIC
+    {
+    ReqSubRecord<MAGICOBME> OBME;
+    RAWBYTES DATX;
+    #ifdef _DEBUG
+    void Debug(char *name, int debugLevel, size_t &indentation)
+        {
+        if(name != NULL)
+            {
+            PrintIndent(indentation);
+            printf("%s\n", name);
+            }
+        if(debugLevel > 3)
+            {
+            indentation += 2;
+            OBME.Debug("OBME", debugLevel, indentation);
+            DATX.Debug("DATX", debugLevel, indentation);
+            indentation -= 2;
+            }
+        }
+    #endif
+    bool operator ==(const OBMEMAGIC &other) const
+        {
+        return (OBME == other.OBME &&
+                DATX == other.DATX);
+        }
+    bool operator !=(const OBMEMAGIC &other) const
+        {
+        return !(*this == other);
+        }
+    };
+
+class FormIDOp
+    {
+    protected:
+        unsigned int count;
+    public:
+        FormIDOp():count(0) {}
+        virtual bool Accept(unsigned int &curFormID) abstract {};
+        virtual bool AcceptMGEF(unsigned int &curMgefCode) {return true;};
+        unsigned int GetCount() {return count;};
+        void ResetCount() {count = 0;};
+    };
+
+class FormIDResolver : public FormIDOp
+    {
+    private:
+        const unsigned char (&ResolveTable)[255];
+    public:
+        FormIDResolver(const unsigned char (&cResolveTable)[255]):FormIDOp(),ResolveTable(cResolveTable) {}
+        bool Accept(unsigned int &curFormID)
+            {
+            if(curFormID)
+                curFormID = (ResolveTable[curFormID >> 24] << 24 ) | (curFormID & 0x00FFFFFF);
+            return true;
+            }
+        bool AcceptMGEF(unsigned int &curMgefCode)
+            {
+            if(curMgefCode)
+                curMgefCode = (ResolveTable[curMgefCode & 0x000000FF]) | (curMgefCode & 0xFFFFFF00);
+            return true;
+            }
+    };
+
+class FormIDMasterUpdater : public FormIDOp
+    {
+    private:
+        _FormIDHandler &FormIDHandler;
+    public:
+        FormIDMasterUpdater(_FormIDHandler &cFormIDHandler):FormIDOp(),FormIDHandler(cFormIDHandler) {}
+        bool Accept(unsigned int &curFormID)
+            {
+            unsigned int modIndex = curFormID >> 24;
+            //If formID is not set, or the formID belongs to the engine, or the formID belongs to the mod, or if the master is already present, do nothing
+            if((curFormID == 0) || (curFormID < END_HARDCODED_IDS) || (modIndex == FormIDHandler.ExpandedIndex) || (FormIDHandler.CollapseTable[modIndex] != FormIDHandler.CollapsedIndex))
+                return true;
+            //If the modIndex doesn't match to a loaded mod, it gets assigned to the mod that it is in.
+            if(modIndex >= FormIDHandler.LoadOrder255.size())
+                {
+                #ifdef _DEBUG
+                printf("Something's rotten in FormIDMasterUpdater. modIndex:%i, ModFiles.Size:%i\n", modIndex, LoadOrder255.size());
+                #endif
+                FormIDResolver collapser(FormIDHandler.CollapseTable);
+                collapser.Accept(curFormID);
+                FormIDResolver expander(FormIDHandler.ExpandTable);
+                expander.Accept(curFormID);
+                return true;
+                }
+            FormIDHandler.AddMaster(FormIDHandler.LoadOrder255[modIndex]);
+            ++count;
+            return true;
+            }
+        bool AcceptMGEF(unsigned int &curMgefCode)
+            {
+            unsigned int modIndex = curMgefCode << 24;
+            //If formID is not set, or the formID belongs to the engine, or the formID belongs to the mod, or if the master is already present, do nothing
+            if((curMgefCode == 0) || (curMgefCode < END_HARDCODED_IDS) || (modIndex == FormIDHandler.ExpandedIndex) || (FormIDHandler.CollapseTable[modIndex] != FormIDHandler.CollapsedIndex))
+                return true;
+            //If the modIndex doesn't match to a loaded mod, it gets assigned to the mod that it is in.
+            if(modIndex >= FormIDHandler.LoadOrder255.size())
+                {
+                #ifdef _DEBUG
+                printf("Something's rotten in MGEF FormIDMasterUpdater. modIndex:%i, ModFiles.Size:%i\n", modIndex, LoadOrder255.size());
+                #endif
+                FormIDResolver collapser(FormIDHandler.CollapseTable);
+                collapser.AcceptMGEF(curMgefCode);
+                FormIDResolver expander(FormIDHandler.ExpandTable);
+                expander.AcceptMGEF(curMgefCode);
+                return true;
+                }
+            FormIDHandler.AddMaster(FormIDHandler.LoadOrder255[modIndex]);
+            ++count;
+            return true;
+            }
+    };
+
+class FormIDMasterChecker : public FormIDOp
+    {
+    private:
+        const unsigned char (&ExpandTable)[255];
+        const unsigned char &MasterIndex;
+    public:
+        FormIDMasterChecker(const unsigned char (&cExpandTable)[255],const unsigned char &cMasterIndex):FormIDOp(),ExpandTable(cExpandTable),MasterIndex(cMasterIndex) {}
+        bool Accept(unsigned int &curFormID)
+            {
+            if(curFormID < END_HARDCODED_IDS) //Any formID <= 0x800 is hardcoded in the engine and doesn't 'belong' to a mod.
+                return false;
+            if(ExpandTable[MasterIndex] == (curFormID >> 24))
+                {
+                ++count;
+                return true;
+                }
+            return false;
+            }
+        bool AcceptMGEF(unsigned int &curMgefCode)
+            {
+            if(ExpandTable[MasterIndex] == (curMgefCode & 0x000000FF))
+                {
+                ++count;
+                return true;
+                }
+            return false;
+            }
+    };
+
+class FormIDMatchCounter : public FormIDOp
+    {
+    private:
+        const unsigned int &FormIDToMatch;
+    public:
+        FormIDMatchCounter(const unsigned int &cFormID):FormIDOp(),FormIDToMatch(cFormID) {}
+        bool Accept(unsigned int &curFormID)
+            {
+            if(curFormID == FormIDToMatch)
+                ++count;
+            return true;
+            }
+        bool AcceptMGEF(unsigned int &curMgefCode)
+            {
+            if(curMgefCode == FormIDToMatch)
+                ++count;
+            return true;
+            }
+    };
+
+class FormIDSwapper : public FormIDOp
+    {
+    private:
+        const unsigned int &FormIDToMatch;
+        const unsigned int &FormIDToSwap;
+        FormIDMasterUpdater checker;
+    public:
+        FormIDSwapper(const unsigned int &cMatch,const unsigned int &cSwap,_FormIDHandler &cFormIDHandler):FormIDOp(),FormIDToMatch(cMatch),FormIDToSwap(cSwap),checker(cFormIDHandler) {}
+        bool Accept(unsigned int &curFormID)
+            {
+            if(curFormID == FormIDToMatch)
+                {
+                curFormID = FormIDToSwap;
+                checker.Accept(curFormID);
+                ++count;
+                }
+            return true;
+            }
+        bool AcceptMGEF(unsigned int &curMgefCode)
+            {
+            if(curMgefCode == FormIDToMatch)
+                {
+                curMgefCode = FormIDToSwap;
+                checker.Accept(curMgefCode);
+                ++count;
+                }
+            return true;
+            }
+    };
+
 class Record
     {
     protected:
@@ -1429,8 +1847,8 @@ class Record
                     return GetOtherField(Field);
                 }
             }
-        virtual void SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue) {return;}
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue)
+        virtual void SetOtherField(const unsigned int Field, unsigned int FieldValue) {return;}
+        void SetField(const unsigned int Field, unsigned int FieldValue)
             {
             switch(Field)
                 {
@@ -1439,26 +1857,25 @@ class Record
                     return;
                 //case 3: //fid
                 //    formID = FieldValue;
-                //    FormIDHandler.AddMaster(formID);
                 //    return;
                 case 4: //flags2
                     flagsUnk = FieldValue;
                     return;
                 default:
-                    SetOtherField(FormIDHandler, Field, FieldValue);
+                    SetOtherField(Field, FieldValue);
                     return;
                 }
             }
-        virtual void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char **FieldValue, unsigned int nSize) {return;}
-        virtual void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize) {return;}
-        virtual void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue) {return;}
-        virtual void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, int FieldValue) {return;}
-        virtual void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue) {return;}
-        virtual void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char FieldValue) {return;}
-        virtual void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue) {return;}
-        virtual void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue[], unsigned int nSize) {return;}
-        virtual void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, short FieldValue) {return;}
-        virtual void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned short FieldValue) {return;}
+        virtual void SetField(const unsigned int Field, char **FieldValue, unsigned int nSize) {return;}
+        virtual void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize) {return;}
+        virtual void SetField(const unsigned int Field, float FieldValue) {return;}
+        virtual void SetField(const unsigned int Field, int FieldValue) {return;}
+        virtual void SetField(const unsigned int Field, char *FieldValue) {return;}
+        virtual void SetField(const unsigned int Field, char FieldValue) {return;}
+        virtual void SetField(const unsigned int Field, unsigned char FieldValue) {return;}
+        virtual void SetField(const unsigned int Field, unsigned int FieldValue[], unsigned int nSize) {return;}
+        virtual void SetField(const unsigned int Field, short FieldValue) {return;}
+        virtual void SetField(const unsigned int Field, unsigned short FieldValue) {return;}
 
         virtual unsigned int GetFieldArraySize(const unsigned int Field) {return 0;}
         virtual unsigned int GetListSize(const unsigned int Field) {return 0;}
@@ -1477,39 +1894,39 @@ class Record
         virtual void * GetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field) {return NULL;}
         virtual void * GetListX3Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field) {return NULL;}
 
-        virtual void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize) {return;}
-        virtual void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, char **FieldValue, unsigned int nSize) {return;}
-        virtual void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, char FieldValue) {return;}
-        virtual void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue) {return;}
-        virtual void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, char *FieldValue) {return;}
-        virtual void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, short FieldValue) {return;}
-        virtual void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned short FieldValue) {return;}
-        virtual void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, int FieldValue) {return;}
-        virtual void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue) {return;}
-        virtual void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue[], unsigned int nSize) {return;}
-        virtual void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, float FieldValue) {return;}
+        virtual void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize) {return;}
+        virtual void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, char **FieldValue, unsigned int nSize) {return;}
+        virtual void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, char FieldValue) {return;}
+        virtual void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue) {return;}
+        virtual void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, char *FieldValue) {return;}
+        virtual void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, short FieldValue) {return;}
+        virtual void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned short FieldValue) {return;}
+        virtual void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, int FieldValue) {return;}
+        virtual void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue) {return;}
+        virtual void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue[], unsigned int nSize) {return;}
+        virtual void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, float FieldValue) {return;}
 
-        virtual void SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned char *FieldValue, unsigned int nSize) {return;}
-        virtual void SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, char **FieldValue, unsigned int nSize) {return;}
-        virtual void SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, char FieldValue) {return;}
-        virtual void SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned char FieldValue) {return;}
-        virtual void SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, char *FieldValue) {return;}
-        virtual void SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, short FieldValue) {return;}
-        virtual void SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned short FieldValue) {return;}
-        virtual void SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, int FieldValue) {return;}
-        virtual void SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned int FieldValue) {return;}
-        virtual void SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, float FieldValue) {return;}
+        virtual void SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned char *FieldValue, unsigned int nSize) {return;}
+        virtual void SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, char **FieldValue, unsigned int nSize) {return;}
+        virtual void SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, char FieldValue) {return;}
+        virtual void SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned char FieldValue) {return;}
+        virtual void SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, char *FieldValue) {return;}
+        virtual void SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, short FieldValue) {return;}
+        virtual void SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned short FieldValue) {return;}
+        virtual void SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, int FieldValue) {return;}
+        virtual void SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned int FieldValue) {return;}
+        virtual void SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, float FieldValue) {return;}
 
-        virtual void SetListX3Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, unsigned char *FieldValue, unsigned int nSize) {return;}
-        virtual void SetListX3Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, char **FieldValue, unsigned int nSize) {return;}
-        virtual void SetListX3Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, char FieldValue) {return;}
-        virtual void SetListX3Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, unsigned char FieldValue) {return;}
-        virtual void SetListX3Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, char *FieldValue) {return;}
-        virtual void SetListX3Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, short FieldValue) {return;}
-        virtual void SetListX3Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, unsigned short FieldValue) {return;}
-        virtual void SetListX3Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, int FieldValue) {return;}
-        virtual void SetListX3Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, unsigned int FieldValue) {return;}
-        virtual void SetListX3Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, float FieldValue) {return;}
+        virtual void SetListX3Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, unsigned char *FieldValue, unsigned int nSize) {return;}
+        virtual void SetListX3Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, char **FieldValue, unsigned int nSize) {return;}
+        virtual void SetListX3Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, char FieldValue) {return;}
+        virtual void SetListX3Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, unsigned char FieldValue) {return;}
+        virtual void SetListX3Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, char *FieldValue) {return;}
+        virtual void SetListX3Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, short FieldValue) {return;}
+        virtual void SetListX3Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, unsigned short FieldValue) {return;}
+        virtual void SetListX3Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, int FieldValue) {return;}
+        virtual void SetListX3Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, unsigned int FieldValue) {return;}
+        virtual void SetListX3Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, float FieldValue) {return;}
 
         virtual void GetFieldArray(const unsigned int Field, void **FieldValues)
             {*FieldValues = NULL;return;}
@@ -1537,15 +1954,9 @@ class Record
         virtual unsigned int GetSize(bool forceCalc=false) abstract {};
         virtual unsigned int GetType() {return eUnknown;}
         virtual char * GetStrType() abstract {}
-        virtual void GetReferencedFormIDs(std::vector<FormID> &FormIDs) {};
+        virtual void VisitFormIDs(FormIDOp &op) {};
 
-        int Read(_FormIDHandler &FormIDHandler);
-        void ExpandFormIDs(_FormIDHandler &FormIDHandler);
-        void CollapseFormIDs(_FormIDHandler &FormIDHandler);
-        void AddMasters(_FormIDHandler &FormIDHandler);
-        unsigned int GetNumReferences(unsigned int referenceFormID, _FormIDHandler &FormIDHandler);
-        unsigned int UpdateReferences(unsigned int origFormID, unsigned int newFormID, _FormIDHandler &FormIDHandler);
-        bool CheckMasters(unsigned int MASTIndex, _FormIDHandler &FormIDHandler);
+        bool Read();
 
         virtual void CopyFrom(Record *temp) {return;}
         virtual int WriteRecord(_FileHandler &SaveHandler) abstract {};
@@ -1765,5 +2176,74 @@ class Record
                 flags |= _fIsLoaded;
             else
                 flags &= ~_fIsLoaded;
+            }
+    };
+
+class RecordOp
+    {
+    protected:
+        unsigned int count;
+    public:
+        RecordOp():count(0) {}
+        virtual bool Accept(Record &curRecord) abstract {};
+        unsigned int GetCount() {return count;};
+        void ResetCount() {count = 0;};
+    };
+
+class RecordReader : public RecordOp
+    {
+    private:
+        FormIDResolver expander;
+    public:
+        RecordReader(_FormIDHandler &FormIDHandler):RecordOp(),expander(FormIDHandler.ExpandTable) {}
+        bool Accept(Record &curRecord)
+            {
+            if(curRecord.Read())
+                {
+                curRecord.VisitFormIDs(expander);
+                ++count;
+                }
+            return true;
+            }
+    };
+
+class RecordUnloader : public RecordOp
+    {
+    public:
+        RecordUnloader():RecordOp() {}
+        bool Accept(Record &curRecord)
+            {
+            if(curRecord.recData != NULL)
+                {
+                curRecord.Unload();
+                ++count;
+                }
+            return true;
+            }
+    };
+
+class RecordFormIDVisitor : public RecordOp
+    {
+    private:
+        RecordReader reader;
+        FormIDOp &op;
+        const bool bOpChangesRecord;
+    public:
+        RecordFormIDVisitor(_FormIDHandler &FormIDHandler,FormIDOp &Op, bool OpChangesRecord=false):RecordOp(),reader(FormIDHandler),op(Op),bOpChangesRecord(OpChangesRecord) {}
+        bool Accept(Record &curRecord)
+            {
+            bool loaded = reader.Accept(curRecord);
+            op.ResetCount();
+            curRecord.VisitFormIDs(op);
+            unsigned int opCount = op.GetCount();
+            if(opCount)
+                {
+                if(bOpChangesRecord)
+                    curRecord.recData = NULL;
+                count += opCount;
+                }
+            if(loaded && curRecord.recData != NULL)
+                curRecord.Unload();
+            return true;
             }
     };

@@ -67,7 +67,7 @@ class CONTRecord : public Record
             #endif
             bool operator ==(const CONTDATA &other) const
                 {
-                return (flags == other.flags && 
+                return (flags == other.flags &&
                         AlmostEqual(weight,other.weight,2));
                 }
             bool operator !=(const CONTDATA &other) const
@@ -143,18 +143,18 @@ class CONTRecord : public Record
             QNAM.Unload();
             }
 
-        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
+        void VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
                 return;
             if(SCRI.IsLoaded())
-                FormIDs.push_back(&SCRI->fid);
+                op.Accept(SCRI->fid);
             for(unsigned int x = 0; x < CNTO.size(); x++)
-                FormIDs.push_back(&CNTO[x]->value.item);
+                op.Accept(CNTO[x]->value.item);
             if(SNAM.IsLoaded())
-                FormIDs.push_back(&SNAM->fid);
+                op.Accept(SNAM->fid);
             if(QNAM.IsLoaded())
-                FormIDs.push_back(&QNAM->fid);
+                op.Accept(QNAM->fid);
             }
 
         #ifdef _DEBUG
@@ -170,13 +170,13 @@ class CONTRecord : public Record
         int GetListFieldType(const unsigned int subField, const unsigned int listField);
         unsigned int GetListSize(const unsigned int Field);
         void * GetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue);
-        void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue);
-        void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, int FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue);
+        void SetField(const unsigned int Field, char *FieldValue);
+        void SetField(const unsigned int Field, float FieldValue);
+        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
+        void SetOtherField(const unsigned int Field, unsigned int FieldValue);
+        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue);
+        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, int FieldValue);
+        void SetField(const unsigned int Field, unsigned char FieldValue);
 
         int DeleteField(const unsigned int Field);
         int DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);

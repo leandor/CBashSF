@@ -101,15 +101,15 @@ class GRASRecord : public Record
             #endif
             bool operator ==(const GRASDATA &other) const
                 {
-                return (density == other.density && 
-                        minSlope == other.minSlope && 
-                        maxSlope == other.maxSlope && 
-                        waterDistance == other.waterDistance && 
-                        waterOp == other.waterOp && 
-                        AlmostEqual(posRange,other.posRange,2) && 
-                        AlmostEqual(heightRange,other.heightRange,2) && 
-                        AlmostEqual(colorRange,other.colorRange,2) && 
-                        AlmostEqual(wavePeriod,other.wavePeriod,2) && 
+                return (density == other.density &&
+                        minSlope == other.minSlope &&
+                        maxSlope == other.maxSlope &&
+                        waterDistance == other.waterDistance &&
+                        waterOp == other.waterOp &&
+                        AlmostEqual(posRange,other.posRange,2) &&
+                        AlmostEqual(heightRange,other.heightRange,2) &&
+                        AlmostEqual(colorRange,other.colorRange,2) &&
+                        AlmostEqual(wavePeriod,other.wavePeriod,2) &&
                         flags == other.flags);
                 }
             bool operator !=(const GRASDATA &other) const
@@ -163,12 +163,12 @@ class GRASRecord : public Record
         void * GetOtherField(const unsigned int Field);
         unsigned int GetFieldArraySize(const unsigned int Field);
         void GetFieldArray(const unsigned int Field, void **FieldValues);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned short FieldValue);
-        void SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue);
+        void SetField(const unsigned int Field, char *FieldValue);
+        void SetField(const unsigned int Field, float FieldValue);
+        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
+        void SetField(const unsigned int Field, unsigned char FieldValue);
+        void SetField(const unsigned int Field, unsigned short FieldValue);
+        void SetOtherField(const unsigned int Field, unsigned int FieldValue);
 
         int DeleteField(const unsigned int Field);
 

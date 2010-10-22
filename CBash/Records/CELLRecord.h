@@ -87,14 +87,14 @@ class CELLRecord : public Record
             #endif
             bool operator ==(const CELLXCLL &other) const
                 {
-                return (ambient == other.ambient && 
-                        directional == other.directional && 
-                        fog == other.fog && 
-                        AlmostEqual(fogNear,other.fogNear,2) && 
-                        AlmostEqual(fogFar,other.fogFar,2) && 
-                        directionalXY == other.directionalXY && 
-                        directionalZ == other.directionalZ &&                        
-                        AlmostEqual(directionalFade,other.directionalFade,2) && 
+                return (ambient == other.ambient &&
+                        directional == other.directional &&
+                        fog == other.fog &&
+                        AlmostEqual(fogNear,other.fogNear,2) &&
+                        AlmostEqual(fogFar,other.fogFar,2) &&
+                        directionalXY == other.directionalXY &&
+                        directionalZ == other.directionalZ &&
+                        AlmostEqual(directionalFade,other.directionalFade,2) &&
                         AlmostEqual(fogClip,other.fogClip,2));
                 }
             bool operator !=(const CELLXCLL &other) const
@@ -147,7 +147,7 @@ class CELLRecord : public Record
             #endif
             bool operator ==(const CELLXCLC &other) const
                 {
-                return (posX == other.posX && 
+                return (posX == other.posX &&
                         posY == other.posY);
                 }
             bool operator !=(const CELLXCLC &other) const
@@ -268,13 +268,13 @@ class CELLRecord : public Record
         void * GetOtherField(const unsigned int Field);
         unsigned int GetFieldArraySize(const unsigned int Field);
         void GetFieldArray(const unsigned int Field, void **FieldValues);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, int FieldValue);
-        void SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue[], unsigned int nSize);
+        void SetField(const unsigned int Field, char *FieldValue);
+        void SetField(const unsigned int Field, unsigned char FieldValue);
+        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
+        void SetField(const unsigned int Field, float FieldValue);
+        void SetField(const unsigned int Field, int FieldValue);
+        void SetOtherField(const unsigned int Field, unsigned int FieldValue);
+        void SetField(const unsigned int Field, unsigned int FieldValue[], unsigned int nSize);
 
         int DeleteField(const unsigned int Field);
 

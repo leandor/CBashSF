@@ -63,9 +63,9 @@ class LSCRRecord : public Record
             #endif
             bool operator ==(const LSCRLNAM &other) const
                 {
-                return (direct == other.direct && 
-                        indirect == other.indirect && 
-                        gridY == other.gridY && 
+                return (direct == other.direct &&
+                        indirect == other.indirect &&
+                        gridY == other.gridY &&
                         gridX == other.gridX);
                 }
             bool operator !=(const LSCRLNAM &other) const
@@ -114,14 +114,14 @@ class LSCRRecord : public Record
             LNAM.clear();
             }
 
-        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
+        void VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
                 return;
             for(unsigned int x = 0; x < LNAM.size(); x++)
                 {
-                FormIDs.push_back(&LNAM[x]->value.direct);
-                FormIDs.push_back(&LNAM[x]->value.indirect);
+                op.Accept(LNAM[x]->value.direct);
+                op.Accept(LNAM[x]->value.indirect);
                 }
             }
 
@@ -136,9 +136,9 @@ class LSCRRecord : public Record
         int GetListFieldType(const unsigned int subField, const unsigned int listField);
         unsigned int GetListSize(const unsigned int Field);
         void * GetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue);
-        void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue);
-        void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, short FieldValue);
+        void SetField(const unsigned int Field, char *FieldValue);
+        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue);
+        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, short FieldValue);
 
         int DeleteField(const unsigned int Field);
         int DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);

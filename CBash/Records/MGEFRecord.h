@@ -29,6 +29,8 @@ class MGEFRecord : public Record
     private:
         enum MGEFSubRecords {
             eEDID = 0x44494445,
+            eOBME = 0x454D424F,
+            eEDDX = 0x58444445,
             eFULL = 0x4C4C5546,
             eDESC = 0x43534544,
             eICON = 0x4E4F4349,
@@ -38,6 +40,7 @@ class MGEFRecord : public Record
             eMODT = 0x54444F4D,
 
             eDATA = 0x41544144,
+            eDATX = 0x58544144,
             eESCE = 0x45435345
             };
         struct MGEFDATA
@@ -45,7 +48,8 @@ class MGEFRecord : public Record
             unsigned int flags;
             float baseCost;
             unsigned int associated;
-            int school, resistValue;
+            int school;
+            unsigned int resistValue;
             unsigned short unk1;
             unsigned char unused1[2];
             unsigned int light;
@@ -117,23 +121,154 @@ class MGEFRecord : public Record
             #endif
             bool operator ==(const MGEFDATA &other) const
                 {
-                return (flags == other.flags && 
-                        AlmostEqual(baseCost,other.baseCost,2) && 
-                        associated == other.associated && 
-                        school == other.school && 
-                        resistValue == other.resistValue && 
-                        light == other.light && 
-                        AlmostEqual(projectileSpeed,other.projectileSpeed,2) && 
-                        effectShader == other.effectShader && 
-                        enchantEffect == other.enchantEffect && 
-                        castingSound == other.castingSound && 
-                        boltSound == other.boltSound && 
-                        hitSound == other.hitSound && 
-                        areaSound == other.areaSound && 
-                        AlmostEqual(cefEnchantment,other.cefEnchantment,2) && 
+                return (flags == other.flags &&
+                        AlmostEqual(baseCost,other.baseCost,2) &&
+                        associated == other.associated &&
+                        school == other.school &&
+                        resistValue == other.resistValue &&
+                        light == other.light &&
+                        AlmostEqual(projectileSpeed,other.projectileSpeed,2) &&
+                        effectShader == other.effectShader &&
+                        enchantEffect == other.enchantEffect &&
+                        castingSound == other.castingSound &&
+                        boltSound == other.boltSound &&
+                        hitSound == other.hitSound &&
+                        areaSound == other.areaSound &&
+                        AlmostEqual(cefEnchantment,other.cefEnchantment,2) &&
                         AlmostEqual(cefBarter,other.cefBarter,2));
                 }
             bool operator !=(const MGEFDATA &other) const
+                {
+                return !(*this == other);
+                }
+            };
+
+        struct OBMEEDDX
+            {
+            unsigned int mgefCode;
+            OBMEEDDX():mgefCode(0) {}
+            #ifdef _DEBUG
+            void Debug(int debugLevel, size_t &indentation)
+                {
+                if(debugLevel > 3)
+                    {
+                    indentation += 2;
+                    PrintIndent(indentation);
+                    printf("%s\n", PrintFormID(mgefCode));
+                    indentation -= 2;
+                    }
+                }
+            #endif
+            bool operator ==(const OBMEEDDX& other) const
+                {
+                return mgefCode == other.mgefCode;
+                }
+            bool operator !=(const OBMEEDDX &other) const
+                {
+                return !(*this == other);
+                }
+            };
+        struct MGEFOBME
+            {
+            unsigned char recordVersion, betaVersion, minorVersion, majorVersion;
+            unsigned char mgefParamAInfo;
+            unsigned char mgefParamBInfo;
+            unsigned char reserved1[2];
+            unsigned int handlerCode;
+            unsigned int mgefFlagOverrides;
+            unsigned int mgefParamB;
+            unsigned char reserved2[0x1C];
+            MGEFOBME():recordVersion(0), betaVersion(0), minorVersion(0), majorVersion(0),
+                       mgefParamAInfo(0), mgefParamBInfo(0), handlerCode(0), mgefFlagOverrides(0), mgefParamB(0)
+                {
+                memset(&reserved1, 0x00, 2);
+                memset(&reserved2, 0x00, 0x1C);
+                }
+            #ifdef _DEBUG
+            void Debug(int debugLevel, size_t &indentation)
+                {
+                if(debugLevel > 3)
+                    {
+                    indentation += 2;
+                    PrintIndent(indentation);
+                    printf("recordVersion = %i\n", recordVersion);
+                    printf("betaVersion = %i\n", betaVersion);
+                    printf("minorVersion = %i\n", minorVersion);
+                    printf("majorVersion = %i\n", majorVersion);
+
+                    printf("mgefParamAInfo = %i\n", mgefParamAInfo);
+                    printf("mgefParamBInfo = %i\n", mgefParamBInfo);
+
+                    if(debugLevel > 5)
+                        {
+                        PrintIndent(indentation);
+                        printf("reserved1 = %c%c\n", reserved1[0], reserved1[1]);
+                        }
+                    printf("handlerCode = %i\n", handlerCode);
+                    printf("mgefFlagOverrides = %i\n", mgefFlagOverrides);
+                    printf("mgefParamB = %i\n", mgefParamB);
+
+                    if(debugLevel > 5)
+                        {
+                        PrintIndent(indentation);
+                        printf("reserved2 = ");
+                        for(unsigned int x = 0; x < 0x1C; x++)
+                            printf("%c", reserved2[x]);
+                        pritnf("\n");
+                        }
+                    indentation -= 2;
+                    }
+                }
+            #endif
+            bool operator ==(const MGEFOBME &other) const
+                {
+                return (recordVersion == other.recordVersion &&
+                        betaVersion == other.betaVersion &&
+                        minorVersion == other.minorVersion &&
+                        majorVersion == other.majorVersion &&
+                        mgefParamAInfo == other.mgefParamAInfo &&
+                        mgefParamBInfo == other.mgefParamBInfo &&
+                        reserved1 == other.reserved1 &&
+                        handlerCode == other.handlerCode &&
+                        mgefFlagOverrides == other.mgefFlagOverrides &&
+                        mgefParamB == other.mgefParamB &&
+                        reserved2 == other.reserved2);
+                }
+            bool operator !=(const MGEFOBME &other) const
+                {
+                return !(*this == other);
+                }
+            };
+        struct OBMEMGEF
+            {
+            ReqSubRecord<MGEFOBME> OBME;
+            ReqSubRecord<OBMEEDDX> EDDX; //Is switched with the normal EDID on read and write so that the EDID field is a string as expected
+            RAWBYTES DATX;
+            #ifdef _DEBUG
+            void Debug(char *name, int debugLevel, size_t &indentation)
+                {
+                if(name != NULL)
+                    {
+                    PrintIndent(indentation);
+                    printf("%s\n", name);
+                    }
+                if(debugLevel > 3)
+                    {
+                    indentation += 2;
+                    OBME.Debug("OBME", debugLevel, indentation);
+                    EDDX.Debug("EDDX", debugLevel, indentation);
+                    DATX.Debug("DATX", debugLevel, indentation);
+                    indentation -= 2;
+                    }
+                }
+            #endif
+            bool operator ==(const OBMEMGEF &other) const
+                {
+                return (OBME == other.OBME &&
+                        EDDX == other.EDDX &&
+                        DATX == other.DATX);
+                }
+            bool operator !=(const OBMEMGEF &other) const
                 {
                 return !(*this == other);
                 }
@@ -173,6 +308,8 @@ class MGEFRecord : public Record
         OptSubRecord<GENMODEL> MODL;
         ReqSubRecord<MGEFDATA> DATA;
         std::vector<unsigned int> ESCE;
+        OptSubRecord<OBMEMGEF> OBME;
+
         MGEFRecord(bool newRecord=false):Record(newRecord) {}
         MGEFRecord(const unsigned int &newFormID):Record(newFormID) {}
         MGEFRecord(MGEFRecord *srcRecord):Record(true)
@@ -193,6 +330,13 @@ class MGEFRecord : public Record
                 }
             DATA = srcRecord->DATA;
             ESCE = srcRecord->ESCE;
+            if(srcRecord->OBME.IsLoaded())
+                {
+                OBME.Load();
+                OBME->OBME = srcRecord->OBME->OBME;
+                OBME->EDDX = srcRecord->OBME->EDDX;
+                OBME->DATX = srcRecord->OBME->DATX;
+                }
             }
         ~MGEFRecord() {}
         void Unload()
@@ -205,20 +349,89 @@ class MGEFRecord : public Record
             MODL.Unload();
             DATA.Unload();
             ESCE.clear();
+            OBME.Unload();
             }
 
-        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
+        void VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
                 return;
-            FormIDs.push_back(&DATA.value.associated);
-            FormIDs.push_back(&DATA.value.light);
-            FormIDs.push_back(&DATA.value.effectShader);
-            FormIDs.push_back(&DATA.value.enchantEffect);
-            FormIDs.push_back(&DATA.value.castingSound);
-            FormIDs.push_back(&DATA.value.boltSound);
-            FormIDs.push_back(&DATA.value.hitSound);
-            FormIDs.push_back(&DATA.value.areaSound);
+            if(OBME.IsLoaded())
+                {
+                if(OBME->EDDX.IsLoaded())
+                    //Conditional resolution of mgefCode's based on JRoush's OBME mod
+                    //It's resolved just like a formID, except it uses the lower byte instead of the upper
+                    if(OBME->EDDX.value.mgefCode >= 0x80000000)
+                        op.AcceptMGEF(OBME->EDDX.value.mgefCode);
+                if(OBME->OBME.IsLoaded())
+                    {
+                    switch(OBME->OBME.value.mgefParamAInfo)
+                        {
+                        case 1: //It's a regular formID, so nothing fancy.
+                            op.Accept(DATA.value.associated);
+                            break;
+                        case 2: //It's a mgefCode, and not a formID at all.
+                            //Conditional resolution of mgefCode's based on JRoush's OBME mod
+                            //It's resolved just like a formID, except it uses the lower byte instead of the upper
+                            if(DATA.value.associated >= 0x80000000)
+                                op.AcceptMGEF(DATA.value.associated);
+                            break;
+                        case 3: //It's an actor value, and not a formID at all.
+                            //Conditional resolution of av's based on JRoush's OBME/AV mod(s)
+                            //It's resolved just like a formID
+                            if(DATA.value.associated >= 0x800)
+                                op.Accept(DATA.value.associated);
+                            break;
+                        default: //It's not a formID, mgefCode, or fancied up actor value
+                            //so do nothing
+                            break;
+                        }
+                    switch(OBME->OBME.value.mgefParamBInfo)
+                        {
+                        case 1: //It's a regular formID, so nothing fancy.
+                            op.Accept(OBME->OBME.value.mgefParamB);
+                            break;
+                        case 2: //It's a mgefCode, and not a formID at all.
+                            //Conditional resolution of mgefCode's based on JRoush's OBME mod
+                            //It's resolved just like a formID, except it uses the lower byte instead of the upper
+                            if(OBME->OBME.value.mgefParamB >= 0x80000000)
+                                op.AcceptMGEF(OBME->OBME.value.mgefParamB);
+                            break;
+                        case 3: //It's an actor value, and not a formID at all.
+                            //Conditional resolution of av's based on JRoush's OBME/AV mod(s)
+                            //It's resolved just like a formID
+                            if(OBME->OBME.value.mgefParamB >= 0x800)
+                                op.Accept(OBME->OBME.value.mgefParamB);
+                            break;
+                        default: //It's not a formID, mgefCode, or fancied up actor value
+                            //so do nothing
+                            break;
+                        }
+                    }
+                op.Accept(DATA.value.light);
+                op.Accept(DATA.value.effectShader);
+                op.Accept(DATA.value.enchantEffect);
+                op.Accept(DATA.value.castingSound);
+                op.Accept(DATA.value.boltSound);
+                op.Accept(DATA.value.hitSound);
+                op.Accept(DATA.value.areaSound);
+                if(DATA.value.resistValue >= 0x800)
+                    op.Accept(DATA.value.resistValue);
+                for(unsigned int x = 0; x < ESCE.size(); ++x)
+                    if(ESCE[x] >= 0x80000000)
+                        op.AcceptMGEF(ESCE[x]);
+                }
+            else
+                {
+                op.Accept(DATA.value.associated);
+                op.Accept(DATA.value.light);
+                op.Accept(DATA.value.effectShader);
+                op.Accept(DATA.value.enchantEffect);
+                op.Accept(DATA.value.castingSound);
+                op.Accept(DATA.value.boltSound);
+                op.Accept(DATA.value.hitSound);
+                op.Accept(DATA.value.areaSound);
+                }
             }
 
         #ifdef _DEBUG
@@ -229,13 +442,15 @@ class MGEFRecord : public Record
         void * GetOtherField(const unsigned int Field);
         unsigned int GetFieldArraySize(const unsigned int Field);
         void GetFieldArray(const unsigned int Field, void **FieldValues);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, int FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned short FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue[], unsigned int nSize);
+        void SetField(const unsigned int Field, char *FieldValue);
+        void SetField(const unsigned int Field, float FieldValue);
+        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
+        void SetOtherField(const unsigned int Field, unsigned int FieldValue);
+        void SetField(const unsigned int Field, int FieldValue);
+        void SetField(const unsigned int Field, unsigned short FieldValue);
+        void SetField(const unsigned int Field, unsigned int FieldValue[], unsigned int nSize);
+        //OBME Fields
+        void SetField(const unsigned int Field, unsigned char FieldValue);
 
         int DeleteField(const unsigned int Field);
 

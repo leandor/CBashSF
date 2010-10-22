@@ -93,10 +93,10 @@ class SKILRecord : public Record
             #endif
             bool operator ==(const SKILDATA &other) const
                 {
-                return (action == other.action && 
-                        attribute == other.attribute && 
-                        specialization == other.specialization && 
-                        AlmostEqual(use0,other.use0,2) && 
+                return (action == other.action &&
+                        attribute == other.attribute &&
+                        specialization == other.specialization &&
+                        AlmostEqual(use0,other.use0,2) &&
                         AlmostEqual(use1,other.use1,2));
                 }
             bool operator !=(const SKILDATA &other) const
@@ -155,10 +155,10 @@ class SKILRecord : public Record
 
         int GetOtherFieldType(const unsigned int Field);
         void * GetOtherField(const unsigned int Field);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, int FieldValue);
-        void SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue);
+        void SetField(const unsigned int Field, char *FieldValue);
+        void SetField(const unsigned int Field, int FieldValue);
+        void SetOtherField(const unsigned int Field, unsigned int FieldValue);
+        void SetField(const unsigned int Field, float FieldValue);
 
         int DeleteField(const unsigned int Field);
 

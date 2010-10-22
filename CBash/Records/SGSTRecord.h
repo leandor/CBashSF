@@ -29,6 +29,7 @@ class SGSTRecord : public Record
     private:
         enum SGSTSubRecords {
             eEDID = 0x44494445,
+            eOBME = 0x454D424F,
             eFULL = 0x4C4C5546,
 
             eMODL = 0x4C444F4D,
@@ -39,9 +40,15 @@ class SGSTRecord : public Record
             eSCRI = 0x49524353,
             eDATA = 0x41544144,
 
+            eEFME = 0x454D4645,
             eEFID = 0x44494645,
             eEFIT = 0x54494645,
-            eSCIT = 0x54494353
+            eSCIT = 0x54494353,
+            eEFII = 0x49494645,
+            eEFIX = 0x58494645,
+            eEFXX = 0x58584645,
+
+            eDATX = 0x58544144
             };
         #pragma pack(push)
         #pragma pack(1)
@@ -69,8 +76,8 @@ class SGSTRecord : public Record
             #endif
             bool operator ==(const SGSTDATA &other) const
                 {
-                return (uses == other.uses && 
-                        value == other.value && 
+                return (uses == other.uses &&
+                        value == other.value &&
                         AlmostEqual(weight,other.weight,2));
                 }
             bool operator !=(const SGSTDATA &other) const
@@ -87,6 +94,7 @@ class SGSTRecord : public Record
         OptSubRecord<GENFID> SCRI;
         std::vector<GENEffect *> Effects;
         ReqSubRecord<SGSTDATA> DATA;
+        OptSubRecord<OBMEMAGIC> OBME;
 
         SGSTRecord(bool newRecord=false):Record(newRecord) {}
         SGSTRecord(const unsigned int &newFormID):Record(newFormID) {}
@@ -115,8 +123,21 @@ class SGSTRecord : public Record
                 Effects[x]->EFIT = srcRecord->Effects[x]->EFIT;
                 Effects[x]->SCIT = srcRecord->Effects[x]->SCIT;
                 Effects[x]->FULL = srcRecord->Effects[x]->FULL;
+                if(srcRecord->Effects[x]->OBME.IsLoaded())
+                    {
+                    Effects[x]->OBME.Load();
+                    Effects[x]->OBME->EFME = srcRecord->Effects[x]->OBME->EFME;
+                    Effects[x]->OBME->EFII = srcRecord->Effects[x]->OBME->EFII;
+                    Effects[x]->OBME->EFIX = srcRecord->Effects[x]->OBME->EFIX;
+                    }
                 }
             DATA = srcRecord->DATA;
+            if(srcRecord->OBME.IsLoaded())
+                {
+                OBME.Load();
+                OBME->OBME = srcRecord->OBME->OBME;
+                OBME->DATX = srcRecord->OBME->DATX;
+                }
             return;
             }
         ~SGSTRecord()
@@ -136,17 +157,80 @@ class SGSTRecord : public Record
                 delete Effects[x];
             Effects.clear();
             DATA.Unload();
+            OBME.Unload();
             }
 
-        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
+        void VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
                 return;
             if(SCRI.IsLoaded())
-                FormIDs.push_back(&SCRI->fid);
+                op.Accept(SCRI->fid);
             for(unsigned int x = 0; x < Effects.size(); x++)
-                if(Effects[x]->SCIT.IsLoaded())
-                    FormIDs.push_back(&Effects[x]->SCIT->script);
+                {
+                if(Effects[x]->OBME.IsLoaded())
+                    {
+                    if(Effects[x]->EFID.value.name >= 0x80000000)
+                        op.AcceptMGEF(Effects[x]->EFID.value.name);
+                    if(Effects[x]->EFIT.value.name >= 0x80000000)
+                        op.AcceptMGEF(Effects[x]->EFIT.value.name);
+                    switch(Effects[x]->OBME->EFME.value.efitParamInfo)
+                        {
+                        case 1: //It's a regular formID, so nothing fancy.
+                            op.Accept(Effects[x]->EFIT.value.actorValue);
+                            break;
+                        case 2: //It's a mgefCode, and not a formID at all.
+                            //Conditional resolution of mgefCode's based on JRoush's OBME mod
+                            //It's resolved just like a formID, except it uses the lower byte instead of the upper
+                            if(Effects[x]->EFIT.value.actorValue >= 0x80000000)
+                                op.AcceptMGEF(Effects[x]->EFIT.value.actorValue);
+                            break;
+                        case 3: //It's an actor value, and not a formID at all.
+                            //Conditional resolution of av's based on JRoush's OBME/AV mod(s)
+                            //It's resolved just like a formID
+                            if(Effects[x]->EFIT.value.actorValue >= 0x800)
+                                op.Accept(Effects[x]->EFIT.value.actorValue);
+                            break;
+                        default: //It's not a formID, mgefCode, or fancied up actor value
+                            //so do nothing
+                            break;
+                        }
+                    if(Effects[x]->SCIT.IsLoaded())
+                        {
+                        if(Effects[x]->SCIT->visual >= 0x80000000)
+                            op.AcceptMGEF(Effects[x]->SCIT->visual);
+                        switch(Effects[x]->OBME->EFME.value.efixParamInfo)
+                            {
+                            case 1: //It's a regular formID, so nothing fancy.
+                                op.Accept(Effects[x]->SCIT->script);
+                                break;
+                            case 2: //It's a mgefCode, and not a formID at all.
+                                //Conditional resolution of mgefCode's based on JRoush's OBME mod
+                                //It's resolved just like a formID, except it uses the lower byte instead of the upper
+                                if(Effects[x]->SCIT->script >= 0x80000000)
+                                    op.AcceptMGEF(Effects[x]->SCIT->script);
+                                break;
+                            case 3: //It's an actor value, and not a formID at all.
+                                //Conditional resolution of av's based on JRoush's OBME/AV mod(s)
+                                //It's resolved just like a formID
+                                if(Effects[x]->SCIT->script >= 0x800)
+                                    op.Accept(Effects[x]->SCIT->script);
+                                break;
+                            default: //It's not a formID, mgefCode, or fancied up actor value
+                                //so do nothing
+                                break;
+                            }
+                        }
+                    if(Effects[x]->OBME->EFIX.IsLoaded())
+                        if(Effects[x]->OBME->EFIX->resistAV >= 0x800)
+                            op.Accept(Effects[x]->OBME->EFIX->resistAV);
+                    }
+                else
+                    {
+                    if(Effects[x]->SCIT.IsLoaded())
+                        op.Accept(Effects[x]->SCIT->script);
+                    }
+                }
             }
 
         #ifdef _DEBUG
@@ -164,17 +248,17 @@ class SGSTRecord : public Record
         unsigned int GetListArraySize(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
         void GetListArray(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, void **FieldValues);
         void * GetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, int FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue);
-        void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue);
-        void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, int FieldValue);
-        void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue);
-        void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize);
-        void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, char *FieldValue);
+        void SetField(const unsigned int Field, char *FieldValue);
+        void SetField(const unsigned int Field, float FieldValue);
+        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
+        void SetOtherField(const unsigned int Field, unsigned int FieldValue);
+        void SetField(const unsigned int Field, int FieldValue);
+        void SetField(const unsigned int Field, unsigned char FieldValue);
+        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue);
+        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, float FieldValue);
+        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue);
+        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize);
+        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, char *FieldValue);
 
         int DeleteField(const unsigned int Field);
         int DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);

@@ -62,7 +62,7 @@ class REGNRecord : public Record
             #endif
             bool operator ==(const REGNRPLD &other) const
                 {
-                return (AlmostEqual(posX,other.posX,2) && 
+                return (AlmostEqual(posX,other.posX,2) &&
                         AlmostEqual(posY,other.posY,2));
                 }
             bool operator !=(const REGNRPLD &other) const
@@ -144,7 +144,7 @@ class REGNRecord : public Record
             #endif
             bool operator ==(const REGNArea &other) const
                 {
-                return (RPLI == other.RPLI && 
+                return (RPLI == other.RPLI &&
                         RPLD == other.RPLD);
                 }
             bool operator !=(const REGNArea &other) const
@@ -173,7 +173,7 @@ class REGNRecord : public Record
             #endif
             bool operator ==(const REGNRDWT &other) const
                 {
-                return (weather == other.weather && 
+                return (weather == other.weather &&
                         chance == other.chance);
                 }
             bool operator !=(const REGNRDWT &other) const
@@ -207,8 +207,8 @@ class REGNRecord : public Record
             #endif
             bool operator ==(const REGNRDSD &other) const
                 {
-                return (sound == other.sound && 
-                        flags == other.flags && 
+                return (sound == other.sound &&
+                        flags == other.flags &&
                         flags == other.flags);
                 }
             bool operator !=(const REGNRDSD &other) const
@@ -425,21 +425,21 @@ class REGNRecord : public Record
             #endif
             bool operator ==(const REGNRDOT &other) const
                 {
-                return (objectId == other.objectId && 
-                        parentIndex == other.parentIndex && 
-                        AlmostEqual(density,other.density,2) && 
-                        clustering == other.clustering && 
-                        minSlope == other.minSlope && 
-                        maxSlope == other.maxSlope && 
-                        flags == other.flags && 
-                        radiusWRTParent == other.radiusWRTParent && 
-                        radius == other.radius && 
-                        AlmostEqual(maxHeight,other.maxHeight,2) && 
-                        AlmostEqual(sink,other.sink,2) && 
-                        AlmostEqual(sinkVar,other.sinkVar,2) && 
-                        AlmostEqual(sizeVar,other.sizeVar,2) && 
-                        angleVarX == other.angleVarX && 
-                        angleVarY == other.angleVarY && 
+                return (objectId == other.objectId &&
+                        parentIndex == other.parentIndex &&
+                        AlmostEqual(density,other.density,2) &&
+                        clustering == other.clustering &&
+                        minSlope == other.minSlope &&
+                        maxSlope == other.maxSlope &&
+                        flags == other.flags &&
+                        radiusWRTParent == other.radiusWRTParent &&
+                        radius == other.radius &&
+                        AlmostEqual(maxHeight,other.maxHeight,2) &&
+                        AlmostEqual(sink,other.sink,2) &&
+                        AlmostEqual(sinkVar,other.sinkVar,2) &&
+                        AlmostEqual(sizeVar,other.sizeVar,2) &&
+                        angleVarX == other.angleVarX &&
+                        angleVarY == other.angleVarY &&
                         angleVarZ == other.angleVarZ);
                 }
             bool operator !=(const REGNRDOT &other) const
@@ -588,8 +588,8 @@ class REGNRecord : public Record
             #endif
             bool operator ==(const REGNRDAT &other) const
                 {
-                return (entryType == other.entryType && 
-                        flags == other.flags && 
+                return (entryType == other.entryType &&
+                        flags == other.flags &&
                         priority == other.priority);
                 }
             bool operator !=(const REGNRDAT &other) const
@@ -675,13 +675,13 @@ class REGNRecord : public Record
             #endif
             bool operator ==(const REGNEntry &other) const
                 {
-                return (RDAT == other.RDAT && 
-                        RDOT == other.RDOT && 
-                        RDMP == other.RDMP && 
-                        ICON == other.ICON && 
-                        RDGS == other.RDGS && 
-                        RDMD == other.RDMD && 
-                        RDSD == other.RDSD && 
+                return (RDAT == other.RDAT &&
+                        RDOT == other.RDOT &&
+                        RDMP == other.RDMP &&
+                        ICON == other.ICON &&
+                        RDGS == other.RDGS &&
+                        RDMD == other.RDMD &&
+                        RDSD == other.RDSD &&
                         RDWT == other.RDWT);
                 }
             bool operator !=(const REGNEntry &other) const
@@ -920,21 +920,22 @@ class REGNRecord : public Record
             Entries.clear();
             }
 
-        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
+        void VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
                 return;
-            FormIDs.push_back(&WNAM.value.fid);
+            if(WNAM.IsLoaded())
+                op.Accept(WNAM.value.fid);
             for(unsigned int x = 0; x < Entries.size(); x++)
                 {
                 for(unsigned int y = 0; y < Entries[x]->RDOT.size(); y++)
-                    FormIDs.push_back(&Entries[x]->RDOT[y].objectId);
+                    op.Accept(Entries[x]->RDOT[y].objectId);
                 for(unsigned int y = 0; y < Entries[x]->RDGS.size(); y++)
-                    FormIDs.push_back(&Entries[x]->RDGS[y].grass);
+                    op.Accept(Entries[x]->RDGS[y].grass);
                 for(unsigned int y = 0; y < Entries[x]->RDSD.size(); y++)
-                    FormIDs.push_back(&Entries[x]->RDSD[y].sound);
+                    op.Accept(Entries[x]->RDSD[y].sound);
                 for(unsigned int y = 0; y < Entries[x]->RDWT.size(); y++)
-                    FormIDs.push_back(&Entries[x]->RDWT[y].weather);
+                    op.Accept(Entries[x]->RDWT[y].weather);
                 }
             }
 
@@ -960,19 +961,19 @@ class REGNRecord : public Record
         void GetListX2Array(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, void **FieldValues);
         void * GetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
         void * GetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue);
-        void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue);
-        void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue);
-        void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize);
-        void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, char *FieldValue);
-        void SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, float FieldValue);
-        void SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned int FieldValue);
-        void SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned short FieldValue);
-        void SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned char FieldValue);
+        void SetField(const unsigned int Field, char *FieldValue);
+        void SetField(const unsigned int Field, unsigned char FieldValue);
+        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
+        void SetOtherField(const unsigned int Field, unsigned int FieldValue);
+        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue);
+        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue);
+        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize);
+        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, char *FieldValue);
+        void SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, float FieldValue);
+        void SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned int FieldValue);
+        void SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned short FieldValue);
+        void SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned char *FieldValue, unsigned int nSize);
+        void SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned char FieldValue);
 
         int DeleteField(const unsigned int Field);
         int DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);

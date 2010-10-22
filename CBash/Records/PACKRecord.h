@@ -71,7 +71,7 @@ class PACKRecord : public Record
             #endif
             bool operator ==(const PACKPKDT &other) const
                 {
-                return (flags == other.flags && 
+                return (flags == other.flags &&
                         aiType == other.aiType);
                 }
             bool operator !=(const PACKPKDT &other) const
@@ -109,8 +109,8 @@ class PACKRecord : public Record
             #endif
             bool operator ==(const PACKPLDT &other) const
                 {
-                return (locType == other.locType && 
-                        locId == other.locId && 
+                return (locType == other.locType &&
+                        locId == other.locId &&
                         locRadius == other.locRadius);
                 }
             bool operator !=(const PACKPLDT &other) const
@@ -147,10 +147,10 @@ class PACKRecord : public Record
             #endif
             bool operator ==(const PACKPSDT &other) const
                 {
-                return (month == other.month && 
-                        day == other.day && 
-                        date == other.date && 
-                        time == other.time && 
+                return (month == other.month &&
+                        day == other.day &&
+                        date == other.date &&
+                        time == other.time &&
                         duration == other.duration);
                 }
             bool operator !=(const PACKPSDT &other) const
@@ -188,8 +188,8 @@ class PACKRecord : public Record
             #endif
             bool operator ==(const PACKPTDT &other) const
                 {
-                return (targetType == other.targetType && 
-                        targetId == other.targetId && 
+                return (targetType == other.targetType &&
+                        targetId == other.targetId &&
                         targetCount == other.targetCount);
                 }
             bool operator !=(const PACKPTDT &other) const
@@ -299,16 +299,16 @@ class PACKRecord : public Record
             CTDA.clear();
             }
 
-        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
+        void VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
                 return;
             std::pair<unsigned int, unsigned int> CTDAFunction;
             std::map<unsigned int, std::pair<unsigned int,unsigned int>>::const_iterator curCTDAFunction;
             if(PLDT.IsLoaded() && PLDT->locType != 5)
-                FormIDs.push_back(&PLDT->locId);
+                op.Accept(PLDT->locId);
             if(PTDT.IsLoaded() && PTDT->targetType != 2)
-                FormIDs.push_back(&PTDT->targetId);
+                op.Accept(PTDT->targetId);
             for(unsigned int x = 0; x < CTDA.size(); x++)
                 {
                 curCTDAFunction = Function_Arguments.find(CTDA[x]->value.ifunc);
@@ -316,9 +316,9 @@ class PACKRecord : public Record
                     {
                     CTDAFunction = curCTDAFunction->second;
                     if(CTDAFunction.first == eFID)
-                        FormIDs.push_back(&CTDA[x]->value.param1);
+                        op.Accept(CTDA[x]->value.param1);
                     if(CTDAFunction.second == eFID)
-                        FormIDs.push_back(&CTDA[x]->value.param2);
+                        op.Accept(CTDA[x]->value.param2);
                     }
                 }
             }
@@ -338,16 +338,16 @@ class PACKRecord : public Record
         unsigned int GetListArraySize(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
         void GetListArray(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, void **FieldValues);
         void * GetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue);
-        void SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, int FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char FieldValue);
-        void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue);
-        void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize);
-        void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, float FieldValue);
-        void SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue);
+        void SetField(const unsigned int Field, char *FieldValue);
+        void SetOtherField(const unsigned int Field, unsigned int FieldValue);
+        void SetField(const unsigned int Field, unsigned char FieldValue);
+        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
+        void SetField(const unsigned int Field, int FieldValue);
+        void SetField(const unsigned int Field, char FieldValue);
+        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue);
+        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize);
+        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, float FieldValue);
+        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue);
 
         int DeleteField(const unsigned int Field);
         int DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);

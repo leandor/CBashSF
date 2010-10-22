@@ -53,8 +53,8 @@ class SBSPRecord : public Record
             #endif
             bool operator ==(const SBSPDNAM &other) const
                 {
-                return (AlmostEqual(sizeX,other.sizeX,2) && 
-                        AlmostEqual(sizeY,other.sizeY,2) && 
+                return (AlmostEqual(sizeX,other.sizeX,2) &&
+                        AlmostEqual(sizeY,other.sizeY,2) &&
                         AlmostEqual(sizeZ,other.sizeZ,2));
                 }
             bool operator !=(const SBSPDNAM &other) const
@@ -91,8 +91,8 @@ class SBSPRecord : public Record
 
         int GetOtherFieldType(const unsigned int Field);
         void * GetOtherField(const unsigned int Field);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue);
+        void SetField(const unsigned int Field, char *FieldValue);
+        void SetField(const unsigned int Field, float FieldValue);
 
         int DeleteField(const unsigned int Field);
 

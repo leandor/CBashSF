@@ -146,9 +146,9 @@ class GMSTRecord : public Record
 
         int GetOtherFieldType(const unsigned int Field);
         void * GetOtherField(const unsigned int Field);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, int FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue);
+        void SetField(const unsigned int Field, int FieldValue);
+        void SetField(const unsigned int Field, float FieldValue);
+        void SetField(const unsigned int Field, char *FieldValue);
 
         int DeleteField(const unsigned int Field);
 

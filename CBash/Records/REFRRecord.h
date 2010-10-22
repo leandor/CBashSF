@@ -80,7 +80,7 @@ class REFRRecord : public Record
             #endif
             bool operator ==(const REFRXTEL &other) const
                 {
-                return (destinationFid == other.destinationFid && 
+                return (destinationFid == other.destinationFid &&
                         destination == other.destination);
                 }
             bool operator !=(const REFRXTEL &other) const
@@ -136,8 +136,8 @@ class REFRRecord : public Record
             #endif
             bool operator ==(const REFRXLOC &other) const
                 {
-                return (level == other.level && 
-                        key == other.key && 
+                return (level == other.level &&
+                        key == other.key &&
                         flags == other.flags);
                 }
             bool operator !=(const REFRXLOC &other) const
@@ -351,8 +351,8 @@ class REFRRecord : public Record
             #endif
             bool operator ==(const REFRMAPMARKER &other) const
                 {
-                return (FNAM == other.FNAM && 
-                        FULL == other.FULL && 
+                return (FNAM == other.FNAM &&
+                        FULL == other.FULL &&
                         TNAM == other.TNAM);
                 }
             bool operator !=(const REFRMAPMARKER &other) const
@@ -538,12 +538,12 @@ class REFRRecord : public Record
         void * GetOtherField(const unsigned int Field);
         unsigned int GetFieldArraySize(const unsigned int Field);
         void GetFieldArray(const unsigned int Field, void **FieldValues);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue);
-        void SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, int FieldValue);
+        void SetField(const unsigned int Field, char *FieldValue);
+        void SetOtherField(const unsigned int Field, unsigned int FieldValue);
+        void SetField(const unsigned int Field, float FieldValue);
+        void SetField(const unsigned int Field, unsigned char FieldValue);
+        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
+        void SetField(const unsigned int Field, int FieldValue);
 
         int DeleteField(const unsigned int Field);
 

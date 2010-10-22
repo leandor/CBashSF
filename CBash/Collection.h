@@ -52,7 +52,8 @@ class Collection
     private:
         char *ModsDir;
         std::vector<ModFile *> ModFiles;
-        std::vector<char *> LoadOrder;
+        std::vector<char *> LoadOrder255;
+		std::vector<char *> AllLoadOrder;
         //std::vector<int> LoadRecordTypes;
         bool isLoaded;
     public:
@@ -132,13 +133,13 @@ class Collection
 
         int IsWinning(char *ModName, unsigned int recordFID, bool ignoreScanned);
         int IsWinning(char *ModName, char *recordEDID, bool ignoreScanned);
-        
+
         int GetNumFIDConflicts(unsigned int recordFID, bool ignoreScanned);
         void GetFIDConflicts(unsigned int recordFID, bool ignoreScanned, char **ModNames);
 
         int GetNumGMSTConflicts(char *recordEDID, bool ignoreScanned);
         void GetGMSTConflicts(char *recordEDID, bool ignoreScanned, char **ModNames);
-        
+
         //ADD DEFINITIONS HERE
         unsigned int GetNumGMSTRecords(char *ModName);
         unsigned int GetNumGLOBRecords(char *ModName);
@@ -448,7 +449,10 @@ class Collection
                 if(curModFile == NULL)
                     return;
 
-                curModFile->TES4.SetField(curModFile->FormIDHandler, Field, FieldValue, nSize);
+                curModFile->TES4.SetField(Field, FieldValue, nSize);
+                FormIDMasterUpdater checker(curModFile->FormIDHandler);
+                checker.Accept(curModFile->TES4.formID);
+                curModFile->TES4.VisitFormIDs(checker);
                 return;
                 }
             catch(...)
@@ -467,7 +471,10 @@ class Collection
                 if(curModFile == NULL)
                     return;
 
-                ((Record *)&curModFile->TES4)->SetField(curModFile->FormIDHandler, Field, FieldValue);
+                ((Record *)&curModFile->TES4)->SetField(Field, FieldValue);
+                FormIDMasterUpdater checker(curModFile->FormIDHandler);
+                checker.Accept(curModFile->TES4.formID);
+                curModFile->TES4.VisitFormIDs(checker);
                 return;
                 }
             catch(...)
@@ -487,8 +494,11 @@ class Collection
                 LookupGMSTRecord(ModName, recordEDID, curModFile, curRecord);
                 if(curModFile == NULL || curRecord == NULL)
                     return;
-                ((Record *)curRecord)->SetField(curModFile->FormIDHandler, Field, FieldValue);
+                ((Record *)curRecord)->SetField(Field, FieldValue);
                 curRecord->recData = NULL;
+                FormIDMasterUpdater checker(curModFile->FormIDHandler);
+                checker.Accept(curRecord->formID);
+                curRecord->VisitFormIDs(checker);
                 return;
                 }
             catch(...)
@@ -508,9 +518,13 @@ class Collection
                 LookupRecord(ModName, recordFID, curModFile, curRecord);
                 if(curModFile == NULL || curRecord == NULL)
                     return;
-                curRecord->Read(curModFile->FormIDHandler);
-                curRecord->SetField(curModFile->FormIDHandler, Field, FieldValue, nSize);
+                RecordReader reader(curModFile->FormIDHandler);
+                reader.Accept(*curRecord);
+                curRecord->SetField(Field, FieldValue, nSize);
                 curRecord->recData = NULL;
+                FormIDMasterUpdater checker(curModFile->FormIDHandler);
+                checker.Accept(curRecord->formID);
+                curRecord->VisitFormIDs(checker);
                 return;
                 }
             catch(...)
@@ -530,9 +544,13 @@ class Collection
                 LookupRecord(ModName, recordFID, curModFile, curRecord);
                 if(curModFile == NULL || curRecord == NULL)
                     return;
-                curRecord->Read(curModFile->FormIDHandler);
-                curRecord->SetField(curModFile->FormIDHandler, Field, FieldValue);
+                RecordReader reader(curModFile->FormIDHandler);
+                reader.Accept(*curRecord);
+                curRecord->SetField(Field, FieldValue);
                 curRecord->recData = NULL;
+                FormIDMasterUpdater checker(curModFile->FormIDHandler);
+                checker.Accept(curRecord->formID);
+                curRecord->VisitFormIDs(checker);
                 return;
                 }
             catch(...)
@@ -552,9 +570,13 @@ class Collection
                 LookupRecord(ModName, recordFID, curModFile, curRecord);
                 if(curModFile == NULL || curRecord == NULL)
                     return;
-                curRecord->Read(curModFile->FormIDHandler);
-                curRecord->SetListField(curModFile->FormIDHandler, subField, listIndex, listField, FieldValue, nSize);
+                RecordReader reader(curModFile->FormIDHandler);
+                reader.Accept(*curRecord);
+                curRecord->SetListField(subField, listIndex, listField, FieldValue, nSize);
                 curRecord->recData = NULL;
+                FormIDMasterUpdater checker(curModFile->FormIDHandler);
+                checker.Accept(curRecord->formID);
+                curRecord->VisitFormIDs(checker);
                 return;
                 }
             catch(...)
@@ -574,9 +596,13 @@ class Collection
                 LookupRecord(ModName, recordFID, curModFile, curRecord);
                 if(curModFile == NULL || curRecord == NULL)
                     return;
-                curRecord->Read(curModFile->FormIDHandler);
-                curRecord->SetListField(curModFile->FormIDHandler, subField, listIndex, listField, FieldValue);
+                RecordReader reader(curModFile->FormIDHandler);
+                reader.Accept(*curRecord);
+                curRecord->SetListField(subField, listIndex, listField, FieldValue);
                 curRecord->recData = NULL;
+                FormIDMasterUpdater checker(curModFile->FormIDHandler);
+                checker.Accept(curRecord->formID);
+                curRecord->VisitFormIDs(checker);
                 return;
                 }
             catch(...)
@@ -596,9 +622,13 @@ class Collection
                 LookupRecord(ModName, recordFID, curModFile, curRecord);
                 if(curModFile == NULL || curRecord == NULL)
                     return;
-                curRecord->Read(curModFile->FormIDHandler);
-                curRecord->SetListX2Field(curModFile->FormIDHandler, subField, listIndex, listField, listX2Index, listX2Field, FieldValue, nSize);
+                RecordReader reader(curModFile->FormIDHandler);
+                reader.Accept(*curRecord);
+                curRecord->SetListX2Field(subField, listIndex, listField, listX2Index, listX2Field, FieldValue, nSize);
                 curRecord->recData = NULL;
+                FormIDMasterUpdater checker(curModFile->FormIDHandler);
+                checker.Accept(curRecord->formID);
+                curRecord->VisitFormIDs(checker);
                 return;
                 }
             catch(...)
@@ -618,9 +648,13 @@ class Collection
                 LookupRecord(ModName, recordFID, curModFile, curRecord);
                 if(curModFile == NULL || curRecord == NULL)
                     return;
-                curRecord->Read(curModFile->FormIDHandler);
-                curRecord->SetListX2Field(curModFile->FormIDHandler, subField, listIndex, listField, listX2Index, listX2Field, FieldValue);
+                RecordReader reader(curModFile->FormIDHandler);
+                reader.Accept(*curRecord);
+                curRecord->SetListX2Field(subField, listIndex, listField, listX2Index, listX2Field, FieldValue);
                 curRecord->recData = NULL;
+                FormIDMasterUpdater checker(curModFile->FormIDHandler);
+                checker.Accept(curRecord->formID);
+                curRecord->VisitFormIDs(checker);
                 return;
                 }
             catch(...)
@@ -640,9 +674,13 @@ class Collection
                 LookupRecord(ModName, recordFID, curModFile, curRecord);
                 if(curModFile == NULL || curRecord == NULL)
                     return;
-                curRecord->Read(curModFile->FormIDHandler);
-                curRecord->SetListX3Field(curModFile->FormIDHandler, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValue, nSize);
+                RecordReader reader(curModFile->FormIDHandler);
+                reader.Accept(*curRecord);
+                curRecord->SetListX3Field(subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValue, nSize);
                 curRecord->recData = NULL;
+                FormIDMasterUpdater checker(curModFile->FormIDHandler);
+                checker.Accept(curRecord->formID);
+                curRecord->VisitFormIDs(checker);
                 return;
                 }
             catch(...)
@@ -662,9 +700,13 @@ class Collection
                 LookupRecord(ModName, recordFID, curModFile, curRecord);
                 if(curModFile == NULL || curRecord == NULL)
                     return;
-                curRecord->Read(curModFile->FormIDHandler);
-                curRecord->SetListX3Field(curModFile->FormIDHandler, subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValue);
+                RecordReader reader(curModFile->FormIDHandler);
+                reader.Accept(*curRecord);
+                curRecord->SetListX3Field(subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValue);
                 curRecord->recData = NULL;
+                FormIDMasterUpdater checker(curModFile->FormIDHandler);
+                checker.Accept(curRecord->formID);
+                curRecord->VisitFormIDs(checker);
                 return;
                 }
             catch(...)

@@ -67,9 +67,9 @@ class APPARecord : public Record
             #endif
             bool operator ==(const APPADATA &other) const
                 {
-                return (apparatus == other.apparatus && 
-                        value == other.value && 
-                        AlmostEqual(weight,other.weight,2) && 
+                return (apparatus == other.apparatus &&
+                        value == other.value &&
+                        AlmostEqual(weight,other.weight,2) &&
                         AlmostEqual(quality,other.quality,2));
                 }
             bool operator !=(const APPADATA &other) const
@@ -126,12 +126,12 @@ class APPARecord : public Record
             DATA.Unload();
             }
 
-        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
+        void VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
                 return;
             if(SCRI.IsLoaded())
-                FormIDs.push_back(&SCRI->fid);
+                op.Accept(SCRI->fid);
             }
 
         #ifdef _DEBUG
@@ -142,11 +142,11 @@ class APPARecord : public Record
         void * GetOtherField(const unsigned int Field);
         unsigned int GetFieldArraySize(const unsigned int Field);
         void GetFieldArray(const unsigned int Field, void **FieldValues);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue);
+        void SetField(const unsigned int Field, char *FieldValue);
+        void SetField(const unsigned int Field, float FieldValue);
+        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
+        void SetOtherField(const unsigned int Field, unsigned int FieldValue);
+        void SetField(const unsigned int Field, unsigned char FieldValue);
 
         int DeleteField(const unsigned int Field);
 

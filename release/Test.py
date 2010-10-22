@@ -1,9 +1,249 @@
 from cint import *
 
+def TestTemp():
+    Current = Collection()
+    newMod = Current.addMod("SpeedyShowcase.esp")
+    Current.minimalLoad(LoadMasters=True)
+    for cell in newMod.CELL:
+        if cell.eid == 'aveStorageRotateTest':
+            for achr in cell.ACHR:
+                if achr.scale == 2.0:
+                    print achr.fid
+                else:
+                    achr.rotZ_degrees = achr.rotZ_degrees - 9.7862
+
+            print "Placed Creatures"
+            for acre in cell.ACRE:            
+                if acre.scale == 2.0:
+                    print acre.fid
+                else:
+                    acre.rotZ_degrees = acre.rotZ_degrees - 9.7862
+
+            print "Placed Objects"
+            for refr in cell.REFR:            
+                if refr.scale == 2.0:
+                    print refr.fid
+                else:
+                    if refr.base == 0x0003739A:
+                        print refr.posX
+                        print refr.posY
+                        print refr.posZ
+                        print refr.rotX_degrees
+                        print refr.rotY_degrees
+                        print refr.rotZ_degrees
+                    refr.rotZ_degrees = refr.rotZ_degrees - 9.7862
+                    if refr.base == 0x0003739A:
+                        print
+                        print refr.posX
+                        print refr.posY
+                        print refr.posZ
+                        print refr.rotX_degrees
+                        print refr.rotY_degrees
+                        print refr.rotZ_degrees
+    newMod.safeCloseSave()
+
+def TestAttrReport():
+    Current = Collection()
+    newMod = Current.addMod("Oblivion.esm")
+##    Current.addMod("Oscuro's_Oblivion_Overhaul.esm")
+##    Current.addMod("Oscuro's_Oblivion_Overhaul.esp")
+    Current.minimalLoad(LoadMasters=False)
+    healths = []
+    enchantPointss = []
+    weights = []
+    values = []
+    attacks = []
+    reachs = []
+    speeds = []
+    vwratios = []
+    infvwratios = []
+    wvratios = []
+    infwvratios = []
+    mgef_fid = {}
+    for modFile in Current:
+        for record in modFile.MGEF:
+            mgef_fid[record.eid] = (modFile._ModName,record.fid)
+    try:
+        fMagicDurMagBaseCostMult = Current.LookupRecords('fMagicDurMagBaseCostMult')[0].value or 0.1
+    except:
+        fMagicDurMagBaseCostMult = 0.1
+    try:
+        fMagicCostScale = Current.LookupRecords('fMagicCostScale')[0].value or 1.28
+    except:
+        fMagicCostScale = 1.28
+    try:
+        fMagicAreaBaseCostMult = Current.LookupRecords('fMagicAreaBaseCostMult')[0].value or 0.15
+    except:
+        fMagicAreaBaseCostMult = 0.15
+    try:
+        fMagicRangeTargetCostMult = Current.LookupRecords('fMagicRangeTargetCostMult')[0].value or 1.5
+    except:
+        fMagicRangeTargetCostMult = 1.5
+    from math import floor
+    def getValue(record):
+        enchantment = None
+        if record._Type in ('INGR','ALCH'):
+            if record.IsNoAutoCalc:
+                value = record.value
+            else:
+                value = 0
+                enchantment = record
+        else:
+            value = record.value
+            if hasattr(record,'enchantment'):
+                enchantment = record.enchantment
+                if enchantment:
+                    enchantment = Current.LookupRecords(enchantment)[0]
+        if not enchantment:
+            return floor(value)
+
+        enchCost = 0
+        for effect in enchantment.effects:
+            modName, mgefFid = mgef_fid[effect.name]
+            modFile = Current.LookupModFile(modName)
+            mgef = modFile.LookupRecord(mgefFid)
+            effectFactor = mgef.baseCost * fMagicDurMagBaseCostMult
+            magFactor = pow(effect.magnitude,fMagicCostScale)
+            durFactor = max(effect.duration,1)
+            areaFactor = max(effect.area * fMagicAreaBaseCostMult,1)
+            if effect.IsTarget: rangeFactor = fMagicRangeTargetCostMult
+            else: rangeFactor = 1
+            enchCost += floor(effectFactor * magFactor * durFactor * areaFactor * rangeFactor) or 1
+        if record._Type in ('WEAP','AMMO'):
+            enchCost = 0.4 * (enchCost + (record.enchantPoints or 0))
+        elif record._Type in ('ARMO','CLOT'):
+            if value:
+                enchCost = record.enchantPoints or 0
+                mod = 0
+                for effect in enchantment.effects:
+                    modName, mgefFid = mgef_fid[effect.name]
+                    modFile = Current.LookupModFile(modName)
+                    mgef = modFile.LookupRecord(mgefFid)
+                    if effect.name in ('WAWA','WABR','NEYE'):
+                        mod += floor(mgef.cefBarter * 5)
+                    else:
+                        mod += mgef.cefBarter * effect.magnitude
+                enchCost += mod
+        elif record._Type == 'BOOK':
+            enchCost = enchCost / 2.0
+        value += enchCost
+        return floor(value)
+    for attr in pickupables:
+        for record in getattr(newMod,attr):
+            record = Current.LookupRecords(record.fid)[0]
+            if hasattr(record,'IsPlayable'):
+                if not record.IsPlayable:
+                    continue
+##            if hasattr(record, 'health'):
+##                if record.health is not None:
+##                    healths.append(record.health)
+##            if hasattr(record, 'enchantPoints'):
+##                if record.enchantPoints > 5000:
+##                    print PrintFormID(record.fid)
+##                    print record.eid
+##                else:
+##                    if record.enchantPoints is not None:
+##                        enchantPointss.append(record.enchantPoints)
+##            if hasattr(record, 'weight'):
+##                if record.weight == 1000.0:
+##                    print PrintFormID(record.fid)
+##                    print record.eid
+##                else:
+##                    if record.weight is not None:
+##                        weights.append(record.weight)
+            if hasattr(record, 'value'):
+                if record.value == 10000000:
+                    print PrintFormID(record.fid)
+                    print record.eid
+                else:
+                    if record.value is not None:
+                        values.append(record.value)
+            if hasattr(record, 'value') and hasattr(record, 'weight'):
+                value = getValue(record)
+##                print record.full, ":::", value, ":::", '"Oblivion.esm" "%s"' % PrintFormID(record.fid)
+                if value == 0:
+                    vwratios.append(0.0)
+                elif record.weight is None or record.weight == 0:
+                    infvwratios.append(record.fid)
+                else:
+                    if 'Receipt' in record.eid:
+                        continue
+                    if value > 100000:
+                        continue
+                    vwratio = round(value/record.weight,3)
+                    if vwratio == 216000.0:
+                        print record.full
+                        print record.eid
+                        print value
+                        print record.weight
+                    vwratios.append(vwratio)
+            if hasattr(record, 'weight') and hasattr(record, 'value'):
+                value = getValue(record)
+                if record.weight is None or record.weight == 0:
+                    wvratios.append(0.0)
+                elif value == 0:
+                    infwvratios.append(record.fid)
+                else:
+                    wvratio = round(record.weight/value,3)
+                    wvratios.append(wvratio)
+##            if hasattr(record, 'value'):
+##                if record.value == 10000000:
+##                    print PrintFormID(record.fid)
+##                    print record.eid
+##                else:
+##                    if record.value is not None:
+##                        values.append(record.value)
+##            if hasattr(record, 'damage'):
+##                if record.damage is not None:
+##                    attacks.append(record.damage)
+##            if hasattr(record, 'reach'):
+##                if record.reach is not None:
+##                    reachs.append(record.reach)
+##            if hasattr(record, 'speed'):
+##                if record.speed is not None:
+##                    speeds.append(record.speed)
+
+##    print "Min health:", min(healths)
+##    print "Max health:", max(healths)
+##    print "Avg health:", sum(healths) / len(healths)
+##
+##    print "Min enchantPoints:", min(enchantPointss)
+##    print "Max enchantPoints:", max(enchantPointss)
+##    print "Avg enchantPoints:", sum(enchantPointss) / len(enchantPointss)
+##
+##    print "Min weight:", min(weights)
+##    print "Max weight:", max(weights)
+##    print "Avg weight:", sum(weights) / len(weights)
+##
+    print "Min value:", min(values)
+    print "Max value:", max(values)
+    print "Avg value:", sum(values) / len(values)
+
+##    print "Min attack:", min(attacks)
+##    print "Max attack:", max(attacks)
+##    print "Avg attack:", sum(attacks) / len(attacks)
+##
+##    print "Min reach:", min(reachs)
+##    print "Max reach:", max(reachs)
+##    print "Avg reach:", sum(reachs) / len(reachs)
+##                
+##    print "Min Speed:", min(speeds)
+##    print "Max Speed:", max(speeds)
+##    print "Avg Speed:", sum(speeds) / len(speeds)
+
+    print "Inf Value/Weight:", len(infvwratios)
+    print "Min Value/Weight:", min(vwratios)
+    print "Max Value/Weight:", max(vwratios)
+    print "Avg Value/Weight:", sum(vwratios) / len(vwratios)
+
+    print "Inf Weight/Value:", len(infwvratios)
+    print "Min Weight/Value:", min(wvratios)
+    print "Max Weight/Value:", max(wvratios)
+    print "Avg Weight/Value:", sum(wvratios) / len(wvratios)    
 def TestCopyAttrs():
     Current = Collection()
     srcFile = Current.addMod("Oblivion.esm")
-##    destFile = Current.addMod("Clothing.esp", True)
+    destFile = Current.addMod("Clothing.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
     for armor in srcFile.ARMO:
         clothing = srcFile.createCLOTRecord()
@@ -31,7 +271,7 @@ def TestLoadMasters():
 def TestDeleteRecord():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestDelete.esp", True)
+    newMod = Current.addMod("TestDelete.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
     print "Delete Test"
     for record in Current[0].GMST:
@@ -285,7 +525,7 @@ def TestFullLoad():
 def TestReadWriteAll():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestALL.esp", True)
+    newMod = Current.addMod("TestALL.esp", CreateIfNotExist=True)
     ##Preloading seems to have almost no effect (~2ms on all simple, CopyAsNew) on speed when later reading...
     ##Not preloading would make it faster if not all records being iterated, and save memory...
 
@@ -605,7 +845,7 @@ def TestReadWriteAll():
 def TestTES4():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestTES4.esp", True)
+    newMod = Current.addMod("TestTES4.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
     print "TES4:Read Test"
     for modFile in Current:
@@ -661,7 +901,7 @@ def TestTES4():
 def TestGMST():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestGMST.esp", True)
+    newMod = Current.addMod("TestGMST.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
     print "GMST:Read Test"
     for record in Current[0].GMST:
@@ -698,7 +938,7 @@ def TestGMST():
 def TestGLOB():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestGLOB.esp", True)
+    newMod = Current.addMod("TestGLOB.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
     print "GLOB:Read Test"
     for record in Current[0].GLOB:
@@ -744,7 +984,7 @@ def TestGLOB():
 def TestCLAS():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestCLAS.esp", True)
+    newMod = Current.addMod("TestCLAS.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
     print "CLAS:Read Test"
     for record in Current[0].CLAS:
@@ -860,7 +1100,7 @@ def TestCLAS():
 def TestFACT():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestFACT.esp", True)
+    newMod = Current.addMod("TestFACT.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].FACT:
@@ -955,7 +1195,7 @@ def TestFACT():
 def TestHAIR():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestHAIR.esp", True)
+    newMod = Current.addMod("TestHAIR.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].HAIR:
@@ -1031,7 +1271,7 @@ def TestHAIR():
 def TestEYES():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestEYES.esp", True)
+    newMod = Current.addMod("TestEYES.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].EYES:
@@ -1089,7 +1329,7 @@ def TestEYES():
 def TestRACE():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestRACE.esp", True)
+    newMod = Current.addMod("TestRACE.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
     for record in Current[0].RACE:
         print
@@ -1543,7 +1783,7 @@ def TestRACE():
 def TestSOUN():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestSOUN.esp", True)
+    newMod = Current.addMod("TestSOUN.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].SOUN:
@@ -1619,7 +1859,7 @@ def TestSOUN():
 def TestSKIL():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestSKIL.esp", True)
+    newMod = Current.addMod("TestSKIL.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].SKIL:
@@ -1699,7 +1939,7 @@ def TestSKIL():
 def TestMGEF():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestMGEF.esp", True)
+    newMod = Current.addMod("TestMGEF.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].MGEF:
@@ -1816,7 +2056,7 @@ def TestMGEF():
 def TestSCPT():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestSCPT.esp", True)
+    newMod = Current.addMod("TestSCPT.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
     x = 0
     for record in Current[0].SCPT:
@@ -1947,7 +2187,7 @@ def TestSCPT():
 def TestLTEX():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestLTEX.esp", True)
+    newMod = Current.addMod("TestLTEX.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].LTEX:
@@ -2017,7 +2257,7 @@ def TestLTEX():
 def TestENCH():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestENCH.esp", True)
+    newMod = Current.addMod("TestENCH.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].ENCH:
@@ -2142,7 +2382,7 @@ def TestENCH():
 def TestSPEL():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestSPEL.esp", True)
+    newMod = Current.addMod("TestSPEL.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].SPEL:
@@ -2265,7 +2505,7 @@ def TestSPEL():
 def TestBSGN():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestBSGN.esp", True)
+    newMod = Current.addMod("TestBSGN.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].BSGN:
@@ -2327,7 +2567,7 @@ def TestBSGN():
 def TestACTI():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestACTI.esp", True)
+    newMod = Current.addMod("TestACTI.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].ACTI:
@@ -2397,7 +2637,7 @@ def TestACTI():
 def TestAPPA():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestAPPA.esp", True)
+    newMod = Current.addMod("TestAPPA.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].APPA:
@@ -2480,7 +2720,7 @@ def TestAPPA():
 def TestARMO():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestARMO.esp", True)
+    newMod = Current.addMod("TestARMO.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].ARMO:
@@ -2596,7 +2836,7 @@ def TestARMO():
 def TestBOOK():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestBOOK.esp", True)
+    newMod = Current.addMod("TestBOOK.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].BOOK:
@@ -2690,7 +2930,7 @@ def TestBOOK():
 def TestCLOT():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestCLOT.esp", True)
+    newMod = Current.addMod("TestCLOT.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].CLOT:
@@ -2798,7 +3038,7 @@ def TestCLOT():
 def TestCONT():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestCONT.esp", True)
+    newMod = Current.addMod("TestCONT.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].CONT:
@@ -2899,7 +3139,7 @@ def TestCONT():
 def TestDOOR():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestDOOR.esp", True)
+    newMod = Current.addMod("TestDOOR.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].DOOR:
@@ -2989,7 +3229,7 @@ def TestDOOR():
 def TestINGR():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestINGR.esp", True)
+    newMod = Current.addMod("TestINGR.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].INGR:
@@ -3141,7 +3381,7 @@ def TestINGR():
 def TestLIGH():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestLIGH.esp", True)
+    newMod = Current.addMod("TestLIGH.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].LIGH:
@@ -3259,7 +3499,7 @@ def TestLIGH():
 def TestMISC():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestMISC.esp", True)
+    newMod = Current.addMod("TestMISC.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].MISC:
@@ -3336,7 +3576,7 @@ def TestMISC():
 def TestSTAT():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestSTAT.esp", True)
+    newMod = Current.addMod("TestSTAT.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].STAT:
@@ -3394,7 +3634,7 @@ def TestSTAT():
 def TestGRAS():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestGRAS.esp", True)
+    newMod = Current.addMod("TestGRAS.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].GRAS:
@@ -3491,7 +3731,7 @@ def TestGRAS():
 def TestTREE():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestTREE.esp", True)
+    newMod = Current.addMod("TestTREE.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].TREE:
@@ -3588,7 +3828,7 @@ def TestTREE():
 def TestFLOR():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestFLOR.esp", True)
+    newMod = Current.addMod("TestFLOR.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].FLOR:
@@ -3664,7 +3904,7 @@ def TestFLOR():
 def TestFURN():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestFURN.esp", True)
+    newMod = Current.addMod("TestFURN.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].FURN:
@@ -3736,7 +3976,7 @@ def TestFURN():
 def TestWEAP():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestWEAP.esp", True)
+    newMod = Current.addMod("TestWEAP.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].WEAP:
@@ -3839,7 +4079,7 @@ def TestWEAP():
 def TestAMMO():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestAMMO.esp", True)
+    newMod = Current.addMod("TestAMMO.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].AMMO:
@@ -3932,7 +4172,7 @@ def TestAMMO():
 def TestNPC_():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestNPC_.esp", True)
+    newMod = Current.addMod("TestNPC_.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].NPC_:
@@ -4266,7 +4506,7 @@ def TestNPC_():
 def TestCREA():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestCREA.esp", True)
+    newMod = Current.addMod("TestCREA.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].CREA:
@@ -4591,7 +4831,7 @@ def TestCREA():
 def TestLVLC():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestLVLC.esp", True)
+    newMod = Current.addMod("TestLVLC.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].LVLC:
@@ -4693,7 +4933,7 @@ def TestLVLC():
 def TestSLGM():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestSLGM.esp", True)
+    newMod = Current.addMod("TestSLGM.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].SLGM:
@@ -4781,7 +5021,7 @@ def TestSLGM():
 def TestKEYM():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestKEYM.esp", True)
+    newMod = Current.addMod("TestKEYM.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].KEYM:
@@ -4858,7 +5098,7 @@ def TestKEYM():
 def TestALCH():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestALCH.esp", True)
+    newMod = Current.addMod("TestALCH.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].ALCH:
@@ -5009,7 +5249,7 @@ def TestALCH():
 def TestSBSP():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestSBSP.esp", True)
+    newMod = Current.addMod("TestSBSP.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].SBSP:
@@ -5056,7 +5296,7 @@ def TestSBSP():
 def TestSGST():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestSGST.esp", True)
+    newMod = Current.addMod("TestSGST.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].SGST:
@@ -5225,7 +5465,7 @@ def TestSGST():
 def TestLVLI():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestLVLI.esp", True)
+    newMod = Current.addMod("TestLVLI.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].LVLI:
@@ -5319,7 +5559,7 @@ def TestLVLI():
 def TestWTHR():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestWTHR.esp", True)
+    newMod = Current.addMod("TestWTHR.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].WTHR:
@@ -6017,7 +6257,7 @@ def TestWTHR():
 def TestCLMT():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestCLMT.esp", True)
+    newMod = Current.addMod("TestCLMT.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].CLMT:
@@ -6123,7 +6363,7 @@ def TestCLMT():
 def TestREGN():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestREGN.esp", True)
+    newMod = Current.addMod("TestREGN.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].REGN:
@@ -6515,7 +6755,7 @@ def TestREGN():
 def TestCELL():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestCELL.esp", True)
+    newMod = Current.addMod("TestCELL.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
     x = 0
     for record in Current[0].CELL:
@@ -7152,7 +7392,7 @@ def TestCELL():
 def TestWRLD():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestWRLD.esp", True)
+    newMod = Current.addMod("TestWRLD.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].WRLD:
@@ -7930,7 +8170,7 @@ def TestWRLD():
 def TestDIAL():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestDIAL.esp", True)
+    newMod = Current.addMod("TestDIAL.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].DIAL:
@@ -8413,7 +8653,7 @@ def TestDIAL():
 def TestQUST():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestQUST.esp", True)
+    newMod = Current.addMod("TestQUST.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     x = 0
@@ -9394,7 +9634,7 @@ def TestQUST():
 def TestIDLE():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestIDLE.esp", True)
+    newMod = Current.addMod("TestIDLE.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].IDLE:
@@ -9526,7 +9766,7 @@ def TestIDLE():
 def TestPACK():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestPACK.esp", True)
+    newMod = Current.addMod("TestPACK.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].PACK:
@@ -9694,7 +9934,7 @@ def TestPACK():
 def TestCSTY():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestCSTY.esp", True)
+    newMod = Current.addMod("TestCSTY.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].CSTY:
@@ -9933,7 +10173,7 @@ def TestCSTY():
 def TestLSCR():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestLSCR.esp", True)
+    newMod = Current.addMod("TestLSCR.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].LSCR:
@@ -10025,7 +10265,7 @@ def TestLSCR():
 def TestLVSP():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestLVSP.esp", True)
+    newMod = Current.addMod("TestLVSP.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].LVSP:
@@ -10120,7 +10360,7 @@ def TestLVSP():
 def TestANIO():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestANIO.esp", True)
+    newMod = Current.addMod("TestANIO.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].ANIO:
@@ -10185,7 +10425,7 @@ def TestANIO():
 def TestWATR():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestWATR.esp", True)
+    newMod = Current.addMod("TestWATR.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].WATR:
@@ -10364,7 +10604,7 @@ def TestWATR():
 def TestEFSH():
     Current = Collection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestEFSH.esp", True)
+    newMod = Current.addMod("TestEFSH.esp", CreateIfNotExist=True)
     Current.minimalLoad(LoadMasters=True)
 
     for record in Current[0].EFSH:
@@ -10679,8 +10919,10 @@ from timeit import Timer
 ##del Current
 ##phonenumber = raw_input("!")
 
-##TestCopyAttrs()
-TestCleanMasters()
+##TestTemp()
+##TestAttrReport()
+TestCopyAttrs()
+##TestCleanMasters()
 ##TestFullLoad()
 ##TestMinimalLoad()
 ##TestLoadMasters()

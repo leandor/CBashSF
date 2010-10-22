@@ -60,8 +60,8 @@ class TES4Record : public Record
             #endif
             bool operator ==(const TES4HEDR &other) const
                 {
-                return (AlmostEqual(version,other.version,2) && 
-                        numRecords == other.numRecords && 
+                return (AlmostEqual(version,other.version,2) &&
+                        numRecords == other.numRecords &&
                         nextObject == other.nextObject);
                 }
             bool operator !=(const TES4HEDR &other) const
@@ -102,11 +102,11 @@ class TES4Record : public Record
 
         int GetOtherFieldType(const unsigned int Field);
         void * GetOtherField(const unsigned int Field);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char **FieldValue, unsigned int nSize);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue);
-        void SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue);
+        void SetField(const unsigned int Field, char **FieldValue, unsigned int nSize);
+        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
+        void SetField(const unsigned int Field, float FieldValue);
+        void SetOtherField(const unsigned int Field, unsigned int FieldValue);
+        void SetField(const unsigned int Field, char *FieldValue);
         unsigned int GetFieldArraySize(const unsigned int Field);
         void GetFieldArray(const unsigned int Field, void **FieldValues);
 

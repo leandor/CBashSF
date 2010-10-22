@@ -87,12 +87,12 @@ class SOUNRecord : public Record
             #endif
             bool operator ==(const SOUNSNDX &other) const
                 {
-                return (minDistance == other.minDistance && 
-                        maxDistance == other.maxDistance && 
-                        freqAdjustment == other.freqAdjustment && 
-                        flags == other.flags && 
-                        staticAtten == other.staticAtten && 
-                        stopTime == other.stopTime && 
+                return (minDistance == other.minDistance &&
+                        maxDistance == other.maxDistance &&
+                        freqAdjustment == other.freqAdjustment &&
+                        flags == other.flags &&
+                        staticAtten == other.staticAtten &&
+                        stopTime == other.stopTime &&
                         startTime == other.startTime);
                 }
             bool operator !=(const SOUNSNDX &other) const
@@ -145,12 +145,12 @@ class SOUNRecord : public Record
         void * GetOtherField(const unsigned int Field);
         unsigned int GetFieldArraySize(const unsigned int Field);
         void GetFieldArray(const unsigned int Field, void **FieldValues);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned short FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, short FieldValue);
+        void SetField(const unsigned int Field, char *FieldValue);
+        void SetField(const unsigned int Field, unsigned char FieldValue);
+        void SetField(const unsigned int Field, char FieldValue);
+        void SetField(const unsigned int Field, unsigned short FieldValue);
+        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
+        void SetField(const unsigned int Field, short FieldValue);
 
         int DeleteField(const unsigned int Field);
 

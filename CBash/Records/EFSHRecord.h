@@ -210,61 +210,61 @@ class EFSHRecord : public Record
             #endif
             bool operator ==(const EFSHDATA &other) const
                 {
-                return (flags == other.flags && 
-                        memSBlend == other.memSBlend && 
-                        memBlendOp == other.memBlendOp && 
-                        memZFunc == other.memZFunc && 
-                        fill == other.fill && 
-                        AlmostEqual(fillAIn,other.fillAIn,2) && 
-                        AlmostEqual(fillAFull,other.fillAFull,2) && 
-                        AlmostEqual(fillAOut,other.fillAOut,2) && 
-                        AlmostEqual(fillAPRatio,other.fillAPRatio,2) && 
-                        AlmostEqual(fillAAmp,other.fillAAmp,2) && 
-                        AlmostEqual(fillAFreq,other.fillAFreq,2) && 
-                        AlmostEqual(fillAnimSpdU,other.fillAnimSpdU,2) && 
-                        AlmostEqual(fillAnimSpdV,other.fillAnimSpdV,2) && 
-                        AlmostEqual(edgeOff,other.edgeOff,2) && 
-                        edge == other.edge && 
-                        AlmostEqual(edgeAIn,other.edgeAIn,2) && 
-                        AlmostEqual(edgeAFull,other.edgeAFull,2) && 
-                        AlmostEqual(edgeAOut,other.edgeAOut,2) && 
-                        AlmostEqual(edgeAPRatio,other.edgeAPRatio,2) && 
-                        AlmostEqual(edgeAAmp,other.edgeAAmp,2) && 
-                        AlmostEqual(edgeAFreq,other.edgeAFreq,2) && 
-                        AlmostEqual(fillAFRatio,other.fillAFRatio,2) && 
-                        AlmostEqual(edgeAFRatio,other.edgeAFRatio,2) && 
-                        memDBlend == other.memDBlend && 
-                        partSBlend == other.partSBlend && 
-                        partBlendOp == other.partBlendOp && 
-                        partZFunc == other.partZFunc && 
-                        partDBlend == other.partDBlend && 
-                        AlmostEqual(partBUp,other.partBUp,2) && 
-                        AlmostEqual(partBFull,other.partBFull,2) && 
-                        AlmostEqual(partBDown,other.partBDown,2) && 
-                        AlmostEqual(partBFRatio,other.partBFRatio,2) && 
-                        AlmostEqual(partBPRatio,other.partBPRatio,2) && 
-                        AlmostEqual(partLTime,other.partLTime,2) && 
-                        AlmostEqual(partLDelta,other.partLDelta,2) && 
-                        AlmostEqual(partNSpd,other.partNSpd,2) && 
-                        AlmostEqual(partNAcc,other.partNAcc,2) && 
-                        AlmostEqual(partVel1,other.partVel1,2) && 
-                        AlmostEqual(partVel2,other.partVel2,2) && 
-                        AlmostEqual(partVel3,other.partVel3,2) && 
-                        AlmostEqual(partAcc1,other.partAcc1,2) && 
-                        AlmostEqual(partAcc2,other.partAcc2,2) && 
-                        AlmostEqual(partAcc3,other.partAcc3,2) && 
-                        AlmostEqual(partKey1,other.partKey1,2) && 
-                        AlmostEqual(partKey2,other.partKey2,2) && 
-                        AlmostEqual(partKey1Time,other.partKey1Time,2) && 
-                        AlmostEqual(partKey2Time,other.partKey2Time,2) && 
-                        key1 == other.key1 && 
-                        key2 == other.key2 && 
-                        key3 == other.key3 && 
-                        AlmostEqual(key1A,other.key1A,2) && 
-                        AlmostEqual(key2A,other.key2A,2) && 
-                        AlmostEqual(key3A,other.key3A,2) && 
-                        AlmostEqual(key1Time,other.key1Time,2) && 
-                        AlmostEqual(key2Time,other.key2Time,2) && 
+                return (flags == other.flags &&
+                        memSBlend == other.memSBlend &&
+                        memBlendOp == other.memBlendOp &&
+                        memZFunc == other.memZFunc &&
+                        fill == other.fill &&
+                        AlmostEqual(fillAIn,other.fillAIn,2) &&
+                        AlmostEqual(fillAFull,other.fillAFull,2) &&
+                        AlmostEqual(fillAOut,other.fillAOut,2) &&
+                        AlmostEqual(fillAPRatio,other.fillAPRatio,2) &&
+                        AlmostEqual(fillAAmp,other.fillAAmp,2) &&
+                        AlmostEqual(fillAFreq,other.fillAFreq,2) &&
+                        AlmostEqual(fillAnimSpdU,other.fillAnimSpdU,2) &&
+                        AlmostEqual(fillAnimSpdV,other.fillAnimSpdV,2) &&
+                        AlmostEqual(edgeOff,other.edgeOff,2) &&
+                        edge == other.edge &&
+                        AlmostEqual(edgeAIn,other.edgeAIn,2) &&
+                        AlmostEqual(edgeAFull,other.edgeAFull,2) &&
+                        AlmostEqual(edgeAOut,other.edgeAOut,2) &&
+                        AlmostEqual(edgeAPRatio,other.edgeAPRatio,2) &&
+                        AlmostEqual(edgeAAmp,other.edgeAAmp,2) &&
+                        AlmostEqual(edgeAFreq,other.edgeAFreq,2) &&
+                        AlmostEqual(fillAFRatio,other.fillAFRatio,2) &&
+                        AlmostEqual(edgeAFRatio,other.edgeAFRatio,2) &&
+                        memDBlend == other.memDBlend &&
+                        partSBlend == other.partSBlend &&
+                        partBlendOp == other.partBlendOp &&
+                        partZFunc == other.partZFunc &&
+                        partDBlend == other.partDBlend &&
+                        AlmostEqual(partBUp,other.partBUp,2) &&
+                        AlmostEqual(partBFull,other.partBFull,2) &&
+                        AlmostEqual(partBDown,other.partBDown,2) &&
+                        AlmostEqual(partBFRatio,other.partBFRatio,2) &&
+                        AlmostEqual(partBPRatio,other.partBPRatio,2) &&
+                        AlmostEqual(partLTime,other.partLTime,2) &&
+                        AlmostEqual(partLDelta,other.partLDelta,2) &&
+                        AlmostEqual(partNSpd,other.partNSpd,2) &&
+                        AlmostEqual(partNAcc,other.partNAcc,2) &&
+                        AlmostEqual(partVel1,other.partVel1,2) &&
+                        AlmostEqual(partVel2,other.partVel2,2) &&
+                        AlmostEqual(partVel3,other.partVel3,2) &&
+                        AlmostEqual(partAcc1,other.partAcc1,2) &&
+                        AlmostEqual(partAcc2,other.partAcc2,2) &&
+                        AlmostEqual(partAcc3,other.partAcc3,2) &&
+                        AlmostEqual(partKey1,other.partKey1,2) &&
+                        AlmostEqual(partKey2,other.partKey2,2) &&
+                        AlmostEqual(partKey1Time,other.partKey1Time,2) &&
+                        AlmostEqual(partKey2Time,other.partKey2Time,2) &&
+                        key1 == other.key1 &&
+                        key2 == other.key2 &&
+                        key3 == other.key3 &&
+                        AlmostEqual(key1A,other.key1A,2) &&
+                        AlmostEqual(key2A,other.key2A,2) &&
+                        AlmostEqual(key3A,other.key3A,2) &&
+                        AlmostEqual(key1Time,other.key1Time,2) &&
+                        AlmostEqual(key2Time,other.key2Time,2) &&
                         AlmostEqual(key3Time,other.key3Time,2));
                 }
             bool operator !=(const EFSHDATA &other) const
@@ -316,11 +316,11 @@ class EFSHRecord : public Record
         void * GetOtherField(const unsigned int Field);
         unsigned int GetFieldArraySize(const unsigned int Field);
         void GetFieldArray(const unsigned int Field, void **FieldValues);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue);
-        void SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue);
+        void SetField(const unsigned int Field, char *FieldValue);
+        void SetField(const unsigned int Field, unsigned char FieldValue);
+        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
+        void SetOtherField(const unsigned int Field, unsigned int FieldValue);
+        void SetField(const unsigned int Field, float FieldValue);
 
         int DeleteField(const unsigned int Field);
 

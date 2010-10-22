@@ -161,7 +161,7 @@ void DIALRecord::Debug(int debugLevel)
             }
         indentation -= 2;
         }
-        
+
     FULL.Debug("FULL", debugLevel, indentation);
 
     DATA.Debug("DATA", debugLevel, indentation);
