@@ -375,7 +375,7 @@ void EFSHRecord::GetFieldArray(const unsigned int Field, void **FieldValues)
         }
     }
 
-void EFSHRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void EFSHRecord::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {
@@ -394,7 +394,7 @@ void EFSHRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void EFSHRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue)
+void EFSHRecord::SetField(const unsigned int Field, unsigned char FieldValue)
     {
     switch(Field)
         {
@@ -467,7 +467,7 @@ void EFSHRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void EFSHRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
+void EFSHRecord::SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(Field)
         {
@@ -509,7 +509,7 @@ void EFSHRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void EFSHRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue)
+void EFSHRecord::SetOtherField(const unsigned int Field, unsigned int FieldValue)
     {
     switch(Field)
         {
@@ -528,7 +528,7 @@ void EFSHRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
     return;
     }
 
-void EFSHRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue)
+void EFSHRecord::SetField(const unsigned int Field, float FieldValue)
     {
     switch(Field)
         {

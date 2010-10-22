@@ -736,7 +736,7 @@ void * RACERecord::GetListField(const unsigned int subField, const unsigned int 
         }
     }
 
-void RACERecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void RACERecord::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {
@@ -865,7 +865,7 @@ void RACERecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void RACERecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue[], unsigned int nSize)
+void RACERecord::SetField(const unsigned int Field, unsigned int FieldValue[], unsigned int nSize)
     {
     switch(Field)
         {
@@ -877,7 +877,6 @@ void RACERecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
                 for(unsigned int x = 0; x < nSize; x++)
                     {
                     SPLO[x] = new unsigned int(FieldValue[x]);
-                    FormIDHandler.AddMaster(SPLO[x]);
                     }
                 }
             break;
@@ -889,7 +888,6 @@ void RACERecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
                 for(unsigned int x = 0; x < nSize; x++)
                     {
                     HNAM[x] = FieldValue[x];
-                    FormIDHandler.AddMaster(HNAM[x]);
                     }
                 }
             break;
@@ -901,7 +899,6 @@ void RACERecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
                 for(unsigned int x = 0; x < nSize; x++)
                     {
                     ENAM[x] = FieldValue[x];
-                    FormIDHandler.AddMaster(ENAM[x]);
                     }
                 }
             break;
@@ -911,7 +908,7 @@ void RACERecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void RACERecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, int FieldValue)
+void RACERecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, int FieldValue)
     {
     switch(subField)
         {
@@ -933,7 +930,7 @@ void RACERecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void RACERecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue)
+void RACERecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue)
     {
     switch(subField)
         {
@@ -944,7 +941,6 @@ void RACERecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
                 {
                 case 1: //faction
                     XNAM[listIndex]->value.faction = FieldValue;
-                    FormIDHandler.AddMaster(XNAM[listIndex]->value.faction);
                     break;
                 default:
                     return;
@@ -956,7 +952,7 @@ void RACERecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void RACERecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char FieldValue)
+void RACERecord::SetField(const unsigned int Field, char FieldValue)
     {
     switch(Field)
         {
@@ -1008,7 +1004,7 @@ void RACERecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void RACERecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
+void RACERecord::SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(Field)
         {
@@ -1100,7 +1096,7 @@ void RACERecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void RACERecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue)
+void RACERecord::SetField(const unsigned int Field, float FieldValue)
     {
     switch(Field)
         {
@@ -1185,7 +1181,7 @@ void RACERecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void RACERecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue)
+void RACERecord::SetOtherField(const unsigned int Field, unsigned int FieldValue)
     {
     switch(Field)
         {
@@ -1198,7 +1194,6 @@ void RACERecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
             else
                 VNAM.value.maleVoice = FieldValue;
             VNAM.isLoaded = true;
-            FormIDHandler.AddMaster(VNAM.value.maleVoice);
             break;
         case 31: //femaleVoice
             if(FieldValue == formID)
@@ -1206,17 +1201,14 @@ void RACERecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
             else
                 VNAM.value.femaleVoice = FieldValue;
             VNAM.isLoaded = true;
-            FormIDHandler.AddMaster(VNAM.value.femaleVoice);
             break;
         case 32: //defaultHairMale
             DNAM.value.defaultHairMale = FieldValue;
             DNAM.isLoaded = true;
-            FormIDHandler.AddMaster(DNAM.value.defaultHairMale);
             break;
         case 33: //defaultHairFemale
             DNAM.value.defaultHairFemale = FieldValue;
             DNAM.isLoaded = true;
-            FormIDHandler.AddMaster(DNAM.value.defaultHairFemale);
             break;
         default:
             return;
@@ -1224,7 +1216,7 @@ void RACERecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
     return;
     }
 
-void RACERecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue)
+void RACERecord::SetField(const unsigned int Field, unsigned char FieldValue)
     {
     switch(Field)
         {

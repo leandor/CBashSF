@@ -404,7 +404,7 @@ void * INFORecord::GetListField(const unsigned int subField, const unsigned int 
         }
     }
 
-void INFORecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void INFORecord::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {
@@ -417,7 +417,7 @@ void INFORecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void INFORecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned short FieldValue)
+void INFORecord::SetField(const unsigned int Field, unsigned short FieldValue)
     {
     switch(Field)
         {
@@ -430,7 +430,7 @@ void INFORecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void INFORecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue)
+void INFORecord::SetField(const unsigned int Field, unsigned char FieldValue)
     {
     switch(Field)
         {
@@ -443,7 +443,7 @@ void INFORecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void INFORecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
+void INFORecord::SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(Field)
         {
@@ -464,23 +464,20 @@ void INFORecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void INFORecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue)
+void INFORecord::SetOtherField(const unsigned int Field, unsigned int FieldValue)
     {
     switch(Field)
         {
         case 8: //quest
             QSTI.value.fid = FieldValue;
-            FormIDHandler.AddMaster(QSTI.value.fid);
             break;
         case 9: //topic
             TPIC.Load();
             TPIC->fid = FieldValue;
-            FormIDHandler.AddMaster(TPIC->fid);
             break;
         case 10: //prevInfo
             PNAM.Load();
             PNAM->fid = FieldValue;
-            FormIDHandler.AddMaster(PNAM->fid);
             break;
         case 17: //numRefs
             SCHR.value.numRefs = FieldValue;
@@ -500,7 +497,7 @@ void INFORecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
     return;
     }
 
-void INFORecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue[], unsigned int nSize)
+void INFORecord::SetField(const unsigned int Field, unsigned int FieldValue[], unsigned int nSize)
     {
     switch(Field)
         {
@@ -512,7 +509,6 @@ void INFORecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
                 for(unsigned int x = 0; x < nSize; x++)
                     {
                     NAME[x] = new unsigned int(FieldValue[x]);
-                    FormIDHandler.AddMaster(NAME[x]);
                     }
                 }
             break;
@@ -524,7 +520,6 @@ void INFORecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
                 for(unsigned int x = 0; x < nSize; x++)
                     {
                     TCLT[x] = new unsigned int(FieldValue[x]);
-                    FormIDHandler.AddMaster(TCLT[x]);
                     }
                 }
             break;
@@ -536,7 +531,6 @@ void INFORecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
                 for(unsigned int x = 0; x < nSize; x++)
                     {
                     TCLF[x] = new unsigned int(FieldValue[x]);
-                    FormIDHandler.AddMaster(TCLF[x]);
                     }
                 }
             break;
@@ -546,10 +540,8 @@ void INFORecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void INFORecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue)
+void INFORecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue)
     {
-    std::pair<unsigned int, unsigned int> newCTDAFunction;
-    std::map<unsigned int, std::pair<unsigned int,unsigned int>>::const_iterator curCTDAFunction;
     switch(subField)
         {
         case 12: //responses
@@ -570,44 +562,13 @@ void INFORecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
             switch(listField)
                 {
                 case 4: //ifunc
-                    curCTDAFunction = Function_Arguments.find(FieldValue);
-                    if(curCTDAFunction != Function_Arguments.end())
-                        newCTDAFunction = curCTDAFunction->second;
-                    else
-                        {
-                        newCTDAFunction.first = eNULL;
-                        newCTDAFunction.second = eNULL;
-                        }
-
                     CTDA[listIndex]->value.ifunc = FieldValue;
-
-                    if(newCTDAFunction.first == eFID)
-                        FormIDHandler.AddMaster(CTDA[listIndex]->value.param1);
-
-                    if(newCTDAFunction.second == eFID)
-                        FormIDHandler.AddMaster(CTDA[listIndex]->value.param2);
                     break;
                 case 5: //param1
                     CTDA[listIndex]->value.param1 = FieldValue;
-
-                    curCTDAFunction = Function_Arguments.find(CTDA[listIndex]->value.ifunc);
-                    if(curCTDAFunction != Function_Arguments.end())
-                        {
-                        newCTDAFunction = curCTDAFunction->second;
-                        if(newCTDAFunction.first == eFID)
-                            FormIDHandler.AddMaster(CTDA[listIndex]->value.param1);
-                        }
                     break;
                 case 6: //param2
                     CTDA[listIndex]->value.param2 = FieldValue;
-
-                    curCTDAFunction = Function_Arguments.find(CTDA[listIndex]->value.ifunc);
-                    if(curCTDAFunction != Function_Arguments.end())
-                        {
-                        newCTDAFunction = curCTDAFunction->second;
-                        if(newCTDAFunction.second == eFID)
-                            FormIDHandler.AddMaster(CTDA[listIndex]->value.param2);
-                        }
                     break;
                 default:
                     return;
@@ -620,8 +581,6 @@ void INFORecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
                 {
                 case 1: //reference
                     SCR_[listIndex]->value.reference = FieldValue;
-                    if(SCR_[listIndex]->value.isSCRO)
-                        FormIDHandler.AddMaster(SCR_[listIndex]->value.reference);
                     break;
                 case 2: //isSCRO
                     if(FieldValue)
@@ -629,7 +588,6 @@ void INFORecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
                         if(!SCR_[listIndex]->value.isSCRO)
                             {
                             SCR_[listIndex]->value.isSCRO = true;
-                            FormIDHandler.AddMaster(SCR_[listIndex]->value.reference);
                             }
                         }
                     else if(SCR_[listIndex]->value.isSCRO)
@@ -647,7 +605,7 @@ void INFORecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void INFORecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, int FieldValue)
+void INFORecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, int FieldValue)
     {
     switch(subField)
         {
@@ -669,7 +627,7 @@ void INFORecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void INFORecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize)
+void INFORecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(subField)
         {
@@ -727,7 +685,7 @@ void INFORecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void INFORecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue)
+void INFORecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue)
     {
     switch(subField)
         {
@@ -761,7 +719,7 @@ void INFORecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void INFORecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, char *FieldValue)
+void INFORecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, char *FieldValue)
     {
     switch(subField)
         {
@@ -786,7 +744,7 @@ void INFORecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void INFORecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, float FieldValue)
+void INFORecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, float FieldValue)
     {
     switch(subField)
         {

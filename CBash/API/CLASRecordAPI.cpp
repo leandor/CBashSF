@@ -132,7 +132,7 @@ void CLASRecord::GetFieldArray(const unsigned int Field, void **FieldValues)
         }
     }
 
-void CLASRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void CLASRecord::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {
@@ -154,7 +154,7 @@ void CLASRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void CLASRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, int FieldValue)
+void CLASRecord::SetField(const unsigned int Field, int FieldValue)
     {
     switch(Field)
         {
@@ -191,7 +191,7 @@ void CLASRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void CLASRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue)
+void CLASRecord::SetOtherField(const unsigned int Field, unsigned int FieldValue)
     {
     switch(Field)
         {
@@ -210,7 +210,7 @@ void CLASRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
     return;
     }
 
-void CLASRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char FieldValue)
+void CLASRecord::SetField(const unsigned int Field, char FieldValue)
     {
     switch(Field)
         {
@@ -223,7 +223,7 @@ void CLASRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void CLASRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue)
+void CLASRecord::SetField(const unsigned int Field, unsigned char FieldValue)
     {
     switch(Field)
         {
@@ -236,7 +236,7 @@ void CLASRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void CLASRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
+void CLASRecord::SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(Field)
         {

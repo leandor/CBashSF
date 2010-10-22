@@ -242,7 +242,7 @@ void * IDLERecord::GetListField(const unsigned int subField, const unsigned int 
         }
     }
 
-void IDLERecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void IDLERecord::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {
@@ -259,7 +259,7 @@ void IDLERecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void IDLERecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue)
+void IDLERecord::SetField(const unsigned int Field, float FieldValue)
     {
     switch(Field)
         {
@@ -274,7 +274,7 @@ void IDLERecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void IDLERecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
+void IDLERecord::SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(Field)
         {
@@ -289,7 +289,7 @@ void IDLERecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void IDLERecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue)
+void IDLERecord::SetField(const unsigned int Field, unsigned char FieldValue)
     {
     switch(Field)
         {
@@ -302,17 +302,15 @@ void IDLERecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void IDLERecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue)
+void IDLERecord::SetOtherField(const unsigned int Field, unsigned int FieldValue)
     {
     switch(Field)
         {
         case 11: //parent
             DATA.value.parent = FieldValue;
-            FormIDHandler.AddMaster(DATA.value.parent);
             break;
         case 12: //prevId
             DATA.value.prevId = FieldValue;
-            FormIDHandler.AddMaster(DATA.value.prevId);
             break;
         default:
             return;
@@ -320,7 +318,7 @@ void IDLERecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
     return;
     }
 
-void IDLERecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue)
+void IDLERecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue)
     {
     switch(subField)
         {
@@ -342,7 +340,7 @@ void IDLERecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void IDLERecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize)
+void IDLERecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(subField)
         {
@@ -376,7 +374,7 @@ void IDLERecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void IDLERecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, float FieldValue)
+void IDLERecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, float FieldValue)
     {
     switch(subField)
         {
@@ -398,10 +396,8 @@ void IDLERecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void IDLERecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue)
+void IDLERecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue)
     {
-    std::pair<unsigned int, unsigned int> newCTDAFunction;
-    std::map<unsigned int, std::pair<unsigned int,unsigned int>>::const_iterator curCTDAFunction;
     switch(subField)
         {
         case 9: //conditions
@@ -410,44 +406,13 @@ void IDLERecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
             switch(listField)
                 {
                 case 4: //ifunc
-                    curCTDAFunction = Function_Arguments.find(FieldValue);
-                    if(curCTDAFunction != Function_Arguments.end())
-                        newCTDAFunction = curCTDAFunction->second;
-                    else
-                        {
-                        newCTDAFunction.first = eNULL;
-                        newCTDAFunction.second = eNULL;
-                        }
-
                     CTDA[listIndex]->value.ifunc = FieldValue;
-
-                    if(newCTDAFunction.first == eFID)
-                        FormIDHandler.AddMaster(CTDA[listIndex]->value.param1);
-
-                    if(newCTDAFunction.second == eFID)
-                        FormIDHandler.AddMaster(CTDA[listIndex]->value.param2);
                     break;
                 case 5: //param1
                     CTDA[listIndex]->value.param1 = FieldValue;
-
-                    curCTDAFunction = Function_Arguments.find(CTDA[listIndex]->value.ifunc);
-                    if(curCTDAFunction != Function_Arguments.end())
-                        {
-                        newCTDAFunction = curCTDAFunction->second;
-                        if(newCTDAFunction.first == eFID)
-                            FormIDHandler.AddMaster(CTDA[listIndex]->value.param1);
-                        }
                     break;
                 case 6: //param2
                     CTDA[listIndex]->value.param2 = FieldValue;
-
-                    curCTDAFunction = Function_Arguments.find(CTDA[listIndex]->value.ifunc);
-                    if(curCTDAFunction != Function_Arguments.end())
-                        {
-                        newCTDAFunction = curCTDAFunction->second;
-                        if(newCTDAFunction.second == eFID)
-                            FormIDHandler.AddMaster(CTDA[listIndex]->value.param2);
-                        }
                     break;
                 default:
                     return;

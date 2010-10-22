@@ -269,7 +269,7 @@ void * SCPTRecord::GetListField(const unsigned int subField, const unsigned int 
         }
     }
 
-void SCPTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void SCPTRecord::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {
@@ -285,7 +285,7 @@ void SCPTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void SCPTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
+void SCPTRecord::SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(Field)
         {
@@ -306,7 +306,7 @@ void SCPTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void SCPTRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue)
+void SCPTRecord::SetOtherField(const unsigned int Field, unsigned int FieldValue)
     {
     switch(Field)
         {
@@ -328,7 +328,7 @@ void SCPTRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
     return;
     }
 
-void SCPTRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue)
+void SCPTRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue)
     {
     switch(subField)
         {
@@ -351,8 +351,6 @@ void SCPTRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
                 {
                 case 1: //reference
                     SCR_[listIndex]->value.reference = FieldValue;
-                    if(SCR_[listIndex]->value.isSCRO)
-                        FormIDHandler.AddMaster(SCR_[listIndex]->value.reference);
                     break;
                 case 2: //isSCRO
                     if(FieldValue)
@@ -360,7 +358,6 @@ void SCPTRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
                         if(!SCR_[listIndex]->value.isSCRO)
                             {
                             SCR_[listIndex]->value.isSCRO = true;
-                            FormIDHandler.AddMaster(SCR_[listIndex]->value.reference);
                             }
                         }
                     else if(SCR_[listIndex]->value.isSCRO)
@@ -376,7 +373,7 @@ void SCPTRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void SCPTRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize)
+void SCPTRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(subField)
         {
@@ -422,7 +419,7 @@ void SCPTRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void SCPTRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue)
+void SCPTRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue)
     {
     switch(subField)
         {
@@ -444,7 +441,7 @@ void SCPTRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void SCPTRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, char *FieldValue)
+void SCPTRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, char *FieldValue)
     {
     switch(subField)
         {

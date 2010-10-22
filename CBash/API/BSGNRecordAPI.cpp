@@ -81,7 +81,7 @@ void BSGNRecord::GetFieldArray(const unsigned int Field, void **FieldValues)
         }
     }
 
-void BSGNRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void BSGNRecord::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {
@@ -103,7 +103,7 @@ void BSGNRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void BSGNRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue[], unsigned int nSize)
+void BSGNRecord::SetField(const unsigned int Field, unsigned int FieldValue[], unsigned int nSize)
     {
     switch(Field)
         {
@@ -115,7 +115,6 @@ void BSGNRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
                 for(unsigned int x = 0; x < nSize; x++)
                     {
                     SPLO[x] = new unsigned int(FieldValue[x]);
-                    FormIDHandler.AddMaster(SPLO[x]);
                     }
                 }
             break;

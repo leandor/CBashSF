@@ -345,7 +345,7 @@ void * PGRDRecord::GetListField(const unsigned int subField, const unsigned int 
         }
     }
 
-void PGRDRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned short FieldValue)
+void PGRDRecord::SetField(const unsigned int Field, unsigned short FieldValue)
     {
     switch(Field)
         {
@@ -358,7 +358,7 @@ void PGRDRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void PGRDRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
+void PGRDRecord::SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(Field)
         {
@@ -374,7 +374,7 @@ void PGRDRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void PGRDRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, float FieldValue)
+void PGRDRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, float FieldValue)
     {
     switch(subField)
         {
@@ -417,7 +417,7 @@ void PGRDRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void PGRDRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue)
+void PGRDRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue)
     {
     switch(subField)
         {
@@ -439,7 +439,7 @@ void PGRDRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void PGRDRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize)
+void PGRDRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(subField)
         {
@@ -480,7 +480,7 @@ void PGRDRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void PGRDRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned short FieldValue)
+void PGRDRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned short FieldValue)
     {
     switch(subField)
         {
@@ -502,7 +502,7 @@ void PGRDRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void PGRDRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue)
+void PGRDRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue)
     {
     switch(subField)
         {
@@ -515,7 +515,6 @@ void PGRDRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
                     if(PGRL[listIndex]->points.size() == 0)
                         PGRL[listIndex]->points.resize(1);
                     PGRL[listIndex]->points[0] = FieldValue;
-                    FormIDHandler.AddMaster(PGRL[listIndex]->points[0]);
                     break;
                 default:
                     return;
@@ -527,7 +526,7 @@ void PGRDRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void PGRDRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue[], unsigned int nSize)
+void PGRDRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue[], unsigned int nSize)
     {
     unsigned int reference = 0;
     switch(subField)

@@ -115,7 +115,7 @@ void FLORRecord::GetFieldArray(const unsigned int Field, void **FieldValues)
         }
     }
 
-void FLORRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void FLORRecord::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {
@@ -135,7 +135,7 @@ void FLORRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void FLORRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue)
+void FLORRecord::SetField(const unsigned int Field, float FieldValue)
     {
     switch(Field)
         {
@@ -150,7 +150,7 @@ void FLORRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void FLORRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
+void FLORRecord::SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(Field)
         {
@@ -165,18 +165,16 @@ void FLORRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void FLORRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue)
+void FLORRecord::SetOtherField(const unsigned int Field, unsigned int FieldValue)
     {
     switch(Field)
         {
         case 10: //script
             SCRI.Load();
             SCRI->fid = FieldValue;
-            FormIDHandler.AddMaster(SCRI->fid);
             break;
         case 11: //ingredient
             PFIG.value.fid = FieldValue;
-            FormIDHandler.AddMaster(PFIG.value.fid);
             PFIG.isLoaded = true;
             break;
         default:
@@ -185,7 +183,7 @@ void FLORRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
     return;
     }
 
-void FLORRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue)
+void FLORRecord::SetField(const unsigned int Field, unsigned char FieldValue)
     {
     switch(Field)
         {

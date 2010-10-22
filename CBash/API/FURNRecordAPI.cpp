@@ -99,7 +99,7 @@ void FURNRecord::GetFieldArray(const unsigned int Field, void **FieldValues)
         }
     }
 
-void FURNRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void FURNRecord::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {
@@ -119,7 +119,7 @@ void FURNRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void FURNRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue)
+void FURNRecord::SetField(const unsigned int Field, float FieldValue)
     {
     switch(Field)
         {
@@ -134,7 +134,7 @@ void FURNRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void FURNRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
+void FURNRecord::SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(Field)
         {
@@ -149,14 +149,13 @@ void FURNRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void FURNRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue)
+void FURNRecord::SetOtherField(const unsigned int Field, unsigned int FieldValue)
     {
     switch(Field)
         {
         case 10: //script
             SCRI.Load();
             SCRI->fid = FieldValue;
-            FormIDHandler.AddMaster(SCRI->fid);
             break;
         case 11: //flags
             MNAM.value.flags = FieldValue;

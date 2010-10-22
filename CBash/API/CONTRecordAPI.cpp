@@ -197,7 +197,7 @@ void * CONTRecord::GetListField(const unsigned int subField, const unsigned int 
         }
     }
 
-void CONTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void CONTRecord::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {
@@ -217,7 +217,7 @@ void CONTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void CONTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue)
+void CONTRecord::SetField(const unsigned int Field, float FieldValue)
     {
     switch(Field)
         {
@@ -235,7 +235,7 @@ void CONTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void CONTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
+void CONTRecord::SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(Field)
         {
@@ -250,24 +250,21 @@ void CONTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void CONTRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue)
+void CONTRecord::SetOtherField(const unsigned int Field, unsigned int FieldValue)
     {
     switch(Field)
         {
         case 10: //script
             SCRI.Load();
             SCRI->fid = FieldValue;
-            FormIDHandler.AddMaster(SCRI->fid);
             break;
         case 14: //soundOpen
             SNAM.Load();
             SNAM->fid = FieldValue;
-            FormIDHandler.AddMaster(SNAM->fid);
             break;
         case 15: //soundClose
             QNAM.Load();
             QNAM->fid = FieldValue;
-            FormIDHandler.AddMaster(QNAM->fid);
             break;
         default:
             return;
@@ -275,7 +272,7 @@ void CONTRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
     return;
     }
 
-void CONTRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue)
+void CONTRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue)
     {
     switch(subField)
         {
@@ -286,7 +283,6 @@ void CONTRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
                 {
                 case 1: //item
                     CNTO[listIndex]->value.item = FieldValue;
-                    FormIDHandler.AddMaster(CNTO[listIndex]->value.item);
                     break;
                 default:
                     return;
@@ -298,7 +294,7 @@ void CONTRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void CONTRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, int FieldValue)
+void CONTRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, int FieldValue)
     {
     switch(subField)
         {
@@ -320,7 +316,7 @@ void CONTRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void CONTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue)
+void CONTRecord::SetField(const unsigned int Field, unsigned char FieldValue)
     {
     switch(Field)
         {

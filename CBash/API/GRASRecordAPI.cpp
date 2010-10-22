@@ -146,7 +146,7 @@ void GRASRecord::GetFieldArray(const unsigned int Field, void **FieldValues)
         }
     }
 
-void GRASRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void GRASRecord::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {
@@ -163,7 +163,7 @@ void GRASRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void GRASRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue)
+void GRASRecord::SetField(const unsigned int Field, float FieldValue)
     {
     switch(Field)
         {
@@ -190,7 +190,7 @@ void GRASRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void GRASRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
+void GRASRecord::SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(Field)
         {
@@ -223,7 +223,7 @@ void GRASRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void GRASRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue)
+void GRASRecord::SetField(const unsigned int Field, unsigned char FieldValue)
     {
     switch(Field)
         {
@@ -245,7 +245,7 @@ void GRASRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void GRASRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned short FieldValue)
+void GRASRecord::SetField(const unsigned int Field, unsigned short FieldValue)
     {
     switch(Field)
         {
@@ -258,7 +258,7 @@ void GRASRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void GRASRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue)
+void GRASRecord::SetOtherField(const unsigned int Field, unsigned int FieldValue)
     {
     switch(Field)
         {

@@ -97,7 +97,7 @@ void HAIRRecord::GetFieldArray(const unsigned int Field, void **FieldValues)
         }
     }
 
-void HAIRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void HAIRRecord::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {
@@ -120,7 +120,7 @@ void HAIRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void HAIRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue)
+void HAIRRecord::SetField(const unsigned int Field, float FieldValue)
     {
     switch(Field)
         {
@@ -135,7 +135,7 @@ void HAIRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void HAIRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
+void HAIRRecord::SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(Field)
         {
@@ -150,7 +150,7 @@ void HAIRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void HAIRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue)
+void HAIRRecord::SetField(const unsigned int Field, unsigned char FieldValue)
     {
     switch(Field)
         {

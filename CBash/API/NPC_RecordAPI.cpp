@@ -556,7 +556,7 @@ void * NPC_Record::GetListField(const unsigned int subField, const unsigned int 
         }
     }
 
-void NPC_Record::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void NPC_Record::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {
@@ -576,7 +576,7 @@ void NPC_Record::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void NPC_Record::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue)
+void NPC_Record::SetField(const unsigned int Field, float FieldValue)
     {
     switch(Field)
         {
@@ -595,7 +595,7 @@ void NPC_Record::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void NPC_Record::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
+void NPC_Record::SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(Field)
         {
@@ -636,7 +636,7 @@ void NPC_Record::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void NPC_Record::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue)
+void NPC_Record::SetOtherField(const unsigned int Field, unsigned int FieldValue)
     {
     switch(Field)
         {
@@ -647,17 +647,14 @@ void NPC_Record::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
         case 18: //deathItem
             INAM.Load();
             INAM->fid = FieldValue;
-            FormIDHandler.AddMaster(INAM->fid);
             break;
         case 19: //race
             RNAM.Load();
             RNAM->fid = FieldValue;
-            FormIDHandler.AddMaster(RNAM->fid);
             break;
         case 21: //script
             SCRI.Load();
             SCRI->fid = FieldValue;
-            FormIDHandler.AddMaster(SCRI->fid);
             break;
         case 27: //services
             SetServicesFlagMask(FieldValue);
@@ -665,22 +662,18 @@ void NPC_Record::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
             break;
         case 33: //iclass
             CNAM.value.fid = FieldValue;
-            FormIDHandler.AddMaster(CNAM.value.fid);
             break;
         case 65: //hair
             HNAM.Load();
             HNAM->fid = FieldValue;
-            FormIDHandler.AddMaster(HNAM->fid);
             break;
         case 67: //eye
             ENAM.Load();
             ENAM->fid = FieldValue;
-            FormIDHandler.AddMaster(ENAM->fid);
             break;
         case 72: //combatStyle
             ZNAM.Load();
             ZNAM->fid = FieldValue;
-            FormIDHandler.AddMaster(ZNAM->fid);
             break;
         default:
             return;
@@ -688,7 +681,7 @@ void NPC_Record::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
     return;
     }
 
-void NPC_Record::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned short FieldValue)
+void NPC_Record::SetField(const unsigned int Field, unsigned short FieldValue)
     {
     switch(Field)
         {
@@ -719,7 +712,7 @@ void NPC_Record::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void NPC_Record::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, short FieldValue)
+void NPC_Record::SetField(const unsigned int Field, short FieldValue)
     {
     switch(Field)
         {
@@ -732,7 +725,7 @@ void NPC_Record::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void NPC_Record::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue)
+void NPC_Record::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue)
     {
     switch(subField)
         {
@@ -743,7 +736,6 @@ void NPC_Record::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
                 {
                 case 1: //faction
                     SNAM[listIndex]->value.faction = FieldValue;
-                    FormIDHandler.AddMaster(SNAM[listIndex]->value.faction);
                     break;
                 default:
                     return;
@@ -756,7 +748,6 @@ void NPC_Record::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
                 {
                 case 1: //item
                     CNTO[listIndex]->value.item = FieldValue;
-                    FormIDHandler.AddMaster(CNTO[listIndex]->value.item);
                     break;
                 default:
                     return;
@@ -768,7 +759,7 @@ void NPC_Record::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void NPC_Record::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue)
+void NPC_Record::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue)
     {
     switch(subField)
         {
@@ -790,7 +781,7 @@ void NPC_Record::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void NPC_Record::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, int FieldValue)
+void NPC_Record::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, int FieldValue)
     {
     switch(subField)
         {
@@ -812,7 +803,7 @@ void NPC_Record::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void NPC_Record::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize)
+void NPC_Record::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(subField)
         {
@@ -838,7 +829,7 @@ void NPC_Record::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void NPC_Record::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue[], unsigned int nSize)
+void NPC_Record::SetField(const unsigned int Field, unsigned int FieldValue[], unsigned int nSize)
     {
     switch(Field)
         {
@@ -850,7 +841,6 @@ void NPC_Record::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
                 for(unsigned int x = 0; x < nSize; x++)
                     {
                     SPLO[x] = new unsigned int(FieldValue[x]);
-                    FormIDHandler.AddMaster(SPLO[x]);
                     }
                 }
             break;
@@ -862,7 +852,6 @@ void NPC_Record::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
                 for(unsigned int x = 0; x < nSize; x++)
                     {
                     PKID[x] = new unsigned int(FieldValue[x]);
-                    FormIDHandler.AddMaster(PKID[x]);
                     }
                 }
             break;
@@ -872,7 +861,7 @@ void NPC_Record::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void NPC_Record::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue)
+void NPC_Record::SetField(const unsigned int Field, unsigned char FieldValue)
     {
     switch(Field)
         {
@@ -993,7 +982,7 @@ void NPC_Record::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void NPC_Record::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char FieldValue)
+void NPC_Record::SetField(const unsigned int Field, char FieldValue)
     {
     switch(Field)
         {
@@ -1006,7 +995,7 @@ void NPC_Record::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void NPC_Record::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char **FieldValue, unsigned int nSize)
+void NPC_Record::SetField(const unsigned int Field, char **FieldValue, unsigned int nSize)
     {
     switch(Field)
         {

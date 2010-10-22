@@ -107,7 +107,7 @@ void MISCRecord::GetFieldArray(const unsigned int Field, void **FieldValues)
         }
     }
 
-void MISCRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void MISCRecord::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {
@@ -130,7 +130,7 @@ void MISCRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void MISCRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue)
+void MISCRecord::SetField(const unsigned int Field, float FieldValue)
     {
     switch(Field)
         {
@@ -148,7 +148,7 @@ void MISCRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void MISCRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
+void MISCRecord::SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(Field)
         {
@@ -163,14 +163,13 @@ void MISCRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void MISCRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue)
+void MISCRecord::SetOtherField(const unsigned int Field, unsigned int FieldValue)
     {
     switch(Field)
         {
         case 11: //script
             SCRI.Load();
             SCRI->fid = FieldValue;
-            FormIDHandler.AddMaster(SCRI->fid);
             break;
         case 12: //value
             DATA.value.value = FieldValue;

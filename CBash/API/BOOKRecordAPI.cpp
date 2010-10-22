@@ -131,7 +131,7 @@ void BOOKRecord::GetFieldArray(const unsigned int Field, void **FieldValues)
         }
     }
 
-void BOOKRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void BOOKRecord::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {
@@ -157,7 +157,7 @@ void BOOKRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void BOOKRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue)
+void BOOKRecord::SetField(const unsigned int Field, float FieldValue)
     {
     switch(Field)
         {
@@ -175,7 +175,7 @@ void BOOKRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void BOOKRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
+void BOOKRecord::SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(Field)
         {
@@ -190,19 +190,17 @@ void BOOKRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void BOOKRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue)
+void BOOKRecord::SetOtherField(const unsigned int Field, unsigned int FieldValue)
     {
     switch(Field)
         {
         case 12: //script
             SCRI.Load();
             SCRI->fid = FieldValue;
-            FormIDHandler.AddMaster(SCRI->fid);
             break;
         case 13: //enchantment
             ENAM.Load();
             ENAM->fid = FieldValue;
-            FormIDHandler.AddMaster(ENAM->fid);
             break;
         case 17: //value
             DATA.value.value = FieldValue;
@@ -213,7 +211,7 @@ void BOOKRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
     return;
     }
 
-void BOOKRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned short FieldValue)
+void BOOKRecord::SetField(const unsigned int Field, unsigned short FieldValue)
     {
     switch(Field)
         {
@@ -228,7 +226,7 @@ void BOOKRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void BOOKRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue)
+void BOOKRecord::SetField(const unsigned int Field, unsigned char FieldValue)
     {
     switch(Field)
         {
@@ -241,7 +239,7 @@ void BOOKRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void BOOKRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char FieldValue)
+void BOOKRecord::SetField(const unsigned int Field, char FieldValue)
     {
     switch(Field)
         {

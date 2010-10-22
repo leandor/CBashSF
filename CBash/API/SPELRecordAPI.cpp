@@ -69,6 +69,19 @@ int SPELRecord::GetOtherFieldType(const unsigned int Field)
             return BYTES_FIELD;
         case 12: //Effects
             return LIST_FIELD;
+        //OBME Fields
+        case 13: //recordVersion
+            return UBYTE_FIELD;
+        case 14: //betaVersion
+            return UBYTE_FIELD;
+        case 15: //minorVersion
+            return UBYTE_FIELD;
+        case 16: //majorVersion
+            return UBYTE_FIELD;
+        case 17: //reserved
+            return BYTES_FIELD;
+        case 18: //DATX
+            return BYTES_FIELD;
         default:
             return UNKNOWN_FIELD;
         }
@@ -90,6 +103,23 @@ void * SPELRecord::GetOtherField(const unsigned int Field)
             return &SPIT.value.level;
         case 10: //flags
             return &SPIT.value.flags;
+        //OBME Fields
+        case 11: //recordVersion
+            if(OBME.IsLoaded() && OBME->OBME.IsLoaded())
+                return &OBME->OBME.value.recordVersion;
+            return NULL;
+        case 12: //betaVersion
+            if(OBME.IsLoaded() && OBME->OBME.IsLoaded())
+                return &OBME->OBME.value.betaVersion;
+            return NULL;
+        case 13: //minorVersion
+            if(OBME.IsLoaded() && OBME->OBME.IsLoaded())
+                return &OBME->OBME.value.minorVersion;
+            return NULL;
+        case 14: //majorVersion
+            if(OBME.IsLoaded() && OBME->OBME.IsLoaded())
+                return &OBME->OBME.value.majorVersion;
+            return NULL;
         default:
             return NULL;
         }
@@ -101,6 +131,11 @@ unsigned int SPELRecord::GetFieldArraySize(const unsigned int Field)
         {
         case 11: //unused1
             return 3;
+        //OBME Fields
+        case 17: //reserved
+            return 0x1C;
+        case 18: //DATX
+            return 0x20;
         default:
             return 0;
         }
@@ -112,6 +147,19 @@ void SPELRecord::GetFieldArray(const unsigned int Field, void **FieldValues)
         {
         case 11: //unused1
             *FieldValues = &SPIT.value.unused1[0];
+            return;
+        //OBME Fields
+        case 17: //reserved
+            if(OBME.IsLoaded() && OBME->OBME.IsLoaded())
+                *FieldValues = &OBME->OBME.value.reserved[0];
+            else
+                *FieldValues = NULL;
+            return;
+        case 18: //DATX
+            if(OBME.IsLoaded() && OBME->DATX.IsLoaded())
+                *FieldValues = OBME->DATX.value;
+            else
+                *FieldValues = NULL;
             return;
         default:
             *FieldValues = NULL;
@@ -138,7 +186,7 @@ int SPELRecord::GetListFieldType(const unsigned int subField, const unsigned int
                 case 6: //recipient
                     return UINT_FIELD;
                 case 7: //actorValue
-                    return INT_FIELD;
+                    return UINT_FIELD;
                 case 8: //script
                     return FID_FIELD;
                 case 9: //school
@@ -151,6 +199,33 @@ int SPELRecord::GetListFieldType(const unsigned int subField, const unsigned int
                     return BYTES_FIELD;
                 case 13: //full
                     return STRING_FIELD;
+                //OBME Fields
+                case 14: //recordVersion
+                    return UBYTE_FIELD;
+                case 15: //betaVersion
+                    return UBYTE_FIELD;
+                case 16: //minorVersion
+                    return UBYTE_FIELD;
+                case 17: //majorVersion
+                    return UBYTE_FIELD;
+                case 18: //efitParamInfo
+                    return UBYTE_FIELD;
+                case 19: //efixParamInfo
+                    return UBYTE_FIELD;
+                case 20: //reserved1
+                    return BYTES_FIELD;
+                case 21: //iconPath
+                    return STRING_FIELD;
+                case 22: //efixOverrideMask
+                    return UINT_FIELD;
+                case 23: //efixFlags
+                    return UINT_FIELD;
+                case 24: //baseCost
+                    return FLOAT_FIELD;
+                case 25: //resistAV
+                    return UINT_FIELD;
+                case 26: //reserved2
+                    return BYTES_FIELD;
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -181,6 +256,15 @@ unsigned int SPELRecord::GetListArraySize(const unsigned int subField, const uns
                     if(Effects[listIndex]->SCIT.IsLoaded())
                         return 3;
                     return 0;
+                //OBME Fields
+                case 20: //reserved1
+                    if(Effects[listIndex]->OBME.IsLoaded() && Effects[listIndex]->OBME->EFME.IsLoaded())
+                        return 0xA;
+                    return 0;
+                case 26: //reserved2
+                    if(Effects[listIndex]->OBME.IsLoaded() && Effects[listIndex]->OBME->EFIX.IsLoaded())
+                        return 0x10;
+                    return 0;
                 default:
                     return 0;
                 }
@@ -204,6 +288,19 @@ void SPELRecord::GetListArray(const unsigned int subField, const unsigned int li
                 case 12: //unused1
                     if(Effects[listIndex]->SCIT.IsLoaded())
                         *FieldValues = &Effects[listIndex]->SCIT->unused1[0];
+                    else
+                        *FieldValues = NULL;
+                    return;
+                //OBME Fields
+                case 20: //reserved1
+                    if(Effects[listIndex]->OBME.IsLoaded() && Effects[listIndex]->OBME->EFME.IsLoaded())
+                        *FieldValues = &Effects[listIndex]->OBME->EFME.value.reserved[0];
+                    else
+                        *FieldValues = NULL;
+                    return;
+                case 26: //reserved2
+                    if(Effects[listIndex]->OBME.IsLoaded() && Effects[listIndex]->OBME->EFIX.IsLoaded())
+                        *FieldValues = &Effects[listIndex]->OBME->EFIX->reserved[0];
                     else
                         *FieldValues = NULL;
                     return;
@@ -261,6 +358,62 @@ void * SPELRecord::GetListField(const unsigned int subField, const unsigned int 
                         return NULL;
                 case 13: //full
                     return Effects[listIndex]->FULL.value;
+                //OBME Fields
+                case 14: //recordVersion
+                    if(Effects[listIndex]->OBME.IsLoaded() && Effects[listIndex]->OBME->EFME.IsLoaded())
+                        return &Effects[listIndex]->OBME->EFME.value.recordVersion;
+                    else
+                        return NULL;
+                case 15: //betaVersion
+                    if(Effects[listIndex]->OBME.IsLoaded() && Effects[listIndex]->OBME->EFME.IsLoaded())
+                        return &Effects[listIndex]->OBME->EFME.value.betaVersion;
+                    else
+                        return NULL;
+                case 16: //minorVersion
+                    if(Effects[listIndex]->OBME.IsLoaded() && Effects[listIndex]->OBME->EFME.IsLoaded())
+                        return &Effects[listIndex]->OBME->EFME.value.minorVersion;
+                    else
+                        return NULL;
+                case 17: //majorVersion
+                    if(Effects[listIndex]->OBME.IsLoaded() && Effects[listIndex]->OBME->EFME.IsLoaded())
+                        return &Effects[listIndex]->OBME->EFME.value.majorVersion;
+                    else
+                        return NULL;
+                case 18: //efitParamInfo
+                    if(Effects[listIndex]->OBME.IsLoaded() && Effects[listIndex]->OBME->EFME.IsLoaded())
+                        return &Effects[listIndex]->OBME->EFME.value.efitParamInfo;
+                    else
+                        return NULL;
+                case 19: //efixParamInfo
+                    if(Effects[listIndex]->OBME.IsLoaded() && Effects[listIndex]->OBME->EFME.IsLoaded())
+                        return &Effects[listIndex]->OBME->EFME.value.efixParamInfo;
+                    else
+                        return NULL;
+                case 21: //iconPath
+                    if(Effects[listIndex]->OBME.IsLoaded() && Effects[listIndex]->OBME->EFII.IsLoaded())
+                        return Effects[listIndex]->OBME->EFII.value;
+                    else
+                        return NULL;
+                case 22: //efixOverrideMask
+                    if(Effects[listIndex]->OBME.IsLoaded() && Effects[listIndex]->OBME->EFIX.IsLoaded())
+                        return &Effects[listIndex]->OBME->EFIX->efixOverrideMask;
+                    else
+                        return NULL;
+                case 23: //efixFlags
+                    if(Effects[listIndex]->OBME.IsLoaded() && Effects[listIndex]->OBME->EFIX.IsLoaded())
+                        return &Effects[listIndex]->OBME->EFIX->efixFlags;
+                    else
+                        return NULL;
+                case 24: //baseCost
+                    if(Effects[listIndex]->OBME.IsLoaded() && Effects[listIndex]->OBME->EFIX.IsLoaded())
+                        return &Effects[listIndex]->OBME->EFIX->baseCost;
+                    else
+                        return NULL;
+                case 25: //resistAV
+                    if(Effects[listIndex]->OBME.IsLoaded() && Effects[listIndex]->OBME->EFIX.IsLoaded())
+                        return &Effects[listIndex]->OBME->EFIX->resistAV;
+                    else
+                        return NULL;
                 default:
                     return NULL;
                 }
@@ -269,7 +422,7 @@ void * SPELRecord::GetListField(const unsigned int subField, const unsigned int 
         }
     }
 
-void SPELRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void SPELRecord::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {
@@ -285,7 +438,7 @@ void SPELRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void SPELRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue)
+void SPELRecord::SetOtherField(const unsigned int Field, unsigned int FieldValue)
     {
     switch(Field)
         {
@@ -304,12 +457,33 @@ void SPELRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
     return;
     }
 
-void SPELRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue)
+void SPELRecord::SetField(const unsigned int Field, unsigned char FieldValue)
     {
     switch(Field)
         {
         case 10: //flags
             SPIT.value.flags = FieldValue;
+            break;
+        //OBME Fields
+        case 13: //recordVersion
+            OBME.Load();
+            OBME->OBME.Load();
+            OBME->OBME.value.recordVersion = FieldValue;
+            break;
+        case 14: //betaVersion
+            OBME.Load();
+            OBME->OBME.Load();
+            OBME->OBME.value.betaVersion = FieldValue;
+            break;
+        case 15: //minorVersion
+            OBME.Load();
+            OBME->OBME.Load();
+            OBME->OBME.value.minorVersion = FieldValue;
+            break;
+        case 16: //majorVersion
+            OBME.Load();
+            OBME->OBME.Load();
+            OBME->OBME.value.majorVersion = FieldValue;
             break;
         default:
             return;
@@ -317,7 +491,7 @@ void SPELRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void SPELRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
+void SPELRecord::SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(Field)
         {
@@ -328,13 +502,28 @@ void SPELRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
             SPIT.value.unused1[1] = FieldValue[1];
             SPIT.value.unused1[2] = FieldValue[2];
             break;
+        //OBME Fields
+        case 17: //reserved
+            if(nSize != 0x1C)
+                return;
+            OBME.Load();
+            OBME->OBME.Load();
+            memcpy(&OBME->OBME.value.reserved[0], &FieldValue[0], 0x1C);
+            break;
+        case 18: //DATX
+            if(nSize != 0x20)
+                return;
+            OBME.Load();
+            OBME->DATX.Load();
+            OBME->DATX.Copy(FieldValue, nSize);
+            break;
         default:
             return;
         }
     return;
     }
 
-void SPELRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue)
+void SPELRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue)
     {
     switch(subField)
         {
@@ -360,10 +549,12 @@ void SPELRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
                 case 6: //recipient
                     Effects[listIndex]->EFIT.value.recipient = FieldValue;
                     break;
+                case 7: //actorValue
+                    Effects[listIndex]->EFIT.value.actorValue = FieldValue;
+                    break;
                 case 8: //script
                     Effects[listIndex]->SCIT.Load();
                     Effects[listIndex]->SCIT->script = FieldValue;
-                    FormIDHandler.AddMaster(Effects[listIndex]->SCIT->script);
                     break;
                 case 9: //school
                     Effects[listIndex]->SCIT.Load();
@@ -373,27 +564,21 @@ void SPELRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
                     Effects[listIndex]->SCIT.Load();
                     Effects[listIndex]->SCIT->visual = FieldValue;
                     break;
-                default:
-                    return;
-                }
-            break;
-        default:
-            return;
-        }
-    return;
-    }
-
-void SPELRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, int FieldValue)
-    {
-    switch(subField)
-        {
-        case 12: //Effects
-            if(listIndex >= Effects.size())
-                return;
-            switch(listField)
-                {
-                case 7: //actorValue
-                    Effects[listIndex]->EFIT.value.actorValue = FieldValue;
+                //OBME Fields
+                case 22: //efixOverrideMask
+                    Effects[listIndex]->OBME.Load();
+                    Effects[listIndex]->OBME->EFIX.Load();
+                    Effects[listIndex]->OBME->EFIX->efixOverrideMask = FieldValue;
+                    break;
+                case 23: //efixFlags
+                    Effects[listIndex]->OBME.Load();
+                    Effects[listIndex]->OBME->EFIX.Load();
+                    Effects[listIndex]->OBME->EFIX->efixFlags = FieldValue;
+                    break;
+                case 25: //resistAV
+                    Effects[listIndex]->OBME.Load();
+                    Effects[listIndex]->OBME->EFIX.Load();
+                    Effects[listIndex]->OBME->EFIX->resistAV = FieldValue;
                     break;
                 default:
                     return;
@@ -405,7 +590,7 @@ void SPELRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void SPELRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue)
+void SPELRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue)
     {
     switch(subField)
         {
@@ -418,6 +603,37 @@ void SPELRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
                     Effects[listIndex]->SCIT.Load();
                     Effects[listIndex]->SCIT->flags = FieldValue;
                     break;
+                //OBME Fields
+                case 14: //recordVersion
+                    Effects[listIndex]->OBME.Load();
+                    Effects[listIndex]->OBME->EFME.Load();
+                    Effects[listIndex]->OBME->EFME.value.recordVersion = FieldValue;
+                    break;
+                case 15: //betaVersion
+                    Effects[listIndex]->OBME.Load();
+                    Effects[listIndex]->OBME->EFME.Load();
+                    Effects[listIndex]->OBME->EFME.value.betaVersion = FieldValue;
+                    break;
+                case 16: //minorVersion
+                    Effects[listIndex]->OBME.Load();
+                    Effects[listIndex]->OBME->EFME.Load();
+                    Effects[listIndex]->OBME->EFME.value.minorVersion = FieldValue;
+                    break;
+                case 17: //majorVersion
+                    Effects[listIndex]->OBME.Load();
+                    Effects[listIndex]->OBME->EFME.Load();
+                    Effects[listIndex]->OBME->EFME.value.majorVersion = FieldValue;
+                    break;
+                case 18: //efitParamInfo
+                    Effects[listIndex]->OBME.Load();
+                    Effects[listIndex]->OBME->EFME.Load();
+                    Effects[listIndex]->OBME->EFME.value.efitParamInfo = FieldValue;
+                    break;
+                case 19: //efixParamInfo
+                    Effects[listIndex]->OBME.Load();
+                    Effects[listIndex]->OBME->EFME.Load();
+                    Effects[listIndex]->OBME->EFME.value.efixParamInfo = FieldValue;
+                    break;
                 default:
                     return;
                 }
@@ -428,7 +644,32 @@ void SPELRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void SPELRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize)
+void SPELRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, float FieldValue)
+    {
+    switch(subField)
+        {
+        case 12: //Effects
+            if(listIndex >= Effects.size())
+                return;
+            switch(listField)
+                {
+                //OBME Fields
+                case 24: //baseCost
+                    Effects[listIndex]->OBME.Load();
+                    Effects[listIndex]->OBME->EFIX.Load();
+                    Effects[listIndex]->OBME->EFIX->baseCost = FieldValue;
+                    break;
+                default:
+                    return;
+                }
+            break;
+        default:
+            return;
+        }
+    return;
+    }
+
+void SPELRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(subField)
         {
@@ -445,6 +686,21 @@ void SPELRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
                     Effects[listIndex]->SCIT->unused1[1] = FieldValue[1];
                     Effects[listIndex]->SCIT->unused1[2] = FieldValue[2];
                     break;
+                //OBME Fields
+                case 20: //reserved1
+                    if(nSize != 0xA)
+                        return;
+                    Effects[listIndex]->OBME.Load();
+                    Effects[listIndex]->OBME->EFME.Load();
+                    memcpy(&Effects[listIndex]->OBME->EFME.value.reserved[0], &FieldValue[0], 0xA);
+                    break;
+                case 26: //reserved2
+                    if(nSize != 0x10)
+                        return;
+                    Effects[listIndex]->OBME.Load();
+                    Effects[listIndex]->OBME->EFIX.Load();
+                    memcpy(&Effects[listIndex]->OBME->EFIX->reserved[0], &FieldValue[0], 0x10);
+                    break;
                 default:
                     return;
                 }
@@ -455,7 +711,7 @@ void SPELRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void SPELRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, char *FieldValue)
+void SPELRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, char *FieldValue)
     {
     switch(subField)
         {
@@ -466,6 +722,11 @@ void SPELRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
                 {
                 case 13: //full
                     Effects[listIndex]->FULL.Copy(FieldValue);
+                    break;
+                //OBME Fields
+                case 21: //iconPath
+                    Effects[listIndex]->OBME.Load();
+                    Effects[listIndex]->OBME->EFII.Copy(FieldValue);
                     break;
                 default:
                     return;
@@ -480,6 +741,7 @@ void SPELRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
 int SPELRecord::DeleteField(const unsigned int Field)
     {
     SPELSPIT defaultSPIT;
+    MAGICOBME defaultOBME;
     unsigned int nSize;
     switch(Field)
         {
@@ -512,16 +774,43 @@ int SPELRecord::DeleteField(const unsigned int Field)
                 delete Effects[x];
             Effects.clear();
             break;
+        //OBME Fields
+        case 13: //recordVersion
+            if(OBME.IsLoaded())
+                OBME->OBME.value.recordVersion = defaultOBME.recordVersion;
+            break;
+        case 14: //betaVersion
+            if(OBME.IsLoaded())
+                OBME->OBME.value.betaVersion = defaultOBME.betaVersion;
+            break;
+        case 15: //minorVersion
+            if(OBME.IsLoaded())
+                OBME->OBME.value.minorVersion = defaultOBME.minorVersion;
+            break;
+        case 16: //majorVersion
+            if(OBME.IsLoaded())
+                OBME->OBME.value.majorVersion = defaultOBME.majorVersion;
+            break;
+        case 17: //reserved
+            if(OBME.IsLoaded())
+                memcpy(&OBME->OBME.value.reserved[0], &defaultOBME.reserved[0], 0x1C);
+            break;
+        case 18: //DATX
+            if(OBME.IsLoaded() && OBME->DATX.IsLoaded())
+                OBME->DATX.Unload();
+            break;
         default:
             return 0;
         }
     return 1;
     }
-    
+
 int SPELRecord::DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField)
     {
     GENEFIT defaultEFIT;
     GENSCIT defaultSCIT;
+    OBMEEFME defaultEFME;
+    OBMEEFIX defaultEFIX;
     switch(subField)
         {
         case 12: //Effects
@@ -575,6 +864,59 @@ int SPELRecord::DeleteListField(const unsigned int subField, const unsigned int 
                     break;
                 case 13: //full
                     Effects[listIndex]->FULL.Unload();
+                    break;
+                //OBME Fields
+                case 14: //recordVersion
+                    if(Effects[listIndex]->OBME.IsLoaded() && Effects[listIndex]->OBME->EFME.IsLoaded())
+                        Effects[listIndex]->OBME->EFME.value.recordVersion = defaultEFME.recordVersion;
+                    break;
+                case 15: //betaVersion
+                    if(Effects[listIndex]->OBME.IsLoaded() && Effects[listIndex]->OBME->EFME.IsLoaded())
+                        Effects[listIndex]->OBME->EFME.value.betaVersion = defaultEFME.betaVersion;
+                    break;
+                case 16: //minorVersion
+                    if(Effects[listIndex]->OBME.IsLoaded() && Effects[listIndex]->OBME->EFME.IsLoaded())
+                        Effects[listIndex]->OBME->EFME.value.minorVersion = defaultEFME.minorVersion;
+                    break;
+                case 17: //majorVersion
+                    if(Effects[listIndex]->OBME.IsLoaded() && Effects[listIndex]->OBME->EFME.IsLoaded())
+                        Effects[listIndex]->OBME->EFME.value.majorVersion = defaultEFME.majorVersion;
+                    break;
+                case 18: //efitParamInfo
+                    if(Effects[listIndex]->OBME.IsLoaded() && Effects[listIndex]->OBME->EFME.IsLoaded())
+                        Effects[listIndex]->OBME->EFME.value.efitParamInfo = defaultEFME.efitParamInfo;
+                    break;
+                case 19: //efixParamInfo
+                    if(Effects[listIndex]->OBME.IsLoaded() && Effects[listIndex]->OBME->EFME.IsLoaded())
+                        Effects[listIndex]->OBME->EFME.value.efixParamInfo = defaultEFME.efixParamInfo;
+                    break;
+                case 20: //reserved1
+                    if(Effects[listIndex]->OBME.IsLoaded() && Effects[listIndex]->OBME->EFME.IsLoaded())
+                        memcpy(&Effects[listIndex]->OBME->EFME.value.reserved[0],&defaultEFME.reserved[0],0xA);
+                    break;
+                case 21: //iconPath
+                    if(Effects[listIndex]->OBME.IsLoaded() && Effects[listIndex]->OBME->EFII.IsLoaded())
+                        Effects[listIndex]->OBME->EFII.Unload();
+                    break;
+                case 22: //efixOverrideMask
+                    if(Effects[listIndex]->OBME.IsLoaded() && Effects[listIndex]->OBME->EFIX.IsLoaded())
+                        Effects[listIndex]->OBME->EFIX->efixOverrideMask = defaultEFIX.efixOverrideMask;
+                    break;
+                case 23: //efixFlags
+                    if(Effects[listIndex]->OBME.IsLoaded() && Effects[listIndex]->OBME->EFIX.IsLoaded())
+                        Effects[listIndex]->OBME->EFIX->efixFlags = defaultEFIX.efixFlags;
+                    break;
+                case 24: //baseCost
+                    if(Effects[listIndex]->OBME.IsLoaded() && Effects[listIndex]->OBME->EFIX.IsLoaded())
+                        Effects[listIndex]->OBME->EFIX->baseCost = defaultEFIX.baseCost;
+                    break;
+                case 25: //resistAV
+                    if(Effects[listIndex]->OBME.IsLoaded() && Effects[listIndex]->OBME->EFIX.IsLoaded())
+                        Effects[listIndex]->OBME->EFIX->resistAV = defaultEFIX.resistAV;
+                    break;
+                case 26: //reserved2
+                    if(Effects[listIndex]->OBME.IsLoaded() && Effects[listIndex]->OBME->EFIX.IsLoaded())
+                        memcpy(&Effects[listIndex]->OBME->EFIX->reserved[0],&defaultEFIX.reserved[0],0x10);
                     break;
                 default:
                     return 0;

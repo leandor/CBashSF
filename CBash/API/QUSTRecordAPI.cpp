@@ -950,7 +950,7 @@ void * QUSTRecord::GetListX3Field(const unsigned int subField, const unsigned in
         }
     }
 
-void QUSTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void QUSTRecord::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {
@@ -969,14 +969,13 @@ void QUSTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void QUSTRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue)
+void QUSTRecord::SetOtherField(const unsigned int Field, unsigned int FieldValue)
     {
     switch(Field)
         {
         case 6: //script
             SCRI.Load();
             SCRI->fid = FieldValue;
-            FormIDHandler.AddMaster(SCRI->fid);
             break;
         default:
             return;
@@ -984,7 +983,7 @@ void QUSTRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
     return;
     }
 
-void QUSTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue)
+void QUSTRecord::SetField(const unsigned int Field, unsigned char FieldValue)
     {
     switch(Field)
         {
@@ -1000,7 +999,7 @@ void QUSTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void QUSTRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue)
+void QUSTRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue)
     {
     switch(subField)
         {
@@ -1034,7 +1033,7 @@ void QUSTRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void QUSTRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize)
+void QUSTRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(subField)
         {
@@ -1084,7 +1083,7 @@ void QUSTRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void QUSTRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, float FieldValue)
+void QUSTRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, float FieldValue)
     {
     switch(subField)
         {
@@ -1106,10 +1105,8 @@ void QUSTRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void QUSTRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue)
+void QUSTRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue)
     {
-    std::pair<unsigned int, unsigned int> newCTDAFunction;
-    std::map<unsigned int, std::pair<unsigned int,unsigned int>>::const_iterator curCTDAFunction;
     switch(subField)
         {
         case 11: //conditions
@@ -1118,43 +1115,13 @@ void QUSTRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
             switch(listField)
                 {
                 case 4: //ifunc
-                    curCTDAFunction = Function_Arguments.find(FieldValue);
-                    if(curCTDAFunction != Function_Arguments.end())
-                        newCTDAFunction = curCTDAFunction->second;
-                    else
-                        {
-                        newCTDAFunction.first = eNULL;
-                        newCTDAFunction.second = eNULL;
-                        }
-
                     CTDA[listIndex]->value.ifunc = FieldValue;
-
-                    if(newCTDAFunction.first == eFID)
-                        FormIDHandler.AddMaster(CTDA[listIndex]->value.param1);
-                    if(newCTDAFunction.second == eFID)
-                        FormIDHandler.AddMaster(CTDA[listIndex]->value.param2);
                     break;
                 case 5: //param1
                     CTDA[listIndex]->value.param1 = FieldValue;
-
-                    curCTDAFunction = Function_Arguments.find(CTDA[listIndex]->value.ifunc);
-                    if(curCTDAFunction != Function_Arguments.end())
-                        {
-                        newCTDAFunction = curCTDAFunction->second;
-                        if(newCTDAFunction.first == eFID)
-                            FormIDHandler.AddMaster(CTDA[listIndex]->value.param1);
-                        }
                     break;
                 case 6: //param2
                     CTDA[listIndex]->value.param2 = FieldValue;
-
-                    curCTDAFunction = Function_Arguments.find(CTDA[listIndex]->value.ifunc);
-                    if(curCTDAFunction != Function_Arguments.end())
-                        {
-                        newCTDAFunction = curCTDAFunction->second;
-                        if(newCTDAFunction.second == eFID)
-                            FormIDHandler.AddMaster(CTDA[listIndex]->value.param2);
-                        }
                     break;
                 default:
                     return;
@@ -1167,7 +1134,6 @@ void QUSTRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
                 {
                 case 1: //targetId
                     Targets[listIndex]->QSTA.value.targetId = FieldValue;
-                    FormIDHandler.AddMaster(Targets[listIndex]->QSTA.value.targetId);
                     break;
                 default:
                     return;
@@ -1179,7 +1145,7 @@ void QUSTRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void QUSTRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned short FieldValue)
+void QUSTRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned short FieldValue)
     {
     switch(subField)
         {
@@ -1201,7 +1167,7 @@ void QUSTRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void QUSTRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned char FieldValue)
+void QUSTRecord::SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned char FieldValue)
     {
     switch(subField)
         {
@@ -1253,7 +1219,7 @@ void QUSTRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned in
     return;
     }
 
-void QUSTRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, char *FieldValue)
+void QUSTRecord::SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, char *FieldValue)
     {
     switch(subField)
         {
@@ -1287,7 +1253,7 @@ void QUSTRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned in
     return;
     }
 
-void QUSTRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned char *FieldValue, unsigned int nSize)
+void QUSTRecord::SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(subField)
         {
@@ -1359,10 +1325,8 @@ void QUSTRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned in
     return;
     }
 
-void QUSTRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned int FieldValue)
+void QUSTRecord::SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned int FieldValue)
     {
-    std::pair<unsigned int, unsigned int> newCTDAFunction;
-    std::map<unsigned int, std::pair<unsigned int,unsigned int>>::const_iterator curCTDAFunction;
     switch(subField)
         {
         case 12: //stages
@@ -1406,44 +1370,13 @@ void QUSTRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned in
                     switch(listX2Field)
                         {
                         case 4: //ifunc
-                            curCTDAFunction = Function_Arguments.find(FieldValue);
-                            if(curCTDAFunction != Function_Arguments.end())
-                                newCTDAFunction = curCTDAFunction->second;
-                            else
-                                {
-                                newCTDAFunction.first = eNULL;
-                                newCTDAFunction.second = eNULL;
-                                }
-
                             Targets[listIndex]->CTDA[listX2Index]->value.ifunc = FieldValue;
-
-                            if(newCTDAFunction.first == eFID)
-                                FormIDHandler.AddMaster(Targets[listIndex]->CTDA[listX2Index]->value.param1);
-
-                            if(newCTDAFunction.second == eFID)
-                                FormIDHandler.AddMaster(Targets[listIndex]->CTDA[listX2Index]->value.param2);
                             break;
                         case 5: //param1
                             Targets[listIndex]->CTDA[listX2Index]->value.param1 = FieldValue;
-
-                            curCTDAFunction = Function_Arguments.find(Targets[listIndex]->CTDA[listX2Index]->value.ifunc);
-                            if(curCTDAFunction != Function_Arguments.end())
-                                {
-                                newCTDAFunction = curCTDAFunction->second;
-                                if(newCTDAFunction.first == eFID)
-                                    FormIDHandler.AddMaster(Targets[listIndex]->CTDA[listX2Index]->value.param1);
-                                }
                             break;
                         case 6: //param2
                             Targets[listIndex]->CTDA[listX2Index]->value.param2 = FieldValue;
-
-                            curCTDAFunction = Function_Arguments.find(Targets[listIndex]->CTDA[listX2Index]->value.ifunc);
-                            if(curCTDAFunction != Function_Arguments.end())
-                                {
-                                newCTDAFunction = curCTDAFunction->second;
-                                if(newCTDAFunction.second == eFID)
-                                    FormIDHandler.AddMaster(Targets[listIndex]->CTDA[listX2Index]->value.param2);
-                                }
                             break;
                         default:
                             return;
@@ -1459,7 +1392,7 @@ void QUSTRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned in
     return;
     }
 
-void QUSTRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, float FieldValue)
+void QUSTRecord::SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, float FieldValue)
     {
     switch(subField)
         {
@@ -1490,7 +1423,7 @@ void QUSTRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned in
     return;
     }
 
-void QUSTRecord::SetListX3Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, unsigned char FieldValue)
+void QUSTRecord::SetListX3Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, unsigned char FieldValue)
     {
     switch(subField)
         {
@@ -1529,7 +1462,7 @@ void QUSTRecord::SetListX3Field(_FormIDHandler &FormIDHandler, const unsigned in
     return;
     }
 
-void QUSTRecord::SetListX3Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, unsigned char *FieldValue, unsigned int nSize)
+void QUSTRecord::SetListX3Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(subField)
         {
@@ -1580,7 +1513,7 @@ void QUSTRecord::SetListX3Field(_FormIDHandler &FormIDHandler, const unsigned in
     return;
     }
 
-void QUSTRecord::SetListX3Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, float FieldValue)
+void QUSTRecord::SetListX3Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, float FieldValue)
     {
     switch(subField)
         {
@@ -1619,10 +1552,8 @@ void QUSTRecord::SetListX3Field(_FormIDHandler &FormIDHandler, const unsigned in
     return;
     }
 
-void QUSTRecord::SetListX3Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, unsigned int FieldValue)
+void QUSTRecord::SetListX3Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, unsigned int FieldValue)
     {
-    std::pair<unsigned int, unsigned int> newCTDAFunction;
-    std::map<unsigned int, std::pair<unsigned int,unsigned int>>::const_iterator curCTDAFunction;
     switch(subField)
         {
         case 12: //stages
@@ -1641,44 +1572,13 @@ void QUSTRecord::SetListX3Field(_FormIDHandler &FormIDHandler, const unsigned in
                             switch(listX3Field)
                                 {
                                 case 4: //ifunc
-                                    curCTDAFunction = Function_Arguments.find(FieldValue);
-                                    if(curCTDAFunction != Function_Arguments.end())
-                                        newCTDAFunction = curCTDAFunction->second;
-                                    else
-                                        {
-                                        newCTDAFunction.first = eNULL;
-                                        newCTDAFunction.second = eNULL;
-                                        }
-
                                     Stages[listIndex]->Entries[listX2Index]->CTDA[listX3Index]->value.ifunc = FieldValue;
-
-                                    if(newCTDAFunction.first == eFID)
-                                        FormIDHandler.AddMaster(Stages[listIndex]->Entries[listX2Index]->CTDA[listX3Index]->value.param1);
-
-                                    if(newCTDAFunction.second == eFID)
-                                        FormIDHandler.AddMaster(Stages[listIndex]->Entries[listX2Index]->CTDA[listX3Index]->value.param2);
                                     break;
                                 case 5: //param1
                                     Stages[listIndex]->Entries[listX2Index]->CTDA[listX3Index]->value.param1 = FieldValue;
-
-                                    curCTDAFunction = Function_Arguments.find(Stages[listIndex]->Entries[listX2Index]->CTDA[listX3Index]->value.ifunc);
-                                    if(curCTDAFunction != Function_Arguments.end())
-                                        {
-                                        newCTDAFunction = curCTDAFunction->second;
-                                        if(newCTDAFunction.first == eFID)
-                                            FormIDHandler.AddMaster(Stages[listIndex]->Entries[listX2Index]->CTDA[listX3Index]->value.param1);
-                                        }
                                     break;
                                 case 6: //param2
                                     Stages[listIndex]->Entries[listX2Index]->CTDA[listX3Index]->value.param2 = FieldValue;
-
-                                    curCTDAFunction = Function_Arguments.find(Stages[listIndex]->Entries[listX2Index]->CTDA[listX3Index]->value.ifunc);
-                                    if(curCTDAFunction != Function_Arguments.end())
-                                        {
-                                        newCTDAFunction = curCTDAFunction->second;
-                                        if(newCTDAFunction.second == eFID)
-                                            FormIDHandler.AddMaster(Stages[listIndex]->Entries[listX2Index]->CTDA[listX3Index]->value.param2);
-                                        }
                                     break;
                                 default:
                                     return;
@@ -1690,8 +1590,6 @@ void QUSTRecord::SetListX3Field(_FormIDHandler &FormIDHandler, const unsigned in
                                 {
                                 case 1: //reference
                                     Stages[listIndex]->Entries[listX2Index]->SCR_[listX3Index]->value.reference = FieldValue;
-                                    if(Stages[listIndex]->Entries[listX2Index]->SCR_[listX3Index]->value.isSCRO)
-                                        FormIDHandler.AddMaster(Stages[listIndex]->Entries[listX2Index]->SCR_[listX3Index]->value.reference);
                                     break;
                                 case 2: //isSCRO
                                     if(FieldValue)
@@ -1699,7 +1597,6 @@ void QUSTRecord::SetListX3Field(_FormIDHandler &FormIDHandler, const unsigned in
                                         if(!Stages[listIndex]->Entries[listX2Index]->SCR_[listX3Index]->value.isSCRO)
                                             {
                                             Stages[listIndex]->Entries[listX2Index]->SCR_[listX3Index]->value.isSCRO = true;
-                                            FormIDHandler.AddMaster(Stages[listIndex]->Entries[listX2Index]->SCR_[listX3Index]->value.reference);
                                             }
                                         }
                                     else if(Stages[listIndex]->Entries[listX2Index]->SCR_[listX3Index]->value.isSCRO)

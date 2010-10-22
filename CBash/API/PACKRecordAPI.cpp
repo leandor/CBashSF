@@ -277,7 +277,7 @@ void * PACKRecord::GetListField(const unsigned int subField, const unsigned int 
         }
     }
 
-void PACKRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void PACKRecord::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {
@@ -290,7 +290,7 @@ void PACKRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void PACKRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue)
+void PACKRecord::SetOtherField(const unsigned int Field, unsigned int FieldValue)
     {
     switch(Field)
         {
@@ -301,13 +301,11 @@ void PACKRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
             PLDT.Load();
             PLDT->locId = FieldValue;
             if(PLDT->locType != 5)
-                FormIDHandler.AddMaster(PLDT->locId);
             break;
         case 18: //targetId
             PTDT.Load();
             PTDT->targetId = FieldValue;
             if(PTDT->targetType != 2)
-                FormIDHandler.AddMaster(PTDT->targetId);
             break;
         default:
             return;
@@ -315,7 +313,7 @@ void PACKRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
     return;
     }
 
-void PACKRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue)
+void PACKRecord::SetField(const unsigned int Field, unsigned char FieldValue)
     {
     switch(Field)
         {
@@ -331,7 +329,7 @@ void PACKRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void PACKRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
+void PACKRecord::SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(Field)
         {
@@ -348,7 +346,7 @@ void PACKRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void PACKRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, int FieldValue)
+void PACKRecord::SetField(const unsigned int Field, int FieldValue)
     {
     switch(Field)
         {
@@ -377,7 +375,7 @@ void PACKRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void PACKRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char FieldValue)
+void PACKRecord::SetField(const unsigned int Field, char FieldValue)
     {
     switch(Field)
         {
@@ -396,7 +394,7 @@ void PACKRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void PACKRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue)
+void PACKRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue)
     {
     switch(subField)
         {
@@ -418,7 +416,7 @@ void PACKRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void PACKRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize)
+void PACKRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(subField)
         {
@@ -452,7 +450,7 @@ void PACKRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void PACKRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, float FieldValue)
+void PACKRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, float FieldValue)
     {
     switch(subField)
         {
@@ -474,10 +472,8 @@ void PACKRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void PACKRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue)
+void PACKRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue)
     {
-    std::pair<unsigned int, unsigned int> newCTDAFunction;
-    std::map<unsigned int, std::pair<unsigned int,unsigned int>>::const_iterator curCTDAFunction;
     switch(subField)
         {
         case 20: //conditions
@@ -486,44 +482,13 @@ void PACKRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
             switch(listField)
                 {
                 case 4: //ifunc
-                    curCTDAFunction = Function_Arguments.find(FieldValue);
-                    if(curCTDAFunction != Function_Arguments.end())
-                        newCTDAFunction = curCTDAFunction->second;
-                    else
-                        {
-                        newCTDAFunction.first = eNULL;
-                        newCTDAFunction.second = eNULL;
-                        }
-
                     CTDA[listIndex]->value.ifunc = FieldValue;
-
-                    if(newCTDAFunction.first == eFID)
-                        FormIDHandler.AddMaster(CTDA[listIndex]->value.param1);
-
-                    if(newCTDAFunction.second == eFID)
-                        FormIDHandler.AddMaster(CTDA[listIndex]->value.param2);
                     break;
                 case 5: //param1
                     CTDA[listIndex]->value.param1 = FieldValue;
-
-                    curCTDAFunction = Function_Arguments.find(CTDA[listIndex]->value.ifunc);
-                    if(curCTDAFunction != Function_Arguments.end())
-                        {
-                        newCTDAFunction = curCTDAFunction->second;
-                        if(newCTDAFunction.first == eFID)
-                            FormIDHandler.AddMaster(CTDA[listIndex]->value.param1);
-                        }
                     break;
                 case 6: //param2
                     CTDA[listIndex]->value.param2 = FieldValue;
-
-                    curCTDAFunction = Function_Arguments.find(CTDA[listIndex]->value.ifunc);
-                    if(curCTDAFunction != Function_Arguments.end())
-                        {
-                        newCTDAFunction = curCTDAFunction->second;
-                        if(newCTDAFunction.second == eFID)
-                            FormIDHandler.AddMaster(CTDA[listIndex]->value.param2);
-                        }
                     break;
                 default:
                     return;

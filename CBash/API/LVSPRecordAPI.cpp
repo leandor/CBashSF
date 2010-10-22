@@ -195,7 +195,7 @@ void * LVSPRecord::GetListField(const unsigned int subField, const unsigned int 
         }
     }
 
-void LVSPRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void LVSPRecord::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {
@@ -208,7 +208,7 @@ void LVSPRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void LVSPRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue)
+void LVSPRecord::SetField(const unsigned int Field, unsigned char FieldValue)
     {
     switch(Field)
         {
@@ -231,7 +231,7 @@ void LVSPRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void LVSPRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, short FieldValue)
+void LVSPRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, short FieldValue)
     {
     switch(subField)
         {
@@ -256,7 +256,7 @@ void LVSPRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void LVSPRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize)
+void LVSPRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(subField)
         {
@@ -287,7 +287,7 @@ void LVSPRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void LVSPRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue)
+void LVSPRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue)
     {
     switch(subField)
         {
@@ -298,7 +298,6 @@ void LVSPRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
                 {
                 case 3: //listId
                     Entries[listIndex]->value.listId = FieldValue;
-                    FormIDHandler.AddMaster(Entries[listIndex]->value.listId);
                     break;
                 default:
                     return;

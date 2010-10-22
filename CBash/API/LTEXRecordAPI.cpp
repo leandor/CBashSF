@@ -89,7 +89,7 @@ void LTEXRecord::GetFieldArray(const unsigned int Field, void **FieldValues)
         }
     }
 
-void LTEXRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void LTEXRecord::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {
@@ -105,7 +105,7 @@ void LTEXRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void LTEXRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue)
+void LTEXRecord::SetField(const unsigned int Field, unsigned char FieldValue)
     {
     switch(Field)
         {
@@ -131,7 +131,7 @@ void LTEXRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void LTEXRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue[], unsigned int nSize)
+void LTEXRecord::SetField(const unsigned int Field, unsigned int FieldValue[], unsigned int nSize)
     {
     switch(Field)
         {
@@ -143,7 +143,6 @@ void LTEXRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
                 for(unsigned int x = 0; x < nSize; x++)
                     {
                     GNAM[x] = new unsigned int(FieldValue[x]);
-                    FormIDHandler.AddMaster(GNAM[x]);
                     }
                 }
             break;

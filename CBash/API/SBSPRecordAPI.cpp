@@ -54,7 +54,7 @@ void * SBSPRecord::GetOtherField(const unsigned int Field)
         }
     }
 
-void SBSPRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void SBSPRecord::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {
@@ -67,7 +67,7 @@ void SBSPRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void SBSPRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue)
+void SBSPRecord::SetField(const unsigned int Field, float FieldValue)
     {
     switch(Field)
         {

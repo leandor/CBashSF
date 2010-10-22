@@ -47,7 +47,7 @@ int MGEFRecord::GetOtherFieldType(const unsigned int Field)
         case 15: //school
             return INT_FIELD;
         case 16: //resistValue
-            return INT_FIELD;
+            return UINT_FIELD;
         case 17: //unk1
             return USHORT_FIELD;
         case 18: //unused1
@@ -74,6 +74,33 @@ int MGEFRecord::GetOtherFieldType(const unsigned int Field)
             return FLOAT_FIELD;
         case 29: //counterEffects
             return UINTARRAY_FIELD;
+        //OBME Fields
+        case 30: //recordVersion
+            return UBYTE_FIELD;
+        case 31: //betaVersion
+            return UBYTE_FIELD;
+        case 32: //minorVersion
+            return UBYTE_FIELD;
+        case 33: //majorVersion
+            return UBYTE_FIELD;
+        case 34: //mgefParamAInfo
+            return UBYTE_FIELD;
+        case 35: //mgefParamBInfo
+            return UBYTE_FIELD;
+        case 36: //reserved1
+            return BYTES_FIELD;
+        case 37: //handlerCode
+            return UINT_FIELD;
+        case 38: //mgefFlagOverrides
+            return UINT_FIELD;
+        case 39: //mgefParamB
+            return UINT_FIELD;
+        case 40: //reserved2
+            return BYTES_FIELD;
+        case 41: //mgefCode
+            return UINT_FIELD;
+        case 42: //DATX
+            return BYTES_FIELD;
         default:
             return UNKNOWN_FIELD;
         }
@@ -131,6 +158,47 @@ void * MGEFRecord::GetOtherField(const unsigned int Field)
             return &DATA.value.cefEnchantment;
         case 28: //cefBarter
             return &DATA.value.cefBarter;
+        //OBME Fields
+        case 30: //recordVersion
+            if(OBME.IsLoaded() && OBME->OBME.IsLoaded())
+                return &OBME->OBME.value.recordVersion;
+            return NULL;
+        case 31: //betaVersion
+            if(OBME.IsLoaded() && OBME->OBME.IsLoaded())
+                return &OBME->OBME.value.betaVersion;
+            return NULL;
+        case 32: //minorVersion
+            if(OBME.IsLoaded() && OBME->OBME.IsLoaded())
+                return &OBME->OBME.value.minorVersion;
+            return NULL;
+        case 33: //majorVersion
+            if(OBME.IsLoaded() && OBME->OBME.IsLoaded())
+                return &OBME->OBME.value.majorVersion;
+            return NULL;
+        case 34: //mgefParamAInfo
+            if(OBME.IsLoaded() && OBME->OBME.IsLoaded())
+                return &OBME->OBME.value.mgefParamAInfo;
+            return NULL;
+        case 35: //mgefParamBInfo
+            if(OBME.IsLoaded() && OBME->OBME.IsLoaded())
+                return &OBME->OBME.value.mgefParamBInfo;
+            return NULL;
+        case 37: //handlerCode
+            if(OBME.IsLoaded() && OBME->OBME.IsLoaded())
+                return &OBME->OBME.value.handlerCode;
+            return NULL;
+        case 38: //mgefFlagOverrides
+            if(OBME.IsLoaded() && OBME->OBME.IsLoaded())
+                return &OBME->OBME.value.mgefFlagOverrides;
+            return NULL;
+        case 39: //mgefParamB
+            if(OBME.IsLoaded() && OBME->OBME.IsLoaded())
+                return &OBME->OBME.value.mgefParamB;
+            return NULL;
+        case 41: //mgefCode
+            if(OBME.IsLoaded() && OBME->EDDX.IsLoaded())
+                return &OBME->EDDX.value.mgefCode;
+            return NULL;
         default:
             return NULL;
         }
@@ -148,6 +216,13 @@ unsigned int MGEFRecord::GetFieldArraySize(const unsigned int Field)
             return 2;
         case 29: //counterEffects
             return (unsigned int)ESCE.size();
+        //OBME Fields
+        case 36: //reserved1
+            return 0x2;
+        case 40: //reserved2
+            return 0x1C;
+        case 42: //DATX
+            return 0x20;
         default:
             return 0;
         }
@@ -171,13 +246,33 @@ void MGEFRecord::GetFieldArray(const unsigned int Field, void **FieldValues)
             //for(unsigned int p = 0;p < ESCE.size();p++)
             //    FieldValues[p] = &ESCE[p];
             return;
+
+        //OBME Fields
+        case 36: //reserved1
+            if(OBME.IsLoaded() && OBME->OBME.IsLoaded())
+                *FieldValues = &OBME->OBME.value.reserved1[0];
+            else
+                *FieldValues = NULL;
+            return;
+        case 40: //reserved2
+            if(OBME.IsLoaded() && OBME->OBME.IsLoaded())
+                *FieldValues = &OBME->OBME.value.reserved2[0];
+            else
+                *FieldValues = NULL;
+            return;
+        case 42: //DATX
+            if(OBME.IsLoaded() && OBME->DATX.IsLoaded())
+                *FieldValues = OBME->DATX.value;
+            else
+                *FieldValues = NULL;
+            return;
         default:
             *FieldValues = NULL;
             return;
         }
     }
 
-void MGEFRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void MGEFRecord::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {
@@ -203,7 +298,7 @@ void MGEFRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void MGEFRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue)
+void MGEFRecord::SetField(const unsigned int Field, float FieldValue)
     {
     switch(Field)
         {
@@ -230,7 +325,7 @@ void MGEFRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void MGEFRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
+void MGEFRecord::SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(Field)
         {
@@ -245,13 +340,36 @@ void MGEFRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
             DATA.value.unused1[0] = FieldValue[0];
             DATA.value.unused1[1] = FieldValue[1];
             break;
+        //OBME Fields
+        case 36: //reserved1
+            if(nSize != 0x2)
+                return;
+            OBME.Load();
+            OBME->OBME.Load();
+            OBME->OBME.value.reserved1[0] = FieldValue[0];
+            OBME->OBME.value.reserved1[1] = FieldValue[1];
+            break;
+        case 40: //reserved2
+            if(nSize != 0x1C)
+                return;
+            OBME.Load();
+            OBME->OBME.Load();
+            memcpy(&OBME->OBME.value.reserved2[0], &FieldValue[0], 0x1C);
+            break;
+        case 42: //DATX
+            if(nSize != 0x20)
+                return;
+            OBME.Load();
+            OBME->DATX.Load();
+            OBME->DATX.Copy(FieldValue, nSize);
+            break;
         default:
             return;
         }
     return;
     }
 
-void MGEFRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue)
+void MGEFRecord::SetOtherField(const unsigned int Field, unsigned int FieldValue)
     {
     switch(Field)
         {
@@ -260,35 +378,51 @@ void MGEFRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
             break;
         case 14: //associated
             DATA.value.associated = FieldValue;
-            FormIDHandler.AddMaster(DATA.value.associated);
+            break;
+        case 16: //resistValue
+            DATA.value.resistValue = FieldValue;
             break;
         case 19: //light
             DATA.value.light = FieldValue;
-            FormIDHandler.AddMaster(DATA.value.light);
             break;
         case 21: //effectShader
             DATA.value.effectShader = FieldValue;
-            FormIDHandler.AddMaster(DATA.value.effectShader);
             break;
         case 22: //enchantEffect
             DATA.value.enchantEffect = FieldValue;
-            FormIDHandler.AddMaster(DATA.value.enchantEffect);
             break;
         case 23: //castingSound
             DATA.value.castingSound = FieldValue;
-            FormIDHandler.AddMaster(DATA.value.castingSound);
             break;
         case 24: //boltSound
             DATA.value.boltSound = FieldValue;
-            FormIDHandler.AddMaster(DATA.value.boltSound);
             break;
         case 25: //hitSound
             DATA.value.hitSound = FieldValue;
-            FormIDHandler.AddMaster(DATA.value.hitSound);
             break;
         case 26: //areaSound
             DATA.value.areaSound = FieldValue;
-            FormIDHandler.AddMaster(DATA.value.areaSound);
+            break;
+        //OBME Fields
+        case 37: //handlerCode
+            OBME.Load();
+            OBME->OBME.Load();
+            OBME->OBME.value.handlerCode = FieldValue;
+            break;
+        case 38: //mgefFlagOverrides
+            OBME.Load();
+            OBME->OBME.Load();
+            OBME->OBME.value.mgefFlagOverrides = FieldValue;
+            break;
+        case 39: //mgefParamB
+            OBME.Load();
+            OBME->OBME.Load();
+            OBME->OBME.value.mgefParamB = FieldValue;
+            break;
+        case 41: //mgefCode
+            OBME.Load();
+            OBME->EDDX.Load();
+            OBME->EDDX.value.mgefCode = FieldValue;
             break;
         default:
             return;
@@ -296,23 +430,20 @@ void MGEFRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
     return;
     }
 
-void MGEFRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, int FieldValue)
+void MGEFRecord::SetField(const unsigned int Field, int FieldValue)
     {
     switch(Field)
         {
         case 15: //school
             DATA.value.school = FieldValue;
             break;
-        case 16: //resistValue
-            DATA.value.resistValue = FieldValue;
-            break;
         default:
             return;
         }
     return;
     }
 
-void MGEFRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned short FieldValue)
+void MGEFRecord::SetField(const unsigned int Field, unsigned short FieldValue)
     {
     switch(Field)
         {
@@ -325,7 +456,7 @@ void MGEFRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void MGEFRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue[], unsigned int nSize)
+void MGEFRecord::SetField(const unsigned int Field, unsigned int FieldValue[], unsigned int nSize)
     {
     switch(Field)
         {
@@ -343,9 +474,51 @@ void MGEFRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
+void MGEFRecord::SetField(const unsigned int Field, unsigned char FieldValue)
+    {
+    switch(Field)
+        {
+        //OBME Fields
+        case 30: //recordVersion
+            OBME.Load();
+            OBME->OBME.Load();
+            OBME->OBME.value.recordVersion = FieldValue;
+            break;
+        case 31: //betaVersion
+            OBME.Load();
+            OBME->OBME.Load();
+            OBME->OBME.value.betaVersion = FieldValue;
+            break;
+        case 32: //minorVersion
+            OBME.Load();
+            OBME->OBME.Load();
+            OBME->OBME.value.minorVersion = FieldValue;
+            break;
+        case 33: //majorVersion
+            OBME.Load();
+            OBME->OBME.Load();
+            OBME->OBME.value.majorVersion = FieldValue;
+            break;
+        case 34: //mgefParamAInfo
+            OBME.Load();
+            OBME->OBME.Load();
+            OBME->OBME.value.mgefParamAInfo = FieldValue;
+            break;
+        case 35: //mgefParamBInfo
+            OBME.Load();
+            OBME->OBME.Load();
+            OBME->OBME.value.mgefParamBInfo = FieldValue;
+            break;
+        default:
+            return;
+        }
+    return;
+    }
+
 int MGEFRecord::DeleteField(const unsigned int Field)
     {
     MGEFDATA defaultDATA;
+    MGEFOBME defaultOBME;
     switch(Field)
         {
         case 5: //eid
@@ -426,6 +599,62 @@ int MGEFRecord::DeleteField(const unsigned int Field)
             break;
         case 29: //counterEffects
             ESCE.clear();
+            break;
+        //OBME Fields
+        case 30: //recordVersion
+            if(OBME.IsLoaded() && OBME->OBME.IsLoaded())
+                OBME->OBME.value.recordVersion = defaultOBME.recordVersion;
+            break;
+        case 31: //betaVersion
+            if(OBME.IsLoaded() && OBME->OBME.IsLoaded())
+                OBME->OBME.value.betaVersion = defaultOBME.betaVersion;
+            break;
+        case 32: //minorVersion
+            if(OBME.IsLoaded() && OBME->OBME.IsLoaded())
+                OBME->OBME.value.minorVersion = defaultOBME.minorVersion;
+            break;
+        case 33: //majorVersion
+            if(OBME.IsLoaded() && OBME->OBME.IsLoaded())
+                OBME->OBME.value.majorVersion = defaultOBME.majorVersion;
+            break;
+        case 34: //mgefParamAInfo
+            if(OBME.IsLoaded() && OBME->OBME.IsLoaded())
+                OBME->OBME.value.mgefParamAInfo = defaultOBME.mgefParamAInfo;
+            break;
+        case 35: //mgefParamBInfo
+            if(OBME.IsLoaded() && OBME->OBME.IsLoaded())
+                OBME->OBME.value.mgefParamBInfo = defaultOBME.mgefParamBInfo;
+            break;
+        case 36: //reserved1
+            if(OBME.IsLoaded() && OBME->OBME.IsLoaded())
+                {
+                OBME->OBME.value.reserved1[0] = defaultOBME.reserved1[0];
+                OBME->OBME.value.reserved1[1] = defaultOBME.reserved1[1];
+                }
+            break;
+        case 37: //handlerCode
+            if(OBME.IsLoaded() && OBME->OBME.IsLoaded())
+                OBME->OBME.value.handlerCode = defaultOBME.handlerCode;
+            break;
+        case 38: //mgefFlagOverrides
+            if(OBME.IsLoaded() && OBME->OBME.IsLoaded())
+                OBME->OBME.value.mgefFlagOverrides = defaultOBME.mgefFlagOverrides;
+            break;
+        case 39: //mgefParamB
+            if(OBME.IsLoaded() && OBME->OBME.IsLoaded())
+                OBME->OBME.value.mgefParamB = defaultOBME.mgefParamB;
+            break;
+        case 40: //reserved2
+            if(OBME.IsLoaded() && OBME->OBME.IsLoaded())
+                memcpy(&OBME->OBME.value.reserved2[0], &defaultOBME.reserved2[0], 0x1C);
+            break;
+        case 41: //mgefCode
+            if(OBME.IsLoaded() && OBME->EDDX.IsLoaded())
+                OBME->EDDX.Unload();
+            break;
+        case 42: //DATX
+            if(OBME.IsLoaded() && OBME->DATX.IsLoaded())
+                OBME->DATX.Unload();
             break;
         default:
             return 0;

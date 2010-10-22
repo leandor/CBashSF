@@ -115,7 +115,7 @@ void SLGMRecord::GetFieldArray(const unsigned int Field, void **FieldValues)
         }
     }
 
-void SLGMRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void SLGMRecord::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {
@@ -138,7 +138,7 @@ void SLGMRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void SLGMRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue)
+void SLGMRecord::SetField(const unsigned int Field, float FieldValue)
     {
     switch(Field)
         {
@@ -156,7 +156,7 @@ void SLGMRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void SLGMRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
+void SLGMRecord::SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(Field)
         {
@@ -171,14 +171,13 @@ void SLGMRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void SLGMRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue)
+void SLGMRecord::SetOtherField(const unsigned int Field, unsigned int FieldValue)
     {
     switch(Field)
         {
         case 11: //script
             SCRI.Load();
             SCRI->fid = FieldValue;
-            FormIDHandler.AddMaster(SCRI->fid);
             break;
         case 12: //value
             DATA.value.value = FieldValue;
@@ -189,7 +188,7 @@ void SLGMRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
     return;
     }
 
-void SLGMRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue)
+void SLGMRecord::SetField(const unsigned int Field, unsigned char FieldValue)
     {
     switch(Field)
         {

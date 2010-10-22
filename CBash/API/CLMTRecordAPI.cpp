@@ -194,7 +194,7 @@ void * CLMTRecord::GetListField(const unsigned int subField, const unsigned int 
         }
     }
 
-void CLMTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void CLMTRecord::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {
@@ -217,7 +217,7 @@ void CLMTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void CLMTRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue)
+void CLMTRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue)
     {
     switch(subField)
         {
@@ -228,7 +228,6 @@ void CLMTRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
                 {
                 case 1: //weather
                     Weathers[listIndex].weather = FieldValue;
-                    FormIDHandler.AddMaster(Weathers[listIndex].weather);
                     break;
                 default:
                     return;
@@ -239,7 +238,7 @@ void CLMTRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
         }
     }
 
-void CLMTRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, int FieldValue)
+void CLMTRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, int FieldValue)
     {
     switch(subField)
         {
@@ -260,7 +259,7 @@ void CLMTRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
         }
     }
 
-void CLMTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue)
+void CLMTRecord::SetField(const unsigned int Field, float FieldValue)
     {
     switch(Field)
         {
@@ -275,7 +274,7 @@ void CLMTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void CLMTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
+void CLMTRecord::SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(Field)
         {
@@ -290,7 +289,7 @@ void CLMTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void CLMTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue)
+void CLMTRecord::SetField(const unsigned int Field, unsigned char FieldValue)
     {
     switch(Field)
         {

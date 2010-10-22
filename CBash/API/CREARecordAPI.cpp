@@ -517,7 +517,7 @@ void * CREARecord::GetListField(const unsigned int subField, const unsigned int 
         }
     }
 
-void CREARecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void CREARecord::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {
@@ -543,7 +543,7 @@ void CREARecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void CREARecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue)
+void CREARecord::SetField(const unsigned int Field, float FieldValue)
     {
     switch(Field)
         {
@@ -567,7 +567,7 @@ void CREARecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void CREARecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
+void CREARecord::SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(Field)
         {
@@ -602,7 +602,7 @@ void CREARecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void CREARecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue)
+void CREARecord::SetOtherField(const unsigned int Field, unsigned int FieldValue)
     {
     switch(Field)
         {
@@ -612,12 +612,10 @@ void CREARecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
         case 21: //deathItem
             INAM.Load();
             INAM->fid = FieldValue;
-            FormIDHandler.AddMaster(INAM->fid);
             break;
         case 22: //script
             SCRI.Load();
             SCRI->fid = FieldValue;
-            FormIDHandler.AddMaster(SCRI->fid);
             break;
         case 28: //services
             AIDT.value.flags = FieldValue;
@@ -625,12 +623,10 @@ void CREARecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
         case 52: //combatStyle
             ZNAM.Load();
             ZNAM->fid = FieldValue;
-            FormIDHandler.AddMaster(ZNAM->fid);
             break;
         case 56: //inheritsSoundsFrom
             CSCR.Load();
             CSCR->fid = FieldValue;
-            FormIDHandler.AddMaster(CSCR->fid);
             break;
         default:
             return;
@@ -638,7 +634,7 @@ void CREARecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
     return;
     }
 
-void CREARecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned short FieldValue)
+void CREARecord::SetField(const unsigned int Field, unsigned short FieldValue)
     {
     switch(Field)
         {
@@ -669,7 +665,7 @@ void CREARecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void CREARecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, short FieldValue)
+void CREARecord::SetField(const unsigned int Field, short FieldValue)
     {
     switch(Field)
         {
@@ -682,7 +678,7 @@ void CREARecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void CREARecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue)
+void CREARecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue)
     {
     switch(subField)
         {
@@ -693,7 +689,6 @@ void CREARecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
                 {
                 case 1: //faction
                     SNAM[listIndex]->value.faction = FieldValue;
-                    FormIDHandler.AddMaster(SNAM[listIndex]->value.faction);
                     break;
                 default:
                     return;
@@ -706,7 +701,6 @@ void CREARecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
                 {
                 case 1: //item
                     CNTO[listIndex]->value.item = FieldValue;
-                    FormIDHandler.AddMaster(CNTO[listIndex]->value.item);
                     break;
                 default:
                     return;
@@ -722,7 +716,6 @@ void CREARecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
                     break;
                 case 2: //sound
                     Sounds[listIndex]->CSDI.value.fid = FieldValue;
-                    FormIDHandler.AddMaster(Sounds[listIndex]->CSDI.value.fid);
                     break;
                 default:
                     return;
@@ -734,7 +727,7 @@ void CREARecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void CREARecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue)
+void CREARecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue)
     {
     switch(subField)
         {
@@ -768,7 +761,7 @@ void CREARecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void CREARecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, int FieldValue)
+void CREARecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, int FieldValue)
     {
     switch(subField)
         {
@@ -790,7 +783,7 @@ void CREARecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void CREARecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize)
+void CREARecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(subField)
         {
@@ -816,7 +809,7 @@ void CREARecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void CREARecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue[], unsigned int nSize)
+void CREARecord::SetField(const unsigned int Field, unsigned int FieldValue[], unsigned int nSize)
     {
     switch(Field)
         {
@@ -828,7 +821,6 @@ void CREARecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
                 for(unsigned int x = 0; x < nSize; x++)
                     {
                     SPLO[x] = new unsigned int(FieldValue[x]);
-                    FormIDHandler.AddMaster(SPLO[x]);
                     }
                 }
             break;
@@ -840,7 +832,6 @@ void CREARecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
                 for(unsigned int x = 0; x < nSize; x++)
                     {
                     PKID[x] = new unsigned int(FieldValue[x]);
-                    FormIDHandler.AddMaster(PKID[x]);
                     }
                 }
             break;
@@ -850,7 +841,7 @@ void CREARecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void CREARecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue)
+void CREARecord::SetField(const unsigned int Field, unsigned char FieldValue)
     {
     switch(Field)
         {
@@ -918,7 +909,7 @@ void CREARecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void CREARecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char FieldValue)
+void CREARecord::SetField(const unsigned int Field, char FieldValue)
     {
     switch(Field)
         {
@@ -931,7 +922,7 @@ void CREARecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void CREARecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char **FieldValue, unsigned int nSize)
+void CREARecord::SetField(const unsigned int Field, char **FieldValue, unsigned int nSize)
     {
     switch(Field)
         {

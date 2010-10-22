@@ -778,7 +778,7 @@ void * LANDRecord::GetListX2Field(const unsigned int subField, const unsigned in
     }
 
 
-void LANDRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue)
+void LANDRecord::SetField(const unsigned int Field, float FieldValue)
     {
     switch(Field)
         {
@@ -792,7 +792,7 @@ void LANDRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void LANDRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
+void LANDRecord::SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(Field)
         {
@@ -813,7 +813,7 @@ void LANDRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void LANDRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue)
+void LANDRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue)
     {
     switch(subField)
         {
@@ -824,7 +824,6 @@ void LANDRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
                 {
                 case 1: //texture
                     BTXT[listIndex]->value.texture = FieldValue;
-                    FormIDHandler.AddMaster(BTXT[listIndex]->value.texture);
                     break;
                 default:
                     return;
@@ -837,7 +836,6 @@ void LANDRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
                 {
                 case 1: //texture
                     Layers[listIndex]->ATXT.value.texture = FieldValue;
-                    FormIDHandler.AddMaster(Layers[listIndex]->ATXT.value.texture);
                     break;
                 default:
                     return;
@@ -850,7 +848,6 @@ void LANDRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
                 {
                 case 1: //texture
                     VTEX[listIndex] = FieldValue;
-                    FormIDHandler.AddMaster(VTEX[listIndex]);
                     break;
                 default:
                     return;
@@ -863,7 +860,7 @@ void LANDRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     }
 
 
-void LANDRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue)
+void LANDRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue)
     {
     switch(subField)
         {
@@ -897,7 +894,7 @@ void LANDRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void LANDRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize)
+void LANDRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(subField)
         {
@@ -935,7 +932,7 @@ void LANDRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void LANDRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, short FieldValue)
+void LANDRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, short FieldValue)
     {
     switch(subField)
         {
@@ -969,7 +966,7 @@ void LANDRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void LANDRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned char FieldValue)
+void LANDRecord::SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned char FieldValue)
     {
     switch(subField)
         {
@@ -1060,7 +1057,7 @@ void LANDRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned in
     return;
     }
 
-void LANDRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, char FieldValue)
+void LANDRecord::SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, char FieldValue)
     {
     switch(subField)
         {
@@ -1085,7 +1082,7 @@ void LANDRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned in
     return;
     }
 
-void LANDRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned short FieldValue)
+void LANDRecord::SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned short FieldValue)
     {
     switch(subField)
         {
@@ -1116,7 +1113,7 @@ void LANDRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned in
     return;
     }
 
-void LANDRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned char *FieldValue, unsigned int nSize)
+void LANDRecord::SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(subField)
         {
@@ -1150,7 +1147,7 @@ void LANDRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned in
     return;
     }
 
-void LANDRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, float FieldValue)
+void LANDRecord::SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, float FieldValue)
     {
     signed char newOffset;
     unsigned char curQuadrant;
@@ -1600,7 +1597,7 @@ void LANDRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned in
     return;
     }
 
-void LANDRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned int FieldValue)
+void LANDRecord::SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned int FieldValue)
     {
     unsigned char curQuadrant;
     ReqSubRecord<LANDGENTXT> *curTexture;
@@ -1620,7 +1617,6 @@ void LANDRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned in
                         if(BTXT[x]->value.quadrant == curQuadrant)
                             {
                             BTXT[x]->value.texture = FieldValue;
-                            FormIDHandler.AddMaster(BTXT[x]->value.texture);
                             return;
                             }
                     //No existing BTXT, so make one if able
@@ -1630,7 +1626,6 @@ void LANDRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned in
                     curTexture->value.layer = -1;
                     curTexture->value.quadrant = curQuadrant;
                     curTexture->value.texture = FieldValue;
-                    FormIDHandler.AddMaster(curTexture->value.texture);
                     BTXT.push_back(curTexture);
                     break;
                 case 9: //alphaLayer1Texture
@@ -1639,14 +1634,12 @@ void LANDRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned in
                         if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 0)
                             {
                             Layers[x]->ATXT.value.texture = FieldValue;
-                            FormIDHandler.AddMaster(Layers[x]->ATXT.value.texture);
                             return;
                             }
                     curLayer = new LANDLAYERS;
                     curLayer->ATXT.value.layer = 0;
                     curLayer->ATXT.value.quadrant = curQuadrant;
                     curLayer->ATXT.value.texture = FieldValue;
-                    FormIDHandler.AddMaster(curLayer->ATXT.value.texture);
                     Layers.push_back(curLayer);
                     break;
                 case 11: //alphaLayer2Texture
@@ -1655,14 +1648,12 @@ void LANDRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned in
                         if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 1)
                             {
                             Layers[x]->ATXT.value.texture = FieldValue;
-                            FormIDHandler.AddMaster(Layers[x]->ATXT.value.texture);
                             return;
                             }
                     curLayer = new LANDLAYERS;
                     curLayer->ATXT.value.layer = 1;
                     curLayer->ATXT.value.quadrant = curQuadrant;
                     curLayer->ATXT.value.texture = FieldValue;
-                    FormIDHandler.AddMaster(curLayer->ATXT.value.texture);
                     Layers.push_back(curLayer);
                     break;
                 case 13: //alphaLayer3Texture
@@ -1671,14 +1662,12 @@ void LANDRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned in
                         if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 2)
                             {
                             Layers[x]->ATXT.value.texture = FieldValue;
-                            FormIDHandler.AddMaster(Layers[x]->ATXT.value.texture);
                             return;
                             }
                     curLayer = new LANDLAYERS;
                     curLayer->ATXT.value.layer = 2;
                     curLayer->ATXT.value.quadrant = curQuadrant;
                     curLayer->ATXT.value.texture = FieldValue;
-                    FormIDHandler.AddMaster(curLayer->ATXT.value.texture);
                     Layers.push_back(curLayer);
                     break;
                 case 15: //alphaLayer4Texture
@@ -1687,14 +1676,12 @@ void LANDRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned in
                         if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 3)
                             {
                             Layers[x]->ATXT.value.texture = FieldValue;
-                            FormIDHandler.AddMaster(Layers[x]->ATXT.value.texture);
                             return;
                             }
                     curLayer = new LANDLAYERS;
                     curLayer->ATXT.value.layer = 3;
                     curLayer->ATXT.value.quadrant = curQuadrant;
                     curLayer->ATXT.value.texture = FieldValue;
-                    FormIDHandler.AddMaster(curLayer->ATXT.value.texture);
                     Layers.push_back(curLayer);
                     break;
                 case 17: //alphaLayer5Texture
@@ -1703,14 +1690,12 @@ void LANDRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned in
                         if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 4)
                             {
                             Layers[x]->ATXT.value.texture = FieldValue;
-                            FormIDHandler.AddMaster(Layers[x]->ATXT.value.texture);
                             return;
                             }
                     curLayer = new LANDLAYERS;
                     curLayer->ATXT.value.layer = 4;
                     curLayer->ATXT.value.quadrant = curQuadrant;
                     curLayer->ATXT.value.texture = FieldValue;
-                    FormIDHandler.AddMaster(curLayer->ATXT.value.texture);
                     Layers.push_back(curLayer);
                     break;
                 case 19: //alphaLayer6Texture
@@ -1719,14 +1704,12 @@ void LANDRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned in
                         if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 5)
                             {
                             Layers[x]->ATXT.value.texture = FieldValue;
-                            FormIDHandler.AddMaster(Layers[x]->ATXT.value.texture);
                             return;
                             }
                     curLayer = new LANDLAYERS;
                     curLayer->ATXT.value.layer = 5;
                     curLayer->ATXT.value.quadrant = curQuadrant;
                     curLayer->ATXT.value.texture = FieldValue;
-                    FormIDHandler.AddMaster(curLayer->ATXT.value.texture);
                     Layers.push_back(curLayer);
                     break;
                 case 21: //alphaLayer7Texture
@@ -1735,14 +1718,12 @@ void LANDRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned in
                         if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 6)
                             {
                             Layers[x]->ATXT.value.texture = FieldValue;
-                            FormIDHandler.AddMaster(Layers[x]->ATXT.value.texture);
                             return;
                             }
                     curLayer = new LANDLAYERS;
                     curLayer->ATXT.value.layer = 6;
                     curLayer->ATXT.value.quadrant = curQuadrant;
                     curLayer->ATXT.value.texture = FieldValue;
-                    FormIDHandler.AddMaster(curLayer->ATXT.value.texture);
                     Layers.push_back(curLayer);
                     break;
                 case 23: //alphaLayer8Texture
@@ -1751,14 +1732,12 @@ void LANDRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned in
                         if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 7)
                             {
                             Layers[x]->ATXT.value.texture = FieldValue;
-                            FormIDHandler.AddMaster(Layers[x]->ATXT.value.texture);
                             return;
                             }
                     curLayer = new LANDLAYERS;
                     curLayer->ATXT.value.layer = 7;
                     curLayer->ATXT.value.quadrant = curQuadrant;
                     curLayer->ATXT.value.texture = FieldValue;
-                    FormIDHandler.AddMaster(curLayer->ATXT.value.texture);
                     Layers.push_back(curLayer);
                     break;
                 default:

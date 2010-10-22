@@ -125,7 +125,7 @@ void DOORRecord::GetFieldArray(const unsigned int Field, void **FieldValues)
         }
     }
 
-void DOORRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void DOORRecord::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {
@@ -145,7 +145,7 @@ void DOORRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void DOORRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue)
+void DOORRecord::SetField(const unsigned int Field, float FieldValue)
     {
     switch(Field)
         {
@@ -160,7 +160,7 @@ void DOORRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void DOORRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
+void DOORRecord::SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(Field)
         {
@@ -175,29 +175,25 @@ void DOORRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void DOORRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue)
+void DOORRecord::SetOtherField(const unsigned int Field, unsigned int FieldValue)
     {
     switch(Field)
         {
         case 10: //script
             SCRI.Load();
             SCRI->fid = FieldValue;
-            FormIDHandler.AddMaster(SCRI->fid);
             break;
         case 11: //soundOpen
             SNAM.Load();
             SNAM->fid = FieldValue;
-            FormIDHandler.AddMaster(SNAM->fid);
             break;
         case 12: //soundClose
             ANAM.Load();
             ANAM->fid = FieldValue;
-            FormIDHandler.AddMaster(ANAM->fid);
             break;
         case 13: //soundLoop
             BNAM.Load();
             BNAM->fid = FieldValue;
-            FormIDHandler.AddMaster(BNAM->fid);
             break;
         default:
             return;
@@ -205,7 +201,7 @@ void DOORRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
     return;
     }
 
-void DOORRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue)
+void DOORRecord::SetField(const unsigned int Field, unsigned char FieldValue)
     {
     switch(Field)
         {
@@ -218,7 +214,7 @@ void DOORRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void DOORRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue[], unsigned int nSize)
+void DOORRecord::SetField(const unsigned int Field, unsigned int FieldValue[], unsigned int nSize)
     {
     switch(Field)
         {
@@ -230,7 +226,6 @@ void DOORRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
                 for(unsigned int x = 0; x < nSize; x++)
                     {
                     TNAM[x] = new unsigned int(FieldValue[x]);
-                    FormIDHandler.AddMaster(TNAM[x]);
                     }
                 }
             break;

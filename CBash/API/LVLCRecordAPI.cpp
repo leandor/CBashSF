@@ -201,7 +201,7 @@ void * LVLCRecord::GetListField(const unsigned int subField, const unsigned int 
         }
     }
 
-void LVLCRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void LVLCRecord::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {
@@ -214,7 +214,7 @@ void LVLCRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void LVLCRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue)
+void LVLCRecord::SetField(const unsigned int Field, unsigned char FieldValue)
     {
     switch(Field)
         {
@@ -237,19 +237,17 @@ void LVLCRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void LVLCRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue)
+void LVLCRecord::SetOtherField(const unsigned int Field, unsigned int FieldValue)
     {
     switch(Field)
         {
         case 8: //script
             SCRI.Load();
             SCRI->fid = FieldValue;
-            FormIDHandler.AddMaster(SCRI->fid);
             break;
         case 9: //template
             TNAM.Load();
             TNAM->fid = FieldValue;
-            FormIDHandler.AddMaster(TNAM->fid);
             break;
         default:
             return;
@@ -257,7 +255,7 @@ void LVLCRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
     return;
     }
 
-void LVLCRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, short FieldValue)
+void LVLCRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, short FieldValue)
     {
     switch(subField)
         {
@@ -282,7 +280,7 @@ void LVLCRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void LVLCRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize)
+void LVLCRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(subField)
         {
@@ -313,7 +311,7 @@ void LVLCRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void LVLCRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue)
+void LVLCRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue)
     {
     switch(subField)
         {
@@ -324,7 +322,6 @@ void LVLCRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
                 {
                 case 3: //listId
                     Entries[listIndex]->value.listId = FieldValue;
-                    FormIDHandler.AddMaster(Entries[listIndex]->value.listId);
                     break;
                 default:
                     return;

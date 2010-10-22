@@ -341,7 +341,7 @@ void WATRRecord::GetFieldArray(const unsigned int Field, void **FieldValues)
         }
     }
 
-void WATRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void WATRRecord::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {
@@ -360,7 +360,7 @@ void WATRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void WATRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue)
+void WATRRecord::SetField(const unsigned int Field, unsigned char FieldValue)
     {
     switch(Field)
         {
@@ -416,29 +416,25 @@ void WATRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void WATRRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue)
+void WATRRecord::SetOtherField(const unsigned int Field, unsigned int FieldValue)
     {
     switch(Field)
         {
         case 10: //sound
             SNAM.Load();
             SNAM->fid = FieldValue;
-            FormIDHandler.AddMaster(SNAM->fid);
             break;
         case 47: //dayWater
             GNAM.Load();
             GNAM->dayWater = FieldValue;
-            FormIDHandler.AddMaster(GNAM->dayWater);
             break;
         case 48: //nightWater
             GNAM.Load();
             GNAM->nightWater = FieldValue;
-            FormIDHandler.AddMaster(GNAM->nightWater);
             break;
         case 49: //underWater
             GNAM.Load();
             GNAM->underWater = FieldValue;
-            FormIDHandler.AddMaster(GNAM->underWater);
             break;
         default:
             return;
@@ -446,7 +442,7 @@ void WATRRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
     return;
     }
 
-void WATRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue)
+void WATRRecord::SetField(const unsigned int Field, float FieldValue)
     {
     switch(Field)
         {
@@ -540,7 +536,7 @@ void WATRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void WATRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
+void WATRRecord::SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(Field)
         {
@@ -576,7 +572,7 @@ void WATRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void WATRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned short FieldValue)
+void WATRRecord::SetField(const unsigned int Field, unsigned short FieldValue)
     {
     switch(Field)
         {

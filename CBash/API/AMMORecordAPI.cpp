@@ -132,7 +132,7 @@ void AMMORecord::GetFieldArray(const unsigned int Field, void **FieldValues)
         }
     }
 
-void AMMORecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void AMMORecord::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {
@@ -155,7 +155,7 @@ void AMMORecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void AMMORecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue)
+void AMMORecord::SetField(const unsigned int Field, float FieldValue)
     {
     switch(Field)
         {
@@ -176,7 +176,7 @@ void AMMORecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void AMMORecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
+void AMMORecord::SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(Field)
         {
@@ -198,14 +198,13 @@ void AMMORecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void AMMORecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue)
+void AMMORecord::SetOtherField(const unsigned int Field, unsigned int FieldValue)
     {
     switch(Field)
         {
         case 11: //enchantment
             ENAM.Load();
             ENAM->fid = FieldValue;
-            FormIDHandler.AddMaster(ENAM->fid);
             break;
         case 14: //flags
             DATA.value.flags = FieldValue;
@@ -219,7 +218,7 @@ void AMMORecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
     return;
     }
 
-void AMMORecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned short FieldValue)
+void AMMORecord::SetField(const unsigned int Field, unsigned short FieldValue)
     {
     switch(Field)
         {

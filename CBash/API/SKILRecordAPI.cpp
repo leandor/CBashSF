@@ -90,7 +90,7 @@ void * SKILRecord::GetOtherField(const unsigned int Field)
         }
     }
 
-void SKILRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void SKILRecord::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {
@@ -121,7 +121,7 @@ void SKILRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void SKILRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, int FieldValue)
+void SKILRecord::SetField(const unsigned int Field, int FieldValue)
     {
     switch(Field)
         {
@@ -140,7 +140,7 @@ void SKILRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void SKILRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue)
+void SKILRecord::SetOtherField(const unsigned int Field, unsigned int FieldValue)
     {
     switch(Field)
         {
@@ -153,7 +153,7 @@ void SKILRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
     return;
     }
 
-void SKILRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue)
+void SKILRecord::SetField(const unsigned int Field, float FieldValue)
     {
     switch(Field)
         {

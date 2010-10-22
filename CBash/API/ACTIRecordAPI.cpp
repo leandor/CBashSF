@@ -101,7 +101,7 @@ void ACTIRecord::GetFieldArray(const unsigned int Field, void **FieldValues)
         }
     }
 
-void ACTIRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void ACTIRecord::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {
@@ -121,7 +121,7 @@ void ACTIRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void ACTIRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue)
+void ACTIRecord::SetField(const unsigned int Field, float FieldValue)
     {
     switch(Field)
         {
@@ -136,7 +136,7 @@ void ACTIRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void ACTIRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
+void ACTIRecord::SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(Field)
         {
@@ -151,19 +151,17 @@ void ACTIRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void ACTIRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue)
+void ACTIRecord::SetOtherField(const unsigned int Field, unsigned int FieldValue)
     {
     switch(Field)
         {
         case 10: //script
             SCRI.Load();
             SCRI->fid = FieldValue;
-            FormIDHandler.AddMaster(SCRI->fid);
             break;
         case 11: //sound
             SNAM.Load();
             SNAM->fid = FieldValue;
-            FormIDHandler.AddMaster(SNAM->fid);
             break;
         default:
             return;

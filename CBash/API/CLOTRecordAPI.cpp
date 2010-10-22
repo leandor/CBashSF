@@ -199,7 +199,7 @@ void CLOTRecord::GetFieldArray(const unsigned int Field, void **FieldValues)
         }
     }
 
-void CLOTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void CLOTRecord::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {
@@ -237,19 +237,17 @@ void CLOTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void CLOTRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue)
+void CLOTRecord::SetOtherField(const unsigned int Field, unsigned int FieldValue)
     {
     switch(Field)
         {
         case 7: //script
             SCRI.Load();
             SCRI->fid = FieldValue;
-            FormIDHandler.AddMaster(SCRI->fid);
             break;
         case 8: //enchantment
             ENAM.Load();
             ENAM->fid = FieldValue;
-            FormIDHandler.AddMaster(ENAM->fid);
             break;
         case 10: //flags
             BMDT.value.flags = FieldValue;
@@ -263,7 +261,7 @@ void CLOTRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
     return;
     }
 
-void CLOTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned short FieldValue)
+void CLOTRecord::SetField(const unsigned int Field, unsigned short FieldValue)
     {
     switch(Field)
         {
@@ -277,7 +275,7 @@ void CLOTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void CLOTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue)
+void CLOTRecord::SetField(const unsigned int Field, float FieldValue)
     {
     switch(Field)
         {
@@ -310,7 +308,7 @@ void CLOTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void CLOTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
+void CLOTRecord::SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(Field)
         {

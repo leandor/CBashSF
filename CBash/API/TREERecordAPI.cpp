@@ -136,7 +136,7 @@ void TREERecord::GetFieldArray(const unsigned int Field, void **FieldValues)
         }
     }
 
-void TREERecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void TREERecord::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {
@@ -156,7 +156,7 @@ void TREERecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void TREERecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue)
+void TREERecord::SetField(const unsigned int Field, float FieldValue)
     {
     switch(Field)
         {
@@ -198,7 +198,7 @@ void TREERecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void TREERecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
+void TREERecord::SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(Field)
         {
@@ -213,7 +213,7 @@ void TREERecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void TREERecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue[], unsigned int nSize)
+void TREERecord::SetField(const unsigned int Field, unsigned int FieldValue[], unsigned int nSize)
     {
     switch(Field)
         {
@@ -231,7 +231,7 @@ void TREERecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void TREERecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, int FieldValue)
+void TREERecord::SetField(const unsigned int Field, int FieldValue)
     {
     switch(Field)
         {

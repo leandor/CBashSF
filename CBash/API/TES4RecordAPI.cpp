@@ -73,7 +73,7 @@ void * TES4Record::GetOtherField(const unsigned int Field)
         }
     }
 
-void TES4Record::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char **FieldValue, unsigned int nSize)
+void TES4Record::SetField(const unsigned int Field, char **FieldValue, unsigned int nSize)
     {
     switch(Field)
         {
@@ -94,7 +94,7 @@ void TES4Record::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void TES4Record::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
+void TES4Record::SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(Field)
         {
@@ -110,7 +110,7 @@ void TES4Record::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void TES4Record::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue)
+void TES4Record::SetField(const unsigned int Field, float FieldValue)
     {
     switch(Field)
         {
@@ -123,7 +123,7 @@ void TES4Record::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void TES4Record::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue)
+void TES4Record::SetOtherField(const unsigned int Field, unsigned int FieldValue)
     {
     switch(Field)
         {
@@ -139,7 +139,7 @@ void TES4Record::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
     return;
     }
 
-void TES4Record::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void TES4Record::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {

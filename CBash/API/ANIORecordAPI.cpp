@@ -89,7 +89,7 @@ void ANIORecord::GetFieldArray(const unsigned int Field, void **FieldValues)
         }
     }
 
-void ANIORecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void ANIORecord::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {
@@ -106,7 +106,7 @@ void ANIORecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void ANIORecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue)
+void ANIORecord::SetField(const unsigned int Field, float FieldValue)
     {
     switch(Field)
         {
@@ -121,7 +121,7 @@ void ANIORecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void ANIORecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
+void ANIORecord::SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(Field)
         {
@@ -136,13 +136,12 @@ void ANIORecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void ANIORecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue)
+void ANIORecord::SetOtherField(const unsigned int Field, unsigned int FieldValue)
     {
     switch(Field)
         {
         case 9: //animationId
             DATA.value.fid = FieldValue;
-            FormIDHandler.AddMaster(DATA.value.fid);
             break;
         default:
             return;

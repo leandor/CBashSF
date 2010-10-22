@@ -307,7 +307,7 @@ void CELLRecord::GetFieldArray(const unsigned int Field, void **FieldValues)
         }
     }
 
-void CELLRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void CELLRecord::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {
@@ -323,7 +323,7 @@ void CELLRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void CELLRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue)
+void CELLRecord::SetField(const unsigned int Field, unsigned char FieldValue)
     {
     switch(Field)
         {
@@ -376,7 +376,7 @@ void CELLRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void CELLRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
+void CELLRecord::SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(Field)
         {
@@ -404,7 +404,7 @@ void CELLRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void CELLRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue)
+void CELLRecord::SetField(const unsigned int Field, float FieldValue)
     {
     switch(Field)
         {
@@ -434,7 +434,7 @@ void CELLRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void CELLRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, int FieldValue)
+void CELLRecord::SetField(const unsigned int Field, int FieldValue)
     {
     switch(Field)
         {
@@ -469,30 +469,26 @@ void CELLRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void CELLRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue)
+void CELLRecord::SetOtherField(const unsigned int Field, unsigned int FieldValue)
     {
     switch(Field)
         {
         case 27: //owner
             Ownership.Load();
             Ownership->XOWN.value.fid = FieldValue;
-            FormIDHandler.AddMaster(Ownership->XOWN.value.fid);
             break;
         case 29: //globalVariable
             Ownership.Load();
             Ownership->XGLB.Load();
             Ownership->XGLB->fid = FieldValue;
-            FormIDHandler.AddMaster(Ownership->XGLB->fid);
             break;
         case 30: //climate
             XCCM.value.fid = FieldValue;
             XCCM.isLoaded = true;
-            FormIDHandler.AddMaster(XCCM.value.fid);
             break;
         case 35: //water
             XCWT.value.fid = FieldValue;
             XCWT.isLoaded = true;
-            FormIDHandler.AddMaster(XCWT.value.fid);
             break;
         default:
             return;
@@ -500,7 +496,7 @@ void CELLRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
     return;
     }
 
-void CELLRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue[], unsigned int nSize)
+void CELLRecord::SetField(const unsigned int Field, unsigned int FieldValue[], unsigned int nSize)
     {
     switch(Field)
         {
@@ -512,7 +508,6 @@ void CELLRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
                 for(unsigned int x = 0; x < nSize; x++)
                     {
                     XCLR[x] = FieldValue[x];
-                    FormIDHandler.AddMaster(XCLR[x]);
                     }
                 }
             break;

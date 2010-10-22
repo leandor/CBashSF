@@ -181,7 +181,7 @@ void * FACTRecord::GetListField(const unsigned int subField, const unsigned int 
         }
     }
 
-void FACTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void FACTRecord::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {
@@ -197,7 +197,7 @@ void FACTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void FACTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue)
+void FACTRecord::SetField(const unsigned int Field, unsigned char FieldValue)
     {
     switch(Field)
         {
@@ -210,7 +210,7 @@ void FACTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void FACTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue)
+void FACTRecord::SetField(const unsigned int Field, float FieldValue)
     {
     switch(Field)
         {
@@ -223,7 +223,7 @@ void FACTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void FACTRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, int FieldValue)
+void FACTRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, int FieldValue)
     {
     switch(subField)
         {
@@ -257,7 +257,7 @@ void FACTRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void FACTRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue)
+void FACTRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue)
     {
     switch(subField)
         {
@@ -268,7 +268,6 @@ void FACTRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
                 {
                 case 1: //faction
                     XNAM[listIndex]->value.faction = FieldValue;
-                    FormIDHandler.AddMaster(XNAM[listIndex]->value.faction);
                     break;
                 default:
                     return;
@@ -280,7 +279,7 @@ void FACTRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void FACTRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, char *FieldValue)
+void FACTRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, char *FieldValue)
     {
     switch(subField)
         {

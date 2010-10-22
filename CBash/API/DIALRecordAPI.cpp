@@ -93,7 +93,7 @@ void DIALRecord::GetFieldArray(const unsigned int Field, void **FieldValues)
         }
     }
 
-void DIALRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void DIALRecord::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {
@@ -109,7 +109,7 @@ void DIALRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void DIALRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue[], unsigned int nSize)
+void DIALRecord::SetField(const unsigned int Field, unsigned int FieldValue[], unsigned int nSize)
     {
     switch(Field)
         {
@@ -123,7 +123,6 @@ void DIALRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
                 for(unsigned int x = 0; x < nSize; x++)
                     {
                     QSTI[x] = new unsigned int(FieldValue[x]);
-                    FormIDHandler.AddMaster(QSTI[x]);
                     }
                 }
             break;
@@ -137,7 +136,6 @@ void DIALRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
                 for(unsigned int x = 0; x < nSize; x++)
                     {
                     QSTR[x] = new unsigned int(FieldValue[x]);
-                    FormIDHandler.AddMaster(QSTR[x]);
                     }
                 }
             break;
@@ -147,7 +145,7 @@ void DIALRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void DIALRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue)
+void DIALRecord::SetField(const unsigned int Field, unsigned char FieldValue)
     {
     switch(Field)
         {

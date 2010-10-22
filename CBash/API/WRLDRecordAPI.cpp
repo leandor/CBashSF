@@ -176,7 +176,7 @@ void WRLDRecord::GetFieldArray(const unsigned int Field, void **FieldValues)
         }
     }
 
-void WRLDRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void WRLDRecord::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {
@@ -195,24 +195,21 @@ void WRLDRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void WRLDRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue)
+void WRLDRecord::SetOtherField(const unsigned int Field, unsigned int FieldValue)
     {
     switch(Field)
         {
         case 7: //parent
             WNAM.Load();
             WNAM->fid = FieldValue;
-            FormIDHandler.AddMaster(WNAM->fid);
             break;
         case 8: //climate
             CNAM.Load();
             CNAM->fid = FieldValue;
-            FormIDHandler.AddMaster(CNAM->fid);
             break;
         case 9: //water
             NAM2.Load();
             NAM2->fid = FieldValue;
-            FormIDHandler.AddMaster(NAM2->fid);
             break;
         case 22: //sound
             SNAM.Load();
@@ -224,7 +221,7 @@ void WRLDRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
     return;
     }
 
-void WRLDRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, int FieldValue)
+void WRLDRecord::SetField(const unsigned int Field, int FieldValue)
     {
     switch(Field)
         {
@@ -242,7 +239,7 @@ void WRLDRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void WRLDRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, short FieldValue)
+void WRLDRecord::SetField(const unsigned int Field, short FieldValue)
     {
     switch(Field)
         {
@@ -268,7 +265,7 @@ void WRLDRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void WRLDRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue)
+void WRLDRecord::SetField(const unsigned int Field, unsigned char FieldValue)
     {
     switch(Field)
         {
@@ -281,7 +278,7 @@ void WRLDRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void WRLDRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue)
+void WRLDRecord::SetField(const unsigned int Field, float FieldValue)
     {
     switch(Field)
         {
@@ -303,7 +300,7 @@ void WRLDRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void WRLDRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
+void WRLDRecord::SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(Field)
         {

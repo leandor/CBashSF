@@ -166,7 +166,7 @@ void ACHRRecord::GetFieldArray(const unsigned int Field, void **FieldValues)
         }
     }
 
-void ACHRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void ACHRRecord::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {
@@ -183,34 +183,29 @@ void ACHRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void ACHRRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue)
+void ACHRRecord::SetOtherField(const unsigned int Field, unsigned int FieldValue)
     {
     switch(Field)
         {
         case 6: //base
             NAME.value.fid = FieldValue;
-            FormIDHandler.AddMaster(NAME.value.fid);
             break;
         case 7: //unknownXPCIFormID
             XPCI.Load();
             XPCI->XPCI.Load();
             XPCI->XPCI->fid = FieldValue;
-            FormIDHandler.AddMaster(XPCI->XPCI->fid);
             break;
         case 12: //parent
             XESP.Load();
             XESP->parent = FieldValue;
-            FormIDHandler.AddMaster(XESP->parent);
             break;
         case 15: //merchantContainer
             XMRC.Load();
             XMRC->fid = FieldValue;
-            FormIDHandler.AddMaster(XMRC->fid);
             break;
         case 16: //horse
             XHRS.value.fid = FieldValue;
             XHRS.isLoaded = true;
-            FormIDHandler.AddMaster(XHRS.value.fid);
             break;
         default:
             return;
@@ -218,7 +213,7 @@ void ACHRRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
     return;
     }
 
-void ACHRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue)
+void ACHRRecord::SetField(const unsigned int Field, float FieldValue)
     {
     switch(Field)
         {
@@ -262,7 +257,7 @@ void ACHRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void ACHRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue)
+void ACHRRecord::SetField(const unsigned int Field, unsigned char FieldValue)
     {
     switch(Field)
         {
@@ -276,7 +271,7 @@ void ACHRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void ACHRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
+void ACHRRecord::SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(Field)
         {

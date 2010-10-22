@@ -158,7 +158,7 @@ void LIGHRecord::GetFieldArray(const unsigned int Field, void **FieldValues)
         }
     }
 
-void LIGHRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void LIGHRecord::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {
@@ -181,7 +181,7 @@ void LIGHRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void LIGHRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue)
+void LIGHRecord::SetField(const unsigned int Field, float FieldValue)
     {
     switch(Field)
         {
@@ -209,7 +209,7 @@ void LIGHRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void LIGHRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
+void LIGHRecord::SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(Field)
         {
@@ -229,14 +229,13 @@ void LIGHRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void LIGHRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue)
+void LIGHRecord::SetOtherField(const unsigned int Field, unsigned int FieldValue)
     {
     switch(Field)
         {
         case 9: //script
             SCRI.Load();
             SCRI->fid = FieldValue;
-            FormIDHandler.AddMaster(SCRI->fid);
             break;
         case 13: //radius
             DATA.value.radius = FieldValue;
@@ -250,7 +249,6 @@ void LIGHRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
         case 24: //sound
             SNAM.Load();
             SNAM->fid = FieldValue;
-            FormIDHandler.AddMaster(SNAM->fid);
             break;
         default:
             return;
@@ -258,7 +256,7 @@ void LIGHRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
     return;
     }
 
-void LIGHRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, int FieldValue)
+void LIGHRecord::SetField(const unsigned int Field, int FieldValue)
     {
     switch(Field)
         {
@@ -271,7 +269,7 @@ void LIGHRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void LIGHRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue)
+void LIGHRecord::SetField(const unsigned int Field, unsigned char FieldValue)
     {
     switch(Field)
         {

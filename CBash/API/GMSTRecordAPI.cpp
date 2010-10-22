@@ -66,7 +66,7 @@ void * GMSTRecord::GetOtherField(const unsigned int Field)
         }
     }
 
-void GMSTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, int FieldValue)
+void GMSTRecord::SetField(const unsigned int Field, int FieldValue)
     {
     switch(Field)
         {
@@ -79,7 +79,7 @@ void GMSTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
         }
     }
 
-void GMSTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue)
+void GMSTRecord::SetField(const unsigned int Field, float FieldValue)
     {
     switch(Field)
         {
@@ -92,7 +92,7 @@ void GMSTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
         }
     }
 
-void GMSTRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void GMSTRecord::SetField(const unsigned int Field, char *FieldValue)
     {
     unsigned int nSize;
     switch(Field)

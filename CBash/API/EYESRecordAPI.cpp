@@ -54,7 +54,7 @@ void * EYESRecord::GetOtherField(const unsigned int Field)
         }
     }
 
-void EYESRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void EYESRecord::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {
@@ -73,7 +73,7 @@ void EYESRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void EYESRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue)
+void EYESRecord::SetField(const unsigned int Field, unsigned char FieldValue)
     {
     switch(Field)
         {

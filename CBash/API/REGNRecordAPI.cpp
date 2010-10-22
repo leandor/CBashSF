@@ -733,7 +733,7 @@ void * REGNRecord::GetListX2Field(const unsigned int subField, const unsigned in
         }
     }
 
-void REGNRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void REGNRecord::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {
@@ -749,7 +749,7 @@ void REGNRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void REGNRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue)
+void REGNRecord::SetField(const unsigned int Field, unsigned char FieldValue)
     {
     switch(Field)
         {
@@ -766,7 +766,7 @@ void REGNRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void REGNRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
+void REGNRecord::SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(Field)
         {
@@ -781,13 +781,12 @@ void REGNRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void REGNRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue)
+void REGNRecord::SetOtherField(const unsigned int Field, unsigned int FieldValue)
     {
     switch(Field)
         {
         case 11: //worldspace
             WNAM.value.fid = FieldValue;
-            FormIDHandler.AddMaster(WNAM.value.fid);
             break;
         default:
             return;
@@ -795,7 +794,7 @@ void REGNRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
     return;
     }
 
-void REGNRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue)
+void REGNRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue)
     {
     switch(subField)
         {
@@ -833,7 +832,7 @@ void REGNRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void REGNRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue)
+void REGNRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue)
     {
     switch(subField)
         {
@@ -858,7 +857,7 @@ void REGNRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void REGNRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize)
+void REGNRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(subField)
         {
@@ -883,7 +882,7 @@ void REGNRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void REGNRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, char *FieldValue)
+void REGNRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, char *FieldValue)
     {
     switch(subField)
         {
@@ -908,7 +907,7 @@ void REGNRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void REGNRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, float FieldValue)
+void REGNRecord::SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, float FieldValue)
     {
     switch(subField)
         {
@@ -974,7 +973,7 @@ void REGNRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned in
         }
     }
 
-void REGNRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned int FieldValue)
+void REGNRecord::SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned int FieldValue)
     {
     switch(subField)
         {
@@ -990,7 +989,6 @@ void REGNRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned in
                         {
                         case 1: //objectId
                             Entries[listIndex]->RDOT[listX2Index].objectId = FieldValue;
-                            FormIDHandler.AddMaster(Entries[listIndex]->RDOT[listX2Index].objectId);
                             break;
                         default:
                             return;
@@ -1003,7 +1001,6 @@ void REGNRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned in
                         {
                         case 1: //grass
                             Entries[listIndex]->RDGS[listX2Index].grass = FieldValue;
-                            FormIDHandler.AddMaster(Entries[listIndex]->RDGS[listX2Index].grass);
                             break;
                         default:
                             return;
@@ -1015,7 +1012,6 @@ void REGNRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned in
                         {
                         case 1: //sound
                             Entries[listIndex]->RDSD[listX2Index].sound = FieldValue;
-                            FormIDHandler.AddMaster(Entries[listIndex]->RDSD[listX2Index].sound);
                             break;
                         case 2: //flags
                             Entries[listIndex]->RDSD[listX2Index].flags = FieldValue;
@@ -1033,7 +1029,6 @@ void REGNRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned in
                         {
                         case 1: //weather
                             Entries[listIndex]->RDWT[listX2Index].weather = FieldValue;
-                            FormIDHandler.AddMaster(Entries[listIndex]->RDWT[listX2Index].weather);
                             break;
                         case 2: //chance
                             Entries[listIndex]->RDWT[listX2Index].chance = FieldValue;
@@ -1050,7 +1045,7 @@ void REGNRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned in
         }
     }
 
-void REGNRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned short FieldValue)
+void REGNRecord::SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned short FieldValue)
     {
     switch(subField)
         {
@@ -1095,7 +1090,7 @@ void REGNRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned in
         }
     }
 
-void REGNRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned char *FieldValue, unsigned int nSize)
+void REGNRecord::SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(subField)
         {
@@ -1165,7 +1160,7 @@ void REGNRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned in
         }
     }
 
-void REGNRecord::SetListX2Field(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned char FieldValue)
+void REGNRecord::SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned char FieldValue)
     {
     switch(subField)
         {

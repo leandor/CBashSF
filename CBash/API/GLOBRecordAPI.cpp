@@ -51,7 +51,7 @@ void * GLOBRecord::GetOtherField(const unsigned int Field)
         }
     }
 
-void GLOBRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char FieldValue)
+void GLOBRecord::SetField(const unsigned int Field, char FieldValue)
     {
     switch(Field)
         {
@@ -64,7 +64,7 @@ void GLOBRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void GLOBRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void GLOBRecord::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {
@@ -77,7 +77,7 @@ void GLOBRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void GLOBRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue)
+void GLOBRecord::SetField(const unsigned int Field, float FieldValue)
     {
     switch(Field)
         {

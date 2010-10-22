@@ -140,7 +140,7 @@ void * LSCRRecord::GetListField(const unsigned int subField, const unsigned int 
         }
     }
 
-void LSCRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void LSCRRecord::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {
@@ -159,7 +159,7 @@ void LSCRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void LSCRRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue)
+void LSCRRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue)
     {
     switch(subField)
         {
@@ -170,11 +170,9 @@ void LSCRRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
                 {
                 case 1: //direct
                     LNAM[listIndex]->value.direct = FieldValue;
-                    FormIDHandler.AddMaster(LNAM[listIndex]->value.direct);
                     break;
                 case 2: //indirect
                     LNAM[listIndex]->value.indirect = FieldValue;
-                    FormIDHandler.AddMaster(LNAM[listIndex]->value.indirect);
                     break;
                 default:
                     return;
@@ -186,7 +184,7 @@ void LSCRRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
     return;
     }
 
-void LSCRRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, short FieldValue)
+void LSCRRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, short FieldValue)
     {
     switch(subField)
         {

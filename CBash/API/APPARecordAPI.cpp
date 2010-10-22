@@ -115,7 +115,7 @@ void APPARecord::GetFieldArray(const unsigned int Field, void **FieldValues)
         }
     }
 
-void APPARecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void APPARecord::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {
@@ -138,7 +138,7 @@ void APPARecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void APPARecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue)
+void APPARecord::SetField(const unsigned int Field, float FieldValue)
     {
     switch(Field)
         {
@@ -159,7 +159,7 @@ void APPARecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void APPARecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
+void APPARecord::SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(Field)
         {
@@ -174,14 +174,13 @@ void APPARecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void APPARecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue)
+void APPARecord::SetOtherField(const unsigned int Field, unsigned int FieldValue)
     {
     switch(Field)
         {
         case 11: //script
             SCRI.Load();
             SCRI->fid = FieldValue;
-            FormIDHandler.AddMaster(SCRI->fid);
             break;
         case 13: //value
             DATA.value.value = FieldValue;
@@ -192,7 +191,7 @@ void APPARecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
     return;
     }
 
-void APPARecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue)
+void APPARecord::SetField(const unsigned int Field, unsigned char FieldValue)
     {
     switch(Field)
         {

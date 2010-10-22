@@ -1072,7 +1072,7 @@ void * WTHRRecord::GetListField(const unsigned int subField, const unsigned int 
         }
     }
 
-void WTHRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void WTHRRecord::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {
@@ -1095,7 +1095,7 @@ void WTHRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void WTHRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue)
+void WTHRRecord::SetField(const unsigned int Field, float FieldValue)
     {
     switch(Field)
         {
@@ -1165,7 +1165,7 @@ void WTHRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void WTHRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
+void WTHRRecord::SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(Field)
         {
@@ -1380,7 +1380,7 @@ void WTHRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void WTHRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue)
+void WTHRRecord::SetField(const unsigned int Field, unsigned char FieldValue)
     {
     switch(Field)
         {
@@ -1795,7 +1795,7 @@ void WTHRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void WTHRRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue)
+void WTHRRecord::SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue)
     {
     switch(subField)
         {
@@ -1806,7 +1806,6 @@ void WTHRRecord::SetListField(_FormIDHandler &FormIDHandler, const unsigned int 
                 {
                 case 1: //sound
                     Sounds[listIndex]->value.sound = FieldValue;
-                    FormIDHandler.AddMaster(Sounds[listIndex]->value.sound);
                     break;
                 case 2: //type
                     Sounds[listIndex]->value.type = FieldValue;

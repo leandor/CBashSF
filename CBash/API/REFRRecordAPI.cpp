@@ -353,7 +353,7 @@ void REFRRecord::GetFieldArray(const unsigned int Field, void **FieldValues)
         }
     }
 
-void REFRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, char *FieldValue)
+void REFRRecord::SetField(const unsigned int Field, char *FieldValue)
     {
     switch(Field)
         {
@@ -374,44 +374,37 @@ void REFRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void REFRRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned int FieldValue)
+void REFRRecord::SetOtherField(const unsigned int Field, unsigned int FieldValue)
     {
     switch(Field)
         {
         case 6: //base
             NAME.value.fid = FieldValue;
-            FormIDHandler.AddMaster(NAME.value.fid);
             break;
         case 7: //destinationFormID
             XTEL.Load();
             XTEL->destinationFid = FieldValue;
-            FormIDHandler.AddMaster(XTEL->destinationFid);
             break;
         case 16: //lockKey
             XLOC.Load();
             XLOC->key = FieldValue;
-            FormIDHandler.AddMaster(XLOC->key);
             break;
         case 20: //owner
             Ownership.Load();
             Ownership->XOWN.value.fid = FieldValue;
-            FormIDHandler.AddMaster(Ownership->XOWN.value.fid);
             break;
         case 22: //globalVariable
             Ownership.Load();
             Ownership->XGLB.Load();
             Ownership->XGLB->fid = FieldValue;
-            FormIDHandler.AddMaster(Ownership->XGLB->fid);
             break;
         case 23: //parent
             XESP.Load();
             XESP->parent = FieldValue;
-            FormIDHandler.AddMaster(XESP->parent);
             break;
         case 26: //targetFormID
             XTRG.Load();
             XTRG->fid = FieldValue;
-            FormIDHandler.AddMaster(XTRG->fid);
             break;
         case 27: //seed
             XSED.Load();
@@ -422,12 +415,10 @@ void REFRRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
             XPCI.Load();
             XPCI->XPCI.Load();
             XPCI->XPCI->fid = FieldValue;
-            FormIDHandler.AddMaster(XPCI->XPCI->fid);
             break;
         case 36: //unknownXRTMFormID
             XRTM.Load();
             XRTM->fid = FieldValue;
-            FormIDHandler.AddMaster(XRTM->fid);
             break;
         case 37: //actionFlags
             XACT.Load();
@@ -439,7 +430,7 @@ void REFRRecord::SetOtherField(_FormIDHandler &FormIDHandler, const unsigned int
     return;
     }
 
-void REFRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, float FieldValue)
+void REFRRecord::SetField(const unsigned int Field, float FieldValue)
     {
     switch(Field)
         {
@@ -511,7 +502,7 @@ void REFRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void REFRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char FieldValue)
+void REFRRecord::SetField(const unsigned int Field, unsigned char FieldValue)
     {
     switch(Field)
         {
@@ -550,7 +541,7 @@ void REFRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void REFRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
+void REFRRecord::SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize)
     {
     switch(Field)
         {
@@ -599,7 +590,7 @@ void REFRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Fiel
     return;
     }
 
-void REFRRecord::SetField(_FormIDHandler &FormIDHandler, const unsigned int Field, int FieldValue)
+void REFRRecord::SetField(const unsigned int Field, int FieldValue)
     {
     switch(Field)
         {
