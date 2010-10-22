@@ -113,6 +113,13 @@ int ENCHRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 newEffect->OBME.Load();
                 newEffect->OBME->EFIX.Read(buffer, subSize, curPos);
                 break;
+            case eEFXX:
+                curPos += subSize;
+                break;
+            case eDATX:
+                OBME.Load();
+                OBME->DATX.Read(buffer, subSize, curPos);
+                break;
             default:
                 //printf("FileName = %s\n", FileName);
                 printf("  ENCH: %08X - Unknown subType = %04x\n", formID, subType);

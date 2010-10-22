@@ -134,9 +134,16 @@ int INGRRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 newEffect->OBME.Load();
                 newEffect->OBME->EFIX.Read(buffer, subSize, curPos);
                 break;
+            case eEFXX:
+                curPos += subSize;
+                break;
+            case eDATX:
+                OBME.Load();
+                OBME->DATX.Read(buffer, subSize, curPos);
+                break;
             default:
                 //printf("FileName = %s\n", FileName);
-                printf("  %08X - Unknown subType = %04x\n", formID, subType);
+                printf("  INGR: %08X - Unknown subType = %04x\n", formID, subType);
                 printf("  Size = %i\n", subSize);
                 printf("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
