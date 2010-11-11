@@ -388,19 +388,19 @@ class INFORecord : public Record
             SCR_.clear();
             }
 
-        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
+        void VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
                 return;
             std::pair<unsigned int, unsigned int> CTDAFunction;
             std::map<unsigned int, std::pair<unsigned int,unsigned int>>::const_iterator curCTDAFunction;
-            FormIDs.push_back(&QSTI.value.fid);
+            op.Accept(QSTI.value.fid);
             if(TPIC.IsLoaded())
-                FormIDs.push_back(&TPIC->fid);
+                op.Accept(TPIC->fid);
             if(PNAM.IsLoaded())
-                FormIDs.push_back(&PNAM->fid);
+                op.Accept(PNAM->fid);
             for(unsigned int x = 0; x < NAME.size(); x++)
-                FormIDs.push_back(NAME[x]);
+                op.Accept(*NAME[x]);
             for(unsigned int x = 0; x < CTDA.size(); x++)
                 {
                 curCTDAFunction = Function_Arguments.find(CTDA[x]->value.ifunc);
@@ -408,18 +408,18 @@ class INFORecord : public Record
                     {
                     CTDAFunction = curCTDAFunction->second;
                     if(CTDAFunction.first == eFID)
-                        FormIDs.push_back(&CTDA[x]->value.param1);
+                        op.Accept(CTDA[x]->value.param1);
                     if(CTDAFunction.second == eFID)
-                        FormIDs.push_back(&CTDA[x]->value.param2);
+                        op.Accept(CTDA[x]->value.param2);
                     }
                 }
             for(unsigned int x = 0; x < TCLT.size(); x++)
-                FormIDs.push_back(TCLT[x]);
+                op.Accept(*TCLT[x]);
             for(unsigned int x = 0; x < TCLF.size(); x++)
-                FormIDs.push_back(TCLF[x]);
+                op.Accept(*TCLF[x]);
             for(unsigned int x = 0; x < SCR_.size(); x++)
                 if(SCR_[x]->value.isSCRO)
-                    FormIDs.push_back(&SCR_[x]->value.reference);
+                    op.Accept(SCR_[x]->value.reference);
             }
 
         #ifdef _DEBUG

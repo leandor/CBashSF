@@ -59,11 +59,11 @@ int ACHRRecord::GetOtherFieldType(const unsigned int Field)
         case 21: //posZ
             return FLOAT_FIELD;
         case 22: //rotX
-            return FLOAT_FIELD;
+            return RADIAN_FIELD;
         case 23: //rotY
-            return FLOAT_FIELD;
+            return RADIAN_FIELD;
         case 24: //rotZ
-            return FLOAT_FIELD;
+            return RADIAN_FIELD;
         default:
             return UNKNOWN_FIELD;
         }

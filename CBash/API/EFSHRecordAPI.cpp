@@ -40,13 +40,13 @@ int EFSHRecord::GetOtherFieldType(const unsigned int Field)
             return UINT_FIELD;
         case 12: //memZFunc
             return UINT_FIELD;
-        case 13: //fill.red
+        case 13: //fillRed
             return UBYTE_FIELD;
-        case 14: //fill.green
+        case 14: //fillGreen
             return UBYTE_FIELD;
-        case 15: //fill.blue
+        case 15: //fillBlue
             return UBYTE_FIELD;
-        case 16: //fill.unused1
+        case 16: //unused2
             return BYTES_FIELD;
         case 17: //fillAIn
             return FLOAT_FIELD;
@@ -66,13 +66,13 @@ int EFSHRecord::GetOtherFieldType(const unsigned int Field)
             return FLOAT_FIELD;
         case 25: //edgeOff
             return FLOAT_FIELD;
-        case 26: //edge.red
+        case 26: //edgeRed
             return UBYTE_FIELD;
-        case 27: //edge.green
+        case 27: //edgeGreen
             return UBYTE_FIELD;
-        case 28: //edge.blue
+        case 28: //edgeBlue
             return UBYTE_FIELD;
-        case 29: //edge.unused1
+        case 29: //unused3
             return BYTES_FIELD;
         case 30: //edgeAIn
             return FLOAT_FIELD;
@@ -138,29 +138,29 @@ int EFSHRecord::GetOtherFieldType(const unsigned int Field)
             return FLOAT_FIELD;
         case 61: //partKey2Time
             return FLOAT_FIELD;
-        case 62: //key1.red
+        case 62: //key1Red
             return UBYTE_FIELD;
-        case 63: //key1.green
+        case 63: //key1Green
             return UBYTE_FIELD;
-        case 64: //key1.blue
+        case 64: //key1Blue
             return UBYTE_FIELD;
-        case 65: //key1.unused1
+        case 65: //unused4
             return BYTES_FIELD;
-        case 66: //key2.red
+        case 66: //key2Red
             return UBYTE_FIELD;
-        case 67: //key2.green
+        case 67: //key2Green
             return UBYTE_FIELD;
-        case 68: //key2.blue
+        case 68: //key2Blue
             return UBYTE_FIELD;
-        case 69: //key2.unused1
+        case 69: //unused5
             return BYTES_FIELD;
-        case 70: //key3.red
+        case 70: //key3Red
             return UBYTE_FIELD;
-        case 71: //key3.green
+        case 71: //key3Green
             return UBYTE_FIELD;
-        case 72: //key3.blue
+        case 72: //key3Blue
             return UBYTE_FIELD;
-        case 73: //key3.unused1
+        case 73: //unused6
             return BYTES_FIELD;
         case 74: //key1A
             return FLOAT_FIELD;
@@ -197,11 +197,11 @@ void * EFSHRecord::GetOtherField(const unsigned int Field)
             return &DATA.value.memBlendOp;
         case 12: //memZFunc
             return &DATA.value.memZFunc;
-        case 13: //fill.red
+        case 13: //fillRed
             return &DATA.value.fill.red;
-        case 14: //fill.green
+        case 14: //fillGreen
             return &DATA.value.fill.green;
-        case 15: //fill.blue
+        case 15: //fillBlue
             return &DATA.value.fill.blue;
         case 17: //fillAIn
             return &DATA.value.fillAIn;
@@ -221,11 +221,11 @@ void * EFSHRecord::GetOtherField(const unsigned int Field)
             return &DATA.value.fillAnimSpdV;
         case 25: //edgeOff
             return &DATA.value.edgeOff;
-        case 26: //edge.red
+        case 26: //edgeRed
             return &DATA.value.edge.red;
-        case 27: //edge.green
+        case 27: //edgeGreen
             return &DATA.value.edge.green;
-        case 28: //edge.blue
+        case 28: //edgeBlue
             return &DATA.value.edge.blue;
         case 30: //edgeAIn
             return &DATA.value.edgeAIn;
@@ -291,23 +291,23 @@ void * EFSHRecord::GetOtherField(const unsigned int Field)
             return &DATA.value.partKey1Time;
         case 61: //partKey2Time
             return &DATA.value.partKey2Time;
-        case 62: //key1.red
+        case 62: //key1Red
             return &DATA.value.key1.red;
-        case 63: //key1.green
+        case 63: //key1Green
             return &DATA.value.key1.green;
-        case 64: //key1.blue
+        case 64: //key1Blue
             return &DATA.value.key1.blue;
-        case 66: //key2.red
+        case 66: //key2Red
             return &DATA.value.key2.red;
-        case 67: //key2.green
+        case 67: //key2Green
             return &DATA.value.key2.green;
-        case 68: //key2.blue
+        case 68: //key2Blue
             return &DATA.value.key2.blue;
-        case 70: //key3.red
+        case 70: //key3Red
             return &DATA.value.key3.red;
-        case 71: //key3.green
+        case 71: //key3Green
             return &DATA.value.key3.green;
-        case 72: //key3.blue
+        case 72: //key3Blue
             return &DATA.value.key3.blue;
         case 74: //key1A
             return &DATA.value.key1A;
@@ -332,15 +332,15 @@ unsigned int EFSHRecord::GetFieldArraySize(const unsigned int Field)
         {
         case 9: //unused1
             return 3;
-        case 16: //fill.unused1
+        case 16: //unused2
             return 1;
-        case 29: //edge.unused1
+        case 29: //unused3
             return 1;
-        case 65: //key1.unused1
+        case 65: //unused4
             return 1;
-        case 69: //key2.unused1
+        case 69: //unused5
             return 1;
-        case 73: //key3.unused1
+        case 73: //unused6
             return 1;
         default:
             return 0;
@@ -354,19 +354,19 @@ void EFSHRecord::GetFieldArray(const unsigned int Field, void **FieldValues)
         case 9: //unused1
             *FieldValues = &DATA.value.unused1[0];
             return;
-        case 16: //fill.unused1
+        case 16: //unused2
             *FieldValues = &DATA.value.fill.unused1;
             return;
-        case 29: //edge.unused1
+        case 29: //unused3
             *FieldValues = &DATA.value.edge.unused1;
             return;
-        case 65: //key1.unused1
+        case 65: //unused4
             *FieldValues = &DATA.value.key1.unused1;
             return;
-        case 69: //key2.unused1
+        case 69: //unused5
             *FieldValues = &DATA.value.key2.unused1;
             return;
-        case 73: //key3.unused1
+        case 73: //unused6
             *FieldValues = &DATA.value.key3.unused1;
             return;
         default:
@@ -401,22 +401,22 @@ void EFSHRecord::SetField(const unsigned int Field, unsigned char FieldValue)
         case 8: //flags
             DATA.value.flags = FieldValue;
             break;
-        case 13: //fill.red
+        case 13: //fillRed
             DATA.value.fill.red = FieldValue;
             break;
-        case 14: //fill.green
+        case 14: //fillGreen
             DATA.value.fill.green = FieldValue;
             break;
-        case 15: //fill.blue
+        case 15: //fillBlue
             DATA.value.fill.blue = FieldValue;
             break;
-        case 26: //edge.red
+        case 26: //edgeRed
             DATA.value.edge.red = FieldValue;
             break;
-        case 27: //edge.green
+        case 27: //edgeGreen
             DATA.value.edge.green = FieldValue;
             break;
-        case 28: //edge.blue
+        case 28: //edgeBlue
             DATA.value.edge.blue = FieldValue;
             break;
         case 38: //memDBlend
@@ -434,31 +434,31 @@ void EFSHRecord::SetField(const unsigned int Field, unsigned char FieldValue)
         case 42: //partDBlend
             DATA.value.partDBlend = FieldValue;
             break;
-        case 62: //key1.red
+        case 62: //key1Red
             DATA.value.key1.red = FieldValue;
             break;
-        case 63: //key1.green
+        case 63: //key1Green
             DATA.value.key1.green = FieldValue;
             break;
-        case 64: //key1.blue
+        case 64: //key1Blue
             DATA.value.key1.blue = FieldValue;
             break;
-        case 66: //key2.red
+        case 66: //key2Red
             DATA.value.key2.red = FieldValue;
             break;
-        case 67: //key2.green
+        case 67: //key2Green
             DATA.value.key2.green = FieldValue;
             break;
-        case 68: //key2.blue
+        case 68: //key2Blue
             DATA.value.key2.blue = FieldValue;
             break;
-        case 70: //key3.red
+        case 70: //key3Red
             DATA.value.key3.red = FieldValue;
             break;
-        case 71: //key3.green
+        case 71: //key3Green
             DATA.value.key3.green = FieldValue;
             break;
-        case 72: //key3.blue
+        case 72: //key3Blue
             DATA.value.key3.blue = FieldValue;
             break;
         default:
@@ -478,27 +478,27 @@ void EFSHRecord::SetField(const unsigned int Field, unsigned char *FieldValue, u
             DATA.value.unused1[1] = FieldValue[1];
             DATA.value.unused1[2] = FieldValue[2];
             break;
-        case 16: //fill.unused1
+        case 16: //unused2
             if(nSize != 1)
                 return;
             DATA.value.fill.unused1 = FieldValue[0];
             break;
-        case 29: //edge.unused1
+        case 29: //unused3
             if(nSize != 1)
                 return;
             DATA.value.edge.unused1 = FieldValue[0];
             break;
-        case 65: //key1.unused1
+        case 65: //unused4
             if(nSize != 1)
                 return;
             DATA.value.key1.unused1 = FieldValue[0];
             break;
-        case 69: //key2.unused1
+        case 69: //unused5
             if(nSize != 1)
                 return;
             DATA.value.key2.unused1 = FieldValue[0];
             break;
-        case 73: //key3.unused1
+        case 73: //unused6
             if(nSize != 1)
                 return;
             DATA.value.key3.unused1 = FieldValue[0];
@@ -695,16 +695,16 @@ int EFSHRecord::DeleteField(const unsigned int Field)
         case 12: //memZFunc
             DATA.value.memZFunc = defaultDATA.memZFunc;
             break;
-        case 13: //fill.red
+        case 13: //fillRed
             DATA.value.fill.red = defaultDATA.fill.red;
             break;
-        case 14: //fill.green
+        case 14: //fillGreen
             DATA.value.fill.green = defaultDATA.fill.green;
             break;
-        case 15: //fill.blue
+        case 15: //fillBlue
             DATA.value.fill.blue = defaultDATA.fill.blue;
             break;
-        case 16: //fill.unused1
+        case 16: //unused2
             DATA.value.fill.unused1 = defaultDATA.fill.unused1;
             break;
         case 17: //fillAIn
@@ -734,16 +734,16 @@ int EFSHRecord::DeleteField(const unsigned int Field)
         case 25: //edgeOff
             DATA.value.edgeOff = defaultDATA.edgeOff;
             break;
-        case 26: //edge.red
+        case 26: //edgeRed
             DATA.value.edge.red = defaultDATA.edge.red;
             break;
-        case 27: //edge.green
+        case 27: //edgeGreen
             DATA.value.edge.green = defaultDATA.edge.green;
             break;
-        case 28: //edge.blue
+        case 28: //edgeBlue
             DATA.value.edge.blue = defaultDATA.edge.blue;
             break;
-        case 29: //edge.unused1
+        case 29: //unused3
             DATA.value.edge.unused1 = defaultDATA.edge.unused1;
             break;
         case 30: //edgeAIn
@@ -842,40 +842,40 @@ int EFSHRecord::DeleteField(const unsigned int Field)
         case 61: //partKey2Time
             DATA.value.partKey2Time = defaultDATA.partKey2Time;
             break;
-        case 62: //key1.red
+        case 62: //key1Red
             DATA.value.key1.red = defaultDATA.key1.red;
             break;
-        case 63: //key1.green
+        case 63: //key1Green
             DATA.value.key1.green = defaultDATA.key1.green;
             break;
-        case 64: //key1.blue
+        case 64: //key1Blue
             DATA.value.key1.blue = defaultDATA.key1.blue;
             break;
-        case 65: //key1.unused1
+        case 65: //unused4
             DATA.value.key1.unused1 = defaultDATA.key1.unused1;
             break;
-        case 66: //key2.red
+        case 66: //key2Red
             DATA.value.key2.red = defaultDATA.key2.red;
             break;
-        case 67: //key2.green
+        case 67: //key2Green
             DATA.value.key2.green = defaultDATA.key2.green;
             break;
-        case 68: //key2.blue
+        case 68: //key2Blue
             DATA.value.key2.blue = defaultDATA.key2.blue;
             break;
-        case 69: //key2.unused1
+        case 69: //unused5
             DATA.value.key2.unused1 = defaultDATA.key2.unused1;
             break;
-        case 70: //key3.red
+        case 70: //key3Red
             DATA.value.key3.red = defaultDATA.key3.red;
             break;
-        case 71: //key3.green
+        case 71: //key3Green
             DATA.value.key3.green = defaultDATA.key3.green;
             break;
-        case 72: //key3.blue
+        case 72: //key3Blue
             DATA.value.key3.blue = defaultDATA.key3.blue;
             break;
-        case 73: //key3.unused1
+        case 73: //unused6
             DATA.value.key3.unused1 = defaultDATA.key3.unused1;
             break;
         case 74: //key1A

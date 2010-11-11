@@ -198,16 +198,16 @@ class WRLDRecord : public Record
             OFST.Unload();
             }
 
-        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
+        void VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
                 return;
             if(WNAM.IsLoaded())
-                FormIDs.push_back(&WNAM->fid);
+                op.Accept(WNAM->fid);
             if(CNAM.IsLoaded())
-                FormIDs.push_back(&CNAM->fid);
+                op.Accept(CNAM->fid);
             if(NAM2.IsLoaded())
-                FormIDs.push_back(&NAM2->fid);
+                op.Accept(NAM2->fid);
             }
 
         #ifdef _DEBUG

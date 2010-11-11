@@ -39,11 +39,17 @@ int CLASRecord::GetOtherFieldType(const unsigned int Field)
         case 11: //specialization
             return UINT_FIELD;
         case 12: //major1
+            return INT_FIELD;
         case 13: //major2
+            return INT_FIELD;
         case 14: //major3
+            return INT_FIELD;
         case 15: //major4
+            return INT_FIELD;
         case 16: //major5
+            return INT_FIELD;
         case 17: //major6
+            return INT_FIELD;
         case 18: //major7
             return INT_FIELD;
         case 19: //flags

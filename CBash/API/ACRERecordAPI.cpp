@@ -57,11 +57,11 @@ int ACRERecord::GetOtherFieldType(const unsigned int Field)
         case 20: //posZ
             return FLOAT_FIELD;
         case 21: //rotX
-            return FLOAT_FIELD;
+            return RADIAN_FIELD;
         case 22: //rotY
-            return FLOAT_FIELD;
+            return RADIAN_FIELD;
         case 23: //rotZ
-            return FLOAT_FIELD;
+            return RADIAN_FIELD;
         default:
             return UNKNOWN_FIELD;
         }

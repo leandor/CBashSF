@@ -243,21 +243,21 @@ class CELLRecord : public Record
             XCWT.Unload();
             }
 
-        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
+        void VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
                 return;
             if(Ownership.IsLoaded())
                 {
                 if(Ownership->XOWN.IsLoaded())
-                    FormIDs.push_back(&Ownership->XOWN.value.fid);
+                    op.Accept(Ownership->XOWN.value.fid);
                 if(Ownership->XGLB.IsLoaded())
-                    FormIDs.push_back(&Ownership->XGLB->fid);
+                    op.Accept(Ownership->XGLB->fid);
                 }
-            FormIDs.push_back(&XCCM.value.fid);
+            op.Accept(XCCM.value.fid);
             for(unsigned int x = 0; x < XCLR.size(); x++)
-                FormIDs.push_back(&XCLR[x]);
-            FormIDs.push_back(&XCWT.value.fid);
+                op.Accept(XCLR[x]);
+            op.Accept(XCWT.value.fid);
             }
 
         #ifdef _DEBUG

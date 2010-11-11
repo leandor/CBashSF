@@ -514,6 +514,7 @@ void ENCHRecord::SetField(const unsigned int Field, unsigned char *FieldValue, u
             if(nSize != 0x20)
                 return;
             OBME.Load();
+            OBME->OBME.Load();
             OBME->DATX.Load();
             OBME->DATX.Copy(FieldValue, nSize);
             break;

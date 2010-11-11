@@ -91,6 +91,8 @@ int NewCollection(const char *ModsPath)
     return (int)Collections.size() - 1;
     }
 
+#pragma warning( push )
+#pragma warning( disable : 4101 ) //Disable warning about deliberately unused variable (Ex_INVALIDINDEX &ex)
 int DeleteCollection(const unsigned int CollectionIndex)
     {
     try
@@ -119,9 +121,9 @@ int DeleteCollection(const unsigned int CollectionIndex)
         printf("Error erasing collection at pos %i\n  Unhandled Exception\n", CollectionIndex);
         return -1;
         }
-
     return 0;
     }
+#pragma warning( pop ) 
 
 ////////////////////////////////////////////////////////////////////////
 int AddMod(const unsigned int CollectionIndex, const char *ModName, unsigned int OptionFlags)

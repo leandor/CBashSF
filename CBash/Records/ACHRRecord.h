@@ -94,18 +94,18 @@ class ACHRRecord : public Record
             DATA.Unload();
             }
 
-        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
+        void VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
                 return;
-            FormIDs.push_back(&NAME.value.fid);
+            op.Accept(NAME.value.fid);
             if(XPCI.IsLoaded() && XPCI->XPCI.IsLoaded())
-                FormIDs.push_back(&XPCI->XPCI->fid);
+                op.Accept(XPCI->XPCI->fid);
             if(XESP.IsLoaded())
-                FormIDs.push_back(&XESP->parent);
+                op.Accept(XESP->parent);
             if(XMRC.IsLoaded())
-                FormIDs.push_back(&XMRC->fid);
-            FormIDs.push_back(&XHRS.value.fid);
+                op.Accept(XMRC->fid);
+            op.Accept(XHRS.value.fid);
             }
 
         #ifdef _DEBUG

@@ -113,11 +113,11 @@ int REFRRecord::GetOtherFieldType(const unsigned int Field)
         case 47: //posZ
             return FLOAT_FIELD;
         case 48: //rotX
-            return FLOAT_FIELD;
+            return RADIAN_FIELD;
         case 49: //rotY
-            return FLOAT_FIELD;
+            return RADIAN_FIELD;
         case 50: //rotZ
-            return FLOAT_FIELD;
+            return RADIAN_FIELD;
         default:
             return UNKNOWN_FIELD;
         }

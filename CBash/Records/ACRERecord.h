@@ -93,20 +93,20 @@ class ACRERecord : public Record
             DATA.Unload();
             }
 
-        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
+        void VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
                 return;
-            FormIDs.push_back(&NAME.value.fid);
+            op.Accept(NAME.value.fid);
             if(Ownership.IsLoaded())
                 {
                 if(Ownership->XOWN.IsLoaded())
-                    FormIDs.push_back(&Ownership->XOWN.value.fid);
+                    op.Accept(Ownership->XOWN.value.fid);
                 if(Ownership->XGLB.IsLoaded())
-                    FormIDs.push_back(&Ownership->XGLB->fid);
+                    op.Accept(Ownership->XGLB->fid);
                 }
             if(XESP.IsLoaded())
-                FormIDs.push_back(&XESP->parent);
+                op.Accept(XESP->parent);
             }
 
         #ifdef _DEBUG

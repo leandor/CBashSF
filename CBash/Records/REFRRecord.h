@@ -504,30 +504,30 @@ class REFRRecord : public Record
             DATA.Unload();
             }
 
-        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
+        void VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
                 return;
-            FormIDs.push_back(&NAME.value.fid);
+            op.Accept(NAME.value.fid);
             if(XTEL.IsLoaded())
-                FormIDs.push_back(&XTEL->destinationFid);
+                op.Accept(XTEL->destinationFid);
             if(XLOC.IsLoaded())
-                FormIDs.push_back(&XLOC->key);
+                op.Accept(XLOC->key);
             if(Ownership.IsLoaded())
                 {
                 if(Ownership->XOWN.IsLoaded())
-                    FormIDs.push_back(&Ownership->XOWN.value.fid);
+                    op.Accept(Ownership->XOWN.value.fid);
                 if(Ownership->XGLB.IsLoaded())
-                    FormIDs.push_back(&Ownership->XGLB->fid);
+                    op.Accept(Ownership->XGLB->fid);
                 }
             if(XESP.IsLoaded())
-                FormIDs.push_back(&XESP->parent);
+                op.Accept(XESP->parent);
             if(XTRG.IsLoaded())
-                FormIDs.push_back(&XTRG->fid);
+                op.Accept(XTRG->fid);
             if(XPCI.IsLoaded() && XPCI->XPCI.IsLoaded())
-                FormIDs.push_back(&XPCI->XPCI->fid);
+                op.Accept(XPCI->XPCI->fid);
             if(XRTM.IsLoaded())
-                FormIDs.push_back(&XRTM->fid);
+                op.Accept(XRTM->fid);
             }
 
         #ifdef _DEBUG

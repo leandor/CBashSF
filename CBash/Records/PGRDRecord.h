@@ -209,12 +209,12 @@ class PGRDRecord : public Record
             PGRL.clear();
             }
 
-        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
+        void VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
                 return;
             for(unsigned int x = 0; x < PGRL.size(); x++)
-                FormIDs.push_back(&PGRL[x]->points[0]);
+                op.Accept(PGRL[x]->points[0]);
             }
 
         #ifdef _DEBUG

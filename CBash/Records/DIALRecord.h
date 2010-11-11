@@ -95,14 +95,14 @@ class DIALRecord : public Record
             DATA.Unload();
             }
 
-        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
+        void VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
                 return;
             for(unsigned int x = 0; x < QSTI.size(); x++)
-                FormIDs.push_back(QSTI[x]);
+                op.Accept(*QSTI[x]);
             for(unsigned int x = 0; x < QSTR.size(); x++)
-                FormIDs.push_back(QSTR[x]);
+                op.Accept(*QSTR[x]);
             }
 
         #ifdef _DEBUG

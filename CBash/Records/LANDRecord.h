@@ -469,17 +469,17 @@ class LANDRecord : public Record
             VTEX.clear();
             }
 
-        void GetReferencedFormIDs(std::vector<FormID> &FormIDs)
+        void VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
                 return;
             for(unsigned int x = 0; x < BTXT.size(); ++x)
                 if(BTXT[x] != NULL)
-                    FormIDs.push_back(&BTXT[x]->value.texture);
+                    op.Accept(BTXT[x]->value.texture);
             for(unsigned int x = 0; x < Layers.size(); ++x)
-                FormIDs.push_back(&Layers[x]->ATXT.value.texture);
+                op.Accept(Layers[x]->ATXT.value.texture);
             for(unsigned int x = 0; x < VTEX.size(); x++)
-                FormIDs.push_back(&VTEX[x]);
+                op.Accept(VTEX[x]);
             }
 
         #ifdef _DEBUG
