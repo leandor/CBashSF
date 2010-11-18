@@ -53,6 +53,8 @@ int LVLIRecord::DeleteListElement(const unsigned int subField)
 
 int LVLIRecord::GetOtherFieldType(const unsigned int Field)
     {
+    //The jump in numbering from case 7 to case 10 is deliberate
+    //It allows LVLC, LVLI, and LVSP to share a common id scheme
     switch(Field)
         {
         case 6: //chanceNone

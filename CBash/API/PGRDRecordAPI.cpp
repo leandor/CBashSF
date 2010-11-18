@@ -27,17 +27,17 @@ int PGRDRecord::CreateListElement(const unsigned int subField)
     unsigned int listSize = 0;
     switch(subField)
         {
-        case 7: //PGRP
+        case 7: //pgrp
             listSize = (unsigned int)PGRP.size();
             listSize++;
             PGRP.resize(listSize);
             return (int)listSize - 1;
-        case 10: //PGRI
+        case 10: //pgri
             listSize = (unsigned int)PGRI.size();
             listSize++;
             PGRI.resize(listSize);
             return (int)listSize - 1;
-        case 11: //PGRL
+        case 11: //pgrl
             PGRL.push_back(new PGRDPGRL);
             return (int)PGRL.size() - 1;
         default:
@@ -51,17 +51,17 @@ int PGRDRecord::DeleteListElement(const unsigned int subField)
     PGRDPGRL *curPGRL = NULL;
     switch(subField)
         {
-        case 7: //PGRP
+        case 7: //pgrp
             listSize = (unsigned int)PGRP.size();
             PGRP.pop_back();
             listSize--;
             return (int)listSize - 1;
-        case 10: //PGRI
+        case 10: //pgri
             listSize = (unsigned int)PGRI.size();
             PGRI.pop_back();
             listSize--;
             return (int)listSize - 1;
-        case 11: //PGRL
+        case 11: //pgrl
             curPGRL = PGRL.back();
             delete curPGRL;
             PGRL.pop_back();
@@ -77,15 +77,15 @@ int PGRDRecord::GetOtherFieldType(const unsigned int Field)
         {
         case 6: //count
             return USHORT_FIELD;
-        case 7: //PGRP
+        case 7: //pgrp
             return LIST_FIELD;
-        case 8: //PGAG
+        case 8: //pgag_p
             return BYTES_FIELD;
-        case 9: //PGRR
+        case 9: //pgrr_p
             return BYTES_FIELD;
-        case 10: //PGRI
+        case 10: //pgri
             return LIST_FIELD;
-        case 11: //PGRL
+        case 11: //pgrl
             return LIST_FIELD;
         default:
             return UNKNOWN_FIELD;
@@ -107,7 +107,7 @@ int PGRDRecord::GetListFieldType(const unsigned int subField, const unsigned int
     {
     switch(subField)
         {
-        case 7: //PGRP
+        case 7: //pgrp
             switch(listField)
                 {
                 case 1: //x
@@ -123,7 +123,7 @@ int PGRDRecord::GetListFieldType(const unsigned int subField, const unsigned int
                 default:
                     return UNKNOWN_FIELD;
                 }
-        case 10: //PGRI
+        case 10: //pgri
             switch(listField)
                 {
                 case 1: //point
@@ -139,7 +139,7 @@ int PGRDRecord::GetListFieldType(const unsigned int subField, const unsigned int
                 default:
                     return UNKNOWN_FIELD;
                 }
-        case 11: //PGRL
+        case 11: //pgrl
             switch(listField)
                 {
                 case 1: //reference
@@ -158,11 +158,11 @@ unsigned int PGRDRecord::GetListSize(const unsigned int Field)
     {
     switch(Field)
         {
-        case 7: //PGRP
+        case 7: //pgrp
             return (unsigned int)PGRP.size();
-        case 10: //PGRI
+        case 10: //pgri
             return (unsigned int)PGRI.size();
-        case 11: //PGRL
+        case 11: //pgrl
             return (unsigned int)PGRL.size();
         default:
             return 0;
@@ -173,7 +173,7 @@ unsigned int PGRDRecord::GetListArraySize(const unsigned int subField, const uns
     {
     switch(subField)
         {
-        case 7: //PGRP
+        case 7: //pgrp
             switch(listField)
                 {
                 case 5: //unused1
@@ -181,7 +181,7 @@ unsigned int PGRDRecord::GetListArraySize(const unsigned int subField, const uns
                 default:
                     return 0;
                 }
-        case 10: //PGRI
+        case 10: //pgri
             switch(listField)
                 {
                 case 2: //unused1
@@ -189,7 +189,7 @@ unsigned int PGRDRecord::GetListArraySize(const unsigned int subField, const uns
                 default:
                     return 0;
                 }
-        case 11: //PGRL
+        case 11: //pgrl
             if(listIndex >= PGRL.size())
                 return 0;
             switch(listField)
@@ -208,9 +208,9 @@ unsigned int PGRDRecord::GetFieldArraySize(const unsigned int Field)
     {
     switch(Field)
         {
-        case 8: //PGAG
+        case 8: //pgag_p
             return PGAG.size;
-        case 9: //PGRR
+        case 9: //pgrr_p
             return PGRR.size;
         default:
             return 0;
@@ -221,10 +221,10 @@ void PGRDRecord::GetFieldArray(const unsigned int Field, void **FieldValues)
     {
     switch(Field)
         {
-        case 8: //PGAG
+        case 8: //pgag_p
             *FieldValues = PGAG.value;
             return;
-        case 9: //PGRR
+        case 9: //pgrr_p
             *FieldValues = PGRR.value;
             return;
         default:
@@ -237,7 +237,7 @@ void PGRDRecord::GetListArray(const unsigned int subField, const unsigned int li
     {
     switch(subField)
         {
-        case 7: //PGRP
+        case 7: //pgrp
             if(listIndex >= PGRP.size())
                 {
                 *FieldValues = NULL;
@@ -252,7 +252,7 @@ void PGRDRecord::GetListArray(const unsigned int subField, const unsigned int li
                     *FieldValues = NULL;
                     return;
                 }
-        case 10: //PGRI
+        case 10: //pgri
             if(listIndex >= PGRI.size())
                 {
                 *FieldValues = NULL;
@@ -267,7 +267,7 @@ void PGRDRecord::GetListArray(const unsigned int subField, const unsigned int li
                     *FieldValues = NULL;
                     return;
                 }
-        case 11: //PGRL
+        case 11: //pgrl
             if(listIndex >= PGRL.size())
                 {
                 *FieldValues = NULL;
@@ -295,7 +295,7 @@ void * PGRDRecord::GetListField(const unsigned int subField, const unsigned int 
     {
     switch(subField)
         {
-        case 7: //PGRP
+        case 7: //pgrp
             if(listIndex >= PGRP.size())
                 return NULL;
             switch(listField)
@@ -311,7 +311,7 @@ void * PGRDRecord::GetListField(const unsigned int subField, const unsigned int 
                 default:
                     return NULL;
                 }
-        case 10: //PGRI
+        case 10: //pgri
             if(listIndex >= PGRI.size())
                 return NULL;
             switch(listField)
@@ -327,7 +327,7 @@ void * PGRDRecord::GetListField(const unsigned int subField, const unsigned int 
                 default:
                     return NULL;
                 }
-        case 11: //PGRL
+        case 11: //pgrl
             if(listIndex >= PGRL.size())
                 return NULL;
             switch(listField)
@@ -362,10 +362,10 @@ void PGRDRecord::SetField(const unsigned int Field, unsigned char *FieldValue, u
     {
     switch(Field)
         {
-        case 8: //PGAG
+        case 8: //pgag_p
             PGAG.Copy(FieldValue, nSize);
             break;
-        case 9: //PGRR
+        case 9: //pgrr_p
             PGRR.Copy(FieldValue, nSize);
             break;
         default:
@@ -378,7 +378,7 @@ void PGRDRecord::SetListField(const unsigned int subField, const unsigned int li
     {
     switch(subField)
         {
-        case 7: //PGRP
+        case 7: //pgrp
             if(listIndex >= PGRP.size())
                 return;
             switch(listField)
@@ -396,7 +396,7 @@ void PGRDRecord::SetListField(const unsigned int subField, const unsigned int li
                     return;
                 }
             break;
-        case 10: //PGRI
+        case 10: //pgri
             if(listIndex >= PGRI.size())
                 return;
             switch(listField)
@@ -421,7 +421,7 @@ void PGRDRecord::SetListField(const unsigned int subField, const unsigned int li
     {
     switch(subField)
         {
-        case 7: //PGRP
+        case 7: //pgrp
             if(listIndex >= PGRP.size())
                 return;
             switch(listField)
@@ -443,7 +443,7 @@ void PGRDRecord::SetListField(const unsigned int subField, const unsigned int li
     {
     switch(subField)
         {
-        case 7: //PGRP
+        case 7: //pgrp
             if(listIndex >= PGRP.size())
                 return;
             switch(listField)
@@ -459,7 +459,7 @@ void PGRDRecord::SetListField(const unsigned int subField, const unsigned int li
                     return;
                 }
             break;
-        case 10: //PGRI
+        case 10: //pgri
             if(listIndex >= PGRI.size())
                 return;
             switch(listField)
@@ -484,7 +484,7 @@ void PGRDRecord::SetListField(const unsigned int subField, const unsigned int li
     {
     switch(subField)
         {
-        case 10: //PGRI
+        case 10: //pgri
             if(listIndex >= PGRI.size())
                 return;
             switch(listField)
@@ -506,7 +506,7 @@ void PGRDRecord::SetListField(const unsigned int subField, const unsigned int li
     {
     switch(subField)
         {
-        case 11: //PGRL
+        case 11: //pgrl
             if(listIndex >= PGRL.size())
                 return;
             switch(listField)
@@ -531,7 +531,7 @@ void PGRDRecord::SetListField(const unsigned int subField, const unsigned int li
     unsigned int reference = 0;
     switch(subField)
         {
-        case 11: //PGRL
+        case 11: //pgrl
             if(listIndex >= PGRL.size())
                 return;
             switch(listField)
@@ -564,19 +564,19 @@ int PGRDRecord::DeleteField(const unsigned int Field)
         case 6: //count
             DATA.Unload();
             break;
-        case 7: //PGRP
+        case 7: //pgrp
             PGRP.clear();
             break;
-        case 8: //PGAG
+        case 8: //pgag_p
             PGAG.Unload();
             break;
-        case 9: //PGRR
+        case 9: //pgrr_p
             PGRR.Unload();
             break;
-        case 10: //PGRI
+        case 10: //pgri
             PGRI.clear();
             break;
-        case 11: //PGRL
+        case 11: //pgrl
             nSize = (unsigned int)PGRL.size();
             for(unsigned int x = 0; x < nSize; x++)
                 delete PGRL[x];
@@ -596,7 +596,7 @@ int PGRDRecord::DeleteListField(const unsigned int subField, const unsigned int 
     unsigned int reference;
     switch(subField)
         {
-        case 7: //PGRP
+        case 7: //pgrp
             if(listIndex >= PGRP.size())
                 return 0;
             switch(listField)
@@ -622,7 +622,7 @@ int PGRDRecord::DeleteListField(const unsigned int subField, const unsigned int 
                     return 0;
                 }
             break;
-        case 10: //PGRI
+        case 10: //pgri
             if(listIndex >= PGRI.size())
                 return 0;
             switch(listField)
@@ -647,7 +647,7 @@ int PGRDRecord::DeleteListField(const unsigned int subField, const unsigned int 
                     return 0;
                 }
             break;
-        case 11: //PGRL
+        case 11: //pgrl
             if(listIndex >= PGRL.size())
                 return 0;
             switch(listField)

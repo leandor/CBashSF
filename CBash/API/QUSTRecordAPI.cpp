@@ -281,9 +281,9 @@ int QUSTRecord::GetListFieldType(const unsigned int subField, const unsigned int
                 case 4: //ifunc
                     return UINT_FIELD;
                 case 5: //param1
-                    return UINT_FIELD;
+                    return FID_OR_UINT_FIELD;
                 case 6: //param2
-                    return UINT_FIELD;
+                    return FID_OR_UINT_FIELD;
                 case 7: //unused2
                     return BYTES_FIELD;
                 default:
@@ -371,9 +371,9 @@ int QUSTRecord::GetListX2FieldType(const unsigned int subField, const unsigned i
                         case 4: //ifunc
                             return UINT_FIELD;
                         case 5: //param1
-                            return UINT_FIELD;
+                            return FID_OR_UINT_FIELD;
                         case 6: //param2
-                            return UINT_FIELD;
+                            return FID_OR_UINT_FIELD;
                         case 7: //unused2
                             return BYTES_FIELD;
                         default:
@@ -409,9 +409,9 @@ int QUSTRecord::GetListX3FieldType(const unsigned int subField, const unsigned i
                                 case 4: //ifunc
                                     return UINT_FIELD;
                                 case 5: //param1
-                                    return UINT_FIELD;
+                                    return FID_OR_UINT_FIELD;
                                 case 6: //param2
-                                    return UINT_FIELD;
+                                    return FID_OR_UINT_FIELD;
                                 case 7: //unused2
                                     return BYTES_FIELD;
                                 default:
@@ -421,9 +421,9 @@ int QUSTRecord::GetListX3FieldType(const unsigned int subField, const unsigned i
                             switch(listX3Field)
                                 {
                                 case 1: //reference
-                                    return UINT_FIELD;
+                                    return FID_OR_UINT_FIELD;
                                 case 2: //isSCRO
-                                    return UINT_FIELD;
+                                    return BOOL_FIELD;
                                 default:
                                     return UNKNOWN_FIELD;
                                 }

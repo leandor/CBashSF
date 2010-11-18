@@ -384,19 +384,19 @@ class REFRRecord : public Record
             };
         enum markerTypeTypes
             {
-            eMarkerNone      = 0x00000000,
-            eCamp            = 0x00000001,
-            eCave            = 0x00000002,
-            eCity            = 0x00000003,
-            eElvenRuin       = 0x00000004,
-            eFortRuin        = 0x00000005,
-            eMine            = 0x00000006,
-            eLandmark        = 0x00000007,
-            eTavern          = 0x00000008,
-            eSettlement      = 0x00000009,
-            eDaedricShrine   = 0x0000000A,
-            eOblivionGate    = 0x0000000B,
-            eUnknownDoorIcon = 0x0000000C
+            eMarkerNone      = 0,
+            eCamp            = 1,
+            eCave            = 2,
+            eCity            = 3,
+            eElvenRuin       = 4,
+            eFortRuin        = 5,
+            eMine            = 6,
+            eLandmark        = 7,
+            eTavern          = 8,
+            eSettlement      = 9,
+            eDaedricShrine   = 10,
+            eOblivionGate    = 11,
+            eUnknownDoorIcon = 12
             };
         enum eSoulType
             {

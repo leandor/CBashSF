@@ -88,7 +88,7 @@ int INGRRecord::GetOtherFieldType(const unsigned int Field)
             return UBYTE_FIELD;
         case 21: //reserved
             return BYTES_FIELD;
-        case 22: //DATX
+        case 22: //datx_p
             return BYTES_FIELD;
         default:
             return UNKNOWN_FIELD;
@@ -158,7 +158,7 @@ unsigned int INGRRecord::GetFieldArraySize(const unsigned int Field)
         //OBME Fields
         case 21: //reserved
             return 0x1C;
-        case 22: //DATX
+        case 22: //datx_p
             return 0x20;
         default:
             return 0;
@@ -185,7 +185,7 @@ void INGRRecord::GetFieldArray(const unsigned int Field, void **FieldValues)
             else
                 *FieldValues = NULL;
             return;
-        case 22: //DATX
+        case 22: //datx_p
             if(OBME.IsLoaded() && OBME->DATX.IsLoaded())
                 *FieldValues = OBME->DATX.value;
             else
@@ -517,7 +517,7 @@ void INGRRecord::SetField(const unsigned int Field, unsigned char *FieldValue, u
             OBME->OBME.Load();
             memcpy(&OBME->OBME.value.reserved[0], &FieldValue[0], 0x1C);
             break;
-        case 22: //DATX
+        case 22: //datx_p
             if(nSize != 0x20)
                 return;
             OBME.Load();
@@ -878,7 +878,7 @@ int INGRRecord::DeleteField(const unsigned int Field)
             if(OBME.IsLoaded())
                 memcpy(&OBME->OBME.value.reserved[0], &defaultOBME.reserved[0], 0x1C);
             break;
-        case 22: //DATX
+        case 22: //datx_p
             if(OBME.IsLoaded() && OBME->DATX.IsLoaded())
                 OBME->DATX.Unload();
             break;

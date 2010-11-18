@@ -58,7 +58,7 @@ int WRLDRecord::GetOtherFieldType(const unsigned int Field)
             return FLOAT_FIELD;
         case 21: //unknown91
             return FLOAT_FIELD;
-        case 22: //sound
+        case 22: //soundType
             return UINT_FIELD;
         case 23: //ofst_p
             return BYTES_FIELD;
@@ -129,7 +129,7 @@ void * WRLDRecord::GetOtherField(const unsigned int Field)
             return &NAM9.value.unk1;
         case 21: //unknown91
             return &NAM9.value.unk2;
-        case 22: //sound
+        case 22: //soundType
             if(SNAM.IsLoaded())
                 return &SNAM->flags;
             return NULL;
@@ -211,7 +211,7 @@ void WRLDRecord::SetOtherField(const unsigned int Field, unsigned int FieldValue
             NAM2.Load();
             NAM2->fid = FieldValue;
             break;
-        case 22: //sound
+        case 22: //soundType
             SNAM.Load();
             SNAM->flags = FieldValue;
             break;
@@ -376,7 +376,7 @@ int WRLDRecord::DeleteField(const unsigned int Field)
         case 21: //unknown91
             NAM9.value.unk2 = defaultUNK.unk2;
             break;
-        case 22: //sound
+        case 22: //soundType
             SNAM.Unload();
             break;
         case 23: //ofst_p

@@ -358,10 +358,10 @@ class WTHRRecord : public Record
                 }
             enum eSoundType
                 {
-                eDefault,
-                ePrecip,
-                eWind,
-                eThunder
+                eDefault = 0,
+                ePrecip  = 1,
+                eWind    = 2,
+                eThunder = 3
                 };
             bool IsDefault()
                 {
@@ -430,13 +430,13 @@ class WTHRRecord : public Record
     public:
         enum eWeatherType //actually flags, but all are exclusive(except unknowns)...so like a Type
             { //Manual hackery will make the CS think it is multiple types. It isn't known how the game would react.
-            eNone     = 0x00000000,
-            ePleasant = 0x00000001,
-            eCloudy   = 0x00000002,
-            eRainy    = 0x00000004,
-            eSnow     = 0x00000008,
-            fUnk1     = 0x01000000,
-            fUnk2     = 0x10000000
+            eNone     = 0x00,
+            ePleasant = 0x01,
+            eCloudy   = 0x02,
+            eRainy    = 0x04,
+            eSnow     = 0x08,
+            fUnk1     = 0x40,
+            fUnk2     = 0x80
             };
         STRING EDID;
         STRING CNAM;

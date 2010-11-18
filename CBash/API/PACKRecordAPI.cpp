@@ -64,7 +64,7 @@ int PACKRecord::GetOtherFieldType(const unsigned int Field)
         case 9: //locType
             return INT_FIELD;
         case 10: //locId
-            return UINT_FIELD;
+            return FID_OR_UINT_FIELD;
         case 11: //locRadius
             return INT_FIELD;
         case 12: //month
@@ -80,7 +80,7 @@ int PACKRecord::GetOtherFieldType(const unsigned int Field)
         case 17: //targetType
             return INT_FIELD;
         case 18: //targetId
-            return UINT_FIELD;
+            return FID_OR_UINT_FIELD;
         case 19: //targetCount
             return INT_FIELD;
         case 20: //conditions
@@ -179,9 +179,9 @@ int PACKRecord::GetListFieldType(const unsigned int subField, const unsigned int
                 case 4: //ifunc
                     return UINT_FIELD;
                 case 5: //param1
-                    return UINT_FIELD;
+                    return FID_OR_UINT_FIELD;
                 case 6: //param2
-                    return UINT_FIELD;
+                    return FID_OR_UINT_FIELD;
                 case 7: //unused2
                     return BYTES_FIELD;
                 default:
@@ -300,12 +300,10 @@ void PACKRecord::SetOtherField(const unsigned int Field, unsigned int FieldValue
         case 10: //locId
             PLDT.Load();
             PLDT->locId = FieldValue;
-            if(PLDT->locType != 5)
             break;
         case 18: //targetId
             PTDT.Load();
             PTDT->targetId = FieldValue;
-            if(PTDT->targetType != 2)
             break;
         default:
             return;

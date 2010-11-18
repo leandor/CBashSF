@@ -86,7 +86,7 @@ int SGSTRecord::GetOtherFieldType(const unsigned int Field)
             return UBYTE_FIELD;
         case 20: //reserved
             return BYTES_FIELD;
-        case 21: //DATX
+        case 21: //datx_p
             return BYTES_FIELD;
         default:
             return UNKNOWN_FIELD;
@@ -154,7 +154,7 @@ unsigned int SGSTRecord::GetFieldArraySize(const unsigned int Field)
         //OBME Fields
         case 20: //reserved
             return 0x1C;
-        case 21: //DATX
+        case 21: //datx_p
             return 0x20;
         default:
             return 0;
@@ -178,7 +178,7 @@ void SGSTRecord::GetFieldArray(const unsigned int Field, void **FieldValues)
             else
                 *FieldValues = NULL;
             return;
-        case 21: //DATX
+        case 21: //datx_p
             if(OBME.IsLoaded() && OBME->DATX.IsLoaded())
                 *FieldValues = OBME->DATX.value;
             else
@@ -503,7 +503,7 @@ void SGSTRecord::SetField(const unsigned int Field, unsigned char *FieldValue, u
             OBME->OBME.Load();
             memcpy(&OBME->OBME.value.reserved[0], &FieldValue[0], 0x1C);
             break;
-        case 21: //DATX
+        case 21: //datx_p
             if(nSize != 0x20)
                 return;
             OBME.Load();
@@ -859,7 +859,7 @@ int SGSTRecord::DeleteField(const unsigned int Field)
             if(OBME.IsLoaded())
                 memcpy(&OBME->OBME.value.reserved[0], &defaultOBME.reserved[0], 0x1C);
             break;
-        case 21: //DATX
+        case 21: //datx_p
             if(OBME.IsLoaded() && OBME->DATX.IsLoaded())
                 OBME->DATX.Unload();
             break;

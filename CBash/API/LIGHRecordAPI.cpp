@@ -42,13 +42,13 @@ int LIGHRecord::GetOtherFieldType(const unsigned int Field)
             return INT_FIELD;
         case 13: //radius
             return UINT_FIELD;
-        case 14: //color.red
+        case 14: //red
             return UBYTE_FIELD;
-        case 15: //color.green
+        case 15: //green
             return UBYTE_FIELD;
-        case 16: //color.blue
+        case 16: //blue
             return UBYTE_FIELD;
-        case 17: //color.unused1
+        case 17: //unused1
             return BYTES_FIELD;
         case 18: //flags
             return UINT_FIELD;
@@ -95,11 +95,11 @@ void * LIGHRecord::GetOtherField(const unsigned int Field)
             return &DATA.value.duration;
         case 13: //radius
             return &DATA.value.radius;
-        case 14: //color.red
+        case 14: //red
             return &DATA.value.color.red;
-        case 15: //color.green
+        case 15: //green
             return &DATA.value.color.green;
-        case 16: //color.blue
+        case 16: //blue
             return &DATA.value.color.blue;
         case 18: //flags
             return &DATA.value.flags;
@@ -132,7 +132,7 @@ unsigned int LIGHRecord::GetFieldArraySize(const unsigned int Field)
             if(MODL.IsLoaded() && MODL->MODT.IsLoaded())
                 return MODL->MODT.size;
             return 0;
-        case 17: //color.unused1
+        case 17: //unused1
             return 1;
         default:
             return 0;
@@ -149,7 +149,7 @@ void LIGHRecord::GetFieldArray(const unsigned int Field, void **FieldValues)
             else
                 *FieldValues = NULL;
             return;
-        case 17: //color.unused1
+        case 17: //unused1
             *FieldValues = &DATA.value.color.unused1;
             return;
         default:
@@ -218,7 +218,7 @@ void LIGHRecord::SetField(const unsigned int Field, unsigned char *FieldValue, u
             MODL->MODT.Load();
             MODL->MODT.Copy(FieldValue, nSize);
             break;
-        case 17: //color.unused1
+        case 17: //unused1
             if(nSize != 1)
                 return;
             DATA.value.color.unused1 = FieldValue[0];
@@ -273,13 +273,13 @@ void LIGHRecord::SetField(const unsigned int Field, unsigned char FieldValue)
     {
     switch(Field)
         {
-        case 14: //color.red
+        case 14: //red
             DATA.value.color.red = FieldValue;
             break;
-        case 15: //color.green
+        case 15: //green
             DATA.value.color.green = FieldValue;
             break;
-        case 16: //color.blue
+        case 16: //blue
             DATA.value.color.blue = FieldValue;
             break;
         default:
@@ -323,16 +323,16 @@ int LIGHRecord::DeleteField(const unsigned int Field)
         case 13: //radius
             DATA.value.radius = defaultDATA.radius;
             break;
-        case 14: //color.red
+        case 14: //red
             DATA.value.color.red = defaultDATA.color.red;
             break;
-        case 15: //color.green
+        case 15: //green
             DATA.value.color.green = defaultDATA.color.green;
             break;
-        case 16: //color.blue
+        case 16: //blue
             DATA.value.color.blue = defaultDATA.color.blue;
             break;
-        case 17: //color.unused1
+        case 17: //unused1
             DATA.value.color.unused1 = defaultDATA.color.unused1;
             break;
         case 18: //flags

@@ -227,7 +227,7 @@ class WATRRecord : public Record
     public:
         enum flagsFlags
             {
-            fIsCausesDmg  = 0x00000001,
+            fIsCausesDamage  = 0x00000001,
             fIsReflective = 0x00000002
             };
         STRING EDID;
@@ -308,25 +308,25 @@ class WATRRecord : public Record
         int WriteRecord(_FileHandler &SaveHandler);
         bool IsCausesDmg()
             {
-            return (FNAM.value.flags & fIsCausesDmg) != 0;
+            return (FNAM.value.flags & fIsCausesDamage) != 0;
             }
         void IsCausesDmg(bool value)
             {
             if(value)
-                FNAM.value.flags |= fIsCausesDmg;
+                FNAM.value.flags |= fIsCausesDamage;
             else
-                FNAM.value.flags &= ~fIsCausesDmg;
+                FNAM.value.flags &= ~fIsCausesDamage;
             }
         bool IsCausesDamage()
             {
-            return (FNAM.value.flags & fIsCausesDmg) != 0;
+            return (FNAM.value.flags & fIsCausesDamage) != 0;
             }
         void IsCausesDamage(bool value)
             {
             if(value)
-                FNAM.value.flags |= fIsCausesDmg;
+                FNAM.value.flags |= fIsCausesDamage;
             else
-                FNAM.value.flags &= ~fIsCausesDmg;
+                FNAM.value.flags &= ~fIsCausesDamage;
             }
         bool IsReflective()
             {

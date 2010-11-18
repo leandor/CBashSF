@@ -62,6 +62,9 @@ int LANDRecord::DeleteListElement(const unsigned int subField)
 
 int LANDRecord::GetOtherFieldType(const unsigned int Field)
     {
+    //normals, heights, and colors are accessed as if they were a list of lists
+    //They aren't true lists, but rather 33x33 arrays
+    //So there are some inconsistencies when compared to true lists of lists
     switch(Field)
         {
         case 6: //data
@@ -367,7 +370,7 @@ unsigned int LANDRecord::GetFieldArraySize(const unsigned int Field)
     {
     switch(Field)
         {
-        case 6: //data
+        case 6: //data_p
             return DATA.size;
         case 10: //unused1
             if(VHGT.IsLoaded())

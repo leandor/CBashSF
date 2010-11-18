@@ -80,7 +80,7 @@ int LVLIRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
-                printf("  LVL?: %08X - Unknown subType = %04x\n", formID, subType);
+                printf("  LVLI: %08X - Unknown subType = %04x\n", formID, subType);
                 printf("  Size = %i\n", subSize);
                 printf("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;

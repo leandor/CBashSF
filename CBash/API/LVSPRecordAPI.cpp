@@ -59,14 +59,8 @@ int LVSPRecord::GetOtherFieldType(const unsigned int Field)
             return UBYTE_FIELD;
         case 7: //flags
             return UBYTE_FIELD;
-        case 8: //script
-            return UNKNOWN_FIELD;
-        case 9: //template
-            return UNKNOWN_FIELD;
         case 10: //entries
             return LIST_FIELD;
-        case 11: //data_p
-            return UNKNOWN_FIELD;
         default:
             return UNKNOWN_FIELD;
         }

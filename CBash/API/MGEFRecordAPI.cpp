@@ -99,7 +99,7 @@ int MGEFRecord::GetOtherFieldType(const unsigned int Field)
             return BYTES_FIELD;
         case 41: //mgefCode
             return UINT_FIELD;
-        case 42: //DATX
+        case 42: //datx_p
             return BYTES_FIELD;
         default:
             return UNKNOWN_FIELD;
@@ -221,7 +221,7 @@ unsigned int MGEFRecord::GetFieldArraySize(const unsigned int Field)
             return 0x2;
         case 40: //reserved2
             return 0x1C;
-        case 42: //DATX
+        case 42: //datx_p
             return 0x20;
         default:
             return 0;
@@ -260,7 +260,7 @@ void MGEFRecord::GetFieldArray(const unsigned int Field, void **FieldValues)
             else
                 *FieldValues = NULL;
             return;
-        case 42: //DATX
+        case 42: //datx_p
             if(OBME.IsLoaded() && OBME->DATX.IsLoaded())
                 *FieldValues = OBME->DATX.value;
             else
@@ -356,7 +356,7 @@ void MGEFRecord::SetField(const unsigned int Field, unsigned char *FieldValue, u
             OBME->OBME.Load();
             memcpy(&OBME->OBME.value.reserved2[0], &FieldValue[0], 0x1C);
             break;
-        case 42: //DATX
+        case 42: //datx_p
             if(nSize != 0x20)
                 return;
             OBME.Load();
@@ -652,7 +652,7 @@ int MGEFRecord::DeleteField(const unsigned int Field)
             if(OBME.IsLoaded() && OBME->EDDX.IsLoaded())
                 OBME->EDDX.Unload();
             break;
-        case 42: //DATX
+        case 42: //datx_p
             if(OBME.IsLoaded() && OBME->DATX.IsLoaded())
                 OBME->DATX.Unload();
             break;

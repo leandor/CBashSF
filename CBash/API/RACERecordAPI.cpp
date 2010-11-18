@@ -221,11 +221,11 @@ int RACERecord::GetOtherFieldType(const unsigned int Field)
             return STRING_FIELD;
         case 88: //rightEye_modt_p
             return BYTES_FIELD;
-        case 89: //maleTailModelPath
+        case 89: //maleTail_modPath
             return STRING_FIELD;
-        case 90: //maleTailModel_b
+        case 90: //maleTail_modb
             return FLOAT_FIELD;
-        case 91: //maleTailModel_t_p
+        case 91: //maleTail_modt_p
             return BYTES_FIELD;
         case 92: //maleUpperBodyPath
             return STRING_FIELD;
@@ -237,11 +237,11 @@ int RACERecord::GetOtherFieldType(const unsigned int Field)
             return STRING_FIELD;
         case 96: //maleTailPath
             return STRING_FIELD;
-        case 97: //femaleTailModelPath
+        case 97: //femaleTail_modPath
             return STRING_FIELD;
-        case 98: //femaleTailModel_b
+        case 98: //femaleTail_modb
             return FLOAT_FIELD;
-        case 99: //femaleTailModel_t_p
+        case 99: //femaleTail_modt_p
             return BYTES_FIELD;
         case 100: //femaleUpperBodyPath
             return STRING_FIELD;
@@ -472,11 +472,11 @@ void * RACERecord::GetOtherField(const unsigned int Field)
             if(MOD8.IsLoaded() && MOD8->ICON.IsLoaded())
                 return MOD8->ICON.value;
             return NULL;
-        case 89: //maleTailModelPath
+        case 89: //maleTail_modPath
             if(MMODL.IsLoaded() && MMODL->MODL.IsLoaded())
                 return MMODL->MODL.value;
             return NULL;
-        case 90: //maleTailModel_b
+        case 90: //maleTail_modb
             if(MMODL.IsLoaded() && MMODL->MODB.IsLoaded())
                 return &MMODL->MODB.value.MODB;
             return NULL;
@@ -490,11 +490,11 @@ void * RACERecord::GetOtherField(const unsigned int Field)
             return MICON3.value;
         case 96: //maleTailPath
             return MICON4.value;
-        case 97: //femaleTailModelPath
+        case 97: //femaleTail_modPath
             if(FMODL.IsLoaded() && FMODL->MODL.IsLoaded())
                 return FMODL->MODL.value;
             return NULL;
-        case 98: //femaleTailModel_b
+        case 98: //femaleTail_modb
             if(FMODL.IsLoaded() && FMODL->MODB.IsLoaded())
                 return &FMODL->MODB.value.MODB;
             return NULL;
@@ -557,11 +557,11 @@ unsigned int RACERecord::GetFieldArraySize(const unsigned int Field)
             if(MOD8.IsLoaded() && MOD8->MODT.IsLoaded())
                 return MOD8->MODT.size;
             return 0;
-        case 91: //maleTailModel_t_p
+        case 91: //maleTail_modt_p
             if(MMODL.IsLoaded() && MMODL->MODT.IsLoaded())
                 return MMODL->MODT.size;
             return 0;
-        case 99: //femaleTailModel_t_p
+        case 99: //femaleTail_modt_p
             if(FMODL.IsLoaded() && FMODL->MODT.IsLoaded())
                 return FMODL->MODT.size;
             return 0;
@@ -647,13 +647,13 @@ void RACERecord::GetFieldArray(const unsigned int Field, void **FieldValues)
             else
                 *FieldValues = NULL;
             return;
-        case 91: //maleTailModel_t_p
+        case 91: //maleTail_modt_p
             if(MMODL.IsLoaded() && MMODL->MODT.IsLoaded())
                 *FieldValues = MMODL->MODT.value;
             else
                 *FieldValues = NULL;
             return;
-        case 99: //femaleTailModel_t_p
+        case 99: //femaleTail_modt_p
             if(FMODL.IsLoaded() && FMODL->MODT.IsLoaded())
                 *FieldValues = FMODL->MODT.value;
             else
@@ -821,7 +821,7 @@ void RACERecord::SetField(const unsigned int Field, char *FieldValue)
             MOD8.Load();
             MOD8->ICON.Copy(FieldValue);
             break;
-        case 89: //maleTailModelPath
+        case 89: //maleTail_modPath
             MMODL.Load();
             MMODL->MODL.Copy(FieldValue);
             break;
@@ -840,7 +840,7 @@ void RACERecord::SetField(const unsigned int Field, char *FieldValue)
         case 96: //maleTailPath
             MICON4.Copy(FieldValue);
             break;
-        case 97: //femaleTailModelPath
+        case 97: //femaleTail_modPath
             FMODL.Load();
             FMODL->MODL.Copy(FieldValue);
             break;
@@ -1059,12 +1059,12 @@ void RACERecord::SetField(const unsigned int Field, unsigned char *FieldValue, u
             MOD8->MODT.Load();
             MOD8->MODT.Copy(FieldValue, nSize);
             break;
-        case 91: //maleTailModel_t_p
+        case 91: //maleTail_modt_p
             MMODL.Load();
             MMODL->MODT.Load();
             MMODL->MODT.Copy(FieldValue, nSize);
             break;
-        case 99: //femaleTailModel_t_p
+        case 99: //femaleTail_modt_p
             FMODL.Load();
             FMODL->MODT.Load();
             FMODL->MODT.Copy(FieldValue, nSize);
@@ -1165,12 +1165,12 @@ void RACERecord::SetField(const unsigned int Field, float FieldValue)
             MOD8->MODB.Load();
             MOD8->MODB.value.MODB = FieldValue;
             break;
-        case 90: //maleTailModel_b
+        case 90: //maleTail_modb
             MMODL.Load();
             MMODL->MODB.Load();
             MMODL->MODB.value.MODB = FieldValue;
             break;
-        case 98: //femaleTailModel_b
+        case 98: //femaleTail_modb
             FMODL.Load();
             FMODL->MODB.Load();
             FMODL->MODB.value.MODB = FieldValue;
@@ -1581,7 +1581,7 @@ int RACERecord::DeleteField(const unsigned int Field)
             if(MOD8.IsLoaded())
                 MOD8->MODT.Unload();
             break;
-        case 89: //maleTailModelPath
+        case 89: //maleTail_modPath
             if(MMODL.IsLoaded())
                 MMODL->MODL.Unload();
             break;
@@ -1608,7 +1608,7 @@ int RACERecord::DeleteField(const unsigned int Field)
         case 96: //maleTailPath
             MICON4.Unload();
             break;
-        case 97: //femaleTailModelPath
+        case 97: //femaleTail_modPath
             if(FMODL.IsLoaded())
                 FMODL->MODL.Unload();
             break;

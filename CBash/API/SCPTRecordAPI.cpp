@@ -163,9 +163,9 @@ int SCPTRecord::GetListFieldType(const unsigned int subField, const unsigned int
             switch(listField)
                 {
                 case 1: //reference
-                    return UINT_FIELD;
+                    return FID_OR_UINT_FIELD;
                 case 2: //isSCRO
-                    return UINT_FIELD;
+                    return BOOL_FIELD;
                 default:
                     return UNKNOWN_FIELD;
                 }

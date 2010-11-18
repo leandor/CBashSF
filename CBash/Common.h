@@ -1005,7 +1005,9 @@ enum API_FieldTypes {
     SUBRECORDS_FIELD,
     SUBRECORD_FIELD,
     PARENTRECORD_FIELD,
-    RADIAN_FIELD
+    RADIAN_FIELD,
+    FID_OR_UINT_FIELD,
+    BOOL_FIELD
     };
 
 enum TopRecords {

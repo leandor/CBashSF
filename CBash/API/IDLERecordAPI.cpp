@@ -115,9 +115,9 @@ int IDLERecord::GetListFieldType(const unsigned int subField, const unsigned int
                 case 4: //ifunc
                     return UINT_FIELD;
                 case 5: //param1
-                    return UINT_FIELD;
+                    return FID_OR_UINT_FIELD;
                 case 6: //param2
-                    return UINT_FIELD;
+                    return FID_OR_UINT_FIELD;
                 case 7: //unused2
                     return BYTES_FIELD;
                 default:

@@ -129,9 +129,9 @@ class WRLDRecord : public Record
             };
         enum eSNAMType
             {
-            eDefault,
-            ePublic,
-            eDungeon
+            eDefault = 0,
+            ePublic  = 1,
+            eDungeon = 2
             };
         STRING EDID;
         STRING FULL;

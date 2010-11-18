@@ -28,7 +28,7 @@ int REFRRecord::GetOtherFieldType(const unsigned int Field)
         {
         case 6: //base
             return FID_FIELD;
-        case 7: //destinationFormID
+        case 7: //destination
             return FID_FIELD;
         case 8: //destinationPosX
             return FLOAT_FIELD;
@@ -37,11 +37,11 @@ int REFRRecord::GetOtherFieldType(const unsigned int Field)
         case 10: //destinationPosZ
             return FLOAT_FIELD;
         case 11: //destinationRotX
-            return FLOAT_FIELD;
+            return RADIAN_FIELD;
         case 12: //destinationRotY
-            return FLOAT_FIELD;
+            return RADIAN_FIELD;
         case 13: //destinationRotZ
-            return FLOAT_FIELD;
+            return RADIAN_FIELD;
         case 14: //lockLevel
             return UBYTE_FIELD;
         case 15: //unused1
@@ -66,7 +66,7 @@ int REFRRecord::GetOtherFieldType(const unsigned int Field)
             return UBYTE_FIELD;
         case 25: //unused4
             return BYTES_FIELD;
-        case 26: //targetFormID
+        case 26: //target
             return FID_FIELD;
         case 27: //seed
             if(XSED->isOffset)
@@ -131,7 +131,7 @@ void * REFRRecord::GetOtherField(const unsigned int Field)
             return EDID.value;
         case 6: //base
             return &NAME.value.fid;
-        case 7: //destinationFormID
+        case 7: //destination
             if(XTEL.IsLoaded())
                 return &XTEL->destinationFid;
             return NULL;
@@ -191,7 +191,7 @@ void * REFRRecord::GetOtherField(const unsigned int Field)
             if(XESP.IsLoaded())
                 return &XESP->flags;
             return NULL;
-        case 26: //targetFormID
+        case 26: //target
             if(XTRG.IsLoaded())
                 return &XTRG->fid;
             return NULL;
@@ -381,7 +381,7 @@ void REFRRecord::SetOtherField(const unsigned int Field, unsigned int FieldValue
         case 6: //base
             NAME.value.fid = FieldValue;
             break;
-        case 7: //destinationFormID
+        case 7: //destination
             XTEL.Load();
             XTEL->destinationFid = FieldValue;
             break;
@@ -402,7 +402,7 @@ void REFRRecord::SetOtherField(const unsigned int Field, unsigned int FieldValue
             XESP.Load();
             XESP->parent = FieldValue;
             break;
-        case 26: //targetFormID
+        case 26: //target
             XTRG.Load();
             XTRG->fid = FieldValue;
             break;
@@ -633,7 +633,7 @@ int REFRRecord::DeleteField(const unsigned int Field)
         case 6: //base
             NAME.Unload();
             break;
-        case 7: //destinationFormID
+        case 7: //destination
             if(XTEL.IsLoaded())
                 XTEL->destinationFid = defaultXTEL.destinationFid;
             break;
@@ -726,7 +726,7 @@ int REFRRecord::DeleteField(const unsigned int Field)
                 XESP->unused1[2] = defaultXESP.unused1[2];
                 }
             break;
-        case 26: //targetFormID
+        case 26: //target
             XTRG.Unload();
             break;
         case 27: //seed

@@ -58,33 +58,33 @@ int WATRRecord::GetOtherFieldType(const unsigned int Field)
             return FLOAT_FIELD;
         case 21: //fogFar
             return FLOAT_FIELD;
-        case 22: //shallow.red
+        case 22: //shallowRed
             return UBYTE_FIELD;
-        case 23: //shallow.green
+        case 23: //shallowGreen
             return UBYTE_FIELD;
-        case 24: //shallow.blue
+        case 24: //shallowBlue
             return UBYTE_FIELD;
-        case 25: //shallow.unused1
+        case 25: //unused1
             return BYTES_FIELD;
-        case 26: //deep.red
+        case 26: //deepRed
             return UBYTE_FIELD;
-        case 27: //deep.green
+        case 27: //deepGreen
             return UBYTE_FIELD;
-        case 28: //deep.blue
+        case 28: //deepBlue
             return UBYTE_FIELD;
-        case 29: //deep.unused1
+        case 29: //unused2
             return BYTES_FIELD;
-        case 30: //refl.red
+        case 30: //reflRed
             return UBYTE_FIELD;
-        case 31: //refl.green
+        case 31: //reflGreen
             return UBYTE_FIELD;
-        case 32: //refl.blue
+        case 32: //reflBlue
             return UBYTE_FIELD;
-        case 33: //refl.unused1
+        case 33: //unused3
             return BYTES_FIELD;
         case 34: //blend
             return UBYTE_FIELD;
-        case 35: //unused1
+        case 35: //unused4
             return BYTES_FIELD;
         case 36: //rainForce
             return FLOAT_FIELD;
@@ -181,39 +181,39 @@ void * WATRRecord::GetOtherField(const unsigned int Field)
             if(DATA.IsLoaded())
                 return &DATA->fogFar;
             return NULL;
-        case 22: //shallow.red
+        case 22: //shallowRed
             if(DATA.IsLoaded())
                 return &DATA->shallow.red;
             return NULL;
-        case 23: //shallow.green
+        case 23: //shallowGreen
             if(DATA.IsLoaded())
                 return &DATA->shallow.green;
             return NULL;
-        case 24: //shallow.blue
+        case 24: //shallowBlue
             if(DATA.IsLoaded())
                 return &DATA->shallow.blue;
             return NULL;
-        case 26: //deep.red
+        case 26: //deepRed
             if(DATA.IsLoaded())
                 return &DATA->deep.red;
             return NULL;
-        case 27: //deep.green
+        case 27: //deepGreen
             if(DATA.IsLoaded())
                 return &DATA->deep.green;
             return NULL;
-        case 28: //deep.blue
+        case 28: //deepBlue
             if(DATA.IsLoaded())
                 return &DATA->deep.blue;
             return NULL;
-        case 30: //refl.red
+        case 30: //reflRed
             if(DATA.IsLoaded())
                 return &DATA->refl.red;
             return NULL;
-        case 31: //refl.green
+        case 31: //reflGreen
             if(DATA.IsLoaded())
                 return &DATA->refl.green;
             return NULL;
-        case 32: //refl.blue
+        case 32: //reflBlue
             if(DATA.IsLoaded())
                 return &DATA->refl.blue;
             return NULL;
@@ -286,19 +286,19 @@ unsigned int WATRRecord::GetFieldArraySize(const unsigned int Field)
     {
     switch(Field)
         {
-        case 25: //shallow.unused1
+        case 25: //unused1
             if(DATA.IsLoaded())
                 return 1;
             return 0;
-        case 29: //deep.unused1
+        case 29: //unused2
             if(DATA.IsLoaded())
                 return 1;
             return 0;
-        case 33: //refl.unused1
+        case 33: //unused3
             if(DATA.IsLoaded())
                 return 1;
             return 0;
-        case 35: //unused1
+        case 35: //unused4
             if(DATA.IsLoaded())
                 return 3;
             return 0;
@@ -311,25 +311,25 @@ void WATRRecord::GetFieldArray(const unsigned int Field, void **FieldValues)
     {
     switch(Field)
         {
-        case 25: //shallow.unused1
+        case 25: //unused1
             if(DATA.IsLoaded())
                 *FieldValues = &DATA->shallow.unused1;
             else
                 *FieldValues = NULL;
             return;
-        case 29: //deep.unused1
+        case 29: //unused2
             if(DATA.IsLoaded())
                 *FieldValues = &DATA->deep.unused1;
             else
                 *FieldValues = NULL;
             return;
-        case 33: //refl.unused1
+        case 33: //unused3
             if(DATA.IsLoaded())
                 *FieldValues = &DATA->refl.unused1;
             else
                 *FieldValues = NULL;
             return;
-        case 35: //unused1
+        case 35: //unused4
             if(DATA.IsLoaded())
                 *FieldValues = &DATA->unused1[0];
             else
@@ -370,39 +370,39 @@ void WATRRecord::SetField(const unsigned int Field, unsigned char FieldValue)
         case 8: //flags
             FNAM.value.flags = FieldValue;
             break;
-        case 22: //shallow.red
+        case 22: //shallowRed
             DATA.Load();
             DATA->shallow.red = FieldValue;
             break;
-        case 23: //shallow.green
+        case 23: //shallowGreen
             DATA.Load();
             DATA->shallow.green = FieldValue;
             break;
-        case 24: //shallow.blue
+        case 24: //shallowBlue
             DATA.Load();
             DATA->shallow.blue = FieldValue;
             break;
-        case 26: //deep.red
+        case 26: //deepRed
             DATA.Load();
             DATA->deep.red = FieldValue;
             break;
-        case 27: //deep.green
+        case 27: //deepGreen
             DATA.Load();
             DATA->deep.green = FieldValue;
             break;
-        case 28: //deep.blue
+        case 28: //deepBlue
             DATA.Load();
             DATA->deep.blue = FieldValue;
             break;
-        case 30: //refl.red
+        case 30: //reflRed
             DATA.Load();
             DATA->refl.red = FieldValue;
             break;
-        case 31: //refl.green
+        case 31: //reflGreen
             DATA.Load();
             DATA->refl.green = FieldValue;
             break;
-        case 32: //refl.blue
+        case 32: //reflBlue
             DATA.Load();
             DATA->refl.blue = FieldValue;
             break;
@@ -540,25 +540,25 @@ void WATRRecord::SetField(const unsigned int Field, unsigned char *FieldValue, u
     {
     switch(Field)
         {
-        case 25: //shallow.unused1
+        case 25: //unused1
             if(nSize != 1)
                 return;
             DATA.Load();
             DATA->shallow.unused1 = FieldValue[0];
             break;
-        case 29: //deep.unused1
+        case 29: //unused2
             if(nSize != 1)
                 return;
             DATA.Load();
             DATA->deep.unused1 = FieldValue[0];
             break;
-        case 33: //refl.unused1
+        case 33: //unused3
             if(nSize != 1)
                 return;
             DATA.Load();
             DATA->refl.unused1 = FieldValue[0];
             break;
-        case 35: //unused1
+        case 35: //unused4
             if(nSize != 3)
                 return;
             DATA.Load();
@@ -654,51 +654,51 @@ int WATRRecord::DeleteField(const unsigned int Field)
             if(DATA.IsLoaded())
                 DATA->fogFar = defaultDATA.fogFar;
             break;
-        case 22: //shallow.red
+        case 22: //shallowRed
             if(DATA.IsLoaded())
                 DATA->shallow.red = defaultDATA.shallow.red;
             break;
-        case 23: //shallow.green
+        case 23: //shallowGreen
             if(DATA.IsLoaded())
                 DATA->shallow.green = defaultDATA.shallow.green;
             break;
-        case 24: //shallow.blue
+        case 24: //shallowBlue
             if(DATA.IsLoaded())
                 DATA->shallow.blue = defaultDATA.shallow.blue;
             break;
-        case 25: //shallow.unused1
+        case 25: //unused1
             if(DATA.IsLoaded())
                 DATA->shallow.unused1 = defaultDATA.shallow.unused1;
             break;
-        case 26: //deep.red
+        case 26: //deepRed
             if(DATA.IsLoaded())
                 DATA->deep.red = defaultDATA.deep.red;
             break;
-        case 27: //deep.green
+        case 27: //deepGreen
             if(DATA.IsLoaded())
                 DATA->deep.green = defaultDATA.deep.green;
             break;
-        case 28: //deep.blue
+        case 28: //deepBlue
             if(DATA.IsLoaded())
                 DATA->deep.blue = defaultDATA.deep.blue;
             break;
-        case 29: //deep.unused1
+        case 29: //unused2
             if(DATA.IsLoaded())
                 DATA->deep.unused1 = defaultDATA.deep.unused1;
             break;
-        case 30: //refl.red
+        case 30: //reflRed
             if(DATA.IsLoaded())
                 DATA->refl.red = defaultDATA.refl.red;
             break;
-        case 31: //refl.green
+        case 31: //reflGreen
             if(DATA.IsLoaded())
                 DATA->refl.green = defaultDATA.refl.green;
             break;
-        case 32: //refl.blue
+        case 32: //reflBlue
             if(DATA.IsLoaded())
                 DATA->refl.blue = defaultDATA.refl.blue;
             break;
-        case 33: //refl.unused1
+        case 33: //unused3
             if(DATA.IsLoaded())
                 DATA->refl.unused1 = defaultDATA.refl.unused1;
             break;
@@ -706,7 +706,7 @@ int WATRRecord::DeleteField(const unsigned int Field)
             if(DATA.IsLoaded())
                 DATA->blend = defaultDATA.blend;
             break;
-        case 35: //unused1
+        case 35: //unused4
             if(DATA.IsLoaded())
                 {
                 DATA->unused1[0] = defaultDATA.unused1[0];

@@ -35,7 +35,7 @@ int SOUNRecord::GetOtherFieldType(const unsigned int Field)
         case 9: //freqAdjustment
             return BYTE_FIELD;
         case 10: //unused1
-            return UBYTE_FIELD;
+            return BYTES_FIELD;
         case 11: //flags
             return USHORT_FIELD;
         case 12: //unused2
@@ -65,8 +65,6 @@ void * SOUNRecord::GetOtherField(const unsigned int Field)
             return &SNDX.value.maxDistance;
         case 9: //freqAdjustment
             return &SNDX.value.freqAdjustment;
-        case 10: //unused1
-            return &SNDX.value.unused1;
         case 11: //flags
             return &SNDX.value.flags;
         case 13: //staticAtten
@@ -84,6 +82,8 @@ unsigned int SOUNRecord::GetFieldArraySize(const unsigned int Field)
     {
     switch(Field)
         {
+        case 10: //unused1
+            return 1;
         case 12: //unused2
             return 2;
         default:
@@ -95,6 +95,9 @@ void SOUNRecord::GetFieldArray(const unsigned int Field, void **FieldValues)
     {
     switch(Field)
         {
+        case 10: //unused1
+            *FieldValues = &SNDX.value.unused1;
+            return;
         case 12: //unused2
             *FieldValues = &SNDX.value.unused2[0];
             return;
@@ -129,9 +132,6 @@ void SOUNRecord::SetField(const unsigned int Field, unsigned char FieldValue)
             break;
         case 8: //maxDistance
             SNDX.value.maxDistance = FieldValue;
-            break;
-        case 10: //unused1
-            SNDX.value.unused1 = FieldValue;
             break;
         case 14: //stopTime
             SNDX.value.stopTime = FieldValue;
@@ -175,6 +175,11 @@ void SOUNRecord::SetField(const unsigned int Field, unsigned char *FieldValue, u
     {
     switch(Field)
         {
+        case 10: //unused1
+            if(nSize != 1)
+                return;
+            SNDX.value.unused1 = FieldValue[0];
+            break;
         case 12: //unused2
             if(nSize != 2)
                 return;
