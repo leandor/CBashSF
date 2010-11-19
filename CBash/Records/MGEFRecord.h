@@ -311,9 +311,11 @@ class MGEFRecord : public Record
         OptSubRecord<OBMEMGEF> OBME;
 
         MGEFRecord(bool newRecord=false):Record(newRecord) {}
-        MGEFRecord(const unsigned int &newFormID):Record(newFormID) {}
         MGEFRecord(MGEFRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eMGEF)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -356,6 +358,7 @@ class MGEFRecord : public Record
             {
             if(!IsLoaded())
                 return;
+
             if(OBME.IsLoaded())
                 {
                 if(OBME->EDDX.IsLoaded())

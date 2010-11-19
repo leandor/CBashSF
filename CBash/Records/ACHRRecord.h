@@ -54,10 +54,13 @@ class ACHRRecord : public Record
         RAWBYTES XRGD;
         OptSubRecord<GENXSCL> XSCL;
         ReqSubRecord<GENPOSDATA> DATA;
+
         ACHRRecord(bool newRecord=false):Record(newRecord) {IsPersistent(true);}
-        ACHRRecord(const unsigned int &newFormID):Record(newFormID) {IsPersistent(true);}
         ACHRRecord(ACHRRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eACHR)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -98,6 +101,7 @@ class ACHRRecord : public Record
             {
             if(!IsLoaded())
                 return;
+
             op.Accept(NAME.value.fid);
             if(XPCI.IsLoaded() && XPCI->XPCI.IsLoaded())
                 op.Accept(XPCI->XPCI->fid);

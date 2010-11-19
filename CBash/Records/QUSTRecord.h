@@ -367,9 +367,11 @@ class QUSTRecord : public Record
         std::vector<QUSTTarget *> Targets;
 
         QUSTRecord(bool newRecord=false):Record(newRecord) {}
-        QUSTRecord(const unsigned int &newFormID):Record(newFormID) {}
         QUSTRecord(QUSTRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eQUST)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -469,6 +471,7 @@ class QUSTRecord : public Record
             {
             if(!IsLoaded())
                 return;
+
             std::pair<unsigned int, unsigned int> CTDAFunction;
             std::map<unsigned int, std::pair<unsigned int,unsigned int>>::const_iterator curCTDAFunction;
             if(SCRI.IsLoaded())

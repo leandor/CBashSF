@@ -68,9 +68,11 @@ class ALCHRecord : public Record
         OptSubRecord<OBMEMAGIC> OBME;
 
         ALCHRecord(bool newRecord=false):Record(newRecord) {}
-        ALCHRecord(const unsigned int &newFormID):Record(newFormID) {}
         ALCHRecord(ALCHRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eALCH)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -138,6 +140,7 @@ class ALCHRecord : public Record
             {
             if(!IsLoaded())
                 return;
+
             if(SCRI.IsLoaded())
                 op.Accept(SCRI->fid);
             for(unsigned int x = 0; x < Effects.size(); x++)

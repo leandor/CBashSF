@@ -39,10 +39,13 @@ class ANIORecord : public Record
         STRING EDID;
         OptSubRecord<GENMODEL> MODL;
         ReqSubRecord<GENFID> DATA;
+
         ANIORecord(bool newRecord=false):Record(newRecord) {}
-        ANIORecord(const unsigned int &newFormID):Record(newFormID) {}
         ANIORecord(ANIORecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eANIO)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -70,6 +73,7 @@ class ANIORecord : public Record
             {
             if(!IsLoaded())
                 return;
+
             if(DATA.IsLoaded())
                 op.Accept(DATA.value.fid);
             }

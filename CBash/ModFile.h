@@ -88,12 +88,12 @@ class ModFile
     {
     private:
         _FileHandler ReadHandler;
-        bool IsOpen, LoadedGRUPs, IsDummy, IsNew;
         time_t ModTime;
     public:
-        bool IsMerge, IsScan;
+        ModFlags Settings;
         _FormIDHandler FormIDHandler;
         char *FileName;
+
         TES4Record TES4;
         //ADD DEFINITIONS HERE
         GRUPRecords<GMSTRecord> GMST;
@@ -153,10 +153,8 @@ class ModFile
         GRUPRecords<WATRRecord> WATR;
         GRUPRecords<EFSHRecord> EFSH;
 
-        ModFile(char *ModName, bool MergeMod=false, bool ScanMod=false, bool CreateFile=false, bool DummyLoad=false):IsOpen(CreateFile),
-                                                                         LoadedGRUPs(CreateFile), IsMerge(MergeMod), IsScan(ScanMod),
-                                                                         IsDummy(DummyLoad), IsNew(CreateFile), FileName(ModName), TES4(DummyLoad || CreateFile),
-                                                                         FormIDHandler(ModName, TES4.MAST, TES4.HEDR.value.nextObject)
+        ModFile(char *ModName, ModFlags &_settings):Settings(_settings.GetFlagField()), FileName(ModName), TES4(_settings.IsNew || _settings.IsDummy),
+                                                       FormIDHandler(ModName, TES4.MAST, TES4.HEDR.value.nextObject)
             {
             struct stat buf;
             if(stat(FileName, &buf) < 0)
@@ -164,7 +162,7 @@ class ModFile
             else
                 ModTime = buf.st_mtime;
 
-            if(CreateFile || IsDummy)
+            if(Settings.IsNew || Settings.IsDummy)
                 TES4.IsESM(_stricmp(".esm",ModName + strlen(ModName)-4) == 0);
             }
         ~ModFile()
@@ -196,17 +194,17 @@ class ModFile
             //Non-existent esps retain their relative load order
             //Existing esps sort by modified date
             //New esps load last
-            //if(lhs->IsNewFile())
+            //if(lhs->Settings.IsNew)
             //    printf("New mod: %s\n", lhs->FileName);
-            //if(rhs->IsNewFile())
+            //if(rhs->Settings.IsNew)
             //    printf("New mod: %s\n", rhs->FileName);
-            if(IsNew)
+            if(Settings.IsNew)
                 {
-                if(other.IsNewFile())
+                if(other.Settings.IsNew)
                     return true;
                 return false;
                 }
-            if(other.IsNewFile())
+            if(other.Settings.IsNew)
                 return false;
             if(ModTime == 0)
                 {
@@ -227,12 +225,13 @@ class ModFile
         int Close();
         int LoadTES4();
         int Load(boost::threadpool::pool &Threads, const bool &FullLoad);
-        bool IsFake() {return IsDummy;}
         bool IsEmpty() {return FormIDHandler.IsEmpty;}
-        bool IsNewFile() {return IsNew;}
+        unsigned int GetNumRecords(const unsigned int &RecordType);
+        Record * CreateRecord(const unsigned int &RecordType, Record *&SourceRecord, Record *&ParentRecord, CreateRecordOptions &options);
         int CleanMasters();
-        unsigned int Unload();
         int Save(_FileHandler &SaveHandler, bool CloseMod);
+        void VisitRecords(RecordOp &op);
+        void VisitTopRecords(const unsigned int &RecordType, RecordOp &op);
         #ifdef _DEBUG
         void Debug(int debugLevel);
         #endif

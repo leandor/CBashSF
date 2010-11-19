@@ -53,13 +53,13 @@ class ACRERecord : public Record
         RAWBYTES XRGD;
         OptSubRecord<GENXSCL> XSCL;
         ReqSubRecord<GENPOSDATA> DATA;
-        //Used on reading
+
         ACRERecord(bool newRecord=false):Record(newRecord) {IsTemporary(true);}
-        //Used on new records
-        ACRERecord(const unsigned int &newFormID):Record(newFormID) {IsTemporary(true);}
-        //Used on copying records
         ACRERecord(ACRERecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eACRE)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -97,6 +97,7 @@ class ACRERecord : public Record
             {
             if(!IsLoaded())
                 return;
+
             op.Accept(NAME.value.fid);
             if(Ownership.IsLoaded())
                 {

@@ -277,16 +277,17 @@ class INFORecord : public Record
         std::vector<ReqSubRecord<GENCTDA> *> CTDA;
         std::vector<unsigned int *> TCLT;
         std::vector<unsigned int *> TCLF;
-
         ReqSubRecord<GENSCHR> SCHR;
         RAWBYTES SCDA;
         NONNULLSTRING SCTX;
         std::vector<ReqSubRecord<GENSCR_> *> SCR_;
 
         INFORecord(bool newRecord=false):Record(newRecord) {}
-        INFORecord(const unsigned int &newFormID):Record(newFormID) {}
         INFORecord(INFORecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eINFO)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -392,6 +393,7 @@ class INFORecord : public Record
             {
             if(!IsLoaded())
                 return;
+
             std::pair<unsigned int, unsigned int> CTDAFunction;
             std::map<unsigned int, std::pair<unsigned int,unsigned int>>::const_iterator curCTDAFunction;
             op.Accept(QSTI.value.fid);

@@ -148,9 +148,11 @@ class LIGHRecord : public Record
         OptSubRecord<GENFID> SNAM;
 
         LIGHRecord(bool newRecord=false):Record(newRecord) {}
-        LIGHRecord(const unsigned int &newFormID):Record(newFormID) {}
         LIGHRecord(LIGHRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eLIGH)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -188,6 +190,7 @@ class LIGHRecord : public Record
             {
             if(!IsLoaded())
                 return;
+
             if(SCRI.IsLoaded())
                 op.Accept(SCRI->fid);
             if(SNAM.IsLoaded())

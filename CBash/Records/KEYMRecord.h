@@ -45,10 +45,13 @@ class KEYMRecord : public Record
         STRING ICON;
         OptSubRecord<GENFID> SCRI;
         ReqSubRecord<GENVALUEWEIGHT> DATA;
+
         KEYMRecord(bool newRecord=false):Record(newRecord) {}
-        KEYMRecord(const unsigned int &newFormID):Record(newFormID) {}
         KEYMRecord(KEYMRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eKEYM)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -82,6 +85,7 @@ class KEYMRecord : public Record
             {
             if(!IsLoaded())
                 return;
+
             if(SCRI.IsLoaded())
                 op.Accept(SCRI->fid);
             }

@@ -101,9 +101,11 @@ class BOOKRecord : public Record
         ReqSubRecord<BOOKDATA> DATA;
 
         BOOKRecord(bool newRecord=false):Record(newRecord) {}
-        BOOKRecord(const unsigned int &newFormID):Record(newFormID) {}
         BOOKRecord(BOOKRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eBOOK)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -143,6 +145,7 @@ class BOOKRecord : public Record
             {
             if(!IsLoaded())
                 return;
+
             if(SCRI.IsLoaded())
                 op.Accept(SCRI->fid);
             if(ENAM.IsLoaded())

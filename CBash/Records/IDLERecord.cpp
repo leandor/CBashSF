@@ -31,8 +31,6 @@ int IDLERecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
     unsigned int subType = 0;
     unsigned int subSize = 0;
     ReqSubRecord<GENCTDA> *newCTDA = NULL;
-    std::pair<unsigned int, unsigned int> CTDAFunction;
-    std::map<unsigned int, std::pair<unsigned int,unsigned int>>::const_iterator curCTDAFunction;
     unsigned int curPos = 0;
     while(curPos < recSize){
         _readBuffer(&subType,buffer,4,curPos);

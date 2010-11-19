@@ -119,10 +119,13 @@ class CLMTRecord : public Record
         ISTRING GNAM;
         OptSubRecord<GENMODEL> MODL;
         ReqSubRecord<CLMTTNAM> TNAM;
+
         CLMTRecord(bool newRecord=false):Record(newRecord) {}
-        CLMTRecord(const unsigned int &newFormID):Record(newFormID) {}
         CLMTRecord(CLMTRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eCLMT)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -156,6 +159,7 @@ class CLMTRecord : public Record
             {
             if(!IsLoaded())
                 return;
+
             for(unsigned int x = 0; x < Weathers.size(); x++)
                 op.Accept(Weathers[x].weather);
             }

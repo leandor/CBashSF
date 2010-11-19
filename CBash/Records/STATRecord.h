@@ -36,10 +36,13 @@ class STATRecord : public Record
     public:
         STRING EDID;
         OptSubRecord<GENMODEL> MODL;
+
         STATRecord(bool newRecord=false):Record(newRecord) {}
-        STATRecord(const unsigned int &newFormID):Record(newFormID) {}
         STATRecord(STATRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eSTAT)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;

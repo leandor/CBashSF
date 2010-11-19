@@ -122,9 +122,11 @@ class WEAPRecord : public Record
         ReqSubRecord<WEAPDATA> DATA;
 
         WEAPRecord(bool newRecord=false):Record(newRecord) {}
-        WEAPRecord(const unsigned int &newFormID):Record(newFormID) {}
         WEAPRecord(WEAPRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eWEAP)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -162,6 +164,7 @@ class WEAPRecord : public Record
             {
             if(!IsLoaded())
                 return;
+
             if(SCRI.IsLoaded())
                 op.Accept(SCRI->fid);
             if(ENAM.IsLoaded())

@@ -126,9 +126,11 @@ class SPELRecord : public Record
         OptSubRecord<OBMEMAGIC> OBME;
 
         SPELRecord(bool newRecord=false):Record(newRecord) {}
-        SPELRecord(const unsigned int &newFormID):Record(newFormID) {}
         SPELRecord(SPELRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eSPEL)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;

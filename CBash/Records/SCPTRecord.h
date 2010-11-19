@@ -132,13 +132,15 @@ class SCPTRecord : public Record
         ReqSubRecord<GENSCHR> SCHR;
         RAWBYTES SCDA;
         NONNULLSTRING SCTX;
-
         std::vector<SCPTVARS *> VARS;
         std::vector<ReqSubRecord<GENSCR_> *> SCR_;
+
         SCPTRecord(bool newRecord=false):Record(newRecord) {}
-        SCPTRecord(const unsigned int &newFormID):Record(newFormID) {}
         SCPTRecord(SCPTRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eSCPT)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -192,6 +194,7 @@ class SCPTRecord : public Record
             {
             if(!IsLoaded())
                 return;
+
             for(unsigned int x = 0; x < SCR_.size(); x++)
                 if(SCR_[x]->value.isSCRO)
                     op.Accept(SCR_[x]->value.reference);

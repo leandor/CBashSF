@@ -53,10 +53,13 @@ class DIALRecord : public Record
         STRING FULL;
         ReqSubRecord<GENFLAG> DATA;
         std::vector<INFORecord *> INFO;
+
         DIALRecord(bool newRecord=false):Record(newRecord) {}
-        DIALRecord(const unsigned int &newFormID):Record(newFormID) {}
         DIALRecord(DIALRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eDIAL)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -99,6 +102,7 @@ class DIALRecord : public Record
             {
             if(!IsLoaded())
                 return;
+
             for(unsigned int x = 0; x < QSTI.size(); x++)
                 op.Accept(*QSTI[x]);
             for(unsigned int x = 0; x < QSTR.size(); x++)

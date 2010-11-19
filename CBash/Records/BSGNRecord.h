@@ -40,10 +40,13 @@ class BSGNRecord : public Record
         STRING ICON;
         STRING DESC;
         std::vector<unsigned int *> SPLO;
+
         BSGNRecord(bool newRecord=false):Record(newRecord) {}
-        BSGNRecord(const unsigned int &newFormID):Record(newFormID) {}
         BSGNRecord(BSGNRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eBSGN)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -79,6 +82,7 @@ class BSGNRecord : public Record
             {
             if(!IsLoaded())
                 return;
+
             for(unsigned int x = 0; x < SPLO.size(); x++)
                 op.Accept(*SPLO[x]);
             }

@@ -67,9 +67,11 @@ class SBSPRecord : public Record
         ReqSubRecord<SBSPDNAM> DNAM;
 
         SBSPRecord(bool newRecord=false):Record(newRecord) {}
-        SBSPRecord(const unsigned int &newFormID):Record(newFormID) {}
         SBSPRecord(SBSPRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eSBSP)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;

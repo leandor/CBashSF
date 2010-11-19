@@ -117,9 +117,11 @@ class SKILRecord : public Record
         STRING MNAM;
 
         SKILRecord(bool newRecord=false):Record(newRecord) {}
-        SKILRecord(const unsigned int &newFormID):Record(newFormID) {}
         SKILRecord(SKILRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eSKIL)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;

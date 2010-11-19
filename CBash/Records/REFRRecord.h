@@ -431,9 +431,11 @@ class REFRRecord : public Record
         ReqSubRecord<GENPOSDATA> DATA;
 
         REFRRecord(bool newRecord=false):Record(newRecord) {}
-        REFRRecord(const unsigned int &newFormID):Record(newFormID) {}
         REFRRecord(REFRRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eREFR)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -508,6 +510,7 @@ class REFRRecord : public Record
             {
             if(!IsLoaded())
                 return;
+
             op.Accept(NAME.value.fid);
             if(XTEL.IsLoaded())
                 op.Accept(XTEL->destinationFid);

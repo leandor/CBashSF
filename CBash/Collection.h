@@ -29,7 +29,6 @@ GPL License and Copyright Notice ============================================
 #define NUMTHREADS    boost::thread::hardware_concurrency()
 #endif
 
-
 struct sameStr
     {
     bool operator()( const char* s1, const char* s2 ) const
@@ -73,7 +72,7 @@ class Collection
             }
 
         bool IsModAdded(const char *ModName);
-        int AddMod(const char *ModName, bool MergeMod=false, bool ScanMod=false, bool CreateIfNotExist=false, bool DummyLoad=false);
+        int AddMod(const char *ModName, ModFlags &settings);
 
         int IsEmpty(char *ModName);
         unsigned int GetNumNewRecordTypes(char *ModName);
@@ -82,8 +81,8 @@ class Collection
         int CleanMasters(char *ModName);
         int SafeSaveMod(char *ModName, bool CloseMod=false);
 
-        void IndexRecords(ModFile *curModFile);
-        void IndexRecords();
+        void IndexRecords(ModFile *curModFile, const bool &FullLoad);
+        void IndexRecords(const bool &FullLoad);
         int Load(const bool &LoadMasters, const bool &FullLoad);
         unsigned int NextFreeExpandedFID(ModFile *curModFile, unsigned int depth = 0);
         int RemoveIndex(Record *curRecord, char *ModName);
@@ -91,13 +90,18 @@ class Collection
         int UnloadRecord(char *ModName, unsigned int recordFID);
         int UnloadModFile(char *ModName);
         int UnloadAll();
+        int Close();
+
+        unsigned int CreateRecord(char *ModName, const unsigned int RecordType, const unsigned int ParentFID, unsigned int CreateFlags);
+        unsigned int CopyRecord(char *ModName, unsigned int RecordFID, char *DestModName, unsigned int DestParentFID, unsigned int CreateFlags);
+        unsigned int CreateGMSTRecord(char *ModName, char *recordEDID);
+        unsigned int CopyGMSTRecord(char *ModName, char *srcRecordEDID, char *destModName);
         int DeleteRecord(char *ModName, unsigned int recordFID, unsigned int parentFID);
         int DeleteCELL(CELLRecord *curCell, char *ModName);
         int DeleteGMSTRecord(char *ModName, char *recordEDID);
-        int Close();
 
         template <class T>
-        FID_Iterator LookupRecord(char *ModName, unsigned int &recordFID, ModFile *&curModFile, T *&curRecord)
+        FID_Iterator LookupRecord(char *ModName, const unsigned int &recordFID, ModFile *&curModFile, T *&curRecord)
             {
             curRecord = NULL;
             curModFile = NULL;
@@ -117,7 +121,6 @@ class Collection
             }
         EDID_Iterator LookupGMSTRecord(char *ModName, char *recordEDID, ModFile *&curModFile, GMSTRecord *&curRecord);
 
-        CELLRecord *LookupWorldCELL(ModFile *&curModFile, CELLRecord *&curCELL);
         void ResolveGrid(const float &posX, const float &posY, int &gridX, int &gridY);
 
         ModFile *LookupModFile(char *ModName);
@@ -140,130 +143,12 @@ class Collection
         int GetNumGMSTConflicts(char *recordEDID, bool ignoreScanned);
         void GetGMSTConflicts(char *recordEDID, bool ignoreScanned, char **ModNames);
 
-        //ADD DEFINITIONS HERE
-        unsigned int GetNumGMSTRecords(char *ModName);
-        unsigned int GetNumGLOBRecords(char *ModName);
-        unsigned int GetNumCLASRecords(char *ModName);
-        unsigned int GetNumFACTRecords(char *ModName);
-        unsigned int GetNumHAIRRecords(char *ModName);
-        unsigned int GetNumEYESRecords(char *ModName);
-        unsigned int GetNumRACERecords(char *ModName);
-        unsigned int GetNumSOUNRecords(char *ModName);
-        unsigned int GetNumSKILRecords(char *ModName);
-        unsigned int GetNumMGEFRecords(char *ModName);
-        unsigned int GetNumSCPTRecords(char *ModName);
-        unsigned int GetNumLTEXRecords(char *ModName);
-        unsigned int GetNumENCHRecords(char *ModName);
-        unsigned int GetNumSPELRecords(char *ModName);
-        unsigned int GetNumBSGNRecords(char *ModName);
-        unsigned int GetNumACTIRecords(char *ModName);
-        unsigned int GetNumAPPARecords(char *ModName);
-        unsigned int GetNumARMORecords(char *ModName);
-        unsigned int GetNumBOOKRecords(char *ModName);
-        unsigned int GetNumCLOTRecords(char *ModName);
-        unsigned int GetNumCONTRecords(char *ModName);
-        unsigned int GetNumDOORRecords(char *ModName);
-        unsigned int GetNumINGRRecords(char *ModName);
-        unsigned int GetNumLIGHRecords(char *ModName);
-        unsigned int GetNumMISCRecords(char *ModName);
-        unsigned int GetNumSTATRecords(char *ModName);
-        unsigned int GetNumGRASRecords(char *ModName);
-        unsigned int GetNumTREERecords(char *ModName);
-        unsigned int GetNumFLORRecords(char *ModName);
-        unsigned int GetNumFURNRecords(char *ModName);
-        unsigned int GetNumWEAPRecords(char *ModName);
-        unsigned int GetNumAMMORecords(char *ModName);
-        unsigned int GetNumNPC_Records(char *ModName);
-        unsigned int GetNumCREARecords(char *ModName);
-        unsigned int GetNumLVLCRecords(char *ModName);
-        unsigned int GetNumSLGMRecords(char *ModName);
-        unsigned int GetNumKEYMRecords(char *ModName);
-        unsigned int GetNumALCHRecords(char *ModName);
-        unsigned int GetNumSBSPRecords(char *ModName);
-        unsigned int GetNumSGSTRecords(char *ModName);
-        unsigned int GetNumLVLIRecords(char *ModName);
-        unsigned int GetNumWTHRRecords(char *ModName);
-        unsigned int GetNumCLMTRecords(char *ModName);
-        unsigned int GetNumREGNRecords(char *ModName);
-        unsigned int GetNumCELLRecords(char *ModName);
-        unsigned int GetNumACHRRecords(char *ModName, unsigned int parentFID);
-        unsigned int GetNumACRERecords(char *ModName, unsigned int parentFID);
-        unsigned int GetNumREFRRecords(char *ModName, unsigned int parentFID);
-        unsigned int GetNumWRLDRecords(char *ModName);
-        unsigned int GetNumDIALRecords(char *ModName);
-        unsigned int GetNumQUSTRecords(char *ModName);
-        unsigned int GetNumIDLERecords(char *ModName);
-        unsigned int GetNumPACKRecords(char *ModName);
-        unsigned int GetNumCSTYRecords(char *ModName);
-        unsigned int GetNumLSCRRecords(char *ModName);
-        unsigned int GetNumLVSPRecords(char *ModName);
-        unsigned int GetNumANIORecords(char *ModName);
-        unsigned int GetNumWATRRecords(char *ModName);
-        unsigned int GetNumEFSHRecords(char *ModName);
-
+        unsigned int GetNumRecords(char *ModName, const unsigned int RecordType);
+        void GetRecordFormIDs(char *ModName, const unsigned int RecordType, unsigned int **RecordFIDs);
+        void GetRecordEditorIDs(char *ModName, const unsigned int RecordType, char **RecordEditorIDs);
         void GetMods(char **ModNames);
 
         //ADD DEFINITIONS HERE
-        void GetGMSTRecords(char *ModName, char **RecordEIDs);
-        void GetGLOBRecords(char *ModName, unsigned int **RecordFIDs);
-        void GetCLASRecords(char *ModName, unsigned int **RecordFIDs);
-        void GetFACTRecords(char *ModName, unsigned int **RecordFIDs);
-        void GetHAIRRecords(char *ModName, unsigned int **RecordFIDs);
-        void GetEYESRecords(char *ModName, unsigned int **RecordFIDs);
-        void GetRACERecords(char *ModName, unsigned int **RecordFIDs);
-        void GetSOUNRecords(char *ModName, unsigned int **RecordFIDs);
-        void GetSKILRecords(char *ModName, unsigned int **RecordFIDs);
-        void GetMGEFRecords(char *ModName, unsigned int **RecordFIDs);
-        void GetSCPTRecords(char *ModName, unsigned int **RecordFIDs);
-        void GetLTEXRecords(char *ModName, unsigned int **RecordFIDs);
-        void GetENCHRecords(char *ModName, unsigned int **RecordFIDs);
-        void GetSPELRecords(char *ModName, unsigned int **RecordFIDs);
-        void GetBSGNRecords(char *ModName, unsigned int **RecordFIDs);
-        void GetACTIRecords(char *ModName, unsigned int **RecordFIDs);
-        void GetAPPARecords(char *ModName, unsigned int **RecordFIDs);
-        void GetARMORecords(char *ModName, unsigned int **RecordFIDs);
-        void GetBOOKRecords(char *ModName, unsigned int **RecordFIDs);
-        void GetCLOTRecords(char *ModName, unsigned int **RecordFIDs);
-        void GetCONTRecords(char *ModName, unsigned int **RecordFIDs);
-        void GetDOORRecords(char *ModName, unsigned int **RecordFIDs);
-        void GetINGRRecords(char *ModName, unsigned int **RecordFIDs);
-        void GetLIGHRecords(char *ModName, unsigned int **RecordFIDs);
-        void GetMISCRecords(char *ModName, unsigned int **RecordFIDs);
-        void GetSTATRecords(char *ModName, unsigned int **RecordFIDs);
-        void GetGRASRecords(char *ModName, unsigned int **RecordFIDs);
-        void GetTREERecords(char *ModName, unsigned int **RecordFIDs);
-        void GetFLORRecords(char *ModName, unsigned int **RecordFIDs);
-        void GetFURNRecords(char *ModName, unsigned int **RecordFIDs);
-        void GetWEAPRecords(char *ModName, unsigned int **RecordFIDs);
-        void GetAMMORecords(char *ModName, unsigned int **RecordFIDs);
-        void GetNPC_Records(char *ModName, unsigned int **RecordFIDs);
-        void GetCREARecords(char *ModName, unsigned int **RecordFIDs);
-        void GetLVLCRecords(char *ModName, unsigned int **RecordFIDs);
-        void GetSLGMRecords(char *ModName, unsigned int **RecordFIDs);
-        void GetKEYMRecords(char *ModName, unsigned int **RecordFIDs);
-        void GetALCHRecords(char *ModName, unsigned int **RecordFIDs);
-        void GetSBSPRecords(char *ModName, unsigned int **RecordFIDs);
-        void GetSGSTRecords(char *ModName, unsigned int **RecordFIDs);
-        void GetLVLIRecords(char *ModName, unsigned int **RecordFIDs);
-        void GetWTHRRecords(char *ModName, unsigned int **RecordFIDs);
-        void GetCLMTRecords(char *ModName, unsigned int **RecordFIDs);
-        void GetREGNRecords(char *ModName, unsigned int **RecordFIDs);
-        void GetCELLRecords(char *ModName, unsigned int **RecordFIDs);
-        void GetACHRRecords(char *ModName, unsigned int parentFID, unsigned int **RecordFIDs);
-        void GetACRERecords(char *ModName, unsigned int parentFID, unsigned int **RecordFIDs);
-        void GetREFRRecords(char *ModName, unsigned int parentFID, unsigned int **RecordFIDs);
-        void GetWRLDRecords(char *ModName, unsigned int **RecordFIDs);
-        void GetDIALRecords(char *ModName, unsigned int **RecordFIDs);
-        void GetQUSTRecords(char *ModName, unsigned int **RecordFIDs);
-        void GetIDLERecords(char *ModName, unsigned int **RecordFIDs);
-        void GetPACKRecords(char *ModName, unsigned int **RecordFIDs);
-        void GetCSTYRecords(char *ModName, unsigned int **RecordFIDs);
-        void GetLSCRRecords(char *ModName, unsigned int **RecordFIDs);
-        void GetLVSPRecords(char *ModName, unsigned int **RecordFIDs);
-        void GetANIORecords(char *ModName, unsigned int **RecordFIDs);
-        void GetWATRRecords(char *ModName, unsigned int **RecordFIDs);
-        void GetEFSHRecords(char *ModName, unsigned int **RecordFIDs);
-
         int GetTES4FieldType(char *ModName, const unsigned int Field);
         int GetGMSTFieldType(char *ModName, char *recordEDID, const unsigned int Field);
         int GetFIDFieldType(char *ModName, unsigned int recordFID, const unsigned int Field);
@@ -293,137 +178,6 @@ class Collection
         void * ReadFIDListField(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
         void * ReadFIDListX2Field(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field);
         void * ReadFIDListX3Field(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field);
-
-        unsigned int CreateGMSTRecord(char *ModName, char *recordEDID);
-        unsigned int CopyGMSTRecord(char *ModName, char *srcRecordEDID, char *destModName);
-        //ADD
-        unsigned int CreateGLOBRecord(char *ModName);
-        unsigned int CreateCLASRecord(char *ModName);
-        unsigned int CreateFACTRecord(char *ModName);
-        unsigned int CreateHAIRRecord(char *ModName);
-        unsigned int CreateEYESRecord(char *ModName);
-        unsigned int CreateRACERecord(char *ModName);
-        unsigned int CreateSOUNRecord(char *ModName);
-        unsigned int CreateSKILRecord(char *ModName);
-        unsigned int CreateMGEFRecord(char *ModName);
-        unsigned int CreateSCPTRecord(char *ModName);
-        unsigned int CreateLTEXRecord(char *ModName);
-        unsigned int CreateENCHRecord(char *ModName);
-        unsigned int CreateSPELRecord(char *ModName);
-        unsigned int CreateBSGNRecord(char *ModName);
-        unsigned int CreateACTIRecord(char *ModName);
-        unsigned int CreateAPPARecord(char *ModName);
-        unsigned int CreateARMORecord(char *ModName);
-        unsigned int CreateBOOKRecord(char *ModName);
-        unsigned int CreateCLOTRecord(char *ModName);
-        unsigned int CreateCONTRecord(char *ModName);
-        unsigned int CreateDOORRecord(char *ModName);
-        unsigned int CreateINGRRecord(char *ModName);
-        unsigned int CreateLIGHRecord(char *ModName);
-        unsigned int CreateMISCRecord(char *ModName);
-        unsigned int CreateSTATRecord(char *ModName);
-        unsigned int CreateGRASRecord(char *ModName);
-        unsigned int CreateTREERecord(char *ModName);
-        unsigned int CreateFLORRecord(char *ModName);
-        unsigned int CreateFURNRecord(char *ModName);
-        unsigned int CreateWEAPRecord(char *ModName);
-        unsigned int CreateAMMORecord(char *ModName);
-        unsigned int CreateNPC_Record(char *ModName);
-        unsigned int CreateCREARecord(char *ModName);
-        unsigned int CreateLVLCRecord(char *ModName);
-        unsigned int CreateSLGMRecord(char *ModName);
-        unsigned int CreateKEYMRecord(char *ModName);
-        unsigned int CreateALCHRecord(char *ModName);
-        unsigned int CreateSBSPRecord(char *ModName);
-        unsigned int CreateSGSTRecord(char *ModName);
-        unsigned int CreateLVLIRecord(char *ModName);
-        unsigned int CreateWTHRRecord(char *ModName);
-        unsigned int CreateCLMTRecord(char *ModName);
-        unsigned int CreateREGNRecord(char *ModName);
-        unsigned int CreateCELLRecord(char *ModName, unsigned int parentFID, int isWorldCELL);
-        unsigned int CreateACHRRecord(char *ModName, unsigned int parentFID);
-        unsigned int CreateACRERecord(char *ModName, unsigned int parentFID);
-        unsigned int CreateREFRRecord(char *ModName, unsigned int parentFID);
-        unsigned int CreatePGRDRecord(char *ModName, unsigned int parentFID);
-        unsigned int CreateLANDRecord(char *ModName, unsigned int parentFID);
-        unsigned int CreateWRLDRecord(char *ModName);
-        unsigned int CreateROADRecord(char *ModName, unsigned int parentFID);
-        unsigned int CreateDIALRecord(char *ModName);
-        unsigned int CreateINFORecord(char *ModName, unsigned int parentFID);
-        unsigned int CreateQUSTRecord(char *ModName);
-        unsigned int CreateIDLERecord(char *ModName);
-        unsigned int CreatePACKRecord(char *ModName);
-        unsigned int CreateCSTYRecord(char *ModName);
-        unsigned int CreateLSCRRecord(char *ModName);
-        unsigned int CreateLVSPRecord(char *ModName);
-        unsigned int CreateANIORecord(char *ModName);
-        unsigned int CreateWATRRecord(char *ModName);
-        unsigned int CreateEFSHRecord(char *ModName);
-
-        //ADD
-        unsigned int CopyFIDRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyGLOBRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyCLASRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyFACTRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyHAIRRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyEYESRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyRACERecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopySOUNRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopySKILRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyMGEFRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopySCPTRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyLTEXRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyENCHRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopySPELRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyBSGNRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyACTIRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyAPPARecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyARMORecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyBOOKRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyCLOTRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyCONTRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyDOORRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyINGRRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyLIGHRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyMISCRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopySTATRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyGRASRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyTREERecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyFLORRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyFURNRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyWEAPRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyAMMORecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyNPC_Record(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyCREARecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyLVLCRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopySLGMRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyKEYMRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyALCHRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopySBSPRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopySGSTRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyLVLIRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyWTHRRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyCLMTRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyREGNRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyCELLRecord(char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride, int isWorldCELL);
-        unsigned int CopyACHRRecord(char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride);
-        unsigned int CopyACRERecord(char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride);
-        unsigned int CopyREFRRecord(char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride);
-        unsigned int CopyPGRDRecord(char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride);
-        unsigned int CopyWRLDRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyROADRecord(char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride);
-        unsigned int CopyLANDRecord(char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride);
-        unsigned int CopyDIALRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyINFORecord(char *ModName, unsigned int srcRecordFID, char *destModName, unsigned int destParentFID, bool asOverride);
-        unsigned int CopyQUSTRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyIDLERecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyPACKRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyCSTYRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyLSCRRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyLVSPRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyANIORecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyWATRRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
-        unsigned int CopyEFSHRecord(char *ModName, unsigned int srcRecordFID, char *destModName, bool asOverride);
 
         int CreateFIDListElement(char *ModName, unsigned int recordFID, const unsigned int subField);
         int CreateFIDListX2Element(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
@@ -720,26 +474,3 @@ class Collection
         void Debug(int debugLevel, bool AllRecords);
         #endif
     };
-
-//class Iterator
-//    {
-//    protected:
-//        unsigned int recordType;
-//        FID_Iterator it;
-//        FID_Iterator end;
-//    public:
-//        Iterator(Collection *nCollection, unsigned int recType):recordType(recType), it(nCollection->FID_ModFile_Record.begin()), end(nCollection->FID_ModFile_Record.end()) {}
-//        ~Iterator() {}
-//        long long IncrementIterator()
-//            {
-//            unsigned int formID;
-//            for(;it != end;it++)
-//                if(it->second.second->GetType() == recordType)
-//                    {
-//                    formID = it->second.second->formID;
-//                    it++;
-//                    return formID;
-//                    }
-//            return -1;
-//            }
-//    };

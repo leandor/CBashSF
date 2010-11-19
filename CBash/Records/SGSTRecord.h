@@ -97,9 +97,11 @@ class SGSTRecord : public Record
         OptSubRecord<OBMEMAGIC> OBME;
 
         SGSTRecord(bool newRecord=false):Record(newRecord) {}
-        SGSTRecord(const unsigned int &newFormID):Record(newFormID) {}
         SGSTRecord(SGSTRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eSGST)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -164,6 +166,7 @@ class SGSTRecord : public Record
             {
             if(!IsLoaded())
                 return;
+
             if(SCRI.IsLoaded())
                 op.Accept(SCRI->fid);
             for(unsigned int x = 0; x < Effects.size(); x++)

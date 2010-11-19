@@ -419,9 +419,11 @@ class CREARecord : public Record
         std::vector<CREASound *> Sounds;
 
         CREARecord(bool newRecord=false):Record(newRecord) {}
-        CREARecord(const unsigned int &newFormID):Record(newFormID) {}
         CREARecord(CREARecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eCREA)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -557,6 +559,7 @@ class CREARecord : public Record
             {
             if(!IsLoaded())
                 return;
+
             for(unsigned int x = 0; x < SPLO.size(); x++)
                 op.Accept(*SPLO[x]);
             for(unsigned int x = 0; x < SNAM.size(); x++)

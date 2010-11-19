@@ -81,9 +81,13 @@ class TES4Record : public Record
         STRING CNAM;
         STRING SNAM;
         std::vector<STRING> MAST;
+
         TES4Record(bool newFile=false):Record(newFile) {}
         TES4Record(TES4Record *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eTES4)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;

@@ -43,10 +43,13 @@ class ACTIRecord : public Record
         OptSubRecord<GENMODEL> MODL;
         OptSubRecord<GENFID> SCRI;
         OptSubRecord<GENFID> SNAM;
+
         ACTIRecord(bool newRecord=false):Record(newRecord) {}
-        ACTIRecord(const unsigned int &newFormID):Record(newFormID) {}
         ACTIRecord(ACTIRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eACTI)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -78,6 +81,7 @@ class ACTIRecord : public Record
             {
             if(!IsLoaded())
                 return;
+
             if(SCRI.IsLoaded())
                 op.Accept(SCRI->fid);
             if(SNAM.IsLoaded())

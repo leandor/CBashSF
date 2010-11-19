@@ -110,9 +110,11 @@ class SLGMRecord : public Record
         ReqSubRecord<SLGMSLCP> SLCP;
 
         SLGMRecord(bool newRecord=false):Record(newRecord) {}
-        SLGMRecord(const unsigned int &newFormID):Record(newFormID) {}
         SLGMRecord(SLGMRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eSLGM)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -150,6 +152,7 @@ class SLGMRecord : public Record
             {
             if(!IsLoaded())
                 return;
+
             if(SCRI.IsLoaded())
                 op.Accept(SCRI->fid);
             }

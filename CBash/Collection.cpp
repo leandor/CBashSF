@@ -108,7 +108,7 @@ bool Collection::IsModAdded(const char *ModName)
     return false;
     }
 
-int Collection::AddMod(const char *ModName, bool MergeMod, bool ScanMod, bool CreateIfNotExist, bool DummyLoad)
+int Collection::AddMod(const char *ModName, ModFlags &settings)
     {
     _chdir(ModsDir);
     //Mods may not be added after collection is loaded.
@@ -119,11 +119,12 @@ int Collection::AddMod(const char *ModName, bool MergeMod, bool ScanMod, bool Cr
     if(IsModAdded(ModName))
         return -1;
     bool exists = FileExists(ModName);
-    if(exists || DummyLoad || CreateIfNotExist)
+    settings.IsNew = !exists;
+    if(exists || settings.IsDummy || settings.CreateIfNotExist)
         {
         char *FileName = new char[strlen(ModName)+1];
         strcpy_s(FileName, strlen(ModName)+1, ModName);
-        ModFiles.push_back(new ModFile(FileName, MergeMod, ScanMod, CreateIfNotExist && !exists, DummyLoad));
+        ModFiles.push_back(new ModFile(FileName, settings));
         return 0;
         }
     else
@@ -194,7 +195,7 @@ int Collection::SafeSaveMod(char *ModName, bool CloseMod)
     curModFile = LookupModFile(ModName);
 
     //Only save to files that have already been added.
-    if(curModFile == NULL || curModFile->IsFake() || curModFile->IsMerge || curModFile->IsScan)
+    if(curModFile == NULL || curModFile->Settings.IsDummy || curModFile->Settings.Merge || curModFile->Settings.Scan)
         return -1;
     err = tmpnam_s(tName, L_tmpnam_s);
     if (err)
@@ -314,10 +315,11 @@ int Collection::SafeSaveMod(char *ModName, bool CloseMod)
     return 0;
     }
 
-void Collection::IndexRecords(ModFile *curModFile)
+void Collection::IndexRecords(ModFile *curModFile, const bool &FullLoad)
     {
-    if(curModFile == NULL || curModFile->IsFake())
+    if(curModFile == NULL || curModFile->Settings.IsDummy)
         return;
+    RecordReader reader(curModFile->FormIDHandler);
     //Associates record ids at the collection level, allowing for conflicts to be determined.
     //ADD DEFINITIONS HERE
     for(std::vector<GMSTRecord *>::iterator curGMST = curModFile->GMST.Records.begin();curGMST != curModFile->GMST.Records.end();curGMST++)
@@ -429,30 +431,10 @@ void Collection::IndexRecords(ModFile *curModFile)
 
     for(std::vector<WRLDRecord *>::iterator curWRLD = curModFile->WRLD.Records.begin();curWRLD != curModFile->WRLD.Records.end();curWRLD++)
         {
-        FID_ModFile_Record.insert(std::make_pair((*curWRLD)->formID,std::make_pair(curModFile,*curWRLD)));
-        if((*curWRLD)->CELL != NULL)
-            {
-            FID_ModFile_Record.insert(std::make_pair((*curWRLD)->CELL->formID,std::make_pair(curModFile,(*curWRLD)->CELL)));
-            for(std::vector<ACHRRecord *>::iterator curACHR = (*curWRLD)->CELL->ACHR.begin();curACHR != (*curWRLD)->CELL->ACHR.end();curACHR++)
-                FID_ModFile_Record.insert(std::make_pair((*curACHR)->formID,std::make_pair(curModFile,*curACHR)));
+        WRLDRecord *curWRLDRecord = *curWRLD;
+        FID_ModFile_Record.insert(std::make_pair(curWRLDRecord->formID,std::make_pair(curModFile,curWRLDRecord)));
 
-            for(std::vector<ACRERecord *>::iterator curACRE = (*curWRLD)->CELL->ACRE.begin();curACRE != (*curWRLD)->CELL->ACRE.end();curACRE++)
-                FID_ModFile_Record.insert(std::make_pair((*curACRE)->formID,std::make_pair(curModFile,*curACRE)));
-
-            for(std::vector<REFRRecord *>::iterator curREFR = (*curWRLD)->CELL->REFR.begin();curREFR != (*curWRLD)->CELL->REFR.end();curREFR++)
-                FID_ModFile_Record.insert(std::make_pair((*curREFR)->formID,std::make_pair(curModFile,*curREFR)));
-
-            if((*curWRLD)->CELL->PGRD != NULL)
-                FID_ModFile_Record.insert(std::make_pair((*curWRLD)->CELL->PGRD->formID,std::make_pair(curModFile,(*curWRLD)->CELL->PGRD)));
-            if((*curWRLD)->CELL->LAND != NULL)
-                FID_ModFile_Record.insert(std::make_pair((*curWRLD)->CELL->LAND->formID,std::make_pair(curModFile,(*curWRLD)->CELL->LAND)));
-            }
-
-        if((*curWRLD)->ROAD != NULL)
-            FID_ModFile_Record.insert(std::make_pair((*curWRLD)->ROAD->formID,std::make_pair(curModFile,(*curWRLD)->ROAD)));
-
-
-        for(std::vector<CELLRecord *>::iterator curCELL = (*curWRLD)->CELLS.begin();curCELL != (*curWRLD)->CELLS.end();curCELL++)
+        for(std::vector<CELLRecord *>::iterator curCELL = curWRLDRecord->CELLS.begin();curCELL != curWRLDRecord->CELLS.end();curCELL++)
             {
             FID_ModFile_Record.insert(std::make_pair((*curCELL)->formID,std::make_pair(curModFile,*curCELL)));
             for(std::vector<ACHRRecord *>::iterator curACHR = (*curCELL)->ACHR.begin();curACHR != (*curCELL)->ACHR.end();curACHR++)
@@ -468,7 +450,90 @@ void Collection::IndexRecords(ModFile *curModFile)
                 FID_ModFile_Record.insert(std::make_pair((*curCELL)->PGRD->formID,std::make_pair(curModFile,(*curCELL)->PGRD)));
             if((*curCELL)->LAND != NULL)
                 FID_ModFile_Record.insert(std::make_pair((*curCELL)->LAND->formID,std::make_pair(curModFile,(*curCELL)->LAND)));
+
+            //There might be ACHR, ACRE, or REFR records in the World CELL if it exists
+            if(curWRLDRecord->CELL != NULL)
+                {
+                ACHRRecord *curACHRRecord = NULL;
+                ACRERecord *curACRERecord = NULL;
+                REFRRecord *curREFRRecord = NULL;
+                CELLRecord *curCELLRecord = *curCELL;
+                int gridX = 0, gridY = 0;
+
+                reader.Accept(*curCELLRecord);
+                for(unsigned int x = 0; x < curWRLDRecord->CELL->ACHR.size();)
+                    {
+                    curACHRRecord = curWRLDRecord->CELL->ACHR[x];
+                    //Have to test each ACHR to see if it belongs to the cell. This is determined by its positioning.
+                    reader.Accept(*curACHRRecord);
+                    ResolveGrid(curACHRRecord->DATA.value.posX, curACHRRecord->DATA.value.posY, gridX, gridY);
+                    if(!FullLoad)
+                        curACHRRecord->Unload();
+                    curCELLRecord->XCLC.Load();
+                    if(gridX == curCELLRecord->XCLC->posX && gridY == curCELLRecord->XCLC->posY)
+                        {
+                        //For easier use later on, go ahead and move it to the parent cell.
+                        //It will get moved back later during the save process if need be.
+                        curCELLRecord->ACHR.push_back(curACHRRecord);
+                        curWRLDRecord->CELL->ACHR.erase(curWRLDRecord->CELL->ACHR.begin() + x);
+                        }
+                    else ++x;
+                    }
+                for(unsigned int x = 0; x < curWRLDRecord->CELL->ACRE.size();)
+                    {
+                    curACRERecord = curWRLDRecord->CELL->ACRE[x];
+                    reader.Accept(*curACRERecord);
+                    ResolveGrid(curACRERecord->DATA.value.posX, curACRERecord->DATA.value.posY, gridX, gridY);
+                    if(!FullLoad)
+                        curACRERecord->Unload();
+                    curCELLRecord->XCLC.Load();
+                    if(gridX == curCELLRecord->XCLC->posX && gridY == curCELLRecord->XCLC->posY)
+                        {
+                        curCELLRecord->ACRE.push_back(curACRERecord);
+                        curWRLDRecord->CELL->ACRE.erase(curWRLDRecord->CELL->ACRE.begin() + x);
+                        }
+                    else ++x;
+                    }
+                for(unsigned int x = 0; x < curWRLDRecord->CELL->REFR.size();)
+                    {
+                    curREFRRecord = curWRLDRecord->CELL->REFR[x];
+                    reader.Accept(*curREFRRecord);
+                    ResolveGrid(curREFRRecord->DATA.value.posX, curREFRRecord->DATA.value.posY, gridX, gridY);
+                    if(!FullLoad)
+                        curREFRRecord->Unload();
+                    curCELLRecord->XCLC.Load();
+                    if(gridX == curCELLRecord->XCLC->posX && gridY == curCELLRecord->XCLC->posY)
+                        {
+                        curCELLRecord->REFR.push_back(curREFRRecord);
+                        curWRLDRecord->CELL->REFR.erase(curWRLDRecord->CELL->REFR.begin() + x);
+                        }
+                    else ++x;
+                    }
+                if(!FullLoad)
+                    curCELLRecord->Unload();
+                }
             }
+
+        if(curWRLDRecord->CELL != NULL)
+            {
+            FID_ModFile_Record.insert(std::make_pair(curWRLDRecord->CELL->formID,std::make_pair(curModFile,curWRLDRecord->CELL)));
+            for(std::vector<ACHRRecord *>::iterator curACHR = curWRLDRecord->CELL->ACHR.begin();curACHR != curWRLDRecord->CELL->ACHR.end();curACHR++)
+                FID_ModFile_Record.insert(std::make_pair((*curACHR)->formID,std::make_pair(curModFile,*curACHR)));
+
+            for(std::vector<ACRERecord *>::iterator curACRE = curWRLDRecord->CELL->ACRE.begin();curACRE != curWRLDRecord->CELL->ACRE.end();curACRE++)
+                FID_ModFile_Record.insert(std::make_pair((*curACRE)->formID,std::make_pair(curModFile,*curACRE)));
+
+            for(std::vector<REFRRecord *>::iterator curREFR = curWRLDRecord->CELL->REFR.begin();curREFR != curWRLDRecord->CELL->REFR.end();curREFR++)
+                FID_ModFile_Record.insert(std::make_pair((*curREFR)->formID,std::make_pair(curModFile,*curREFR)));
+
+            if(curWRLDRecord->CELL->PGRD != NULL)
+                FID_ModFile_Record.insert(std::make_pair(curWRLDRecord->CELL->PGRD->formID,std::make_pair(curModFile,curWRLDRecord->CELL->PGRD)));
+            if(curWRLDRecord->CELL->LAND != NULL)
+                FID_ModFile_Record.insert(std::make_pair(curWRLDRecord->CELL->LAND->formID,std::make_pair(curModFile,curWRLDRecord->CELL->LAND)));
+            }
+
+        if(curWRLDRecord->ROAD != NULL)
+            FID_ModFile_Record.insert(std::make_pair(curWRLDRecord->ROAD->formID,std::make_pair(curModFile,curWRLDRecord->ROAD)));
         }
 
     for(std::vector<DIALRecord *>::iterator curDIAL = curModFile->DIAL.Records.begin();curDIAL != curModFile->DIAL.Records.end();curDIAL++)
@@ -498,16 +563,16 @@ void Collection::IndexRecords(ModFile *curModFile)
         FID_ModFile_Record.insert(std::make_pair((*curEFSH)->formID,std::make_pair(curModFile,*curEFSH)));
     }
 
-void Collection::IndexRecords()
+void Collection::IndexRecords(const bool &FullLoad)
     {
     ModFile *curModFile = NULL;
     //boost::threadpool::pool IndexThreads(NUMTHREADS);
     for(unsigned int p = 0; p < (unsigned int)ModFiles.size(); ++p)
         {
         curModFile = ModFiles[p];
-        if(!curModFile->IsFake())
+        if(!curModFile->Settings.IsDummy)
             //IndexThreads.schedule(boost::bind(&Collection::IndexRecords, this, curModFile));
-            IndexRecords(curModFile);
+            IndexRecords(curModFile, FullLoad);
         }
     }
 
@@ -515,6 +580,8 @@ int Collection::Load(const bool &LoadMasters, const bool &FullLoad)
     {
     ModFile *curModFile = NULL;
     bool Preloading = false;
+    ModFlags preloadSettings;
+    preloadSettings.IsDummy = !LoadMasters;
     if(isLoaded)
         return 0;
     try
@@ -531,9 +598,9 @@ int Collection::Load(const bool &LoadMasters, const bool &FullLoad)
                 {
                 curModFile = ModFiles[p];
                 curModFile->LoadTES4();
-                if(!curModFile->IsMerge && !curModFile->IsScan)
+                if(!curModFile->Settings.Merge && !curModFile->Settings.Scan)
                     for(unsigned char x = 0; x < curModFile->TES4.MAST.size(); ++x)
-                        Preloading = (AddMod(curModFile->TES4.MAST[x].value, false, false, false, !LoadMasters) == 0 || Preloading);
+                        Preloading = (AddMod(curModFile->TES4.MAST[x].value, preloadSettings) == 0 || Preloading);
                 }
             }while(Preloading);
         //printf("Before Sort\n");
@@ -553,7 +620,7 @@ int Collection::Load(const bool &LoadMasters, const bool &FullLoad)
         for(unsigned int p = 0; p < (unsigned int)ModFiles.size(); ++p)
             {
             AllLoadOrder.push_back(ModFiles[p]->FileName);
-            if(!ModFiles[p]->IsMerge && !ModFiles[p]->IsScan)
+            if(!ModFiles[p]->Settings.Merge && !ModFiles[p]->Settings.Scan)
                 LoadOrder255.push_back(ModFiles[p]->FileName);
             }
             //else
@@ -570,7 +637,7 @@ int Collection::Load(const bool &LoadMasters, const bool &FullLoad)
             //Loads GRUP and Record Headers.  Fully loads GMST records.
             curModFile->FormIDHandler.SetLoadOrder(LoadOrder255);
             //printf("%02X: %s\n", expandedIndex, curModFile->FileName);
-            if(curModFile->IsMerge || curModFile->IsScan)
+            if(curModFile->Settings.Merge || curModFile->Settings.Scan)
                 curModFile->FormIDHandler.CreateFormIDLookup(0xFF);
             else
                 {
@@ -658,7 +725,9 @@ int Collection::UnloadRecord(char *ModName, unsigned int recordFID)
 int Collection::UnloadModFile(char *ModName)
     {
     ModFile *curModFile = LookupModFile(ModName);
-    curModFile->Unload();
+
+    RecordUnloader unloader;
+    curModFile->VisitRecords(unloader);
     return 0;
     }
 
@@ -672,6 +741,172 @@ int Collection::UnloadAll()
             curRecord->Unload();
         }
     return 0;
+    }
+
+unsigned int Collection::CreateRecord(char *ModName, const unsigned int RecordType, const unsigned int ParentFID, unsigned int CreateFlags)
+    {
+    CreateRecordOptions options(CreateFlags);
+    ModFile *curModFile = NULL;
+    Record *DummyRecord = NULL;
+    Record *ParentRecord = NULL;
+
+    //Lookup the required data, and ensure it exists
+    if(ParentFID)
+        {
+        LookupRecord(ModName, ParentFID, curModFile, ParentRecord);
+        if(ParentRecord == NULL)
+            return 0;
+        }
+    else
+        {
+        curModFile = LookupModFile(ModName);
+        }
+    if(curModFile == NULL)
+        return 0;
+
+    //Create the new record
+    Record *curRecord = curModFile->CreateRecord(RecordType, DummyRecord, ParentRecord, options);
+    if(curRecord == NULL)
+        return 0;
+
+    //See if an existing record was returned instead of a new record
+    if(curRecord->formID != 0)
+        return curRecord->formID;
+
+    //Assign the new record an unused formID
+    unsigned int newRecordFID = curRecord->formID = NextFreeExpandedFID(curModFile);
+
+    //Index the new record
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
+    return newRecordFID;
+    }
+
+unsigned int Collection::CopyRecord(char *ModName, unsigned int RecordFID, char *DestModName, unsigned int DestParentFID, unsigned int CreateFlags)
+    {
+    CreateRecordOptions options(CreateFlags);
+    ModFile *curModFile = NULL;
+    Record *curRecord = NULL;
+
+    LookupRecord(ModName, RecordFID, curModFile, curRecord);
+    if(curModFile == NULL || curRecord == NULL)
+        return 0;
+
+    ModFile *DestModFile = NULL;
+    Record *ParentRecord = NULL;
+    Record *RecordCopy = NULL;
+
+    if(options.SetAsOverride)
+        {
+        //See if its trying to copy a record that already exists in the destination mod
+        LookupRecord(DestModName, RecordFID, DestModFile, RecordCopy);
+        if(DestModFile != NULL || RecordCopy != NULL)
+            return RecordFID;
+        }
+
+    if(DestParentFID)
+        {
+        //See if the parent record already exists in the destination mod
+        LookupRecord(DestModName, DestParentFID, DestModFile, ParentRecord);
+        if(ParentRecord == NULL)
+            {
+            //If it doesn't, try and create it.
+            CreateRecordOptions parentOptions;
+            parentOptions.SetAsOverride = options.SetAsOverride;
+            DestParentFID = CopyRecord(ModName, DestParentFID, DestModName, 0, parentOptions.GetFlagField());
+            LookupRecord(DestModName, DestParentFID, DestModFile, ParentRecord);
+            if(ParentRecord == NULL)
+                return 0;
+            }
+        }
+    else
+        {
+        DestModFile = LookupModFile(DestModName);
+        }
+    if(DestModFile == NULL || curModFile == DestModFile)
+        return 0;
+
+    //Ensure the record has been fully read
+    RecordReader reader(curModFile->FormIDHandler);
+    reader.Accept(*curRecord);
+
+    //Create the record copy
+    RecordCopy = curModFile->CreateRecord(curRecord->GetType(), curRecord, ParentRecord, options);
+    if(RecordCopy == NULL)
+        return 0;
+
+    //See if an existing record was returned instead of the requested copy
+    if(RecordCopy->formID != curRecord->formID)
+        return RecordCopy->formID;
+
+    //Give the record a new formID if it isn't an override record
+    if(!options.SetAsOverride)
+        RecordCopy->formID = NextFreeExpandedFID(DestModFile);
+
+    //See if the destination mod masters need updating
+    FormIDMasterUpdater checker(DestModFile->FormIDHandler);
+    checker.Accept(RecordCopy->formID);
+    RecordCopy->VisitFormIDs(checker);
+
+    //Index the record
+    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
+
+    return RecordCopy->formID;
+    }
+
+unsigned int Collection::CreateGMSTRecord(char *ModName, char *recordEDID)
+    {
+    ModFile *curModFile = NULL;
+    GMSTRecord *curRecord = NULL;
+    //Check and see if the GMST already exists
+    LookupGMSTRecord(ModName, recordEDID, curModFile, curRecord);
+
+    if(curModFile != NULL || curRecord != NULL)
+        return 0;
+
+    curModFile = LookupModFile(ModName);
+
+    if(curModFile == NULL)
+        return 0;
+
+    curRecord = new GMSTRecord(recordEDID);
+    unsigned int newRecordFID = curRecord->formID = NextFreeExpandedFID(curModFile);
+
+    curModFile->GMST.Records.push_back(curRecord);
+    EDID_ModFile_Record.insert(std::make_pair(curRecord->EDID.value,std::make_pair(curModFile,curRecord)));
+    return newRecordFID;
+    }
+
+unsigned int Collection::CopyGMSTRecord(char *ModName, char *srcRecordEDID, char *destModName)
+    {
+    ModFile *srcMod = NULL;
+    ModFile *destMod = NULL;
+    GMSTRecord *srcRecord = NULL;
+    GMSTRecord *copyRecord = NULL;
+
+    //Check and see if the GMST already exists
+    LookupGMSTRecord(destModName, srcRecordEDID, destMod, copyRecord);
+    if(destMod != NULL || copyRecord != NULL)
+        return 0;
+
+    destMod = LookupModFile(destModName);
+    if(destMod == NULL)
+        return 0;
+
+    LookupGMSTRecord(ModName, srcRecordEDID, srcMod, srcRecord);
+    if(srcMod == NULL || srcRecord == NULL || srcMod == destMod)
+        return 0;
+    RecordReader reader(srcMod->FormIDHandler);
+
+    //Ensure the record has been fully read
+    reader.Accept(*srcRecord);
+    copyRecord = new GMSTRecord(srcRecord);
+    destMod->GMST.Records.push_back(copyRecord);
+    //Add any master as necessary, and register the formID
+    FormIDMasterUpdater checker(destMod->FormIDHandler);
+    checker.Accept(copyRecord->formID);
+    copyRecord->VisitFormIDs(checker);
+    EDID_ModFile_Record.insert(std::make_pair(copyRecord->EDID.value, std::make_pair(destMod, copyRecord)));
+    return 1;
     }
 
 int Collection::DeleteRecord(char *ModName, unsigned int recordFID, unsigned int parentFID)
@@ -1051,45 +1286,38 @@ EDID_Iterator Collection::LookupGMSTRecord(char *ModName, char *recordEDID, ModF
     return range.first;
     }
 
-CELLRecord *Collection::LookupWorldCELL(ModFile *&curModFile, CELLRecord *&curCELL)
-    {
-    if(curModFile == NULL || curCELL == NULL || curCELL->IsInterior())
-        return NULL;
-    static CELLRecord *lastCELLRecord_1 = curModFile->WRLD.Records[0]->CELLS[0];
-    static CELLRecord *lastCELLRecord_2 = curModFile->WRLD.Records[0]->CELLS[0];
-    static CELLRecord *lastRetValue_1 = NULL;
-    static CELLRecord *lastRetValue_2 = NULL;
-
-    if(lastCELLRecord_1 == curCELL)
-        return lastRetValue_1;
-    if(lastCELLRecord_2 == curCELL)
-        {
-        std::swap(lastCELLRecord_1, lastCELLRecord_2);
-        std::swap(lastRetValue_1, lastRetValue_2);
-        return lastRetValue_1;
-        }
-
-    WRLDRecord *curWorldRecord = NULL;
-    for(unsigned int x = 0; x < curModFile->WRLD.Records.size(); ++x)
-        {
-        curWorldRecord = curModFile->WRLD.Records[x];
-        for(unsigned int p = 0; p < curWorldRecord->CELLS.size(); ++p)
-            if(curWorldRecord->CELLS[p] == curCELL)
-                {
-                lastCELLRecord_2 = lastCELLRecord_1;
-                lastCELLRecord_1 = curWorldRecord->CELLS[p];
-                lastRetValue_2 = lastRetValue_1;
-                lastRetValue_1 = curWorldRecord->CELL;
-                return lastRetValue_1;
-                }
-        }
-    return NULL;
-    }
-
 void Collection::ResolveGrid(const float &posX, const float &posY, int &gridX, int &gridY)
     {
     gridX = (int)floor(posX / 4096.0);
     gridY = (int)floor(posY / 4096.0);
+    return;
+    }
+
+unsigned int Collection::GetNumRecords(char *ModName, const unsigned int RecordType)
+    {
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return 0;
+    return (unsigned int)curModFile->GetNumRecords(RecordType);
+    }
+
+void Collection::GetRecordFormIDs(char *ModName, const unsigned int RecordType, unsigned int **RecordFIDs)
+    {
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    FormIDRecordRetriever retriever(RecordFIDs);
+    curModFile->VisitTopRecords(RecordType, retriever);
+    return;
+    }
+
+void Collection::GetRecordEditorIDs(char *ModName, const unsigned int RecordType, char **RecordEditorIDs)
+    {
+    ModFile *curModFile = LookupModFile(ModName);
+    if(curModFile == NULL)
+        return;
+    EditorIDRecordRetriever retriever(RecordEditorIDs);
+    curModFile->VisitTopRecords(RecordType, retriever);
     return;
     }
 
@@ -1098,7 +1326,7 @@ unsigned int Collection::GetNumMods()
     unsigned int count = (unsigned int)ModFiles.size();
     for(unsigned int p = 0;p < ModFiles.size();++p)
         {
-        if(ModFiles[p]->IsFake() || ModFiles[p]->IsScan || ModFiles[p]->IsMerge)
+        if(ModFiles[p]->Settings.IsDummy || ModFiles[p]->Settings.Scan || ModFiles[p]->Settings.Merge)
             --count;
         }
     return count;
@@ -1110,7 +1338,7 @@ void Collection::GetMods(char **ModNames)
     for(unsigned int p = 0;p < AllLoadOrder.size();++p)
         {
         curModFile = LookupModFile(AllLoadOrder[p]);
-        if(!curModFile->IsFake())
+        if(!curModFile->Settings.IsDummy)
             ModNames[p] = AllLoadOrder[p];
         }
     return;
@@ -1152,7 +1380,7 @@ unsigned int Collection::ModIsFake(const unsigned int iIndex)
     if(iIndex < AllLoadOrder.size())
         {
         curModFile = LookupModFile(AllLoadOrder[iIndex]);
-        return curModFile->IsFake();
+        return curModFile->Settings.IsDummy;
         }
     return 1;
     }
@@ -1302,7 +1530,7 @@ int Collection::IsWinning(char *ModName, unsigned int recordFID, bool ignoreScan
     std::vector<ModFile *> sortedConflicts;
     sortedConflicts.reserve(300);  //Enough for the worst case of all 255 loaded mods having conflicts, plus some for imported mods
     for(; range.first != range.second; ++range.first)
-        if(!(ignoreScanned && range.first->second.first->IsScan))
+        if(!(ignoreScanned && range.first->second.first->Settings.Scan))
             sortedConflicts.push_back(range.first->second.first);
 
     if(sortedConflicts.size())
@@ -1325,7 +1553,7 @@ int Collection::IsWinning(char *ModName, char *recordEDID, bool ignoreScanned)
     std::vector<ModFile *> sortedConflicts;
     sortedConflicts.reserve(300);  //Enough for the worst case of all 255 loaded mods having conflicts, plus some for imported mods
     for(; range.first != range.second; ++range.first)
-        if(!(ignoreScanned && range.first->second.first->IsScan))
+        if(!(ignoreScanned && range.first->second.first->Settings.Scan))
             sortedConflicts.push_back(range.first->second.first);
 
     if(sortedConflicts.size())
@@ -1348,7 +1576,7 @@ int Collection::GetNumFIDConflicts(unsigned int recordFID, bool ignoreScanned)
         FID_Iterator it = FID_ModFile_Record.find(recordFID);
         unsigned int scanned = 0;
         for(unsigned int x = 0; x < count;++it, ++x)
-            if(it->second.first->IsScan)
+            if(it->second.first->Settings.Scan)
                 ++scanned;
         count -= scanned;
         }
@@ -1362,7 +1590,7 @@ void Collection::GetFIDConflicts(unsigned int recordFID, bool ignoreScanned, cha
     std::vector<ModFile *> sortedConflicts;
     sortedConflicts.reserve(300);  //Enough for the worst case of all 255 loaded mods having conflicts, plus some for imported mods
     for(; range.first != range.second; ++range.first)
-        if(!(ignoreScanned && range.first->second.first->IsScan))
+        if(!(ignoreScanned && range.first->second.first->Settings.Scan))
             sortedConflicts.push_back(range.first->second.first);
     //std::sort(sortedConflicts.begin(), sortedConflicts.end(), sortLoad);
     //sortMods(sortedConflicts);
@@ -1381,7 +1609,7 @@ int Collection::GetNumGMSTConflicts(char *recordEDID, bool ignoreScanned)
         EDID_Iterator it = EDID_ModFile_Record.find(recordEDID);
         unsigned int scanned = 0;
         for(unsigned int x = 0; x < count;++it, ++x)
-            if(it->second.first->IsScan)
+            if(it->second.first->Settings.Scan)
                 ++scanned;
         count -= scanned;
         }
@@ -1395,7 +1623,7 @@ void Collection::GetGMSTConflicts(char *recordEDID, bool ignoreScanned, char **M
     std::vector<ModFile *> sortedConflicts;
     sortedConflicts.reserve(300);  //Enough for the worst case of all 255 loaded mods having conflicts, plus some for imported mods
     for(; range.first != range.second; ++range.first)
-        if(!(ignoreScanned && range.first->second.first->IsScan))
+        if(!(ignoreScanned && range.first->second.first->Settings.Scan))
             sortedConflicts.push_back(range.first->second.first);
     //std::sort(sortedConflicts.begin(), sortedConflicts.end(), sortLoad);
     //sortMods(sortedConflicts);

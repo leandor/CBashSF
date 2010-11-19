@@ -116,10 +116,13 @@ class SOUNRecord : public Record
         STRING EDID;
         ISTRING FNAM;
         ReqSubRecord<SOUNSNDX> SNDX;
+
         SOUNRecord(bool newRecord=false):Record(newRecord) {}
-        SOUNRecord(const unsigned int &newFormID):Record(newFormID) {}
         SOUNRecord(SOUNRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eSOUN)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;

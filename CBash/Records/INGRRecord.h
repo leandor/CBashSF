@@ -68,9 +68,11 @@ class INGRRecord : public Record
         OptSubRecord<OBMEMAGIC> OBME;
 
         INGRRecord(bool newRecord=false):Record(newRecord) {}
-        INGRRecord(const unsigned int &newFormID):Record(newFormID) {}
         INGRRecord(INGRRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eINGR)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -137,6 +139,7 @@ class INGRRecord : public Record
             {
             if(!IsLoaded())
                 return;
+
             if(SCRI.IsLoaded())
                 op.Accept(SCRI->fid);
             for(unsigned int x = 0; x < Effects.size(); x++)

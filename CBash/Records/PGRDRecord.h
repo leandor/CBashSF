@@ -169,9 +169,11 @@ class PGRDRecord : public Record
         std::vector<PGRDPGRL *> PGRL;
 
         PGRDRecord(bool newRecord=false):Record(newRecord) {IsCompressed(true);}
-        PGRDRecord(const unsigned int &newFormID):Record(newFormID) {IsCompressed(true);}
         PGRDRecord(PGRDRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != ePGRD)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -213,6 +215,7 @@ class PGRDRecord : public Record
             {
             if(!IsLoaded())
                 return;
+
             for(unsigned int x = 0; x < PGRL.size(); x++)
                 op.Accept(PGRL[x]->points[0]);
             }

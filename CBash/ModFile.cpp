@@ -26,25 +26,25 @@ GPL License and Copyright Notice ============================================
 
 int ModFile::Open()
     {
-    if(IsOpen || IsDummy)
+    if(Settings.IsOpen || Settings.IsDummy)
         return 0;
     ReadHandler.open_ReadOnly(FileName);
-    IsOpen = true;
+    Settings.IsOpen = true;
     return 0;
     }
 
 int ModFile::Close()
     {
-    if(!IsOpen || IsDummy)
+    if(!Settings.IsOpen || Settings.IsDummy)
         return 0;
     ReadHandler.close();
-    IsOpen = false;
+    Settings.IsOpen = false;
     return 0;
     }
 
 int ModFile::LoadTES4()
     {
-    if(IsDummy || TES4.IsLoaded())
+    if(Settings.IsDummy || TES4.IsLoaded())
         return 0;
     Open();
     ReadHandler.set_used(8);
@@ -121,11 +121,11 @@ int ModFile::Load(boost::threadpool::pool &Threads, const bool &FullLoad)
         eIgWATR=0x52545157,
         eIgEFSH=0x48535645
         };
-    if(IsDummy || !TES4.IsLoaded() || LoadedGRUPs)
+    if(Settings.IsDummy || !TES4.IsLoaded() || Settings.LoadedGRUPs)
         return 0;
     //printf("Begin Mod: %s\n", FileName);
     //Open();
-    LoadedGRUPs = true;
+    Settings.LoadedGRUPs = true;
     unsigned long GRUPSize;
     unsigned long GRUPLabel;
     boost::unordered_set<unsigned int> UsedFormIDs;
@@ -434,6 +434,473 @@ int ModFile::Load(boost::threadpool::pool &Threads, const bool &FullLoad)
     return 1;
     }
 
+unsigned int ModFile::GetNumRecords(const unsigned int &RecordType)
+    {
+    switch(RecordType)
+        {
+        case eGLOB:
+            return (unsigned int)GLOB.Records.size();
+        case eCLAS:
+            return (unsigned int)CLAS.Records.size();
+        case eFACT:
+            return (unsigned int)FACT.Records.size();
+        case eHAIR:
+            return (unsigned int)HAIR.Records.size();
+        case eEYES:
+            return (unsigned int)EYES.Records.size();
+        case eRACE:
+            return (unsigned int)RACE.Records.size();
+        case eSOUN:
+            return (unsigned int)SOUN.Records.size();
+        case eSKIL:
+            return (unsigned int)SKIL.Records.size();
+        case eMGEF:
+            return (unsigned int)MGEF.Records.size();
+        case eSCPT:
+            return (unsigned int)SCPT.Records.size();
+        case eLTEX:
+            return (unsigned int)LTEX.Records.size();
+        case eENCH:
+            return (unsigned int)ENCH.Records.size();
+        case eSPEL:
+            return (unsigned int)SPEL.Records.size();
+        case eBSGN:
+            return (unsigned int)BSGN.Records.size();
+        case eACTI:
+            return (unsigned int)ACTI.Records.size();
+        case eAPPA:
+            return (unsigned int)APPA.Records.size();
+        case eARMO:
+            return (unsigned int)ARMO.Records.size();
+        case eBOOK:
+            return (unsigned int)BOOK.Records.size();
+        case eCLOT:
+            return (unsigned int)CLOT.Records.size();
+        case eCONT:
+            return (unsigned int)CONT.Records.size();
+        case eDOOR:
+            return (unsigned int)DOOR.Records.size();
+        case eINGR:
+            return (unsigned int)INGR.Records.size();
+        case eLIGH:
+            return (unsigned int)LIGH.Records.size();
+        case eMISC:
+            return (unsigned int)MISC.Records.size();
+        case eSTAT:
+            return (unsigned int)STAT.Records.size();
+        case eGRAS:
+            return (unsigned int)GRAS.Records.size();
+        case eTREE:
+            return (unsigned int)TREE.Records.size();
+        case eFLOR:
+            return (unsigned int)FLOR.Records.size();
+        case eFURN:
+            return (unsigned int)FURN.Records.size();
+        case eWEAP:
+            return (unsigned int)WEAP.Records.size();
+        case eAMMO:
+            return (unsigned int)AMMO.Records.size();
+        case eNPC_:
+            return (unsigned int)NPC_.Records.size();
+        case eCREA:
+            return (unsigned int)CREA.Records.size();
+        case eLVLC:
+            return (unsigned int)LVLC.Records.size();
+        case eSLGM:
+            return (unsigned int)SLGM.Records.size();
+        case eKEYM:
+            return (unsigned int)KEYM.Records.size();
+        case eALCH:
+            return (unsigned int)ALCH.Records.size();
+        case eSBSP:
+            return (unsigned int)SBSP.Records.size();
+        case eSGST:
+            return (unsigned int)SGST.Records.size();
+        case eLVLI:
+            return (unsigned int)LVLI.Records.size();
+        case eWTHR:
+            return (unsigned int)WTHR.Records.size();
+        case eCLMT:
+            return (unsigned int)CLMT.Records.size();
+        case eREGN:
+            return (unsigned int)REGN.Records.size();
+        case eCELL:
+            return (unsigned int)CELL.Records.size();
+        case eWRLD:
+            return (unsigned int)WRLD.Records.size();
+        case eDIAL:
+            return (unsigned int)DIAL.Records.size();
+        ///////////////////////////////////////////////
+        //SubRecords are counted via GetFIDFieldArraySize API function(s)
+        //case ePGRD:
+        //    break;
+        //case eLAND:
+        //    break;
+        //case eACHR:
+        //    break;
+        //case eACRE:
+        //    break;
+        //case eREFR:
+        //    break;
+        //case eROAD:
+        //    break;
+        //case eINFO:
+        //    break;
+        ///////////////////////////////////////////////
+        case eQUST:
+            return (unsigned int)QUST.Records.size();
+        case eIDLE:
+            return (unsigned int)IDLE.Records.size();
+        case ePACK:
+            return (unsigned int)PACK.Records.size();
+        case eCSTY:
+            return (unsigned int)CSTY.Records.size();
+        case eLSCR:
+            return (unsigned int)LSCR.Records.size();
+        case eLVSP:
+            return (unsigned int)LVSP.Records.size();
+        case eANIO:
+            return (unsigned int)ANIO.Records.size();
+        case eWATR:
+            return (unsigned int)WATR.Records.size();
+        case eEFSH:
+            return (unsigned int)EFSH.Records.size();
+        default:
+            printf("Error counting records: %i\n", RecordType);
+            break;
+        }
+    return 0;
+    }
+
+Record * ModFile::CreateRecord(const unsigned int &RecordType, Record *&SourceRecord, Record *&ParentRecord, CreateRecordOptions &options)
+    {
+    Record *newRecord = NULL;
+
+    switch(RecordType)
+        {
+        case eGLOB:
+            GLOB.Records.push_back(new GLOBRecord((GLOBRecord *)SourceRecord));
+            newRecord = GLOB.Records.back();
+            break;
+        case eCLAS:
+            CLAS.Records.push_back(new CLASRecord((CLASRecord *)SourceRecord));
+            newRecord = CLAS.Records.back();
+            break;
+        case eFACT:
+            FACT.Records.push_back(new FACTRecord((FACTRecord *)SourceRecord));
+            newRecord = FACT.Records.back();
+            break;
+        case eHAIR:
+            HAIR.Records.push_back(new HAIRRecord((HAIRRecord *)SourceRecord));
+            newRecord = HAIR.Records.back();
+            break;
+        case eEYES:
+            EYES.Records.push_back(new EYESRecord((EYESRecord *)SourceRecord));
+            newRecord = EYES.Records.back();
+            break;
+        case eRACE:
+            RACE.Records.push_back(new RACERecord((RACERecord *)SourceRecord));
+            newRecord = RACE.Records.back();
+            break;
+        case eSOUN:
+            SOUN.Records.push_back(new SOUNRecord((SOUNRecord *)SourceRecord));
+            newRecord = SOUN.Records.back();
+            break;
+        case eSKIL:
+            SKIL.Records.push_back(new SKILRecord((SKILRecord *)SourceRecord));
+            newRecord = SKIL.Records.back();
+            break;
+        case eMGEF:
+            MGEF.Records.push_back(new MGEFRecord((MGEFRecord *)SourceRecord));
+            newRecord = MGEF.Records.back();
+            break;
+        case eSCPT:
+            SCPT.Records.push_back(new SCPTRecord((SCPTRecord *)SourceRecord));
+            newRecord = SCPT.Records.back();
+            break;
+        case eLTEX:
+            LTEX.Records.push_back(new LTEXRecord((LTEXRecord *)SourceRecord));
+            newRecord = LTEX.Records.back();
+            break;
+        case eENCH:
+            ENCH.Records.push_back(new ENCHRecord((ENCHRecord *)SourceRecord));
+            newRecord = ENCH.Records.back();
+            break;
+        case eSPEL:
+            SPEL.Records.push_back(new SPELRecord((SPELRecord *)SourceRecord));
+            newRecord = SPEL.Records.back();
+            break;
+        case eBSGN:
+            BSGN.Records.push_back(new BSGNRecord((BSGNRecord *)SourceRecord));
+            newRecord = BSGN.Records.back();
+            break;
+        case eACTI:
+            ACTI.Records.push_back(new ACTIRecord((ACTIRecord *)SourceRecord));
+            newRecord = ACTI.Records.back();
+            break;
+        case eAPPA:
+            APPA.Records.push_back(new APPARecord((APPARecord *)SourceRecord));
+            newRecord = APPA.Records.back();
+            break;
+        case eARMO:
+            ARMO.Records.push_back(new ARMORecord((ARMORecord *)SourceRecord));
+            newRecord = ARMO.Records.back();
+            break;
+        case eBOOK:
+            BOOK.Records.push_back(new BOOKRecord((BOOKRecord *)SourceRecord));
+            newRecord = BOOK.Records.back();
+            break;
+        case eCLOT:
+            CLOT.Records.push_back(new CLOTRecord((CLOTRecord *)SourceRecord));
+            newRecord = CLOT.Records.back();
+            break;
+        case eCONT:
+            CONT.Records.push_back(new CONTRecord((CONTRecord *)SourceRecord));
+            newRecord = CONT.Records.back();
+            break;
+        case eDOOR:
+            DOOR.Records.push_back(new DOORRecord((DOORRecord *)SourceRecord));
+            newRecord = DOOR.Records.back();
+            break;
+        case eINGR:
+            INGR.Records.push_back(new INGRRecord((INGRRecord *)SourceRecord));
+            newRecord = INGR.Records.back();
+            break;
+        case eLIGH:
+            LIGH.Records.push_back(new LIGHRecord((LIGHRecord *)SourceRecord));
+            newRecord = LIGH.Records.back();
+            break;
+        case eMISC:
+            MISC.Records.push_back(new MISCRecord((MISCRecord *)SourceRecord));
+            newRecord = MISC.Records.back();
+            break;
+        case eSTAT:
+            STAT.Records.push_back(new STATRecord((STATRecord *)SourceRecord));
+            newRecord = STAT.Records.back();
+            break;
+        case eGRAS:
+            GRAS.Records.push_back(new GRASRecord((GRASRecord *)SourceRecord));
+            newRecord = GRAS.Records.back();
+            break;
+        case eTREE:
+            TREE.Records.push_back(new TREERecord((TREERecord *)SourceRecord));
+            newRecord = TREE.Records.back();
+            break;
+        case eFLOR:
+            FLOR.Records.push_back(new FLORRecord((FLORRecord *)SourceRecord));
+            newRecord = FLOR.Records.back();
+            break;
+        case eFURN:
+            FURN.Records.push_back(new FURNRecord((FURNRecord *)SourceRecord));
+            newRecord = FURN.Records.back();
+            break;
+        case eWEAP:
+            WEAP.Records.push_back(new WEAPRecord((WEAPRecord *)SourceRecord));
+            newRecord = WEAP.Records.back();
+            break;
+        case eAMMO:
+            AMMO.Records.push_back(new AMMORecord((AMMORecord *)SourceRecord));
+            newRecord = AMMO.Records.back();
+            break;
+        case eNPC_:
+            NPC_.Records.push_back(new NPC_Record((NPC_Record *)SourceRecord));
+            newRecord = NPC_.Records.back();
+            break;
+        case eCREA:
+            CREA.Records.push_back(new CREARecord((CREARecord *)SourceRecord));
+            newRecord = CREA.Records.back();
+            break;
+        case eLVLC:
+            LVLC.Records.push_back(new LVLCRecord((LVLCRecord *)SourceRecord));
+            newRecord = LVLC.Records.back();
+            break;
+        case eSLGM:
+            SLGM.Records.push_back(new SLGMRecord((SLGMRecord *)SourceRecord));
+            newRecord = SLGM.Records.back();
+            break;
+        case eKEYM:
+            KEYM.Records.push_back(new KEYMRecord((KEYMRecord *)SourceRecord));
+            newRecord = KEYM.Records.back();
+            break;
+        case eALCH:
+            ALCH.Records.push_back(new ALCHRecord((ALCHRecord *)SourceRecord));
+            newRecord = ALCH.Records.back();
+            break;
+        case eSBSP:
+            SBSP.Records.push_back(new SBSPRecord((SBSPRecord *)SourceRecord));
+            newRecord = SBSP.Records.back();
+            break;
+        case eSGST:
+            SGST.Records.push_back(new SGSTRecord((SGSTRecord *)SourceRecord));
+            newRecord = SGST.Records.back();
+            break;
+        case eLVLI:
+            LVLI.Records.push_back(new LVLIRecord((LVLIRecord *)SourceRecord));
+            newRecord = LVLI.Records.back();
+            break;
+        case eWTHR:
+            WTHR.Records.push_back(new WTHRRecord((WTHRRecord *)SourceRecord));
+            newRecord = WTHR.Records.back();
+            break;
+        case eCLMT:
+            CLMT.Records.push_back(new CLMTRecord((CLMTRecord *)SourceRecord));
+            newRecord = CLMT.Records.back();
+            break;
+        case eREGN:
+            REGN.Records.push_back(new REGNRecord((REGNRecord *)SourceRecord));
+            newRecord = REGN.Records.back();
+            break;
+        case eCELL:
+            if(ParentRecord == NULL)
+                {
+                CELL.Records.push_back(new CELLRecord((CELLRecord *)SourceRecord));
+                newRecord = CELL.Records.back();
+
+                ((CELLRecord *)newRecord)->IsInterior(true);
+                }
+            else
+                {
+                if(ParentRecord->GetType() != eWRLD)
+                    return NULL;
+
+                if(options.CopyWorldCellStatus)
+                    {
+                    if(((WRLDRecord *)((CELLRecord *)SourceRecord)->Parent)->CELL->formID == SourceRecord->formID)
+                        options.SetAsWorldCell = true;
+                    else
+                        options.SetAsWorldCell = false;
+                    }
+
+                if(options.SetAsWorldCell)
+                    {
+                    //If a world cell already exists, return it instead of making a new one
+                    if(((WRLDRecord *)ParentRecord)->CELL != NULL)
+                        return ((WRLDRecord *)ParentRecord)->CELL;
+
+                    ((WRLDRecord *)ParentRecord)->CELL = new CELLRecord((CELLRecord *)SourceRecord);
+                    newRecord = ((WRLDRecord *)ParentRecord)->CELL;
+                    }
+                else
+                    {
+                    ((WRLDRecord *)ParentRecord)->CELLS.push_back(new CELLRecord((CELLRecord *)SourceRecord));
+                    newRecord = ((WRLDRecord *)ParentRecord)->CELLS.back();
+                    }
+
+                ((CELLRecord *)newRecord)->IsInterior(false);
+                ((CELLRecord *)newRecord)->Parent = ParentRecord;
+                }
+            break;
+        case eWRLD:
+            WRLD.Records.push_back(new WRLDRecord((WRLDRecord *)SourceRecord));
+            newRecord = WRLD.Records.back();
+            break;
+        case eDIAL:
+            DIAL.Records.push_back(new DIALRecord((DIALRecord *)SourceRecord));
+            newRecord = DIAL.Records.back();
+            break;
+        case ePGRD:
+            if(ParentRecord == NULL || ParentRecord->GetType() != eCELL)
+                return NULL;
+
+            //If a cell pathgrid already exists, return it instead of making a new one
+            if(((CELLRecord *)ParentRecord)->PGRD != NULL)
+                return ((CELLRecord *)ParentRecord)->PGRD;
+
+            ((CELLRecord *)ParentRecord)->PGRD = new PGRDRecord((PGRDRecord *)SourceRecord);
+            newRecord = ((CELLRecord *)ParentRecord)->PGRD;
+            break;
+        case eLAND:
+            if(ParentRecord == NULL || ParentRecord->GetType() != eCELL)
+                return NULL;
+
+            //If a cell land already exists, return it instead of making a new one
+            if(((CELLRecord *)ParentRecord)->LAND != NULL)
+                return ((CELLRecord *)ParentRecord)->LAND;
+
+            ((CELLRecord *)ParentRecord)->LAND = new LANDRecord((LANDRecord *)SourceRecord);
+            newRecord = ((CELLRecord *)ParentRecord)->LAND;
+            break;
+        case eACHR:
+            if(ParentRecord == NULL || ParentRecord->GetType() != eCELL)
+                return NULL;
+
+            ((CELLRecord *)ParentRecord)->ACHR.push_back(new ACHRRecord((ACHRRecord *)SourceRecord));
+            newRecord = ((CELLRecord *)ParentRecord)->ACHR.back();
+            break;
+        case eACRE:
+            if(ParentRecord == NULL || ParentRecord->GetType() != eCELL)
+                return NULL;
+
+            ((CELLRecord *)ParentRecord)->ACRE.push_back(new ACRERecord((ACRERecord *)SourceRecord));
+            newRecord = ((CELLRecord *)ParentRecord)->ACRE.back();
+            break;
+        case eREFR:
+            if(ParentRecord == NULL || ParentRecord->GetType() != eCELL)
+                return NULL;
+            ((CELLRecord *)ParentRecord)->REFR.push_back(new REFRRecord((REFRRecord *)SourceRecord));
+            newRecord = ((CELLRecord *)ParentRecord)->REFR.back();
+            break;
+        case eROAD:
+            if(ParentRecord == NULL || ParentRecord->GetType() != eWRLD)
+                return NULL;
+
+            //If a world road already exists, return it instead of making a new one
+            if(((WRLDRecord *)ParentRecord)->ROAD != NULL)
+                return ((WRLDRecord *)ParentRecord)->ROAD;
+
+            ((WRLDRecord *)ParentRecord)->ROAD = new ROADRecord((ROADRecord *)SourceRecord);
+            newRecord = ((WRLDRecord *)ParentRecord)->ROAD;
+            break;
+        case eINFO:
+            if(ParentRecord == NULL || ParentRecord->GetType() != eDIAL)
+                return NULL;
+
+            ((DIALRecord *)ParentRecord)->INFO.push_back(new INFORecord((INFORecord *)SourceRecord));
+            newRecord = ((DIALRecord *)ParentRecord)->INFO.back();
+            break;
+        case eQUST:
+            QUST.Records.push_back(new QUSTRecord((QUSTRecord *)SourceRecord));
+            newRecord = QUST.Records.back();
+            break;
+        case eIDLE:
+            IDLE.Records.push_back(new IDLERecord((IDLERecord *)SourceRecord));
+            newRecord = IDLE.Records.back();
+            break;
+        case ePACK:
+            PACK.Records.push_back(new PACKRecord((PACKRecord *)SourceRecord));
+            newRecord = PACK.Records.back();
+            break;
+        case eCSTY:
+            CSTY.Records.push_back(new CSTYRecord((CSTYRecord *)SourceRecord));
+            newRecord = CSTY.Records.back();
+            break;
+        case eLSCR:
+            LSCR.Records.push_back(new LSCRRecord((LSCRRecord *)SourceRecord));
+            newRecord = LSCR.Records.back();
+            break;
+        case eLVSP:
+            LVSP.Records.push_back(new LVSPRecord((LVSPRecord *)SourceRecord));
+            newRecord = LVSP.Records.back();
+            break;
+        case eANIO:
+            ANIO.Records.push_back(new ANIORecord((ANIORecord *)SourceRecord));
+            newRecord = ANIO.Records.back();
+            break;
+        case eWATR:
+            WATR.Records.push_back(new WATRRecord((WATRRecord *)SourceRecord));
+            newRecord = WATR.Records.back();
+            break;
+        case eEFSH:
+            EFSH.Records.push_back(new EFSHRecord((EFSHRecord *)SourceRecord));
+            newRecord = EFSH.Records.back();
+            break;
+        default:
+            printf("Error creating record: %i\n", RecordType);
+            break;
+        }
+    return newRecord;
+    }
+
 int ModFile::CleanMasters()
     {
     unsigned int cleaned = 0;
@@ -516,74 +983,10 @@ int ModFile::CleanMasters()
     return cleaned;
     }
 
-unsigned int ModFile::Unload()
-    {
-    //GMSTs are always loaded.
-    //GMST.Unload();
-    RecordUnloader unloader;
-    GLOB.VisitRecords(unloader);
-    GLOB.VisitRecords(unloader);
-    CLAS.VisitRecords(unloader);
-    FACT.VisitRecords(unloader);
-    HAIR.VisitRecords(unloader);
-    EYES.VisitRecords(unloader);
-    RACE.VisitRecords(unloader);
-    SOUN.VisitRecords(unloader);
-    SKIL.VisitRecords(unloader);
-    MGEF.VisitRecords(unloader);
-    SCPT.VisitRecords(unloader);
-    LTEX.VisitRecords(unloader);
-    ENCH.VisitRecords(unloader);
-    SPEL.VisitRecords(unloader);
-    BSGN.VisitRecords(unloader);
-    ACTI.VisitRecords(unloader);
-    APPA.VisitRecords(unloader);
-    ARMO.VisitRecords(unloader);
-    BOOK.VisitRecords(unloader);
-    CLOT.VisitRecords(unloader);
-    CONT.VisitRecords(unloader);
-    DOOR.VisitRecords(unloader);
-    INGR.VisitRecords(unloader);
-    LIGH.VisitRecords(unloader);
-    MISC.VisitRecords(unloader);
-    STAT.VisitRecords(unloader);
-    GRAS.VisitRecords(unloader);
-    TREE.VisitRecords(unloader);
-    FLOR.VisitRecords(unloader);
-    FURN.VisitRecords(unloader);
-    WEAP.VisitRecords(unloader);
-    AMMO.VisitRecords(unloader);
-    NPC_.VisitRecords(unloader);
-    CREA.VisitRecords(unloader);
-    LVLC.VisitRecords(unloader);
-    SLGM.VisitRecords(unloader);
-    KEYM.VisitRecords(unloader);
-    ALCH.VisitRecords(unloader);
-    SBSP.VisitRecords(unloader);
-    SGST.VisitRecords(unloader);
-    LVLI.VisitRecords(unloader);
-    WTHR.VisitRecords(unloader);
-    CLMT.VisitRecords(unloader);
-    REGN.VisitRecords(unloader);
-    CELL.VisitRecords(unloader);
-    WRLD.VisitRecords(unloader);
-    DIAL.VisitRecords(unloader);
-    QUST.VisitRecords(unloader);
-    IDLE.VisitRecords(unloader);
-    PACK.VisitRecords(unloader);
-    CSTY.VisitRecords(unloader);
-    LSCR.VisitRecords(unloader);
-    LVSP.VisitRecords(unloader);
-    ANIO.VisitRecords(unloader);
-    WATR.VisitRecords(unloader);
-    EFSH.VisitRecords(unloader);
-    return unloader.GetCount();
-    }
-
 int ModFile::Save(_FileHandler &SaveHandler, bool CloseMod)
     {
     unsigned int formCount = 0;
-    if(IsDummy)
+    if(Settings.IsDummy)
         return -1;
 
     TES4.Write(SaveHandler, FormIDHandler);
@@ -651,4 +1054,247 @@ int ModFile::Save(_FileHandler &SaveHandler, bool CloseMod)
     if(CloseMod)
         Close();
     return 0;
+    }
+
+void ModFile::VisitRecords(RecordOp &op)
+    {
+    //This visits every record and subrecord
+    GMST.VisitRecords(op);
+    GLOB.VisitRecords(op);
+    CLAS.VisitRecords(op);
+    FACT.VisitRecords(op);
+    HAIR.VisitRecords(op);
+    EYES.VisitRecords(op);
+    RACE.VisitRecords(op);
+    SOUN.VisitRecords(op);
+    SKIL.VisitRecords(op);
+    MGEF.VisitRecords(op);
+    SCPT.VisitRecords(op);
+    LTEX.VisitRecords(op);
+    ENCH.VisitRecords(op);
+    SPEL.VisitRecords(op);
+    BSGN.VisitRecords(op);
+    ACTI.VisitRecords(op);
+    APPA.VisitRecords(op);
+    ARMO.VisitRecords(op);
+    BOOK.VisitRecords(op);
+    CLOT.VisitRecords(op);
+    CONT.VisitRecords(op);
+    DOOR.VisitRecords(op);
+    INGR.VisitRecords(op);
+    LIGH.VisitRecords(op);
+    MISC.VisitRecords(op);
+    STAT.VisitRecords(op);
+    GRAS.VisitRecords(op);
+    TREE.VisitRecords(op);
+    FLOR.VisitRecords(op);
+    FURN.VisitRecords(op);
+    WEAP.VisitRecords(op);
+    AMMO.VisitRecords(op);
+    NPC_.VisitRecords(op);
+    CREA.VisitRecords(op);
+    LVLC.VisitRecords(op);
+    SLGM.VisitRecords(op);
+    KEYM.VisitRecords(op);
+    ALCH.VisitRecords(op);
+    SBSP.VisitRecords(op);
+    SGST.VisitRecords(op);
+    LVLI.VisitRecords(op);
+    WTHR.VisitRecords(op);
+    CLMT.VisitRecords(op);
+    REGN.VisitRecords(op);
+    CELL.VisitRecords(op);
+    WRLD.VisitRecords(op);
+    DIAL.VisitRecords(op);
+    QUST.VisitRecords(op);
+    IDLE.VisitRecords(op);
+    PACK.VisitRecords(op);
+    CSTY.VisitRecords(op);
+    LSCR.VisitRecords(op);
+    LVSP.VisitRecords(op);
+    ANIO.VisitRecords(op);
+    WATR.VisitRecords(op);
+    EFSH.VisitRecords(op);
+    return;
+    }
+
+void ModFile::VisitTopRecords(const unsigned int &RecordType, RecordOp &op)
+    {
+    //This visits only the top records specified.
+    //Any subrecords are NOT visited.
+    switch(RecordType)
+        {
+        case eGMST:
+            GMST.VisitRecords(op);
+            break;
+        case eGLOB:
+            GLOB.VisitRecords(op);
+            break;
+        case eCLAS:
+            CLAS.VisitRecords(op);
+            break;
+        case eFACT:
+            FACT.VisitRecords(op);
+            break;
+        case eHAIR:
+            HAIR.VisitRecords(op);
+            break;
+        case eEYES:
+            EYES.VisitRecords(op);
+            break;
+        case eRACE:
+            RACE.VisitRecords(op);
+            break;
+        case eSOUN:
+            SOUN.VisitRecords(op);
+            break;
+        case eSKIL:
+            SKIL.VisitRecords(op);
+            break;
+        case eMGEF:
+            MGEF.VisitRecords(op);
+            break;
+        case eSCPT:
+            SCPT.VisitRecords(op);
+            break;
+        case eLTEX:
+            LTEX.VisitRecords(op);
+            break;
+        case eENCH:
+            ENCH.VisitRecords(op);
+            break;
+        case eSPEL:
+            SPEL.VisitRecords(op);
+            break;
+        case eBSGN:
+            BSGN.VisitRecords(op);
+            break;
+        case eACTI:
+            ACTI.VisitRecords(op);
+            break;
+        case eAPPA:
+            APPA.VisitRecords(op);
+            break;
+        case eARMO:
+            ARMO.VisitRecords(op);
+            break;
+        case eBOOK:
+            BOOK.VisitRecords(op);
+            break;
+        case eCLOT:
+            CLOT.VisitRecords(op);
+            break;
+        case eCONT:
+            CONT.VisitRecords(op);
+            break;
+        case eDOOR:
+            DOOR.VisitRecords(op);
+            break;
+        case eINGR:
+            INGR.VisitRecords(op);
+            break;
+        case eLIGH:
+            LIGH.VisitRecords(op);
+            break;
+        case eMISC:
+            MISC.VisitRecords(op);
+            break;
+        case eSTAT:
+            STAT.VisitRecords(op);
+            break;
+        case eGRAS:
+            GRAS.VisitRecords(op);
+            break;
+        case eTREE:
+            TREE.VisitRecords(op);
+            break;
+        case eFLOR:
+            FLOR.VisitRecords(op);
+            break;
+        case eFURN:
+            FURN.VisitRecords(op);
+            break;
+        case eWEAP:
+            WEAP.VisitRecords(op);
+            break;
+        case eAMMO:
+            AMMO.VisitRecords(op);
+            break;
+        case eNPC_:
+            NPC_.VisitRecords(op);
+            break;
+        case eCREA:
+            CREA.VisitRecords(op);
+            break;
+        case eLVLC:
+            LVLC.VisitRecords(op);
+            break;
+        case eSLGM:
+            SLGM.VisitRecords(op);
+            break;
+        case eKEYM:
+            KEYM.VisitRecords(op);
+            break;
+        case eALCH:
+            ALCH.VisitRecords(op);
+            break;
+        case eSBSP:
+            SBSP.VisitRecords(op);
+            break;
+        case eSGST:
+            SGST.VisitRecords(op);
+            break;
+        case eLVLI:
+            LVLI.VisitRecords(op);
+            break;
+        case eWTHR:
+            WTHR.VisitRecords(op);
+            break;
+        case eCLMT:
+            CLMT.VisitRecords(op);
+            break;
+        case eREGN:
+            REGN.VisitRecords(op);
+            break;
+        case eCELL:
+            CELL.VisitTopRecords(op);
+            break;
+        case eWRLD:
+            WRLD.VisitTopRecords(op);
+            break;
+        case eDIAL:
+            DIAL.VisitTopRecords(op);
+            break;
+        case eQUST:
+            QUST.VisitRecords(op);
+            break;
+        case eIDLE:
+            IDLE.VisitRecords(op);
+            break;
+        case ePACK:
+            PACK.VisitRecords(op);
+            break;
+        case eCSTY:
+            CSTY.VisitRecords(op);
+            break;
+        case eLSCR:
+            LSCR.VisitRecords(op);
+            break;
+        case eLVSP:
+            LVSP.VisitRecords(op);
+            break;
+        case eANIO:
+            ANIO.VisitRecords(op);
+            break;
+        case eWATR:
+            WATR.VisitRecords(op);
+            break;
+        case eEFSH:
+            EFSH.VisitRecords(op);
+            break;
+        default:
+            printf("Error visiting records: %i\n", RecordType);
+            break;
+        }
+    return;
     }

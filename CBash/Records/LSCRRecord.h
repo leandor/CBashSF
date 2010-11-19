@@ -80,9 +80,11 @@ class LSCRRecord : public Record
         std::vector<ReqSubRecord<LSCRLNAM> *> LNAM;
 
         LSCRRecord(bool newRecord=false):Record(newRecord) {}
-        LSCRRecord(const unsigned int &newFormID):Record(newFormID) {}
         LSCRRecord(LSCRRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eLSCR)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -118,6 +120,7 @@ class LSCRRecord : public Record
             {
             if(!IsLoaded())
                 return;
+
             for(unsigned int x = 0; x < LNAM.size(); x++)
                 {
                 op.Accept(LNAM[x]->value.direct);

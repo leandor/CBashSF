@@ -43,9 +43,11 @@ class EYESRecord : public Record
         ReqSubRecord<GENFLAG> DATA;
 
         EYESRecord(bool newRecord=false):Record(newRecord) {}
-        EYESRecord(const unsigned int &newFormID):Record(newFormID) {}
         EYESRecord(EYESRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eEYES)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;

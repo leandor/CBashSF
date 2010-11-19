@@ -60,10 +60,13 @@ class DOORRecord : public Record
         OptSubRecord<GENFID> BNAM;
         ReqSubRecord<GENFLAG> FNAM;
         std::vector<unsigned int *> TNAM;
+
         DOORRecord(bool newRecord=false):Record(newRecord) {}
-        DOORRecord(const unsigned int &newFormID):Record(newFormID) {}
         DOORRecord(DOORRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eDOOR)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -112,6 +115,7 @@ class DOORRecord : public Record
             {
             if(!IsLoaded())
                 return;
+
             if(SCRI.IsLoaded())
                 op.Accept(SCRI->fid);
             if(SNAM.IsLoaded())

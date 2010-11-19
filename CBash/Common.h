@@ -36,31 +36,31 @@ GPL License and Copyright Notice ============================================
 #include <boost/interprocess/mapped_region.hpp>
 
 #ifndef NULL
-#ifdef __cplusplus
-#define NULL    0
-#else
-#define NULL    ((void *)0)
-#endif
+    #ifdef __cplusplus
+        #define NULL    0
+    #else
+        #define NULL    ((void *)0)
+    #endif
 #endif
 
 #ifndef BUFFERSIZE
-#define BUFFERSIZE    65536
+    #define BUFFERSIZE    65536
 #endif
 
 #ifndef END_HARDCODED_IDS
-#define END_HARDCODED_IDS    0x00000800
+    #define END_HARDCODED_IDS    0x00000800
 #endif
 
 #ifndef MAJOR_VERSION
-#define MAJOR_VERSION    0
+    #define MAJOR_VERSION    0
 #endif
 
 #ifndef MINOR_VERSION
-#define MINOR_VERSION    4
+    #define MINOR_VERSION    5
 #endif
 
 #ifndef REVISION_VERSION
-#define REVISION_VERSION    2
+    #define REVISION_VERSION    0
 #endif
 
 class Ex_NULL : public std::exception
@@ -1102,4 +1102,48 @@ enum varType {
     eInt,
     eFloat,
     eFID
+    };
+
+class CreateRecordOptions
+    {
+    private:
+        enum createFlags
+            {
+            fSetAsOverride       = 0x00000001,
+            fSetAsWorldCell      = 0x00000002,
+            fCopyWorldCellStatus = 0x00000004
+            };
+    public:
+        CreateRecordOptions();
+        CreateRecordOptions(unsigned int nFlags);
+        ~CreateRecordOptions();
+
+        bool SetAsOverride;
+        bool SetAsWorldCell;
+        bool CopyWorldCellStatus;
+
+        unsigned int GetFlagField();
+    };
+
+class ModFlags
+    {
+    private:
+        enum addModFlags
+            {
+            fMerge             = 0x00000001,
+            fScan              = 0x00000002,
+            fCreateIfNotExist  = 0x00000004
+            };
+    public:
+        ModFlags();
+        ModFlags(unsigned int nFlags);
+        ~ModFlags();
+
+        bool Merge;
+        bool Scan;
+        bool CreateIfNotExist;
+
+        bool IsDummy, IsOpen, LoadedGRUPs, IsNew;
+
+        unsigned int GetFlagField();
     };

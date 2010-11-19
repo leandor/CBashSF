@@ -1800,7 +1800,6 @@ class Record
         unsigned int flags, formID, flagsUnk;
 
         Record(bool newRecord=false):flags(0), formID(0), flagsUnk(0), recData(NULL) {IsLoaded(newRecord);}
-        Record(const unsigned int &newFormID):flags(_fIsLoaded), formID(newFormID), flagsUnk(0), recData(NULL) {}
 
         virtual ~Record() {}
         #ifdef _DEBUG
@@ -2244,6 +2243,38 @@ class RecordFormIDVisitor : public RecordOp
                 }
             if(loaded && curRecord.recData != NULL)
                 curRecord.Unload();
+            return true;
+            }
+    };
+
+class FormIDRecordRetriever : public RecordOp
+    {
+    private:
+        unsigned int **RecordFIDs;
+    public:
+        FormIDRecordRetriever(unsigned int **cRecordFIDs):RecordOp(), RecordFIDs(cRecordFIDs) {}
+        bool Accept(Record &curRecord)
+            {
+            RecordFIDs[count] = &curRecord.formID;
+            ++count;
+            return true;
+            }
+    };
+
+class EditorIDRecordRetriever : public RecordOp
+    {
+    private:
+        char **RecordEditorIDs;
+    public:
+        EditorIDRecordRetriever(char **cRecordEditorIDs):RecordOp(), RecordEditorIDs(cRecordEditorIDs) {}
+        bool Accept(Record &curRecord)
+            {
+            char *editorID = (char *)curRecord.GetField(5);
+            if(editorID != NULL)
+                {
+                RecordEditorIDs[count] = editorID;
+                ++count;
+                }
             return true;
             }
     };

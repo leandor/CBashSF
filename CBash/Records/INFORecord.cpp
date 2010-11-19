@@ -34,8 +34,6 @@ int INFORecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
     FormID curFormID = NULL;
     INFOResponse *newResponse = NULL;
     ReqSubRecord<GENCTDA> *newCTDA = NULL;
-    std::pair<unsigned int, unsigned int> CTDAFunction;
-    std::map<unsigned int, std::pair<unsigned int,unsigned int>>::const_iterator curCTDAFunction;
     ReqSubRecord<GENSCR_> *newSCR_ = NULL;
     while(curPos < recSize){
         _readBuffer(&subType,buffer,4,curPos);

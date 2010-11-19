@@ -94,9 +94,11 @@ class APPARecord : public Record
         ReqSubRecord<APPADATA> DATA;
 
         APPARecord(bool newRecord=false):Record(newRecord) {}
-        APPARecord(const unsigned int &newFormID):Record(newFormID) {}
         APPARecord(APPARecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eAPPA)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -130,6 +132,7 @@ class APPARecord : public Record
             {
             if(!IsLoaded())
                 return;
+
             if(SCRI.IsLoaded())
                 op.Accept(SCRI->fid);
             }

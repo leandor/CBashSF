@@ -66,9 +66,11 @@ class ROADRecord : public Record
         std::vector<ROADPGRR> PGRR;
 
         ROADRecord(bool newRecord=false):Record(newRecord) {}
-        ROADRecord(const unsigned int &newFormID):Record(newFormID) {}
         ROADRecord(ROADRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eROAD)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;

@@ -189,11 +189,15 @@ class CELLRecord : public Record
         std::vector<REFRRecord *> REFR;
         PGRDRecord *PGRD;
         LANDRecord *LAND;
+
         Record *Parent;
+
         CELLRecord(bool newRecord=false):Record(newRecord), PGRD(NULL), LAND(NULL), Parent(NULL) {}
-        CELLRecord(const unsigned int &newFormID):Record(newFormID), PGRD(NULL), LAND(NULL), Parent(NULL) {}
         CELLRecord(CELLRecord *srcRecord):Record(true), PGRD(NULL), LAND(NULL), Parent(NULL)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eCELL)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -247,6 +251,7 @@ class CELLRecord : public Record
             {
             if(!IsLoaded())
                 return;
+
             if(Ownership.IsLoaded())
                 {
                 if(Ownership->XOWN.IsLoaded())

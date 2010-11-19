@@ -129,9 +129,11 @@ class GRASRecord : public Record
         ReqSubRecord<GRASDATA> DATA;
 
         GRASRecord(bool newRecord=false):Record(newRecord) {}
-        GRASRecord(const unsigned int &newFormID):Record(newFormID) {}
         GRASRecord(GRASRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eGRAS)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;

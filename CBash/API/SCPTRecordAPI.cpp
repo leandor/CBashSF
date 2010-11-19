@@ -164,7 +164,7 @@ int SCPTRecord::GetListFieldType(const unsigned int subField, const unsigned int
                 {
                 case 1: //reference
                     return FID_OR_UINT_FIELD;
-                case 2: //isSCRO
+                case 2: //IsSCRO
                     return BOOL_FIELD;
                 default:
                     return UNKNOWN_FIELD;
@@ -259,7 +259,7 @@ void * SCPTRecord::GetListField(const unsigned int subField, const unsigned int 
                 {
                 case 1: //reference
                     return &SCR_[listIndex]->value.reference;
-                case 2: //isSCRO
+                case 2: //IsSCRO
                     return &SCR_[listIndex]->value.isSCRO;
                 default:
                     return NULL;
@@ -352,7 +352,7 @@ void SCPTRecord::SetListField(const unsigned int subField, const unsigned int li
                 case 1: //reference
                     SCR_[listIndex]->value.reference = FieldValue;
                     break;
-                case 2: //isSCRO
+                case 2: //IsSCRO
                     if(FieldValue)
                         {
                         if(!SCR_[listIndex]->value.isSCRO)
@@ -570,7 +570,7 @@ int SCPTRecord::DeleteListField(const unsigned int subField, const unsigned int 
                 case 1: //reference
                     SCR_[listIndex]->value.reference = defaultSCR_.reference;
                     break;
-                case 2: //isSCRO
+                case 2: //IsSCRO
                     SCR_[listIndex]->value.isSCRO = defaultSCR_.isSCRO;
                     break;
                 default:

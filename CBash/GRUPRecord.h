@@ -346,6 +346,16 @@ class GRUPRecords<DIALRecord>
                 }
             return;
             }
+        void VisitTopRecords(RecordOp &op)
+            {
+            DIALRecord * curRecord = NULL;
+            for(unsigned int p = 0; p < Records.size(); p++)
+                {
+                curRecord = Records[p];
+                op.Accept(*curRecord);
+                }
+            return;
+            }
         unsigned int CheckMasters(unsigned char MASTIndex, _FormIDHandler &FormIDHandler)
             {
             FormIDMasterChecker checker(FormIDHandler.ExpandTable, MASTIndex);
@@ -755,6 +765,16 @@ class GRUPRecords<CELLRecord>
                     curSubRecord = curRecord->PGRD;
                     op.Accept(*curSubRecord);
                     }
+                }
+            return;
+            }
+        void VisitTopRecords(RecordOp &op)
+            {
+            CELLRecord * curRecord = NULL;
+            for(unsigned int p = 0; p < Records.size(); p++)
+                {
+                curRecord = Records[p];
+                op.Accept(*curRecord);
                 }
             return;
             }
@@ -1620,6 +1640,16 @@ class GRUPRecords<WRLDRecord>
                 }
             return;
             }
+        void VisitTopRecords(RecordOp &op)
+            {
+            WRLDRecord *curWRLDRecord = NULL;
+            for(unsigned int p = 0; p < Records.size(); p++)
+                {
+                curWRLDRecord = Records[p];
+                op.Accept(*curWRLDRecord);
+                }
+            return;
+            }
         bool CheckMasters(unsigned char MASTIndex, _FormIDHandler &FormIDHandler)
             {
             FormIDMasterChecker checker(FormIDHandler.ExpandTable, MASTIndex);
@@ -1839,7 +1869,8 @@ class GRUPRecords<WRLDRecord>
 
                 if(curWorld->CELL == NULL && FixedPersistent.size()) //create a default dummy cell for persistents
                     {
-                    curWorld->CELL = new CELLRecord(FormIDHandler.NextExpandedFID());
+                    curWorld->CELL = new CELLRecord(true);
+                    curWorld->CELL->formID = FormIDHandler.NextExpandedFID();
                     curWorld->CELL->Parent = curWorld;
                     curWorld->CELL->IsHasWater(true);
                     curWorld->CELL->IsPersistent(true);

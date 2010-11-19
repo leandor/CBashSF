@@ -108,9 +108,11 @@ class AMMORecord : public Record
         ReqSubRecord<AMMODATA> DATA;
 
         AMMORecord(bool newRecord=false):Record(newRecord) {}
-        AMMORecord(const unsigned int &newFormID):Record(newFormID) {}
         AMMORecord(AMMORecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eAMMO)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -146,6 +148,7 @@ class AMMORecord : public Record
             {
             if(!IsLoaded())
                 return;
+
             if(ENAM.IsLoaded())
                 op.Accept(ENAM->fid);
             }

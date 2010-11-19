@@ -111,9 +111,11 @@ class FACTRecord : public Record
         std::vector<ReqSubRecord<FACTRNAM> *> RNAM;
 
         FACTRecord(bool newRecord=false):Record(newRecord) {}
-        FACTRecord(const unsigned int &newFormID):Record(newFormID) {}
         FACTRecord(FACTRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eFACT)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -168,6 +170,7 @@ class FACTRecord : public Record
             {
             if(!IsLoaded())
                 return;
+
             for(unsigned int x = 0; x < XNAM.size(); x++)
                 op.Accept(XNAM[x]->value.faction);
             }

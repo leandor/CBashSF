@@ -52,9 +52,11 @@ class HAIRRecord : public Record
         ReqSubRecord<GENFLAG> DATA;
 
         HAIRRecord(bool newRecord=false):Record(newRecord) {}
-        HAIRRecord(const unsigned int &newFormID):Record(newFormID) {}
         HAIRRecord(HAIRRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eHAIR)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;

@@ -260,9 +260,11 @@ class PACKRecord : public Record
         std::vector<ReqSubRecord<GENCTDA> *> CTDA;
 
         PACKRecord(bool newRecord=false):Record(newRecord) {}
-        PACKRecord(const unsigned int &newFormID):Record(newFormID) {}
         PACKRecord(PACKRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != ePACK)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -303,6 +305,7 @@ class PACKRecord : public Record
             {
             if(!IsLoaded())
                 return;
+
             std::pair<unsigned int, unsigned int> CTDAFunction;
             std::map<unsigned int, std::pair<unsigned int,unsigned int>>::const_iterator curCTDAFunction;
             if(PLDT.IsLoaded() && PLDT->locType != 5)

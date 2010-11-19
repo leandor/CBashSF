@@ -286,9 +286,11 @@ class EFSHRecord : public Record
         ReqSubRecord<EFSHDATA> DATA;
 
         EFSHRecord(bool newRecord=false):Record(newRecord) {}
-        EFSHRecord(const unsigned int &newFormID):Record(newFormID) {}
         EFSHRecord(EFSHRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eEFSH)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;

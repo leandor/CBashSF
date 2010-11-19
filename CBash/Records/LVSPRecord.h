@@ -127,9 +127,11 @@ class LVSPRecord : public Record
         std::vector<ReqSubRecord<LVLLVLO> *> Entries;
 
         LVSPRecord(bool newRecord=false):Record(newRecord) {}
-        LVSPRecord(const unsigned int &newFormID):Record(newFormID) {}
         LVSPRecord(LVSPRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eLVSP)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -165,6 +167,7 @@ class LVSPRecord : public Record
             {
             if(!IsLoaded())
                 return;
+
             for(unsigned int x = 0; x < Entries.size(); x++)
                 op.Accept(Entries[x]->value.listId);
             }

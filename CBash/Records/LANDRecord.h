@@ -414,10 +414,13 @@ class LANDRecord : public Record
         LANDRecord *EastLand;
         LANDRecord *NorthLand;
         LANDRecord *SouthLand;
+
         LANDRecord(bool newRecord=false):Record(newRecord), WestLand(NULL), EastLand(NULL), NorthLand(NULL), SouthLand(NULL) {IsCompressed(true);}
-        LANDRecord(const unsigned int &newFormID):Record(newFormID), WestLand(NULL), EastLand(NULL), NorthLand(NULL), SouthLand(NULL) {IsCompressed(true);}
         LANDRecord(LANDRecord *srcRecord):Record(true), WestLand(NULL), EastLand(NULL), NorthLand(NULL), SouthLand(NULL)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eLAND)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -473,6 +476,7 @@ class LANDRecord : public Record
             {
             if(!IsLoaded())
                 return;
+
             for(unsigned int x = 0; x < BTXT.size(); ++x)
                 if(BTXT[x] != NULL)
                     op.Accept(BTXT[x]->value.texture);

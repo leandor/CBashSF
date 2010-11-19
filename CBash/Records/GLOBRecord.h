@@ -88,9 +88,11 @@ class GLOBRecord : public Record
         ReqSubRecord<GLOBFLTV> FLTV;
 
         GLOBRecord(bool newRecord=false):Record(newRecord) {}
-        GLOBRecord(const unsigned int &newFormID):Record(newFormID) {}
         GLOBRecord(GLOBRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eGLOB)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;

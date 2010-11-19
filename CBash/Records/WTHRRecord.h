@@ -449,9 +449,11 @@ class WTHRRecord : public Record
         std::vector<ReqSubRecord<WTHRSNAM> *> Sounds;
 
         WTHRRecord(bool newRecord=false):Record(newRecord) {}
-        WTHRRecord(const unsigned int &newFormID):Record(newFormID) {}
         WTHRRecord(WTHRRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eWTHR)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -503,6 +505,7 @@ class WTHRRecord : public Record
             {
             if(!IsLoaded())
                 return;
+
             for(unsigned int x = 0; x < Sounds.size(); x++)
                 op.Accept(Sounds[x]->value.sound);
             }

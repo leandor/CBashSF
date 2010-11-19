@@ -129,9 +129,11 @@ class LVLIRecord : public Record
         //RAWBYTES DATA; //Older version of LVLF. Auto-updated to newer format.
 
         LVLIRecord(bool newRecord=false):Record(newRecord) {}
-        LVLIRecord(const unsigned int &newFormID):Record(newFormID) {}
         LVLIRecord(LVLIRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eLVLI)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -169,6 +171,7 @@ class LVLIRecord : public Record
             {
             if(!IsLoaded())
                 return;
+
             for(unsigned int x = 0; x < Entries.size(); x++)
                 op.Accept(Entries[x]->value.listId);
             }

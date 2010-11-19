@@ -135,28 +135,27 @@ class WRLDRecord : public Record
             };
         STRING EDID;
         STRING FULL;
-
         OptSubRecord<GENFID> WNAM;
         OptSubRecord<GENFID> CNAM;
         OptSubRecord<GENFID> NAM2;
-
         STRING ICON;
-
         SemiOptSubRecord<WRLDMNAM> MNAM;
         ReqSubRecord<GENFLAG> DATA;
-
         ReqSubRecord<WRLDUNK> NAM0;
         ReqSubRecord<WRLDUNK> NAM9;
-
         OptSubRecord<GENUFLAG> SNAM;
         RAWBYTES OFST;
+
         ROADRecord *ROAD;
         CELLRecord *CELL;
         std::vector<CELLRecord *> CELLS;
+
         WRLDRecord(bool newRecord=false):Record(newRecord), ROAD(NULL), CELL(NULL) {}
-        WRLDRecord(const unsigned int &newFormID):Record(newFormID), ROAD(NULL), CELL(NULL) {}
         WRLDRecord(WRLDRecord *srcRecord):Record(true), ROAD(NULL), CELL(NULL)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eWRLD)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -202,6 +201,7 @@ class WRLDRecord : public Record
             {
             if(!IsLoaded())
                 return;
+
             if(WNAM.IsLoaded())
                 op.Accept(WNAM->fid);
             if(CNAM.IsLoaded())

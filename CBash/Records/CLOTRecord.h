@@ -91,10 +91,13 @@ class CLOTRecord : public Record
         OptSubRecord<GENMODEL> MOD4;
         STRING ICO2;
         ReqSubRecord<GENVALUEWEIGHT> DATA;
+
         CLOTRecord(bool newRecord=false):Record(newRecord) {}
-        CLOTRecord(const unsigned int &newFormID):Record(newFormID) {}
         CLOTRecord(CLOTRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eCLOT)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -160,6 +163,7 @@ class CLOTRecord : public Record
             {
             if(!IsLoaded())
                 return;
+
             if(SCRI.IsLoaded())
                 op.Accept(SCRI->fid);
             if(ENAM.IsLoaded())

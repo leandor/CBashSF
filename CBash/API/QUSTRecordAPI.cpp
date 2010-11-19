@@ -422,7 +422,7 @@ int QUSTRecord::GetListX3FieldType(const unsigned int subField, const unsigned i
                                 {
                                 case 1: //reference
                                     return FID_OR_UINT_FIELD;
-                                case 2: //isSCRO
+                                case 2: //IsSCRO
                                     return BOOL_FIELD;
                                 default:
                                     return UNKNOWN_FIELD;
@@ -934,7 +934,7 @@ void * QUSTRecord::GetListX3Field(const unsigned int subField, const unsigned in
                                 {
                                 case 1: //reference
                                     return &Stages[listIndex]->Entries[listX2Index]->SCR_[listX3Index]->value.reference;
-                                case 2: //isSCRO
+                                case 2: //IsSCRO
                                     return &Stages[listIndex]->Entries[listX2Index]->SCR_[listX3Index]->value.isSCRO;
                                 default:
                                     return NULL;
@@ -1591,7 +1591,7 @@ void QUSTRecord::SetListX3Field(const unsigned int subField, const unsigned int 
                                 case 1: //reference
                                     Stages[listIndex]->Entries[listX2Index]->SCR_[listX3Index]->value.reference = FieldValue;
                                     break;
-                                case 2: //isSCRO
+                                case 2: //IsSCRO
                                     if(FieldValue)
                                         {
                                         if(!Stages[listIndex]->Entries[listX2Index]->SCR_[listX3Index]->value.isSCRO)
@@ -1935,7 +1935,7 @@ int QUSTRecord::DeleteListX3Field(const unsigned int subField, const unsigned in
                                 case 1: //reference
                                     Stages[listIndex]->Entries[listX2Index]->SCR_[listX3Index]->value.reference = defaultSCR_.reference;
                                     break;
-                                case 2: //isSCRO
+                                case 2: //IsSCRO
                                     Stages[listIndex]->Entries[listX2Index]->SCR_[listX3Index]->value.isSCRO = defaultSCR_.isSCRO;
                                     break;
                                 default:

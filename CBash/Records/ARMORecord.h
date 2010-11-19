@@ -133,9 +133,11 @@ class ARMORecord : public Record
         ReqSubRecord<ARMODATA> DATA;
 
         ARMORecord(bool newRecord=false):Record(newRecord) {}
-        ARMORecord(const unsigned int &newFormID):Record(newFormID) {}
         ARMORecord(ARMORecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eARMO)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -201,6 +203,7 @@ class ARMORecord : public Record
             {
             if(!IsLoaded())
                 return;
+
             if(SCRI.IsLoaded())
                 op.Accept(SCRI->fid);
             if(ENAM.IsLoaded())

@@ -263,10 +263,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\CollectionBP.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\Common.cpp"
 				>
 			</File>

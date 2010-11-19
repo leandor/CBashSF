@@ -91,9 +91,11 @@ class CONTRecord : public Record
         OptSubRecord<GENFID> QNAM;
 
         CONTRecord(bool newRecord=false):Record(newRecord) {}
-        CONTRecord(const unsigned int &newFormID):Record(newFormID) {}
         CONTRecord(CONTRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eCONT)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -147,6 +149,7 @@ class CONTRecord : public Record
             {
             if(!IsLoaded())
                 return;
+
             if(SCRI.IsLoaded())
                 op.Accept(SCRI->fid);
             for(unsigned int x = 0; x < CNTO.size(); x++)

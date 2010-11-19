@@ -240,9 +240,11 @@ class WATRRecord : public Record
         OptSubRecord<WATRGNAM> GNAM;
 
         WATRRecord(bool newRecord=false):Record(newRecord) {}
-        WATRRecord(const unsigned int &newFormID):Record(newFormID) {}
         WATRRecord(WATRRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eWATR)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -274,6 +276,7 @@ class WATRRecord : public Record
             {
             if(!IsLoaded())
                 return;
+
             if(SNAM.IsLoaded())
                 op.Accept(SNAM->fid);
             if(GNAM.IsLoaded())

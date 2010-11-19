@@ -80,9 +80,11 @@ class FURNRecord : public Record
         ReqSubRecord<GENUFLAG> MNAM;
 
         FURNRecord(bool newRecord=false):Record(newRecord) {}
-        FURNRecord(const unsigned int &newFormID):Record(newFormID) {}
         FURNRecord(FURNRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eFURN)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -114,6 +116,7 @@ class FURNRecord : public Record
             {
             if(!IsLoaded())
                 return;
+
             if(SCRI.IsLoaded())
                 op.Accept(SCRI->fid);
             }

@@ -33,8 +33,6 @@ int QUSTRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
     unsigned int curPos = 0;
     int whichCTDA = 0;
     ReqSubRecord<GENCTDA> *newCTDA = NULL;
-    std::pair<unsigned int, unsigned int> CTDAFunction;
-    std::map<unsigned int, std::pair<unsigned int,unsigned int>>::const_iterator curCTDAFunction;
     QUSTStage *newStage = NULL;
     QUSTEntry *newEntry = NULL;
     QUSTTarget *newTarget = NULL;

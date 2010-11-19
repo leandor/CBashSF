@@ -126,9 +126,11 @@ class TREERecord : public Record
         ReqSubRecord<TREEBNAM> BNAM;
 
         TREERecord(bool newRecord=false):Record(newRecord) {}
-        TREERecord(const unsigned int &newFormID):Record(newFormID) {}
         TREERecord(TREERecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eTREE)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;

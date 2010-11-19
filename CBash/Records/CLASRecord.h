@@ -152,10 +152,13 @@ class CLASRecord : public Record
         STRING DESC;
         STRING ICON;
         ReqSubRecord<CLASDATA> DATA;
+
         CLASRecord(bool newRecord=false):Record(newRecord) {}
-        CLASRecord(const unsigned int &newFormID):Record(newFormID) {}
         CLASRecord(CLASRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eCLAS)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;

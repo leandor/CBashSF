@@ -131,9 +131,11 @@ class LVLCRecord : public Record
         std::vector<ReqSubRecord<LVLLVLO> *> Entries;
 
         LVLCRecord(bool newRecord=false):Record(newRecord) {}
-        LVLCRecord(const unsigned int &newFormID):Record(newFormID) {}
         LVLCRecord(LVLCRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eLVLC)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -173,6 +175,7 @@ class LVLCRecord : public Record
             {
             if(!IsLoaded())
                 return;
+
             if(SCRI.IsLoaded())
                 op.Accept(SCRI->fid);
             if(TNAM.IsLoaded())

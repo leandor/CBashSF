@@ -355,10 +355,13 @@ class CSTYRecord : public Record
         STRING EDID;
         ReqSubRecord<CSTYCSTD> CSTD;
         OptSubRecord<CSTYCSAD> CSAD;
+
         CSTYRecord(bool newRecord=false):Record(newRecord) {}
-        CSTYRecord(const unsigned int &newFormID):Record(newFormID) {}
         CSTYRecord(CSTYRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eCSTY)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;

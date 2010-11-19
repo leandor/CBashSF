@@ -861,10 +861,13 @@ class REGNRecord : public Record
         SubRecord<GENFID> WNAM;
         std::vector<REGNArea *> Areas;
         std::vector<REGNEntry *> Entries;
+
         REGNRecord(bool newRecord=false):Record(newRecord) {}
-        REGNRecord(const unsigned int &newFormID):Record(newFormID) {}
         REGNRecord(REGNRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eREGN)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -924,6 +927,7 @@ class REGNRecord : public Record
             {
             if(!IsLoaded())
                 return;
+
             if(WNAM.IsLoaded())
                 op.Accept(WNAM.value.fid);
             for(unsigned int x = 0; x < Entries.size(); x++)

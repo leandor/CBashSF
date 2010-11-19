@@ -118,10 +118,13 @@ class LTEXRecord : public Record
         SubRecord<LTEXHNAM> HNAM;
         SubRecord<LTEXSNAM> SNAM;
         std::vector<unsigned int *> GNAM;
+
         LTEXRecord(bool newRecord=false):Record(newRecord) {}
-        LTEXRecord(const unsigned int &newFormID):Record(newFormID) {}
         LTEXRecord(LTEXRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eLTEX)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -157,6 +160,7 @@ class LTEXRecord : public Record
             {
             if(!IsLoaded())
                 return;
+
             for(unsigned int x = 0; x < GNAM.size(); x++)
                 op.Accept(*GNAM[x]);
             }

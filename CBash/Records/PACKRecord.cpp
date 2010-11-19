@@ -32,8 +32,6 @@ int PACKRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
     unsigned int subSize = 0;
     unsigned int curPos = 0;
     ReqSubRecord<GENCTDA> *newCTDA = NULL;
-    std::pair<unsigned int, unsigned int> CTDAFunction;
-    std::map<unsigned int, std::pair<unsigned int,unsigned int>>::const_iterator curCTDAFunction;
     while(curPos < recSize){
         _readBuffer(&subType,buffer,4,curPos);
         switch(subType)

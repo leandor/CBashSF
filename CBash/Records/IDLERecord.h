@@ -118,11 +118,11 @@ class IDLERecord : public Record
         ReqSubRecord<IDLEDATA> DATA;
 
         IDLERecord(bool newRecord=false):Record(newRecord) {}
-        IDLERecord(const unsigned int &newFormID):Record(newFormID) {}
         IDLERecord(IDLERecord *srcRecord):Record(true)
             {
-            std::pair<unsigned int, unsigned int> CTDAFunction;
-            std::map<unsigned int, std::pair<unsigned int,unsigned int>>::const_iterator curCTDAFunction;
+            if(srcRecord == NULL || srcRecord->GetType() != eIDLE)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -166,6 +166,7 @@ class IDLERecord : public Record
             {
             if(!IsLoaded())
                 return;
+
             std::pair<unsigned int, unsigned int> CTDAFunction;
             std::map<unsigned int, std::pair<unsigned int,unsigned int>>::const_iterator curCTDAFunction;
             for(unsigned int x = 0; x < CTDA.size(); x++)

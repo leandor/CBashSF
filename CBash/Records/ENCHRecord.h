@@ -108,9 +108,11 @@ class ENCHRecord : public Record
         OptSubRecord<OBMEMAGIC> OBME;
 
         ENCHRecord(bool newRecord=false):Record(newRecord) {}
-        ENCHRecord(const unsigned int &newFormID):Record(newFormID) {}
         ENCHRecord(ENCHRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eENCH)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -163,6 +165,7 @@ class ENCHRecord : public Record
             {
             if(!IsLoaded())
                 return;
+
             for(unsigned int x = 0; x < Effects.size(); x++)
                 {
                 if(Effects[x]->OBME.IsLoaded())

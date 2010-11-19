@@ -48,9 +48,11 @@ class MISCRecord : public Record
         ReqSubRecord<GENVALUEWEIGHT> DATA;
 
         MISCRecord(bool newRecord=false):Record(newRecord) {}
-        MISCRecord(const unsigned int &newFormID):Record(newFormID) {}
         MISCRecord(MISCRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eMISC)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -84,6 +86,7 @@ class MISCRecord : public Record
             {
             if(!IsLoaded())
                 return;
+
             if(SCRI.IsLoaded())
                 op.Accept(SCRI->fid);
             }

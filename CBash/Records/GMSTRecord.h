@@ -104,9 +104,11 @@ class GMSTRecord : public Record
         GMSTDATA DATA;
 
         GMSTRecord(bool newRecord=false):Record(newRecord) {}
-        GMSTRecord(const unsigned int &newFormID):Record(newFormID) {}
         GMSTRecord(GMSTRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eGMST)
+                return;
+
             unsigned int vSize;
             flags = srcRecord->flags;
             formID = srcRecord->formID;
@@ -131,7 +133,7 @@ class GMSTRecord : public Record
                 }
             return;
             }
-        GMSTRecord(const unsigned int &newFormID, char *newRecordEDID):Record(newFormID)
+        GMSTRecord(char *newRecordEDID):Record(true)
             {
             EDID.Copy(newRecordEDID);
             DATA.format = EDID.value[0];

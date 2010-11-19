@@ -461,6 +461,66 @@ char * PrintFormID(FormID formID)
     }
 #endif
 
+CreateRecordOptions::CreateRecordOptions()
+    :SetAsOverride(false),
+    SetAsWorldCell(false),
+    CopyWorldCellStatus(false)
+    { }
+
+CreateRecordOptions::CreateRecordOptions(unsigned int nFlags)
+    :SetAsOverride((nFlags & fSetAsOverride) != 0),
+    SetAsWorldCell((nFlags & fSetAsWorldCell) != 0),
+    CopyWorldCellStatus((nFlags & fCopyWorldCellStatus) != 0)
+    { }
+
+CreateRecordOptions::~CreateRecordOptions() { }
+
+unsigned int CreateRecordOptions::GetFlagField()
+    {
+    unsigned int flags = 0;
+    if(SetAsOverride)
+        flags |= fSetAsOverride;
+    if(SetAsWorldCell)
+        flags |= fSetAsWorldCell;
+    if(CopyWorldCellStatus)
+        flags |= fCopyWorldCellStatus;
+    return flags;
+    }
+
+ModFlags::ModFlags()
+    :Merge(false),
+    Scan(false),
+    CreateIfNotExist(false),
+    IsDummy(false),
+    IsOpen(false),
+    LoadedGRUPs(false),
+    IsNew(false)
+    { }
+
+ModFlags::ModFlags(unsigned int nFlags)
+    :Merge((nFlags & fMerge) != 0),
+    Scan((nFlags & fScan) != 0),
+    CreateIfNotExist((nFlags & fCreateIfNotExist) != 0),
+    IsDummy(false),
+    IsOpen(false),
+    LoadedGRUPs(false),
+    IsNew(false)
+    { }
+
+ModFlags::~ModFlags() { }
+
+unsigned int ModFlags::GetFlagField()
+    {
+    unsigned int flags = 0;
+    if(Merge)
+        flags |= fMerge;
+    if(Scan)
+        flags |= fScan;
+    if(CreateIfNotExist)
+        flags |= fCreateIfNotExist;
+    return flags;
+    }
+
 typedef std::map<unsigned int, std::pair<varType,varType>>::value_type Function_ArgumentsType;
 
 Function_ArgumentsType Function_ArgumentsInit[] =

@@ -308,9 +308,11 @@ class NPC_Record : public Record
         ReqSubRecord<NPC_FNAM> FNAM;
 
         NPC_Record(bool newRecord=false):Record(newRecord) {IsCompressed(true);}
-        NPC_Record(const unsigned int &newFormID):Record(newFormID) {IsCompressed(true);}
         NPC_Record(NPC_Record *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eNPC_)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -428,6 +430,7 @@ class NPC_Record : public Record
             {
             if(!IsLoaded())
                 return;
+
             for(unsigned int x = 0; x < SNAM.size(); x++)
                 op.Accept(SNAM[x]->value.faction);
             if(INAM.IsLoaded())

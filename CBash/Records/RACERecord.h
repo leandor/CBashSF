@@ -487,9 +487,11 @@ class RACERecord : public Record
         ReqSubRecord<RACESNAM> SNAM;
 
         RACERecord(bool newRecord=false):Record(newRecord) {}
-        RACERecord(const unsigned int &newFormID):Record(newFormID) {}
         RACERecord(RACERecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eRACE)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -703,6 +705,7 @@ class RACERecord : public Record
             {
             if(!IsLoaded())
                 return;
+
             for(unsigned int x = 0; x < SPLO.size(); x++)
                 op.Accept(*SPLO[x]);
             for(unsigned int x = 0; x < XNAM.size(); x++)

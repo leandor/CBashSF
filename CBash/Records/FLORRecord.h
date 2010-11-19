@@ -81,9 +81,11 @@ class FLORRecord : public Record
         ReqSubRecord<FLORPFPC> PFPC;
 
         FLORRecord(bool newRecord=false):Record(newRecord) {}
-        FLORRecord(const unsigned int &newFormID):Record(newFormID) {}
         FLORRecord(FLORRecord *srcRecord):Record(true)
             {
+            if(srcRecord == NULL || srcRecord->GetType() != eFLOR)
+                return;
+
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -117,6 +119,7 @@ class FLORRecord : public Record
             {
             if(!IsLoaded())
                 return;
+
             if(SCRI.IsLoaded())
                 op.Accept(SCRI->fid);
             if(PFIG.IsLoaded())
