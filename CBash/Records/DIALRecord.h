@@ -22,7 +22,6 @@ GPL License and Copyright Notice ============================================
 #pragma once
 #include "..\Common.h"
 #include "..\BaseRecord.h"
-#include "..\SubGRUPRecord.h"
 #include "INFORecord.h"
 #include <vector>
 

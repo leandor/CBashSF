@@ -28,7 +28,6 @@ GPL License and Copyright Notice ============================================
 #include "PGRDRecord.h"
 #include "LANDRecord.h"
 //#include "WRLDRecord.h"
-#include "..\SubGRUPRecord.h"
 #include <vector>
 
 class CELLRecord : public Record

@@ -604,7 +604,7 @@ class REGNRecord : public Record
             STRING RDMP;
             STRING ICON;
             std::vector<REGNRDGS> RDGS;
-            OptSubRecord<REGNRDMD> RDMD;
+            SemiOptSubRecord<REGNRDMD> RDMD;
             std::vector<REGNRDSD> RDSD;
             std::vector<REGNRDWT> RDWT;
             #ifdef _DEBUG

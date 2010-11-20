@@ -62,7 +62,10 @@ unsigned int Record::Write(_FileHandler &SaveHandler, _FormIDHandler &FormIDHand
         }
     RecordReader reader(FormIDHandler);
     reader.Accept(*this);
-    recSize = GetSize(true);
+    if(IsDeleted())
+        recSize = 0;
+    else
+        recSize = GetSize(true);
     FormIDResolver collapser(FormIDHandler.CollapseTable);
     collapser.Accept(formID);
     VisitFormIDs(collapser);
@@ -76,32 +79,35 @@ unsigned int Record::Write(_FileHandler &SaveHandler, _FormIDHandler &FormIDHand
     SaveHandler.write(&flagsUnk, 4);
     IsLoaded(true);
 
-    //IsCompressed(true); //Test code
-    if(IsCompressed())
+    if(!IsDeleted())
         {
-        //printf("Compressed: %08X\n", formID);
-        unsigned long recStart = SaveHandler.tell();
-        unsigned long compSize = compressBound(recSize);
-        unsigned char *compBuffer = new unsigned char[compSize + 4];
-        SaveHandler.reserveBuffer(compSize + 4);
-        WriteRecord(SaveHandler);
-        memcpy(compBuffer, &recSize, 4);
-        if(SaveHandler.IsCached(recStart) && ((SaveHandler.UnusedCache() + recSize) >= compSize))
-            compress2(compBuffer + 4, &compSize, SaveHandler.getBuffer(recStart), recSize, 6);
-        else
+        //IsCompressed(true); //Test code
+        if(IsCompressed())
             {
-            SaveHandler.flush();
-            printf("Not in cache, written improperly!\n  Size: %u\n", recSize);
-            return recSize + 20;
+            //printf("Compressed: %08X\n", formID);
+            unsigned long recStart = SaveHandler.tell();
+            unsigned long compSize = compressBound(recSize);
+            unsigned char *compBuffer = new unsigned char[compSize + 4];
+            SaveHandler.reserveBuffer(compSize + 4);
+            WriteRecord(SaveHandler);
+            memcpy(compBuffer, &recSize, 4);
+            if(SaveHandler.IsCached(recStart) && ((SaveHandler.UnusedCache() + recSize) >= compSize))
+                compress2(compBuffer + 4, &compSize, SaveHandler.getBuffer(recStart), recSize, 6);
+            else
+                {
+                SaveHandler.flush();
+                printf("Not in cache, written improperly!\n  Size: %u\n", recSize);
+                return recSize + 20;
+                }
+            SaveHandler.set_used((compSize + 4) - recSize);
+            recSize = compSize + 4;
+            SaveHandler.writeAt(recStart - 16, &recSize, 4);
+            SaveHandler.writeAt(recStart, compBuffer, recSize);
+            delete []compBuffer;
             }
-        SaveHandler.set_used((compSize + 4) - recSize);
-        recSize = compSize + 4;
-        SaveHandler.writeAt(recStart - 16, &recSize, 4);
-        SaveHandler.writeAt(recStart, compBuffer, recSize);
-        delete []compBuffer;
+        else
+            WriteRecord(SaveHandler);
         }
-    else
-        WriteRecord(SaveHandler);
     FormIDResolver expander(FormIDHandler.ExpandTable);
     expander.Accept(formID);
     if(recData == NULL)
