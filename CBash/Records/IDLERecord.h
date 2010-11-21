@@ -45,7 +45,7 @@ class IDLERecord : public Record
             unsigned char group;
             IDLEANAM():group(0) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -70,10 +70,10 @@ class IDLERecord : public Record
             };
         struct IDLEDATA
             {
-            unsigned int parent, prevId;
+            unsigned long parent, prevId;
             IDLEDATA():parent(0), prevId(0) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -111,7 +111,7 @@ class IDLERecord : public Record
             {
             fIsNotReturnFile = 0x00000080
             };
-        STRING EDID;
+        StringRecord EDID;
         OptSubRecord<GENMODEL> MODL;
         std::vector<ReqSubRecord<GENCTDA> *> CTDA;
         ReqSubRecord<IDLEANAM> ANAM;
@@ -136,7 +136,7 @@ class IDLERecord : public Record
                 }
             CTDA.clear();
             CTDA.resize(srcRecord->CTDA.size());
-            for(unsigned int x = 0; x < srcRecord->CTDA.size(); x++)
+            for(unsigned long x = 0; x < srcRecord->CTDA.size(); x++)
                 {
                 CTDA[x] = new ReqSubRecord<GENCTDA>;
                 *CTDA[x] = *srcRecord->CTDA[x];
@@ -147,7 +147,7 @@ class IDLERecord : public Record
             }
         ~IDLERecord()
             {
-            for(unsigned int x = 0; x < CTDA.size(); x++)
+            for(unsigned long x = 0; x < CTDA.size(); x++)
                 delete CTDA[x];
             }
         void Unload()
@@ -155,21 +155,21 @@ class IDLERecord : public Record
             IsLoaded(false);
             EDID.Unload();
             MODL.Unload();
-            for(unsigned int x = 0; x < CTDA.size(); x++)
+            for(unsigned long x = 0; x < CTDA.size(); x++)
                 delete CTDA[x];
             CTDA.clear();
             ANAM.Unload();
             DATA.Unload();
             }
 
-        void VisitFormIDs(FormIDOp &op)
+        bool VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
-                return;
+                return false;
 
-            std::pair<unsigned int, unsigned int> CTDAFunction;
-            std::map<unsigned int, std::pair<unsigned int,unsigned int>>::const_iterator curCTDAFunction;
-            for(unsigned int x = 0; x < CTDA.size(); x++)
+            std::pair<unsigned long, unsigned long> CTDAFunction;
+            std::map<unsigned long, std::pair<unsigned long,unsigned long>>::const_iterator curCTDAFunction;
+            for(unsigned long x = 0; x < CTDA.size(); x++)
                 {
                 curCTDAFunction = Function_Arguments.find(CTDA[x]->value.ifunc);
                 if(curCTDAFunction != Function_Arguments.end())
@@ -186,41 +186,43 @@ class IDLERecord : public Record
                 op.Accept(DATA.value.parent);
                 op.Accept(DATA.value.prevId);
                 }
+
+            return op.Stop();
             }
 
         #ifdef _DEBUG
-        void Debug(int debugLevel);
+        void Debug(signed long debugLevel);
         #endif
 
-        int CreateListElement(const unsigned int subField);
-        int DeleteListElement(const unsigned int subField);
-        int GetOtherFieldType(const unsigned int Field);
-        void * GetOtherField(const unsigned int Field);
-        int GetListFieldType(const unsigned int subField, const unsigned int listField);
-        unsigned int GetListSize(const unsigned int Field);
-        unsigned int GetListArraySize(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
-        unsigned int GetFieldArraySize(const unsigned int Field);
-        void GetFieldArray(const unsigned int Field, void **FieldValues);
-        void GetListArray(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, void **FieldValues);
-        void * GetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
-        void SetField(const unsigned int Field, char *FieldValue);
-        void SetField(const unsigned int Field, float FieldValue);
-        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetField(const unsigned int Field, unsigned char FieldValue);
-        void SetOtherField(const unsigned int Field, unsigned int FieldValue);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, float FieldValue);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue);
+        signed long CreateListElement(const unsigned long subField);
+        signed long DeleteListElement(const unsigned long subField);
+        signed long GetOtherFieldType(const unsigned long Field);
+        void * GetOtherField(const unsigned long Field);
+        signed long GetListFieldType(const unsigned long subField, const unsigned long listField);
+        unsigned long GetListSize(const unsigned long Field);
+        unsigned long GetListArraySize(const unsigned long subField, const unsigned long listIndex, const unsigned long listField);
+        unsigned long GetFieldArraySize(const unsigned long Field);
+        void GetFieldArray(const unsigned long Field, void **FieldValues);
+        void GetListArray(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, void **FieldValues);
+        void * GetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField);
+        void SetField(const unsigned long Field, char *FieldValue);
+        void SetField(const unsigned long Field, float FieldValue);
+        void SetField(const unsigned long Field, unsigned char *FieldValue, unsigned long nSize);
+        void SetField(const unsigned long Field, unsigned char FieldValue);
+        void SetOtherField(const unsigned long Field, unsigned long FieldValue);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, unsigned char FieldValue);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, unsigned char *FieldValue, unsigned long nSize);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, float FieldValue);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, unsigned long FieldValue);
 
-        int DeleteField(const unsigned int Field);
-        int DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
+        signed long DeleteField(const unsigned long Field);
+        signed long DeleteListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField);
 
-        int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize(bool forceCalc=false);
-        unsigned int GetType() {return eIDLE;}
-        char * GetStrType() {return "IDLE";}
-        int WriteRecord(_FileHandler &SaveHandler);
+        signed long ParseRecord(unsigned char *buffer, const unsigned long &recSize);
+        unsigned long GetSize(bool forceCalc=false);
+        unsigned long GetType() {return eIDLE;}
+        char *GetStrType() {return "IDLE";}
+        signed long WriteRecord(_FileHandler &SaveHandler);
         bool IsLowerBody()
             {
             return ((ANAM.value.group & 0x0F) == eLowerBody);

@@ -44,11 +44,11 @@ class APPARecord : public Record
         struct APPADATA
             {
             unsigned char apparatus;
-            unsigned int value;
+            unsigned long value;
             float weight, quality;
             APPADATA():apparatus(0), value(25), weight(1.0f), quality(10.0f) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -86,10 +86,10 @@ class APPARecord : public Record
             eCalcinator   = 2,
             eRetort       = 3
             };
-        STRING EDID;
-        STRING FULL;
+        StringRecord EDID;
+        StringRecord FULL;
         OptSubRecord<GENMODEL> MODL;
-        STRING ICON;
+        StringRecord ICON;
         OptSubRecord<GENFID> SCRI;
         ReqSubRecord<APPADATA> DATA;
 
@@ -128,36 +128,38 @@ class APPARecord : public Record
             DATA.Unload();
             }
 
-        void VisitFormIDs(FormIDOp &op)
+        bool VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
-                return;
+                return false;
 
             if(SCRI.IsLoaded())
                 op.Accept(SCRI->fid);
+
+            return op.Stop();
             }
 
         #ifdef _DEBUG
-        void Debug(int debugLevel);
+        void Debug(signed long debugLevel);
         #endif
 
-        int GetOtherFieldType(const unsigned int Field);
-        void * GetOtherField(const unsigned int Field);
-        unsigned int GetFieldArraySize(const unsigned int Field);
-        void GetFieldArray(const unsigned int Field, void **FieldValues);
-        void SetField(const unsigned int Field, char *FieldValue);
-        void SetField(const unsigned int Field, float FieldValue);
-        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetOtherField(const unsigned int Field, unsigned int FieldValue);
-        void SetField(const unsigned int Field, unsigned char FieldValue);
+        signed long GetOtherFieldType(const unsigned long Field);
+        void * GetOtherField(const unsigned long Field);
+        unsigned long GetFieldArraySize(const unsigned long Field);
+        void GetFieldArray(const unsigned long Field, void **FieldValues);
+        void SetField(const unsigned long Field, char *FieldValue);
+        void SetField(const unsigned long Field, float FieldValue);
+        void SetField(const unsigned long Field, unsigned char *FieldValue, unsigned long nSize);
+        void SetOtherField(const unsigned long Field, unsigned long FieldValue);
+        void SetField(const unsigned long Field, unsigned char FieldValue);
 
-        int DeleteField(const unsigned int Field);
+        signed long DeleteField(const unsigned long Field);
 
-        int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize(bool forceCalc=false);
-        unsigned int GetType() {return eAPPA;}
-        char * GetStrType() {return "APPA";}
-        int WriteRecord(_FileHandler &SaveHandler);
+        signed long ParseRecord(unsigned char *buffer, const unsigned long &recSize);
+        unsigned long GetSize(bool forceCalc=false);
+        unsigned long GetType() {return eAPPA;}
+        char *GetStrType() {return "APPA";}
+        signed long WriteRecord(_FileHandler &SaveHandler);
         bool IsMortarPestle()
             {
             return (DATA.value.apparatus == eMortarPestle);

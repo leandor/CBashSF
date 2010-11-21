@@ -43,7 +43,7 @@ class FACTRecord : public Record
             float crimeGoldMultiplier;
             FACTCNAM():crimeGoldMultiplier(1.0f) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -66,11 +66,11 @@ class FACTRecord : public Record
 
         struct FACTRNAM
             {
-            int RNAM;
-            STRING MNAM, FNAM, INAM;
+            signed long RNAM;
+            StringRecord MNAM, FNAM, INAM;
             FACTRNAM():RNAM(0) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -103,8 +103,8 @@ class FACTRecord : public Record
             fIsEvil          = 0x00000002,
             fIsSpecialCombat = 0x00000004
             };
-        STRING EDID;
-        STRING FULL;
+        StringRecord EDID;
+        StringRecord FULL;
         std::vector<ReqSubRecord<GENXNAM> *> XNAM;
         ReqSubRecord<GENFLAG> DATA;
         ReqSubRecord<FACTCNAM> CNAM;
@@ -124,7 +124,7 @@ class FACTRecord : public Record
 
             XNAM.clear();
             XNAM.resize(srcRecord->XNAM.size());
-            for(unsigned int x = 0; x < srcRecord->XNAM.size(); x++)
+            for(unsigned long x = 0; x < srcRecord->XNAM.size(); x++)
                 {
                 XNAM[x] = new ReqSubRecord<GENXNAM>;
                 *XNAM[x] = *srcRecord->XNAM[x];
@@ -135,7 +135,7 @@ class FACTRecord : public Record
 
             RNAM.clear();
             RNAM.resize(srcRecord->RNAM.size());
-            for(unsigned int x = 0; x < srcRecord->RNAM.size(); x++)
+            for(unsigned long x = 0; x < srcRecord->RNAM.size(); x++)
                 {
                 RNAM[x] = new ReqSubRecord<FACTRNAM>;
                 *RNAM[x] = *srcRecord->RNAM[x];
@@ -143,9 +143,9 @@ class FACTRecord : public Record
             }
         ~FACTRecord()
             {
-            for(unsigned int x = 0; x < XNAM.size(); x++)
+            for(unsigned long x = 0; x < XNAM.size(); x++)
                 delete XNAM[x];
-            for(unsigned int x = 0; x < RNAM.size(); x++)
+            for(unsigned long x = 0; x < RNAM.size(); x++)
                 delete RNAM[x];
             }
         void Unload()
@@ -154,53 +154,55 @@ class FACTRecord : public Record
             EDID.Unload();
             FULL.Unload();
 
-            for(unsigned int x = 0; x < XNAM.size(); x++)
+            for(unsigned long x = 0; x < XNAM.size(); x++)
                 delete XNAM[x];
             XNAM.clear();
 
             DATA.Unload();
             CNAM.Unload();
 
-            for(unsigned int x = 0; x < RNAM.size(); x++)
+            for(unsigned long x = 0; x < RNAM.size(); x++)
                 delete RNAM[x];
             RNAM.clear();
             }
 
-        void VisitFormIDs(FormIDOp &op)
+        bool VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
-                return;
+                return false;
 
-            for(unsigned int x = 0; x < XNAM.size(); x++)
+            for(unsigned long x = 0; x < XNAM.size(); x++)
                 op.Accept(XNAM[x]->value.faction);
+
+            return op.Stop();
             }
 
         #ifdef _DEBUG
-        void Debug(int debugLevel);
+        void Debug(signed long debugLevel);
         #endif
 
-        int CreateListElement(const unsigned int subField);
-        int DeleteListElement(const unsigned int subField);
-        int GetOtherFieldType(const unsigned int Field);
-        void * GetOtherField(const unsigned int Field);
-        int GetListFieldType(const unsigned int subField, const unsigned int listField);
-        unsigned int GetListSize(const unsigned int Field);
-        void * GetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
-        void SetField(const unsigned int Field, char *FieldValue);
-        void SetField(const unsigned int Field, unsigned char FieldValue);
-        void SetField(const unsigned int Field, float FieldValue);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, int FieldValue);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, char *FieldValue);
+        signed long CreateListElement(const unsigned long subField);
+        signed long DeleteListElement(const unsigned long subField);
+        signed long GetOtherFieldType(const unsigned long Field);
+        void * GetOtherField(const unsigned long Field);
+        signed long GetListFieldType(const unsigned long subField, const unsigned long listField);
+        unsigned long GetListSize(const unsigned long Field);
+        void * GetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField);
+        void SetField(const unsigned long Field, char *FieldValue);
+        void SetField(const unsigned long Field, unsigned char FieldValue);
+        void SetField(const unsigned long Field, float FieldValue);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, signed long FieldValue);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, unsigned long FieldValue);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, char *FieldValue);
 
-        int DeleteField(const unsigned int Field);
-        int DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
+        signed long DeleteField(const unsigned long Field);
+        signed long DeleteListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField);
 
-        int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize(bool forceCalc=false);
-        unsigned int GetType() {return eFACT;}
-        char * GetStrType() {return "FACT";}
-        int WriteRecord(_FileHandler &SaveHandler);
+        signed long ParseRecord(unsigned char *buffer, const unsigned long &recSize);
+        unsigned long GetSize(bool forceCalc=false);
+        unsigned long GetType() {return eFACT;}
+        char *GetStrType() {return "FACT";}
+        signed long WriteRecord(_FileHandler &SaveHandler);
 
         bool IsHiddenFromPC()
             {

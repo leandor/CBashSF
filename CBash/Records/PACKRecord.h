@@ -38,14 +38,14 @@ class PACKRecord : public Record
             };
         struct PACKPKDT
             {
-            unsigned int flags;
+            unsigned long flags;
             unsigned char aiType, unused1[3];
             PACKPKDT():flags(0), aiType(0)
                 {
                 memset(&unused1, 0x00, 3);
                 }
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -81,12 +81,12 @@ class PACKRecord : public Record
             };
         struct PACKPLDT
             {
-            int locType;
-            unsigned int locId;
-            int locRadius;
+            signed long locType;
+            unsigned long locId;
+            signed long locRadius;
             PACKPLDT():locType(0), locId(0), locRadius(0) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -123,10 +123,10 @@ class PACKRecord : public Record
             char month, day;
             unsigned char date;
             char time;
-            int duration;
+            signed long duration;
             PACKPSDT():month(0), day(0), date(0), time(0), duration(0) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -160,12 +160,12 @@ class PACKRecord : public Record
             };
         struct PACKPTDT
             {
-            int targetType;
-            unsigned int targetId;
-            int targetCount;
+            signed long targetType;
+            unsigned long targetId;
+            signed long targetCount;
             PACKPTDT():targetType(0), targetId(0), targetCount(0) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -252,7 +252,7 @@ class PACKRecord : public Record
             eTargetObjectID    = 1,
             eTargetObjectType  = 2
             };
-        STRING EDID;
+        StringRecord EDID;
         ReqSubRecord<PACKPKDT> PKDT;
         OptSubRecord<PACKPLDT> PLDT;
         ReqSubRecord<PACKPSDT> PSDT;
@@ -275,7 +275,7 @@ class PACKRecord : public Record
             PTDT = srcRecord->PTDT;
             CTDA.clear();
             CTDA.resize(srcRecord->CTDA.size());
-            for(unsigned int x = 0; x < srcRecord->CTDA.size(); x++)
+            for(unsigned long x = 0; x < srcRecord->CTDA.size(); x++)
                 {
                 CTDA[x] = new ReqSubRecord<GENCTDA>;
                 *CTDA[x] = *srcRecord->CTDA[x];
@@ -284,7 +284,7 @@ class PACKRecord : public Record
             }
         ~PACKRecord()
             {
-            for(unsigned int x = 0; x < CTDA.size(); x++)
+            for(unsigned long x = 0; x < CTDA.size(); x++)
                 delete CTDA[x];
             }
         void Unload()
@@ -296,23 +296,23 @@ class PACKRecord : public Record
             PSDT.Unload();
             PTDT.Unload();
 
-            for(unsigned int x = 0; x < CTDA.size(); x++)
+            for(unsigned long x = 0; x < CTDA.size(); x++)
                 delete CTDA[x];
             CTDA.clear();
             }
 
-        void VisitFormIDs(FormIDOp &op)
+        bool VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
-                return;
+                return false;
 
-            std::pair<unsigned int, unsigned int> CTDAFunction;
-            std::map<unsigned int, std::pair<unsigned int,unsigned int>>::const_iterator curCTDAFunction;
+            std::pair<unsigned long, unsigned long> CTDAFunction;
+            std::map<unsigned long, std::pair<unsigned long,unsigned long>>::const_iterator curCTDAFunction;
             if(PLDT.IsLoaded() && PLDT->locType != 5)
                 op.Accept(PLDT->locId);
             if(PTDT.IsLoaded() && PTDT->targetType != 2)
                 op.Accept(PTDT->targetId);
-            for(unsigned int x = 0; x < CTDA.size(); x++)
+            for(unsigned long x = 0; x < CTDA.size(); x++)
                 {
                 curCTDAFunction = Function_Arguments.find(CTDA[x]->value.ifunc);
                 if(curCTDAFunction != Function_Arguments.end())
@@ -324,42 +324,44 @@ class PACKRecord : public Record
                         op.Accept(CTDA[x]->value.param2);
                     }
                 }
+
+            return op.Stop();
             }
 
         #ifdef _DEBUG
-        void Debug(int debugLevel);
+        void Debug(signed long debugLevel);
         #endif
 
-        int CreateListElement(const unsigned int subField);
-        int DeleteListElement(const unsigned int subField);
-        int GetOtherFieldType(const unsigned int Field);
-        void * GetOtherField(const unsigned int Field);
-        unsigned int GetFieldArraySize(const unsigned int Field);
-        void GetFieldArray(const unsigned int Field, void **FieldValues);
-        int GetListFieldType(const unsigned int subField, const unsigned int listField);
-        unsigned int GetListSize(const unsigned int Field);
-        unsigned int GetListArraySize(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
-        void GetListArray(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, void **FieldValues);
-        void * GetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
-        void SetField(const unsigned int Field, char *FieldValue);
-        void SetOtherField(const unsigned int Field, unsigned int FieldValue);
-        void SetField(const unsigned int Field, unsigned char FieldValue);
-        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetField(const unsigned int Field, int FieldValue);
-        void SetField(const unsigned int Field, char FieldValue);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, float FieldValue);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue);
+        signed long CreateListElement(const unsigned long subField);
+        signed long DeleteListElement(const unsigned long subField);
+        signed long GetOtherFieldType(const unsigned long Field);
+        void * GetOtherField(const unsigned long Field);
+        unsigned long GetFieldArraySize(const unsigned long Field);
+        void GetFieldArray(const unsigned long Field, void **FieldValues);
+        signed long GetListFieldType(const unsigned long subField, const unsigned long listField);
+        unsigned long GetListSize(const unsigned long Field);
+        unsigned long GetListArraySize(const unsigned long subField, const unsigned long listIndex, const unsigned long listField);
+        void GetListArray(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, void **FieldValues);
+        void * GetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField);
+        void SetField(const unsigned long Field, char *FieldValue);
+        void SetOtherField(const unsigned long Field, unsigned long FieldValue);
+        void SetField(const unsigned long Field, unsigned char FieldValue);
+        void SetField(const unsigned long Field, unsigned char *FieldValue, unsigned long nSize);
+        void SetField(const unsigned long Field, signed long FieldValue);
+        void SetField(const unsigned long Field, char FieldValue);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, unsigned char FieldValue);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, unsigned char *FieldValue, unsigned long nSize);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, float FieldValue);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, unsigned long FieldValue);
 
-        int DeleteField(const unsigned int Field);
-        int DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
+        signed long DeleteField(const unsigned long Field);
+        signed long DeleteListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField);
 
-        int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize(bool forceCalc=false);
-        unsigned int GetType() {return ePACK;}
-        char * GetStrType() {return "PACK";}
-        int WriteRecord(_FileHandler &SaveHandler);
+        signed long ParseRecord(unsigned char *buffer, const unsigned long &recSize);
+        unsigned long GetSize(bool forceCalc=false);
+        unsigned long GetType() {return ePACK;}
+        char *GetStrType() {return "PACK";}
+        signed long WriteRecord(_FileHandler &SaveHandler);
         bool IsAIFind()
             {
             return (PKDT.value.aiType == eAIFind);
@@ -732,14 +734,14 @@ class PACKRecord : public Record
                 PKDT.value.flags &= ~fIsNoIdleAnims;
             }
 
-        bool IsFlagMask(unsigned int Mask, bool Exact=false)
+        bool IsFlagMask(unsigned long Mask, bool Exact=false)
             {
             if(Exact)
                 return (PKDT.value.flags & Mask) == Mask;
             else
                 return (PKDT.value.flags & Mask) != 0;
             }
-        void SetFlagMask(unsigned int Mask)
+        void SetFlagMask(unsigned long Mask)
             {
             PKDT.value.flags = Mask;
             }
@@ -821,12 +823,12 @@ class PACKRecord : public Record
             else if(IsLocObjectType())
                 PLDT->locType = eLocNearReference;
             }
-        bool IsLocType(int Type)
+        bool IsLocType(signed long Type)
             {
             if(!PLDT.IsLoaded()) return false;
             return (PLDT->locType == Type);
             }
-        void SetLocType(int Type)
+        void SetLocType(signed long Type)
             {
             if(!PLDT.IsLoaded()) return;
             PLDT->locType = Type;
@@ -870,12 +872,12 @@ class PACKRecord : public Record
             else if(IsTargetObjectType())
                 PTDT->targetType = eTargetReference;
             }
-        bool IsTargetType(int Type)
+        bool IsTargetType(signed long Type)
             {
             if(!PTDT.IsLoaded()) return false;
             return (PTDT->targetType == Type);
             }
-        void SetTargetType(int Type)
+        void SetTargetType(signed long Type)
             {
             if(!PTDT.IsLoaded()) return;
             PTDT->targetType = Type;

@@ -38,12 +38,12 @@ class TES4Record : public Record
         struct TES4HEDR
             {
             float version;
-            unsigned int numRecords, nextObject;
-            TES4HEDR(float nVersion, unsigned int nNumRecords, unsigned int nNextObject):
+            unsigned long numRecords, nextObject;
+            TES4HEDR(float nVersion, unsigned long nNumRecords, unsigned long nNextObject):
                 version(nVersion),numRecords(nNumRecords),nextObject(nNextObject) {}
             TES4HEDR():version(0.8f),numRecords(0),nextObject(END_HARDCODED_IDS) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, unsigned int &indentation)
+            void Debug(signed long debugLevel, unsigned long &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -71,16 +71,16 @@ class TES4Record : public Record
             };
         struct TES4DATA //Placeholder for writing. Otherwise not used.
             {
-            unsigned int unk1, unk2;
+            unsigned long unk1, unk2;
             TES4DATA():unk1(0), unk2(0) {}
             };
     public:
         ReqSubRecord<TES4HEDR> HEDR;
-        RAWBYTES OFST;
-        RAWBYTES DELE;
-        STRING CNAM;
-        STRING SNAM;
-        std::vector<STRING> MAST;
+        RawRecord OFST;
+        RawRecord DELE;
+        StringRecord CNAM;
+        StringRecord SNAM;
+        std::vector<StringRecord> MAST;
 
         TES4Record(bool newFile=false):Record(newFile) {}
         TES4Record(TES4Record *srcRecord):Record(true)
@@ -104,25 +104,25 @@ class TES4Record : public Record
         void Unload() //TES4 should never be unloaded, so do nothing
             {return;}
 
-        int GetOtherFieldType(const unsigned int Field);
-        void * GetOtherField(const unsigned int Field);
-        void SetField(const unsigned int Field, char **FieldValue, unsigned int nSize);
-        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetField(const unsigned int Field, float FieldValue);
-        void SetOtherField(const unsigned int Field, unsigned int FieldValue);
-        void SetField(const unsigned int Field, char *FieldValue);
-        unsigned int GetFieldArraySize(const unsigned int Field);
-        void GetFieldArray(const unsigned int Field, void **FieldValues);
+        signed long GetOtherFieldType(const unsigned long Field);
+        void * GetOtherField(const unsigned long Field);
+        void SetField(const unsigned long Field, char **FieldValue, unsigned long nSize);
+        void SetField(const unsigned long Field, unsigned char *FieldValue, unsigned long nSize);
+        void SetField(const unsigned long Field, float FieldValue);
+        void SetOtherField(const unsigned long Field, unsigned long FieldValue);
+        void SetField(const unsigned long Field, char *FieldValue);
+        unsigned long GetFieldArraySize(const unsigned long Field);
+        void GetFieldArray(const unsigned long Field, void **FieldValues);
 
-        int DeleteField(const unsigned int Field);
+        signed long DeleteField(const unsigned long Field);
 
-        int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize(bool forceCalc=false);
-        unsigned int GetType() {return eTES4;}
-        char * GetStrType() {return "TES4";}
-        int WriteRecord(_FileHandler &SaveHandler);
+        signed long ParseRecord(unsigned char *buffer, const unsigned long &recSize);
+        unsigned long GetSize(bool forceCalc=false);
+        unsigned long GetType() {return eTES4;}
+        char *GetStrType() {return "TES4";}
+        signed long WriteRecord(_FileHandler &SaveHandler);
         #ifdef _DEBUG
-        void Debug(int debugLevel);
+        void Debug(signed long debugLevel);
         #endif
 
         bool IsESM()

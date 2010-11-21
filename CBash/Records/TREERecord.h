@@ -42,13 +42,13 @@ class TREERecord : public Record
         struct TREECNAM
             {
             float curvature, minAngle, maxAngle, branchDim, leafDim;
-            int shadowRadius;
+            signed long shadowRadius;
             float rockSpeed, rustleSpeed;
             TREECNAM():curvature(0.0f), minAngle(0.0f), maxAngle(0.0f),
                 branchDim(0.0f), leafDim(0.0f), shadowRadius(0),
                 rockSpeed(0.0f), rustleSpeed(0.0f) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, unsigned int &indentation)
+            void Debug(signed long debugLevel, unsigned long &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -94,7 +94,7 @@ class TREERecord : public Record
             float widthBill, heightBill;
             TREEBNAM():widthBill(0.0f), heightBill(0.0f) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, unsigned int &indentation)
+            void Debug(signed long debugLevel, unsigned long &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -118,10 +118,10 @@ class TREERecord : public Record
                 }
             };
     public:
-        STRING EDID;
+        StringRecord EDID;
         OptSubRecord<GENMODEL> MODL;
-        STRING ICON;
-        std::vector<unsigned int> SNAM;
+        StringRecord ICON;
+        std::vector<unsigned long> SNAM;
         ReqSubRecord<TREECNAM> CNAM;
         ReqSubRecord<TREEBNAM> BNAM;
 
@@ -161,24 +161,24 @@ class TREERecord : public Record
             }
 
         #ifdef _DEBUG
-        void Debug(int debugLevel);
+        void Debug(signed long debugLevel);
         #endif
 
-        int GetOtherFieldType(const unsigned int Field);
-        void * GetOtherField(const unsigned int Field);
-        unsigned int GetFieldArraySize(const unsigned int Field);
-        void GetFieldArray(const unsigned int Field, void **FieldValues);
-        void SetField(const unsigned int Field, char *FieldValue);
-        void SetField(const unsigned int Field, float FieldValue);
-        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetField(const unsigned int Field, unsigned int FieldValue[], unsigned int nSize);
-        void SetField(const unsigned int Field, int FieldValue);
+        signed long GetOtherFieldType(const unsigned long Field);
+        void * GetOtherField(const unsigned long Field);
+        unsigned long GetFieldArraySize(const unsigned long Field);
+        void GetFieldArray(const unsigned long Field, void **FieldValues);
+        void SetField(const unsigned long Field, char *FieldValue);
+        void SetField(const unsigned long Field, float FieldValue);
+        void SetField(const unsigned long Field, unsigned char *FieldValue, unsigned long nSize);
+        void SetField(const unsigned long Field, unsigned long FieldValue[], unsigned long nSize);
+        void SetField(const unsigned long Field, signed long FieldValue);
 
-        int DeleteField(const unsigned int Field);
+        signed long DeleteField(const unsigned long Field);
 
-        int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize(bool forceCalc=false);
-        unsigned int GetType() {return eTREE;}
-        char * GetStrType() {return "TREE";}
-        int WriteRecord(_FileHandler &SaveHandler);
+        signed long ParseRecord(unsigned char *buffer, const unsigned long &recSize);
+        unsigned long GetSize(bool forceCalc=false);
+        unsigned long GetType() {return eTREE;}
+        char *GetStrType() {return "TREE";}
+        signed long WriteRecord(_FileHandler &SaveHandler);
     };

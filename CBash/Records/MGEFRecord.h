@@ -45,16 +45,16 @@ class MGEFRecord : public Record
             };
         struct MGEFDATA
             {
-            unsigned int flags;
+            unsigned long flags;
             float baseCost;
-            unsigned int associated;
-            int school;
-            unsigned int resistValue;
+            unsigned long associated;
+            signed long school;
+            unsigned long resistValue;
             unsigned short unk1;
             unsigned char unused1[2];
-            unsigned int light;
+            unsigned long light;
             float projectileSpeed;
-            unsigned int effectShader, enchantEffect, castingSound, boltSound, hitSound, areaSound;
+            unsigned long effectShader, enchantEffect, castingSound, boltSound, hitSound, areaSound;
             float cefEnchantment, cefBarter;
             MGEFDATA():flags(0), baseCost(0.0f), associated(0),
                 school(0), resistValue(0), unk1(0),
@@ -67,7 +67,7 @@ class MGEFRecord : public Record
                 memset(&unused1, 0x00, 2);
                 }
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -145,10 +145,10 @@ class MGEFRecord : public Record
 
         struct OBMEEDDX
             {
-            unsigned int mgefCode;
+            unsigned long mgefCode;
             OBMEEDDX():mgefCode(0) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -174,9 +174,9 @@ class MGEFRecord : public Record
             unsigned char mgefParamAInfo;
             unsigned char mgefParamBInfo;
             unsigned char reserved1[2];
-            unsigned int handlerCode;
-            unsigned int mgefFlagOverrides;
-            unsigned int mgefParamB;
+            unsigned long handlerCode;
+            unsigned long mgefFlagOverrides;
+            unsigned long mgefParamB;
             unsigned char reserved2[0x1C];
             MGEFOBME():recordVersion(0), betaVersion(0), minorVersion(0), majorVersion(0),
                        mgefParamAInfo(0), mgefParamBInfo(0), handlerCode(0), mgefFlagOverrides(0), mgefParamB(0)
@@ -185,7 +185,7 @@ class MGEFRecord : public Record
                 memset(&reserved2, 0x00, 0x1C);
                 }
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -212,7 +212,7 @@ class MGEFRecord : public Record
                         {
                         PrintIndent(indentation);
                         printf("reserved2 = ");
-                        for(unsigned int x = 0; x < 0x1C; x++)
+                        for(unsigned long x = 0; x < 0x1C; x++)
                             printf("%c", reserved2[x]);
                         pritnf("\n");
                         }
@@ -242,10 +242,10 @@ class MGEFRecord : public Record
         struct OBMEMGEF
             {
             ReqSubRecord<MGEFOBME> OBME;
-            ReqSubRecord<OBMEEDDX> EDDX; //Is switched with the normal EDID on read and write so that the EDID field is a string as expected
-            RAWBYTES DATX;
+            ReqSubRecord<OBMEEDDX> EDDX; //Is switched with the normal EDID on read and write so that the EDID field is a char *as expected
+            RawRecord DATX;
             #ifdef _DEBUG
-            void Debug(char *name, int debugLevel, size_t &indentation)
+            void Debug(char *name, signed long debugLevel, size_t &indentation)
                 {
                 if(name != NULL)
                     {
@@ -301,13 +301,13 @@ class MGEFRecord : public Record
             fIsFogType      = 0x06000000,
             fIsNoHitEffect  = 0x08000000
             };
-        STRING EDID;
-        STRING FULL;
-        STRING DESC;
-        STRING ICON;
+        StringRecord EDID;
+        StringRecord FULL;
+        StringRecord DESC;
+        StringRecord ICON;
         OptSubRecord<GENMODEL> MODL;
         ReqSubRecord<MGEFDATA> DATA;
-        std::vector<unsigned int> ESCE;
+        std::vector<unsigned long> ESCE;
         OptSubRecord<OBMEMGEF> OBME;
 
         MGEFRecord(bool newRecord=false):Record(newRecord) {}
@@ -354,10 +354,10 @@ class MGEFRecord : public Record
             OBME.Unload();
             }
 
-        void VisitFormIDs(FormIDOp &op)
+        bool VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
-                return;
+                return false;
 
             if(OBME.IsLoaded())
                 {
@@ -420,7 +420,7 @@ class MGEFRecord : public Record
                 op.Accept(DATA.value.areaSound);
                 if(DATA.value.resistValue >= 0x800)
                     op.Accept(DATA.value.resistValue);
-                for(unsigned int x = 0; x < ESCE.size(); ++x)
+                for(unsigned long x = 0; x < ESCE.size(); ++x)
                     if(ESCE[x] >= 0x80000000)
                         op.AcceptMGEF(ESCE[x]);
                 }
@@ -435,33 +435,35 @@ class MGEFRecord : public Record
                 op.Accept(DATA.value.hitSound);
                 op.Accept(DATA.value.areaSound);
                 }
+
+            return op.Stop();
             }
 
         #ifdef _DEBUG
-        void Debug(int debugLevel);
+        void Debug(signed long debugLevel);
         #endif
 
-        int GetOtherFieldType(const unsigned int Field);
-        void * GetOtherField(const unsigned int Field);
-        unsigned int GetFieldArraySize(const unsigned int Field);
-        void GetFieldArray(const unsigned int Field, void **FieldValues);
-        void SetField(const unsigned int Field, char *FieldValue);
-        void SetField(const unsigned int Field, float FieldValue);
-        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetOtherField(const unsigned int Field, unsigned int FieldValue);
-        void SetField(const unsigned int Field, int FieldValue);
-        void SetField(const unsigned int Field, unsigned short FieldValue);
-        void SetField(const unsigned int Field, unsigned int FieldValue[], unsigned int nSize);
+        signed long GetOtherFieldType(const unsigned long Field);
+        void * GetOtherField(const unsigned long Field);
+        unsigned long GetFieldArraySize(const unsigned long Field);
+        void GetFieldArray(const unsigned long Field, void **FieldValues);
+        void SetField(const unsigned long Field, char *FieldValue);
+        void SetField(const unsigned long Field, float FieldValue);
+        void SetField(const unsigned long Field, unsigned char *FieldValue, unsigned long nSize);
+        void SetOtherField(const unsigned long Field, unsigned long FieldValue);
+        void SetField(const unsigned long Field, signed long FieldValue);
+        void SetField(const unsigned long Field, unsigned short FieldValue);
+        void SetField(const unsigned long Field, unsigned long FieldValue[], unsigned long nSize);
         //OBME Fields
-        void SetField(const unsigned int Field, unsigned char FieldValue);
+        void SetField(const unsigned long Field, unsigned char FieldValue);
 
-        int DeleteField(const unsigned int Field);
+        signed long DeleteField(const unsigned long Field);
 
-        int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize(bool forceCalc=false);
-        unsigned int GetType() {return eMGEF;}
-        char * GetStrType() {return "MGEF";}
-        int WriteRecord(_FileHandler &SaveHandler);
+        signed long ParseRecord(unsigned char *buffer, const unsigned long &recSize);
+        unsigned long GetSize(bool forceCalc=false);
+        unsigned long GetType() {return eMGEF;}
+        char *GetStrType() {return "MGEF";}
+        signed long WriteRecord(_FileHandler &SaveHandler);
         bool IsHostile()
             {
             return (DATA.value.flags & fIsHostile) != 0;
@@ -653,14 +655,14 @@ class MGEFRecord : public Record
             else
                 DATA.value.flags &= ~fIsNoHitEffect;
             }
-        bool IsFlagMask(unsigned int Mask, bool Exact=false)
+        bool IsFlagMask(unsigned long Mask, bool Exact=false)
             {
             if(Exact)
                 return (DATA.value.flags & Mask) == Mask;
             else
                 return (DATA.value.flags & Mask) != 0;
             }
-        void SetFlagMask(unsigned int Mask)
+        void SetFlagMask(unsigned long Mask)
             {
             DATA.value.flags = Mask;
             }

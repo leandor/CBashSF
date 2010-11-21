@@ -55,7 +55,7 @@ class INFORecord : public Record
             unsigned char flags;
             INFODATA():dialType(0), flags(0) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -84,8 +84,8 @@ class INFORecord : public Record
 
         struct INFOTRDT
             {
-            unsigned int emotionType;
-            int emotionValue;
+            unsigned long emotionType;
+            signed long emotionValue;
             unsigned char unused1[4], responseNum, unused2[3];
             INFOTRDT():emotionType(0), emotionValue(0), responseNum(0)
                 {
@@ -93,7 +93,7 @@ class INFORecord : public Record
                 memset(&unused2, 0x00, 3);
                 }
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -132,10 +132,10 @@ class INFORecord : public Record
         struct INFOResponse
             {
             ReqSubRecord<INFOTRDT> TRDT;
-            STRING NAM1;
-            STRING NAM2;
+            StringRecord NAM1;
+            StringRecord NAM2;
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -267,19 +267,19 @@ class INFORecord : public Record
             fIsRandomEnd      = 0x00000020,
             fIsRunForRumors   = 0x00000040
             };
-        STRING EDID;
+        StringRecord EDID;
         ReqSubRecord<INFODATA> DATA;
         ReqSubRecord<GENFID> QSTI;
         OptSubRecord<GENFID> TPIC;
         SemiOptSubRecord<GENFID> PNAM;
-        std::vector<unsigned int *> NAME;
+        std::vector<unsigned long *> NAME;
         std::vector<INFOResponse *> Responses;
         std::vector<ReqSubRecord<GENCTDA> *> CTDA;
-        std::vector<unsigned int *> TCLT;
-        std::vector<unsigned int *> TCLF;
+        std::vector<unsigned long *> TCLT;
+        std::vector<unsigned long *> TCLF;
         ReqSubRecord<GENSCHR> SCHR;
-        RAWBYTES SCDA;
-        NONNULLSTRING SCTX;
+        RawRecord SCDA;
+        NonNullStringRecord SCTX;
         std::vector<ReqSubRecord<GENSCR_> *> SCR_;
 
         INFORecord(bool newRecord=false):Record(newRecord) {}
@@ -297,11 +297,11 @@ class INFORecord : public Record
             PNAM = srcRecord->PNAM;
             NAME.clear();
             NAME.resize(srcRecord->NAME.size());
-            for(unsigned int x = 0; x < srcRecord->NAME.size(); x++)
-                NAME[x] = new unsigned int(*srcRecord->NAME[x]);
+            for(unsigned long x = 0; x < srcRecord->NAME.size(); x++)
+                NAME[x] = new unsigned long(*srcRecord->NAME[x]);
             Responses.clear();
             Responses.resize(srcRecord->Responses.size());
-            for(unsigned int x = 0; x < srcRecord->Responses.size(); x++)
+            for(unsigned long x = 0; x < srcRecord->Responses.size(); x++)
                 {
                 Responses[x] = new INFOResponse;
                 Responses[x]->TRDT = srcRecord->Responses[x]->TRDT;
@@ -310,26 +310,26 @@ class INFORecord : public Record
                 }
             CTDA.clear();
             CTDA.resize(srcRecord->CTDA.size());
-            for(unsigned int x = 0; x < srcRecord->CTDA.size(); x++)
+            for(unsigned long x = 0; x < srcRecord->CTDA.size(); x++)
                 {
                 CTDA[x] = new ReqSubRecord<GENCTDA>;
                 *CTDA[x] = *srcRecord->CTDA[x];
                 }
             TCLT.clear();
             TCLT.resize(srcRecord->TCLT.size());
-            for(unsigned int x = 0; x < srcRecord->TCLT.size(); x++)
-                TCLT[x] = new unsigned int(*srcRecord->TCLT[x]);
+            for(unsigned long x = 0; x < srcRecord->TCLT.size(); x++)
+                TCLT[x] = new unsigned long(*srcRecord->TCLT[x]);
             TCLF.clear();
             TCLF.resize(srcRecord->TCLF.size());
-            for(unsigned int x = 0; x < srcRecord->TCLF.size(); x++)
-                TCLF[x] = new unsigned int(*srcRecord->TCLF[x]);
+            for(unsigned long x = 0; x < srcRecord->TCLF.size(); x++)
+                TCLF[x] = new unsigned long(*srcRecord->TCLF[x]);
             //SCHD = srcRecord->SCHD;
             SCHR = srcRecord->SCHR;
             SCDA = srcRecord->SCDA;
             SCTX = srcRecord->SCTX;
             SCR_.clear();
             SCR_.resize(srcRecord->SCR_.size());
-            for(unsigned int x = 0; x < srcRecord->SCR_.size(); x++)
+            for(unsigned long x = 0; x < srcRecord->SCR_.size(); x++)
                 {
                 SCR_[x] = new ReqSubRecord<GENSCR_>;
                 *SCR_[x] = *srcRecord->SCR_[x];
@@ -338,17 +338,17 @@ class INFORecord : public Record
             }
         ~INFORecord()
             {
-            for(unsigned int x = 0; x < NAME.size(); x++)
+            for(unsigned long x = 0; x < NAME.size(); x++)
                 delete NAME[x];
-            for(unsigned int x = 0; x < Responses.size(); x++)
+            for(unsigned long x = 0; x < Responses.size(); x++)
                 delete Responses[x];
-            for(unsigned int x = 0; x < CTDA.size(); x++)
+            for(unsigned long x = 0; x < CTDA.size(); x++)
                 delete CTDA[x];
-            for(unsigned int x = 0; x < TCLT.size(); x++)
+            for(unsigned long x = 0; x < TCLT.size(); x++)
                 delete TCLT[x];
-            for(unsigned int x = 0; x < TCLF.size(); x++)
+            for(unsigned long x = 0; x < TCLF.size(); x++)
                 delete TCLF[x];
-            for(unsigned int x = 0; x < SCR_.size(); x++)
+            for(unsigned long x = 0; x < SCR_.size(); x++)
                 delete SCR_[x];
             }
         void Unload()
@@ -359,23 +359,23 @@ class INFORecord : public Record
             TPIC.Unload();
             PNAM.Unload();
 
-            for(unsigned int x = 0; x < NAME.size(); x++)
+            for(unsigned long x = 0; x < NAME.size(); x++)
                 delete NAME[x];
             NAME.clear();
 
-            for(unsigned int x = 0; x < Responses.size(); x++)
+            for(unsigned long x = 0; x < Responses.size(); x++)
                 delete Responses[x];
             Responses.clear();
 
-            for(unsigned int x = 0; x < CTDA.size(); x++)
+            for(unsigned long x = 0; x < CTDA.size(); x++)
                 delete CTDA[x];
             CTDA.clear();
 
-            for(unsigned int x = 0; x < TCLT.size(); x++)
+            for(unsigned long x = 0; x < TCLT.size(); x++)
                 delete TCLT[x];
             TCLT.clear();
 
-            for(unsigned int x = 0; x < TCLF.size(); x++)
+            for(unsigned long x = 0; x < TCLF.size(); x++)
                 delete TCLF[x];
             TCLF.clear();
 
@@ -384,26 +384,26 @@ class INFORecord : public Record
             SCDA.Unload();
             SCTX.Unload();
 
-            for(unsigned int x = 0; x < SCR_.size(); x++)
+            for(unsigned long x = 0; x < SCR_.size(); x++)
                 delete SCR_[x];
             SCR_.clear();
             }
 
-        void VisitFormIDs(FormIDOp &op)
+        bool VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
-                return;
+                return false;
 
-            std::pair<unsigned int, unsigned int> CTDAFunction;
-            std::map<unsigned int, std::pair<unsigned int,unsigned int>>::const_iterator curCTDAFunction;
+            std::pair<unsigned long, unsigned long> CTDAFunction;
+            std::map<unsigned long, std::pair<unsigned long,unsigned long>>::const_iterator curCTDAFunction;
             op.Accept(QSTI.value.fid);
             if(TPIC.IsLoaded())
                 op.Accept(TPIC->fid);
             if(PNAM.IsLoaded())
                 op.Accept(PNAM->fid);
-            for(unsigned int x = 0; x < NAME.size(); x++)
+            for(unsigned long x = 0; x < NAME.size(); x++)
                 op.Accept(*NAME[x]);
-            for(unsigned int x = 0; x < CTDA.size(); x++)
+            for(unsigned long x = 0; x < CTDA.size(); x++)
                 {
                 curCTDAFunction = Function_Arguments.find(CTDA[x]->value.ifunc);
                 if(curCTDAFunction != Function_Arguments.end())
@@ -415,51 +415,54 @@ class INFORecord : public Record
                         op.Accept(CTDA[x]->value.param2);
                     }
                 }
-            for(unsigned int x = 0; x < TCLT.size(); x++)
+            for(unsigned long x = 0; x < TCLT.size(); x++)
                 op.Accept(*TCLT[x]);
-            for(unsigned int x = 0; x < TCLF.size(); x++)
+            for(unsigned long x = 0; x < TCLF.size(); x++)
                 op.Accept(*TCLF[x]);
-            for(unsigned int x = 0; x < SCR_.size(); x++)
+            for(unsigned long x = 0; x < SCR_.size(); x++)
                 if(SCR_[x]->value.isSCRO)
                     op.Accept(SCR_[x]->value.reference);
+
+            return op.Stop();
             }
 
         #ifdef _DEBUG
-        void Debug(int debugLevel);
+        void Debug(signed long debugLevel);
         #endif
 
-        int CreateListElement(const unsigned int subField);
-        int DeleteListElement(const unsigned int subField);
-        int GetOtherFieldType(const unsigned int Field);
-        void * GetOtherField(const unsigned int Field);
-        int GetListFieldType(const unsigned int subField, const unsigned int listField);
-        unsigned int GetListSize(const unsigned int Field);
-        unsigned int GetListArraySize(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
-        unsigned int GetFieldArraySize(const unsigned int Field);
-        void GetFieldArray(const unsigned int Field, void **FieldValues);
-        void GetListArray(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, void **FieldValues);
-        void * GetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
-        void SetField(const unsigned int Field, char *FieldValue);
-        void SetField(const unsigned int Field, unsigned short FieldValue);
-        void SetField(const unsigned int Field, unsigned char FieldValue);
-        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetOtherField(const unsigned int Field, unsigned int FieldValue);
-        void SetField(const unsigned int Field, unsigned int FieldValue[], unsigned int nSize);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, int FieldValue);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, char *FieldValue);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, float FieldValue);
+        signed long CreateListElement(const unsigned long subField);
+        signed long DeleteListElement(const unsigned long subField);
+        signed long GetOtherFieldType(const unsigned long Field);
+        void * GetOtherField(const unsigned long Field);
+        signed long GetListFieldType(const unsigned long subField, const unsigned long listField);
+        unsigned long GetListSize(const unsigned long Field);
+        unsigned long GetListArraySize(const unsigned long subField, const unsigned long listIndex, const unsigned long listField);
+        unsigned long GetFieldArraySize(const unsigned long Field);
+        void GetFieldArray(const unsigned long Field, void **FieldValues);
+        void GetListArray(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, void **FieldValues);
+        void * GetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField);
+        void SetField(const unsigned long Field, char *FieldValue);
+        void SetField(const unsigned long Field, unsigned short FieldValue);
+        void SetField(const unsigned long Field, unsigned char FieldValue);
+        void SetField(const unsigned long Field, unsigned char *FieldValue, unsigned long nSize);
+        void SetOtherField(const unsigned long Field, unsigned long FieldValue);
+        void SetField(const unsigned long Field, unsigned long FieldValue[], unsigned long nSize);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, unsigned long FieldValue);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, signed long FieldValue);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, unsigned char *FieldValue, unsigned long nSize);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, unsigned char FieldValue);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, char *FieldValue);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, float FieldValue);
 
-        int DeleteField(const unsigned int Field);
-        int DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
+        signed long DeleteField(const unsigned long Field);
+        signed long DeleteListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField);
 
-        int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize(bool forceCalc=false);
-        unsigned int GetType() {return eINFO;}
-        char * GetStrType() {return "INFO";}
-        int WriteRecord(_FileHandler &SaveHandler);
+        signed long ParseRecord(unsigned char *buffer, const unsigned long &recSize);
+        unsigned long GetSize(bool forceCalc=false);
+        unsigned long GetType() {return eINFO;}
+        char *GetStrType() {return "INFO";}
+        unsigned long GetParentType() {return eDIAL;}
+        signed long WriteRecord(_FileHandler &SaveHandler);
 
         bool IsTopic()
             {
@@ -538,11 +541,11 @@ class INFORecord : public Record
             else if(IsMisc())
                 DATA.value.dialType = eTopic;
             }
-        bool IsDialogType(unsigned int Type)
+        bool IsDialogType(unsigned short Type)
             {
             return (DATA.value.dialType == Type);
             }
-        void SetDialogType(unsigned int Type)
+        void SetDialogType(unsigned short Type)
             {
             DATA.value.dialType = Type;
             }

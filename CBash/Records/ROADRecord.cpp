@@ -22,14 +22,14 @@ GPL License and Copyright Notice ============================================
 #include "..\Common.h"
 #include "ROADRecord.h"
 
-int ROADRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
+signed long ROADRecord::ParseRecord(unsigned char *buffer, const unsigned long &recSize)
     {
     if(IsLoaded())
         return -1;
     IsLoaded(true);
-    unsigned int subType = 0;
-    unsigned int subSize = 0;
-    unsigned int curPos = 0;
+    unsigned long subType = 0;
+    unsigned long subSize = 0;
+    unsigned long curPos = 0;
     while(curPos < recSize){
         _readBuffer(&subType,buffer,4,curPos);
         switch(subType)
@@ -87,33 +87,33 @@ int ROADRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
     return 0;
     }
 
-unsigned int ROADRecord::GetSize(bool forceCalc)
+unsigned long ROADRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && recData != NULL)
-        return *(unsigned int*)&recData[-16];
-    unsigned int cSize = 0;
-    unsigned int TotSize = 0;
+        return *(unsigned long*)&recData[-16];
+    unsigned long cSize = 0;
+    unsigned long TotSize = 0;
     if(PGRP.size())
         {
-        cSize = (sizeof(GENPGRP) * (unsigned int)PGRP.size());
+        cSize = (sizeof(GENPGRP) * (unsigned long)PGRP.size());
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
         }
     if(PGRR.size())
         {
-        cSize = (sizeof(ROADPGRR) * (unsigned int)PGRR.size());
+        cSize = (sizeof(ROADPGRR) * (unsigned long)PGRR.size());
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
         }
     return TotSize;
     }
 
-int ROADRecord::WriteRecord(_FileHandler &SaveHandler)
+signed long ROADRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(PGRP.size())
-        SaveHandler.writeSubRecord(ePGRP, &PGRP[0], sizeof(GENPGRP) * (unsigned int)PGRP.size());
+        SaveHandler.writeSubRecord(ePGRP, &PGRP[0], sizeof(GENPGRP) * (unsigned long)PGRP.size());
     if(PGRR.size())
-        SaveHandler.writeSubRecord(ePGRR, &PGRR[0], sizeof(ROADPGRR) * (unsigned int)PGRR.size());
+        SaveHandler.writeSubRecord(ePGRR, &PGRR[0], sizeof(ROADPGRR) * (unsigned long)PGRR.size());
     return -1;
     }
 
@@ -122,7 +122,7 @@ void ROADRecord::Debug(int debugLevel)
     {
     if(!IsLoaded())
         return;
-    unsigned int indentation = 4;
+    unsigned long indentation = 4;
     printf("  ROAD\n");
     if(Header.IsLoaded())
         Header.Debug(debugLevel, indentation);
@@ -132,7 +132,7 @@ void ROADRecord::Debug(int debugLevel)
         PrintIndent(indentation);
         printf("PGRP:\n");
         indentation += 2;
-        for(unsigned int p = 0;p < PGRP.size();p++)
+        for(unsigned long p = 0;p < PGRP.size();p++)
             {
             PrintIndent(indentation);
             PGRP[p].Debug(debugLevel, indentation);
@@ -145,7 +145,7 @@ void ROADRecord::Debug(int debugLevel)
         PrintIndent(indentation);
         printf("PGRR:\n");
         indentation += 2;
-        for(unsigned int p = 0;p < PGRR.size();p++)
+        for(unsigned long p = 0;p < PGRR.size();p++)
             {
             PrintIndent(indentation);
             PGRR[p].Debug(debugLevel, indentation);

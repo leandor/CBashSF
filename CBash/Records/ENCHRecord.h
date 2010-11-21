@@ -45,14 +45,14 @@ class ENCHRecord : public Record
             };
         struct ENCHENIT
             {
-            unsigned int itemType, chargeAmount, enchantCost;
+            unsigned long itemType, chargeAmount, enchantCost;
             unsigned char flags, unused1[3];
             ENCHENIT():itemType(0), chargeAmount(0), enchantCost(0), flags(0)
                 {
                 memset(&unused1, 0x00, 3);
                 }
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -101,8 +101,8 @@ class ENCHRecord : public Record
             eWeapon  = 2,
             eApparel = 3
             };
-        STRING EDID;
-        STRING FULL;
+        StringRecord EDID;
+        StringRecord FULL;
         ReqSubRecord<ENCHENIT> ENIT;
         std::vector<GENEffect *> Effects;
         OptSubRecord<OBMEMAGIC> OBME;
@@ -121,7 +121,7 @@ class ENCHRecord : public Record
             ENIT = srcRecord->ENIT;
             Effects.clear();
             Effects.resize(srcRecord->Effects.size());
-            for(unsigned int x = 0; x < srcRecord->Effects.size(); x++)
+            for(unsigned long x = 0; x < srcRecord->Effects.size(); x++)
                 {
                 Effects[x] = new GENEffect;
                 Effects[x]->EFID = srcRecord->Effects[x]->EFID;
@@ -146,7 +146,7 @@ class ENCHRecord : public Record
             }
         ~ENCHRecord()
             {
-            for(unsigned int x = 0; x < Effects.size(); x++)
+            for(unsigned long x = 0; x < Effects.size(); x++)
                 delete Effects[x];
             }
         void Unload()
@@ -155,18 +155,18 @@ class ENCHRecord : public Record
             EDID.Unload();
             FULL.Unload();
             ENIT.Unload();
-            for(unsigned int x = 0; x < Effects.size(); x++)
+            for(unsigned long x = 0; x < Effects.size(); x++)
                 delete Effects[x];
             Effects.clear();
             OBME.Unload();
             }
 
-        void VisitFormIDs(FormIDOp &op)
+        bool VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
-                return;
+                return false;
 
-            for(unsigned int x = 0; x < Effects.size(); x++)
+            for(unsigned long x = 0; x < Effects.size(); x++)
                 {
                 if(Effects[x]->OBME.IsLoaded())
                     {
@@ -231,41 +231,43 @@ class ENCHRecord : public Record
                         op.Accept(Effects[x]->SCIT->script);
                     }
                 }
+
+            return op.Stop();
             }
 
         #ifdef _DEBUG
-        void Debug(int debugLevel);
+        void Debug(signed long debugLevel);
         #endif
 
-        int CreateListElement(const unsigned int subField);
-        int DeleteListElement(const unsigned int subField);
-        int GetOtherFieldType(const unsigned int Field);
-        void * GetOtherField(const unsigned int Field);
-        unsigned int GetFieldArraySize(const unsigned int Field);
-        void GetFieldArray(const unsigned int Field, void **FieldValues);
-        int GetListFieldType(const unsigned int subField, const unsigned int listField);
-        unsigned int GetListSize(const unsigned int Field);
-        unsigned int GetListArraySize(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
-        void GetListArray(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, void **FieldValues);
-        void * GetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
-        void SetField(const unsigned int Field, char *FieldValue);
-        void SetOtherField(const unsigned int Field, unsigned int FieldValue);
-        void SetField(const unsigned int Field, unsigned char FieldValue);
-        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, float FieldValue);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, char *FieldValue);
+        signed long CreateListElement(const unsigned long subField);
+        signed long DeleteListElement(const unsigned long subField);
+        signed long GetOtherFieldType(const unsigned long Field);
+        void * GetOtherField(const unsigned long Field);
+        unsigned long GetFieldArraySize(const unsigned long Field);
+        void GetFieldArray(const unsigned long Field, void **FieldValues);
+        signed long GetListFieldType(const unsigned long subField, const unsigned long listField);
+        unsigned long GetListSize(const unsigned long Field);
+        unsigned long GetListArraySize(const unsigned long subField, const unsigned long listIndex, const unsigned long listField);
+        void GetListArray(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, void **FieldValues);
+        void * GetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField);
+        void SetField(const unsigned long Field, char *FieldValue);
+        void SetOtherField(const unsigned long Field, unsigned long FieldValue);
+        void SetField(const unsigned long Field, unsigned char FieldValue);
+        void SetField(const unsigned long Field, unsigned char *FieldValue, unsigned long nSize);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, unsigned long FieldValue);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, float FieldValue);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, unsigned char FieldValue);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, unsigned char *FieldValue, unsigned long nSize);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, char *FieldValue);
 
-        int DeleteField(const unsigned int Field);
-        int DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
+        signed long DeleteField(const unsigned long Field);
+        signed long DeleteListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField);
 
-        int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize(bool forceCalc=false);
-        unsigned int GetType() {return eENCH;}
-        char * GetStrType() {return "ENCH";}
-        int WriteRecord(_FileHandler &SaveHandler);
+        signed long ParseRecord(unsigned char *buffer, const unsigned long &recSize);
+        unsigned long GetSize(bool forceCalc=false);
+        unsigned long GetType() {return eENCH;}
+        char *GetStrType() {return "ENCH";}
+        signed long WriteRecord(_FileHandler &SaveHandler);
         bool IsNoAutoCalc()
             {
             return (ENIT.value.flags & fIsNoAutoCalc) != 0;
@@ -332,11 +334,11 @@ class ENCHRecord : public Record
             else
                 ENIT.value.itemType = eScroll;
             }
-        bool IsType(unsigned int Type)
+        bool IsType(unsigned long Type)
             {
             return (ENIT.value.itemType == Type);
             }
-        void SetType(unsigned int Type)
+        void SetType(unsigned long Type)
             {
             ENIT.value.itemType = Type;
             }

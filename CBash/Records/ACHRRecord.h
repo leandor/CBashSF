@@ -44,14 +44,14 @@ class ACHRRecord : public Record
             {
             fIsOppositeParent = 0x00000001
             };
-        STRING EDID;
+        StringRecord EDID;
         ReqSubRecord<GENFID> NAME;
         OptSubRecord<GENXPCI> XPCI;
         OptSubRecord<GENXLOD> XLOD;
         OptSubRecord<GENXESP> XESP;
         OptSubRecord<GENFID> XMRC;
         SubRecord<GENFID> XHRS;
-        RAWBYTES XRGD;
+        RawRecord XRGD;
         OptSubRecord<GENXSCL> XSCL;
         ReqSubRecord<GENPOSDATA> DATA;
 
@@ -97,10 +97,10 @@ class ACHRRecord : public Record
             DATA.Unload();
             }
 
-        void VisitFormIDs(FormIDOp &op)
+        bool VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
-                return;
+                return false;
 
             op.Accept(NAME.value.fid);
             if(XPCI.IsLoaded() && XPCI->XPCI.IsLoaded())
@@ -110,29 +110,33 @@ class ACHRRecord : public Record
             if(XMRC.IsLoaded())
                 op.Accept(XMRC->fid);
             op.Accept(XHRS.value.fid);
+
+            return op.Stop();
             }
 
         #ifdef _DEBUG
-        void Debug(int debugLevel);
+        void Debug(signed long debugLevel);
         #endif
 
-        int GetOtherFieldType(const unsigned int Field);
-        void * GetOtherField(const unsigned int Field);
-        unsigned int GetFieldArraySize(const unsigned int Field);
-        void GetFieldArray(const unsigned int Field, void **FieldValues);
-        void SetField(const unsigned int Field, char *FieldValue);
-        void SetOtherField(const unsigned int Field, unsigned int FieldValue);
-        void SetField(const unsigned int Field, float FieldValue);
-        void SetField(const unsigned int Field, unsigned char FieldValue);
-        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
+        signed long GetOtherFieldType(const unsigned long Field);
+        void * GetOtherField(const unsigned long Field);
+        unsigned long GetFieldArraySize(const unsigned long Field);
+        void GetFieldArray(const unsigned long Field, void **FieldValues);
+        void SetField(const unsigned long Field, char *FieldValue);
+        void SetOtherField(const unsigned long Field, unsigned long FieldValue);
+        void SetField(const unsigned long Field, float FieldValue);
+        void SetField(const unsigned long Field, unsigned char FieldValue);
+        void SetField(const unsigned long Field, unsigned char *FieldValue, unsigned long nSize);
 
-        int DeleteField(const unsigned int Field);
+        signed long DeleteField(const unsigned long Field);
 
-        int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize(bool forceCalc=false);
-        unsigned int GetType() {return eACHR;}
-        char * GetStrType() {return "ACHR";}
-        int WriteRecord(_FileHandler &SaveHandler);
+        signed long ParseRecord(unsigned char *buffer, const unsigned long &recSize);
+        unsigned long GetSize(bool forceCalc=false);
+        unsigned long GetType() {return eACHR;}
+        char *GetStrType() {return "ACHR";}
+        unsigned long GetParentType() {return eCELL;}
+        signed long WriteRecord(_FileHandler &SaveHandler);
+
         bool IsOppositeParent()
             {
             if(!XESP.IsLoaded()) return false;

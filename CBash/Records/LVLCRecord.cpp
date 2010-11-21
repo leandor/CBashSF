@@ -23,14 +23,14 @@ GPL License and Copyright Notice ============================================
 #include "LVLCRecord.h"
 #include <vector>
 
-int LVLCRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
+signed long LVLCRecord::ParseRecord(unsigned char *buffer, const unsigned long &recSize)
     {
     if(IsLoaded())
         return -1;
     IsLoaded(true);
-    unsigned int subType = 0;
-    unsigned int subSize = 0;
-    unsigned int curPos = 0;
+    unsigned long subType = 0;
+    unsigned long subSize = 0;
+    unsigned long curPos = 0;
     ReqSubRecord<LVLLVLO> *newEntry = NULL;
     while(curPos < recSize){
         _readBuffer(&subType,buffer,4,curPos);
@@ -87,12 +87,12 @@ int LVLCRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
     return 0;
     }
 
-unsigned int LVLCRecord::GetSize(bool forceCalc)
+unsigned long LVLCRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && recData != NULL)
-        return *(unsigned int*)&recData[-16];
-    unsigned int cSize = 0;
-    unsigned int TotSize = 0;
+        return *(unsigned long*)&recData[-16];
+    unsigned long cSize = 0;
+    unsigned long TotSize = 0;
     if(EDID.IsLoaded())
         {
         cSize = EDID.GetSize();
@@ -108,13 +108,13 @@ unsigned int LVLCRecord::GetSize(bool forceCalc)
     if(TNAM.IsLoaded())
         TotSize += TNAM.GetSize() + 6;
     if(Entries.size())
-        for(unsigned int p = 0; p < Entries.size(); p++)
+        for(unsigned long p = 0; p < Entries.size(); p++)
             if(Entries[p]->IsLoaded())
                 TotSize += Entries[p]->GetSize() + 6;
     return TotSize;
     }
 
-int LVLCRecord::WriteRecord(_FileHandler &SaveHandler)
+signed long LVLCRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
@@ -127,7 +127,7 @@ int LVLCRecord::WriteRecord(_FileHandler &SaveHandler)
     if(TNAM.IsLoaded())
         SaveHandler.writeSubRecord(eTNAM, TNAM.value, TNAM.GetSize());
     if(Entries.size())
-        for(unsigned int p = 0; p < Entries.size(); p++)
+        for(unsigned long p = 0; p < Entries.size(); p++)
             if(Entries[p]->IsLoaded())
                 SaveHandler.writeSubRecord(eLVLO, &Entries[p]->value, Entries[p]->GetSize());
     return -1;
@@ -138,7 +138,7 @@ void LVLCRecord::Debug(int debugLevel)
     {
     if(!IsLoaded())
         return;
-    unsigned int indentation = 4;
+    unsigned long indentation = 4;
     if(Header.Header.type == eLVLC)
         printf("  LVLC\n");
     else if(Header.Header.type == eLVLI)
@@ -163,7 +163,7 @@ void LVLCRecord::Debug(int debugLevel)
         PrintIndent(indentation);
         printf("Entries:\n");
         indentation += 2;
-        for(unsigned int p = 0;p < Entries.size();p++)
+        for(unsigned long p = 0;p < Entries.size();p++)
             {
             PrintIndent(indentation);
             printf("Index: %u\n", p);

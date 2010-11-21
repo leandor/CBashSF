@@ -37,9 +37,9 @@ class EYESRecord : public Record
             {
             fIsPlayable   = 0x00000001
             };
-        STRING EDID;
-        STRING FULL;
-        STRING ICON;
+        StringRecord EDID;
+        StringRecord FULL;
+        StringRecord ICON;
         ReqSubRecord<GENFLAG> DATA;
 
         EYESRecord(bool newRecord=false):Record(newRecord) {}
@@ -67,21 +67,21 @@ class EYESRecord : public Record
             }
 
         #ifdef _DEBUG
-        void Debug(int debugLevel);
+        void Debug(signed long debugLevel);
         #endif
 
-        int GetOtherFieldType(const unsigned int Field);
-        void * GetOtherField(const unsigned int Field);
-        void SetField(const unsigned int Field, char *FieldValue);
-        void SetField(const unsigned int Field, unsigned char FieldValue);
+        signed long GetOtherFieldType(const unsigned long Field);
+        void * GetOtherField(const unsigned long Field);
+        void SetField(const unsigned long Field, char *FieldValue);
+        void SetField(const unsigned long Field, unsigned char FieldValue);
 
-        int DeleteField(const unsigned int Field);
+        signed long DeleteField(const unsigned long Field);
 
-        int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize(bool forceCalc=false);
-        unsigned int GetType() {return eEYES;}
-        char * GetStrType() {return "EYES";}
-        int WriteRecord(_FileHandler &SaveHandler);
+        signed long ParseRecord(unsigned char *buffer, const unsigned long &recSize);
+        unsigned long GetSize(bool forceCalc=false);
+        unsigned long GetType() {return eEYES;}
+        char *GetStrType() {return "EYES";}
+        signed long WriteRecord(_FileHandler &SaveHandler);
         bool IsPlayable()
             {
             return (DATA.value.flags & fIsPlayable) != 0;

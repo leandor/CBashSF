@@ -22,14 +22,14 @@ GPL License and Copyright Notice ============================================
 #include "..\Common.h"
 #include "CONTRecord.h"
 
-int CONTRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
+signed long CONTRecord::ParseRecord(unsigned char *buffer, const unsigned long &recSize)
     {
     if(IsLoaded())
         return -1;
     IsLoaded(true);
-    unsigned int subType = 0;
-    unsigned int subSize = 0;
-    unsigned int curPos = 0;
+    unsigned long subType = 0;
+    unsigned long subSize = 0;
+    unsigned long curPos = 0;
     ReqSubRecord<GENCNTO> *newCNTO = NULL;
     while(curPos < recSize){
         _readBuffer(&subType,buffer,4,curPos);
@@ -95,12 +95,12 @@ int CONTRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
     return 0;
     }
 
-unsigned int CONTRecord::GetSize(bool forceCalc)
+unsigned long CONTRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && recData != NULL)
-        return *(unsigned int*)&recData[-16];
-    unsigned int cSize = 0;
-    unsigned int TotSize = 0;
+        return *(unsigned long*)&recData[-16];
+    unsigned long cSize = 0;
+    unsigned long TotSize = 0;
     if(EDID.IsLoaded())
         {
         cSize = EDID.GetSize();
@@ -130,7 +130,7 @@ unsigned int CONTRecord::GetSize(bool forceCalc)
     if(SCRI.IsLoaded())
         TotSize += SCRI.GetSize() + 6;
     if(CNTO.size())
-        for(unsigned int p = 0; p < CNTO.size(); p++)
+        for(unsigned long p = 0; p < CNTO.size(); p++)
             if(CNTO[p]->IsLoaded())
                 TotSize += CNTO[p]->GetSize() + 6;
     if(DATA.IsLoaded())
@@ -142,7 +142,7 @@ unsigned int CONTRecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int CONTRecord::WriteRecord(_FileHandler &SaveHandler)
+signed long CONTRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
@@ -159,7 +159,7 @@ int CONTRecord::WriteRecord(_FileHandler &SaveHandler)
     if(SCRI.IsLoaded())
         SaveHandler.writeSubRecord(eSCRI, SCRI.value, SCRI.GetSize());
     if(CNTO.size())
-        for(unsigned int p = 0; p < CNTO.size(); p++)
+        for(unsigned long p = 0; p < CNTO.size(); p++)
             if(CNTO[p]->IsLoaded())
                 SaveHandler.writeSubRecord(eCNTO, &CNTO[p]->value, sizeof(GENCNTO));
     if(DATA.IsLoaded())
@@ -176,7 +176,7 @@ void CONTRecord::Debug(int debugLevel)
     {
     if(!IsLoaded())
         return;
-    unsigned int indentation = 4;
+    unsigned long indentation = 4;
     printf("  CONT\n");
     if(Header.IsLoaded())
         Header.Debug(debugLevel, indentation);
@@ -194,7 +194,7 @@ void CONTRecord::Debug(int debugLevel)
         PrintIndent(indentation);
         printf("CNTO:\n");
         indentation += 2;
-        for(unsigned int p = 0;p < CNTO.size();p++)
+        for(unsigned long p = 0;p < CNTO.size();p++)
             {
             PrintIndent(indentation);
             printf("Index: %u\n", p);

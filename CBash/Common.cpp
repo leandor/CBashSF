@@ -43,22 +43,22 @@ bool AlmostEqual(float A, float B, int maxUlps)
     return false;
     }
 
-unsigned int _FormIDHandler::AssignToMod(unsigned int curFormID)
+unsigned long FormIDHandlerClass::AssignToMod(unsigned long curFormID)
     {
     if(curFormID == 0)
         return 0;
     return (ExpandedIndex << 24 ) | (curFormID & 0x00FFFFFF);
     }
 
-unsigned int _FormIDHandler::AssignToMod(unsigned int *curFormID)
+unsigned long FormIDHandlerClass::AssignToMod(unsigned long *curFormID)
     {
-    unsigned int newFormID = 0;
+    unsigned long newFormID = 0;
     if(*curFormID != 0)
         newFormID = (ExpandedIndex << 24 ) | (*curFormID & 0x00FFFFFF);
     return newFormID;
     }
 
-void _FormIDHandler::SetLoadOrder(std::vector<char *> &cLoadOrder)
+void FormIDHandlerClass::SetLoadOrder(std::vector<char *> &cLoadOrder)
     {
 	if(cLoadOrder.size() > 0xFF)
 		{
@@ -70,7 +70,7 @@ void _FormIDHandler::SetLoadOrder(std::vector<char *> &cLoadOrder)
     return;
     }
 
-unsigned int _FormIDHandler::NextExpandedFID()
+unsigned long FormIDHandlerClass::NextExpandedFID()
     {
     //0x00FFFFFF is the highest formID that can be used.
     if(nextObject >= 0x01000000)
@@ -78,7 +78,7 @@ unsigned int _FormIDHandler::NextExpandedFID()
     return (ExpandedIndex << 24) | ++nextObject;
     }
 
-void _FormIDHandler::UpdateFormIDLookup()
+void FormIDHandlerClass::UpdateFormIDLookup()
     {
     //Each ModFile maintains a formID resolution lookup table of valid modIndexs
     //both when expanded into a load order corrected format
@@ -88,15 +88,15 @@ void _FormIDHandler::UpdateFormIDLookup()
 
     //The Collapsed lookup table has to be updated anytime the mod's masters change.
     //It also sorts the masters based on the load order
-    unsigned int numMods = (unsigned int)LoadOrder255.size();
+    unsigned long numMods = (unsigned long)LoadOrder255.size();
     char *curMaster = NULL;
     CollapsedIndex = (unsigned char)MAST.size();
     for(unsigned char p = 0; p < 255; ++p)
         CollapseTable[p] = CollapsedIndex;
 
-    std::vector<STRING> sortedMAST;
+    std::vector<StringRecord> sortedMAST;
     sortedMAST.reserve(CollapsedIndex);
-    for(unsigned int x = 0; x < LoadOrder255.size(); ++x)
+    for(unsigned long x = 0; x < LoadOrder255.size(); ++x)
         {
         for(unsigned char y = 0; y < CollapsedIndex; ++y)
             {
@@ -114,7 +114,7 @@ void _FormIDHandler::UpdateFormIDLookup()
         {
         MAST[p] = sortedMAST[p];
         curMaster = MAST[p].value;
-        for(unsigned int y = 0; y < numMods; ++y)
+        for(unsigned long y = 0; y < numMods; ++y)
             if(_stricmp(LoadOrder255[y], curMaster) == 0)
                 {
                 CollapseTable[y] = p;
@@ -125,7 +125,7 @@ void _FormIDHandler::UpdateFormIDLookup()
     return;
     }
 
-void _FormIDHandler::CreateFormIDLookup(const unsigned int expandedIndex)
+void FormIDHandlerClass::CreateFormIDLookup(const unsigned char expandedIndex)
     {
     //Each ModFile maintains a formID resolution lookup table of valid modIndexs
     //both when expanded into a load order corrected format
@@ -138,7 +138,7 @@ void _FormIDHandler::CreateFormIDLookup(const unsigned int expandedIndex)
     //be set to the proper load order corrected value.
     //This can only be done because the load order is finalized once the mods are loaded.
 
-    unsigned int numMods = (unsigned int)LoadOrder255.size();
+    unsigned long numMods = (unsigned long)LoadOrder255.size();
     char *curMaster = NULL;
     CollapsedIndex = (unsigned char)MAST.size();
 	if(expandedIndex > 0xFF)
@@ -154,10 +154,10 @@ void _FormIDHandler::CreateFormIDLookup(const unsigned int expandedIndex)
     for(unsigned char p = 0; p < CollapsedIndex; ++p)
         {
         curMaster = MAST[p].value;
-        for(unsigned int y = 0; y < numMods; ++y)
+        for(unsigned long y = 0; y < numMods; ++y)
             if(_stricmp(LoadOrder255[y], curMaster) == 0)
                 {
-                ExpandTable[p] = y;
+                ExpandTable[p] = (unsigned char)y;
                 CollapseTable[y] = p;
                 break;
                 }
@@ -165,29 +165,29 @@ void _FormIDHandler::CreateFormIDLookup(const unsigned int expandedIndex)
     return;
     }
 
-void _FormIDHandler::AddMaster(const char *curMaster)
+void FormIDHandlerClass::AddMaster(const char *curMaster)
     {
     //Add the master to the end, and update header size
-    MAST.push_back(STRING(curMaster));
+    MAST.push_back(StringRecord(curMaster));
     bMastersChanged = true;
     //Update the formID resolution lookup table
     UpdateFormIDLookup();
     return;
     }
 
-bool _FormIDHandler::MastersChanged()
+bool FormIDHandlerClass::MastersChanged()
     {
     return bMastersChanged;
     }
 
-bool _FormIDHandler::IsNewRecord(const unsigned int *&recordFID)
+bool FormIDHandlerClass::IsNewRecord(const unsigned long *&recordFID)
     {
     //if((*recordFID >> 24) >= ExpandedIndex)
     //    printf("%02X - %08X - %02X\n", (*recordFID >> 24), *recordFID, ExpandedIndex);
     return ((*recordFID >> 24) >= ExpandedIndex);
     }
 
-bool _FormIDHandler::IsNewRecord(const unsigned int &recordFID)
+bool FormIDHandlerClass::IsNewRecord(const unsigned long &recordFID)
     {
     //if((recordFID >> 24) >= ExpandedIndex)
     //    printf("%02X - %08X - %02X\n", (recordFID >> 24), recordFID, ExpandedIndex);
@@ -222,7 +222,7 @@ int _FileHandler::open_ReadOnly(const char *FileName)
         return -1;
         }
     _Buffer = (unsigned char*)m_region->get_address();
-    _BufEnd = (unsigned int)m_region->get_size();
+    _BufEnd = (unsigned long)m_region->get_size();
     return 0;
     }
 
@@ -270,7 +270,7 @@ bool _FileHandler::eof()
     return (_BufPos >= _BufEnd);
     }
 
-unsigned long _FileHandler::set_used(long _Used)
+unsigned long _FileHandler::set_used(signed long _Used)
     {
     if(_Used == 0)
         return _BufPos;
@@ -305,7 +305,7 @@ unsigned long _FileHandler::set_used(long _Used)
     return _BufPos;
     }
 
-void _FileHandler::read(void *_DstBuf, unsigned int _MaxCharCount)
+void _FileHandler::read(void *_DstBuf, unsigned long _MaxCharCount)
     {
     if(_DstBuf == NULL || _Buffer == NULL)
         return;
@@ -320,7 +320,7 @@ unsigned char *_FileHandler::getBuffer(unsigned long _Offset)
     return NULL;
     }
 
-unsigned long _FileHandler::write(const void *_SrcBuf, unsigned int _MaxCharCount)
+unsigned long _FileHandler::write(const void *_SrcBuf, unsigned long _MaxCharCount)
     {
     if(fh == -1 || _SrcBuf == NULL || _Buffer == NULL || _MaxCharCount == 0)
         return _BufPos;
@@ -343,9 +343,9 @@ unsigned long _FileHandler::write(const void *_SrcBuf, unsigned int _MaxCharCoun
     return _BufPos;
     }
 
-void _FileHandler::writeSubRecord(unsigned int _Type, const void *_SrcBuf, unsigned int _MaxCharCount)
+void _FileHandler::writeSubRecord(unsigned long _Type, const void *_SrcBuf, unsigned long _MaxCharCount)
     {
-    unsigned int _Temp = 0;
+    unsigned long _Temp = 0;
     if(_MaxCharCount <= 65535)
         {
         write(&_Type, 4);
@@ -365,7 +365,7 @@ void _FileHandler::writeSubRecord(unsigned int _Type, const void *_SrcBuf, unsig
     return;
     }
 
-unsigned long _FileHandler::writeAt(unsigned long _Offset, const void *_SrcBuf, unsigned int _MaxCharCount)
+unsigned long _FileHandler::writeAt(unsigned long _Offset, const void *_SrcBuf, unsigned long _MaxCharCount)
     {
     if(fh == -1 || _SrcBuf == NULL || _Buffer == NULL || _MaxCharCount == 0 || _Offset > tell())
         return _Offset;
@@ -377,7 +377,7 @@ unsigned long _FileHandler::writeAt(unsigned long _Offset, const void *_SrcBuf, 
     else
         {
         //It has already been written to disk.
-        long curPos = _tell(fh);
+        signed long curPos = _tell(fh);
         _lseek(fh, _Offset, SEEK_SET);
         _write(fh, _SrcBuf, _MaxCharCount);
         _lseek(fh, curPos, SEEK_SET);
@@ -421,7 +421,7 @@ int _FileHandler::close()
     return 0;
     }
 
-void _FileHandler::reserveBuffer(unsigned int nSize)
+void _FileHandler::reserveBuffer(unsigned long nSize)
     {
     if(fh == -1 || f_map != NULL || m_region != NULL || nSize <= UnusedCache())
         return;
@@ -438,13 +438,13 @@ void _FileHandler::reserveBuffer(unsigned int nSize)
     }
 
 #ifdef _DEBUG
-void PrintIndent(const unsigned int &indentation)
+void PrintIndent(const unsigned long &indentation)
     {
-    for(unsigned int x = 0; x < indentation; x++)
+    for(unsigned long x = 0; x < indentation; x++)
         printf(" ");
     }
 
-char * PrintFormID(unsigned int formID)
+char * PrintFormID(unsigned long formID)
     {
     static char buff[9] = {'\0'};
     sprintf_s(buff, 9, "%08X", formID);
@@ -461,23 +461,23 @@ char * PrintFormID(FormID formID)
     }
 #endif
 
-CreateRecordOptions::CreateRecordOptions()
-    :SetAsOverride(false),
+CreateRecordOptions::CreateRecordOptions():
+    SetAsOverride(false),
     SetAsWorldCell(false),
     CopyWorldCellStatus(false)
     { }
 
-CreateRecordOptions::CreateRecordOptions(unsigned int nFlags)
-    :SetAsOverride((nFlags & fSetAsOverride) != 0),
+CreateRecordOptions::CreateRecordOptions(unsigned long nFlags):
+    SetAsOverride((nFlags & fSetAsOverride) != 0),
     SetAsWorldCell((nFlags & fSetAsWorldCell) != 0),
     CopyWorldCellStatus((nFlags & fCopyWorldCellStatus) != 0)
     { }
 
 CreateRecordOptions::~CreateRecordOptions() { }
 
-unsigned int CreateRecordOptions::GetFlagField()
+unsigned long CreateRecordOptions::GetFlagField()
     {
-    unsigned int flags = 0;
+    unsigned long flags = 0;
     if(SetAsOverride)
         flags |= fSetAsOverride;
     if(SetAsWorldCell)
@@ -487,8 +487,8 @@ unsigned int CreateRecordOptions::GetFlagField()
     return flags;
     }
 
-ModFlags::ModFlags()
-    :Merge(false),
+ModFlags::ModFlags():
+    Merge(false),
     Scan(false),
     CreateIfNotExist(false),
     IsDummy(false),
@@ -497,8 +497,8 @@ ModFlags::ModFlags()
     IsNew(false)
     { }
 
-ModFlags::ModFlags(unsigned int nFlags)
-    :Merge((nFlags & fMerge) != 0),
+ModFlags::ModFlags(unsigned long nFlags):
+    Merge((nFlags & fMerge) != 0),
     Scan((nFlags & fScan) != 0),
     CreateIfNotExist((nFlags & fCreateIfNotExist) != 0),
     IsDummy(false),
@@ -509,9 +509,9 @@ ModFlags::ModFlags(unsigned int nFlags)
 
 ModFlags::~ModFlags() { }
 
-unsigned int ModFlags::GetFlagField()
+unsigned long ModFlags::GetFlagField()
     {
-    unsigned int flags = 0;
+    unsigned long flags = 0;
     if(Merge)
         flags |= fMerge;
     if(Scan)
@@ -521,7 +521,7 @@ unsigned int ModFlags::GetFlagField()
     return flags;
     }
 
-typedef std::map<unsigned int, std::pair<varType,varType>>::value_type Function_ArgumentsType;
+typedef std::map<unsigned long, std::pair<varType,varType>>::value_type Function_ArgumentsType;
 
 Function_ArgumentsType Function_ArgumentsInit[] =
     {
@@ -696,7 +696,7 @@ Function_ArgumentsType Function_ArgumentsInit[] =
     Function_ArgumentsType(323,std::make_pair(eNULL,eNULL))
     };
 
-typedef std::map<unsigned int, char *>::value_type Function_NameType;
+typedef std::map<unsigned long, char *>::value_type Function_NameType;
 Function_NameType Function_NameInit[] =
     {
     Function_NameType(153,"CanHaveFlames"),
@@ -1210,12 +1210,12 @@ Function_NameType HardCodedFormID_EDIDInit[] =
     Function_NameType(0x022B,"FSTMetal")
     };
 
-const std::map<unsigned int, std::pair<unsigned int,unsigned int>> Function_Arguments(Function_ArgumentsInit, Function_ArgumentsInit + sizeof(Function_ArgumentsInit) / sizeof(Function_ArgumentsInit[0]));
+const std::map<unsigned long, std::pair<unsigned long,unsigned long>> Function_Arguments(Function_ArgumentsInit, Function_ArgumentsInit + sizeof(Function_ArgumentsInit) / sizeof(Function_ArgumentsInit[0]));
 
-const std::map<unsigned int, char *> Function_Name(Function_NameInit, Function_NameInit + sizeof(Function_NameInit) / sizeof(Function_NameInit[0]));
-const std::map<unsigned int, char *> Comparison_Name(Comparison_NameInit, Comparison_NameInit + sizeof(Comparison_NameInit) / sizeof(Comparison_NameInit[0]));
-const std::map<unsigned int, char *> IDLEGroup_Name(IDLEGroup_NameInit, IDLEGroup_NameInit + sizeof(IDLEGroup_NameInit) / sizeof(IDLEGroup_NameInit[0]));
-const std::map<unsigned int, char *> PACKAIType_Name(PACKAIType_NameInit, PACKAIType_NameInit + sizeof(PACKAIType_NameInit) / sizeof(PACKAIType_NameInit[0]));
-const std::map<unsigned int, char *> PACKLocType_Name(PACKLocType_NameInit, PACKLocType_NameInit + sizeof(PACKLocType_NameInit) / sizeof(PACKLocType_NameInit[0]));
-const std::map<unsigned int, char *> PACKTargetType_Name(PACKTargetType_NameInit, PACKTargetType_NameInit + sizeof(PACKTargetType_NameInit) / sizeof(PACKTargetType_NameInit[0]));
-const std::map<unsigned int, char *> HardCodedFormID_EDID(HardCodedFormID_EDIDInit, HardCodedFormID_EDIDInit + sizeof(HardCodedFormID_EDIDInit) / sizeof(HardCodedFormID_EDIDInit[0]));
+const std::map<unsigned long, char *> Function_Name(Function_NameInit, Function_NameInit + sizeof(Function_NameInit) / sizeof(Function_NameInit[0]));
+const std::map<unsigned long, char *> Comparison_Name(Comparison_NameInit, Comparison_NameInit + sizeof(Comparison_NameInit) / sizeof(Comparison_NameInit[0]));
+const std::map<unsigned long, char *> IDLEGroup_Name(IDLEGroup_NameInit, IDLEGroup_NameInit + sizeof(IDLEGroup_NameInit) / sizeof(IDLEGroup_NameInit[0]));
+const std::map<unsigned long, char *> PACKAIType_Name(PACKAIType_NameInit, PACKAIType_NameInit + sizeof(PACKAIType_NameInit) / sizeof(PACKAIType_NameInit[0]));
+const std::map<unsigned long, char *> PACKLocType_Name(PACKLocType_NameInit, PACKLocType_NameInit + sizeof(PACKLocType_NameInit) / sizeof(PACKLocType_NameInit[0]));
+const std::map<unsigned long, char *> PACKTargetType_Name(PACKTargetType_NameInit, PACKTargetType_NameInit + sizeof(PACKTargetType_NameInit) / sizeof(PACKTargetType_NameInit[0]));
+const std::map<unsigned long, char *> HardCodedFormID_EDID(HardCodedFormID_EDIDInit, HardCodedFormID_EDIDInit + sizeof(HardCodedFormID_EDIDInit) / sizeof(HardCodedFormID_EDIDInit[0]));

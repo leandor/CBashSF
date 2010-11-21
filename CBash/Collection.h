@@ -37,7 +37,7 @@ struct sameStr
         }
     };
 
-typedef std::multimap<unsigned int, std::pair<ModFile *, Record *> >   FID_Map;
+typedef std::multimap<unsigned long, std::pair<ModFile *, Record *> >   FID_Map;
 typedef std::multimap<char *, std::pair<ModFile *, Record *>, sameStr> EDID_Map;
 
 typedef FID_Map::iterator FID_Iterator;
@@ -45,6 +45,61 @@ typedef EDID_Map::iterator EDID_Iterator;
 
 typedef std::pair<FID_Iterator, FID_Iterator> FID_Range;
 typedef std::pair<EDID_Iterator, EDID_Iterator> EDID_Range;
+
+class RecordDeleter : public RecordOp
+    {
+    private:
+        EDID_Map &EDID_ModFile_Record;
+        FID_Map &FID_ModFile_Record;
+        Record *RecordToDelete;
+    public:
+        RecordDeleter(Record *_RecordToDelete, EDID_Map &_EDID_ModFile_Record, FID_Map &_FID_ModFile_Record):RecordOp(),
+            EDID_ModFile_Record(_EDID_ModFile_Record),
+            FID_ModFile_Record(_FID_ModFile_Record),
+            RecordToDelete(_RecordToDelete)
+            {}
+        bool Accept(Record **curRecord)
+            {
+            if(curRecord == NULL || (*curRecord) == NULL)
+                return false;
+
+            if(RecordToDelete == NULL || (*curRecord) == RecordToDelete)
+                {
+                //De-Index the record
+                if((*curRecord)->IsKeyedByEditorID())
+                    {
+                    for(EDID_Range range = EDID_ModFile_Record.equal_range((char *)(*curRecord)->GetField(5)); range.first != range.second; ++range.first)
+                        if(range.first->second.second == (*curRecord))
+                            {
+                            EDID_ModFile_Record.erase(range.first);
+                            break;
+                            }
+                    }
+                else
+                    {
+                    for(FID_Range range = FID_ModFile_Record.equal_range((*curRecord)->formID); range.first != range.second; ++range.first)
+                        if(range.first->second.second == (*curRecord))
+                            {
+                            FID_ModFile_Record.erase(range.first);
+                            break;
+                            }
+                    }
+                if((*curRecord)->HasSubRecords())
+                    {
+                    RecordDeleter SubRecordDeleter(NULL, EDID_ModFile_Record, FID_ModFile_Record);
+                    (*curRecord)->VisitSubRecords(NULL, SubRecordDeleter);
+                    }
+                //Delete the record
+                delete (*curRecord);
+                (*curRecord) = NULL;
+                ++count;
+                result = true;
+                stop = RecordToDelete != NULL;
+                return stop;
+                }
+            return false;
+            }
+    };
 
 class Collection
     {
@@ -67,7 +122,7 @@ class Collection
         ~Collection()
             {
             delete []ModsDir;
-            for(unsigned int p = 0; p < ModFiles.size(); p++)
+            for(unsigned long p = 0; p < ModFiles.size(); p++)
                 delete ModFiles[p];
             }
 
@@ -75,8 +130,8 @@ class Collection
         int AddMod(const char *ModName, ModFlags &settings);
 
         int IsEmpty(char *ModName);
-        unsigned int GetNumNewRecordTypes(char *ModName);
-        void GetNewRecordTypes(char *ModName, unsigned int const **RecordTypes);
+        unsigned long GetNumNewRecordTypes(char *ModName);
+        void GetNewRecordTypes(char *ModName, unsigned long const **RecordTypes);
 
         int CleanMasters(char *ModName);
         int SafeSaveMod(char *ModName, bool CloseMod=false);
@@ -84,24 +139,20 @@ class Collection
         void IndexRecords(ModFile *curModFile, const bool &FullLoad);
         void IndexRecords(const bool &FullLoad);
         int Load(const bool &LoadMasters, const bool &FullLoad);
-        unsigned int NextFreeExpandedFID(ModFile *curModFile, unsigned int depth = 0);
-        int RemoveIndex(Record *curRecord, char *ModName);
-        int LoadRecord(char *ModName, unsigned int recordFID);
-        int UnloadRecord(char *ModName, unsigned int recordFID);
+        unsigned long NextFreeExpandedFID(ModFile *curModFile, unsigned long depth = 0);
+        int LoadRecord(char *ModName, unsigned long recordFID);
+        int UnloadRecord(char *ModName, unsigned long recordFID);
         int UnloadModFile(char *ModName);
         int UnloadAll();
         int Close();
 
-        unsigned int CreateRecord(char *ModName, const unsigned int RecordType, const unsigned int ParentFID, unsigned int CreateFlags);
-        unsigned int CopyRecord(char *ModName, unsigned int RecordFID, char *DestModName, unsigned int DestParentFID, unsigned int CreateFlags);
-        unsigned int CreateGMSTRecord(char *ModName, char *recordEDID);
-        unsigned int CopyGMSTRecord(char *ModName, char *srcRecordEDID, char *destModName);
-        int DeleteRecord(char *ModName, unsigned int recordFID, unsigned int parentFID);
-        int DeleteCELL(CELLRecord *curCell, char *ModName);
-        int DeleteGMSTRecord(char *ModName, char *recordEDID);
+        unsigned long CreateRecord(char *ModName, const unsigned long RecordType, unsigned long RecordFID, char *RecordEditorID, const unsigned long ParentFID, unsigned long CreateFlags);
+        unsigned long CopyRecord(char *ModName, unsigned long RecordFID, char *DestModName, unsigned long DestParentFID, unsigned long CreateFlags);
+
+        int DeleteRecord(char *ModName, unsigned long RecordFID, char *RecordEditorID, unsigned long ParentFID);
 
         template <class T>
-        FID_Iterator LookupRecord(char *ModName, const unsigned int &recordFID, ModFile *&curModFile, T *&curRecord)
+        FID_Iterator LookupRecord(char *ModName, const unsigned long &recordFID, ModFile *&curModFile, T *&curRecord)
             {
             curRecord = NULL;
             curModFile = NULL;
@@ -119,83 +170,83 @@ class Collection
             curRecord = (T *)range.first->second.second;
             return range.first;
             }
-        EDID_Iterator LookupGMSTRecord(char *ModName, char *recordEDID, ModFile *&curModFile, GMSTRecord *&curRecord);
+        EDID_Iterator LookupRecordByEditorID(char *ModName, char *RecordEDID, ModFile *&curModFile, Record *&curRecord);
 
         void ResolveGrid(const float &posX, const float &posY, int &gridX, int &gridY);
 
         ModFile *LookupModFile(char *ModName);
-        unsigned int SetRecordFormID(char *ModName, unsigned int recordFID, unsigned int FieldValue);
-        unsigned int GetNumMods();
-        char * GetModName(const unsigned int iIndex);
-        unsigned int ModIsFake(const unsigned int iIndex);
-        unsigned int GetCorrectedFID(char *ModName, unsigned int recordObjectID);
-        unsigned int UpdateReferences(char *ModName, unsigned int origFormID, unsigned int newFormID);
-        unsigned int GetNumReferences(char *ModName, unsigned int recordFID, unsigned int referenceFormID);
-        unsigned int UpdateReferences(char *ModName, unsigned int recordFID, unsigned int origFormID, unsigned int newFormID);
+        unsigned long SetRecordFormID(char *ModName, unsigned long recordFID, unsigned long FieldValue);
+        unsigned long GetNumMods();
+        char * GetModName(const unsigned long iIndex);
+        unsigned long ModIsFake(const unsigned long iIndex);
+        unsigned long GetCorrectedFID(char *ModName, unsigned long recordObjectID);
+        unsigned long UpdateReferences(char *ModName, unsigned long origFormID, unsigned long newFormID);
+        unsigned long GetNumReferences(char *ModName, unsigned long recordFID, unsigned long referenceFormID);
+        unsigned long UpdateReferences(char *ModName, unsigned long recordFID, unsigned long origFormID, unsigned long newFormID);
         int GetModIndex(const char *ModName);
 
-        int IsWinning(char *ModName, unsigned int recordFID, bool ignoreScanned);
+        int IsWinning(char *ModName, unsigned long recordFID, bool ignoreScanned);
         int IsWinning(char *ModName, char *recordEDID, bool ignoreScanned);
 
-        int GetNumFIDConflicts(unsigned int recordFID, bool ignoreScanned);
-        void GetFIDConflicts(unsigned int recordFID, bool ignoreScanned, char **ModNames);
+        int GetNumFIDConflicts(unsigned long recordFID, bool ignoreScanned);
+        void GetFIDConflicts(unsigned long recordFID, bool ignoreScanned, char **ModNames);
 
         int GetNumGMSTConflicts(char *recordEDID, bool ignoreScanned);
         void GetGMSTConflicts(char *recordEDID, bool ignoreScanned, char **ModNames);
 
-        unsigned int GetNumRecords(char *ModName, const unsigned int RecordType);
-        void GetRecordFormIDs(char *ModName, const unsigned int RecordType, unsigned int **RecordFIDs);
-        void GetRecordEditorIDs(char *ModName, const unsigned int RecordType, char **RecordEditorIDs);
+        unsigned long GetNumRecords(char *ModName, const unsigned long RecordType);
+        void GetRecordFormIDs(char *ModName, const unsigned long RecordType, unsigned long **RecordFIDs);
+        void GetRecordEditorIDs(char *ModName, const unsigned long RecordType, char **RecordEditorIDs);
         void GetMods(char **ModNames);
 
         //ADD DEFINITIONS HERE
-        int GetTES4FieldType(char *ModName, const unsigned int Field);
-        int GetGMSTFieldType(char *ModName, char *recordEDID, const unsigned int Field);
-        int GetFIDFieldType(char *ModName, unsigned int recordFID, const unsigned int Field);
-        int GetFIDListFieldType(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listField);
-        int GetFIDListX2FieldType(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listField, const unsigned int listX2Field);
-        int GetFIDListX3FieldType(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listField, const unsigned int listX2Field, const unsigned int listX3Field);
+        int GetTES4FieldType(char *ModName, const unsigned long Field);
+        int GetGMSTFieldType(char *ModName, char *recordEDID, const unsigned long Field);
+        int GetFIDFieldType(char *ModName, unsigned long recordFID, const unsigned long Field);
+        int GetFIDListFieldType(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listField);
+        int GetFIDListX2FieldType(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listField, const unsigned long listX2Field);
+        int GetFIDListX3FieldType(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listField, const unsigned long listX2Field, const unsigned long listX3Field);
 
-        unsigned int GetFIDListSize(char *ModName, unsigned int recordFID, const unsigned int Field);
-        unsigned int GetFIDListX2Size(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
-        unsigned int GetFIDListX3Size(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field);
+        unsigned long GetFIDListSize(char *ModName, unsigned long recordFID, const unsigned long Field);
+        unsigned long GetFIDListX2Size(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listIndex, const unsigned long listField);
+        unsigned long GetFIDListX3Size(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listIndex, const unsigned long listField, const unsigned long listX2Index, const unsigned long listX2Field);
 
-        unsigned int GetTES4FieldArraySize(char *ModName, const unsigned int Field);
-        unsigned int GetFIDFieldArraySize(char *ModName, unsigned int recordFID, const unsigned int Field);
-        unsigned int GetFIDListArraySize(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
-        unsigned int GetFIDListX2ArraySize(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field);
-        unsigned int GetFIDListX3ArraySize(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field);
+        unsigned long GetTES4FieldArraySize(char *ModName, const unsigned long Field);
+        unsigned long GetFIDFieldArraySize(char *ModName, unsigned long recordFID, const unsigned long Field);
+        unsigned long GetFIDListArraySize(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listIndex, const unsigned long listField);
+        unsigned long GetFIDListX2ArraySize(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listIndex, const unsigned long listField, const unsigned long listX2Index, const unsigned long listX2Field);
+        unsigned long GetFIDListX3ArraySize(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listIndex, const unsigned long listField, const unsigned long listX2Index, const unsigned long listX2Field, const unsigned long listX3Index, const unsigned long listX3Field);
 
-        void GetTES4FieldArray(char *ModName, const unsigned int Field, void **FieldValues);
-        void GetFIDFieldArray(char *ModName, unsigned int recordFID, const unsigned int Field, void **FieldValues);
-        void GetFIDListArray(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, void **FieldValues);
-        void GetFIDListX2Array(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, void **FieldValues);
-        void GetFIDListX3Array(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, void **FieldValues);
+        void GetTES4FieldArray(char *ModName, const unsigned long Field, void **FieldValues);
+        void GetFIDFieldArray(char *ModName, unsigned long recordFID, const unsigned long Field, void **FieldValues);
+        void GetFIDListArray(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listIndex, const unsigned long listField, void **FieldValues);
+        void GetFIDListX2Array(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listIndex, const unsigned long listField, const unsigned long listX2Index, const unsigned long listX2Field, void **FieldValues);
+        void GetFIDListX3Array(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listIndex, const unsigned long listField, const unsigned long listX2Index, const unsigned long listX2Field, const unsigned long listX3Index, const unsigned long listX3Field, void **FieldValues);
 
-        void * ReadTES4Field(char *ModName, const unsigned int Field);
-        void * ReadGMSTField(char *ModName, char *recordEDID, const unsigned int Field);
-        void * ReadFIDField(char *ModName, unsigned int recordFID, const unsigned int Field);
-        void * ReadFIDListField(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
-        void * ReadFIDListX2Field(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field);
-        void * ReadFIDListX3Field(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field);
+        void * ReadTES4Field(char *ModName, const unsigned long Field);
+        void * ReadGMSTField(char *ModName, char *recordEDID, const unsigned long Field);
+        void * ReadFIDField(char *ModName, unsigned long recordFID, const unsigned long Field);
+        void * ReadFIDListField(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listIndex, const unsigned long listField);
+        void * ReadFIDListX2Field(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listIndex, const unsigned long listField, const unsigned long listX2Index, const unsigned long listX2Field);
+        void * ReadFIDListX3Field(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listIndex, const unsigned long listField, const unsigned long listX2Index, const unsigned long listX2Field, const unsigned long listX3Index, const unsigned long listX3Field);
 
-        int CreateFIDListElement(char *ModName, unsigned int recordFID, const unsigned int subField);
-        int CreateFIDListX2Element(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
-        int CreateFIDListX3Element(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field);
+        int CreateFIDListElement(char *ModName, unsigned long recordFID, const unsigned long subField);
+        int CreateFIDListX2Element(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listIndex, const unsigned long listField);
+        int CreateFIDListX3Element(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listIndex, const unsigned long listField, const unsigned long listX2Index, const unsigned long listX2Field);
 
-        int DeleteFIDListElement(char *ModName, unsigned int recordFID, const unsigned int subField);
-        int DeleteFIDListX2Element(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
-        int DeleteFIDListX3Element(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field);
+        int DeleteFIDListElement(char *ModName, unsigned long recordFID, const unsigned long subField);
+        int DeleteFIDListX2Element(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listIndex, const unsigned long listField);
+        int DeleteFIDListX3Element(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listIndex, const unsigned long listField, const unsigned long listX2Index, const unsigned long listX2Field);
 
-        int DeleteTES4Field(char *ModName, const unsigned int Field);
-        int DeleteGMSTField(char *ModName, char *recordEDID, const unsigned int Field);
-        int DeleteFIDField(char *ModName, unsigned int recordFID, const unsigned int Field);
-        int DeleteFIDListField(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
-        int DeleteFIDListX2Field(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field);
-        int DeleteFIDListX3Field(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field);
+        int DeleteTES4Field(char *ModName, const unsigned long Field);
+        int DeleteGMSTField(char *ModName, char *recordEDID, const unsigned long Field);
+        int DeleteFIDField(char *ModName, unsigned long recordFID, const unsigned long Field);
+        int DeleteFIDListField(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listIndex, const unsigned long listField);
+        int DeleteFIDListX2Field(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listIndex, const unsigned long listField, const unsigned long listX2Index, const unsigned long listX2Field);
+        int DeleteFIDListX3Field(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listIndex, const unsigned long listField, const unsigned long listX2Index, const unsigned long listX2Field, const unsigned long listX3Index, const unsigned long listX3Field);
 
         template<class T>
-        void SetTES4Field(char *ModName, const unsigned int Field, T FieldValue, unsigned int nSize)
+        void SetTES4Field(char *ModName, const unsigned long Field, T FieldValue, unsigned long nSize)
             {
             try
                 {
@@ -217,7 +268,7 @@ class Collection
             }
 
         template<class T>
-        void SetTES4Field(char *ModName, const unsigned int Field, T FieldValue)
+        void SetTES4Field(char *ModName, const unsigned long Field, T FieldValue)
             {
             try
                 {
@@ -239,67 +290,15 @@ class Collection
             }
 
         template<class T>
-        void SetGMSTField(char *ModName, char *recordEDID, const unsigned int Field, T FieldValue)
-            {
-            try
-                {
-                ModFile *curModFile = NULL;
-                GMSTRecord *curRecord = NULL;
-                LookupGMSTRecord(ModName, recordEDID, curModFile, curRecord);
-                if(curModFile == NULL || curRecord == NULL)
-                    return;
-                ((Record *)curRecord)->SetField(Field, FieldValue);
-                curRecord->recData = NULL;
-                FormIDMasterUpdater checker(curModFile->FormIDHandler);
-                checker.Accept(curRecord->formID);
-                curRecord->VisitFormIDs(checker);
-                return;
-                }
-            catch(...)
-                {
-                throw;
-                }
-            return;
-            }
-
-        template<class T>
-        void SetFIDField(char *ModName, unsigned int recordFID, const unsigned int Field, T FieldValue, unsigned int nSize)
+        void SetGMSTField(char *ModName, char *recordEDID, const unsigned long Field, T FieldValue)
             {
             try
                 {
                 ModFile *curModFile = NULL;
                 Record *curRecord = NULL;
-                LookupRecord(ModName, recordFID, curModFile, curRecord);
+                LookupRecordByEditorID(ModName, recordEDID, curModFile, curRecord);
                 if(curModFile == NULL || curRecord == NULL)
                     return;
-                RecordReader reader(curModFile->FormIDHandler);
-                reader.Accept(*curRecord);
-                curRecord->SetField(Field, FieldValue, nSize);
-                curRecord->recData = NULL;
-                FormIDMasterUpdater checker(curModFile->FormIDHandler);
-                checker.Accept(curRecord->formID);
-                curRecord->VisitFormIDs(checker);
-                return;
-                }
-            catch(...)
-                {
-                throw;
-                }
-            return;
-            }
-
-        template<class T>
-        void SetFIDField(char *ModName, unsigned int recordFID, const unsigned int Field, T FieldValue)
-            {
-            try
-                {
-                ModFile *curModFile = NULL;
-                Record *curRecord = NULL;
-                LookupRecord(ModName, recordFID, curModFile, curRecord);
-                if(curModFile == NULL || curRecord == NULL)
-                    return;
-                RecordReader reader(curModFile->FormIDHandler);
-                reader.Accept(*curRecord);
                 curRecord->SetField(Field, FieldValue);
                 curRecord->recData = NULL;
                 FormIDMasterUpdater checker(curModFile->FormIDHandler);
@@ -315,7 +314,7 @@ class Collection
             }
 
         template<class T>
-        void SetFIDListField(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, T FieldValue, unsigned int nSize)
+        void SetFIDField(char *ModName, unsigned long recordFID, const unsigned long Field, T FieldValue, unsigned long nSize)
             {
             try
                 {
@@ -325,7 +324,59 @@ class Collection
                 if(curModFile == NULL || curRecord == NULL)
                     return;
                 RecordReader reader(curModFile->FormIDHandler);
-                reader.Accept(*curRecord);
+                reader.Accept(&curRecord);
+                curRecord->SetField(Field, FieldValue, nSize);
+                curRecord->recData = NULL;
+                FormIDMasterUpdater checker(curModFile->FormIDHandler);
+                checker.Accept(curRecord->formID);
+                curRecord->VisitFormIDs(checker);
+                return;
+                }
+            catch(...)
+                {
+                throw;
+                }
+            return;
+            }
+
+        template<class T>
+        void SetFIDField(char *ModName, unsigned long recordFID, const unsigned long Field, T FieldValue)
+            {
+            try
+                {
+                ModFile *curModFile = NULL;
+                Record *curRecord = NULL;
+                LookupRecord(ModName, recordFID, curModFile, curRecord);
+                if(curModFile == NULL || curRecord == NULL)
+                    return;
+                RecordReader reader(curModFile->FormIDHandler);
+                reader.Accept(&curRecord);
+                curRecord->SetField(Field, FieldValue);
+                curRecord->recData = NULL;
+                FormIDMasterUpdater checker(curModFile->FormIDHandler);
+                checker.Accept(curRecord->formID);
+                curRecord->VisitFormIDs(checker);
+                return;
+                }
+            catch(...)
+                {
+                throw;
+                }
+            return;
+            }
+
+        template<class T>
+        void SetFIDListField(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listIndex, const unsigned long listField, T FieldValue, unsigned long nSize)
+            {
+            try
+                {
+                ModFile *curModFile = NULL;
+                Record *curRecord = NULL;
+                LookupRecord(ModName, recordFID, curModFile, curRecord);
+                if(curModFile == NULL || curRecord == NULL)
+                    return;
+                RecordReader reader(curModFile->FormIDHandler);
+                reader.Accept(&curRecord);
                 curRecord->SetListField(subField, listIndex, listField, FieldValue, nSize);
                 curRecord->recData = NULL;
                 FormIDMasterUpdater checker(curModFile->FormIDHandler);
@@ -341,7 +392,7 @@ class Collection
             }
 
         template<class T>
-        void SetFIDListField(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, T FieldValue)
+        void SetFIDListField(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listIndex, const unsigned long listField, T FieldValue)
             {
             try
                 {
@@ -351,7 +402,7 @@ class Collection
                 if(curModFile == NULL || curRecord == NULL)
                     return;
                 RecordReader reader(curModFile->FormIDHandler);
-                reader.Accept(*curRecord);
+                reader.Accept(&curRecord);
                 curRecord->SetListField(subField, listIndex, listField, FieldValue);
                 curRecord->recData = NULL;
                 FormIDMasterUpdater checker(curModFile->FormIDHandler);
@@ -367,7 +418,7 @@ class Collection
             }
 
         template<class T>
-        void SetFIDListX2Field(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned int listX2Index, const unsigned int listX2Field, T FieldValue, unsigned int nSize)
+        void SetFIDListX2Field(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listIndex, const unsigned long listField, const unsigned long listX2Index, const unsigned long listX2Field, T FieldValue, unsigned long nSize)
             {
             try
                 {
@@ -377,7 +428,7 @@ class Collection
                 if(curModFile == NULL || curRecord == NULL)
                     return;
                 RecordReader reader(curModFile->FormIDHandler);
-                reader.Accept(*curRecord);
+                reader.Accept(&curRecord);
                 curRecord->SetListX2Field(subField, listIndex, listField, listX2Index, listX2Field, FieldValue, nSize);
                 curRecord->recData = NULL;
                 FormIDMasterUpdater checker(curModFile->FormIDHandler);
@@ -393,7 +444,7 @@ class Collection
             }
 
         template<class T>
-        void SetFIDListX2Field(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned int listX2Index, const unsigned int listX2Field, T FieldValue)
+        void SetFIDListX2Field(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listIndex, const unsigned long listField, const unsigned long listX2Index, const unsigned long listX2Field, T FieldValue)
             {
             try
                 {
@@ -403,7 +454,7 @@ class Collection
                 if(curModFile == NULL || curRecord == NULL)
                     return;
                 RecordReader reader(curModFile->FormIDHandler);
-                reader.Accept(*curRecord);
+                reader.Accept(&curRecord);
                 curRecord->SetListX2Field(subField, listIndex, listField, listX2Index, listX2Field, FieldValue);
                 curRecord->recData = NULL;
                 FormIDMasterUpdater checker(curModFile->FormIDHandler);
@@ -419,7 +470,7 @@ class Collection
             }
 
         template<class T>
-        void SetFIDListX3Field(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned int listX2Index, const unsigned int listX2Field, const unsigned int listX3Index, const unsigned int listX3Field, T FieldValue, unsigned int nSize)
+        void SetFIDListX3Field(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listIndex, const unsigned long listField, const unsigned long listX2Index, const unsigned long listX2Field, const unsigned long listX3Index, const unsigned long listX3Field, T FieldValue, unsigned long nSize)
             {
             try
                 {
@@ -429,7 +480,7 @@ class Collection
                 if(curModFile == NULL || curRecord == NULL)
                     return;
                 RecordReader reader(curModFile->FormIDHandler);
-                reader.Accept(*curRecord);
+                reader.Accept(&curRecord);
                 curRecord->SetListX3Field(subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValue, nSize);
                 curRecord->recData = NULL;
                 FormIDMasterUpdater checker(curModFile->FormIDHandler);
@@ -445,7 +496,7 @@ class Collection
             }
 
         template<class T>
-        void SetFIDListX3Field(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned int listX2Index, const unsigned int listX2Field, const unsigned int listX3Index, const unsigned int listX3Field, T FieldValue)
+        void SetFIDListX3Field(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listIndex, const unsigned long listField, const unsigned long listX2Index, const unsigned long listX2Field, const unsigned long listX3Index, const unsigned long listX3Field, T FieldValue)
             {
             try
                 {
@@ -455,7 +506,7 @@ class Collection
                 if(curModFile == NULL || curRecord == NULL)
                     return;
                 RecordReader reader(curModFile->FormIDHandler);
-                reader.Accept(*curRecord);
+                reader.Accept(&curRecord);
                 curRecord->SetListX3Field(subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValue);
                 curRecord->recData = NULL;
                 FormIDMasterUpdater checker(curModFile->FormIDHandler);

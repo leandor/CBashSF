@@ -23,14 +23,14 @@ GPL License and Copyright Notice ============================================
 #include "WTHRRecord.h"
 #include <vector>
 
-int WTHRRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
+signed long WTHRRecord::ParseRecord(unsigned char *buffer, const unsigned long &recSize)
     {
     if(IsLoaded())
         return -1;
     IsLoaded(true);
-    unsigned int subType = 0;
-    unsigned int subSize = 0;
-    unsigned int curPos = 0;
+    unsigned long subType = 0;
+    unsigned long subSize = 0;
+    unsigned long curPos = 0;
     ReqSubRecord<WTHRSNAM> *newSNAM = NULL;
     while(curPos < recSize){
         _readBuffer(&subType,buffer,4,curPos);
@@ -99,12 +99,12 @@ int WTHRRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
     return 0;
     }
 
-unsigned int WTHRRecord::GetSize(bool forceCalc)
+unsigned long WTHRRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && recData != NULL)
-        return *(unsigned int*)&recData[-16];
-    unsigned int cSize = 0;
-    unsigned int TotSize = 0;
+        return *(unsigned long*)&recData[-16];
+    unsigned long cSize = 0;
+    unsigned long TotSize = 0;
     if(EDID.IsLoaded())
         {
         cSize = EDID.GetSize();
@@ -146,12 +146,12 @@ unsigned int WTHRRecord::GetSize(bool forceCalc)
     if(DATA.IsLoaded())
         TotSize += DATA.GetSize() + 6;
     if(Sounds.size())
-        for(unsigned int p = 0; p < Sounds.size(); p++)
+        for(unsigned long p = 0; p < Sounds.size(); p++)
             TotSize += Sounds[p]->GetSize() + 6;
     return TotSize;
     }
 
-int WTHRRecord::WriteRecord(_FileHandler &SaveHandler)
+signed long WTHRRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
@@ -176,7 +176,7 @@ int WTHRRecord::WriteRecord(_FileHandler &SaveHandler)
     if(DATA.IsLoaded())
         SaveHandler.writeSubRecord(eDATA, &DATA.value, DATA.GetSize());
     if(Sounds.size())
-        for(unsigned int p = 0; p < Sounds.size(); p++)
+        for(unsigned long p = 0; p < Sounds.size(); p++)
             SaveHandler.writeSubRecord(eSNAM, &Sounds[p]->value, Sounds[p]->GetSize());
     return -1;
     }
@@ -186,7 +186,7 @@ void WTHRRecord::Debug(int debugLevel)
     {
     if(!IsLoaded())
         return;
-    unsigned int indentation = 4;
+    unsigned long indentation = 4;
     printf("  WTHR\n");
     if(Header.IsLoaded())
         Header.Debug(debugLevel, indentation);
@@ -212,7 +212,7 @@ void WTHRRecord::Debug(int debugLevel)
         PrintIndent(indentation);
         printf("Sounds:\n");
         indentation += 2;
-        for(unsigned int p = 0;p < Sounds.size();p++)
+        for(unsigned long p = 0;p < Sounds.size();p++)
             {
             PrintIndent(indentation);
             printf("Index: %u\n", p);

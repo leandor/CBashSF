@@ -23,14 +23,14 @@ GPL License and Copyright Notice ============================================
 #include "TREERecord.h"
 #include <vector>
 
-int TREERecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
+signed long TREERecord::ParseRecord(unsigned char *buffer, const unsigned long &recSize)
     {
     if(IsLoaded())
         return -1;
     IsLoaded(true);
-    unsigned int subType = 0;
-    unsigned int subSize = 0;
-    unsigned int curPos = 0;
+    unsigned long subType = 0;
+    unsigned long subSize = 0;
+    unsigned long curPos = 0;
     while(curPos < recSize){
         _readBuffer(&subType,buffer,4,curPos);
         switch(subType)
@@ -67,11 +67,11 @@ int TREERecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 ICON.Read(buffer, subSize, curPos);
                 break;
             case eSNAM:
-                if(subSize % sizeof(unsigned int) == 0)
+                if(subSize % sizeof(unsigned long) == 0)
                     {
                     if(subSize == 0)
                         break;
-                    SNAM.resize(subSize / sizeof(unsigned int));
+                    SNAM.resize(subSize / sizeof(unsigned long));
                     _readBuffer(&SNAM[0], buffer, subSize, curPos);
                     }
                 else
@@ -98,12 +98,12 @@ int TREERecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
     return 0;
     }
 
-unsigned int TREERecord::GetSize(bool forceCalc)
+unsigned long TREERecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && recData != NULL)
-        return *(unsigned int*)&recData[-16];
-    unsigned int cSize = 0;
-    unsigned int TotSize = 0;
+        return *(unsigned long*)&recData[-16];
+    unsigned long cSize = 0;
+    unsigned long TotSize = 0;
     if(EDID.IsLoaded())
         {
         cSize = EDID.GetSize();
@@ -132,7 +132,7 @@ unsigned int TREERecord::GetSize(bool forceCalc)
         }
     if(SNAM.size())
         {
-        cSize = (sizeof(unsigned int) * (unsigned int)SNAM.size());
+        cSize = (sizeof(unsigned long) * (unsigned long)SNAM.size());
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
         }
@@ -143,7 +143,7 @@ unsigned int TREERecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int TREERecord::WriteRecord(_FileHandler &SaveHandler)
+signed long TREERecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
@@ -158,7 +158,7 @@ int TREERecord::WriteRecord(_FileHandler &SaveHandler)
     if(ICON.IsLoaded())
         SaveHandler.writeSubRecord(eICON, ICON.value, ICON.GetSize());
     if(SNAM.size())
-        SaveHandler.writeSubRecord(eSNAM, &SNAM[0], (unsigned int)SNAM.size() * sizeof(unsigned int));
+        SaveHandler.writeSubRecord(eSNAM, &SNAM[0], (unsigned long)SNAM.size() * sizeof(unsigned long));
     //else
     //    SaveHandler.writeSubRecord(eSNAM, NULL, 0);
     if(CNAM.IsLoaded())
@@ -173,7 +173,7 @@ void TREERecord::Debug(int debugLevel)
     {
     if(!IsLoaded())
         return;
-    unsigned int indentation = 4;
+    unsigned long indentation = 4;
     printf("  TREE\n");
     if(Header.IsLoaded())
         Header.Debug(debugLevel, indentation);
@@ -189,7 +189,7 @@ void TREERecord::Debug(int debugLevel)
         PrintIndent(indentation);
         printf("SNAM:\n");
         indentation += 2;
-        for(unsigned int p = 0;p < SNAM.size();p++)
+        for(unsigned long p = 0;p < SNAM.size();p++)
             {
             PrintIndent(indentation);
             printf("%u:%u\n", p, SNAM[p]);

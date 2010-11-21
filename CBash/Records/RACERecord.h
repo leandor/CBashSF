@@ -82,13 +82,13 @@ class RACERecord : public Record
             RACESKILL skills[7];
             unsigned char unused1[2];
             float maleHeight, femaleHeight, maleWeight, femaleWeight;
-            unsigned int flags;
+            unsigned long flags;
             RACEDATA(bool newRecord=false):maleHeight(1.0f), femaleHeight(1.0f), maleWeight(1.0f), femaleWeight(1.0f), flags(0)
                 {
                 memset(&unused1, 0x00, 2);
                 }
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -152,10 +152,10 @@ class RACERecord : public Record
 
         struct RACEVNAM
             {
-            unsigned int maleVoice, femaleVoice;
+            unsigned long maleVoice, femaleVoice;
             RACEVNAM(bool newRecord=false):maleVoice(0), femaleVoice(0) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -181,10 +181,10 @@ class RACERecord : public Record
 
         struct RACEDNAM
             {
-            unsigned int defaultHairMale, defaultHairFemale;
+            unsigned long defaultHairMale, defaultHairFemale;
             RACEDNAM(bool newRecord=false):defaultHairMale(0), defaultHairFemale(0) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -213,7 +213,7 @@ class RACERecord : public Record
             unsigned char defaultHairColor;
             RACECNAM(bool newRecord=false):defaultHairColor(0) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -239,7 +239,7 @@ class RACERecord : public Record
             float mainClamp;
             RACEPNAM(bool newRecord=false):mainClamp(0.0f) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -265,7 +265,7 @@ class RACERecord : public Record
             float faceClamp;
             RACEUNAM(bool newRecord=false):faceClamp(0.0f) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -303,7 +303,7 @@ class RACERecord : public Record
                 femaleSpeed(50), femaleEndurance(50),
                 femalePersonality(50), femaleLuck(50) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -372,11 +372,11 @@ class RACERecord : public Record
         struct RACEMODEL
             {
             ReqSubRecord<MODELMODB> MODB;
-            STRING MODL;
-            RAWBYTES MODT;
-            STRING ICON;
+            StringRecord MODL;
+            RawRecord MODT;
+            StringRecord ICON;
             #ifdef _DEBUG
-            void Debug(char *name, int debugLevel, size_t &indentation)
+            void Debug(char *name, signed long debugLevel, size_t &indentation)
                 {
                 if(name != NULL)
                     {
@@ -415,7 +415,7 @@ class RACERecord : public Record
                 memset(&SNAM, 0x00, 2);
                 }
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -441,10 +441,10 @@ class RACERecord : public Record
             {
             fIsPlayable   = 0x00000001
             };
-        STRING EDID;
-        STRING FULL;
-        STRING DESC;
-        std::vector<unsigned int *> SPLO;
+        StringRecord EDID;
+        StringRecord FULL;
+        StringRecord DESC;
+        std::vector<unsigned long *> SPLO;
         std::vector<ReqSubRecord<GENXNAM> *> XNAM;
         ReqSubRecord<RACEDATA> DATA;
         SubRecord<RACEVNAM> VNAM;
@@ -465,25 +465,25 @@ class RACERecord : public Record
 
         OptSubRecord<GENMODEL> MMODL;
 
-        STRING MICON0;
-        STRING MICON1;
-        STRING MICON2;
-        STRING MICON3;
-        STRING MICON4;
+        StringRecord MICON0;
+        StringRecord MICON1;
+        StringRecord MICON2;
+        StringRecord MICON3;
+        StringRecord MICON4;
 
         OptSubRecord<GENMODEL> FMODL;
 
-        STRING FICON0;
-        STRING FICON1;
-        STRING FICON2;
-        STRING FICON3;
-        STRING FICON4;
+        StringRecord FICON0;
+        StringRecord FICON1;
+        StringRecord FICON2;
+        StringRecord FICON3;
+        StringRecord FICON4;
 
-        std::vector<unsigned int> HNAM;
-        std::vector<unsigned int> ENAM;
-        RAWBYTES FGGS;
-        RAWBYTES FGGA;
-        RAWBYTES FGTS;
+        std::vector<unsigned long> HNAM;
+        std::vector<unsigned long> ENAM;
+        RawRecord FGGS;
+        RawRecord FGGA;
+        RawRecord FGTS;
         ReqSubRecord<RACESNAM> SNAM;
 
         RACERecord(bool newRecord=false):Record(newRecord) {}
@@ -501,12 +501,12 @@ class RACERecord : public Record
 
             SPLO.clear();
             SPLO.resize(srcRecord->SPLO.size());
-            for(unsigned int x = 0; x < srcRecord->SPLO.size(); x++)
-                SPLO[x] = new unsigned int(*srcRecord->SPLO[x]);
+            for(unsigned long x = 0; x < srcRecord->SPLO.size(); x++)
+                SPLO[x] = new unsigned long(*srcRecord->SPLO[x]);
 
             XNAM.clear();
             XNAM.resize(srcRecord->XNAM.size());
-            for(unsigned int x = 0; x < srcRecord->XNAM.size(); x++)
+            for(unsigned long x = 0; x < srcRecord->XNAM.size(); x++)
                 {
                 XNAM[x] = new ReqSubRecord<GENXNAM>;
                 *XNAM[x] = *srcRecord->XNAM[x];
@@ -639,9 +639,9 @@ class RACERecord : public Record
             }
         ~RACERecord()
             {
-            for(unsigned int x = 0; x < SPLO.size(); x++)
+            for(unsigned long x = 0; x < SPLO.size(); x++)
                 delete SPLO[x];
-            for(unsigned int x = 0; x < XNAM.size(); x++)
+            for(unsigned long x = 0; x < XNAM.size(); x++)
                 delete XNAM[x];
             }
         void Unload()
@@ -650,11 +650,11 @@ class RACERecord : public Record
             EDID.Unload();
             FULL.Unload();
             DESC.Unload();
-            for(unsigned int x = 0; x < SPLO.size(); x++)
+            for(unsigned long x = 0; x < SPLO.size(); x++)
                 delete SPLO[x];
             SPLO.clear();
 
-            for(unsigned int x = 0; x < XNAM.size(); x++)
+            for(unsigned long x = 0; x < XNAM.size(); x++)
                 delete XNAM[x];
             XNAM.clear();
 
@@ -701,14 +701,14 @@ class RACERecord : public Record
             SNAM.Unload();
             }
 
-        void VisitFormIDs(FormIDOp &op)
+        bool VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
-                return;
+                return false;
 
-            for(unsigned int x = 0; x < SPLO.size(); x++)
+            for(unsigned long x = 0; x < SPLO.size(); x++)
                 op.Accept(*SPLO[x]);
-            for(unsigned int x = 0; x < XNAM.size(); x++)
+            for(unsigned long x = 0; x < XNAM.size(); x++)
                 op.Accept(XNAM[x]->value.faction);
             if(VNAM.IsLoaded())
                 {
@@ -720,43 +720,45 @@ class RACERecord : public Record
                 op.Accept(DNAM.value.defaultHairFemale);
                 op.Accept(DNAM.value.defaultHairMale);
                 }
-            for(unsigned int x = 0; x < HNAM.size(); x++)
+            for(unsigned long x = 0; x < HNAM.size(); x++)
                 op.Accept(HNAM[x]);
-            for(unsigned int x = 0; x < ENAM.size(); x++)
+            for(unsigned long x = 0; x < ENAM.size(); x++)
                 op.Accept(ENAM[x]);
+
+            return op.Stop();
             }
 
         #ifdef _DEBUG
-        void Debug(int debugLevel);
+        void Debug(signed long debugLevel);
         #endif
 
-        int CreateListElement(const unsigned int subField);
-        int DeleteListElement(const unsigned int subField);
-        int GetOtherFieldType(const unsigned int Field);
-        void * GetOtherField(const unsigned int Field);
-        unsigned int GetFieldArraySize(const unsigned int Field);
-        void GetFieldArray(const unsigned int Field, void **FieldValues);
-        int GetListFieldType(const unsigned int subField, const unsigned int listField);
-        unsigned int GetListSize(const unsigned int Field);
-        void * GetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
-        void SetField(const unsigned int Field, char *FieldValue);
-        void SetField(const unsigned int Field, unsigned int FieldValue[], unsigned int nSize);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, int FieldValue);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue);
-        void SetField(const unsigned int Field, char FieldValue);
-        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetField(const unsigned int Field, float FieldValue);
-        void SetOtherField(const unsigned int Field, unsigned int FieldValue);
-        void SetField(const unsigned int Field, unsigned char FieldValue);
+        signed long CreateListElement(const unsigned long subField);
+        signed long DeleteListElement(const unsigned long subField);
+        signed long GetOtherFieldType(const unsigned long Field);
+        void * GetOtherField(const unsigned long Field);
+        unsigned long GetFieldArraySize(const unsigned long Field);
+        void GetFieldArray(const unsigned long Field, void **FieldValues);
+        signed long GetListFieldType(const unsigned long subField, const unsigned long listField);
+        unsigned long GetListSize(const unsigned long Field);
+        void * GetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField);
+        void SetField(const unsigned long Field, char *FieldValue);
+        void SetField(const unsigned long Field, unsigned long FieldValue[], unsigned long nSize);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, signed long FieldValue);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, unsigned long FieldValue);
+        void SetField(const unsigned long Field, char FieldValue);
+        void SetField(const unsigned long Field, unsigned char *FieldValue, unsigned long nSize);
+        void SetField(const unsigned long Field, float FieldValue);
+        void SetOtherField(const unsigned long Field, unsigned long FieldValue);
+        void SetField(const unsigned long Field, unsigned char FieldValue);
 
-        int DeleteField(const unsigned int Field);
-        int DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
+        signed long DeleteField(const unsigned long Field);
+        signed long DeleteListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField);
 
-        int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize(bool forceCalc=false);
-        unsigned int GetType() {return eRACE;}
-        char * GetStrType() {return "RACE";}
-        int WriteRecord(_FileHandler &SaveHandler);
+        signed long ParseRecord(unsigned char *buffer, const unsigned long &recSize);
+        unsigned long GetSize(bool forceCalc=false);
+        unsigned long GetType() {return eRACE;}
+        char *GetStrType() {return "RACE";}
+        signed long WriteRecord(_FileHandler &SaveHandler);
 
         bool IsPlayable()
             {
@@ -769,14 +771,14 @@ class RACERecord : public Record
             else
                 DATA.value.flags &= ~fIsPlayable;
             }
-        bool IsFlagMask(unsigned int Mask, bool Exact=false)
+        bool IsFlagMask(unsigned long Mask, bool Exact=false)
             {
             if(Exact)
                 return (DATA.value.flags & Mask) == Mask;
             else
                 return (DATA.value.flags & Mask) != 0;
             }
-        void SetFlagMask(unsigned int Mask)
+        void SetFlagMask(unsigned long Mask)
             {
             DATA.value.flags = Mask;
             }

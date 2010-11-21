@@ -46,10 +46,10 @@ class DIALRecord : public Record
             eService      = 5,
             eMisc         = 6
             };
-        STRING EDID;
-        std::vector<unsigned int *> QSTI;
-        std::vector<unsigned int *> QSTR;
-        STRING FULL;
+        StringRecord EDID;
+        std::vector<unsigned long *> QSTI;
+        std::vector<unsigned long *> QSTR;
+        StringRecord FULL;
         ReqSubRecord<GENFLAG> DATA;
         std::vector<INFORecord *> INFO;
 
@@ -65,19 +65,19 @@ class DIALRecord : public Record
             EDID = srcRecord->EDID;
             QSTI.clear();
             QSTI.resize(srcRecord->QSTI.size());
-            for(unsigned int x = 0; x < srcRecord->QSTI.size(); x++)
-                QSTI[x] = new unsigned int(*srcRecord->QSTI[x]);
+            for(unsigned long x = 0; x < srcRecord->QSTI.size(); x++)
+                QSTI[x] = new unsigned long(*srcRecord->QSTI[x]);
             FULL = srcRecord->FULL;
             DATA = srcRecord->DATA;
             return;
             }
         ~DIALRecord()
             {
-            for(unsigned int x = 0; x < QSTI.size(); x++)
+            for(unsigned long x = 0; x < QSTI.size(); x++)
                 delete QSTI[x];
-            for(unsigned int x = 0; x < QSTR.size(); x++)
+            for(unsigned long x = 0; x < QSTR.size(); x++)
                 delete QSTR[x];
-            for(unsigned int x = 0; x < INFO.size(); x++)
+            for(unsigned long x = 0; x < INFO.size(); x++)
                 delete INFO[x];
             }
         void Unload()
@@ -85,11 +85,11 @@ class DIALRecord : public Record
             IsLoaded(false);
             EDID.Unload();
 
-            for(unsigned int x = 0; x < QSTI.size(); x++)
+            for(unsigned long x = 0; x < QSTI.size(); x++)
                 delete QSTI[x];
             QSTI.clear();
 
-            for(unsigned int x = 0; x < QSTR.size(); x++)
+            for(unsigned long x = 0; x < QSTR.size(); x++)
                 delete QSTR[x];
             QSTR.clear();
 
@@ -97,36 +97,59 @@ class DIALRecord : public Record
             DATA.Unload();
             }
 
-        void VisitFormIDs(FormIDOp &op)
+        bool HasSubRecords() {return true;}
+
+        bool VisitSubRecords(const unsigned long &RecordType, RecordOp &op)
+            {
+            bool stop;
+
+            if(RecordType == NULL || RecordType == eINFO)
+                for(unsigned long x = 0; x < INFO.size();)
+                    {
+                    stop = op.Accept((Record **)&INFO[x]);
+                    if(INFO[x] == NULL)
+                        INFO.erase(INFO.begin() + x);
+                    else
+                        ++x;
+                    if(stop)
+                        return stop;
+                    }
+
+            return op.Stop();
+            }
+
+        bool VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
-                return;
+                return false;
 
-            for(unsigned int x = 0; x < QSTI.size(); x++)
+            for(unsigned long x = 0; x < QSTI.size(); x++)
                 op.Accept(*QSTI[x]);
-            for(unsigned int x = 0; x < QSTR.size(); x++)
+            for(unsigned long x = 0; x < QSTR.size(); x++)
                 op.Accept(*QSTR[x]);
+
+            return op.Stop();
             }
 
         #ifdef _DEBUG
-        void Debug(int debugLevel);
+        void Debug(signed long debugLevel);
         #endif
 
-        int GetOtherFieldType(const unsigned int Field);
-        void * GetOtherField(const unsigned int Field);
-        unsigned int GetFieldArraySize(const unsigned int Field);
-        void GetFieldArray(const unsigned int Field, void **FieldValues);
-        void SetField(const unsigned int Field, char *FieldValue);
-        void SetField(const unsigned int Field, unsigned int FieldValue[], unsigned int nSize);
-        void SetField(const unsigned int Field, unsigned char FieldValue);
+        signed long GetOtherFieldType(const unsigned long Field);
+        void * GetOtherField(const unsigned long Field);
+        unsigned long GetFieldArraySize(const unsigned long Field);
+        void GetFieldArray(const unsigned long Field, void **FieldValues);
+        void SetField(const unsigned long Field, char *FieldValue);
+        void SetField(const unsigned long Field, unsigned long FieldValue[], unsigned long nSize);
+        void SetField(const unsigned long Field, unsigned char FieldValue);
 
-        int DeleteField(const unsigned int Field);
+        signed long DeleteField(const unsigned long Field);
 
-        int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize(bool forceCalc=false);
-        unsigned int GetType() {return eDIAL;}
-        char * GetStrType() {return "DIAL";}
-        int WriteRecord(_FileHandler &SaveHandler);
+        signed long ParseRecord(unsigned char *buffer, const unsigned long &recSize);
+        unsigned long GetSize(bool forceCalc=false);
+        unsigned long GetType() {return eDIAL;}
+        char *GetStrType() {return "DIAL";}
+        signed long WriteRecord(_FileHandler &SaveHandler);
 
         bool IsTopic()
             {

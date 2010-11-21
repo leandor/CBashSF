@@ -22,14 +22,14 @@ GPL License and Copyright Notice ============================================
 #include "..\Common.h"
 #include "FACTRecord.h"
 
-int FACTRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
+signed long FACTRecord::ParseRecord(unsigned char *buffer, const unsigned long &recSize)
     {
     if(IsLoaded())
         return -1;
     IsLoaded(true);
-    unsigned int subType = 0;
-    unsigned int subSize = 0;
-    unsigned int curPos = 0;
+    unsigned long subType = 0;
+    unsigned long subSize = 0;
+    unsigned long curPos = 0;
     ReqSubRecord<GENXNAM> *newXNAM = NULL;
     ReqSubRecord<FACTRNAM> *newRNAM = NULL;
     while(curPos < recSize){
@@ -107,12 +107,12 @@ int FACTRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
     return 0;
     }
 
-unsigned int FACTRecord::GetSize(bool forceCalc)
+unsigned long FACTRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && recData != NULL)
-        return *(unsigned int*)&recData[-16];
-    unsigned int cSize = 0;
-    unsigned int TotSize = 0;
+        return *(unsigned long*)&recData[-16];
+    unsigned long cSize = 0;
+    unsigned long TotSize = 0;
     if(EDID.IsLoaded())
         {
         cSize = EDID.GetSize();
@@ -125,13 +125,13 @@ unsigned int FACTRecord::GetSize(bool forceCalc)
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
         }
-    for(unsigned int p = 0; p < XNAM.size(); p++)
+    for(unsigned long p = 0; p < XNAM.size(); p++)
         TotSize += XNAM[p]->GetSize() + 6;
     if(DATA.IsLoaded())
         TotSize += DATA.GetSize() + 6;
     if(CNAM.IsLoaded())
         TotSize += CNAM.GetSize() + 6;
-    for(unsigned int p = 0; p < RNAM.size(); p++)
+    for(unsigned long p = 0; p < RNAM.size(); p++)
         {
         TotSize += sizeof(RNAM[p]->value.RNAM) + 6;
         if(RNAM[p]->value.MNAM.IsLoaded())
@@ -156,13 +156,13 @@ unsigned int FACTRecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int FACTRecord::WriteRecord(_FileHandler &SaveHandler)
+signed long FACTRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
     if(FULL.IsLoaded())
         SaveHandler.writeSubRecord(eFULL, FULL.value, FULL.GetSize());
-    for(unsigned int p = 0; p < XNAM.size(); p++)
+    for(unsigned long p = 0; p < XNAM.size(); p++)
         if(XNAM[p]->IsLoaded())
             SaveHandler.writeSubRecord(eXNAM, &XNAM[p]->value, XNAM[p]->GetSize());
 
@@ -171,7 +171,7 @@ int FACTRecord::WriteRecord(_FileHandler &SaveHandler)
     if(CNAM.IsLoaded())
         SaveHandler.writeSubRecord(eCNAM, &CNAM.value, CNAM.GetSize());
 
-    for(unsigned int p = 0; p < RNAM.size(); p++)
+    for(unsigned long p = 0; p < RNAM.size(); p++)
         {
         if(RNAM[p]->IsLoaded())
             SaveHandler.writeSubRecord(eRNAM, &RNAM[p]->value.RNAM, sizeof(RNAM[p]->value.RNAM));
@@ -190,7 +190,7 @@ void FACTRecord::Debug(int debugLevel)
     {
     if(!IsLoaded())
         return;
-    unsigned int indentation = 4;
+    unsigned long indentation = 4;
     printf("  FACT\n");
     if(Header.IsLoaded())
         Header.Debug(debugLevel, indentation);
@@ -204,7 +204,7 @@ void FACTRecord::Debug(int debugLevel)
         PrintIndent(indentation);
         printf("XNAM:\n");
         indentation += 2;
-        for(unsigned int p=0;p < XNAM.size();p++)
+        for(unsigned long p=0;p < XNAM.size();p++)
             {
             PrintIndent(indentation);
             printf("Index: %u\n", p);
@@ -222,7 +222,7 @@ void FACTRecord::Debug(int debugLevel)
         PrintIndent(indentation);
         printf("RNAM:\n");
         indentation += 2;
-        for(unsigned int p=0;p < RNAM.size();p++)
+        for(unsigned long p=0;p < RNAM.size();p++)
             {
             PrintIndent(indentation);
             printf("Index: %u\n", p);

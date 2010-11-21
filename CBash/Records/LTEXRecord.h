@@ -39,7 +39,7 @@ class LTEXRecord : public Record
             unsigned char flags, friction, restitution;
             LTEXHNAM():flags(0), friction(0), restitution(0) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -74,7 +74,7 @@ class LTEXRecord : public Record
             unsigned char specular;
             LTEXSNAM():specular(0) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -113,11 +113,11 @@ class LTEXRecord : public Record
             fIsChain      = 0x00002000,
             fIsSnow       = 0x00004000
             };
-        STRING EDID;
-        STRING ICON;
+        StringRecord EDID;
+        StringRecord ICON;
         SubRecord<LTEXHNAM> HNAM;
         SubRecord<LTEXSNAM> SNAM;
-        std::vector<unsigned int *> GNAM;
+        std::vector<unsigned long *> GNAM;
 
         LTEXRecord(bool newRecord=false):Record(newRecord) {}
         LTEXRecord(LTEXRecord *srcRecord):Record(true)
@@ -135,13 +135,13 @@ class LTEXRecord : public Record
 
             GNAM.clear();
             GNAM.resize(srcRecord->GNAM.size());
-            for(unsigned int x = 0; x < srcRecord->GNAM.size(); x++)
-                GNAM[x] = new unsigned int(*srcRecord->GNAM[x]);
+            for(unsigned long x = 0; x < srcRecord->GNAM.size(); x++)
+                GNAM[x] = new unsigned long(*srcRecord->GNAM[x]);
             return;
             }
         ~LTEXRecord()
             {
-            for(unsigned int x = 0; x < GNAM.size(); x++)
+            for(unsigned long x = 0; x < GNAM.size(); x++)
                 delete GNAM[x];
             }
         void Unload()
@@ -151,39 +151,41 @@ class LTEXRecord : public Record
             ICON.Unload();
             HNAM.Unload();
             SNAM.Unload();
-            for(unsigned int x = 0; x < GNAM.size(); x++)
+            for(unsigned long x = 0; x < GNAM.size(); x++)
                 delete GNAM[x];
             GNAM.clear();
             }
 
-        void VisitFormIDs(FormIDOp &op)
+        bool VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
-                return;
+                return false;
 
-            for(unsigned int x = 0; x < GNAM.size(); x++)
+            for(unsigned long x = 0; x < GNAM.size(); x++)
                 op.Accept(*GNAM[x]);
+
+            return op.Stop();
             }
 
         #ifdef _DEBUG
-        void Debug(int debugLevel);
+        void Debug(signed long debugLevel);
         #endif
 
-        int GetOtherFieldType(const unsigned int Field);
-        void * GetOtherField(const unsigned int Field);
-        unsigned int GetFieldArraySize(const unsigned int Field);
-        void GetFieldArray(const unsigned int Field, void **FieldValues);
-        void SetField(const unsigned int Field, char *FieldValue);
-        void SetField(const unsigned int Field, unsigned char FieldValue);
-        void SetField(const unsigned int Field, unsigned int FieldValue[], unsigned int nSize);
+        signed long GetOtherFieldType(const unsigned long Field);
+        void * GetOtherField(const unsigned long Field);
+        unsigned long GetFieldArraySize(const unsigned long Field);
+        void GetFieldArray(const unsigned long Field, void **FieldValues);
+        void SetField(const unsigned long Field, char *FieldValue);
+        void SetField(const unsigned long Field, unsigned char FieldValue);
+        void SetField(const unsigned long Field, unsigned long FieldValue[], unsigned long nSize);
 
-        int DeleteField(const unsigned int Field);
+        signed long DeleteField(const unsigned long Field);
 
-        int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize(bool forceCalc=false);
-        unsigned int GetType() {return eLTEX;}
-        char * GetStrType() {return "LTEX";}
-        int WriteRecord(_FileHandler &SaveHandler);
+        signed long ParseRecord(unsigned char *buffer, const unsigned long &recSize);
+        unsigned long GetSize(bool forceCalc=false);
+        unsigned long GetType() {return eLTEX;}
+        char *GetStrType() {return "LTEX";}
+        signed long WriteRecord(_FileHandler &SaveHandler);
         bool IsStone()
             {
             return (HNAM.value.flags & fIsStone) != 0;

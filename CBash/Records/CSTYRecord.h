@@ -46,7 +46,7 @@ class CSTYRecord : public Record
             float rMultOpt, rMultMax, mDistance, rDistance, buffStand, rStand, groupStand;
             unsigned char rushChance, unused6[3];
             float rushMult;
-            unsigned int flagsB;
+            unsigned long flagsB;
             CSTYCSTD():dodgeChance(75), lrChance(50),
                 lrTimerMin(0.5f), lrTimerMax(1.5f), forTimerMin(0.5f), forTimerMax(1.0f),
                 backTimerMin(0.25f), backTimerMax(0.75f), idleTimerMin(0.5f), idleTimerMax(1.5f),
@@ -70,7 +70,7 @@ class CSTYRecord : public Record
                  memset(&unused6, 0xCD, 3);
                 }
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -252,7 +252,7 @@ class CSTYRecord : public Record
                 atkAtkMult(0.75f), atkNAtkMult(1.0f), atkBlockMult(0.5f),
                 pAtkFBase(5.0f), pAtkFMult(-10.0f) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -352,7 +352,7 @@ class CSTYRecord : public Record
             {
             fIsDoNotAcquire       = 0x00000001 //OBSE, ignored?
             };
-        STRING EDID;
+        StringRecord EDID;
         ReqSubRecord<CSTYCSTD> CSTD;
         OptSubRecord<CSTYCSAD> CSAD;
 
@@ -380,26 +380,26 @@ class CSTYRecord : public Record
             }
 
         #ifdef _DEBUG
-        void Debug(int debugLevel);
+        void Debug(signed long debugLevel);
         #endif
 
-        int GetOtherFieldType(const unsigned int Field);
-        void * GetOtherField(const unsigned int Field);
-        unsigned int GetFieldArraySize(const unsigned int Field);
-        void GetFieldArray(const unsigned int Field, void **FieldValues);
-        void SetField(const unsigned int Field, char *FieldValue);
-        void SetField(const unsigned int Field, unsigned char FieldValue);
-        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetField(const unsigned int Field, float FieldValue);
-        void SetOtherField(const unsigned int Field, unsigned int FieldValue);
+        signed long GetOtherFieldType(const unsigned long Field);
+        void * GetOtherField(const unsigned long Field);
+        unsigned long GetFieldArraySize(const unsigned long Field);
+        void GetFieldArray(const unsigned long Field, void **FieldValues);
+        void SetField(const unsigned long Field, char *FieldValue);
+        void SetField(const unsigned long Field, unsigned char FieldValue);
+        void SetField(const unsigned long Field, unsigned char *FieldValue, unsigned long nSize);
+        void SetField(const unsigned long Field, float FieldValue);
+        void SetOtherField(const unsigned long Field, unsigned long FieldValue);
 
-        int DeleteField(const unsigned int Field);
+        signed long DeleteField(const unsigned long Field);
 
-        int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize(bool forceCalc=false);
-        unsigned int GetType() {return eCSTY;}
-        char * GetStrType() {return "CSTY";}
-        int WriteRecord(_FileHandler &SaveHandler);
+        signed long ParseRecord(unsigned char *buffer, const unsigned long &recSize);
+        unsigned long GetSize(bool forceCalc=false);
+        unsigned long GetType() {return eCSTY;}
+        char *GetStrType() {return "CSTY";}
+        signed long WriteRecord(_FileHandler &SaveHandler);
         bool IsUseAdvanced()
             {
             return (CSTD.value.flagsA & fIsUseAdvanced) != 0;

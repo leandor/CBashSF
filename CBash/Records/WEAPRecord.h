@@ -44,16 +44,16 @@ class WEAPRecord : public Record
         #pragma pack(2)
         struct WEAPDATA
             {
-            unsigned int weaponType;
+            unsigned long weaponType;
             float speed, reach;
-            unsigned int flags, value, health;
+            unsigned long flags, value, health;
             float weight;
             unsigned short damage;
             WEAPDATA():weaponType(0), speed(0.0f), reach(0.0f),
                 flags(0), value(0), health(0), weight(0.0f),
                 damage(0) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, unsigned int &indentation)
+            void Debug(signed long debugLevel, unsigned long &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -112,10 +112,10 @@ class WEAPRecord : public Record
             eStaff      = 4,
             eBow        = 5
             };
-        STRING EDID;
-        STRING FULL;
+        StringRecord EDID;
+        StringRecord FULL;
         OptSubRecord<GENMODEL> MODL;
-        STRING ICON;
+        StringRecord ICON;
         OptSubRecord<GENFID> SCRI;
         OptSubRecord<GENFID> ENAM;
         OptSubRecord<GENANAM> ANAM;
@@ -160,38 +160,41 @@ class WEAPRecord : public Record
             DATA.Unload();
             }
 
-        void VisitFormIDs(FormIDOp &op)
+        bool VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
-                return;
+                return false;
 
             if(SCRI.IsLoaded())
                 op.Accept(SCRI->fid);
             if(ENAM.IsLoaded())
                 op.Accept(ENAM->fid);
+
+            return op.Stop();
             }
 
         #ifdef _DEBUG
-        void Debug(int debugLevel);
+        void Debug(signed long debugLevel);
         #endif
 
-        int GetOtherFieldType(const unsigned int Field);
-        void * GetOtherField(const unsigned int Field);
-        unsigned int GetFieldArraySize(const unsigned int Field);
-        void GetFieldArray(const unsigned int Field, void **FieldValues);
-        void SetField(const unsigned int Field, char *FieldValue);
-        void SetField(const unsigned int Field, float FieldValue);
-        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetOtherField(const unsigned int Field, unsigned int FieldValue);
-        void SetField(const unsigned int Field, unsigned short FieldValue);
+        signed long GetOtherFieldType(const unsigned long Field);
+        void * GetOtherField(const unsigned long Field);
+        unsigned long GetFieldArraySize(const unsigned long Field);
+        void GetFieldArray(const unsigned long Field, void **FieldValues);
+        void SetField(const unsigned long Field, char *FieldValue);
+        void SetField(const unsigned long Field, float FieldValue);
+        void SetField(const unsigned long Field, unsigned char *FieldValue, unsigned long nSize);
+        void SetOtherField(const unsigned long Field, unsigned long FieldValue);
+        void SetField(const unsigned long Field, unsigned short FieldValue);
 
-        int DeleteField(const unsigned int Field);
+        signed long DeleteField(const unsigned long Field);
 
-        int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize(bool forceCalc=false);
-        unsigned int GetType() {return eWEAP;}
-        char * GetStrType() {return "WEAP";}
-        int WriteRecord(_FileHandler &SaveHandler);
+        signed long ParseRecord(unsigned char *buffer, const unsigned long &recSize);
+        unsigned long GetSize(bool forceCalc=false);
+        unsigned long GetType() {return eWEAP;}
+        char *GetStrType() {return "WEAP";}
+        signed long WriteRecord(_FileHandler &SaveHandler);
+
         bool IsNotNormalWeapon()
             {
             return (DATA.value.flags & fIsNotNormalWeapon) != 0;
@@ -236,14 +239,14 @@ class WEAPRecord : public Record
             else
                 DATA.value.flags |= fIsNotNormalWeapon;
             }
-        bool IsFlagMask(unsigned int Mask, bool Exact=false)
+        bool IsFlagMask(unsigned long Mask, bool Exact=false)
             {
             if(Exact)
                 return (DATA.value.flags & Mask) == Mask;
             else
                 return (DATA.value.flags & Mask) != 0;
             }
-        void SetFlagMask(unsigned int Mask)
+        void SetFlagMask(unsigned long Mask)
             {
             DATA.value.flags = Mask;
             }
@@ -313,11 +316,11 @@ class WEAPRecord : public Record
             else if(IsBow())
                 DATA.value.weaponType = eBlade1Hand;
             }
-        bool IsType(unsigned int Type)
+        bool IsType(unsigned long Type)
             {
             return (DATA.value.weaponType == Type);
             }
-        void SetType(unsigned int Type)
+        void SetType(unsigned long Type)
             {
             DATA.value.weaponType = Type;
             }

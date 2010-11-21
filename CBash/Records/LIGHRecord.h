@@ -43,18 +43,18 @@ class LIGHRecord : public Record
             };
         struct LIGHDATA
             {
-            int duration;
-            unsigned int radius;
+            signed long duration;
+            unsigned long radius;
             GENCLR color;
-            unsigned int flags;
+            unsigned long flags;
             float falloff, fov;
-            unsigned int value;
+            unsigned long value;
             float weight;
             LIGHDATA():duration(0), radius(0),
                 flags(0), falloff(0.0f), fov(0.0f),
                 value(0), weight(0.0f) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -104,7 +104,7 @@ class LIGHRecord : public Record
             float fade;
             LIGHFNAM():fade(0.0f) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -138,11 +138,11 @@ class LIGHRecord : public Record
             fIsSpotLight    = 0x00000200,
             fIsSpotShadow   = 0x00000400
             };
-        STRING EDID;
+        StringRecord EDID;
         OptSubRecord<GENMODEL> MODL;
         OptSubRecord<GENFID> SCRI;
-        STRING FULL;
-        STRING ICON;
+        StringRecord FULL;
+        StringRecord ICON;
         ReqSubRecord<LIGHDATA> DATA;
         OptSubRecord<LIGHFNAM> FNAM;
         OptSubRecord<GENFID> SNAM;
@@ -186,39 +186,41 @@ class LIGHRecord : public Record
             SNAM.Unload();
             }
 
-        void VisitFormIDs(FormIDOp &op)
+        bool VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
-                return;
+                return false;
 
             if(SCRI.IsLoaded())
                 op.Accept(SCRI->fid);
             if(SNAM.IsLoaded())
                 op.Accept(SNAM->fid);
+
+            return op.Stop();
             }
 
         #ifdef _DEBUG
-        void Debug(int debugLevel);
+        void Debug(signed long debugLevel);
         #endif
 
-        int GetOtherFieldType(const unsigned int Field);
-        void * GetOtherField(const unsigned int Field);
-        unsigned int GetFieldArraySize(const unsigned int Field);
-        void GetFieldArray(const unsigned int Field, void **FieldValues);
-        void SetField(const unsigned int Field, char *FieldValue);
-        void SetField(const unsigned int Field, float FieldValue);
-        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetOtherField(const unsigned int Field, unsigned int FieldValue);
-        void SetField(const unsigned int Field, int FieldValue);
-        void SetField(const unsigned int Field, unsigned char FieldValue);
+        signed long GetOtherFieldType(const unsigned long Field);
+        void * GetOtherField(const unsigned long Field);
+        unsigned long GetFieldArraySize(const unsigned long Field);
+        void GetFieldArray(const unsigned long Field, void **FieldValues);
+        void SetField(const unsigned long Field, char *FieldValue);
+        void SetField(const unsigned long Field, float FieldValue);
+        void SetField(const unsigned long Field, unsigned char *FieldValue, unsigned long nSize);
+        void SetOtherField(const unsigned long Field, unsigned long FieldValue);
+        void SetField(const unsigned long Field, signed long FieldValue);
+        void SetField(const unsigned long Field, unsigned char FieldValue);
 
-        int DeleteField(const unsigned int Field);
+        signed long DeleteField(const unsigned long Field);
 
-        int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize(bool forceCalc=false);
-        unsigned int GetType() {return eLIGH;}
-        char * GetStrType() {return "LIGH";}
-        int WriteRecord(_FileHandler &SaveHandler);
+        signed long ParseRecord(unsigned char *buffer, const unsigned long &recSize);
+        unsigned long GetSize(bool forceCalc=false);
+        unsigned long GetType() {return eLIGH;}
+        char *GetStrType() {return "LIGH";}
+        signed long WriteRecord(_FileHandler &SaveHandler);
         bool IsDynamic()
             {
             return (DATA.value.flags & fIsDynamic) != 0;
@@ -340,14 +342,14 @@ class LIGHRecord : public Record
             else
                 DATA.value.flags &= ~fIsSpotShadow;
             }
-        bool IsFlagMask(unsigned int Mask, bool Exact=false)
+        bool IsFlagMask(unsigned long Mask, bool Exact=false)
             {
             if(Exact)
                 return (DATA.value.flags & Mask) == Mask;
             else
                 return (DATA.value.flags & Mask) != 0;
             }
-        void SetFlagMask(unsigned int Mask)
+        void SetFlagMask(unsigned long Mask)
             {
             DATA.value.flags = Mask;
             }

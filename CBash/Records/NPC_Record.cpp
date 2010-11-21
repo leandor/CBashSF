@@ -23,14 +23,14 @@ GPL License and Copyright Notice ============================================
 #include "NPC_Record.h"
 #include <vector>
 
-int NPC_Record::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
+signed long NPC_Record::ParseRecord(unsigned char *buffer, const unsigned long &recSize)
     {
     if(IsLoaded())
         return -1;
     IsLoaded(true);
-    unsigned int subType = 0;
-    unsigned int subSize = 0;
-    unsigned int curPos = 0;
+    unsigned long subType = 0;
+    unsigned long subSize = 0;
+    unsigned long curPos = 0;
     FormID curFormID = NULL;
     ReqSubRecord<GENSNAM> *newSNAM = NULL;
     ReqSubRecord<GENCNTO> *newCNTO = NULL;
@@ -84,7 +84,7 @@ int NPC_Record::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 RNAM.Read(buffer, subSize, curPos);
                 break;
             case eSPLO:
-                curFormID = new unsigned int;
+                curFormID = new unsigned long;
                 _readBuffer(curFormID,buffer,subSize,curPos);
                 SPLO.push_back(curFormID);
                 break;
@@ -100,13 +100,13 @@ int NPC_Record::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 AIDT.Read(buffer, subSize, curPos);
                 break;
             case ePKID:
-                curFormID = new unsigned int;
+                curFormID = new unsigned long;
                 _readBuffer(curFormID, buffer, subSize, curPos);
                 PKID.push_back(curFormID);
                 break;
             case eKFFZ:
-                for(subSize += curPos;curPos < (subSize - 1);curPos += (unsigned int)strlen((char*)&buffer[curPos]) + 1)
-                    KFFZ.push_back(STRING((char*)&buffer[curPos]));
+                for(subSize += curPos;curPos < (subSize - 1);curPos += (unsigned long)strlen((char*)&buffer[curPos]) + 1)
+                    KFFZ.push_back(StringRecord((char*)&buffer[curPos]));
                 curPos++;
                 break;
             case eCNAM:
@@ -155,12 +155,12 @@ int NPC_Record::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
     return 0;
     }
 
-unsigned int NPC_Record::GetSize(bool forceCalc)
+unsigned long NPC_Record::GetSize(bool forceCalc)
     {
     if(!forceCalc && recData != NULL)
-        return *(unsigned int*)&recData[-16];
-    unsigned int cSize = 0;
-    unsigned int TotSize = 0;
+        return *(unsigned long*)&recData[-16];
+    unsigned long cSize = 0;
+    unsigned long TotSize = 0;
     if(EDID.IsLoaded())
         {
         cSize = EDID.GetSize();
@@ -190,7 +190,7 @@ unsigned int NPC_Record::GetSize(bool forceCalc)
     if(ACBS.IsLoaded())
         TotSize += ACBS.GetSize() + 6;
     if(SNAM.size())
-        for(unsigned int p = 0; p < SNAM.size(); p++)
+        for(unsigned long p = 0; p < SNAM.size(); p++)
             if(SNAM[p]->IsLoaded())
                 TotSize += SNAM[p]->GetSize() + 6;
     if(INAM.IsLoaded())
@@ -198,25 +198,25 @@ unsigned int NPC_Record::GetSize(bool forceCalc)
     if(RNAM.IsLoaded())
         TotSize += RNAM.GetSize() + 6;
     if(SPLO.size())
-        TotSize += (unsigned int)SPLO.size() * (sizeof(unsigned int) + 6);
+        TotSize += (unsigned long)SPLO.size() * (sizeof(unsigned long) + 6);
     if(SCRI.IsLoaded())
         TotSize += SCRI.GetSize() + 6;
     if(CNTO.size())
-        for(unsigned int p = 0; p < CNTO.size(); p++)
+        for(unsigned long p = 0; p < CNTO.size(); p++)
             if(CNTO[p]->IsLoaded())
                 TotSize += CNTO[p]->GetSize() + 6;
     if(AIDT.IsLoaded())
         TotSize += AIDT.GetSize() + 6;
     if(PKID.size())
         {
-        cSize = (unsigned int)PKID.size() * (sizeof(unsigned int) + 6);
+        cSize = (unsigned long)PKID.size() * (sizeof(unsigned long) + 6);
         if(cSize > 65535) cSize += 10;
         TotSize += cSize;
         }
     if(KFFZ.size())
         {
         cSize = 1; //Type, size, and final null terminator
-        for(unsigned int p = 0; p < KFFZ.size(); p++)
+        for(unsigned long p = 0; p < KFFZ.size(); p++)
             if(KFFZ[p].IsLoaded())
                 cSize += KFFZ[p].GetSize();
         if(cSize > 65535) cSize += 10;
@@ -247,9 +247,9 @@ unsigned int NPC_Record::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int NPC_Record::WriteRecord(_FileHandler &SaveHandler)
+signed long NPC_Record::WriteRecord(_FileHandler &SaveHandler)
     {
-    unsigned int cSize = 0;
+    unsigned long cSize = 0;
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
     if(FULL.IsLoaded())
@@ -266,7 +266,7 @@ int NPC_Record::WriteRecord(_FileHandler &SaveHandler)
     if(ACBS.IsLoaded())
         SaveHandler.writeSubRecord(eACBS, &ACBS.value, ACBS.GetSize());
     if(SNAM.size())
-        for(unsigned int p = 0; p < SNAM.size(); p++)
+        for(unsigned long p = 0; p < SNAM.size(); p++)
             if(SNAM[p]->IsLoaded())
                 SaveHandler.writeSubRecord(eSNAM, &SNAM[p]->value, SNAM[p]->GetSize());
     if(INAM.IsLoaded())
@@ -274,27 +274,27 @@ int NPC_Record::WriteRecord(_FileHandler &SaveHandler)
     if(RNAM.IsLoaded())
         SaveHandler.writeSubRecord(eRNAM, RNAM.value, RNAM.GetSize());
     if(SPLO.size())
-        for(unsigned int p = 0; p < SPLO.size(); p++)
-            SaveHandler.writeSubRecord(eSPLO, SPLO[p], sizeof(unsigned int));
+        for(unsigned long p = 0; p < SPLO.size(); p++)
+            SaveHandler.writeSubRecord(eSPLO, SPLO[p], sizeof(unsigned long));
     if(SCRI.IsLoaded())
         SaveHandler.writeSubRecord(eSCRI, SCRI.value, SCRI.GetSize());
     if(CNTO.size())
-        for(unsigned int p = 0; p < CNTO.size(); p++)
+        for(unsigned long p = 0; p < CNTO.size(); p++)
             if(CNTO[p]->IsLoaded())
                 SaveHandler.writeSubRecord(eCNTO, &CNTO[p]->value, sizeof(GENCNTO));
     if(AIDT.IsLoaded())
         SaveHandler.writeSubRecord(eAIDT, &AIDT.value, AIDT.GetSize());
     if(PKID.size())
-        for(unsigned int p = 0; p < PKID.size(); p++)
-            SaveHandler.writeSubRecord(ePKID, PKID[p], sizeof(unsigned int));
+        for(unsigned long p = 0; p < PKID.size(); p++)
+            SaveHandler.writeSubRecord(ePKID, PKID[p], sizeof(unsigned long));
     if(KFFZ.size())
         {
         cSize = 1; //final null terminator
-        for(unsigned int p = 0; p < KFFZ.size(); p++)
+        for(unsigned long p = 0; p < KFFZ.size(); p++)
             if(KFFZ[p].IsLoaded())
                 cSize += KFFZ[p].GetSize();
         SaveHandler.writeSubRecord(eKFFZ, NULL, cSize);
-        for(unsigned int p = 0; p < KFFZ.size(); p++)
+        for(unsigned long p = 0; p < KFFZ.size(); p++)
             if(KFFZ[p].IsLoaded())
                 SaveHandler.write(KFFZ[p].value, KFFZ[p].GetSize());
         cSize = 0;
@@ -331,7 +331,7 @@ void NPC_Record::Debug(int debugLevel)
     {
     if(!IsLoaded())
         return;
-    unsigned int indentation = 4;
+    unsigned long indentation = 4;
     printf("  NPC_\n");
     if(Header.IsLoaded())
         Header.Debug(debugLevel, indentation);
@@ -349,7 +349,7 @@ void NPC_Record::Debug(int debugLevel)
         PrintIndent(indentation);
         printf("SNAM:\n");
         indentation += 2;
-        for(unsigned int p = 0;p < SNAM.size();p++)
+        for(unsigned long p = 0;p < SNAM.size();p++)
             {
             PrintIndent(indentation);
             printf("Index: %u\n", p);
@@ -367,7 +367,7 @@ void NPC_Record::Debug(int debugLevel)
         PrintIndent(indentation);
         printf("SPLO:\n");
         indentation += 2;
-        for(unsigned int p = 0;p < SPLO.size();p++)
+        for(unsigned long p = 0;p < SPLO.size();p++)
             {
             PrintIndent(indentation);
             printf("%u:%s\n", p, PrintFormID(SPLO[p]));
@@ -382,7 +382,7 @@ void NPC_Record::Debug(int debugLevel)
         PrintIndent(indentation);
         printf("CNTO:\n");
         indentation += 2;
-        for(unsigned int p = 0;p < CNTO.size();p++)
+        for(unsigned long p = 0;p < CNTO.size();p++)
             {
             PrintIndent(indentation);
             printf("Index: %u\n", p);
@@ -398,7 +398,7 @@ void NPC_Record::Debug(int debugLevel)
         PrintIndent(indentation);
         printf("PKID:\n");
         indentation += 2;
-        for(unsigned int p = 0;p < PKID.size();p++)
+        for(unsigned long p = 0;p < PKID.size();p++)
             {
             PrintIndent(indentation);
             printf("%u:%s\n", p, PrintFormID(PKID[p]));
@@ -411,7 +411,7 @@ void NPC_Record::Debug(int debugLevel)
         PrintIndent(indentation);
         printf("KFFZ:\n");
         indentation += 2;
-        for(unsigned int p = 0;p < KFFZ.size();p++)
+        for(unsigned long p = 0;p < KFFZ.size();p++)
             {
             PrintIndent(indentation);
             printf("Index: %u\n", p);

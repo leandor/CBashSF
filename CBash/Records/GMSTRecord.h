@@ -35,12 +35,12 @@ class GMSTRecord : public Record
             union
                 {
                 float f;
-                int i;
+                signed long i;
                 };
             char *s;
             char format;
             GMSTDATA(char *sDATA):s(sDATA), format('s') {}
-            GMSTDATA(int iDATA):s(NULL), format('i'), i(iDATA) {}
+            GMSTDATA(signed long iDATA):s(NULL), format('i'), i(iDATA) {}
             GMSTDATA(float fDATA):s(NULL), format('f'), f(fDATA) {}
             GMSTDATA():format(0), s(NULL), i(0) {}
             ~GMSTDATA()
@@ -48,7 +48,7 @@ class GMSTRecord : public Record
                 delete []s;
                 }
             #ifdef _DEBUG
-            void Debug(char *name, int debugLevel, unsigned int &indentation)
+            void Debug(char *name, signed long debugLevel, unsigned long &indentation)
                 {
                 if(name)
                     {
@@ -62,10 +62,10 @@ class GMSTRecord : public Record
                     switch(format)
                         {
                         case 's':
-                            printf("string = %s\n", s);
+                            printf("char *= %s\n", s);
                             break;
                         case 'i':
-                            printf("int    = %i\n", i);
+                            printf("signed long    = %i\n", i);
                             break;
                         case 'f':
                             printf("float  = %f\n", f);
@@ -100,7 +100,7 @@ class GMSTRecord : public Record
                 }
             };
     public:
-        STRING EDID;
+        StringRecord EDID;
         GMSTDATA DATA;
 
         GMSTRecord(bool newRecord=false):Record(newRecord) {}
@@ -109,7 +109,7 @@ class GMSTRecord : public Record
             if(srcRecord == NULL || srcRecord->GetType() != eGMST)
                 return;
 
-            unsigned int vSize;
+            unsigned long vSize;
             flags = srcRecord->flags;
             formID = srcRecord->formID;
             flagsUnk = srcRecord->flagsUnk;
@@ -124,7 +124,7 @@ class GMSTRecord : public Record
                     DATA.i = srcRecord->DATA.i;
                     break;
                 case 's':
-                    vSize = (unsigned int)strlen(srcRecord->DATA.s) + 1;
+                    vSize = (unsigned long)strlen(srcRecord->DATA.s) + 1;
                     DATA.s = new char [vSize];
                     strcpy_s(DATA.s, vSize, srcRecord->DATA.s);
                     break;
@@ -133,30 +133,26 @@ class GMSTRecord : public Record
                 }
             return;
             }
-        GMSTRecord(char *newRecordEDID):Record(true)
-            {
-            EDID.Copy(newRecordEDID);
-            DATA.format = EDID.value[0];
-            }
         ~GMSTRecord() {}
         void Unload() //GMSTs should always be loaded, so do nothing.
             {return;}
 
         #ifdef _DEBUG
-        void Debug(int debugLevel);
+        void Debug(signed long debugLevel);
         #endif
 
-        int GetOtherFieldType(const unsigned int Field);
-        void * GetOtherField(const unsigned int Field);
-        void SetField(const unsigned int Field, int FieldValue);
-        void SetField(const unsigned int Field, float FieldValue);
-        void SetField(const unsigned int Field, char *FieldValue);
+        signed long GetOtherFieldType(const unsigned long Field);
+        void * GetOtherField(const unsigned long Field);
+        void SetField(const unsigned long Field, signed long FieldValue);
+        void SetField(const unsigned long Field, float FieldValue);
+        void SetField(const unsigned long Field, char *FieldValue);
 
-        int DeleteField(const unsigned int Field);
+        signed long DeleteField(const unsigned long Field);
 
-        int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize(bool forceCalc=false);
-        unsigned int GetType() {return eGMST;}
-        char * GetStrType() {return "GMST";}
-        int WriteRecord(_FileHandler &SaveHandler);
+        signed long ParseRecord(unsigned char *buffer, const unsigned long &recSize);
+        unsigned long GetSize(bool forceCalc=false);
+        unsigned long GetType() {return eGMST;}
+        char *GetStrType() {return "GMST";}
+        bool IsKeyedByEditorID() {return true;}
+        signed long WriteRecord(_FileHandler &SaveHandler);
     };

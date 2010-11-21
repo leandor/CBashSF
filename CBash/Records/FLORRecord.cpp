@@ -22,14 +22,14 @@ GPL License and Copyright Notice ============================================
 #include "..\Common.h"
 #include "FLORRecord.h"
 
-int FLORRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
+signed long FLORRecord::ParseRecord(unsigned char *buffer, const unsigned long &recSize)
     {
     if(IsLoaded())
         return -1;
     IsLoaded(true);
-    unsigned int subType = 0;
-    unsigned int subSize = 0;
-    unsigned int curPos = 0;
+    unsigned long subType = 0;
+    unsigned long subSize = 0;
+    unsigned long curPos = 0;
     while(curPos < recSize){
         _readBuffer(&subType,buffer,4,curPos);
         switch(subType)
@@ -86,12 +86,12 @@ int FLORRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
     return 0;
     }
 
-unsigned int FLORRecord::GetSize(bool forceCalc)
+unsigned long FLORRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && recData != NULL)
-        return *(unsigned int*)&recData[-16];
-    unsigned int cSize = 0;
-    unsigned int TotSize = 0;
+        return *(unsigned long*)&recData[-16];
+    unsigned long cSize = 0;
+    unsigned long TotSize = 0;
     if(EDID.IsLoaded())
         {
         cSize = EDID.GetSize();
@@ -127,7 +127,7 @@ unsigned int FLORRecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int FLORRecord::WriteRecord(_FileHandler &SaveHandler)
+signed long FLORRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
@@ -155,7 +155,7 @@ void FLORRecord::Debug(int debugLevel)
     {
     if(!IsLoaded())
         return;
-    unsigned int indentation = 4;
+    unsigned long indentation = 4;
     printf("  FLOR\n");
     if(Header.IsLoaded())
         Header.Debug(debugLevel, indentation);

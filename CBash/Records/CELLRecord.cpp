@@ -23,14 +23,14 @@ GPL License and Copyright Notice ============================================
 #include "CELLRecord.h"
 #include <vector>
 
-int CELLRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
+signed long CELLRecord::ParseRecord(unsigned char *buffer, const unsigned long &recSize)
     {
     if(IsLoaded())
         return -1;
     IsLoaded(true);
-    unsigned int subType = 0;
-    unsigned int subSize = 0;
-    unsigned int curPos = 0;
+    unsigned long subType = 0;
+    unsigned long subSize = 0;
+    unsigned long curPos = 0;
     FormID curFormID = NULL;
     while(curPos < recSize){
         _readBuffer(&subType,buffer,4,curPos);
@@ -83,11 +83,11 @@ int CELLRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 XCLW.Read(buffer, subSize, curPos);
                 break;
             case eXCLR:
-                if(subSize % sizeof(unsigned int) == 0)
+                if(subSize % sizeof(unsigned long) == 0)
                     {
                     if(subSize == 0)
                         break;
-                    XCLR.resize(subSize / sizeof(unsigned int));
+                    XCLR.resize(subSize / sizeof(unsigned long));
                     _readBuffer(&XCLR[0], buffer, subSize, curPos);
                     }
                 else
@@ -114,12 +114,12 @@ int CELLRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
     return 0;
     }
 
-unsigned int CELLRecord::GetSize(bool forceCalc)
+unsigned long CELLRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && recData != NULL)
-        return *(unsigned int*)&recData[-16];
-    unsigned int cSize = 0;
-    unsigned int TotSize = 0;
+        return *(unsigned long*)&recData[-16];
+    unsigned long cSize = 0;
+    unsigned long TotSize = 0;
     if(EDID.IsLoaded())
         {
         cSize = EDID.GetSize();
@@ -155,7 +155,7 @@ unsigned int CELLRecord::GetSize(bool forceCalc)
 
     if(XCLR.size())
         {
-        cSize = (sizeof(unsigned int) * (unsigned int)XCLR.size());
+        cSize = (sizeof(unsigned long) * (unsigned long)XCLR.size());
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
         }
@@ -167,7 +167,7 @@ unsigned int CELLRecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int CELLRecord::WriteRecord(_FileHandler &SaveHandler)
+signed long CELLRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
@@ -196,7 +196,7 @@ int CELLRecord::WriteRecord(_FileHandler &SaveHandler)
         SaveHandler.writeSubRecord(eXCLW, &XCLW.value, XCLW.GetSize());
 
     if(XCLR.size())
-        SaveHandler.writeSubRecord(eXCLR, &XCLR[0], (unsigned int)XCLR.size() * sizeof(unsigned int));
+        SaveHandler.writeSubRecord(eXCLR, &XCLR[0], (unsigned long)XCLR.size() * sizeof(unsigned long));
     //else
     //    SaveHandler.writeSubRecord(eXCLR, NULL, 0);
 
@@ -212,7 +212,7 @@ void CELLRecord::Debug(int debugLevel)
     {
     if(!IsLoaded())
         return;
-    unsigned int indentation = 4;
+    unsigned long indentation = 4;
     printf("  CELL\n");
     if(Header.IsLoaded())
         Header.Debug(debugLevel, indentation);
@@ -239,7 +239,7 @@ void CELLRecord::Debug(int debugLevel)
         printf("XCLR:\n");
         indentation += 2;
         if(debugLevel > 3)
-            for(unsigned int p = 0;p < XCLR.size();p++)
+            for(unsigned long p = 0;p < XCLR.size();p++)
                 {
                 PrintIndent(indentation);
                 printf("%u:%s\n", p, PrintFormID(XCLR[p]));

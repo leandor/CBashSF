@@ -22,19 +22,19 @@ GPL License and Copyright Notice ============================================
 #include "..\Common.h"
 #include "CREARecord.h"
 
-int CREARecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
+signed long CREARecord::ParseRecord(unsigned char *buffer, const unsigned long &recSize)
     {
     if(IsLoaded())
         return -1;
     IsLoaded(true);
-    unsigned int subType = 0;
-    unsigned int subSize = 0;
-    unsigned int curPos = 0;
+    unsigned long subType = 0;
+    unsigned long subSize = 0;
+    unsigned long curPos = 0;
     FormID curFormID = NULL;
     ReqSubRecord<GENSNAM> *newSNAM = NULL;
     ReqSubRecord<GENCNTO> *newCNTO = NULL;
     CREASound *newSound = NULL;
-    unsigned int testNIFT = 0;
+    unsigned long testNIFT = 0;
     while(curPos < recSize){
         _readBuffer(&subType,buffer,4,curPos);
         switch(subType)
@@ -71,20 +71,20 @@ int CREARecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 MODL->MODT.Read(buffer, subSize, curPos);
                 break;
             case eSPLO:
-                curFormID = new unsigned int;
+                curFormID = new unsigned long;
                 _readBuffer(curFormID,buffer,subSize,curPos);
                 SPLO.push_back(curFormID);
                 break;
             case eNIFZ:
-                for(subSize += curPos;curPos < (subSize - 1);curPos += (unsigned int)strlen((char*)&buffer[curPos]) + 1)
-                    NIFZ.push_back(ISTRING((char*)&buffer[curPos]));
+                for(subSize += curPos;curPos < (subSize - 1);curPos += (unsigned long)strlen((char*)&buffer[curPos]) + 1)
+                    NIFZ.push_back(InsensitiveStringRecord((char*)&buffer[curPos]));
                 curPos++;
                 break;
             case eNIFT:
                 NIFT.Read(buffer, subSize, curPos);
                 //Hack
                 testNIFT = 0;
-                for(unsigned int x = 0; x < NIFT.size; ++x)
+                for(unsigned long x = 0; x < NIFT.size; ++x)
                     testNIFT += NIFT.value[x];
                 if(testNIFT == 0)
                     NIFT.Unload();
@@ -112,13 +112,13 @@ int CREARecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 AIDT.Read(buffer, subSize, curPos);
                 break;
             case ePKID:
-                curFormID = new unsigned int;
+                curFormID = new unsigned long;
                 _readBuffer(curFormID, buffer, subSize, curPos);
                 PKID.push_back(curFormID);
                 break;
             case eKFFZ:
-                for(subSize += curPos;curPos < (subSize - 1);curPos += (unsigned int)strlen((char*)&buffer[curPos]) + 1)
-                    KFFZ.push_back(STRING((char*)&buffer[curPos]));
+                for(subSize += curPos;curPos < (subSize - 1);curPos += (unsigned long)strlen((char*)&buffer[curPos]) + 1)
+                    KFFZ.push_back(StringRecord((char*)&buffer[curPos]));
                 curPos++;
                 break;
             case eDATA:
@@ -181,12 +181,12 @@ int CREARecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
     return 0;
     }
 
-unsigned int CREARecord::GetSize(bool forceCalc)
+unsigned long CREARecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && recData != NULL)
-        return *(unsigned int*)&recData[-16];
-    unsigned int cSize = 0;
-    unsigned int TotSize = 0;
+        return *(unsigned long*)&recData[-16];
+    unsigned long cSize = 0;
+    unsigned long TotSize = 0;
     if(EDID.IsLoaded())
         {
         cSize = EDID.GetSize();
@@ -214,11 +214,11 @@ unsigned int CREARecord::GetSize(bool forceCalc)
             }
         }
     if(SPLO.size())
-        TotSize += (unsigned int)SPLO.size() * (sizeof(unsigned int) + 6);
+        TotSize += (unsigned long)SPLO.size() * (sizeof(unsigned long) + 6);
     if(NIFZ.size())
         {
         cSize = 1; //Type, size, and final null terminator
-        for(unsigned int p = 0; p < NIFZ.size(); p++)
+        for(unsigned long p = 0; p < NIFZ.size(); p++)
             if(NIFZ[p].IsLoaded())
                 cSize += NIFZ[p].GetSize();
         if(cSize > 65535) cSize += 10;
@@ -233,7 +233,7 @@ unsigned int CREARecord::GetSize(bool forceCalc)
     if(ACBS.IsLoaded())
         TotSize += ACBS.GetSize() + 6;
     if(SNAM.size())
-        for(unsigned int p = 0; p < SNAM.size(); p++)
+        for(unsigned long p = 0; p < SNAM.size(); p++)
             if(SNAM[p]->IsLoaded())
                 TotSize += SNAM[p]->GetSize() + 6;
     if(INAM.IsLoaded())
@@ -241,21 +241,21 @@ unsigned int CREARecord::GetSize(bool forceCalc)
     if(SCRI.IsLoaded())
         TotSize += SCRI.GetSize() + 6;
     if(CNTO.size())
-        for(unsigned int p = 0; p < CNTO.size(); p++)
+        for(unsigned long p = 0; p < CNTO.size(); p++)
             if(CNTO[p]->IsLoaded())
                 TotSize += CNTO[p]->GetSize() + 6;
     if(AIDT.IsLoaded())
         TotSize += AIDT.GetSize() + 6;
     if(PKID.size())
         {
-        cSize = (unsigned int)PKID.size() * (sizeof(unsigned int) + 6);
+        cSize = (unsigned long)PKID.size() * (sizeof(unsigned long) + 6);
         if(cSize > 65535) cSize += 10;
         TotSize += cSize;
         }
     if(KFFZ.size())
         {
         cSize = 1; //Type, size, and final null terminator
-        for(unsigned int p = 0; p < KFFZ.size(); p++)
+        for(unsigned long p = 0; p < KFFZ.size(); p++)
             if(KFFZ[p].IsLoaded())
                 cSize += KFFZ[p].GetSize();
         if(cSize > 65535) cSize += 10;
@@ -288,7 +288,7 @@ unsigned int CREARecord::GetSize(bool forceCalc)
         TotSize += cSize += 6;
         }
     if(Sounds.size())
-        for(unsigned int p = 0; p < Sounds.size(); p++)
+        for(unsigned long p = 0; p < Sounds.size(); p++)
             {
             if(Sounds[p]->CSDT.IsLoaded())
                 TotSize += Sounds[p]->CSDT.GetSize() + 6;
@@ -300,9 +300,9 @@ unsigned int CREARecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int CREARecord::WriteRecord(_FileHandler &SaveHandler)
+signed long CREARecord::WriteRecord(_FileHandler &SaveHandler)
     {
-    unsigned int cSize = 0;
+    unsigned long cSize = 0;
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
     if(FULL.IsLoaded())
@@ -316,17 +316,17 @@ int CREARecord::WriteRecord(_FileHandler &SaveHandler)
             SaveHandler.writeSubRecord(eMODT, MODL->MODT.value, MODL->MODT.GetSize());
         }
     if(SPLO.size())
-        for(unsigned int p = 0; p < SPLO.size(); p++)
-            SaveHandler.writeSubRecord(eSPLO, SPLO[p], sizeof(unsigned int));
+        for(unsigned long p = 0; p < SPLO.size(); p++)
+            SaveHandler.writeSubRecord(eSPLO, SPLO[p], sizeof(unsigned long));
     if(NIFZ.size())
         {
         cSize = 1; //final null terminator
-        for(unsigned int p = 0; p < NIFZ.size(); p++)
+        for(unsigned long p = 0; p < NIFZ.size(); p++)
             if(NIFZ[p].IsLoaded())
                 cSize += NIFZ[p].GetSize();
         if(cSize > 65535) cSize += 10;
         SaveHandler.writeSubRecord(eNIFZ, NULL, cSize);
-        for(unsigned int p = 0; p < NIFZ.size(); p++)
+        for(unsigned long p = 0; p < NIFZ.size(); p++)
             if(NIFZ[p].IsLoaded())
                 SaveHandler.write(NIFZ[p].value, NIFZ[p].GetSize());
         cSize = 0;
@@ -338,7 +338,7 @@ int CREARecord::WriteRecord(_FileHandler &SaveHandler)
     if(ACBS.IsLoaded())
         SaveHandler.writeSubRecord(eACBS, &ACBS.value, ACBS.GetSize());
     if(SNAM.size())
-        for(unsigned int p = 0; p < SNAM.size(); p++)
+        for(unsigned long p = 0; p < SNAM.size(); p++)
             if(SNAM[p]->IsLoaded())
                 SaveHandler.writeSubRecord(eSNAM, &SNAM[p]->value, SNAM[p]->GetSize());
     if(INAM.IsLoaded())
@@ -346,22 +346,22 @@ int CREARecord::WriteRecord(_FileHandler &SaveHandler)
     if(SCRI.IsLoaded())
         SaveHandler.writeSubRecord(eSCRI, SCRI.value, SCRI.GetSize());
     if(CNTO.size())
-        for(unsigned int p = 0; p < CNTO.size(); p++)
+        for(unsigned long p = 0; p < CNTO.size(); p++)
             if(CNTO[p]->IsLoaded())
                 SaveHandler.writeSubRecord(eCNTO, &CNTO[p]->value, sizeof(GENCNTO));
     if(AIDT.IsLoaded())
         SaveHandler.writeSubRecord(eAIDT, &AIDT.value, AIDT.GetSize());
     if(PKID.size())
-        for(unsigned int p = 0; p < PKID.size(); p++)
-            SaveHandler.writeSubRecord(ePKID, PKID[p], sizeof(unsigned int));
+        for(unsigned long p = 0; p < PKID.size(); p++)
+            SaveHandler.writeSubRecord(ePKID, PKID[p], sizeof(unsigned long));
     if(KFFZ.size())
         {
         cSize = 1; //final null terminator
-        for(unsigned int p = 0; p < KFFZ.size(); p++)
+        for(unsigned long p = 0; p < KFFZ.size(); p++)
             if(KFFZ[p].IsLoaded())
                 cSize += KFFZ[p].GetSize();
         SaveHandler.writeSubRecord(eKFFZ, NULL, cSize);
-        for(unsigned int p = 0; p < KFFZ.size(); p++)
+        for(unsigned long p = 0; p < KFFZ.size(); p++)
             if(KFFZ[p].IsLoaded())
                 SaveHandler.write(KFFZ[p].value, KFFZ[p].GetSize());
         cSize = 0;
@@ -388,7 +388,7 @@ int CREARecord::WriteRecord(_FileHandler &SaveHandler)
     if(NAM1.IsLoaded())
         SaveHandler.writeSubRecord(eNAM1, NAM1.value, NAM1.GetSize());
     if(Sounds.size())
-        for(unsigned int p = 0; p < Sounds.size(); p++)
+        for(unsigned long p = 0; p < Sounds.size(); p++)
             {
             if(Sounds[p]->CSDT.IsLoaded())
                 SaveHandler.writeSubRecord(eCSDT, &Sounds[p]->CSDT.value, Sounds[p]->CSDT.GetSize());
@@ -405,7 +405,7 @@ void CREARecord::Debug(int debugLevel)
     {
     if(!IsLoaded())
         return;
-    unsigned int indentation = 4;
+    unsigned long indentation = 4;
     printf("  CREA\n");
     if(Header.IsLoaded())
         Header.Debug(debugLevel, indentation);
@@ -421,7 +421,7 @@ void CREARecord::Debug(int debugLevel)
         PrintIndent(indentation);
         printf("SPLO:\n");
         indentation += 2;
-        for(unsigned int p = 0;p < SPLO.size();p++)
+        for(unsigned long p = 0;p < SPLO.size();p++)
             {
             PrintIndent(indentation);
             printf("%u:%s\n", p, PrintFormID(SPLO[p]));
@@ -434,7 +434,7 @@ void CREARecord::Debug(int debugLevel)
         PrintIndent(indentation);
         printf("NIFZ:\n");
         indentation += 2;
-        for(unsigned int p = 0;p < NIFZ.size();p++)
+        for(unsigned long p = 0;p < NIFZ.size();p++)
             {
             PrintIndent(indentation);
             printf("Index: %u\n", p);
@@ -452,7 +452,7 @@ void CREARecord::Debug(int debugLevel)
         PrintIndent(indentation);
         printf("SNAM:\n");
         indentation += 2;
-        for(unsigned int p = 0;p < SNAM.size();p++)
+        for(unsigned long p = 0;p < SNAM.size();p++)
             {
             PrintIndent(indentation);
             printf("Index: %u\n", p);
@@ -470,7 +470,7 @@ void CREARecord::Debug(int debugLevel)
         PrintIndent(indentation);
         printf("CNTO:\n");
         indentation += 2;
-        for(unsigned int p = 0;p < CNTO.size();p++)
+        for(unsigned long p = 0;p < CNTO.size();p++)
             {
             PrintIndent(indentation);
             printf("Index: %u\n", p);
@@ -486,7 +486,7 @@ void CREARecord::Debug(int debugLevel)
         PrintIndent(indentation);
         printf("PKID:\n");
         indentation += 2;
-        for(unsigned int p = 0;p < PKID.size();p++)
+        for(unsigned long p = 0;p < PKID.size();p++)
             {
             PrintIndent(indentation);
             printf("%u:%s\n", p, PrintFormID(PKID[p]));
@@ -499,7 +499,7 @@ void CREARecord::Debug(int debugLevel)
         PrintIndent(indentation);
         printf("KFFZ:\n");
         indentation += 2;
-        for(unsigned int p = 0;p < KFFZ.size();p++)
+        for(unsigned long p = 0;p < KFFZ.size();p++)
             {
             PrintIndent(indentation);
             printf("Index: %u\n", p);
@@ -531,7 +531,7 @@ void CREARecord::Debug(int debugLevel)
         PrintIndent(indentation);
         printf("Sounds:\n");
         indentation += 2;
-        for(unsigned int p=0;p < Sounds.size();p++)
+        for(unsigned long p=0;p < Sounds.size();p++)
             {
             PrintIndent(indentation);
             printf("Index: %u\n", p);

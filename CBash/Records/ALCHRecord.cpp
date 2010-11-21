@@ -23,14 +23,14 @@ GPL License and Copyright Notice ============================================
 #include "ALCHRecord.h"
 #include <vector>
 
-int ALCHRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
+signed long ALCHRecord::ParseRecord(unsigned char *buffer, const unsigned long &recSize)
     {
     if(IsLoaded())
         return -1;
     IsLoaded(true);
-    unsigned int subType = 0;
-    unsigned int subSize = 0;
-    unsigned int curPos = 0;
+    unsigned long subType = 0;
+    unsigned long subSize = 0;
+    unsigned long curPos = 0;
     GENEffect *newEffect = NULL;
     bool bNoOBME = true;
     while(curPos < recSize){
@@ -153,12 +153,12 @@ int ALCHRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
     return 0;
     }
 
-unsigned int ALCHRecord::GetSize(bool forceCalc)
+unsigned long ALCHRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && recData != NULL)
-        return *(unsigned int*)&recData[-16];
-    unsigned int cSize = 0;
-    unsigned int TotSize = 0;
+        return *(unsigned long*)&recData[-16];
+    unsigned long cSize = 0;
+    unsigned long TotSize = 0;
     if(EDID.IsLoaded())
         {
         cSize = EDID.GetSize();
@@ -211,7 +211,7 @@ unsigned int ALCHRecord::GetSize(bool forceCalc)
     if(ENIT.IsLoaded())
         TotSize += ENIT.GetSize() + 6;
     if(Effects.size())
-        for(unsigned int p = 0; p < Effects.size(); p++)
+        for(unsigned long p = 0; p < Effects.size(); p++)
             {
             if(Effects[p]->EFID.IsLoaded())
                 TotSize += Effects[p]->EFID.GetSize() + 6;
@@ -242,7 +242,7 @@ unsigned int ALCHRecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int ALCHRecord::WriteRecord(_FileHandler &SaveHandler)
+signed long ALCHRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
@@ -267,7 +267,7 @@ int ALCHRecord::WriteRecord(_FileHandler &SaveHandler)
     if(ENIT.IsLoaded())
         SaveHandler.writeSubRecord(eENIT, &ENIT.value, ENIT.GetSize());
     if(Effects.size())
-        for(unsigned int p = 0; p < Effects.size(); p++)
+        for(unsigned long p = 0; p < Effects.size(); p++)
             {
             if(Effects[p]->OBME.IsLoaded() && Effects[p]->OBME->EFME.IsLoaded())
                 SaveHandler.writeSubRecord(eEFME, &Effects[p]->OBME->EFME.value, Effects[p]->OBME->EFME.GetSize());
@@ -296,7 +296,7 @@ void ALCHRecord::Debug(int debugLevel)
     {
     if(!IsLoaded())
         return;
-    unsigned int indentation = 4;
+    unsigned long indentation = 4;
     printf("  ALCH\n");
     if(Header.IsLoaded())
         Header.Debug(debugLevel, indentation);
@@ -320,7 +320,7 @@ void ALCHRecord::Debug(int debugLevel)
         PrintIndent(indentation);
         printf("Effects:\n");
         indentation += 2;
-        for(unsigned int p = 0;p < Effects.size();p++)
+        for(unsigned long p = 0;p < Effects.size();p++)
             {
             PrintIndent(indentation);
             printf("Index: %u\n", p);

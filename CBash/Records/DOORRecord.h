@@ -51,15 +51,15 @@ class DOORRecord : public Record
             fIsHidden       = 0x00000004,
             fIsMinimalUse   = 0x00000008
             };
-        STRING EDID;
-        STRING FULL;
+        StringRecord EDID;
+        StringRecord FULL;
         OptSubRecord<GENMODEL> MODL;
         OptSubRecord<GENFID> SCRI;
         OptSubRecord<GENFID> SNAM;
         OptSubRecord<GENFID> ANAM;
         OptSubRecord<GENFID> BNAM;
         ReqSubRecord<GENFLAG> FNAM;
-        std::vector<unsigned int *> TNAM;
+        std::vector<unsigned long *> TNAM;
 
         DOORRecord(bool newRecord=false):Record(newRecord) {}
         DOORRecord(DOORRecord *srcRecord):Record(true)
@@ -86,13 +86,13 @@ class DOORRecord : public Record
             FNAM = srcRecord->FNAM;
             TNAM.clear();
             TNAM.resize(srcRecord->TNAM.size());
-            for(unsigned int x = 0; x < srcRecord->TNAM.size(); x++)
-                TNAM[x] = new unsigned int(*srcRecord->TNAM[x]);
+            for(unsigned long x = 0; x < srcRecord->TNAM.size(); x++)
+                TNAM[x] = new unsigned long(*srcRecord->TNAM[x]);
             return;
             }
         ~DOORRecord()
             {
-            for(unsigned int x = 0; x < TNAM.size(); x++)
+            for(unsigned long x = 0; x < TNAM.size(); x++)
                 delete TNAM[x];
             }
         void Unload()
@@ -106,15 +106,15 @@ class DOORRecord : public Record
             ANAM.Unload();
             BNAM.Unload();
             FNAM.Unload();
-            for(unsigned int x = 0; x < TNAM.size(); x++)
+            for(unsigned long x = 0; x < TNAM.size(); x++)
                 delete TNAM[x];
             TNAM.clear();
             }
 
-        void VisitFormIDs(FormIDOp &op)
+        bool VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
-                return;
+                return false;
 
             if(SCRI.IsLoaded())
                 op.Accept(SCRI->fid);
@@ -124,32 +124,34 @@ class DOORRecord : public Record
                 op.Accept(ANAM->fid);
             if(BNAM.IsLoaded())
                 op.Accept(BNAM->fid);
-            for(unsigned int x = 0; x < TNAM.size(); x++)
+            for(unsigned long x = 0; x < TNAM.size(); x++)
                 op.Accept(*TNAM[x]);
+
+            return op.Stop();
             }
 
         #ifdef _DEBUG
-        void Debug(int debugLevel);
+        void Debug(signed long debugLevel);
         #endif
 
-        int GetOtherFieldType(const unsigned int Field);
-        void * GetOtherField(const unsigned int Field);
-        unsigned int GetFieldArraySize(const unsigned int Field);
-        void GetFieldArray(const unsigned int Field, void **FieldValues);
-        void SetField(const unsigned int Field, char *FieldValue);
-        void SetField(const unsigned int Field, float FieldValue);
-        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetOtherField(const unsigned int Field, unsigned int FieldValue);
-        void SetField(const unsigned int Field, unsigned char FieldValue);
-        void SetField(const unsigned int Field, unsigned int FieldValue[], unsigned int nSize);
+        signed long GetOtherFieldType(const unsigned long Field);
+        void * GetOtherField(const unsigned long Field);
+        unsigned long GetFieldArraySize(const unsigned long Field);
+        void GetFieldArray(const unsigned long Field, void **FieldValues);
+        void SetField(const unsigned long Field, char *FieldValue);
+        void SetField(const unsigned long Field, float FieldValue);
+        void SetField(const unsigned long Field, unsigned char *FieldValue, unsigned long nSize);
+        void SetOtherField(const unsigned long Field, unsigned long FieldValue);
+        void SetField(const unsigned long Field, unsigned char FieldValue);
+        void SetField(const unsigned long Field, unsigned long FieldValue[], unsigned long nSize);
 
-        int DeleteField(const unsigned int Field);
+        signed long DeleteField(const unsigned long Field);
 
-        int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize(bool forceCalc=false);
-        unsigned int GetType() {return eDOOR;}
-        char * GetStrType() {return "DOOR";}
-        int WriteRecord(_FileHandler &SaveHandler);
+        signed long ParseRecord(unsigned char *buffer, const unsigned long &recSize);
+        unsigned long GetSize(bool forceCalc=false);
+        unsigned long GetType() {return eDOOR;}
+        char *GetStrType() {return "DOOR";}
+        signed long WriteRecord(_FileHandler &SaveHandler);
         bool IsOblivionGate()
             {
             return (FNAM.value.flags & fIsOblivionGate) != 0;

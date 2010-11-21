@@ -1,0 +1,1094 @@
+/*
+GPL License and Copyright Notice ============================================
+ This file is part of CBash.
+
+ CBash is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation; either version 2
+ of the License, or (at your option) any later version.
+
+ CBash is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with CBash; if not, write to the Free Software Foundation,
+ Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+ CBash copyright (C) 2010 Waruddar
+=============================================================================
+*/
+
+#include "Common.h"
+#include "GenericChunks.h"
+
+GENFLAG::GENFLAG():
+    flags(0)
+    {
+    //
+    }
+
+GENFLAG::~GENFLAG()
+    {
+    //
+    }
+
+bool GENFLAG::operator ==(const GENFLAG& other) const
+    {
+    return flags == other.flags;
+    }
+
+bool GENFLAG::operator !=(const GENFLAG &other) const
+    {
+    return !(*this == other);
+    }
+
+GENXNAM::GENXNAM():
+    faction(0),
+    mod(0)
+    {
+    //
+    }
+
+GENXNAM::~GENXNAM()
+    {
+    //
+    }
+
+bool GENXNAM::operator ==(const GENXNAM& other) const
+    {
+    return (faction == other.faction && mod == other.mod);
+    }
+
+bool GENXNAM::operator !=(const GENXNAM &other) const
+    {
+    return !(*this == other);
+    }
+
+GENFID::GENFID():
+    fid(0)
+    {
+    //
+    }
+
+GENFID::~GENFID()
+    {
+    //
+    }
+
+bool GENFID::operator ==(const GENFID& other) const
+    {
+    return fid == other.fid;
+    }
+
+bool GENFID::operator !=(const GENFID &other) const
+    {
+    return !(*this == other);
+    }
+
+GENSCHR::GENSCHR():
+    numRefs(0),
+    compiledSize(0),
+    lastIndex(0),
+    scriptType(0)
+    {
+    memset(&unused1, 0x00, 4);
+    }
+
+GENSCHR::~GENSCHR()
+    {
+    //
+    }
+
+bool GENSCHR::operator ==(const GENSCHR& other) const
+    {
+    return (numRefs == other.numRefs &&
+            compiledSize == other.compiledSize &&
+            lastIndex == other.lastIndex &&
+            scriptType == other.scriptType);
+    }
+
+bool GENSCHR::operator !=(const GENSCHR &other) const
+    {
+    return !(*this == other);
+    }
+
+GENSCR_::GENSCR_():
+    reference(0),
+    isSCRO(false)
+    {
+    //
+    }
+
+GENSCR_::~GENSCR_()
+    {
+    //
+    }
+
+bool GENSCR_::operator ==(const GENSCR_& other) const
+    {
+    return (reference == other.reference &&
+            isSCRO == other.isSCRO);
+    }
+
+bool GENSCR_::operator !=(const GENSCR_ &other) const
+    {
+    return !(*this == other);
+    }
+
+GENEFID::GENEFID():
+    name(0)
+    {
+    //
+    }
+
+GENEFID::~GENEFID()
+    {
+    //
+    }
+
+bool GENEFID::operator ==(const GENEFID &other) const
+    {
+    return (name == other.name);
+    }
+
+bool GENEFID::operator !=(const GENEFID &other) const
+    {
+    return !(*this == other);
+    }
+
+GENEFIT::GENEFIT():
+    name(0),
+    magnitude(0),
+    area(0),
+    duration(0),
+    recipient(0),
+    actorValue(0)
+    {
+    //
+    }
+
+GENEFIT::~GENEFIT()
+    {
+    //
+    }
+
+bool GENEFIT::operator ==(const GENEFIT& other) const
+    {
+    return (name == other.name &&
+            magnitude == other.magnitude &&
+            area == other.area &&
+            duration == other.duration &&
+            recipient == other.recipient &&
+            actorValue == other.actorValue);
+    }
+
+bool GENEFIT::operator !=(const GENEFIT &other) const
+    {
+    return !(*this == other);
+    }
+
+GENSCIT::GENSCIT():
+    script(0),
+    school(0),
+    visual(0),
+    flags(0)
+    {
+    memset(&unused1, 0x00, 3);
+    }
+
+GENSCIT::~GENSCIT()
+    {
+    //
+    }
+
+bool GENSCIT::operator ==(const GENSCIT& other) const
+    {
+    return (script == other.script &&
+            school == other.school &&
+            visual == other.visual &&
+            flags == other.flags);
+    }
+
+bool GENSCIT::operator !=(const GENSCIT &other) const
+    {
+    return !(*this == other);
+    }
+
+OBMEEFME::OBMEEFME():
+    recordVersion(0),
+    betaVersion(0),
+    minorVersion(0),
+    majorVersion(0),
+    efitParamInfo(0),
+    efixParamInfo(0)
+    {
+    memset(&reserved, 0x00, 0xA);
+    }
+
+OBMEEFME::~OBMEEFME()
+    {
+    //
+    }
+
+bool OBMEEFME::operator ==(const OBMEEFME &other) const
+    {
+    return (recordVersion == other.recordVersion &&
+            betaVersion == other.betaVersion &&
+            minorVersion == other.minorVersion &&
+            majorVersion == other.majorVersion &&
+            efitParamInfo == other.efitParamInfo &&
+            efixParamInfo == other.efixParamInfo &&
+            reserved == other.reserved);
+    }
+
+bool OBMEEFME::operator !=(const OBMEEFME &other) const
+    {
+    return !(*this == other);
+    }
+
+OBMEEFIX::OBMEEFIX():
+    efixOverrideMask(0),
+    efixFlags(0),
+    baseCost(0.0),
+    resistAV(0)
+    {
+    memset(&reserved, 0x00, 0x10);
+    }
+
+OBMEEFIX::~OBMEEFIX()
+    {
+    //
+    }
+
+bool OBMEEFIX::operator ==(const OBMEEFIX &other) const
+    {
+    return (efixOverrideMask == other.efixOverrideMask &&
+            efixFlags == other.efixFlags &&
+            AlmostEqual(baseCost,other.baseCost,2) &&
+            resistAV == other.resistAV &&
+            reserved == other.reserved);
+    }
+
+bool OBMEEFIX::operator !=(const OBMEEFIX &other) const
+    {
+    return !(*this == other);
+    }
+
+bool OBMEEffect::operator ==(const OBMEEffect& other) const
+    {
+    return (EFME == other.EFME &&
+            EFII == other.EFII &&
+            EFIX == other.EFIX);
+    }
+bool OBMEEffect::operator !=(const OBMEEffect &other) const
+    {
+    return !(*this == other);
+    }
+
+bool GENEffect::operator ==(const GENEffect& other) const
+    {
+    return (EFID == other.EFID &&
+            EFIT == other.EFIT &&
+            SCIT == other.SCIT &&
+            FULL == other.FULL &&
+            OBME == other.OBME);
+    }
+
+bool GENEffect::operator !=(const GENEffect &other) const
+    {
+    return !(*this == other);
+    }
+
+bool GENEffect::IsHostile()
+    {
+    if(!SCIT.IsLoaded()) return false;
+    return (SCIT->flags & fIsHostile) != 0;
+    }
+
+void GENEffect::IsHostile(bool value)
+    {
+    if(!SCIT.IsLoaded()) return;
+    if(value)
+        SCIT->flags |= fIsHostile;
+    else
+        SCIT->flags &= ~fIsHostile;
+    }
+
+bool GENEffect::IsFlagMask(UINT8 Mask, bool Exact)
+    {
+    if(!SCIT.IsLoaded()) return false;
+    if(Exact)
+        return (SCIT->flags & Mask) == Mask;
+    else
+        return (SCIT->flags & Mask) != 0;
+    }
+
+void GENEffect::SetFlagMask(UINT8 Mask)
+    {
+    if(!SCIT.IsLoaded()) return;
+    SCIT->flags = Mask;
+    }
+
+bool GENEffect::IsRangeSelf()
+    {
+    return (EFIT.value.recipient == eRangeSelf);
+    }
+
+void GENEffect::IsRangeSelf(bool value)
+    {
+    if(value)
+        EFIT.value.recipient = eRangeSelf;
+    else
+        EFIT.value.recipient = eRangeTouch;
+    }
+
+bool GENEffect::IsRangeTouch()
+    {
+    return (EFIT.value.recipient == eRangeTouch);
+    }
+
+void GENEffect::IsRangeTouch(bool value)
+    {
+    if(value)
+        EFIT.value.recipient = eRangeTouch;
+    else
+        EFIT.value.recipient = eRangeSelf;
+    }
+
+bool GENEffect::IsRangeTarget()
+    {
+    return (EFIT.value.recipient == eRangeTarget);
+    }
+
+void GENEffect::IsRangeTarget(bool value)
+    {
+    if(value)
+        EFIT.value.recipient = eRangeTarget;
+    else
+        EFIT.value.recipient = eRangeSelf;
+    }
+
+bool GENEffect::IsRange(UINT32 Mask)
+    {
+    return (EFIT.value.recipient == Mask);
+    }
+
+void GENEffect::SetRange(UINT32 Mask)
+    {
+    EFIT.value.recipient = Mask;
+    }
+
+GENANAM::GENANAM():
+    enchantPoints(0)
+    {
+    //
+    }
+
+GENANAM::~GENANAM()
+    {
+    //
+    }
+
+bool GENANAM::operator ==(const GENANAM &other) const
+    {
+    return (enchantPoints == other.enchantPoints);
+    }
+
+bool GENANAM::operator !=(const GENANAM &other) const
+    {
+    return !(*this == other);
+    }
+
+GENUFLAG::GENUFLAG():
+    flags(0)
+    {
+    //
+    }
+
+GENUFLAG::~GENUFLAG()
+    {
+    //
+    }
+
+bool GENUFLAG::operator ==(const GENUFLAG &other) const
+    {
+    return (flags == other.flags);
+    }
+
+bool GENUFLAG::operator !=(const GENUFLAG &other) const
+    {
+    return !(*this == other);
+    }
+
+GENWEIGHT::GENWEIGHT():
+    weight(0.0f)
+    {
+    //
+    }
+
+GENWEIGHT::~GENWEIGHT()
+    {
+    //
+    }
+
+bool GENWEIGHT::operator ==(const GENWEIGHT &other) const
+    {
+    return AlmostEqual(weight,other.weight,2);
+    }
+
+bool GENWEIGHT::operator !=(const GENWEIGHT &other) const
+    {
+    return !(*this == other);
+    }
+
+GENENIT::GENENIT():
+    value(0),
+    flags(0)
+    {
+    memset(&unused1, 0x00, 3);
+    }
+
+GENENIT::~GENENIT()
+    {
+    //
+    }
+
+bool GENENIT::operator ==(const GENENIT &other) const
+    {
+    return (value == other.value &&
+            flags == other.flags);
+    }
+
+bool GENENIT::operator !=(const GENENIT &other) const
+    {
+    return !(*this == other);
+    }
+
+GENVALUEWEIGHT::GENVALUEWEIGHT():
+    value(0),
+    weight(0.0f)
+    {
+    //
+    }
+
+GENVALUEWEIGHT::~GENVALUEWEIGHT()
+    {
+    //
+    }
+
+bool GENVALUEWEIGHT::operator ==(const GENVALUEWEIGHT &other) const
+    {
+    return (value == other.value &&
+            AlmostEqual(weight,other.weight,2));
+    }
+
+bool GENVALUEWEIGHT::operator !=(const GENVALUEWEIGHT &other) const
+    {
+    return !(*this == other);
+    }
+
+GENCNTO::GENCNTO():
+    item(0),
+    count(1)
+    {
+    //
+    }
+
+GENCNTO::~GENCNTO()
+    {
+    //
+    }
+
+bool GENCNTO::operator ==(const GENCNTO &other) const
+    {
+    return (item == other.item &&
+            count == other.count);
+    }
+
+bool GENCNTO::operator !=(const GENCNTO &other) const
+    {
+    return !(*this == other);
+    }
+
+GENACBS::GENACBS():
+    flags(0),
+    baseSpell(0),
+    fatigue(0),
+    barterGold(0),
+    level(1),
+    calcMin(0),
+    calcMax(0)
+    {
+    //
+    }
+
+GENACBS::~GENACBS()
+    {
+    //
+    }
+
+bool GENACBS::operator ==(const GENACBS &other) const
+    {
+    return (flags == other.flags &&
+            baseSpell == other.baseSpell &&
+            fatigue == other.fatigue &&
+            barterGold == other.barterGold &&
+            level == other.level &&
+            calcMin == other.calcMin &&
+            calcMax == other.calcMax);
+    }
+
+bool GENACBS::operator !=(const GENACBS &other) const
+    {
+    return !(*this == other);
+    }
+
+GENSNAM::GENSNAM():
+    faction(0),
+    rank(0)
+    {
+    memset(&unused1, 0x00, 3);
+    }
+
+GENSNAM::~GENSNAM()
+    {
+    //
+    }
+
+bool GENSNAM::operator ==(const GENSNAM &other) const
+    {
+    return (faction == other.faction &&
+            rank == other.rank);
+    }
+
+bool GENSNAM::operator !=(const GENSNAM &other) const
+    {
+    return !(*this == other);
+    }
+
+GENAIDT::GENAIDT():
+    aggression(5),
+    confidence(50),
+    energyLevel(50),
+    responsibility(50),
+    flags(0),
+    trainSkill(0),
+    trainLevel(0)
+    {
+    memset(&unused1, 0x00, 2);
+    }
+
+GENAIDT::~GENAIDT()
+    {
+    //
+    }
+
+bool GENAIDT::operator ==(const GENAIDT &other) const
+    {
+    return (aggression == other.aggression &&
+            confidence == other.confidence &&
+            energyLevel == other.energyLevel &&
+            responsibility == other.responsibility &&
+            flags == other.flags &&
+            trainSkill == other.trainSkill &&
+            trainLevel == other.trainLevel);
+    }
+
+bool GENAIDT::operator !=(const GENAIDT &other) const
+    {
+    return !(*this == other);
+    }
+
+GENCTDA::GENCTDA():
+    operType(0),
+    compValue(0.0f),
+    ifunc(0),
+    param1(0),
+    param2(0)
+    {
+    memset(&unused1, 0x00, 3);
+    memset(&unused2, 0x00, 4);
+    }
+
+GENCTDA::~GENCTDA()
+    {
+    //
+    }
+
+bool GENCTDA::operator ==(const GENCTDA &other) const
+    {
+    return (operType == other.operType &&
+            AlmostEqual(compValue,other.compValue,2) &&
+            ifunc == other.ifunc &&
+            param1 == other.param1 &&
+            param2 == other.param2);
+    }
+
+bool GENCTDA::operator !=(const GENCTDA &other) const
+    {
+    return !(*this == other);
+    }
+    
+bool GENCTDA::IsEqual()
+    {
+    return ((operType & 0xF0) == eEqual);
+    }
+
+void GENCTDA::IsEqual(bool value)
+    {
+    if(value)
+        {
+        operType &= 0x0F;
+        operType |= eEqual;
+        }
+    else if(IsEqual())
+        {
+        operType &= 0x0F;
+        operType |= eNotEqual;
+        }
+    }
+
+bool GENCTDA::IsNotEqual()
+    {
+    return ((operType & 0xF0) == eNotEqual);
+    }
+
+void GENCTDA::IsNotEqual(bool value)
+    {
+    if(value)
+        {
+        operType &= 0x0F;
+        operType |= eNotEqual;
+        }
+    else if(IsNotEqual())
+        {
+        operType &= 0x0F;
+        operType |= eEqual;
+        }
+    }
+
+bool GENCTDA::IsGreater()
+    {
+    return ((operType & 0xF0) == eGreater);
+    }
+
+void GENCTDA::IsGreater(bool value)
+    {
+    if(value)
+        {
+        operType &= 0x0F;
+        operType |= eGreater;
+        }
+    else if(IsGreater())
+        {
+        operType &= 0x0F;
+        operType |= eEqual;
+        }
+    }
+
+bool GENCTDA::IsGreaterOrEqual()
+    {
+    return ((operType & 0xF0) == eGreaterOrEqual);
+    }
+
+void GENCTDA::IsGreaterOrEqual(bool value)
+    {
+    if(value)
+        {
+        operType &= 0x0F;
+        operType |= eGreaterOrEqual;
+        }
+    else if(IsGreaterOrEqual())
+        {
+        operType &= 0x0F;
+        operType |= eEqual;
+        }
+    }
+
+bool GENCTDA::IsLess()
+    {
+    return ((operType & 0xF0) == eLess);
+    }
+
+void GENCTDA::IsLess(bool value)
+    {
+    if(value)
+        {
+        operType &= 0x0F;
+        operType |= eLess;
+        }
+    else if(IsLess())
+        {
+        operType &= 0x0F;
+        operType |= eEqual;
+        }
+    }
+
+bool GENCTDA::IsLessOrEqual()
+    {
+    return ((operType & 0xF0) == eLessOrEqual);
+    }
+
+void GENCTDA::IsLessOrEqual(bool value)
+    {
+    if(value)
+        {
+        operType &= 0x0F;
+        operType |= eLessOrEqual;
+        }
+    else if(IsNotEqual())
+        {
+        operType &= 0x0F;
+        operType |= eEqual;
+        }
+    }
+
+bool GENCTDA::IsType(UINT8 Type)
+    {
+    return ((operType & 0xF0) == (Type & 0xF0));
+    }
+
+void GENCTDA::SetType(UINT8 Type)
+    {
+    Type &= 0xF0;
+    operType &= 0x0F;
+    operType |= Type;
+    }
+
+bool GENCTDA::IsNone()
+    {
+    return ((operType & 0x0F) == fIsNone);
+    }
+
+void GENCTDA::IsNone(bool value)
+    {
+    if(value)
+        operType &= 0xF0;
+    }
+
+bool GENCTDA::IsOr()
+    {
+    return ((operType & 0x0F) & fIsOr) != 0;
+    }
+
+void GENCTDA::IsOr(bool value)
+    {
+    if(value)
+        operType |= fIsOr;
+    else
+        operType &= ~fIsOr;
+    }
+
+bool GENCTDA::IsRunOnTarget()
+    {
+    return ((operType & 0x0F) & fIsRunOnTarget) != 0;
+    }
+
+void GENCTDA::IsRunOnTarget(bool value)
+    {
+    if(value)
+        operType |= fIsRunOnTarget;
+    else
+        operType &= ~fIsRunOnTarget;
+    }
+
+bool GENCTDA::IsUseGlobal()
+    {
+    return ((operType & 0x0F) & fIsUseGlobal) != 0;
+    }
+
+void GENCTDA::IsUseGlobal(bool value)
+    {
+    if(value)
+        operType |= fIsUseGlobal;
+    else
+        operType &= ~fIsUseGlobal;
+    }
+
+bool GENCTDA::IsFlagMask(UINT8 Mask, bool Exact)
+    {
+    if(Exact)
+        return ((operType & 0x0F) & (Mask & 0x0F)) == Mask;
+    else
+        return ((operType & 0x0F) & (Mask & 0x0F)) != 0;
+    }
+
+void GENCTDA::SetFlagMask(UINT8 Mask)
+    {
+    Mask &= 0x0F;
+    operType &= 0xF0;
+    operType |= Mask;
+    }
+
+GENCLR::GENCLR(UINT8 _red, UINT8 _green, UINT8 _blue, UINT8 _unused1):
+    red(_red),
+    green(_green),
+    blue(_blue),
+    unused1(_unused1)
+    {
+    //
+    }
+
+GENCLR::~GENCLR()
+    {
+    //
+    }
+
+bool GENCLR::operator ==(const GENCLR &other) const
+    {
+    return (red == other.red &&
+            green == other.green &&
+            blue == other.blue);
+    }
+
+bool GENCLR::operator !=(const GENCLR &other) const
+    {
+    return !(*this == other);
+    }
+
+MODELMODB::MODELMODB():
+    MODB(0.0f)
+    {
+    //
+    }
+
+MODELMODB::~MODELMODB()
+    {
+    //
+    }
+
+bool MODELMODB::operator ==(const MODELMODB &other) const
+    {
+    return AlmostEqual(MODB,other.MODB,2);
+    }
+
+bool MODELMODB::operator !=(const MODELMODB &other) const
+    {
+    return !(*this == other);
+    }
+
+bool GENMODEL::operator ==(const GENMODEL &other) const
+    {
+    return (MODB == other.MODB &&
+            MODL == other.MODL &&
+            MODT == other.MODT);
+    }
+
+bool GENMODEL::operator !=(const GENMODEL &other) const
+    {
+    return !(*this == other);
+    }
+
+GENRANK::GENRANK():
+    rank(0)
+    {
+    //
+    }
+
+GENRANK::~GENRANK()
+    {
+    //
+    }
+
+bool GENRANK::operator ==(const GENRANK &other) const
+    {
+    return (rank == other.rank);
+    }
+
+bool GENRANK::operator !=(const GENRANK &other) const
+    {
+    return !(*this == other);
+    }
+
+bool GENXOWN::operator ==(const GENXOWN &other) const
+    {
+    return (XOWN == other.XOWN &&
+            XRNK == other.XRNK &&
+            XGLB == other.XGLB);
+    }
+
+bool GENXOWN::operator !=(const GENXOWN &other) const
+    {
+    return !(*this == other);
+    }
+
+bool GENXPCI::operator ==(const GENXPCI &other) const
+    {
+    return (XPCI == other.XPCI &&
+            FULL == other.FULL);
+    }
+
+bool GENXPCI::operator !=(const GENXPCI &other) const
+    {
+    return !(*this == other);
+    }
+
+GENXLOD::GENXLOD():
+    lod1(0.0f),
+    lod2(0.0f),
+    lod3(0.0f)
+    {
+    //
+    }
+
+GENXLOD::~GENXLOD()
+    {
+    //
+    }
+
+bool GENXLOD::operator ==(const GENXLOD &other) const
+    {
+    return (AlmostEqual(lod1,other.lod1,2) &&
+            AlmostEqual(lod2,other.lod2,2) &&
+            AlmostEqual(lod3,other.lod3,2)
+            );
+    }
+
+bool GENXLOD::operator !=(const GENXLOD &other) const
+    {
+    return !(*this == other);
+    }
+
+GENXESP::GENXESP():
+    parent(0),
+    flags(0)
+    {
+    memset(&unused1, 0x00, 3);
+    }
+
+GENXESP::~GENXESP()
+    {
+    //
+    }
+
+bool GENXESP::operator ==(const GENXESP &other) const
+    {
+    return (parent == other.parent &&
+            flags == other.flags);
+    }
+
+bool GENXESP::operator !=(const GENXESP &other) const
+    {
+    return !(*this == other);
+    }
+
+GENXSCL::GENXSCL():
+    scale(1.0f)
+    {
+    //
+    }
+
+GENXSCL::~GENXSCL()
+    {
+    //
+    }
+
+bool GENXSCL::operator ==(const GENXSCL &other) const
+    {
+    return (AlmostEqual(scale,other.scale,2));
+    }
+
+bool GENXSCL::operator !=(const GENXSCL &other) const
+    {
+    return !(*this == other);
+    }
+
+GENPOSDATA::GENPOSDATA():
+    posX(0.0f),
+    posY(0.0f),
+    posZ(0.0f),
+    rotX(0.0f),
+    rotY(0.0f),
+    rotZ(0.0f)
+    {
+    //
+    }
+
+GENPOSDATA::~GENPOSDATA()
+    {
+    //
+    }
+
+bool GENPOSDATA::operator ==(const GENPOSDATA &other) const
+    {
+    return (AlmostEqual(posX,other.posX,2) &&
+            AlmostEqual(posY,other.posY,2) &&
+            AlmostEqual(posZ,other.posZ,2) &&
+            AlmostEqual(rotX,other.rotX,2) &&
+            AlmostEqual(rotY,other.rotY,2) &&
+            AlmostEqual(rotZ,other.rotZ,2)
+            );
+    }
+
+bool GENPOSDATA::operator !=(const GENPOSDATA &other) const
+    {
+    return !(*this == other);
+    }
+
+GENPGRP::GENPGRP():
+    x(0.0f),
+    y(0.0f),
+    z(0.0f),
+    connections(0)
+    {
+    memset(&unused1, 0x00, 3);
+    }
+
+GENPGRP::~GENPGRP()
+    {
+    //
+    }
+
+bool GENPGRP::operator ==(const GENPGRP &other) const
+    {
+    return (AlmostEqual(x,other.x,2) &&
+            AlmostEqual(y,other.y,2) &&
+            AlmostEqual(z,other.z,2) &&
+            connections == other.connections);
+    }
+
+bool GENPGRP::operator !=(const GENPGRP &other) const
+    {
+    return !(*this == other);
+    }
+
+MAGICOBME::MAGICOBME():
+    recordVersion(0),
+    betaVersion(0),
+    minorVersion(0),
+    majorVersion(0)
+    {
+    memset(&reserved, 0x00, 0x1C);
+    }
+
+MAGICOBME::~MAGICOBME()
+    {
+    //
+    }
+
+bool MAGICOBME::operator ==(const MAGICOBME &other) const
+    {
+    return (recordVersion == other.recordVersion &&
+            betaVersion == other.betaVersion &&
+            minorVersion == other.minorVersion &&
+            majorVersion == other.majorVersion &&
+            reserved == other.reserved);
+    }
+
+bool MAGICOBME::operator !=(const MAGICOBME &other) const
+    {
+    return !(*this == other);
+    }
+
+bool OBMEMAGIC::operator ==(const OBMEMAGIC &other) const
+    {
+    return (OBME == other.OBME &&
+            DATX == other.DATX);
+    }
+
+bool OBMEMAGIC::operator !=(const OBMEMAGIC &other) const
+    {
+    return !(*this == other);
+    }

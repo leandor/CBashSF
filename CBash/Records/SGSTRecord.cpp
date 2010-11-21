@@ -23,14 +23,14 @@ GPL License and Copyright Notice ============================================
 #include "SGSTRecord.h"
 #include <vector>
 
-int SGSTRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
+signed long SGSTRecord::ParseRecord(unsigned char *buffer, const unsigned long &recSize)
     {
     if(IsLoaded())
         return -1;
     IsLoaded(true);
-    unsigned int subType = 0;
-    unsigned int subSize = 0;
-    unsigned int curPos = 0;
+    unsigned long subType = 0;
+    unsigned long subSize = 0;
+    unsigned long curPos = 0;
     GENEffect *newEffect = NULL;
     bool bNoOBME = true;
     while(curPos < recSize){
@@ -150,12 +150,12 @@ int SGSTRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
     return 0;
     }
 
-unsigned int SGSTRecord::GetSize(bool forceCalc)
+unsigned long SGSTRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && recData != NULL)
-        return *(unsigned int*)&recData[-16];
-    unsigned int cSize = 0;
-    unsigned int TotSize = 0;
+        return *(unsigned long*)&recData[-16];
+    unsigned long cSize = 0;
+    unsigned long TotSize = 0;
     if(EDID.IsLoaded())
         {
         cSize = EDID.GetSize();
@@ -204,7 +204,7 @@ unsigned int SGSTRecord::GetSize(bool forceCalc)
     if(SCRI.IsLoaded())
         TotSize += SCRI.GetSize() + 6;
     if(Effects.size())
-        for(unsigned int p = 0; p < Effects.size(); p++)
+        for(unsigned long p = 0; p < Effects.size(); p++)
             {
             if(Effects[p]->EFID.IsLoaded())
                 TotSize += Effects[p]->EFID.GetSize() + 6;
@@ -237,7 +237,7 @@ unsigned int SGSTRecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int SGSTRecord::WriteRecord(_FileHandler &SaveHandler)
+signed long SGSTRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
@@ -258,7 +258,7 @@ int SGSTRecord::WriteRecord(_FileHandler &SaveHandler)
     if(SCRI.IsLoaded())
         SaveHandler.writeSubRecord(eSCRI, SCRI.value, SCRI.GetSize());
     if(Effects.size())
-        for(unsigned int p = 0; p < Effects.size(); p++)
+        for(unsigned long p = 0; p < Effects.size(); p++)
             {
             if(Effects[p]->OBME.IsLoaded() && Effects[p]->OBME->EFME.IsLoaded())
                 SaveHandler.writeSubRecord(eEFME, &Effects[p]->OBME->EFME.value, Effects[p]->OBME->EFME.GetSize());
@@ -289,7 +289,7 @@ void SGSTRecord::Debug(int debugLevel)
     {
     if(!IsLoaded())
         return;
-    unsigned int indentation = 4;
+    unsigned long indentation = 4;
     printf("  SGST\n");
     if(Header.IsLoaded())
         Header.Debug(debugLevel, indentation);
@@ -309,7 +309,7 @@ void SGSTRecord::Debug(int debugLevel)
         PrintIndent(indentation);
         printf("Effects:\n");
         indentation += 2;
-        for(unsigned int p = 0;p < Effects.size();p++)
+        for(unsigned long p = 0;p < Effects.size();p++)
             {
             PrintIndent(indentation);
             printf("Index: %u\n", p);

@@ -23,14 +23,14 @@ GPL License and Copyright Notice ============================================
 #include "INFORecord.h"
 #include <vector>
 
-int INFORecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
+signed long INFORecord::ParseRecord(unsigned char *buffer, const unsigned long &recSize)
     {
     if(IsLoaded())
         return -1;
     IsLoaded(true);
-    unsigned int subType = 0;
-    unsigned int subSize = 0;
-    unsigned int curPos = 0;
+    unsigned long subType = 0;
+    unsigned long subSize = 0;
+    unsigned long curPos = 0;
     FormID curFormID = NULL;
     INFOResponse *newResponse = NULL;
     ReqSubRecord<GENCTDA> *newCTDA = NULL;
@@ -65,7 +65,7 @@ int INFORecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 PNAM.Read(buffer, subSize, curPos);
                 break;
             case eNAME:
-                curFormID = new unsigned int;
+                curFormID = new unsigned long;
                 _readBuffer(curFormID,buffer,subSize,curPos);
                 NAME.push_back(curFormID);
                 break;
@@ -97,12 +97,12 @@ int INFORecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 CTDA.push_back(newCTDA);
                 break;
             case eTCLT:
-                curFormID = new unsigned int;
+                curFormID = new unsigned long;
                 _readBuffer(curFormID,buffer,subSize,curPos);
                 TCLT.push_back(curFormID);
                 break;
             case eTCLF:
-                curFormID = new unsigned int;
+                curFormID = new unsigned long;
                 _readBuffer(curFormID,buffer,subSize,curPos);
                 TCLF.push_back(curFormID);
                 break;
@@ -142,12 +142,12 @@ int INFORecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
     return 0;
     }
 
-unsigned int INFORecord::GetSize(bool forceCalc)
+unsigned long INFORecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && recData != NULL)
-        return *(unsigned int*)&recData[-16];
-    unsigned int cSize = 0;
-    unsigned int TotSize = 0;
+        return *(unsigned long*)&recData[-16];
+    unsigned long cSize = 0;
+    unsigned long TotSize = 0;
     if(DATA.IsLoaded())
         TotSize += DATA.GetSize() + 6;
     if(QSTI.IsLoaded())
@@ -157,11 +157,11 @@ unsigned int INFORecord::GetSize(bool forceCalc)
     if(PNAM.IsLoaded())
         TotSize += PNAM.GetSize() + 6;
     if(NAME.size())
-        TotSize += (unsigned int)NAME.size() * (sizeof(unsigned int) + 6);
+        TotSize += (unsigned long)NAME.size() * (sizeof(unsigned long) + 6);
 
     if(Responses.size())
         {
-        for(unsigned int p = 0; p < Responses.size(); p++)
+        for(unsigned long p = 0; p < Responses.size(); p++)
             {
             if(Responses[p]->TRDT.IsLoaded())
                 TotSize += Responses[p]->TRDT.GetSize() + 6;
@@ -180,13 +180,13 @@ unsigned int INFORecord::GetSize(bool forceCalc)
             }
         }
     if(CTDA.size())
-        for(unsigned int p = 0; p < CTDA.size(); p++)
+        for(unsigned long p = 0; p < CTDA.size(); p++)
             if(CTDA[p]->IsLoaded())
                 TotSize += CTDA[p]->GetSize() + 6;
     if(TCLT.size())
-        TotSize += (unsigned int)TCLT.size() * (sizeof(unsigned int) + 6);
+        TotSize += (unsigned long)TCLT.size() * (sizeof(unsigned long) + 6);
     if(TCLF.size())
-        TotSize += (unsigned int)TCLF.size() * (sizeof(unsigned int) + 6);
+        TotSize += (unsigned long)TCLF.size() * (sizeof(unsigned long) + 6);
     //if(SCHD.IsLoaded())
     //    cSize += SCHD.GetSize() + 6;
     if(SCHR.IsLoaded())
@@ -203,11 +203,11 @@ unsigned int INFORecord::GetSize(bool forceCalc)
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
         }
-    TotSize += (sizeof(unsigned int) + 6) * (unsigned int)SCR_.size();
+    TotSize += (sizeof(unsigned long) + 6) * (unsigned long)SCR_.size();
     return TotSize;
     }
 
-int INFORecord::WriteRecord(_FileHandler &SaveHandler)
+signed long INFORecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(DATA.IsLoaded())
         SaveHandler.writeSubRecord(eDATA, &DATA.value, DATA.GetSize());
@@ -218,11 +218,11 @@ int INFORecord::WriteRecord(_FileHandler &SaveHandler)
     if(PNAM.IsLoaded())
         SaveHandler.writeSubRecord(ePNAM, PNAM.value, PNAM.GetSize());
     if(NAME.size())
-        for(unsigned int p = 0; p < NAME.size(); p++)
-            SaveHandler.writeSubRecord(eNAME, NAME[p], sizeof(unsigned int));
+        for(unsigned long p = 0; p < NAME.size(); p++)
+            SaveHandler.writeSubRecord(eNAME, NAME[p], sizeof(unsigned long));
     if(Responses.size())
         {
-        for(unsigned int p = 0; p < Responses.size(); p++)
+        for(unsigned long p = 0; p < Responses.size(); p++)
             {
             if(Responses[p]->TRDT.IsLoaded())
                 SaveHandler.writeSubRecord(eTRDT, &Responses[p]->TRDT.value, Responses[p]->TRDT.GetSize());
@@ -233,15 +233,15 @@ int INFORecord::WriteRecord(_FileHandler &SaveHandler)
             }
         }
     if(CTDA.size())
-        for(unsigned int p = 0; p < CTDA.size(); p++)
+        for(unsigned long p = 0; p < CTDA.size(); p++)
             if(CTDA[p]->IsLoaded())
                 SaveHandler.writeSubRecord(eCTDA, &CTDA[p]->value, CTDA[p]->GetSize());
     if(TCLT.size())
-        for(unsigned int p = 0; p < TCLT.size(); p++)
-            SaveHandler.writeSubRecord(eTCLT, TCLT[p], sizeof(unsigned int));
+        for(unsigned long p = 0; p < TCLT.size(); p++)
+            SaveHandler.writeSubRecord(eTCLT, TCLT[p], sizeof(unsigned long));
     if(TCLF.size())
-        for(unsigned int p = 0; p < TCLF.size(); p++)
-            SaveHandler.writeSubRecord(eTCLF, TCLF[p], sizeof(unsigned int));
+        for(unsigned long p = 0; p < TCLF.size(); p++)
+            SaveHandler.writeSubRecord(eTCLF, TCLF[p], sizeof(unsigned long));
     //if(SCHD.IsLoaded())
     //    SaveHandler.writeSubRecord(eSCHD, SCHD.value, SCHD.GetSize());
     if(SCHR.IsLoaded())
@@ -250,12 +250,12 @@ int INFORecord::WriteRecord(_FileHandler &SaveHandler)
         SaveHandler.writeSubRecord(eSCDA, SCDA.value, SCDA.GetSize());
     if(SCTX.IsLoaded())
         SaveHandler.writeSubRecord(eSCTX, SCTX.value, SCTX.GetSize());
-    for(unsigned int p = 0; p < SCR_.size(); p++)
+    for(unsigned long p = 0; p < SCR_.size(); p++)
         if(SCR_[p]->IsLoaded())
             if(SCR_[p]->value.isSCRO)
-                SaveHandler.writeSubRecord(eSCRO, &SCR_[p]->value.reference, sizeof(unsigned int));
+                SaveHandler.writeSubRecord(eSCRO, &SCR_[p]->value.reference, sizeof(unsigned long));
             else
-                SaveHandler.writeSubRecord(eSCRV, &SCR_[p]->value.reference, sizeof(unsigned int));
+                SaveHandler.writeSubRecord(eSCRV, &SCR_[p]->value.reference, sizeof(unsigned long));
     return -1;
     }
 
@@ -264,7 +264,7 @@ void INFORecord::Debug(int debugLevel)
     {
     if(!IsLoaded())
         return;
-    unsigned int indentation = 4;
+    unsigned long indentation = 4;
     printf("  INFO\n");
     if(Header.IsLoaded())
         Header.Debug(debugLevel, indentation);
@@ -282,7 +282,7 @@ void INFORecord::Debug(int debugLevel)
         PrintIndent(indentation);
         printf("NAME:\n");
         indentation += 2;
-        for(unsigned int p = 0;p < NAME.size();p++)
+        for(unsigned long p = 0;p < NAME.size();p++)
             {
             PrintIndent(indentation);
             printf("%u:%s\n", p, PrintFormID(NAME[p]));
@@ -295,7 +295,7 @@ void INFORecord::Debug(int debugLevel)
         PrintIndent(indentation);
         printf("Responses:\n");
         indentation += 2;
-        for(unsigned int p = 0;p < Responses.size();p++)
+        for(unsigned long p = 0;p < Responses.size();p++)
             {
             PrintIndent(indentation);
             printf("Index: %u\n", p);
@@ -309,7 +309,7 @@ void INFORecord::Debug(int debugLevel)
         PrintIndent(indentation);
         printf("CTDA:\n");
         indentation += 2;
-        for(unsigned int p = 0;p < CTDA.size();p++)
+        for(unsigned long p = 0;p < CTDA.size();p++)
             {
             PrintIndent(indentation);
             printf("Index: %u\n", p);
@@ -323,7 +323,7 @@ void INFORecord::Debug(int debugLevel)
         PrintIndent(indentation);
         printf("TCLT:\n");
         indentation += 2;
-        for(unsigned int p = 0;p < TCLT.size();p++)
+        for(unsigned long p = 0;p < TCLT.size();p++)
             {
             PrintIndent(indentation);
             printf("%u:%s\n", p, PrintFormID(TCLT[p]));
@@ -336,7 +336,7 @@ void INFORecord::Debug(int debugLevel)
         PrintIndent(indentation);
         printf("TCLF:\n");
         indentation += 2;
-        for(unsigned int p = 0;p < TCLF.size();p++)
+        for(unsigned long p = 0;p < TCLF.size();p++)
             {
             PrintIndent(indentation);
             printf("%u:%s\n", p, PrintFormID(TCLF[p]));
@@ -357,7 +357,7 @@ void INFORecord::Debug(int debugLevel)
         PrintIndent(indentation);
         printf("SCR_:\n");
         indentation += 2;
-        for(unsigned int p = 0;p < SCR_.size();p++)
+        for(unsigned long p = 0;p < SCR_.size();p++)
             {
             PrintIndent(indentation);
             printf("Index: %u\n", p);

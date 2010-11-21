@@ -23,14 +23,14 @@ GPL License and Copyright Notice ============================================
 #include "SCPTRecord.h"
 #include <vector>
 
-int SCPTRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
+signed long SCPTRecord::ParseRecord(unsigned char *buffer, const unsigned long &recSize)
     {
     if(IsLoaded())
         return -1;
     IsLoaded(true);
-    unsigned int subType = 0;
-    unsigned int subSize = 0;
-    unsigned int curPos = 0;
+    unsigned long subType = 0;
+    unsigned long subSize = 0;
+    unsigned long curPos = 0;
     SCPTVARS *newVARS = NULL;
     ReqSubRecord<GENSCR_> *newSCR_ = NULL;
     while(curPos < recSize){
@@ -99,12 +99,12 @@ int SCPTRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
     return 0;
     }
 
-unsigned int SCPTRecord::GetSize(bool forceCalc)
+unsigned long SCPTRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && recData != NULL)
-        return *(unsigned int*)&recData[-16];
-    unsigned int cSize = 0;
-    unsigned int TotSize = 0;
+        return *(unsigned long*)&recData[-16];
+    unsigned long cSize = 0;
+    unsigned long TotSize = 0;
     if(EDID.IsLoaded())
         {
         cSize = EDID.GetSize();
@@ -125,7 +125,7 @@ unsigned int SCPTRecord::GetSize(bool forceCalc)
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
         }
-    for(unsigned int p = 0; p < VARS.size(); p++)
+    for(unsigned long p = 0; p < VARS.size(); p++)
         {
         if(VARS[p]->SLSD.IsLoaded())
             TotSize += VARS[p]->SLSD.GetSize() + 6;
@@ -136,11 +136,11 @@ unsigned int SCPTRecord::GetSize(bool forceCalc)
             TotSize += cSize += 6;
             }
         }
-    TotSize += (sizeof(unsigned int) + 6) * (unsigned int)SCR_.size();
+    TotSize += (sizeof(unsigned long) + 6) * (unsigned long)SCR_.size();
     return TotSize;
     }
 
-int SCPTRecord::WriteRecord(_FileHandler &SaveHandler)
+signed long SCPTRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
@@ -150,7 +150,7 @@ int SCPTRecord::WriteRecord(_FileHandler &SaveHandler)
         SaveHandler.writeSubRecord(eSCDA, SCDA.value, SCDA.GetSize());
     if(SCTX.IsLoaded())
         SaveHandler.writeSubRecord(eSCTX, SCTX.value, SCTX.GetSize());
-    for(unsigned int p = 0; p < VARS.size(); p++)
+    for(unsigned long p = 0; p < VARS.size(); p++)
         {
         if(VARS[p]->SLSD.IsLoaded())
             SaveHandler.writeSubRecord(eSLSD, &VARS[p]->SLSD.value, VARS[p]->SLSD.GetSize());
@@ -158,12 +158,12 @@ int SCPTRecord::WriteRecord(_FileHandler &SaveHandler)
             SaveHandler.writeSubRecord(eSCVR, VARS[p]->SCVR.value, VARS[p]->SCVR.GetSize());
         }
 
-    for(unsigned int p = 0; p < SCR_.size(); p++)
+    for(unsigned long p = 0; p < SCR_.size(); p++)
         if(SCR_[p]->IsLoaded())
             if(SCR_[p]->value.isSCRO)
-                SaveHandler.writeSubRecord(eSCRO, &SCR_[p]->value.reference, sizeof(unsigned int));
+                SaveHandler.writeSubRecord(eSCRO, &SCR_[p]->value.reference, sizeof(unsigned long));
             else
-                SaveHandler.writeSubRecord(eSCRV, &SCR_[p]->value.reference, sizeof(unsigned int));
+                SaveHandler.writeSubRecord(eSCRV, &SCR_[p]->value.reference, sizeof(unsigned long));
     return -1;
     }
 
@@ -172,7 +172,7 @@ void SCPTRecord::Debug(int debugLevel)
     {
     if(!IsLoaded())
         return;
-    unsigned int indentation = 4;
+    unsigned long indentation = 4;
     printf("  SCPT\n");
     if(Header.IsLoaded())
         Header.Debug(debugLevel, indentation);
@@ -190,7 +190,7 @@ void SCPTRecord::Debug(int debugLevel)
         PrintIndent(indentation);
         printf("VARS:\n");
         indentation += 2;
-        for(unsigned int p = 0;p < VARS.size();p++)
+        for(unsigned long p = 0;p < VARS.size();p++)
             {
             PrintIndent(indentation);
             printf("Index: %u\n", p);
@@ -204,7 +204,7 @@ void SCPTRecord::Debug(int debugLevel)
         PrintIndent(indentation);
         printf("SCR_:\n");
         indentation += 2;
-        for(unsigned int p = 0;p < SCR_.size();p++)
+        for(unsigned long p = 0;p < SCR_.size();p++)
             {
             PrintIndent(indentation);
             printf("Index: %u\n", p);

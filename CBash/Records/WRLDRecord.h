@@ -50,11 +50,11 @@ class WRLDRecord : public Record
 
         struct WRLDMNAM
             {
-            int dimX, dimY;
+            signed long dimX, dimY;
             short NWCellX, NWCellY, SECellX, SECellY;
             WRLDMNAM():dimX(0), dimY(0), NWCellX(0), NWCellY(0), SECellX(0), SECellY(0) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -95,7 +95,7 @@ class WRLDRecord : public Record
             float unk1, unk2;
             WRLDUNK():unk1(0.0f), unk2(0.0f) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 5)
                     {
@@ -133,18 +133,18 @@ class WRLDRecord : public Record
             ePublic  = 1,
             eDungeon = 2
             };
-        STRING EDID;
-        STRING FULL;
+        StringRecord EDID;
+        StringRecord FULL;
         OptSubRecord<GENFID> WNAM;
         OptSubRecord<GENFID> CNAM;
         OptSubRecord<GENFID> NAM2;
-        STRING ICON;
+        StringRecord ICON;
         SemiOptSubRecord<WRLDMNAM> MNAM;
         ReqSubRecord<GENFLAG> DATA;
         ReqSubRecord<WRLDUNK> NAM0;
         ReqSubRecord<WRLDUNK> NAM9;
         OptSubRecord<GENUFLAG> SNAM;
-        RAWBYTES OFST;
+        RawRecord OFST;
 
         ROADRecord *ROAD;
         CELLRecord *CELL;
@@ -177,7 +177,7 @@ class WRLDRecord : public Record
             {
             delete ROAD;
             delete CELL;
-            for(unsigned int x = 0; x < CELLS.size(); ++x)
+            for(unsigned long x = 0; x < CELLS.size(); ++x)
                 delete CELLS[x];
             }
         void Unload()
@@ -197,10 +197,48 @@ class WRLDRecord : public Record
             OFST.Unload();
             }
 
-        void VisitFormIDs(FormIDOp &op)
+        bool HasSubRecords() {return true;}
+
+        bool VisitSubRecords(const unsigned long &RecordType, RecordOp &op)
+            {
+            bool stop;
+
+            if(RecordType == NULL || RecordType == eROAD)
+                {
+                if(ROAD != NULL)
+                    {
+                    if(op.Accept((Record **)&ROAD))
+                        return true;
+                    }
+                }
+
+            if(RecordType == NULL || RecordType == eCELL || RecordType == eACRE || RecordType == eACHR || RecordType == eREFR || RecordType == ePGRD || RecordType == eLAND)
+                {
+                if(CELL != NULL)
+                    {
+                    if(op.Accept((Record **)&CELL))
+                        return true;
+                    }
+
+                for(unsigned long x = 0; x < CELLS.size();)
+                    {
+                    stop = op.Accept((Record **)&CELLS[x]);
+                    if(CELLS[x] == NULL)
+                        CELLS.erase(CELLS.begin() + x);
+                    else
+                        ++x;
+                    if(stop)
+                        return stop;
+                    }
+                }
+
+            return op.Stop();
+            }
+
+        bool VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
-                return;
+                return false;
 
             if(WNAM.IsLoaded())
                 op.Accept(WNAM->fid);
@@ -208,32 +246,33 @@ class WRLDRecord : public Record
                 op.Accept(CNAM->fid);
             if(NAM2.IsLoaded())
                 op.Accept(NAM2->fid);
+
+            return op.Stop();
             }
 
         #ifdef _DEBUG
-        void Debug(int debugLevel);
+        void Debug(signed long debugLevel);
         #endif
 
-        int GetOtherFieldType(const unsigned int Field);
-        void * GetOtherField(const unsigned int Field);
-        unsigned int GetFieldArraySize(const unsigned int Field);
-        void GetFieldArray(const unsigned int Field, void **FieldValues);
-        void SetField(const unsigned int Field, char *FieldValue);
-        void SetOtherField(const unsigned int Field, unsigned int FieldValue);
-        void SetField(const unsigned int Field, int FieldValue);
-        void SetField(const unsigned int Field, short FieldValue);
-        void SetField(const unsigned int Field, unsigned char FieldValue);
-        void SetField(const unsigned int Field, float FieldValue);
-        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
+        signed long GetOtherFieldType(const unsigned long Field);
+        void * GetOtherField(const unsigned long Field);
+        unsigned long GetFieldArraySize(const unsigned long Field);
+        void GetFieldArray(const unsigned long Field, void **FieldValues);
+        void SetField(const unsigned long Field, char *FieldValue);
+        void SetOtherField(const unsigned long Field, unsigned long FieldValue);
+        void SetField(const unsigned long Field, signed long FieldValue);
+        void SetField(const unsigned long Field, short FieldValue);
+        void SetField(const unsigned long Field, unsigned char FieldValue);
+        void SetField(const unsigned long Field, float FieldValue);
+        void SetField(const unsigned long Field, unsigned char *FieldValue, unsigned long nSize);
 
+        signed long DeleteField(const unsigned long Field);
 
-        int DeleteField(const unsigned int Field);
-
-        int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize(bool forceCalc=false);
-        unsigned int GetType() {return eWRLD;}
-        char * GetStrType() {return "WRLD";}
-        int WriteRecord(_FileHandler &SaveHandler);
+        signed long ParseRecord(unsigned char *buffer, const unsigned long &recSize);
+        unsigned long GetSize(bool forceCalc=false);
+        unsigned long GetType() {return eWRLD;}
+        char *GetStrType() {return "WRLD";}
+        signed long WriteRecord(_FileHandler &SaveHandler);
 
         bool IsSmallWorld()
             {
@@ -345,12 +384,12 @@ class WRLDRecord : public Record
             else if(IsDungeonMusic())
                 SNAM->flags = eDefault;
             }
-        bool IsMusicType(unsigned int Type)
+        bool IsMusicType(unsigned long Type)
             {
             if(!SNAM.IsLoaded()) return false;
             return (SNAM->flags == Type);
             }
-        void SetMusicType(unsigned int Type)
+        void SetMusicType(unsigned long Type)
             {
             if(!SNAM.IsLoaded()) return;
             SNAM->flags = Type;

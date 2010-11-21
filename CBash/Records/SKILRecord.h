@@ -40,10 +40,10 @@ class SKILRecord : public Record
 
         struct SKILINDX
             {
-            int skill;
+            signed long skill;
             SKILINDX():skill(26) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -66,13 +66,13 @@ class SKILRecord : public Record
 
         struct SKILDATA
             {
-            int action, attribute;
-            unsigned int specialization;
+            signed long action, attribute;
+            unsigned long specialization;
             float use0, use1;
             SKILDATA():action(26), attribute(0), specialization(0),
                 use0(1.0f), use1(1.0f) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -106,15 +106,15 @@ class SKILRecord : public Record
             };
 
     public:
-        STRING EDID;
+        StringRecord EDID;
         ReqSubRecord<SKILINDX> INDX;
-        STRING DESC;
-        STRING ICON;
+        StringRecord DESC;
+        StringRecord ICON;
         ReqSubRecord<SKILDATA> DATA;
-        STRING ANAM;
-        STRING JNAM;
-        STRING ENAM;
-        STRING MNAM;
+        StringRecord ANAM;
+        StringRecord JNAM;
+        StringRecord ENAM;
+        StringRecord MNAM;
 
         SKILRecord(bool newRecord=false):Record(newRecord) {}
         SKILRecord(SKILRecord *srcRecord):Record(true)
@@ -152,21 +152,21 @@ class SKILRecord : public Record
             }
 
         #ifdef _DEBUG
-        void Debug(int debugLevel);
+        void Debug(signed long debugLevel);
         #endif
 
-        int GetOtherFieldType(const unsigned int Field);
-        void * GetOtherField(const unsigned int Field);
-        void SetField(const unsigned int Field, char *FieldValue);
-        void SetField(const unsigned int Field, int FieldValue);
-        void SetOtherField(const unsigned int Field, unsigned int FieldValue);
-        void SetField(const unsigned int Field, float FieldValue);
+        signed long GetOtherFieldType(const unsigned long Field);
+        void * GetOtherField(const unsigned long Field);
+        void SetField(const unsigned long Field, char *FieldValue);
+        void SetField(const unsigned long Field, signed long FieldValue);
+        void SetOtherField(const unsigned long Field, unsigned long FieldValue);
+        void SetField(const unsigned long Field, float FieldValue);
 
-        int DeleteField(const unsigned int Field);
+        signed long DeleteField(const unsigned long Field);
 
-        int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize(bool forceCalc=false);
-        unsigned int GetType() {return eSKIL;}
-        char * GetStrType() {return "SKIL";}
-        int WriteRecord(_FileHandler &SaveHandler);
+        signed long ParseRecord(unsigned char *buffer, const unsigned long &recSize);
+        unsigned long GetSize(bool forceCalc=false);
+        unsigned long GetType() {return eSKIL;}
+        char *GetStrType() {return "SKIL";}
+        signed long WriteRecord(_FileHandler &SaveHandler);
     };

@@ -23,14 +23,14 @@ GPL License and Copyright Notice ============================================
 #include "QUSTRecord.h"
 #include <vector>
 
-int QUSTRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
+signed long QUSTRecord::ParseRecord(unsigned char *buffer, const unsigned long &recSize)
     {
     if(IsLoaded())
         return -1;
     IsLoaded(true);
-    unsigned int subType = 0;
-    unsigned int subSize = 0;
-    unsigned int curPos = 0;
+    unsigned long subType = 0;
+    unsigned long subSize = 0;
+    unsigned long curPos = 0;
     int whichCTDA = 0;
     ReqSubRecord<GENCTDA> *newCTDA = NULL;
     QUSTStage *newStage = NULL;
@@ -219,12 +219,12 @@ int QUSTRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
     return 0;
     }
 
-unsigned int QUSTRecord::GetSize(bool forceCalc)
+unsigned long QUSTRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && recData != NULL)
-        return *(unsigned int*)&recData[-16];
-    unsigned int cSize = 0;
-    unsigned int TotSize = 0;
+        return *(unsigned long*)&recData[-16];
+    unsigned long cSize = 0;
+    unsigned long TotSize = 0;
     if(EDID.IsLoaded())
         {
         cSize = EDID.GetSize();
@@ -248,21 +248,21 @@ unsigned int QUSTRecord::GetSize(bool forceCalc)
     if(DATA.IsLoaded())
         TotSize += DATA.GetSize() + 6;
     if(CTDA.size())
-        for(unsigned int p = 0; p < CTDA.size(); p++)
+        for(unsigned long p = 0; p < CTDA.size(); p++)
             if(CTDA[p]->IsLoaded())
                 TotSize += CTDA[p]->GetSize() + 6;
     if(Stages.size())
-        for(unsigned int p = 0; p < Stages.size(); p++)
+        for(unsigned long p = 0; p < Stages.size(); p++)
             {
             if(Stages[p]->INDX.IsLoaded())
                 TotSize += Stages[p]->INDX.GetSize() + 6;
             if(Stages[p]->Entries.size())
-                for(unsigned int x = 0; x < Stages[p]->Entries.size(); x++)
+                for(unsigned long x = 0; x < Stages[p]->Entries.size(); x++)
                     {
                     if(Stages[p]->Entries[x]->QSDT.IsLoaded())
                         TotSize += Stages[p]->Entries[x]->QSDT.GetSize() + 6;
                     if(Stages[p]->Entries[x]->CTDA.size())
-                        for(unsigned int y = 0; y < Stages[p]->Entries[x]->CTDA.size(); y++)
+                        for(unsigned long y = 0; y < Stages[p]->Entries[x]->CTDA.size(); y++)
                             if(Stages[p]->Entries[x]->CTDA[y]->IsLoaded())
                                 TotSize += Stages[p]->Entries[x]->CTDA[y]->GetSize() + 6;
                     if(Stages[p]->Entries[x]->CNAM.IsLoaded())
@@ -285,23 +285,23 @@ unsigned int QUSTRecord::GetSize(bool forceCalc)
                         if(cSize > 65535) cSize += 10;
                         TotSize += cSize += 6;
                         }
-                    TotSize += (sizeof(unsigned int) + 6) * (unsigned int)Stages[p]->Entries[x]->SCR_.size();
+                    TotSize += (sizeof(unsigned long) + 6) * (unsigned long)Stages[p]->Entries[x]->SCR_.size();
                     }
             }
     if(Targets.size())
-        for(unsigned int p = 0; p < Targets.size(); p++)
+        for(unsigned long p = 0; p < Targets.size(); p++)
             {
             if(Targets[p]->QSTA.IsLoaded())
                 TotSize += Targets[p]->QSTA.GetSize() + 6;
             if(Targets[p]->CTDA.size())
-                for(unsigned int y = 0; y < Targets[p]->CTDA.size(); y++)
+                for(unsigned long y = 0; y < Targets[p]->CTDA.size(); y++)
                     if(Targets[p]->CTDA[y]->IsLoaded())
                         TotSize += Targets[p]->CTDA[y]->GetSize() + 6;
             }
     return TotSize;
     }
 
-int QUSTRecord::WriteRecord(_FileHandler &SaveHandler)
+signed long QUSTRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
@@ -314,21 +314,21 @@ int QUSTRecord::WriteRecord(_FileHandler &SaveHandler)
     if(DATA.IsLoaded())
         SaveHandler.writeSubRecord(eDATA, &DATA.value, DATA.GetSize());
     if(CTDA.size())
-        for(unsigned int p = 0; p < CTDA.size(); p++)
+        for(unsigned long p = 0; p < CTDA.size(); p++)
             if(CTDA[p]->IsLoaded())
                 SaveHandler.writeSubRecord(eCTDA, &CTDA[p]->value, CTDA[p]->GetSize());
     if(Stages.size())
-        for(unsigned int p = 0; p < Stages.size(); p++)
+        for(unsigned long p = 0; p < Stages.size(); p++)
             {
             if(Stages[p]->INDX.IsLoaded())
                 SaveHandler.writeSubRecord(eINDX, &Stages[p]->INDX.value, Stages[p]->INDX.GetSize());
             if(Stages[p]->Entries.size())
-                for(unsigned int x = 0; x < Stages[p]->Entries.size(); x++)
+                for(unsigned long x = 0; x < Stages[p]->Entries.size(); x++)
                     {
                     if(Stages[p]->Entries[x]->QSDT.IsLoaded())
                         SaveHandler.writeSubRecord(eQSDT, &Stages[p]->Entries[x]->QSDT.value, Stages[p]->Entries[x]->QSDT.GetSize());
                     if(Stages[p]->Entries[x]->CTDA.size())
-                        for(unsigned int y = 0; y < Stages[p]->Entries[x]->CTDA.size(); y++)
+                        for(unsigned long y = 0; y < Stages[p]->Entries[x]->CTDA.size(); y++)
                             if(Stages[p]->Entries[x]->CTDA[y]->IsLoaded())
                                 SaveHandler.writeSubRecord(eCTDA, &Stages[p]->Entries[x]->CTDA[y]->value, Stages[p]->Entries[x]->CTDA[y]->GetSize());
                     if(Stages[p]->Entries[x]->CNAM.IsLoaded())
@@ -340,21 +340,21 @@ int QUSTRecord::WriteRecord(_FileHandler &SaveHandler)
                     if(Stages[p]->Entries[x]->SCTX.IsLoaded())
                         SaveHandler.writeSubRecord(eSCTX, Stages[p]->Entries[x]->SCTX.value, Stages[p]->Entries[x]->SCTX.GetSize());
                     if(Stages[p]->Entries[x]->SCR_.size())
-                        for(unsigned int y = 0; y < Stages[p]->Entries[x]->SCR_.size(); y++)
+                        for(unsigned long y = 0; y < Stages[p]->Entries[x]->SCR_.size(); y++)
                             if(Stages[p]->Entries[x]->SCR_[y]->IsLoaded())
                                 if(Stages[p]->Entries[x]->SCR_[y]->value.isSCRO)
-                                    SaveHandler.writeSubRecord(eSCRO, &Stages[p]->Entries[x]->SCR_[y]->value.reference, sizeof(unsigned int));
+                                    SaveHandler.writeSubRecord(eSCRO, &Stages[p]->Entries[x]->SCR_[y]->value.reference, sizeof(unsigned long));
                                 else
-                                    SaveHandler.writeSubRecord(eSCRV, &Stages[p]->Entries[x]->SCR_[y]->value.reference, sizeof(unsigned int));
+                                    SaveHandler.writeSubRecord(eSCRV, &Stages[p]->Entries[x]->SCR_[y]->value.reference, sizeof(unsigned long));
                     }
             }
     if(Targets.size())
-        for(unsigned int p = 0; p < Targets.size(); p++)
+        for(unsigned long p = 0; p < Targets.size(); p++)
             {
             if(Targets[p]->QSTA.IsLoaded())
                 SaveHandler.writeSubRecord(eQSTA, &Targets[p]->QSTA.value, Targets[p]->QSTA.GetSize());
             if(Targets[p]->CTDA.size())
-                for(unsigned int y = 0; y < Targets[p]->CTDA.size(); y++)
+                for(unsigned long y = 0; y < Targets[p]->CTDA.size(); y++)
                     if(Targets[p]->CTDA[y]->IsLoaded())
                         SaveHandler.writeSubRecord(eCTDA, &Targets[p]->CTDA[y]->value, Targets[p]->CTDA[y]->GetSize());
             }
@@ -366,7 +366,7 @@ void QUSTRecord::Debug(int debugLevel)
     {
     if(!IsLoaded())
         return;
-    unsigned int indentation = 4;
+    unsigned long indentation = 4;
     printf("  QUST\n");
     if(Header.IsLoaded())
         Header.Debug(debugLevel, indentation);
@@ -386,7 +386,7 @@ void QUSTRecord::Debug(int debugLevel)
         PrintIndent(indentation);
         printf("CTDA:\n");
         indentation += 2;
-        for(unsigned int p = 0;p < CTDA.size();p++)
+        for(unsigned long p = 0;p < CTDA.size();p++)
             {
             PrintIndent(indentation);
             printf("Index: %u\n", p);
@@ -400,7 +400,7 @@ void QUSTRecord::Debug(int debugLevel)
         PrintIndent(indentation);
         printf("Stages:\n");
         indentation += 2;
-        for(unsigned int p = 0;p < Stages.size();p++)
+        for(unsigned long p = 0;p < Stages.size();p++)
             {
             PrintIndent(indentation);
             printf("Index: %u\n", p);
@@ -414,7 +414,7 @@ void QUSTRecord::Debug(int debugLevel)
         PrintIndent(indentation);
         printf("Targets:\n");
         indentation += 2;
-        for(unsigned int p = 0;p < Targets.size();p++)
+        for(unsigned long p = 0;p < Targets.size();p++)
             {
             PrintIndent(indentation);
             printf("Index: %u\n", p);

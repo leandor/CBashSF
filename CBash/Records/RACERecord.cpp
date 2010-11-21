@@ -23,16 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "RACERecord.h"
 #include <vector>
 
-int RACERecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
+signed long RACERecord::ParseRecord(unsigned char *buffer, const unsigned long &recSize)
     {
     if(IsLoaded())
         return -1;
     IsLoaded(true);
-    unsigned int subType = 0;
-    unsigned int subSize = 0;
+    unsigned long subType = 0;
+    unsigned long subSize = 0;
     int curNAM = -1;
     int curINDX = -1;
-    unsigned int curPos = 0;
+    unsigned long curPos = 0;
     FormID curFormID = NULL;
     ReqSubRecord<GENXNAM> *newXNAM = NULL;
     while(curPos < recSize){
@@ -62,7 +62,7 @@ int RACERecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 DESC.Read(buffer, subSize, curPos);
                 break;
             case eSPLO:
-                curFormID = new unsigned int;
+                curFormID = new unsigned long;
                 _readBuffer(curFormID,buffer,subSize,curPos);
                 SPLO.push_back(curFormID);
                 break;
@@ -435,11 +435,11 @@ int RACERecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                     }
                 break;
             case eHNAM:
-                if(subSize % sizeof(unsigned int) == 0)
+                if(subSize % sizeof(unsigned long) == 0)
                     {
                     if(subSize == 0)
                         break;
-                    HNAM.resize(subSize / sizeof(unsigned int));
+                    HNAM.resize(subSize / sizeof(unsigned long));
                     _readBuffer(&HNAM[0], buffer, subSize, curPos);
                     }
                 else
@@ -449,11 +449,11 @@ int RACERecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                     }
                 break;
             case eENAM:
-                if(subSize % sizeof(unsigned int) == 0)
+                if(subSize % sizeof(unsigned long) == 0)
                     {
                     if(subSize == 0)
                         break;
-                    ENAM.resize(subSize / sizeof(unsigned int));
+                    ENAM.resize(subSize / sizeof(unsigned long));
                     _readBuffer(&ENAM[0], buffer, subSize, curPos);
                     }
                 else
@@ -486,12 +486,12 @@ int RACERecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
     return 0;
     }
 
-unsigned int RACERecord::GetSize(bool forceCalc)
+unsigned long RACERecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && recData != NULL)
-        return *(unsigned int*)&recData[-16];
-    unsigned int cSize = 0;
-    unsigned int TotSize = 226;
+        return *(unsigned long*)&recData[-16];
+    unsigned long cSize = 0;
+    unsigned long TotSize = 226;
     //TotSize += 96; //NAM0, INDX 0, INDX 1, INDX 2, INDX 3, INDX 4, INDX 5, INDX 6, INDX 7, INDX 8
     //TotSize += 62; //NAM1, MNAM, INDX 0, INDX 1, INDX 2, INDX 3, INDX 4
     //TotSize += 56; //FNAM, INDX 0, INDX 1, INDX 2, INDX 3, INDX 4
@@ -517,9 +517,9 @@ unsigned int RACERecord::GetSize(bool forceCalc)
         }
 
     if(SPLO.size())
-        TotSize += (unsigned int)SPLO.size() * (sizeof(unsigned int) + 6);
+        TotSize += (unsigned long)SPLO.size() * (sizeof(unsigned long) + 6);
 
-    for(unsigned int p = 0; p < XNAM.size(); p++)
+    for(unsigned long p = 0; p < XNAM.size(); p++)
         TotSize += XNAM[p]->GetSize() + 6;
     if(DATA.IsLoaded())
         TotSize += DATA.GetSize() + 6;
@@ -818,14 +818,14 @@ unsigned int RACERecord::GetSize(bool forceCalc)
         }
     if(HNAM.size())
         {
-        cSize = (sizeof(unsigned int) * (unsigned int)HNAM.size());
+        cSize = (sizeof(unsigned long) * (unsigned long)HNAM.size());
         if(cSize > 65535) cSize += 10;
         TotSize += cSize;
         }
 
     if(ENAM.size())
         {
-        cSize = (sizeof(unsigned int) * (unsigned int)ENAM.size());
+        cSize = (sizeof(unsigned long) * (unsigned long)ENAM.size());
         if(cSize > 65535) cSize += 10;
         TotSize += cSize;
         }
@@ -843,9 +843,9 @@ unsigned int RACERecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int RACERecord::WriteRecord(_FileHandler &SaveHandler)
+signed long RACERecord::WriteRecord(_FileHandler &SaveHandler)
     {
-    unsigned int curINDX = 0;
+    unsigned long curINDX = 0;
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
     if(FULL.IsLoaded())
@@ -853,10 +853,10 @@ int RACERecord::WriteRecord(_FileHandler &SaveHandler)
     if(DESC.IsLoaded())
         SaveHandler.writeSubRecord(eDESC, DESC.value, DESC.GetSize());
 
-    for(unsigned int p = 0; p < SPLO.size(); p++)
-        SaveHandler.writeSubRecord(eSPLO, SPLO[p], sizeof(unsigned int));
+    for(unsigned long p = 0; p < SPLO.size(); p++)
+        SaveHandler.writeSubRecord(eSPLO, SPLO[p], sizeof(unsigned long));
 
-    for(unsigned int p = 0; p < XNAM.size(); p++)
+    for(unsigned long p = 0; p < XNAM.size(); p++)
         if(XNAM[p]->IsLoaded())
             SaveHandler.writeSubRecord(eXNAM, &XNAM[p]->value, XNAM[p]->GetSize());
 
@@ -1065,12 +1065,12 @@ int RACERecord::WriteRecord(_FileHandler &SaveHandler)
         SaveHandler.writeSubRecord(eICON, FICON4.value, FICON4.GetSize());
 
     if(HNAM.size())
-        SaveHandler.writeSubRecord(eHNAM, &HNAM[0], (unsigned int)HNAM.size() * sizeof(unsigned int));
+        SaveHandler.writeSubRecord(eHNAM, &HNAM[0], (unsigned long)HNAM.size() * sizeof(unsigned long));
     else
         SaveHandler.writeSubRecord(eHNAM, NULL, 0);
 
     if(ENAM.size())
-        SaveHandler.writeSubRecord(eENAM, &ENAM[0], (unsigned int)ENAM.size() * sizeof(unsigned int));
+        SaveHandler.writeSubRecord(eENAM, &ENAM[0], (unsigned long)ENAM.size() * sizeof(unsigned long));
     else
         SaveHandler.writeSubRecord(eENAM, NULL, 0);
 
@@ -1092,7 +1092,7 @@ void RACERecord::Debug(int debugLevel)
     {
     if(!IsLoaded())
         return;
-    unsigned int indentation = 4;
+    unsigned long indentation = 4;
     printf("  RACE\n");
     if(Header.IsLoaded())
         Header.Debug(debugLevel, indentation);
@@ -1109,7 +1109,7 @@ void RACERecord::Debug(int debugLevel)
         printf("SPLO:\n");
         indentation += 2;
         if(debugLevel > 3)
-            for(unsigned int p = 0;p < SPLO.size();p++)
+            for(unsigned long p = 0;p < SPLO.size();p++)
                 {
                 PrintIndent(indentation);
                 printf("%u:%s\n", p, PrintFormID(SPLO[p]));
@@ -1122,7 +1122,7 @@ void RACERecord::Debug(int debugLevel)
         PrintIndent(indentation);
         printf("XNAM:\n");
         indentation += 2;
-        for(unsigned int p = 0;p < XNAM.size();p++)
+        for(unsigned long p = 0;p < XNAM.size();p++)
             {
             PrintIndent(indentation);
             printf("Index: %u\n", p);
@@ -1193,7 +1193,7 @@ void RACERecord::Debug(int debugLevel)
         printf("HNAM:\n");
         indentation += 2;
         if(debugLevel > 3)
-            for(unsigned int p = 0;p < HNAM.size();p++)
+            for(unsigned long p = 0;p < HNAM.size();p++)
                 {
                 PrintIndent(indentation);
                 printf("%u:%s\n", p, PrintFormID(HNAM[p]));
@@ -1207,7 +1207,7 @@ void RACERecord::Debug(int debugLevel)
         printf("ENAM:\n");
         indentation += 2;
         if(debugLevel > 3)
-            for(unsigned int p = 0;p < ENAM.size();p++)
+            for(unsigned long p = 0;p < ENAM.size();p++)
                 {
                 PrintIndent(indentation);
                 printf("%u:%s\n", p, PrintFormID(ENAM[p]));

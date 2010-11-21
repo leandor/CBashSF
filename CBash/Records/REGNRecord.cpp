@@ -23,14 +23,14 @@ GPL License and Copyright Notice ============================================
 #include "REGNRecord.h"
 #include <vector>
 
-int REGNRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
+signed long REGNRecord::ParseRecord(unsigned char *buffer, const unsigned long &recSize)
     {
     if(IsLoaded())
         return -1;
     IsLoaded(true);
-    unsigned int subType = 0;
-    unsigned int subSize = 0;
-    unsigned int curPos = 0;
+    unsigned long subType = 0;
+    unsigned long subSize = 0;
+    unsigned long curPos = 0;
     REGNArea *newArea = NULL;
     REGNEntry *newEntry = NULL;
     while(curPos < recSize){
@@ -198,12 +198,12 @@ int REGNRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
     return 0;
     }
 
-unsigned int REGNRecord::GetSize(bool forceCalc)
+unsigned long REGNRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && recData != NULL)
-        return *(unsigned int*)&recData[-16];
-    unsigned int cSize = 0;
-    unsigned int TotSize = 0;
+        return *(unsigned long*)&recData[-16];
+    unsigned long cSize = 0;
+    unsigned long TotSize = 0;
     if(EDID.IsLoaded())
         {
         cSize = EDID.GetSize();
@@ -221,19 +221,19 @@ unsigned int REGNRecord::GetSize(bool forceCalc)
     if(WNAM.IsLoaded())
         TotSize += WNAM.GetSize() + 6;
     if(Areas.size())
-        for(unsigned int p = 0; p < Areas.size(); p++)
+        for(unsigned long p = 0; p < Areas.size(); p++)
             {
             if(Areas[p]->RPLI.IsLoaded())
                 TotSize += Areas[p]->RPLI.GetSize() + 6;
             if(Areas[p]->RPLD.size())
                 {
-                cSize = (sizeof(REGNRPLD) * (unsigned int)Areas[p]->RPLD.size());
+                cSize = (sizeof(REGNRPLD) * (unsigned long)Areas[p]->RPLD.size());
                 if(cSize > 65535) cSize += 10;
                 TotSize += cSize += 6;
                 }
             }
     if(Entries.size())
-        for(unsigned int p = 0; p < Entries.size(); p++)
+        for(unsigned long p = 0; p < Entries.size(); p++)
             {
             if(Entries[p]->RDAT.IsLoaded())
                 TotSize += Entries[p]->RDAT.GetSize() + 6;
@@ -243,7 +243,7 @@ unsigned int REGNRecord::GetSize(bool forceCalc)
                     TotSize += 6; //RDOT written even if empty
                     if(Entries[p]->RDOT.size())
                         {
-                        cSize = (sizeof(REGNRDOT) * (unsigned int)Entries[p]->RDOT.size());
+                        cSize = (sizeof(REGNRDOT) * (unsigned long)Entries[p]->RDOT.size());
                         if(cSize > 65535) cSize += 10;
                         TotSize += cSize;
                         }
@@ -251,7 +251,7 @@ unsigned int REGNRecord::GetSize(bool forceCalc)
                 case eREGNWeathers:
                     if(Entries[p]->RDWT.size())
                         {
-                        cSize = (sizeof(REGNRDWT) * (unsigned int)Entries[p]->RDWT.size());
+                        cSize = (sizeof(REGNRDWT) * (unsigned long)Entries[p]->RDWT.size());
                         if(cSize > 65535) cSize += 10;
                         TotSize += cSize += 6;
                         }
@@ -275,7 +275,7 @@ unsigned int REGNRecord::GetSize(bool forceCalc)
                 case eREGNGrasses:
                     if(Entries[p]->RDGS.size())
                         {
-                        cSize = (sizeof(REGNRDGS) * (unsigned int)Entries[p]->RDGS.size());
+                        cSize = (sizeof(REGNRDGS) * (unsigned long)Entries[p]->RDGS.size());
                         if(cSize > 65535) cSize += 10;
                         TotSize += cSize += 6;
                         }
@@ -286,7 +286,7 @@ unsigned int REGNRecord::GetSize(bool forceCalc)
                     TotSize += 6; //RDSD written even if empty
                     if(Entries[p]->RDSD.size())
                         {
-                        cSize = (sizeof(REGNRDSD) * (unsigned int)Entries[p]->RDSD.size());
+                        cSize = (sizeof(REGNRDSD) * (unsigned long)Entries[p]->RDSD.size());
                         if(cSize > 65535) cSize += 10;
                         TotSize += cSize;
                         }
@@ -299,7 +299,7 @@ unsigned int REGNRecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int REGNRecord::WriteRecord(_FileHandler &SaveHandler)
+signed long REGNRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
@@ -310,17 +310,17 @@ int REGNRecord::WriteRecord(_FileHandler &SaveHandler)
     if(WNAM.IsLoaded())
         SaveHandler.writeSubRecord(eWNAM, &WNAM.value, WNAM.GetSize());
     if(Areas.size())
-        for(unsigned int p = 0; p < Areas.size(); p++)
+        for(unsigned long p = 0; p < Areas.size(); p++)
             {
             if(Areas[p]->RPLI.IsLoaded())
                 SaveHandler.writeSubRecord(eRPLI, &Areas[p]->RPLI.value, Areas[p]->RPLI.GetSize());
             if(Areas[p]->RPLD.size())
-                SaveHandler.writeSubRecord(eRPLD, &Areas[p]->RPLD[0], (unsigned int)Areas[p]->RPLD.size() * sizeof(REGNRPLD));
+                SaveHandler.writeSubRecord(eRPLD, &Areas[p]->RPLD[0], (unsigned long)Areas[p]->RPLD.size() * sizeof(REGNRPLD));
             //else
             //    SaveHandler.writeSubRecord(eRPLD, NULL, 0);
             }
     if(Entries.size())
-        for(unsigned int p = 0; p < Entries.size(); p++)
+        for(unsigned long p = 0; p < Entries.size(); p++)
             {
             if(Entries[p]->RDAT.IsLoaded())
                 SaveHandler.writeSubRecord(eRDAT, &Entries[p]->RDAT.value, Entries[p]->RDAT.GetSize());
@@ -328,13 +328,13 @@ int REGNRecord::WriteRecord(_FileHandler &SaveHandler)
                 {
                 case eREGNObjects:
                     if(Entries[p]->RDOT.size())
-                        SaveHandler.writeSubRecord(eRDOT, &Entries[p]->RDOT[0], (unsigned int)Entries[p]->RDOT.size() * sizeof(REGNRDOT));
+                        SaveHandler.writeSubRecord(eRDOT, &Entries[p]->RDOT[0], (unsigned long)Entries[p]->RDOT.size() * sizeof(REGNRDOT));
                     else
                         SaveHandler.writeSubRecord(eRDOT, NULL, 0);
                     break;
                 case eREGNWeathers:
                     if(Entries[p]->RDWT.size())
-                        SaveHandler.writeSubRecord(eRDWT, &Entries[p]->RDWT[0], (unsigned int)Entries[p]->RDWT.size() * sizeof(REGNRDWT));
+                        SaveHandler.writeSubRecord(eRDWT, &Entries[p]->RDWT[0], (unsigned long)Entries[p]->RDWT.size() * sizeof(REGNRDWT));
                     //else
                     //    SaveHandler.writeSubRecord(eRDWT, NULL, 0);
                     break;
@@ -348,7 +348,7 @@ int REGNRecord::WriteRecord(_FileHandler &SaveHandler)
                     break;
                 case eREGNGrasses:
                     if(Entries[p]->RDGS.size())
-                        SaveHandler.writeSubRecord(eRDGS, &Entries[p]->RDGS[0], (unsigned int)Entries[p]->RDGS.size() * sizeof(REGNRDGS));
+                        SaveHandler.writeSubRecord(eRDGS, &Entries[p]->RDGS[0], (unsigned long)Entries[p]->RDGS.size() * sizeof(REGNRDGS));
                     //else
                     //    SaveHandler.writeSubRecord(eRDGS, NULL, 0);
                     break;
@@ -356,7 +356,7 @@ int REGNRecord::WriteRecord(_FileHandler &SaveHandler)
                     if(Entries[p]->RDMD.IsLoaded())
                         SaveHandler.writeSubRecord(eRDMD, Entries[p]->RDMD.value, Entries[p]->RDMD.GetSize());
                     if(Entries[p]->RDSD.size())
-                        SaveHandler.writeSubRecord(eRDSD, &Entries[p]->RDSD[0], (unsigned int)Entries[p]->RDSD.size() * sizeof(REGNRDSD));
+                        SaveHandler.writeSubRecord(eRDSD, &Entries[p]->RDSD[0], (unsigned long)Entries[p]->RDSD.size() * sizeof(REGNRDSD));
                     else
                         SaveHandler.writeSubRecord(eRDSD, NULL, 0);
                     break;
@@ -373,7 +373,7 @@ void REGNRecord::Debug(int debugLevel)
     {
     if(!IsLoaded())
         return;
-    unsigned int indentation = 4;
+    unsigned long indentation = 4;
     printf("  REGN\n");
     if(Header.IsLoaded())
         Header.Debug(debugLevel, indentation);
@@ -391,7 +391,7 @@ void REGNRecord::Debug(int debugLevel)
         PrintIndent(indentation);
         printf("Areas:\n");
         indentation += 2;
-        for(unsigned int p = 0;p < Areas.size();p++)
+        for(unsigned long p = 0;p < Areas.size();p++)
             {
             PrintIndent(indentation);
             printf("Index: %u\n", p);
@@ -401,7 +401,7 @@ void REGNRecord::Debug(int debugLevel)
                 PrintIndent(indentation);
                 printf("RPLD:\n");
                 indentation += 2;
-                for(unsigned int x = 0;x < Areas[p]->RPLD.size();x++)
+                for(unsigned long x = 0;x < Areas[p]->RPLD.size();x++)
                     {
                     PrintIndent(indentation);
                     printf("Index: %u\n", p);
@@ -418,7 +418,7 @@ void REGNRecord::Debug(int debugLevel)
         PrintIndent(indentation);
         printf("Entries:\n");
         indentation += 2;
-        for(unsigned int p = 0;p < Entries.size();p++)
+        for(unsigned long p = 0;p < Entries.size();p++)
             {
             PrintIndent(indentation);
             printf("Index: %u\n", p);

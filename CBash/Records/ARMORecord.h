@@ -60,11 +60,11 @@ class ARMORecord : public Record
         struct ARMODATA
             {
             unsigned short strength;
-            unsigned int value, health;
+            unsigned long value, health;
             float weight;
             ARMODATA():strength(0),value(0), health(0), weight(0.0f) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -118,18 +118,18 @@ class ARMORecord : public Record
             fIsNonPlayable = 0x00400000,
             fIsHeavyArmor  = 0x00800000
             };
-        STRING EDID;
-        STRING FULL;
+        StringRecord EDID;
+        StringRecord FULL;
         OptSubRecord<GENFID> SCRI;
         OptSubRecord<GENFID> ENAM;
         OptSubRecord<GENANAM> ANAM;
         ReqSubRecord<GENUFLAG> BMDT;
         OptSubRecord<GENMODEL> MODL;
         OptSubRecord<GENMODEL> MOD2;
-        STRING ICON;
+        StringRecord ICON;
         OptSubRecord<GENMODEL> MOD3;
         OptSubRecord<GENMODEL> MOD4;
-        STRING ICO2;
+        StringRecord ICO2;
         ReqSubRecord<ARMODATA> DATA;
 
         ARMORecord(bool newRecord=false):Record(newRecord) {}
@@ -199,38 +199,40 @@ class ARMORecord : public Record
             DATA.Unload();
             }
 
-        void VisitFormIDs(FormIDOp &op)
+        bool VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
-                return;
+                return false;
 
             if(SCRI.IsLoaded())
                 op.Accept(SCRI->fid);
             if(ENAM.IsLoaded())
                 op.Accept(ENAM->fid);
+
+            return op.Stop();
             }
 
         #ifdef _DEBUG
-        void Debug(int debugLevel);
+        void Debug(signed long debugLevel);
         #endif
 
-        int GetOtherFieldType(const unsigned int Field);
-        void * GetOtherField(const unsigned int Field);
-        unsigned int GetFieldArraySize(const unsigned int Field);
-        void GetFieldArray(const unsigned int Field, void **FieldValues);
-        void SetField(const unsigned int Field, char *FieldValue);
-        void SetOtherField(const unsigned int Field, unsigned int FieldValue);
-        void SetField(const unsigned int Field, unsigned short FieldValue);
-        void SetField(const unsigned int Field, float FieldValue);
-        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
+        signed long GetOtherFieldType(const unsigned long Field);
+        void * GetOtherField(const unsigned long Field);
+        unsigned long GetFieldArraySize(const unsigned long Field);
+        void GetFieldArray(const unsigned long Field, void **FieldValues);
+        void SetField(const unsigned long Field, char *FieldValue);
+        void SetOtherField(const unsigned long Field, unsigned long FieldValue);
+        void SetField(const unsigned long Field, unsigned short FieldValue);
+        void SetField(const unsigned long Field, float FieldValue);
+        void SetField(const unsigned long Field, unsigned char *FieldValue, unsigned long nSize);
 
-        int DeleteField(const unsigned int Field);
+        signed long DeleteField(const unsigned long Field);
 
-        int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize(bool forceCalc=false);
-        unsigned int GetType() {return eARMO;}
-        char * GetStrType() {return "ARMO";}
-        int WriteRecord(_FileHandler &SaveHandler);
+        signed long ParseRecord(unsigned char *buffer, const unsigned long &recSize);
+        unsigned long GetSize(bool forceCalc=false);
+        unsigned long GetType() {return eARMO;}
+        char *GetStrType() {return "ARMO";}
+        signed long WriteRecord(_FileHandler &SaveHandler);
         bool IsHead()
             {
             return (BMDT.value.flags & fIsHead) != 0;
@@ -451,14 +453,14 @@ class ARMORecord : public Record
             else
                 BMDT.value.flags &= ~fIsHeavyArmor;
             }
-        bool IsFlagMask(unsigned int Mask, bool Exact=false)
+        bool IsFlagMask(unsigned long Mask, bool Exact=false)
             {
             if(Exact)
                 return (BMDT.value.flags & Mask) == Mask;
             else
                 return (BMDT.value.flags & Mask) != 0;
             }
-        void SetFlagMask(unsigned int Mask)
+        void SetFlagMask(unsigned long Mask)
             {
             BMDT.value.flags = Mask;
             }

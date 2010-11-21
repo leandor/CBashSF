@@ -41,7 +41,7 @@ class WATRRecord : public Record
             unsigned char opacity;
             WATRANAM():opacity(75) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, unsigned int &indentation)
+            void Debug(signed long debugLevel, unsigned long &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -89,7 +89,7 @@ class WATRRecord : public Record
                 memset(&unused1, 0xCD, 3);
                 }
             #ifdef _DEBUG
-            void Debug(int debugLevel, unsigned int &indentation)
+            void Debug(signed long debugLevel, unsigned long &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -195,10 +195,10 @@ class WATRRecord : public Record
             };
         struct WATRGNAM
             {
-            unsigned int dayWater, nightWater, underWater;
+            unsigned long dayWater, nightWater, underWater;
             WATRGNAM():dayWater(0), nightWater(0), underWater(0) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, unsigned int &indentation)
+            void Debug(signed long debugLevel, unsigned long &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -230,11 +230,11 @@ class WATRRecord : public Record
             fIsCausesDamage  = 0x00000001,
             fIsReflective = 0x00000002
             };
-        STRING EDID;
-        ISTRING TNAM;
+        StringRecord EDID;
+        InsensitiveStringRecord TNAM;
         ReqSubRecord<WATRANAM> ANAM;
         ReqSubRecord<GENFLAG> FNAM;
-        ISTRING MNAM;
+        InsensitiveStringRecord MNAM;
         OptSubRecord<GENFID> SNAM;
         OptSubRecord<WATRDATA> DATA;
         OptSubRecord<WATRGNAM> GNAM;
@@ -272,10 +272,10 @@ class WATRRecord : public Record
             GNAM.Unload();
             }
 
-        void VisitFormIDs(FormIDOp &op)
+        bool VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
-                return;
+                return false;
 
             if(SNAM.IsLoaded())
                 op.Accept(SNAM->fid);
@@ -285,30 +285,33 @@ class WATRRecord : public Record
                 op.Accept(GNAM->nightWater);
                 op.Accept(GNAM->underWater);
                 }
+
+            return op.Stop();
             }
 
         #ifdef _DEBUG
-        void Debug(int debugLevel);
+        void Debug(signed long debugLevel);
         #endif
 
-        int GetOtherFieldType(const unsigned int Field);
-        void * GetOtherField(const unsigned int Field);
-        unsigned int GetFieldArraySize(const unsigned int Field);
-        void GetFieldArray(const unsigned int Field, void **FieldValues);
-        void SetField(const unsigned int Field, char *FieldValue);
-        void SetField(const unsigned int Field, unsigned char FieldValue);
-        void SetOtherField(const unsigned int Field, unsigned int FieldValue);
-        void SetField(const unsigned int Field, float FieldValue);
-        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetField(const unsigned int Field, unsigned short FieldValue);
+        signed long GetOtherFieldType(const unsigned long Field);
+        void * GetOtherField(const unsigned long Field);
+        unsigned long GetFieldArraySize(const unsigned long Field);
+        void GetFieldArray(const unsigned long Field, void **FieldValues);
+        void SetField(const unsigned long Field, char *FieldValue);
+        void SetField(const unsigned long Field, unsigned char FieldValue);
+        void SetOtherField(const unsigned long Field, unsigned long FieldValue);
+        void SetField(const unsigned long Field, float FieldValue);
+        void SetField(const unsigned long Field, unsigned char *FieldValue, unsigned long nSize);
+        void SetField(const unsigned long Field, unsigned short FieldValue);
 
-        int DeleteField(const unsigned int Field);
+        signed long DeleteField(const unsigned long Field);
 
-        int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize(bool forceCalc=false);
-        unsigned int GetType() {return eWATR;}
-        char * GetStrType() {return "WATR";}
-        int WriteRecord(_FileHandler &SaveHandler);
+        signed long ParseRecord(unsigned char *buffer, const unsigned long &recSize);
+        unsigned long GetSize(bool forceCalc=false);
+        unsigned long GetType() {return eWATR;}
+        char *GetStrType() {return "WATR";}
+        signed long WriteRecord(_FileHandler &SaveHandler);
+
         bool IsCausesDmg()
             {
             return (FNAM.value.flags & fIsCausesDamage) != 0;

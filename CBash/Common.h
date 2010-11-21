@@ -35,6 +35,62 @@ GPL License and Copyright Notice ============================================
 #include <boost/interprocess/file_mapping.hpp>
 #include <boost/interprocess/mapped_region.hpp>
 
+#ifndef UINT8
+    #define UINT8 unsigned char
+#endif
+
+#ifndef UINT8ARRAY
+    #define UINT8ARRAY unsigned char *
+#endif
+
+#ifndef UINT16
+    #define UINT16 unsigned short
+#endif
+
+#ifndef UINT32
+    #define UINT32 unsigned long
+#endif
+
+#ifndef SINT8
+    #define SINT8 signed char
+#endif
+
+#ifndef SINT16
+    #define SINT16 signed short
+#endif
+
+#ifndef SINT32
+    #define SINT32 signed long
+#endif
+
+#ifndef UINT32ARRAY
+    #define UINT32ARRAY unsigned long *
+#endif
+
+#ifndef FLOAT32
+    #define FLOAT32 float
+#endif
+
+#ifndef STRING
+    #define STRING char *
+#endif
+
+#ifndef STRINGARRAY
+    #define STRINGARRAY char **
+#endif
+
+#ifndef FORMID
+    #define FORMID unsigned long
+#endif
+
+#ifndef FORMID_OR_UINT32
+    #define FORMID_OR_UINT32 unsigned long
+#endif
+
+#ifndef FORMIDARRAY
+    #define FORMIDARRAY unsigned long *
+#endif
+
 #ifndef NULL
     #ifdef __cplusplus
         #define NULL    0
@@ -84,31 +140,31 @@ class Ex_INVALIDFORMID : public std::exception
             {return "Invalid FormID";}
     };
 
-typedef unsigned int * FormID;
+typedef unsigned long * FormID;
 
 extern time_t lastSave;
 
-extern const std::map<unsigned int, std::pair<unsigned int,unsigned int>> Function_Arguments;
-extern const std::map<unsigned int, char *> Function_Name;
-extern const std::map<unsigned int, char *> Comparison_Name;
-extern const std::map<unsigned int, char *> IDLEGroup_Name;
-extern const std::map<unsigned int, char *> PACKAIType_Name;
-extern const std::map<unsigned int, char *> PACKLocType_Name;
-extern const std::map<unsigned int, char *> PACKTargetType_Name;
-extern const std::map<unsigned int, char *> HardCodedFormID_EDID;
+extern const std::map<unsigned long, std::pair<unsigned long,unsigned long>> Function_Arguments;
+extern const std::map<unsigned long, char *> Function_Name;
+extern const std::map<unsigned long, char *> Comparison_Name;
+extern const std::map<unsigned long, char *> IDLEGroup_Name;
+extern const std::map<unsigned long, char *> PACKAIType_Name;
+extern const std::map<unsigned long, char *> PACKLocType_Name;
+extern const std::map<unsigned long, char *> PACKTargetType_Name;
+extern const std::map<unsigned long, char *> HardCodedFormID_EDID;
 
 
 
-inline void _readBuffer(void *_DstBuf, const unsigned char *_SrcBuf, const unsigned int &_MaxCharCount, unsigned int &_BufPos)
+inline void _readBuffer(void *_DstBuf, const unsigned char *_SrcBuf, const unsigned long &_MaxCharCount, unsigned long &_BufPos)
     {
     memcpy(_DstBuf,_SrcBuf + _BufPos,_MaxCharCount);
     _BufPos += _MaxCharCount;
     }
 
 #ifdef _DEBUG
-void PrintIndent(const unsigned int &indentation);
+void PrintIndent(const unsigned long &indentation);
 char * PrintFormID(FormID curFormID);
-char * PrintFormID(unsigned int curFormID);
+char * PrintFormID(unsigned long curFormID);
 #endif
 
 //template <class T>
@@ -122,7 +178,7 @@ char * PrintFormID(unsigned int curFormID);
 //        template <class Op>
 //        void Visit(Op& op) const
 //            {
-//            for(unsigned int x = 0; x < VisitedArray.size(); ++x)
+//            for(unsigned long x = 0; x < VisitedArray.size(); ++x)
 //                op.Accept(VisitedArray[x]);
 //	        }
 //    };
@@ -140,7 +196,7 @@ struct SubRecord
     T value;
     bool isLoaded;
     SubRecord():isLoaded(false),value() {}
-    unsigned int GetSize() const
+    unsigned long GetSize() const
         {return sizeof(T);}
     bool IsLoaded() const
         {
@@ -158,7 +214,7 @@ struct SubRecord
         value = newValue;
         isLoaded = false;
         }
-    bool Read(unsigned char *buffer, unsigned int subSize, unsigned int &curPos)
+    bool Read(unsigned char *buffer, unsigned long subSize, unsigned long &curPos)
         {
         if(isLoaded)
             {
@@ -191,7 +247,7 @@ struct SubRecord
         return !(*this == other);
         }
     #ifdef _DEBUG
-    void Debug(const char *name, int debugLevel, unsigned int &indentation)
+    void Debug(const char *name, int debugLevel, unsigned long &indentation)
         {
         if(isLoaded)
             {
@@ -214,7 +270,7 @@ struct ReqSubRecord
     {
     T value;
     ReqSubRecord():value() {}
-    unsigned int GetSize() const
+    unsigned long GetSize() const
         {return sizeof(T);}
     bool IsLoaded() const
         {return true;}
@@ -225,7 +281,7 @@ struct ReqSubRecord
         value.~T();
         value = newValue;
         }
-    bool Read(unsigned char *buffer, unsigned int subSize, unsigned int &curPos)
+    bool Read(unsigned char *buffer, unsigned long subSize, unsigned long &curPos)
         {
         if(subSize > sizeof(T))
             {
@@ -252,7 +308,7 @@ struct ReqSubRecord
         }
 
     #ifdef _DEBUG
-    void Debug(const char *name, int debugLevel, unsigned int &indentation)
+    void Debug(const char *name, int debugLevel, unsigned long &indentation)
         {
         if(name)
             {
@@ -275,7 +331,7 @@ struct OptSubRecord
         {
         delete value;
         }
-    unsigned int GetSize() const
+    unsigned long GetSize() const
         {return sizeof(T);}
     bool IsLoaded() const
         {
@@ -292,7 +348,7 @@ struct OptSubRecord
         delete value;
         value = NULL;
         }
-    bool Read(unsigned char *buffer, unsigned int subSize, unsigned int &curPos)
+    bool Read(unsigned char *buffer, unsigned long subSize, unsigned long &curPos)
         {
         if(value != NULL)
             {
@@ -352,7 +408,7 @@ struct OptSubRecord
         }
 
     #ifdef _DEBUG
-    void Debug(const char *name, int debugLevel, unsigned int &indentation)
+    void Debug(const char *name, int debugLevel, unsigned long &indentation)
         {
         if(isLoaded)
             {
@@ -380,7 +436,7 @@ struct SemiOptSubRecord
         {
         delete value;
         }
-    unsigned int GetSize() const
+    unsigned long GetSize() const
         {return sizeof(T);}
     bool IsLoaded() const
         {
@@ -397,7 +453,7 @@ struct SemiOptSubRecord
         delete value;
         value = NULL;
         }
-    bool Read(unsigned char *buffer, unsigned int subSize, unsigned int &curPos)
+    bool Read(unsigned char *buffer, unsigned long subSize, unsigned long &curPos)
         {
         if(value != NULL)
             {
@@ -457,7 +513,7 @@ struct SemiOptSubRecord
         }
 
     #ifdef _DEBUG
-    void Debug(const char *name, int debugLevel, unsigned int &indentation)
+    void Debug(const char *name, int debugLevel, unsigned long &indentation)
         {
         if(isLoaded)
             {
@@ -472,30 +528,30 @@ struct SemiOptSubRecord
     #endif
     };
 
-struct STRING
+struct StringRecord
     {
     char *value;
-    STRING():value(NULL) {}
-    STRING(const STRING &p):value(NULL)
+    StringRecord():value(NULL) {}
+    StringRecord(const StringRecord &p):value(NULL)
         {
         if(!p.IsLoaded())
             return;
-        unsigned int size = p.GetSize();
+        unsigned long size = p.GetSize();
         value = new char[size];
         memcpy(value, p.value, size);
         }
-    STRING(const char *p):value(NULL)
+    StringRecord(const char *p):value(NULL)
         {
-        unsigned int size = (unsigned int)strlen(p) + 1;
+        unsigned long size = (unsigned long)strlen(p) + 1;
         value = new char[size];
         strcpy_s(value, size, p);
         }
-    ~STRING()
+    ~StringRecord()
         {
         delete []value;
         }
-    unsigned int GetSize() const
-        {return (unsigned int)strlen(value) + 1;}
+    unsigned long GetSize() const
+        {return (unsigned long)strlen(value) + 1;}
     bool IsLoaded() const
         {return value != NULL;}
     void Load() {};
@@ -504,7 +560,7 @@ struct STRING
         delete []value;
         value = NULL;
         }
-    bool Read(unsigned char *buffer, const unsigned int &subSize, unsigned int &curPos)
+    bool Read(unsigned char *buffer, const unsigned long &subSize, unsigned long &curPos)
         {
         if(IsLoaded())
             {
@@ -516,23 +572,23 @@ struct STRING
         curPos += subSize;
         return true;
         }
-    void Copy(const STRING &FieldValue)
+    void Copy(const StringRecord &FieldValue)
         {
         if(!FieldValue.IsLoaded())
             return;
         delete []value;
-        unsigned int size = FieldValue.GetSize();
+        unsigned long size = FieldValue.GetSize();
         value = new char[size];
         strcpy_s(value, size, FieldValue.value);
         }
     void Copy(char *FieldValue)
         {
         delete []value;
-        unsigned int size = (unsigned int)strlen(FieldValue) + 1;
+        unsigned long size = (unsigned long)strlen(FieldValue) + 1;
         value = new char[size];
         strcpy_s(value, size, FieldValue);
         }
-    STRING& operator = (const STRING &rhs)
+    StringRecord& operator = (const StringRecord &rhs)
         {
         if(this != &rhs)
             {
@@ -543,7 +599,7 @@ struct STRING
             }
         return *this;
         }
-    bool operator ==(const STRING &other) const
+    bool operator ==(const StringRecord &other) const
         {
         if(!IsLoaded())
             {
@@ -554,13 +610,13 @@ struct STRING
             return true;
         return false;
         }
-    bool operator !=(const STRING &other) const
+    bool operator !=(const StringRecord &other) const
         {
         return !(*this == other);
         }
 
     #ifdef _DEBUG
-    void Debug(const char *name, int debugLevel, unsigned int &indentation)
+    void Debug(const char *name, int debugLevel, unsigned long &indentation)
         {
         if(IsLoaded())
             {
@@ -581,33 +637,33 @@ struct STRING
     #endif
     };
 
-struct ISTRING
+struct InsensitiveStringRecord
     {
     char *value;
-    ISTRING():value(NULL) {}
-    ISTRING(const ISTRING &p):value(NULL)
+    InsensitiveStringRecord():value(NULL) {}
+    InsensitiveStringRecord(const InsensitiveStringRecord &p):value(NULL)
         {
         if(!p.IsLoaded())
             return;
-        unsigned int size = p.GetSize();
+        unsigned long size = p.GetSize();
         value = new char[size];
         memcpy(value, p.value, size);
         }
-    ISTRING(const char *p):value(NULL)
+    InsensitiveStringRecord(const char *p):value(NULL)
         {
-        unsigned int size = (unsigned int)strlen(p) + 1;
+        unsigned long size = (unsigned long)strlen(p) + 1;
         value = new char[size];
         strcpy_s(value, size, p);
-        unsigned int len = (unsigned int)strlen(value);
-        for (unsigned int i = 0; i < len; ++i)
+        unsigned long len = (unsigned long)strlen(value);
+        for (unsigned long i = 0; i < len; ++i)
            value[i] = tolower(value[i]);
         }
-    ~ISTRING()
+    ~InsensitiveStringRecord()
         {
         delete []value;
         }
-    unsigned int GetSize() const
-        {return (unsigned int)strlen(value) + 1;}
+    unsigned long GetSize() const
+        {return (unsigned long)strlen(value) + 1;}
     bool IsLoaded() const
         {return value != NULL;}
     void Load() {};
@@ -616,7 +672,7 @@ struct ISTRING
         delete []value;
         value = NULL;
         }
-    bool Read(unsigned char *buffer, const unsigned int &subSize, unsigned int &curPos)
+    bool Read(unsigned char *buffer, const unsigned long &subSize, unsigned long &curPos)
         {
         if(IsLoaded())
             {
@@ -626,32 +682,32 @@ struct ISTRING
         value = new char[subSize];
         memcpy(value, buffer + curPos, subSize);
 
-        unsigned int len = (unsigned int)strlen(value);
-        for (unsigned int i = 0; i < len; ++i)
+        unsigned long len = (unsigned long)strlen(value);
+        for (unsigned long i = 0; i < len; ++i)
            value[i] = tolower(value[i]);
         curPos += subSize;
         return true;
         }
-    void Copy(const ISTRING &FieldValue)
+    void Copy(const InsensitiveStringRecord &FieldValue)
         {
         if(!FieldValue.IsLoaded())
             return;
         delete []value;
-        unsigned int size = FieldValue.GetSize();
+        unsigned long size = FieldValue.GetSize();
         value = new char[size];
         strcpy_s(value, size, FieldValue.value);
         }
     void Copy(char *FieldValue)
         {
         delete []value;
-        unsigned int size = (unsigned int)strlen(FieldValue) + 1;
+        unsigned long size = (unsigned long)strlen(FieldValue) + 1;
         value = new char[size];
         strcpy_s(value, size, FieldValue);
-        unsigned int len = (unsigned int)strlen(value);
-        for (unsigned int i = 0; i < len; ++i)
+        unsigned long len = (unsigned long)strlen(value);
+        for (unsigned long i = 0; i < len; ++i)
            value[i] = tolower(value[i]);
         }
-    ISTRING& operator = (const ISTRING &rhs)
+    InsensitiveStringRecord& operator = (const InsensitiveStringRecord &rhs)
         {
         if(this != &rhs)
             {
@@ -662,7 +718,7 @@ struct ISTRING
             }
         return *this;
         }
-    bool operator ==(const ISTRING &other) const
+    bool operator ==(const InsensitiveStringRecord &other) const
         {
         if(!IsLoaded())
             {
@@ -673,13 +729,13 @@ struct ISTRING
             return true;
         return false;
         }
-    bool operator !=(const ISTRING &other) const
+    bool operator !=(const InsensitiveStringRecord &other) const
         {
         return !(*this == other);
         }
 
     #ifdef _DEBUG
-    void Debug(const char *name, int debugLevel, unsigned int &indentation)
+    void Debug(const char *name, int debugLevel, unsigned long &indentation)
         {
         if(IsLoaded())
             {
@@ -700,30 +756,30 @@ struct ISTRING
     #endif
     };
 
-struct NONNULLSTRING
+struct NonNullStringRecord
     {
     char *value;
-    NONNULLSTRING():value(NULL) {}
-    NONNULLSTRING(const NONNULLSTRING &p):value(NULL)
+    NonNullStringRecord():value(NULL) {}
+    NonNullStringRecord(const NonNullStringRecord &p):value(NULL)
         {
         if(!p.IsLoaded())
             return;
-        unsigned int size = p.GetSize();
+        unsigned long size = p.GetSize();
         value = new char[size + 1];
         memcpy(value, p.value, size + 1);
         }
-    NONNULLSTRING(const char *p):value(NULL)
+    NonNullStringRecord(const char *p):value(NULL)
         {
-        unsigned int size = (unsigned int)strlen(p) + 1;
+        unsigned long size = (unsigned long)strlen(p) + 1;
         value = new char[size];
         strcpy_s(value, size, p);
         }
-    ~NONNULLSTRING()
+    ~NonNullStringRecord()
         {
         delete []value;
         }
-    unsigned int GetSize() const
-        {return (unsigned int)strlen(value);}
+    unsigned long GetSize() const
+        {return (unsigned long)strlen(value);}
     bool IsLoaded() const
         {return value != NULL;}
     void Load() {};
@@ -732,7 +788,7 @@ struct NONNULLSTRING
         delete []value;
         value = NULL;
         }
-    bool Read(unsigned char *buffer, const unsigned int &subSize, unsigned int &curPos)
+    bool Read(unsigned char *buffer, const unsigned long &subSize, unsigned long &curPos)
         {
         if(IsLoaded())
             {
@@ -745,12 +801,12 @@ struct NONNULLSTRING
         curPos += subSize;
         return true;
         }
-    void Copy(const NONNULLSTRING &FieldValue)
+    void Copy(const NonNullStringRecord &FieldValue)
         {
         if(!FieldValue.IsLoaded())
             return;
         delete []value;
-        unsigned int size = FieldValue.GetSize();
+        unsigned long size = FieldValue.GetSize();
         value = new char[size + 1];
         memcpy(value, FieldValue.value, size);
         value[size] = 0x00;
@@ -758,11 +814,11 @@ struct NONNULLSTRING
     void Copy(char *FieldValue)
         {
         delete []value;
-        unsigned int size = (unsigned int)strlen(FieldValue) + 1;
+        unsigned long size = (unsigned long)strlen(FieldValue) + 1;
         value = new char[size];
         strcpy_s(value, size, FieldValue);
         }
-    NONNULLSTRING& operator = (const NONNULLSTRING &rhs)
+    NonNullStringRecord& operator = (const NonNullStringRecord &rhs)
         {
         if(this != &rhs)
             {
@@ -773,7 +829,7 @@ struct NONNULLSTRING
             }
         return *this;
         }
-    bool operator ==(const NONNULLSTRING &other) const
+    bool operator ==(const NonNullStringRecord &other) const
         {
         if(!IsLoaded())
             {
@@ -784,13 +840,13 @@ struct NONNULLSTRING
             return true;
         return false;
         }
-    bool operator !=(const NONNULLSTRING &other) const
+    bool operator !=(const NonNullStringRecord &other) const
         {
         return !(*this == other);
         }
 
     #ifdef _DEBUG
-    void Debug(const char *name, int debugLevel, unsigned int &indentation)
+    void Debug(const char *name, int debugLevel, unsigned long &indentation)
         {
         if(IsLoaded())
             {
@@ -811,12 +867,12 @@ struct NONNULLSTRING
     #endif
     };
 
-struct RAWBYTES
+struct RawRecord
     {
-    unsigned int size;
+    unsigned long size;
     unsigned char *value;
-    RAWBYTES():size(0), value(NULL) {}
-    RAWBYTES(const RAWBYTES &p):value(NULL)
+    RawRecord():size(0), value(NULL) {}
+    RawRecord(const RawRecord &p):value(NULL)
         {
         if(!p.IsLoaded())
             return;
@@ -824,11 +880,11 @@ struct RAWBYTES
         value = new unsigned char[size];
         memcpy(value,p.value,size);
         }
-    ~RAWBYTES()
+    ~RawRecord()
         {
         delete []value;
         }
-    unsigned int GetSize() const
+    unsigned long GetSize() const
         {return size;}
     bool IsLoaded() const
         {return value != NULL;}
@@ -839,7 +895,7 @@ struct RAWBYTES
         delete []value;
         value = NULL;
         }
-    bool Read(unsigned char *buffer, unsigned int subSize, unsigned int &curPos)
+    bool Read(unsigned char *buffer, unsigned long subSize, unsigned long &curPos)
         {
         if(IsLoaded())
             {
@@ -852,14 +908,14 @@ struct RAWBYTES
         curPos += subSize;
         return true;
         }
-    void Copy(unsigned char *FieldValue, unsigned int nSize)
+    void Copy(unsigned char *FieldValue, unsigned long nSize)
         {
         delete []value;
         size = nSize;
         value = new unsigned char[size];
         memcpy(value, FieldValue, size);
         }
-    RAWBYTES& operator = (const RAWBYTES &rhs)
+    RawRecord& operator = (const RawRecord &rhs)
         {
         if(this != &rhs)
             {
@@ -870,7 +926,7 @@ struct RAWBYTES
             }
         return *this;
         }
-    bool operator ==(const RAWBYTES &other) const
+    bool operator ==(const RawRecord &other) const
         {
         if(!IsLoaded())
             {
@@ -881,13 +937,13 @@ struct RAWBYTES
             return true;
         return false;
         }
-    bool operator !=(const RAWBYTES &other) const
+    bool operator !=(const RawRecord &other) const
         {
         return !(*this == other);
         }
 
     #ifdef _DEBUG
-    void Debug(const char *name, int debugLevel, unsigned int &indentation)
+    void Debug(const char *name, int debugLevel, unsigned long &indentation)
         {
         if(IsLoaded())
             {
@@ -899,7 +955,7 @@ struct RAWBYTES
             if(debugLevel > 3)
                 if(debugLevel > 5)
                     {
-                    for(unsigned int x = 0;x < size;x++)
+                    for(unsigned long x = 0;x < size;x++)
                         printf("%02X", value[x]);
                     printf("\n");
                     }
@@ -908,35 +964,35 @@ struct RAWBYTES
     #endif
     };
 
-class _FormIDHandler
+class FormIDHandlerClass
     {
     public:
         char *FileName;
-        std::vector<STRING> &MAST;
-        unsigned int &nextObject;
+        std::vector<StringRecord> &MAST;
+        unsigned long &nextObject;
         unsigned char CollapsedIndex;
         bool bMastersChanged;
         unsigned char ExpandTable[255];
         unsigned char CollapseTable[255];
         bool IsEmpty;
 
-        boost::unordered_set<unsigned int> NewTypes;
+        boost::unordered_set<unsigned long> NewTypes;
         std::vector<char *> LoadOrder255;
         unsigned char ExpandedIndex;
-        _FormIDHandler(char *cFileName, std::vector<STRING> &cMAST, unsigned int &cNextObject):FileName(cFileName), MAST(cMAST), nextObject(cNextObject),
+        FormIDHandlerClass(char *cFileName, std::vector<StringRecord> &cMAST, unsigned long &cNextObject):FileName(cFileName), MAST(cMAST), nextObject(cNextObject),
                                                                                                ExpandedIndex(0), CollapsedIndex(0), bMastersChanged(false),
                                                                                                IsEmpty(true) {}
-        ~_FormIDHandler() {}
+        ~FormIDHandlerClass() {}
         void SetLoadOrder(std::vector<char *> &cLoadOrder);
-        unsigned int NextExpandedFID();
-        void CreateFormIDLookup(const unsigned int expandedIndex);
+        unsigned long NextExpandedFID();
+        void CreateFormIDLookup(const unsigned char expandedIndex);
         void UpdateFormIDLookup();
-        unsigned int AssignToMod(unsigned int curFormID);
-        unsigned int AssignToMod(unsigned int *curFormID);
+        unsigned long AssignToMod(unsigned long curFormID);
+        unsigned long AssignToMod(unsigned long *curFormID);
         void AddMaster(const char *curMaster);
         bool MastersChanged();
-        bool IsNewRecord(const unsigned int *&recordFID);
-        bool IsNewRecord(const unsigned int &recordFID);
+        bool IsNewRecord(const unsigned long *&recordFID);
+        bool IsNewRecord(const unsigned long &recordFID);
     };
 
 bool FileExists(const char *FileName);
@@ -949,12 +1005,12 @@ class _FileHandler
         unsigned char *_Buffer;
         unsigned long _BufSize;
         unsigned long _BufPos;
-        unsigned int _BufEnd;
+        unsigned long _BufEnd;
         unsigned long _TotalWritten;
         int fh;
     public:
         _FileHandler():m_region(NULL), f_map(NULL), _Buffer(NULL), _BufSize(0), _BufPos(0), _BufEnd(0), _TotalWritten(0), fh(-1) {}
-        _FileHandler(unsigned int nSize):m_region(NULL), f_map(NULL), _Buffer(NULL), _BufSize(nSize), _BufPos(0), _BufEnd(0), _TotalWritten(0), fh(-1)
+        _FileHandler(unsigned long nSize):m_region(NULL), f_map(NULL), _Buffer(NULL), _BufSize(nSize), _BufPos(0), _BufEnd(0), _TotalWritten(0), fh(-1)
             {
             if(_BufSize == 0)
                 return;
@@ -971,15 +1027,15 @@ class _FileHandler
         bool eof();
         unsigned long tell();
         unsigned long set_used(long _Used);
-        void read(void *_DestBuf, unsigned int _MaxCharCount);
+        void read(void *_DestBuf, unsigned long _MaxCharCount);
         unsigned char *getBuffer(unsigned long _Offset);
-        unsigned long write(const void *_SrcBuf, unsigned int _MaxCharCount);
-        void writeSubRecord(unsigned int _Type, const void *_SrcBuf, unsigned int _MaxCharCount);
-        unsigned long writeAt(unsigned long _Offset, const void *_SrcBuf, unsigned int _MaxCharCount);
+        unsigned long write(const void *_SrcBuf, unsigned long _MaxCharCount);
+        void writeSubRecord(unsigned long _Type, const void *_SrcBuf, unsigned long _MaxCharCount);
+        unsigned long writeAt(unsigned long _Offset, const void *_SrcBuf, unsigned long _MaxCharCount);
         unsigned long UnusedCache();
         bool IsCached(unsigned long _Offset);
         int close();
-        void reserveBuffer(unsigned int nSize);
+        void reserveBuffer(unsigned long nSize);
         void flush();
     };
 
@@ -1115,14 +1171,14 @@ class CreateRecordOptions
             };
     public:
         CreateRecordOptions();
-        CreateRecordOptions(unsigned int nFlags);
+        CreateRecordOptions(unsigned long nFlags);
         ~CreateRecordOptions();
 
         bool SetAsOverride;
         bool SetAsWorldCell;
         bool CopyWorldCellStatus;
 
-        unsigned int GetFlagField();
+        unsigned long GetFlagField();
     };
 
 class ModFlags
@@ -1136,7 +1192,7 @@ class ModFlags
             };
     public:
         ModFlags();
-        ModFlags(unsigned int nFlags);
+        ModFlags(unsigned long nFlags);
         ~ModFlags();
 
         bool Merge;
@@ -1145,5 +1201,5 @@ class ModFlags
 
         bool IsDummy, IsOpen, LoadedGRUPs, IsNew;
 
-        unsigned int GetFlagField();
+        unsigned long GetFlagField();
     };

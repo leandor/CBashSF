@@ -22,14 +22,14 @@ GPL License and Copyright Notice ============================================
 #include "..\Common.h"
 #include "LANDRecord.h"
 
-int LANDRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
+signed long LANDRecord::ParseRecord(unsigned char *buffer, const unsigned long &recSize)
     {
     if(IsLoaded())
         return -1;
     IsLoaded(true);
-    unsigned int subType = 0;
-    unsigned int subSize = 0;
-    unsigned int curPos = 0;
+    unsigned long subType = 0;
+    unsigned long subSize = 0;
+    unsigned long curPos = 0;
     ReqSubRecord<LANDGENTXT> *curTexture = NULL;
     LANDLAYERS *curLayer = NULL;
     while(curPos < recSize){
@@ -87,19 +87,19 @@ int LANDRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 //switch(curTexture.value.quadrant)
                 //    {
                 //    case eBottomLeft:
-                //        for(unsigned int x = 0; x < VTXT.size(); ++x)
+                //        for(unsigned long x = 0; x < VTXT.size(); ++x)
                 //            Merged->Points[(VTXT[x].position % 17)][(VTXT[x].position / 17)].AlphaLayer[curTexture.value.layer] = VTXT[x].opacity;
                 //        break;
                 //    case eBottomRight:
-                //        for(unsigned int x = 0; x < VTXT.size(); ++x)
+                //        for(unsigned long x = 0; x < VTXT.size(); ++x)
                 //            Merged->Points[(VTXT[x].position % 17) + 16][(VTXT[x].position / 17)].AlphaLayer[curTexture.value.layer] = VTXT[x].opacity;
                 //        break;
                 //    case eTopLeft:
-                //        for(unsigned int x = 0; x < VTXT.size(); ++x)
+                //        for(unsigned long x = 0; x < VTXT.size(); ++x)
                 //            Merged->Points[(VTXT[x].position % 17)][(VTXT[x].position / 17) + 16].AlphaLayer[curTexture.value.layer] = VTXT[x].opacity;
                 //        break;
                 //    case eTopRight:
-                //        for(unsigned int x = 0; x < VTXT.size(); ++x)
+                //        for(unsigned long x = 0; x < VTXT.size(); ++x)
                 //            Merged->Points[(VTXT[x].position % 17) + 16][(VTXT[x].position / 17) + 16].AlphaLayer[curTexture.value.layer] = VTXT[x].opacity;
                 //        break;
                 //    default:
@@ -108,11 +108,11 @@ int LANDRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 //    }
                 break;
             case eVTEX:
-                if(subSize % sizeof(unsigned int) == 0)
+                if(subSize % sizeof(unsigned long) == 0)
                     {
                     if(subSize == 0)
                         break;
-                    VTEX.resize(subSize / sizeof(unsigned int));
+                    VTEX.resize(subSize / sizeof(unsigned long));
                     _readBuffer(&VTEX[0], buffer, subSize, curPos);
                     }
                 else
@@ -133,12 +133,12 @@ int LANDRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
     return 0;
     }
 
-unsigned int LANDRecord::GetSize(bool forceCalc)
+unsigned long LANDRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && recData != NULL)
-        return *(unsigned int*)&recData[-16];
-    unsigned int cSize = 0;
-    unsigned int TotSize = 0;
+        return *(unsigned long*)&recData[-16];
+    unsigned long cSize = 0;
+    unsigned long TotSize = 0;
     if(DATA.IsLoaded())
         {
         cSize = DATA.GetSize();
@@ -153,18 +153,18 @@ unsigned int LANDRecord::GetSize(bool forceCalc)
         TotSize += VCLR.GetSize() + 6;
 
     if(BTXT.size())
-        for(unsigned int p = 0; p < BTXT.size(); p++)
+        for(unsigned long p = 0; p < BTXT.size(); p++)
             if(BTXT[p] != NULL && BTXT[p]->IsLoaded())
                 TotSize += BTXT[p]->GetSize() + 6;
 
     if(Layers.size())
-        for(unsigned int p = 0; p < Layers.size(); p++)
+        for(unsigned long p = 0; p < Layers.size(); p++)
             {
             if(Layers[p]->ATXT.IsLoaded())
                 TotSize += Layers[p]->ATXT.GetSize() + 6;
             if(Layers[p]->VTXT.size())
                 {
-                cSize = (sizeof(LANDVTXT) * (unsigned int)Layers[p]->VTXT.size());
+                cSize = (sizeof(LANDVTXT) * (unsigned long)Layers[p]->VTXT.size());
                 if(cSize > 65535) cSize += 10;
                 TotSize += cSize += 6;
                 }
@@ -172,7 +172,7 @@ unsigned int LANDRecord::GetSize(bool forceCalc)
 
     if(VTEX.size())
         {
-        cSize = (sizeof(unsigned int) * (unsigned int)VTEX.size());
+        cSize = (sizeof(unsigned long) * (unsigned long)VTEX.size());
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
         }
@@ -180,7 +180,7 @@ unsigned int LANDRecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int LANDRecord::WriteRecord(_FileHandler &SaveHandler)
+signed long LANDRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(DATA.IsLoaded())
         SaveHandler.writeSubRecord(eDATA, DATA.value, DATA.GetSize());
@@ -191,20 +191,20 @@ int LANDRecord::WriteRecord(_FileHandler &SaveHandler)
     if(VCLR.IsLoaded())
         SaveHandler.writeSubRecord(eVCLR, VCLR.value, VCLR.GetSize());
     if(BTXT.size())
-        for(unsigned int p = 0; p < BTXT.size(); p++)
+        for(unsigned long p = 0; p < BTXT.size(); p++)
             if(BTXT[p]->IsLoaded())
                 SaveHandler.writeSubRecord(eBTXT, &BTXT[p]->value, BTXT[p]->GetSize());
 
     if(Layers.size())
-        for(unsigned int p = 0; p < Layers.size(); p++)
+        for(unsigned long p = 0; p < Layers.size(); p++)
             {
             if(Layers[p]->ATXT.IsLoaded())
                 SaveHandler.writeSubRecord(eATXT, &Layers[p]->ATXT.value, Layers[p]->ATXT.GetSize());
             if(Layers[p]->VTXT.size())
-                SaveHandler.writeSubRecord(eVTXT, &Layers[p]->VTXT[0], (unsigned int)Layers[p]->VTXT.size() * sizeof(LANDVTXT));
+                SaveHandler.writeSubRecord(eVTXT, &Layers[p]->VTXT[0], (unsigned long)Layers[p]->VTXT.size() * sizeof(LANDVTXT));
             }
     if(VTEX.size())
-        SaveHandler.writeSubRecord(eVTEX, &VTEX[0], (unsigned int)VTEX.size() * sizeof(unsigned int));
+        SaveHandler.writeSubRecord(eVTEX, &VTEX[0], (unsigned long)VTEX.size() * sizeof(unsigned long));
 
     return -1;
     }
@@ -214,7 +214,7 @@ void LANDRecord::Debug(int debugLevel)
     {
     if(!IsLoaded())
         return;
-    unsigned int indentation = 4;
+    unsigned long indentation = 4;
     printf("  LAND\n");
     if(Header.IsLoaded())
         Header.Debug(debugLevel, indentation);
@@ -224,7 +224,7 @@ void LANDRecord::Debug(int debugLevel)
     }
 #endif
 
-unsigned char LANDRecord::CalcQuadrant(const unsigned int &row, const unsigned int &column)
+unsigned char LANDRecord::CalcQuadrant(const unsigned long &row, const unsigned long &column)
     {
     if(column > 16)
         {
@@ -238,31 +238,31 @@ unsigned char LANDRecord::CalcQuadrant(const unsigned int &row, const unsigned i
         }
     }
 
-unsigned int LANDRecord::CalcPosition(const unsigned int &curQuadrant, const unsigned int &row, const unsigned int &column)
+unsigned short LANDRecord::CalcPosition(const unsigned char &curQuadrant, const unsigned long &row, const unsigned long &column)
     {
     switch(curQuadrant)
         {
         case eTopRight:
-            return (column - 16) + ((row - 16) * 17);
+            return (unsigned short)((column - 16) + ((row - 16) * 17));
         case eBottomRight:
-            return (column - 16) + ((row) * 17);
+            return (unsigned short)((column - 16) + ((row) * 17));
         case eTopLeft:
-            return (column) + ((row - 16) * 17);
+            return (unsigned short)((column) + ((row - 16) * 17));
         case eBottomLeft:
-            return column + (row * 17);
+            return (unsigned short)(column + (row * 17));
         default:
             return 0;
         }
     }
 
-float LANDRecord::CalcHeight(const unsigned int &row, const unsigned int &column)
+float LANDRecord::CalcHeight(const unsigned long &row, const unsigned long &column)
     {
     if(!VHGT.IsLoaded())
         return 0.0f;
     float fRetValue = VHGT->offset * 8.0f;
-    for(unsigned int curRow = 0; curRow <= row; ++curRow)
+    for(unsigned long curRow = 0; curRow <= row; ++curRow)
         fRetValue += (VHGT->VHGT[curRow][0] * 8.0f);
-    for(unsigned int curColumn = 1; curColumn <= column; ++curColumn)
+    for(unsigned long curColumn = 1; curColumn <= column; ++curColumn)
         fRetValue += (VHGT->VHGT[row][curColumn] * 8.0f);
     return fRetValue;
     }

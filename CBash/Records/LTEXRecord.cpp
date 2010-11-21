@@ -23,14 +23,14 @@ GPL License and Copyright Notice ============================================
 #include "LTEXRecord.h"
 #include <vector>
 
-int LTEXRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
+signed long LTEXRecord::ParseRecord(unsigned char *buffer, const unsigned long &recSize)
     {
     if(IsLoaded())
         return -1;
     IsLoaded(true);
-    unsigned int subType = 0;
-    unsigned int subSize = 0;
-    unsigned int curPos = 0;
+    unsigned long subType = 0;
+    unsigned long subSize = 0;
+    unsigned long curPos = 0;
     FormID curFormID = NULL;
     while(curPos < recSize){
         _readBuffer(&subType,buffer,4,curPos);
@@ -62,7 +62,7 @@ int LTEXRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 SNAM.Read(buffer, subSize, curPos);
                 break;
             case eGNAM:
-                curFormID = new unsigned int;
+                curFormID = new unsigned long;
                 _readBuffer(curFormID,buffer,subSize,curPos);
                 GNAM.push_back(curFormID);
                 break;
@@ -78,12 +78,12 @@ int LTEXRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
     return 0;
     }
 
-unsigned int LTEXRecord::GetSize(bool forceCalc)
+unsigned long LTEXRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && recData != NULL)
-        return *(unsigned int*)&recData[-16];
-    unsigned int cSize = 0;
-    unsigned int TotSize = 0;
+        return *(unsigned long*)&recData[-16];
+    unsigned long cSize = 0;
+    unsigned long TotSize = 0;
     if(EDID.IsLoaded())
         {
         cSize = EDID.GetSize();
@@ -101,11 +101,11 @@ unsigned int LTEXRecord::GetSize(bool forceCalc)
     if(SNAM.IsLoaded())
         TotSize += SNAM.GetSize() + 6;
     if(GNAM.size())
-        TotSize += (unsigned int)GNAM.size() * (sizeof(unsigned int) + 6);
+        TotSize += (unsigned long)GNAM.size() * (sizeof(unsigned long) + 6);
     return TotSize;
     }
 
-int LTEXRecord::WriteRecord(_FileHandler &SaveHandler)
+signed long LTEXRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
@@ -115,8 +115,8 @@ int LTEXRecord::WriteRecord(_FileHandler &SaveHandler)
         SaveHandler.writeSubRecord(eHNAM, &HNAM.value, HNAM.GetSize());
     if(SNAM.IsLoaded())
         SaveHandler.writeSubRecord(eSNAM, &SNAM.value, SNAM.GetSize());
-    for(unsigned int p = 0; p < GNAM.size(); p++)
-        SaveHandler.writeSubRecord(eGNAM, GNAM[p], sizeof(unsigned int));
+    for(unsigned long p = 0; p < GNAM.size(); p++)
+        SaveHandler.writeSubRecord(eGNAM, GNAM[p], sizeof(unsigned long));
     return -1;
     }
 
@@ -125,7 +125,7 @@ void LTEXRecord::Debug(int debugLevel)
     {
     if(!IsLoaded())
         return;
-    unsigned int indentation = 4;
+    unsigned long indentation = 4;
     printf("  LTEX\n");
     if(Header.IsLoaded())
         Header.Debug(debugLevel, indentation);
@@ -143,7 +143,7 @@ void LTEXRecord::Debug(int debugLevel)
         PrintIndent(indentation);
         printf("GNAM:\n");
         indentation += 2;
-        for(unsigned int p = 0;p < GNAM.size();p++)
+        for(unsigned long p = 0;p < GNAM.size();p++)
             {
             PrintIndent(indentation);
             printf("%u:%s\n", p, PrintFormID(GNAM[p]));

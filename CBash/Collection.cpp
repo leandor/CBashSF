@@ -25,84 +25,14 @@ GPL License and Copyright Notice ============================================
 #include <sys/utime.h>
 #include <boost/threadpool.hpp>
 
-//template<typename ItemType>
-//void MergeSort(ItemType* srcArray, ItemType* helpArray, unsigned int size)
-//{
-//    ItemType* src = srcArray;
-//    ItemType* dst = helpArray;
-//
-//    for(unsigned bSize = 2; bSize < size*2; bSize *= 2)
-//    {
-//        unsigned dstInd = 0;
-//        for(unsigned bInd = 0; bInd < size; bInd += bSize)
-//        {
-//            unsigned sbInd1 = bInd, sbInd1e = bInd+bSize/2;
-//            if(sbInd1e > size) sbInd1e = size;
-//            unsigned sbInd2 = sbInd1e, sbInd2e = bInd+bSize;
-//            if(sbInd2e > size) sbInd2e = size;
-//            while(sbInd1 < sbInd1e && sbInd2 < sbInd2e)
-//            {
-//                if(src[sbInd1] < src[sbInd2])
-//                    dst[dstInd++] = src[sbInd1++];
-//                else
-//                    dst[dstInd++] = src[sbInd2++];
-//            }
-//            while(sbInd1 < sbInd1e) dst[dstInd++] = src[sbInd1++];
-//            while(sbInd2 < sbInd2e) dst[dstInd++] = src[sbInd2++];
-//        }
-//        ItemType* tmp = src; src = dst; dst = tmp;
-//    }
-//    if(src == helpArray)
-//    {
-//        for(unsigned i = 0; i < size; ++i)
-//            dst[i] = src[i];
-//    }
-//}
-
 bool compMod(ModFile *lhs, ModFile *rhs)
     {
     return *lhs < *rhs;
     }
 
-////Insertion sort
-//void sortMods(std::vector<ModFile *> &ModFiles)
-//    {
-//    ModFile *Temp = NULL;
-//    int x = 0;
-//    int numMods = (int)ModFiles.size();
-//    for (int count = 0; count < numMods; count++)
-//        {
-//        x = count;
-//        for(int index = count + 1; index < numMods; index++)
-//            if(*ModFiles[index] < *ModFiles[x])
-//                x = index;
-//        if(x > count)
-//            std::swap(ModFiles[x], ModFiles[count]);
-//        }
-//    }
-
-////Insertion sort
-//void sortMods(std::vector<ModFile *> &ModFiles)
-//    {
-//    ModFile *Temp;
-//    int x = 0;
-//    int numMods = (int)ModFiles.size();
-//    for (int count = 1; count < numMods; ++count)
-//        {
-//        x = count;
-//        while(x > 0 && *ModFiles[x - 1] > *ModFiles[x])
-//            {
-//            Temp = ModFiles[x];
-//            ModFiles[x] = ModFiles[x - 1];
-//            ModFiles[x - 1] = Temp;
-//            x--;
-//            }
-//        }
-//    }
-
 bool Collection::IsModAdded(const char *ModName)
     {
-    for(unsigned int p = 0;p < ModFiles.size();p++)
+    for(unsigned long p = 0;p < ModFiles.size();p++)
         if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
             return true;
     return false;
@@ -144,21 +74,21 @@ int Collection::IsEmpty(char *ModName)
     return curModFile->IsEmpty();
     }
 
-unsigned int Collection::GetNumNewRecordTypes(char *ModName)
+unsigned long Collection::GetNumNewRecordTypes(char *ModName)
     {
     ModFile *curModFile = LookupModFile(ModName);
     if(curModFile == NULL)
         return 0;
-    return (unsigned int)curModFile->FormIDHandler.NewTypes.size();
+    return (unsigned long)curModFile->FormIDHandler.NewTypes.size();
     }
 
-void Collection::GetNewRecordTypes(char *ModName, unsigned int const ** RecordTypes)
+void Collection::GetNewRecordTypes(char *ModName, unsigned long const ** RecordTypes)
     {
     ModFile *curModFile = LookupModFile(ModName);
     if(curModFile == NULL)
         return;
-    boost::unordered_set<unsigned int>::iterator it;
-    unsigned int x = 0;
+    boost::unordered_set<unsigned long>::iterator it;
+    unsigned long x = 0;
     for(it = curModFile->FormIDHandler.NewTypes.begin(); it != curModFile->FormIDHandler.NewTypes.end(); ++it, ++x)
         RecordTypes[x] = &(*it);
     return;
@@ -171,6 +101,7 @@ int Collection::CleanMasters(char *ModName)
         return 0;
     return curModFile->CleanMasters();
     }
+
 int Collection::SafeSaveMod(char *ModName, bool CloseMod)
     {
     if(CloseMod)
@@ -190,7 +121,7 @@ int Collection::SafeSaveMod(char *ModName, bool CloseMod)
     struct _utimbuf originalTimes;
 
     char *backupName = NULL;
-    unsigned int bakAttempts = 0, bakSize = 0;
+    unsigned long bakAttempts = 0, bakSize = 0;
 
     curModFile = LookupModFile(ModName);
 
@@ -234,7 +165,7 @@ int Collection::SafeSaveMod(char *ModName, bool CloseMod)
             originalTimes.actime = oTimes.st_atime;
             originalTimes.modtime = oTimes.st_mtime;
 
-            bakSize = (unsigned int)strlen(ModName) + (unsigned int)strlen(".bak.XXXX_XX_XX_XX_XX_XX") + 1;
+            bakSize = (unsigned long)strlen(ModName) + (unsigned long)strlen(".bak.XXXX_XX_XX_XX_XX_XX") + 1;
             backupName = new char[bakSize];
             strcpy_s(backupName, bakSize, ModName);
             strftime(backupName + strlen(ModName), bakSize, ".bak.%Y_%m_%d_%H_%M_%S", &currentTime );
@@ -262,7 +193,7 @@ int Collection::SafeSaveMod(char *ModName, bool CloseMod)
         err = rename(tName, ModName);
         if(err != 0)
             {
-            bakSize = (unsigned int)strlen(ModName) + (unsigned int)strlen(".new.XXXX_XX_XX_XX_XX_XX") + 1;
+            bakSize = (unsigned long)strlen(ModName) + (unsigned long)strlen(".new.XXXX_XX_XX_XX_XX_XX") + 1;
             backupName = new char[bakSize];
 
             strcpy_s(backupName, bakSize, ModName);
@@ -460,12 +391,12 @@ void Collection::IndexRecords(ModFile *curModFile, const bool &FullLoad)
                 CELLRecord *curCELLRecord = *curCELL;
                 int gridX = 0, gridY = 0;
 
-                reader.Accept(*curCELLRecord);
-                for(unsigned int x = 0; x < curWRLDRecord->CELL->ACHR.size();)
+                reader.Accept((Record **)&curCELLRecord);
+                for(unsigned long x = 0; x < curWRLDRecord->CELL->ACHR.size();)
                     {
                     curACHRRecord = curWRLDRecord->CELL->ACHR[x];
                     //Have to test each ACHR to see if it belongs to the cell. This is determined by its positioning.
-                    reader.Accept(*curACHRRecord);
+                    reader.Accept((Record **)&curACHRRecord);
                     ResolveGrid(curACHRRecord->DATA.value.posX, curACHRRecord->DATA.value.posY, gridX, gridY);
                     if(!FullLoad)
                         curACHRRecord->Unload();
@@ -479,10 +410,10 @@ void Collection::IndexRecords(ModFile *curModFile, const bool &FullLoad)
                         }
                     else ++x;
                     }
-                for(unsigned int x = 0; x < curWRLDRecord->CELL->ACRE.size();)
+                for(unsigned long x = 0; x < curWRLDRecord->CELL->ACRE.size();)
                     {
                     curACRERecord = curWRLDRecord->CELL->ACRE[x];
-                    reader.Accept(*curACRERecord);
+                    reader.Accept((Record **)&curACRERecord);
                     ResolveGrid(curACRERecord->DATA.value.posX, curACRERecord->DATA.value.posY, gridX, gridY);
                     if(!FullLoad)
                         curACRERecord->Unload();
@@ -494,10 +425,10 @@ void Collection::IndexRecords(ModFile *curModFile, const bool &FullLoad)
                         }
                     else ++x;
                     }
-                for(unsigned int x = 0; x < curWRLDRecord->CELL->REFR.size();)
+                for(unsigned long x = 0; x < curWRLDRecord->CELL->REFR.size();)
                     {
                     curREFRRecord = curWRLDRecord->CELL->REFR[x];
-                    reader.Accept(*curREFRRecord);
+                    reader.Accept((Record **)&curREFRRecord);
                     ResolveGrid(curREFRRecord->DATA.value.posX, curREFRRecord->DATA.value.posY, gridX, gridY);
                     if(!FullLoad)
                         curREFRRecord->Unload();
@@ -567,7 +498,7 @@ void Collection::IndexRecords(const bool &FullLoad)
     {
     ModFile *curModFile = NULL;
     //boost::threadpool::pool IndexThreads(NUMTHREADS);
-    for(unsigned int p = 0; p < (unsigned int)ModFiles.size(); ++p)
+    for(unsigned long p = 0; p < (unsigned long)ModFiles.size(); ++p)
         {
         curModFile = ModFiles[p];
         if(!curModFile->Settings.IsDummy)
@@ -604,7 +535,7 @@ int Collection::Load(const bool &LoadMasters, const bool &FullLoad)
                 }
             }while(Preloading);
         //printf("Before Sort\n");
-        //for(unsigned int p = 0; p < (unsigned int)ModFiles.size(); ++p)
+        //for(unsigned long p = 0; p < (unsigned long)ModFiles.size(); ++p)
         //    printf("%02X: %s\n", p, ModFiles[p]->FileName);
 
         std::_Insertion_sort(ModFiles.begin(),ModFiles.end(),compMod);
@@ -612,12 +543,12 @@ int Collection::Load(const bool &LoadMasters, const bool &FullLoad)
         //std::sort(ModFiles.begin(), ModFiles.end());
         //printf("\n\n");
         //printf("After Sort\n");
-        //for(unsigned int p = 0; p < (unsigned int)ModFiles.size(); ++p)
+        //for(unsigned long p = 0; p < (unsigned long)ModFiles.size(); ++p)
         //    printf("%02X: %s\n", p, ModFiles[p]->FileName);
         //LoadOrder.resize(ModFiles.size());
         AllLoadOrder.clear();
         LoadOrder255.clear();
-        for(unsigned int p = 0; p < (unsigned int)ModFiles.size(); ++p)
+        for(unsigned long p = 0; p < (unsigned long)ModFiles.size(); ++p)
             {
             AllLoadOrder.push_back(ModFiles[p]->FileName);
             if(!ModFiles[p]->Settings.Merge && !ModFiles[p]->Settings.Scan)
@@ -627,11 +558,11 @@ int Collection::Load(const bool &LoadMasters, const bool &FullLoad)
             //    printf("Merge - %s\n", ModFiles[p]->FileName);
         //printf("\n\n");
 
-        //for(unsigned int p = 0; p < (unsigned int)LoadOrder.size(); ++p)
+        //for(unsigned long p = 0; p < (unsigned long)LoadOrder.size(); ++p)
         //    printf("%02X: %s\n", p, LoadOrder[p]);
         //printf("\n\n");
-        unsigned int expandedIndex = 0;
-        for(unsigned int p = 0; p < (unsigned int)ModFiles.size(); ++p)
+        unsigned char expandedIndex = 0;
+        for(unsigned long p = 0; p < (unsigned long)ModFiles.size(); ++p)
             {
             curModFile = ModFiles[p];
             //Loads GRUP and Record Headers.  Fully loads GMST records.
@@ -668,9 +599,9 @@ int Collection::Load(const bool &LoadMasters, const bool &FullLoad)
     return 0;
     }
 
-unsigned int Collection::NextFreeExpandedFID(ModFile *curModFile, unsigned int depth)
+unsigned long Collection::NextFreeExpandedFID(ModFile *curModFile, unsigned long depth)
     {
-    unsigned int curFormID = curModFile->FormIDHandler.NextExpandedFID();
+    unsigned long curFormID = curModFile->FormIDHandler.NextExpandedFID();
     FID_Range range = FID_ModFile_Record.equal_range(curFormID);
     //FormID doesn't exist in any mod, so it's free for use
     if(range.first == range.second)
@@ -683,19 +614,7 @@ unsigned int Collection::NextFreeExpandedFID(ModFile *curModFile, unsigned int d
     return 0;
     }
 
-int Collection::RemoveIndex(Record *curRecord, char *ModName)
-    {
-    FID_Range range = FID_ModFile_Record.equal_range(curRecord->formID);
-    for(; range.first != range.second; ++range.first)
-        if(_stricmp(range.first->second.first->FileName, ModName) == 0)
-            {
-            FID_ModFile_Record.erase(range.first);
-            return 0;
-            }
-    return -1;
-    }
-
-int Collection::LoadRecord(char *ModName, unsigned int recordFID)
+int Collection::LoadRecord(char *ModName, unsigned long recordFID)
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
@@ -705,11 +624,11 @@ int Collection::LoadRecord(char *ModName, unsigned int recordFID)
         return -1;
 
     RecordReader reader(curModFile->FormIDHandler);
-    reader.Accept(*curRecord);
+    reader.Accept(&curRecord);
     return 0;
     }
 
-int Collection::UnloadRecord(char *ModName, unsigned int recordFID)
+int Collection::UnloadRecord(char *ModName, unsigned long recordFID)
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
@@ -727,7 +646,7 @@ int Collection::UnloadModFile(char *ModName)
     ModFile *curModFile = LookupModFile(ModName);
 
     RecordUnloader unloader;
-    curModFile->VisitRecords(unloader);
+    curModFile->VisitAllRecords(unloader);
     return 0;
     }
 
@@ -743,12 +662,20 @@ int Collection::UnloadAll()
     return 0;
     }
 
-unsigned int Collection::CreateRecord(char *ModName, const unsigned int RecordType, const unsigned int ParentFID, unsigned int CreateFlags)
+unsigned long Collection::CreateRecord(char *ModName, const unsigned long RecordType, unsigned long RecordFID, char *RecordEditorID, const unsigned long ParentFID, unsigned long CreateFlags)
     {
     CreateRecordOptions options(CreateFlags);
     ModFile *curModFile = NULL;
     Record *DummyRecord = NULL;
     Record *ParentRecord = NULL;
+
+    //See if the requested record already exists
+    if(RecordFID != 0)
+        LookupRecord(ModName, RecordFID, curModFile, DummyRecord);
+    else if(RecordEditorID != NULL)
+        LookupRecordByEditorID(ModName, RecordEditorID, curModFile, DummyRecord);
+    if(DummyRecord != NULL)
+        return DummyRecord->formID;
 
     //Lookup the required data, and ensure it exists
     if(ParentFID)
@@ -765,7 +692,7 @@ unsigned int Collection::CreateRecord(char *ModName, const unsigned int RecordTy
         return 0;
 
     //Create the new record
-    Record *curRecord = curModFile->CreateRecord(RecordType, DummyRecord, ParentRecord, options);
+    Record *curRecord = curModFile->CreateRecord(RecordType, RecordEditorID, DummyRecord, ParentRecord, options);
     if(curRecord == NULL)
         return 0;
 
@@ -774,14 +701,21 @@ unsigned int Collection::CreateRecord(char *ModName, const unsigned int RecordTy
         return curRecord->formID;
 
     //Assign the new record an unused formID
-    unsigned int newRecordFID = curRecord->formID = NextFreeExpandedFID(curModFile);
+    if(RecordFID == 0)
+        RecordFID = curRecord->formID = NextFreeExpandedFID(curModFile);
+    else
+        curRecord->formID = RecordFID;
 
     //Index the new record
-    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
-    return newRecordFID;
+    if(curRecord->IsKeyedByEditorID())
+        EDID_ModFile_Record.insert(std::make_pair((char *)curRecord->GetField(5),std::make_pair(curModFile,curRecord)));
+    else
+        FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
+
+    return RecordFID;
     }
 
-unsigned int Collection::CopyRecord(char *ModName, unsigned int RecordFID, char *DestModName, unsigned int DestParentFID, unsigned int CreateFlags)
+unsigned long Collection::CopyRecord(char *ModName, unsigned long RecordFID, char *DestModName, unsigned long DestParentFID, unsigned long CreateFlags)
     {
     CreateRecordOptions options(CreateFlags);
     ModFile *curModFile = NULL;
@@ -794,7 +728,7 @@ unsigned int Collection::CopyRecord(char *ModName, unsigned int RecordFID, char 
     ModFile *DestModFile = NULL;
     Record *ParentRecord = NULL;
     Record *RecordCopy = NULL;
-
+    char *DummyEditorID = NULL;
     if(options.SetAsOverride)
         {
         //See if its trying to copy a record that already exists in the destination mod
@@ -827,10 +761,10 @@ unsigned int Collection::CopyRecord(char *ModName, unsigned int RecordFID, char 
 
     //Ensure the record has been fully read
     RecordReader reader(curModFile->FormIDHandler);
-    reader.Accept(*curRecord);
+    reader.Accept(&curRecord);
 
     //Create the record copy
-    RecordCopy = curModFile->CreateRecord(curRecord->GetType(), curRecord, ParentRecord, options);
+    RecordCopy = curModFile->CreateRecord(curRecord->GetType(), DummyEditorID, curRecord, ParentRecord, options);
     if(RecordCopy == NULL)
         return 0;
 
@@ -848,432 +782,83 @@ unsigned int Collection::CopyRecord(char *ModName, unsigned int RecordFID, char 
     RecordCopy->VisitFormIDs(checker);
 
     //Index the record
-    FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
+    if(curRecord->IsKeyedByEditorID())
+        EDID_ModFile_Record.insert(std::make_pair((char *)curRecord->GetField(5),std::make_pair(curModFile,curRecord)));
+    else
+        FID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
 
     return RecordCopy->formID;
     }
 
-unsigned int Collection::CreateGMSTRecord(char *ModName, char *recordEDID)
+int Collection::DeleteRecord(char *ModName, unsigned long RecordFID, char *RecordEditorID, unsigned long ParentFID)
     {
     ModFile *curModFile = NULL;
-    GMSTRecord *curRecord = NULL;
-    //Check and see if the GMST already exists
-    LookupGMSTRecord(ModName, recordEDID, curModFile, curRecord);
-
-    if(curModFile != NULL || curRecord != NULL)
-        return 0;
-
-    curModFile = LookupModFile(ModName);
-
-    if(curModFile == NULL)
-        return 0;
-
-    curRecord = new GMSTRecord(recordEDID);
-    unsigned int newRecordFID = curRecord->formID = NextFreeExpandedFID(curModFile);
-
-    curModFile->GMST.Records.push_back(curRecord);
-    EDID_ModFile_Record.insert(std::make_pair(curRecord->EDID.value,std::make_pair(curModFile,curRecord)));
-    return newRecordFID;
-    }
-
-unsigned int Collection::CopyGMSTRecord(char *ModName, char *srcRecordEDID, char *destModName)
-    {
-    ModFile *srcMod = NULL;
-    ModFile *destMod = NULL;
-    GMSTRecord *srcRecord = NULL;
-    GMSTRecord *copyRecord = NULL;
-
-    //Check and see if the GMST already exists
-    LookupGMSTRecord(destModName, srcRecordEDID, destMod, copyRecord);
-    if(destMod != NULL || copyRecord != NULL)
-        return 0;
-
-    destMod = LookupModFile(destModName);
-    if(destMod == NULL)
-        return 0;
-
-    LookupGMSTRecord(ModName, srcRecordEDID, srcMod, srcRecord);
-    if(srcMod == NULL || srcRecord == NULL || srcMod == destMod)
-        return 0;
-    RecordReader reader(srcMod->FormIDHandler);
-
-    //Ensure the record has been fully read
-    reader.Accept(*srcRecord);
-    copyRecord = new GMSTRecord(srcRecord);
-    destMod->GMST.Records.push_back(copyRecord);
-    //Add any master as necessary, and register the formID
-    FormIDMasterUpdater checker(destMod->FormIDHandler);
-    checker.Accept(copyRecord->formID);
-    copyRecord->VisitFormIDs(checker);
-    EDID_ModFile_Record.insert(std::make_pair(copyRecord->EDID.value, std::make_pair(destMod, copyRecord)));
-    return 1;
-    }
-
-int Collection::DeleteRecord(char *ModName, unsigned int recordFID, unsigned int parentFID)
-    {
     Record *curRecord = NULL;
-    Record *curParentRecord = NULL;
-    ModFile *curModFile = NULL;
-    ModFile *curParentModFile = NULL;
-    Record *curChild = NULL;
-    bool hasParent = (parentFID != 0);
-    FID_Iterator it = LookupRecord(ModName, recordFID, curModFile, curRecord);
+    Record *ParentRecord = NULL;
 
-    if(hasParent)
+    //See if the requested record doesn't exist
+    FID_Iterator FID_it;
+    EDID_Iterator EDID_it;
+    if(RecordFID != 0)
+        FID_it = LookupRecord(ModName, RecordFID, curModFile, curRecord);
+    else if(RecordEditorID != NULL)
+        EDID_it = LookupRecordByEditorID(ModName, RecordEditorID, curModFile, curRecord);
+    if(curModFile == NULL || curRecord == NULL)
         {
-        LookupRecord(ModName, parentFID, curParentModFile, curParentRecord);
-        if(curParentModFile == NULL || curParentRecord == NULL || curParentModFile != curModFile)
+        throw 1;
+        return -1;
+        }
+
+    //Lookup the required data, and ensure it exists
+    if(ParentFID)
+        {
+        LookupRecord(ModName, ParentFID, curModFile, ParentRecord);
+        if(ParentRecord == NULL)
             {
             throw 1;
             return -1;
             }
         }
-
-    if(it == FID_ModFile_Record.end() || curModFile == NULL || curRecord == NULL)
+    else
+        {
+        curModFile = LookupModFile(ModName);
+        }
+    if(curModFile == NULL)
         {
         throw 1;
         return -1;
         }
 
-    switch(curRecord->GetType())
+    RecordDeleter deleter(curRecord, EDID_ModFile_Record, FID_ModFile_Record);
+    unsigned long topType = 0;
+    if(ParentRecord == NULL)
         {
-        case eGLOB:
-            curModFile->GLOB.DeleteRecord(curRecord);
-            break;
-        case eCLAS:
-            curModFile->CLAS.DeleteRecord(curRecord);
-            break;
-        case eFACT:
-            curModFile->FACT.DeleteRecord(curRecord);
-            break;
-        case eHAIR:
-            curModFile->HAIR.DeleteRecord(curRecord);
-            break;
-        case eEYES:
-            curModFile->EYES.DeleteRecord(curRecord);
-            break;
-        case eRACE:
-            curModFile->RACE.DeleteRecord(curRecord);
-            break;
-        case eSOUN:
-            curModFile->SOUN.DeleteRecord(curRecord);
-            break;
-        case eSKIL:
-            curModFile->SKIL.DeleteRecord(curRecord);
-            break;
-        case eMGEF:
-            curModFile->MGEF.DeleteRecord(curRecord);
-            break;
-        case eSCPT:
-            curModFile->SCPT.DeleteRecord(curRecord);
-            break;
-        case eLTEX:
-            curModFile->LTEX.DeleteRecord(curRecord);
-            break;
-        case eENCH:
-            curModFile->ENCH.DeleteRecord(curRecord);
-            break;
-        case eSPEL:
-            curModFile->SPEL.DeleteRecord(curRecord);
-            break;
-        case eBSGN:
-            curModFile->BSGN.DeleteRecord(curRecord);
-            break;
-        case eACTI:
-            curModFile->ACTI.DeleteRecord(curRecord);
-            break;
-        case eAPPA:
-            curModFile->APPA.DeleteRecord(curRecord);
-            break;
-        case eARMO:
-            curModFile->ARMO.DeleteRecord(curRecord);
-            break;
-        case eBOOK:
-            curModFile->BOOK.DeleteRecord(curRecord);
-            break;
-        case eCLOT:
-            curModFile->CLOT.DeleteRecord(curRecord);
-            break;
-        case eCONT:
-            curModFile->CONT.DeleteRecord(curRecord);
-            break;
-        case eDOOR:
-            curModFile->DOOR.DeleteRecord(curRecord);
-            break;
-        case eINGR:
-            curModFile->INGR.DeleteRecord(curRecord);
-            break;
-        case eLIGH:
-            curModFile->LIGH.DeleteRecord(curRecord);
-            break;
-        case eMISC:
-            curModFile->MISC.DeleteRecord(curRecord);
-            break;
-        case eSTAT:
-            curModFile->STAT.DeleteRecord(curRecord);
-            break;
-        case eGRAS:
-            curModFile->GRAS.DeleteRecord(curRecord);
-            break;
-        case eTREE:
-            curModFile->TREE.DeleteRecord(curRecord);
-            break;
-        case eFLOR:
-            curModFile->FLOR.DeleteRecord(curRecord);
-            break;
-        case eFURN:
-            curModFile->FURN.DeleteRecord(curRecord);
-            break;
-        case eWEAP:
-            curModFile->WEAP.DeleteRecord(curRecord);
-            break;
-        case eAMMO:
-            curModFile->AMMO.DeleteRecord(curRecord);
-            break;
-        case eNPC_:
-            curModFile->NPC_.DeleteRecord(curRecord);
-            break;
-        case eCREA:
-            curModFile->CREA.DeleteRecord(curRecord);
-            break;
-        case eLVLC:
-            curModFile->LVLC.DeleteRecord(curRecord);
-            break;
-        case eSLGM:
-            curModFile->SLGM.DeleteRecord(curRecord);
-            break;
-        case eKEYM:
-            curModFile->KEYM.DeleteRecord(curRecord);
-            break;
-        case eALCH:
-            curModFile->ALCH.DeleteRecord(curRecord);
-            break;
-        case eSBSP:
-            curModFile->SBSP.DeleteRecord(curRecord);
-            break;
-        case eSGST:
-            curModFile->SGST.DeleteRecord(curRecord);
-            break;
-        case eLVLI:
-            curModFile->LVLI.DeleteRecord(curRecord);
-            break;
-        case eWTHR:
-            curModFile->WTHR.DeleteRecord(curRecord);
-            break;
-        case eCLMT:
-            curModFile->CLMT.DeleteRecord(curRecord);
-            break;
-        case eREGN:
-            curModFile->REGN.DeleteRecord(curRecord);
-            break;
-        ///////////////////////////////////////////////
-        case eCELL:
-            DeleteCELL((CELLRecord *)curRecord, ModName);
-
-            if(hasParent)
-                curModFile->WRLD.DeleteRecord(curParentRecord, curRecord);
-            else
-                curModFile->CELL.DeleteRecord(curRecord, NULL);
-            break;
-        //Fall-through is intentional
-        case ePGRD:
-        case eLAND:
-        case eACHR:
-        case eACRE:
-        case eREFR:
-            if(hasParent)
-                {
-                if(((CELLRecord *)curParentRecord)->IsInterior())
-                    curModFile->CELL.DeleteRecord(curParentRecord, curRecord);
-                else
-                    curModFile->WRLD.DeleteRecord(curParentRecord, curRecord);
-                }
-            else
-                {
-                printf("Error deleting %s record: %08X\nUnable to find parent CELL record: %08x\n", curRecord->GetStrType(), recordFID, parentFID);
-                throw 1;
-                return 0;
-                }
-            break;
-        case eWRLD:
-            curChild = ((WRLDRecord *)curRecord)->ROAD;
-            RemoveIndex(curChild, ModName);
-            delete curChild;
-            ((WRLDRecord *)curRecord)->ROAD = NULL;
-
-            curChild = ((WRLDRecord *)curRecord)->CELL;
-            DeleteCELL((CELLRecord *)curChild, ModName);
-            RemoveIndex(curChild, ModName);
-            delete curChild;
-            ((WRLDRecord *)curRecord)->CELL = NULL;
-
-            for(unsigned int p = 0; p < ((WRLDRecord *)curRecord)->CELLS.size(); ++p)
-                {
-                curChild = ((WRLDRecord *)curRecord)->CELLS[p];
-                DeleteCELL((CELLRecord *)curChild, ModName);
-                RemoveIndex(curChild, ModName);
-                delete curChild;
-                }
-            ((WRLDRecord *)curRecord)->CELLS.clear();
-
-            curModFile->WRLD.DeleteRecord(curRecord, NULL);
-            break;
-        case eROAD:
-            if(hasParent)
-                curModFile->WRLD.DeleteRecord(curParentRecord, curRecord);
-            else
-                {
-                printf("Error deleting %s record: %08X\nUnable to find parent WRLD record: %08x\n", curRecord->GetStrType(), recordFID, parentFID);
-                throw 1;
-                return 0;
-                }
-            break;
-        case eDIAL:
-            for(unsigned int p = 0; p < ((DIALRecord *)curRecord)->INFO.size(); ++p)
-                {
-                curChild = ((DIALRecord *)curRecord)->INFO[p];
-                RemoveIndex(curChild, ModName);
-                delete curChild;
-                }
-            ((DIALRecord *)curRecord)->INFO.clear();
-
-            curModFile->DIAL.DeleteRecord(curRecord, NULL);
-            break;
-        case eINFO:
-            if(hasParent)
-                curModFile->DIAL.DeleteRecord(curParentRecord, curRecord);
-            else
-                {
-                printf("Error deleting %s record: %08X\nUnable to find parent INFO record: %08x\n", curRecord->GetStrType(), recordFID, parentFID);
-                throw 1;
-                return 0;
-                }
-            break;
-        ///////////////////////////////////////////////
-        case eQUST:
-            curModFile->QUST.DeleteRecord(curRecord);
-            break;
-        case eIDLE:
-            curModFile->IDLE.DeleteRecord(curRecord);
-            break;
-        case ePACK:
-            curModFile->PACK.DeleteRecord(curRecord);
-            break;
-        case eCSTY:
-            curModFile->CSTY.DeleteRecord(curRecord);
-            break;
-        case eLSCR:
-            curModFile->LSCR.DeleteRecord(curRecord);
-            break;
-        case eLVSP:
-            curModFile->LVSP.DeleteRecord(curRecord);
-            break;
-        case eANIO:
-            curModFile->ANIO.DeleteRecord(curRecord);
-            break;
-        case eWATR:
-            curModFile->WATR.DeleteRecord(curRecord);
-            break;
-        case eEFSH:
-            curModFile->EFSH.DeleteRecord(curRecord);
-            break;
-        default:
-            printf("Error deleting record: %08X. Unknown type: %s\n", recordFID, curRecord->GetStrType());
-            break;
+        topType = curRecord->GetType();
+        curModFile->VisitRecords(topType, topType, deleter, true);
+        }
+    else
+        {
+        topType = ParentRecord->GetParentType();
+        if(topType == eUnknown)
+            topType = ParentRecord->GetType();
+        curModFile->VisitRecords(topType, curRecord->GetType(), deleter, true);
         }
 
-    FID_ModFile_Record.erase(it);
-    return 0;
-    }
-
-int Collection::DeleteCELL(CELLRecord *curCell, char *ModName)
-    {
-    if(curCell == NULL || ModName == NULL)
-        return -1;
-    Record *curChild = NULL;
-
-    curChild = curCell->PGRD;
-    RemoveIndex(curChild, ModName);
-    delete curChild;
-    curCell->PGRD = NULL;
-
-    curChild = curCell->LAND;
-    RemoveIndex(curChild, ModName);
-    delete curChild;
-    curCell->LAND = NULL;
-
-    for(unsigned int p = 0; p < curCell->ACHR.size(); ++p)
-        {
-        curChild = curCell->ACHR[p];
-        RemoveIndex(curChild, ModName);
-        delete curChild;
-        }
-    curCell->ACHR.clear();
-
-    for(unsigned int p = 0; p < curCell->ACRE.size(); ++p)
-        {
-        curChild = curCell->ACRE[p];
-        RemoveIndex(curChild, ModName);
-        delete curChild;
-        }
-    curCell->ACRE.clear();
-
-    for(unsigned int p = 0; p < curCell->REFR.size(); ++p)
-        {
-        curChild = curCell->REFR[p];
-        RemoveIndex(curChild, ModName);
-        delete curChild;
-        }
-    curCell->REFR.clear();
-    return 0;
-    }
-
-int Collection::DeleteGMSTRecord(char *ModName, char *recordEDID)
-    {
-    if(recordEDID == NULL)
-        {
-        throw 1;
-        return -1;
-        }
-    GMSTRecord *curRecord = NULL;
-    ModFile *curModFile = NULL;
-    EDID_Iterator it;
-    it = LookupGMSTRecord(ModName, recordEDID, curModFile, curRecord);
-
-    if(it == EDID_ModFile_Record.end() || curModFile == NULL || curRecord == NULL)
-        {
-        throw 1;
-        return -1;
-        }
-
-    curRecord = (GMSTRecord *)(it->second.second);
-    std::vector<GMSTRecord *>::iterator GMST_it;
-    GMST_it = std::find(curModFile->GMST.Records.begin(), curModFile->GMST.Records.end(), curRecord);
-    if(GMST_it == curModFile->GMST.Records.end())
-        {
-        printf("Record %08X not found in %s\n", curRecord->formID, curRecord->GetStrType());
-        throw 1;
-        return -1;
-        }
-    delete curRecord;
-    curModFile->GMST.Records.erase(GMST_it);
-
-    EDID_ModFile_Record.erase(it);
     return 0;
     }
 
 int Collection::Close()
     {
-    for(unsigned int p = 0;p < ModFiles.size();p++)
+    for(unsigned long p = 0;p < ModFiles.size();p++)
         ModFiles[p]->Close();
     return -1;
     }
 
-EDID_Iterator Collection::LookupGMSTRecord(char *ModName, char *recordEDID, ModFile *&curModFile, GMSTRecord *&curRecord)
+EDID_Iterator Collection::LookupRecordByEditorID(char *ModName, char *RecordEDID, ModFile *&curModFile, Record *&curRecord)
     {
     curRecord = NULL;
     curModFile = NULL;
-    EDID_Range range = EDID_ModFile_Record.equal_range(recordEDID);
+    EDID_Range range = EDID_ModFile_Record.equal_range(RecordEDID);
     for(; range.first != range.second; ++range.first)
         if(_stricmp(range.first->second.first->FileName, ModName) == 0)
             {
@@ -1282,7 +867,7 @@ EDID_Iterator Collection::LookupGMSTRecord(char *ModName, char *recordEDID, ModF
             }
     if(curModFile == NULL)
         return EDID_ModFile_Record.end();
-    curRecord = (GMSTRecord *)range.first->second.second;
+    curRecord = range.first->second.second;
     return range.first;
     }
 
@@ -1293,38 +878,38 @@ void Collection::ResolveGrid(const float &posX, const float &posY, int &gridX, i
     return;
     }
 
-unsigned int Collection::GetNumRecords(char *ModName, const unsigned int RecordType)
+unsigned long Collection::GetNumRecords(char *ModName, const unsigned long RecordType)
     {
     ModFile *curModFile = LookupModFile(ModName);
     if(curModFile == NULL)
         return 0;
-    return (unsigned int)curModFile->GetNumRecords(RecordType);
+    return (unsigned long)curModFile->GetNumRecords(RecordType);
     }
 
-void Collection::GetRecordFormIDs(char *ModName, const unsigned int RecordType, unsigned int **RecordFIDs)
+void Collection::GetRecordFormIDs(char *ModName, const unsigned long RecordType, unsigned long **RecordFIDs)
     {
     ModFile *curModFile = LookupModFile(ModName);
     if(curModFile == NULL)
         return;
     FormIDRecordRetriever retriever(RecordFIDs);
-    curModFile->VisitTopRecords(RecordType, retriever);
+    curModFile->VisitRecords(RecordType, NULL, retriever, false);
     return;
     }
 
-void Collection::GetRecordEditorIDs(char *ModName, const unsigned int RecordType, char **RecordEditorIDs)
+void Collection::GetRecordEditorIDs(char *ModName, const unsigned long RecordType, char **RecordEditorIDs)
     {
     ModFile *curModFile = LookupModFile(ModName);
     if(curModFile == NULL)
         return;
     EditorIDRecordRetriever retriever(RecordEditorIDs);
-    curModFile->VisitTopRecords(RecordType, retriever);
+    curModFile->VisitRecords(RecordType, NULL, retriever, false);
     return;
     }
 
-unsigned int Collection::GetNumMods()
+unsigned long Collection::GetNumMods()
     {
-    unsigned int count = (unsigned int)ModFiles.size();
-    for(unsigned int p = 0;p < ModFiles.size();++p)
+    unsigned long count = (unsigned long)ModFiles.size();
+    for(unsigned long p = 0;p < ModFiles.size();++p)
         {
         if(ModFiles[p]->Settings.IsDummy || ModFiles[p]->Settings.Scan || ModFiles[p]->Settings.Merge)
             --count;
@@ -1335,7 +920,7 @@ unsigned int Collection::GetNumMods()
 void Collection::GetMods(char **ModNames)
     {
     ModFile *curModFile = NULL;
-    for(unsigned int p = 0;p < AllLoadOrder.size();++p)
+    for(unsigned long p = 0;p < AllLoadOrder.size();++p)
         {
         curModFile = LookupModFile(AllLoadOrder[p]);
         if(!curModFile->Settings.IsDummy)
@@ -1344,14 +929,14 @@ void Collection::GetMods(char **ModNames)
     return;
     }
 
-char * Collection::GetModName(const unsigned int iIndex)
+char * Collection::GetModName(const unsigned long iIndex)
     {
     if(iIndex < AllLoadOrder.size())
         return AllLoadOrder[iIndex];
     return NULL;
     }
 
-unsigned int Collection::SetRecordFormID(char *ModName, unsigned int recordFID, unsigned int FieldValue)
+unsigned long Collection::SetRecordFormID(char *ModName, unsigned long recordFID, unsigned long FieldValue)
     {
     if(recordFID == FieldValue)
         return 0;
@@ -1374,7 +959,7 @@ unsigned int Collection::SetRecordFormID(char *ModName, unsigned int recordFID, 
     return FieldValue;
     }
 
-unsigned int Collection::ModIsFake(const unsigned int iIndex)
+unsigned long Collection::ModIsFake(const unsigned long iIndex)
     {
     ModFile *curModFile = NULL;
     if(iIndex < AllLoadOrder.size())
@@ -1385,7 +970,7 @@ unsigned int Collection::ModIsFake(const unsigned int iIndex)
     return 1;
     }
 
-unsigned int Collection::GetCorrectedFID(char *ModName, unsigned int recordObjectID)
+unsigned long Collection::GetCorrectedFID(char *ModName, unsigned long recordObjectID)
     {
     ModFile *curModFile = LookupModFile(ModName);
     if(curModFile == NULL)
@@ -1393,79 +978,85 @@ unsigned int Collection::GetCorrectedFID(char *ModName, unsigned int recordObjec
     return curModFile->FormIDHandler.AssignToMod(recordObjectID);
     }
 
-unsigned int Collection::UpdateReferences(char *ModName, unsigned int origFormID, unsigned int newFormID)
+unsigned long Collection::UpdateReferences(char *ModName, unsigned long origFormID, unsigned long newFormID)
     {
+    //Sanity check.
     if(origFormID == newFormID)
         return 0;
+
+    //Lookup required data
     ModFile *curModFile = LookupModFile(ModName);
+
+    //Ensure the mod exists
     if(curModFile == NULL)
         return 0;
-    FormIDSwapper swapper(origFormID, newFormID, curModFile->FormIDHandler);
-    RecordFormIDVisitor allSwapper(curModFile->FormIDHandler, swapper, true);
+
+    //Perform the swap
+    RecordFormIDSwapper allSwapper(origFormID, newFormID, curModFile->FormIDHandler);
 
     //Commented out GRUPs don't contain any formIDs that could be updated.
-    //curModFile->GMST.VisitRecords(allSwapper);
-    //curModFile->GLOB.VisitRecords(allSwapper);
-    //curModFile->CLAS.VisitRecords(allSwapper);
-    curModFile->FACT.VisitRecords(allSwapper);
-    //curModFile->HAIR.VisitRecords(allSwapper);
-    //curModFile->EYES.VisitRecords(allSwapper);
-    curModFile->RACE.VisitRecords(allSwapper);
-    //curModFile->SOUN.VisitRecords(allSwapper);
-    //curModFile->SKIL.VisitRecords(allSwapper);
-    curModFile->MGEF.VisitRecords(allSwapper);
-    curModFile->SCPT.VisitRecords(allSwapper);
-    curModFile->LTEX.VisitRecords(allSwapper);
-    curModFile->ENCH.VisitRecords(allSwapper);
-    curModFile->SPEL.VisitRecords(allSwapper);
-    curModFile->BSGN.VisitRecords(allSwapper);
-    curModFile->ACTI.VisitRecords(allSwapper);
-    curModFile->APPA.VisitRecords(allSwapper);
-    curModFile->ARMO.VisitRecords(allSwapper);
-    curModFile->BOOK.VisitRecords(allSwapper);
-    curModFile->CLOT.VisitRecords(allSwapper);
-    curModFile->CONT.VisitRecords(allSwapper);
-    curModFile->DOOR.VisitRecords(allSwapper);
-    curModFile->INGR.VisitRecords(allSwapper);
-    curModFile->LIGH.VisitRecords(allSwapper);
-    curModFile->MISC.VisitRecords(allSwapper);
-    //curModFile->STAT.VisitRecords(allSwapper);
-    //curModFile->GRAS.VisitRecords(allSwapper);
-    //curModFile->TREE.VisitRecords(allSwapper);
-    curModFile->FLOR.VisitRecords(allSwapper);
-    curModFile->FURN.VisitRecords(allSwapper);
-    curModFile->WEAP.VisitRecords(allSwapper);
-    curModFile->AMMO.VisitRecords(allSwapper);
-    curModFile->NPC_.VisitRecords(allSwapper);
-    curModFile->CREA.VisitRecords(allSwapper);
-    curModFile->LVLC.VisitRecords(allSwapper);
-    curModFile->SLGM.VisitRecords(allSwapper);
-    curModFile->KEYM.VisitRecords(allSwapper);
-    curModFile->ALCH.VisitRecords(allSwapper);
-    //curModFile->SBSP.VisitRecords(allSwapper);
-    curModFile->SGST.VisitRecords(allSwapper);
-    curModFile->LVLI.VisitRecords(allSwapper);
-    curModFile->WTHR.VisitRecords(allSwapper);
-    curModFile->CLMT.VisitRecords(allSwapper);
-    curModFile->REGN.VisitRecords(allSwapper);
-    curModFile->CELL.VisitRecords(allSwapper);
-    curModFile->WRLD.VisitRecords(allSwapper);
-    curModFile->DIAL.VisitRecords(allSwapper);
-    curModFile->QUST.VisitRecords(allSwapper);
-    curModFile->IDLE.VisitRecords(allSwapper);
-    curModFile->PACK.VisitRecords(allSwapper);
-    //curModFile->CSTY.VisitRecords(allSwapper);
-    curModFile->LSCR.VisitRecords(allSwapper);
-    curModFile->LVSP.VisitRecords(allSwapper);
-    curModFile->ANIO.VisitRecords(allSwapper);
-    curModFile->WATR.VisitRecords(allSwapper);
-    //curModFile->EFSH.VisitRecords(allSwapper);
+    //curModFile->GMST.VisitRecords(NULL, allSwapper, true);
+    //curModFile->GLOB.VisitRecords(NULL, allSwapper, true);
+    //curModFile->CLAS.VisitRecords(NULL, allSwapper, true);
+    curModFile->FACT.VisitRecords(NULL, allSwapper, true);
+    //curModFile->HAIR.VisitRecords(NULL, allSwapper, true);
+    //curModFile->EYES.VisitRecords(NULL, allSwapper, true);
+    curModFile->RACE.VisitRecords(NULL, allSwapper, true);
+    //curModFile->SOUN.VisitRecords(NULL, allSwapper, true);
+    //curModFile->SKIL.VisitRecords(NULL, allSwapper, true);
+    curModFile->MGEF.VisitRecords(NULL, allSwapper, true);
+    curModFile->SCPT.VisitRecords(NULL, allSwapper, true);
+    curModFile->LTEX.VisitRecords(NULL, allSwapper, true);
+    curModFile->ENCH.VisitRecords(NULL, allSwapper, true);
+    curModFile->SPEL.VisitRecords(NULL, allSwapper, true);
+    curModFile->BSGN.VisitRecords(NULL, allSwapper, true);
+    curModFile->ACTI.VisitRecords(NULL, allSwapper, true);
+    curModFile->APPA.VisitRecords(NULL, allSwapper, true);
+    curModFile->ARMO.VisitRecords(NULL, allSwapper, true);
+    curModFile->BOOK.VisitRecords(NULL, allSwapper, true);
+    curModFile->CLOT.VisitRecords(NULL, allSwapper, true);
+    curModFile->CONT.VisitRecords(NULL, allSwapper, true);
+    curModFile->DOOR.VisitRecords(NULL, allSwapper, true);
+    curModFile->INGR.VisitRecords(NULL, allSwapper, true);
+    curModFile->LIGH.VisitRecords(NULL, allSwapper, true);
+    curModFile->MISC.VisitRecords(NULL, allSwapper, true);
+    //curModFile->STAT.VisitRecords(NULL, allSwapper, true);
+    //curModFile->GRAS.VisitRecords(NULL, allSwapper, true);
+    //curModFile->TREE.VisitRecords(NULL, allSwapper, true);
+    curModFile->FLOR.VisitRecords(NULL, allSwapper, true);
+    curModFile->FURN.VisitRecords(NULL, allSwapper, true);
+    curModFile->WEAP.VisitRecords(NULL, allSwapper, true);
+    curModFile->AMMO.VisitRecords(NULL, allSwapper, true);
+    curModFile->NPC_.VisitRecords(NULL, allSwapper, true);
+    curModFile->CREA.VisitRecords(NULL, allSwapper, true);
+    curModFile->LVLC.VisitRecords(NULL, allSwapper, true);
+    curModFile->SLGM.VisitRecords(NULL, allSwapper, true);
+    curModFile->KEYM.VisitRecords(NULL, allSwapper, true);
+    curModFile->ALCH.VisitRecords(NULL, allSwapper, true);
+    //curModFile->SBSP.VisitRecords(NULL, allSwapper, true);
+    curModFile->SGST.VisitRecords(NULL, allSwapper, true);
+    curModFile->LVLI.VisitRecords(NULL, allSwapper, true);
+    curModFile->WTHR.VisitRecords(NULL, allSwapper, true);
+    curModFile->CLMT.VisitRecords(NULL, allSwapper, true);
+    curModFile->REGN.VisitRecords(NULL, allSwapper, true);
+    curModFile->CELL.VisitRecords(NULL, allSwapper, true);
+    curModFile->WRLD.VisitRecords(NULL, allSwapper, true);
+    curModFile->DIAL.VisitRecords(NULL, allSwapper, true);
+    curModFile->QUST.VisitRecords(NULL, allSwapper, true);
+    curModFile->IDLE.VisitRecords(NULL, allSwapper, true);
+    curModFile->PACK.VisitRecords(NULL, allSwapper, true);
+    //curModFile->CSTY.VisitRecords(NULL, allSwapper, true);
+    curModFile->LSCR.VisitRecords(NULL, allSwapper, true);
+    curModFile->LVSP.VisitRecords(NULL, allSwapper, true);
+    curModFile->ANIO.VisitRecords(NULL, allSwapper, true);
+    curModFile->WATR.VisitRecords(NULL, allSwapper, true);
+    //curModFile->EFSH.VisitRecords(NULL, allSwapper, true);
 
     return allSwapper.GetCount();
     }
 
 
-unsigned int Collection::GetNumReferences(char *ModName, unsigned int recordFID, unsigned int referenceFormID)
+unsigned long Collection::GetNumReferences(char *ModName, unsigned long recordFID, unsigned long referenceFormID)
     {
     Record *curRecord = NULL;
     ModFile *curModFile = NULL;
@@ -1478,31 +1069,35 @@ unsigned int Collection::GetNumReferences(char *ModName, unsigned int recordFID,
     return counter.GetCount();
     }
 
-unsigned int Collection::UpdateReferences(char *ModName, unsigned int recordFID, unsigned int origFormID, unsigned int newFormID)
+unsigned long Collection::UpdateReferences(char *ModName, unsigned long recordFID, unsigned long origFormID, unsigned long newFormID)
     {
+    //Sanity check.
     if(origFormID == newFormID)
         return 0;
+
     Record *curRecord = NULL;
     ModFile *curModFile = NULL;
+
+    //Lookup the required data
     LookupRecord(ModName, recordFID, curModFile, curRecord);
+
+    //Make sure the record exists
     if(curModFile == NULL || curRecord == NULL)
         return 0;
-    RecordReader reader(curModFile->FormIDHandler);
-    reader.Accept(*curRecord);
-    FormIDSwapper swapper(origFormID, newFormID,curModFile->FormIDHandler);
-    curRecord->VisitFormIDs(swapper);
-    unsigned int count = swapper.GetCount();
-    if(count)
-        curRecord->recData = NULL;
-    return count;
+
+    //Perform the swap
+    RecordFormIDSwapper swapper(origFormID, newFormID,curModFile->FormIDHandler);
+    swapper.Accept(&curRecord);
+
+    return swapper.GetCount();
     }
 
 int Collection::GetModIndex(const char *ModName)
     {
     if(ModName == NULL)
         return -1;
-    static unsigned int lastModIndex_1 = 0;
-    static unsigned int lastModIndex_2 = 0;
+    static unsigned long lastModIndex_1 = 0;
+    static unsigned long lastModIndex_2 = 0;
     if(_stricmp(ModName, AllLoadOrder[lastModIndex_1]) == 0)
         return lastModIndex_1;
 
@@ -1512,7 +1107,7 @@ int Collection::GetModIndex(const char *ModName)
         return lastModIndex_1;
         }
 
-    for(unsigned int x = 0; x < AllLoadOrder.size();++x)
+    for(unsigned long x = 0; x < AllLoadOrder.size();++x)
         if(_stricmp(ModName, AllLoadOrder[x]) == 0)
             {
             lastModIndex_2 = lastModIndex_1;
@@ -1522,7 +1117,7 @@ int Collection::GetModIndex(const char *ModName)
     return -1;
     }
 
-int Collection::IsWinning(char *ModName, unsigned int recordFID, bool ignoreScanned)
+int Collection::IsWinning(char *ModName, unsigned long recordFID, bool ignoreScanned)
     {
     int isWinning = 0;
     FID_Range range = FID_ModFile_Record.equal_range(recordFID);
@@ -1568,14 +1163,14 @@ int Collection::IsWinning(char *ModName, char *recordEDID, bool ignoreScanned)
     return isWinning;
     }
 
-int Collection::GetNumFIDConflicts(unsigned int recordFID, bool ignoreScanned)
+int Collection::GetNumFIDConflicts(unsigned long recordFID, bool ignoreScanned)
     {
-    unsigned int count = (unsigned int)FID_ModFile_Record.count(recordFID);
+    unsigned long count = (unsigned long)FID_ModFile_Record.count(recordFID);
     if(ignoreScanned)
         {
         FID_Iterator it = FID_ModFile_Record.find(recordFID);
-        unsigned int scanned = 0;
-        for(unsigned int x = 0; x < count;++it, ++x)
+        unsigned long scanned = 0;
+        for(unsigned long x = 0; x < count;++it, ++x)
             if(it->second.first->Settings.Scan)
                 ++scanned;
         count -= scanned;
@@ -1583,7 +1178,7 @@ int Collection::GetNumFIDConflicts(unsigned int recordFID, bool ignoreScanned)
     return count;
     }
 
-void Collection::GetFIDConflicts(unsigned int recordFID, bool ignoreScanned, char **ModNames)
+void Collection::GetFIDConflicts(unsigned long recordFID, bool ignoreScanned, char **ModNames)
     {
     FID_Range range = FID_ModFile_Record.equal_range(recordFID);
 
@@ -1595,7 +1190,7 @@ void Collection::GetFIDConflicts(unsigned int recordFID, bool ignoreScanned, cha
     //std::sort(sortedConflicts.begin(), sortedConflicts.end(), sortLoad);
     //sortMods(sortedConflicts);
     std::_Insertion_sort(sortedConflicts.begin(), sortedConflicts.end(),compMod);
-    unsigned int x = 0;
+    unsigned long x = 0;
     for(int y = (int)sortedConflicts.size() - 1; y >= 0; --y, ++x)
         ModNames[x] = sortedConflicts[y]->FileName;
     sortedConflicts.clear();
@@ -1603,12 +1198,12 @@ void Collection::GetFIDConflicts(unsigned int recordFID, bool ignoreScanned, cha
 
 int Collection::GetNumGMSTConflicts(char *recordEDID, bool ignoreScanned)
     {
-    unsigned int count = (unsigned int)EDID_ModFile_Record.count(recordEDID);
+    unsigned long count = (unsigned long)EDID_ModFile_Record.count(recordEDID);
     if(ignoreScanned)
         {
         EDID_Iterator it = EDID_ModFile_Record.find(recordEDID);
-        unsigned int scanned = 0;
-        for(unsigned int x = 0; x < count;++it, ++x)
+        unsigned long scanned = 0;
+        for(unsigned long x = 0; x < count;++it, ++x)
             if(it->second.first->Settings.Scan)
                 ++scanned;
         count -= scanned;
@@ -1628,7 +1223,7 @@ void Collection::GetGMSTConflicts(char *recordEDID, bool ignoreScanned, char **M
     //std::sort(sortedConflicts.begin(), sortedConflicts.end(), sortLoad);
     //sortMods(sortedConflicts);
     std::_Insertion_sort(sortedConflicts.begin(), sortedConflicts.end(),compMod);
-    unsigned int x = 0;
+    unsigned long x = 0;
     for(int y = (int)sortedConflicts.size() - 1; y >= 0; --y, ++x)
         ModNames[x] = sortedConflicts[y]->FileName;
     sortedConflicts.clear();
@@ -1648,7 +1243,7 @@ ModFile *Collection::LookupModFile(char *ModName)
     //    std::swap(lastModFile_1, lastModFile_2);
     //    return lastModFile_1;
     //    }
-    for(unsigned int p = 0;p < ModFiles.size();p++)
+    for(unsigned long p = 0;p < ModFiles.size();p++)
         if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
             {
             //lastModFile_2 = lastModFile_1;
@@ -1659,7 +1254,7 @@ ModFile *Collection::LookupModFile(char *ModName)
     return NULL;
     }
 
-int Collection::GetTES4FieldType(char *ModName, const unsigned int Field)
+int Collection::GetTES4FieldType(char *ModName, const unsigned long Field)
     {
     ModFile *curModFile = LookupModFile(ModName);
     if(curModFile == NULL)
@@ -1667,17 +1262,17 @@ int Collection::GetTES4FieldType(char *ModName, const unsigned int Field)
     return curModFile->TES4.GetFieldType(Field);
     }
 
-int Collection::GetGMSTFieldType(char *ModName, char *recordEDID, const unsigned int Field)
+int Collection::GetGMSTFieldType(char *ModName, char *recordEDID, const unsigned long Field)
     {
     ModFile *curModFile = NULL;
-    GMSTRecord *curRecord = NULL;
-    LookupGMSTRecord(ModName, recordEDID, curModFile, curRecord);
+    Record *curRecord = NULL;
+    LookupRecordByEditorID(ModName, recordEDID, curModFile, curRecord);
     if(curModFile == NULL || curRecord == NULL)
         return UNKNOWN_FIELD;
     return curRecord->GetFieldType(Field);
     }
 
-int Collection::GetFIDFieldType(char *ModName, unsigned int recordFID, const unsigned int Field)
+int Collection::GetFIDFieldType(char *ModName, unsigned long recordFID, const unsigned long Field)
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
@@ -1687,7 +1282,7 @@ int Collection::GetFIDFieldType(char *ModName, unsigned int recordFID, const uns
     return curRecord->GetFieldType(Field);
     }
 
-int Collection::GetFIDListFieldType(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listField)
+int Collection::GetFIDListFieldType(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listField)
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
@@ -1697,7 +1292,7 @@ int Collection::GetFIDListFieldType(char *ModName, unsigned int recordFID, const
     return curRecord->GetListFieldType(subField, listField);
     }
 
-int Collection::GetFIDListX2FieldType(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listField, const unsigned int listX2Field)
+int Collection::GetFIDListX2FieldType(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listField, const unsigned long listX2Field)
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
@@ -1707,7 +1302,7 @@ int Collection::GetFIDListX2FieldType(char *ModName, unsigned int recordFID, con
     return curRecord->GetListX2FieldType(subField, listField, listX2Field);
     }
 
-int Collection::GetFIDListX3FieldType(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listField, const unsigned int listX2Field, const unsigned int listX3Field)
+int Collection::GetFIDListX3FieldType(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listField, const unsigned long listX2Field, const unsigned long listX3Field)
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
@@ -1717,7 +1312,7 @@ int Collection::GetFIDListX3FieldType(char *ModName, unsigned int recordFID, con
     return curRecord->GetListX3FieldType(subField, listField, listX2Field, listX3Field);
     }
 
-unsigned int Collection::GetTES4FieldArraySize(char *ModName, const unsigned int Field)
+unsigned long Collection::GetTES4FieldArraySize(char *ModName, const unsigned long Field)
     {
     ModFile *curModFile = LookupModFile(ModName);
     if(curModFile == NULL)
@@ -1725,7 +1320,7 @@ unsigned int Collection::GetTES4FieldArraySize(char *ModName, const unsigned int
     return curModFile->TES4.GetFieldArraySize(Field);
     }
 
-void Collection::GetTES4FieldArray(char *ModName, const unsigned int Field, void **FieldValues)
+void Collection::GetTES4FieldArray(char *ModName, const unsigned long Field, void **FieldValues)
     {
     ModFile *curModFile = LookupModFile(ModName);
     if(curModFile == NULL)
@@ -1734,7 +1329,7 @@ void Collection::GetTES4FieldArray(char *ModName, const unsigned int Field, void
     return;
     }
 
-unsigned int Collection::GetFIDFieldArraySize(char *ModName, unsigned int recordFID, const unsigned int Field)
+unsigned long Collection::GetFIDFieldArraySize(char *ModName, unsigned long recordFID, const unsigned long Field)
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
@@ -1742,11 +1337,11 @@ unsigned int Collection::GetFIDFieldArraySize(char *ModName, unsigned int record
     if(curModFile == NULL || curRecord == NULL)
         return 0;
     RecordReader reader(curModFile->FormIDHandler);
-    reader.Accept(*curRecord);
+    reader.Accept(&curRecord);
     return curRecord->GetFieldArraySize(Field);
     }
 
-unsigned int Collection::GetFIDListSize(char *ModName, unsigned int recordFID, const unsigned int Field)
+unsigned long Collection::GetFIDListSize(char *ModName, unsigned long recordFID, const unsigned long Field)
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
@@ -1754,11 +1349,11 @@ unsigned int Collection::GetFIDListSize(char *ModName, unsigned int recordFID, c
     if(curModFile == NULL || curRecord == NULL)
         return 0;
     RecordReader reader(curModFile->FormIDHandler);
-    reader.Accept(*curRecord);
+    reader.Accept(&curRecord);
     return curRecord->GetListSize(Field);
     }
 
-unsigned int Collection::GetFIDListX2Size(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField)
+unsigned long Collection::GetFIDListX2Size(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listIndex, const unsigned long listField)
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
@@ -1766,11 +1361,11 @@ unsigned int Collection::GetFIDListX2Size(char *ModName, unsigned int recordFID,
     if(curModFile == NULL || curRecord == NULL)
         return 0;
     RecordReader reader(curModFile->FormIDHandler);
-    reader.Accept(*curRecord);
+    reader.Accept(&curRecord);
     return curRecord->GetListX2Size(subField, listIndex, listField);
     }
 
-unsigned int Collection::GetFIDListX3Size(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field)
+unsigned long Collection::GetFIDListX3Size(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listIndex, const unsigned long listField, const unsigned long listX2Index, const unsigned long listX2Field)
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
@@ -1778,11 +1373,11 @@ unsigned int Collection::GetFIDListX3Size(char *ModName, unsigned int recordFID,
     if(curModFile == NULL || curRecord == NULL)
         return 0;
     RecordReader reader(curModFile->FormIDHandler);
-    reader.Accept(*curRecord);
+    reader.Accept(&curRecord);
     return curRecord->GetListX3Size(subField, listIndex, listField, listX2Index, listX2Field);
     }
 
-unsigned int Collection::GetFIDListArraySize(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField)
+unsigned long Collection::GetFIDListArraySize(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listIndex, const unsigned long listField)
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
@@ -1790,11 +1385,11 @@ unsigned int Collection::GetFIDListArraySize(char *ModName, unsigned int recordF
     if(curModFile == NULL || curRecord == NULL)
         return 0;
     RecordReader reader(curModFile->FormIDHandler);
-    reader.Accept(*curRecord);
+    reader.Accept(&curRecord);
     return curRecord->GetListArraySize(subField, listIndex, listField);
     }
 
-unsigned int Collection::GetFIDListX2ArraySize(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field)
+unsigned long Collection::GetFIDListX2ArraySize(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listIndex, const unsigned long listField, const unsigned long listX2Index, const unsigned long listX2Field)
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
@@ -1802,11 +1397,11 @@ unsigned int Collection::GetFIDListX2ArraySize(char *ModName, unsigned int recor
     if(curModFile == NULL || curRecord == NULL)
         return 0;
     RecordReader reader(curModFile->FormIDHandler);
-    reader.Accept(*curRecord);
+    reader.Accept(&curRecord);
     return curRecord->GetListX2ArraySize(subField, listIndex, listField, listX2Index, listX2Field);
     }
 
-unsigned int Collection::GetFIDListX3ArraySize(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field)
+unsigned long Collection::GetFIDListX3ArraySize(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listIndex, const unsigned long listField, const unsigned long listX2Index, const unsigned long listX2Field, const unsigned long listX3Index, const unsigned long listX3Field)
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
@@ -1814,11 +1409,11 @@ unsigned int Collection::GetFIDListX3ArraySize(char *ModName, unsigned int recor
     if(curModFile == NULL || curRecord == NULL)
         return 0;
     RecordReader reader(curModFile->FormIDHandler);
-    reader.Accept(*curRecord);
+    reader.Accept(&curRecord);
     return curRecord->GetListX3ArraySize(subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field);
     }
 
-void Collection::GetFIDFieldArray(char *ModName, unsigned int recordFID, const unsigned int Field, void **FieldValues)
+void Collection::GetFIDFieldArray(char *ModName, unsigned long recordFID, const unsigned long Field, void **FieldValues)
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
@@ -1826,12 +1421,12 @@ void Collection::GetFIDFieldArray(char *ModName, unsigned int recordFID, const u
     if(curModFile == NULL || curRecord == NULL)
         return;
     RecordReader reader(curModFile->FormIDHandler);
-    reader.Accept(*curRecord);
+    reader.Accept(&curRecord);
     curRecord->GetFieldArray(Field, FieldValues);
     return;
     }
 
-void Collection::GetFIDListArray(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, void **FieldValues)
+void Collection::GetFIDListArray(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listIndex, const unsigned long listField, void **FieldValues)
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
@@ -1839,12 +1434,12 @@ void Collection::GetFIDListArray(char *ModName, unsigned int recordFID, const un
     if(curModFile == NULL || curRecord == NULL)
         return;
     RecordReader reader(curModFile->FormIDHandler);
-    reader.Accept(*curRecord);
+    reader.Accept(&curRecord);
     curRecord->GetListArray(subField, listIndex, listField, FieldValues);
     return;
     }
 
-void Collection::GetFIDListX2Array(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, void **FieldValues)
+void Collection::GetFIDListX2Array(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listIndex, const unsigned long listField, const unsigned long listX2Index, const unsigned long listX2Field, void **FieldValues)
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
@@ -1852,12 +1447,12 @@ void Collection::GetFIDListX2Array(char *ModName, unsigned int recordFID, const 
     if(curModFile == NULL || curRecord == NULL)
         return;
     RecordReader reader(curModFile->FormIDHandler);
-    reader.Accept(*curRecord);
+    reader.Accept(&curRecord);
     curRecord->GetListX2Array(subField, listIndex, listField, listX2Index, listX2Field, FieldValues);
     return;
     }
 
-void Collection::GetFIDListX3Array(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field, void **FieldValues)
+void Collection::GetFIDListX3Array(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listIndex, const unsigned long listField, const unsigned long listX2Index, const unsigned long listX2Field, const unsigned long listX3Index, const unsigned long listX3Field, void **FieldValues)
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
@@ -1865,12 +1460,12 @@ void Collection::GetFIDListX3Array(char *ModName, unsigned int recordFID, const 
     if(curModFile == NULL || curRecord == NULL)
         return;
     RecordReader reader(curModFile->FormIDHandler);
-    reader.Accept(*curRecord);
+    reader.Accept(&curRecord);
     curRecord->GetListX3Array(subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field, FieldValues);
     return;
     }
 
-void * Collection::ReadTES4Field(char *ModName, const unsigned int Field)
+void * Collection::ReadTES4Field(char *ModName, const unsigned long Field)
     {
     ModFile *curModFile = LookupModFile(ModName);
     if(curModFile == NULL)
@@ -1878,17 +1473,17 @@ void * Collection::ReadTES4Field(char *ModName, const unsigned int Field)
     return curModFile->TES4.GetField(Field);
     }
 
-void * Collection::ReadGMSTField(char *ModName, char *recordEDID, const unsigned int Field)
+void * Collection::ReadGMSTField(char *ModName, char *recordEDID, const unsigned long Field)
     {
     ModFile *curModFile = NULL;
-    GMSTRecord *curRecord = NULL;
-    LookupGMSTRecord(ModName, recordEDID, curModFile, curRecord);
+    Record *curRecord = NULL;
+    LookupRecordByEditorID(ModName, recordEDID, curModFile, curRecord);
     if(curModFile == NULL || curRecord == NULL)
         return NULL;
     return curRecord->GetField(Field);
     }
 
-void * Collection::ReadFIDField(char *ModName, unsigned int recordFID, const unsigned int Field)
+void * Collection::ReadFIDField(char *ModName, unsigned long recordFID, const unsigned long Field)
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
@@ -1896,11 +1491,11 @@ void * Collection::ReadFIDField(char *ModName, unsigned int recordFID, const uns
     if(curModFile == NULL || curRecord == NULL)
         return NULL;
     RecordReader reader(curModFile->FormIDHandler);
-    reader.Accept(*curRecord);
+    reader.Accept(&curRecord);
     return curRecord->GetField(Field);
     }
 
-void * Collection::ReadFIDListField(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField)
+void * Collection::ReadFIDListField(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listIndex, const unsigned long listField)
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
@@ -1908,11 +1503,11 @@ void * Collection::ReadFIDListField(char *ModName, unsigned int recordFID, const
     if(curModFile == NULL || curRecord == NULL)
         return NULL;
     RecordReader reader(curModFile->FormIDHandler);
-    reader.Accept(*curRecord);
+    reader.Accept(&curRecord);
     return curRecord->GetListField(subField, listIndex, listField);
     }
 
-void * Collection::ReadFIDListX2Field(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field)
+void * Collection::ReadFIDListX2Field(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listIndex, const unsigned long listField, const unsigned long listX2Index, const unsigned long listX2Field)
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
@@ -1920,11 +1515,11 @@ void * Collection::ReadFIDListX2Field(char *ModName, unsigned int recordFID, con
     if(curModFile == NULL || curRecord == NULL)
         return NULL;
     RecordReader reader(curModFile->FormIDHandler);
-    reader.Accept(*curRecord);
+    reader.Accept(&curRecord);
     return curRecord->GetListX2Field(subField, listIndex, listField, listX2Index, listX2Field);
     }
 
-void * Collection::ReadFIDListX3Field(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field)
+void * Collection::ReadFIDListX3Field(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listIndex, const unsigned long listField, const unsigned long listX2Index, const unsigned long listX2Field, const unsigned long listX3Index, const unsigned long listX3Field)
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
@@ -1932,12 +1527,12 @@ void * Collection::ReadFIDListX3Field(char *ModName, unsigned int recordFID, con
     if(curModFile == NULL || curRecord == NULL)
         return NULL;
     RecordReader reader(curModFile->FormIDHandler);
-    reader.Accept(*curRecord);
+    reader.Accept(&curRecord);
     return curRecord->GetListX3Field(subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field);
     }
 
 
-int Collection::CreateFIDListElement(char *ModName, unsigned int recordFID, const unsigned int subField)
+int Collection::CreateFIDListElement(char *ModName, unsigned long recordFID, const unsigned long subField)
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
@@ -1945,11 +1540,11 @@ int Collection::CreateFIDListElement(char *ModName, unsigned int recordFID, cons
     if(curModFile == NULL || curRecord == NULL)
         return -1;
     RecordReader reader(curModFile->FormIDHandler);
-    reader.Accept(*curRecord);
+    reader.Accept(&curRecord);
     return curRecord->CreateListElement(subField);
     }
 
-int Collection::CreateFIDListX2Element(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField)
+int Collection::CreateFIDListX2Element(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listIndex, const unsigned long listField)
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
@@ -1957,11 +1552,11 @@ int Collection::CreateFIDListX2Element(char *ModName, unsigned int recordFID, co
     if(curModFile == NULL || curRecord == NULL)
         return -1;
     RecordReader reader(curModFile->FormIDHandler);
-    reader.Accept(*curRecord);
+    reader.Accept(&curRecord);
     return curRecord->CreateListX2Element(subField, listIndex, listField);
     }
 
-int Collection::CreateFIDListX3Element(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field)
+int Collection::CreateFIDListX3Element(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listIndex, const unsigned long listField, const unsigned long listX2Index, const unsigned long listX2Field)
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
@@ -1969,11 +1564,11 @@ int Collection::CreateFIDListX3Element(char *ModName, unsigned int recordFID, co
     if(curModFile == NULL || curRecord == NULL)
         return -1;
     RecordReader reader(curModFile->FormIDHandler);
-    reader.Accept(*curRecord);
+    reader.Accept(&curRecord);
     return curRecord->CreateListX3Element(subField, listIndex, listField, listX2Index, listX2Field);
     }
 
-int Collection::DeleteFIDListElement(char *ModName, unsigned int recordFID, const unsigned int subField)
+int Collection::DeleteFIDListElement(char *ModName, unsigned long recordFID, const unsigned long subField)
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
@@ -1981,11 +1576,11 @@ int Collection::DeleteFIDListElement(char *ModName, unsigned int recordFID, cons
     if(curModFile == NULL || curRecord == NULL)
         return -1;
     RecordReader reader(curModFile->FormIDHandler);
-    reader.Accept(*curRecord);
+    reader.Accept(&curRecord);
     return curRecord->DeleteListElement(subField);
     }
 
-int Collection::DeleteFIDListX2Element(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField)
+int Collection::DeleteFIDListX2Element(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listIndex, const unsigned long listField)
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
@@ -1993,11 +1588,11 @@ int Collection::DeleteFIDListX2Element(char *ModName, unsigned int recordFID, co
     if(curModFile == NULL || curRecord == NULL)
         return -1;
     RecordReader reader(curModFile->FormIDHandler);
-    reader.Accept(*curRecord);
+    reader.Accept(&curRecord);
     return curRecord->DeleteListX2Element(subField, listIndex, listField);
     }
 
-int Collection::DeleteFIDListX3Element(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field)
+int Collection::DeleteFIDListX3Element(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listIndex, const unsigned long listField, const unsigned long listX2Index, const unsigned long listX2Field)
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
@@ -2005,11 +1600,11 @@ int Collection::DeleteFIDListX3Element(char *ModName, unsigned int recordFID, co
     if(curModFile == NULL || curRecord == NULL)
         return -1;
     RecordReader reader(curModFile->FormIDHandler);
-    reader.Accept(*curRecord);
+    reader.Accept(&curRecord);
     return curRecord->DeleteListX3Element(subField, listIndex, listField, listX2Index, listX2Field);
     }
 
-int Collection::DeleteTES4Field(char *ModName, const unsigned int Field)
+int Collection::DeleteTES4Field(char *ModName, const unsigned long Field)
     {
     ModFile *curModFile = LookupModFile(ModName);
     if(curModFile == NULL)
@@ -2018,17 +1613,17 @@ int Collection::DeleteTES4Field(char *ModName, const unsigned int Field)
     return curModFile->TES4.DeleteField(Field);
     }
 
-int Collection::DeleteGMSTField(char *ModName, char *recordEDID, const unsigned int Field)
+int Collection::DeleteGMSTField(char *ModName, char *recordEDID, const unsigned long Field)
     {
     ModFile *curModFile = NULL;
-    GMSTRecord *curRecord = NULL;
-    LookupGMSTRecord(ModName, recordEDID, curModFile, curRecord);
+    Record *curRecord = NULL;
+    LookupRecordByEditorID(ModName, recordEDID, curModFile, curRecord);
     if(curModFile == NULL || curRecord == NULL)
         return -1;
     return curRecord->DeleteField(Field);
     }
 
-int Collection::DeleteFIDField(char *ModName, unsigned int recordFID, const unsigned int Field)
+int Collection::DeleteFIDField(char *ModName, unsigned long recordFID, const unsigned long Field)
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
@@ -2036,11 +1631,11 @@ int Collection::DeleteFIDField(char *ModName, unsigned int recordFID, const unsi
     if(curModFile == NULL || curRecord == NULL)
         return -1;
     RecordReader reader(curModFile->FormIDHandler);
-    reader.Accept(*curRecord);
+    reader.Accept(&curRecord);
     return curRecord->DeleteField(Field);
     }
 
-int Collection::DeleteFIDListField(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField)
+int Collection::DeleteFIDListField(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listIndex, const unsigned long listField)
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
@@ -2048,11 +1643,11 @@ int Collection::DeleteFIDListField(char *ModName, unsigned int recordFID, const 
     if(curModFile == NULL || curRecord == NULL)
         return -1;
     RecordReader reader(curModFile->FormIDHandler);
-    reader.Accept(*curRecord);
+    reader.Accept(&curRecord);
     return curRecord->DeleteListField(subField, listIndex, listField);
     }
 
-int Collection::DeleteFIDListX2Field(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field)
+int Collection::DeleteFIDListX2Field(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listIndex, const unsigned long listField, const unsigned long listX2Index, const unsigned long listX2Field)
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
@@ -2060,11 +1655,11 @@ int Collection::DeleteFIDListX2Field(char *ModName, unsigned int recordFID, cons
     if(curModFile == NULL || curRecord == NULL)
         return -1;
     RecordReader reader(curModFile->FormIDHandler);
-    reader.Accept(*curRecord);
+    reader.Accept(&curRecord);
     return curRecord->DeleteListX2Field(subField, listIndex, listField, listX2Index, listX2Field);
     }
 
-int Collection::DeleteFIDListX3Field(char *ModName, unsigned int recordFID, const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, const unsigned listX3Index, const unsigned int listX3Field)
+int Collection::DeleteFIDListX3Field(char *ModName, unsigned long recordFID, const unsigned long subField, const unsigned long listIndex, const unsigned long listField, const unsigned long listX2Index, const unsigned long listX2Field, const unsigned long listX3Index, const unsigned long listX3Field)
     {
     ModFile *curModFile = NULL;
     Record *curRecord = NULL;
@@ -2072,7 +1667,7 @@ int Collection::DeleteFIDListX3Field(char *ModName, unsigned int recordFID, cons
     if(curModFile == NULL || curRecord == NULL)
         return -1;
     RecordReader reader(curModFile->FormIDHandler);
-    reader.Accept(*curRecord);
+    reader.Accept(&curRecord);
     return curRecord->DeleteListX3Field(subField, listIndex, listField, listX2Index, listX2Field, listX3Index, listX3Field);
     }
 
@@ -2082,7 +1677,7 @@ void Collection::Debug(int debugLevel, bool AllRecords)
     {
     try
         {
-        for(unsigned int p = 0;p < ModFiles.size();p++)
+        for(unsigned long p = 0;p < ModFiles.size();p++)
             {
             //ADD DEFINITIONS HERE
             ModFiles[p]->TES4.Debug(debugLevel);

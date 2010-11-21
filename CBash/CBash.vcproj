@@ -277,6 +277,10 @@
 					RelativePath=".\BaseRecord.cpp"
 					>
 				</File>
+				<File
+					RelativePath=".\GenericChunks.cpp"
+					>
+				</File>
 				<Filter
 					Name="Complex"
 					>
@@ -545,259 +549,259 @@
 					Name="API"
 					>
 					<File
-						RelativePath=".\API\ACHRRecordAPI.cpp"
+						RelativePath=".\Records\API\ACHRRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\ACRERecordAPI.cpp"
+						RelativePath=".\Records\API\ACRERecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\ACTIRecordAPI.cpp"
+						RelativePath=".\Records\API\ACTIRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\ALCHRecordAPI.cpp"
+						RelativePath=".\Records\API\ALCHRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\AMMORecordAPI.cpp"
+						RelativePath=".\Records\API\AMMORecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\ANIORecordAPI.cpp"
+						RelativePath=".\Records\API\ANIORecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\APPARecordAPI.cpp"
+						RelativePath=".\Records\API\APPARecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\ARMORecordAPI.cpp"
+						RelativePath=".\Records\API\ARMORecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\BOOKRecordAPI.cpp"
+						RelativePath=".\Records\API\BOOKRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\BSGNRecordAPI.cpp"
+						RelativePath=".\Records\API\BSGNRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\CELLRecordAPI.cpp"
+						RelativePath=".\Records\API\CELLRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\CLASRecordAPI.cpp"
+						RelativePath=".\Records\API\CLASRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\CLMTRecordAPI.cpp"
+						RelativePath=".\Records\API\CLMTRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\CLOTRecordAPI.cpp"
+						RelativePath=".\Records\API\CLOTRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\CONTRecordAPI.cpp"
+						RelativePath=".\Records\API\CONTRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\CREARecordAPI.cpp"
+						RelativePath=".\Records\API\CREARecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\CSTYRecordAPI.cpp"
+						RelativePath=".\Records\API\CSTYRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\DIALRecordAPI.cpp"
+						RelativePath=".\Records\API\DIALRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\DOORRecordAPI.cpp"
+						RelativePath=".\Records\API\DOORRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\EFSHRecordAPI.cpp"
+						RelativePath=".\Records\API\EFSHRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\ENCHRecordAPI.cpp"
+						RelativePath=".\Records\API\ENCHRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\EYESRecordAPI.cpp"
+						RelativePath=".\Records\API\EYESRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\FACTRecordAPI.cpp"
+						RelativePath=".\Records\API\FACTRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\FLORRecordAPI.cpp"
+						RelativePath=".\Records\API\FLORRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\FURNRecordAPI.cpp"
+						RelativePath=".\Records\API\FURNRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\GLOBRecordAPI.cpp"
+						RelativePath=".\Records\API\GLOBRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\GMSTRecordAPI.cpp"
+						RelativePath=".\Records\API\GMSTRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\GRASRecordAPI.cpp"
+						RelativePath=".\Records\API\GRASRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\HAIRRecordAPI.cpp"
+						RelativePath=".\Records\API\HAIRRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\IDLERecordAPI.cpp"
+						RelativePath=".\Records\API\IDLERecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\INFORecordAPI.cpp"
+						RelativePath=".\Records\API\INFORecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\INGRRecordAPI.cpp"
+						RelativePath=".\Records\API\INGRRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\KEYMRecordAPI.cpp"
+						RelativePath=".\Records\API\KEYMRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\LANDRecordAPI.cpp"
+						RelativePath=".\Records\API\LANDRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\LIGHRecordAPI.cpp"
+						RelativePath=".\Records\API\LIGHRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\LSCRRecordAPI.cpp"
+						RelativePath=".\Records\API\LSCRRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\LTEXRecordAPI.cpp"
+						RelativePath=".\Records\API\LTEXRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\LVLCRecordAPI.cpp"
+						RelativePath=".\Records\API\LVLCRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\LVLIRecordAPI.cpp"
+						RelativePath=".\Records\API\LVLIRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\LVSPRecordAPI.cpp"
+						RelativePath=".\Records\API\LVSPRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\MGEFRecordAPI.cpp"
+						RelativePath=".\Records\API\MGEFRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\MISCRecordAPI.cpp"
+						RelativePath=".\Records\API\MISCRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\NPC_RecordAPI.cpp"
+						RelativePath=".\Records\API\NPC_RecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\PACKRecordAPI.cpp"
+						RelativePath=".\Records\API\PACKRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\PGRDRecordAPI.cpp"
+						RelativePath=".\Records\API\PGRDRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\QUSTRecordAPI.cpp"
+						RelativePath=".\Records\API\QUSTRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\RACERecordAPI.cpp"
+						RelativePath=".\Records\API\RACERecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\REFRRecordAPI.cpp"
+						RelativePath=".\Records\API\REFRRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\REGNRecordAPI.cpp"
+						RelativePath=".\Records\API\REGNRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\ROADRecordAPI.cpp"
+						RelativePath=".\Records\API\ROADRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\SBSPRecordAPI.cpp"
+						RelativePath=".\Records\API\SBSPRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\SCPTRecordAPI.cpp"
+						RelativePath=".\Records\API\SCPTRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\SGSTRecordAPI.cpp"
+						RelativePath=".\Records\API\SGSTRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\SKILRecordAPI.cpp"
+						RelativePath=".\Records\API\SKILRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\SLGMRecordAPI.cpp"
+						RelativePath=".\Records\API\SLGMRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\SOUNRecordAPI.cpp"
+						RelativePath=".\Records\API\SOUNRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\SPELRecordAPI.cpp"
+						RelativePath=".\Records\API\SPELRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\STATRecordAPI.cpp"
+						RelativePath=".\Records\API\STATRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\TES4RecordAPI.cpp"
+						RelativePath=".\Records\API\TES4RecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\TREERecordAPI.cpp"
+						RelativePath=".\Records\API\TREERecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\WATRRecordAPI.cpp"
+						RelativePath=".\Records\API\WATRRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\WEAPRecordAPI.cpp"
+						RelativePath=".\Records\API\WEAPRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\WRLDRecordAPI.cpp"
+						RelativePath=".\Records\API\WRLDRecordAPI.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\API\WTHRRecordAPI.cpp"
+						RelativePath=".\Records\API\WTHRRecordAPI.cpp"
 						>
 					</File>
 				</Filter>
@@ -833,6 +837,10 @@
 				>
 				<File
 					RelativePath=".\BaseRecord.h"
+					>
+				</File>
+				<File
+					RelativePath=".\GenericChunks.h"
 					>
 				</File>
 				<File

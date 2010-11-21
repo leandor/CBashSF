@@ -44,7 +44,7 @@ class LANDRecord : public Record
             unsigned char z;
             LANDNORMALS():x(0), y(0), z(0) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -75,7 +75,7 @@ class LANDRecord : public Record
             {
             LANDNORMALS VNML[33][33];
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -84,12 +84,12 @@ class LANDRecord : public Record
                         {
                         PrintIndent(indentation);
                         printf("Normals:\n");
-                        for(unsigned int x = 0; x < 33; ++x)
+                        for(unsigned long x = 0; x < 33; ++x)
                             {
                             indentation += 2;
                             PrintIndent(indentation);
                             printf("Row: %u\n", x);
-                            for(unsigned int y = 0; y < 33; ++y)
+                            for(unsigned long y = 0; y < 33; ++y)
                                 {
                                 indentation += 2;
                                 PrintIndent(indentation);
@@ -106,8 +106,8 @@ class LANDRecord : public Record
             #endif
             bool operator ==(const LANDVNML &other) const
                 {
-                for(unsigned int x = 0; x < 33; ++x)
-                    for(unsigned int y = 0; y < 33; ++y)
+                for(unsigned long x = 0; x < 33; ++x)
+                    for(unsigned long y = 0; y < 33; ++y)
                         if(VNML[x][y] != other.VNML[x][y])
                             return false;
                 return true;
@@ -129,7 +129,7 @@ class LANDRecord : public Record
                 memset(&unused1[0], 0, 3);
                 }
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -140,13 +140,13 @@ class LANDRecord : public Record
                         {
                         PrintIndent(indentation);
                         printf("Heights:\n");
-                        for(unsigned int x = 0; x < 33; ++x)
+                        for(unsigned long x = 0; x < 33; ++x)
                             {
                             indentation += 2;
                             PrintIndent(indentation);
                             printf("Row: %u\n", x);
                             indentation += 2;
-                            for(unsigned int y = 0; y < 33; ++y)
+                            for(unsigned long y = 0; y < 33; ++y)
                                 {
                                 PrintIndent(indentation);
                                 printf("Column: %u, Height\n", y, VHGT[x][y]);
@@ -165,8 +165,8 @@ class LANDRecord : public Record
                 {
                 if(!AlmostEqual(offset,other.offset,2))
                     return false;
-                for(unsigned int x = 0; x < 33; ++x)
-                    for(unsigned int y = 0; y < 33; ++y)
+                for(unsigned long x = 0; x < 33; ++x)
+                    for(unsigned long y = 0; y < 33; ++y)
                         if(VHGT[x][y] != other.VHGT[x][y])
                             return false;
                 return true;
@@ -184,7 +184,7 @@ class LANDRecord : public Record
             unsigned char blue;
             LANDCOLORS():red(0), green(0), blue(0) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -215,7 +215,7 @@ class LANDRecord : public Record
             {
             LANDCOLORS VCLR[33][33];
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -224,12 +224,12 @@ class LANDRecord : public Record
                         {
                         PrintIndent(indentation);
                         printf("Colors:\n");
-                        for(unsigned int x = 0; x < 33; ++x)
+                        for(unsigned long x = 0; x < 33; ++x)
                             {
                             indentation += 2;
                             PrintIndent(indentation);
                             printf("Row: %u\n", x);
-                            for(unsigned int y = 0; y < 33; ++y)
+                            for(unsigned long y = 0; y < 33; ++y)
                                 {
                                 indentation += 2;
                                 PrintIndent(indentation);
@@ -246,8 +246,8 @@ class LANDRecord : public Record
             #endif
             bool operator ==(const LANDVCLR &other) const
                 {
-                for(unsigned int x = 0; x < 33; ++x)
-                    for(unsigned int y = 0; y < 33; ++y)
+                for(unsigned long x = 0; x < 33; ++x)
+                    for(unsigned long y = 0; y < 33; ++y)
                         if(VCLR[x][y] != other.VCLR[x][y])
                             return false;
                 return true;
@@ -260,13 +260,13 @@ class LANDRecord : public Record
 
         struct LANDGENTXT
             {
-            unsigned int texture;
+            unsigned long texture;
             unsigned char quadrant;
             unsigned char unused1;
             short layer;
             LANDGENTXT():texture(0), quadrant(0), unused1(0), layer(-1) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -308,7 +308,7 @@ class LANDRecord : public Record
                 memset(&unused1[0], 0, 2);
                 }
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -342,7 +342,7 @@ class LANDRecord : public Record
             ReqSubRecord<LANDGENTXT> ATXT;
             std::vector<LANDVTXT> VTXT;
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -378,14 +378,14 @@ class LANDRecord : public Record
         //struct LANDMERGED
         //    {//156B, 40*33*33 (1.319GB), 28B - 7B*33*33 (265MB)
         //    LANDPOINTS Points[33][33];
-        //    //unsigned int bottomLeftAlphas[8];
-        //    //unsigned int bottomRightAlphas[8];
-        //    //unsigned int topLeftAlphas[8];
-        //    //unsigned int topRightAlphas[8];
-        //    unsigned int bottomLeftBaseTexture;
-        //    unsigned int bottomRightBaseTexture;
-        //    unsigned int topLeftBaseTexture;
-        //    unsigned int topRightBaseTexture;
+        //    //unsigned long bottomLeftAlphas[8];
+        //    //unsigned long bottomRightAlphas[8];
+        //    //unsigned long topLeftAlphas[8];
+        //    //unsigned long topRightAlphas[8];
+        //    unsigned long bottomLeftBaseTexture;
+        //    unsigned long bottomRightBaseTexture;
+        //    unsigned long topLeftBaseTexture;
+        //    unsigned long topRightBaseTexture;
         //    float heightOffset;
         //    short bottomLeftBaseLayer;
         //    short bottomRightBaseLayer;
@@ -401,13 +401,13 @@ class LANDRecord : public Record
             eTopLeft,
             eTopRight
             };
-        RAWBYTES DATA;
+        RawRecord DATA;
         OptSubRecord<LANDVNML> VNML;
         OptSubRecord<LANDVHGT> VHGT;
         OptSubRecord<LANDVCLR> VCLR;
         std::vector<ReqSubRecord<LANDGENTXT> *> BTXT;
         std::vector<LANDLAYERS *> Layers;
-        std::vector<unsigned int> VTEX;
+        std::vector<unsigned long> VTEX;
         //LANDMERGED *Merged;
 
         LANDRecord *WestLand;
@@ -431,14 +431,14 @@ class LANDRecord : public Record
             VCLR = srcRecord->VCLR;
             BTXT.clear();
             BTXT.resize(srcRecord->BTXT.size());
-            for(unsigned int x = 0; x < srcRecord->BTXT.size(); ++x)
+            for(unsigned long x = 0; x < srcRecord->BTXT.size(); ++x)
                 {
                 BTXT[x] = new ReqSubRecord<LANDGENTXT>;
                 *BTXT[x] = *srcRecord->BTXT[x];
                 }
             Layers.clear();
             Layers.resize(srcRecord->Layers.size());
-            for(unsigned int x = 0; x < srcRecord->Layers.size(); ++x)
+            for(unsigned long x = 0; x < srcRecord->Layers.size(); ++x)
                 {
                 Layers[x] = new LANDLAYERS;
                 Layers[x]->ATXT = srcRecord->Layers[x]->ATXT;
@@ -449,9 +449,9 @@ class LANDRecord : public Record
             }
         ~LANDRecord()
             {
-            for(unsigned int x = 0; x < BTXT.size(); ++x)
+            for(unsigned long x = 0; x < BTXT.size(); ++x)
                 delete BTXT[x];
-            for(unsigned int x = 0; x < Layers.size(); ++x)
+            for(unsigned long x = 0; x < Layers.size(); ++x)
                 delete Layers[x];
             }
         void Unload()
@@ -461,71 +461,74 @@ class LANDRecord : public Record
             VNML.Unload();
             VHGT.Unload();
             VCLR.Unload();
-            for(unsigned int x = 0; x < BTXT.size(); ++x)
+            for(unsigned long x = 0; x < BTXT.size(); ++x)
                 delete BTXT[x];
             BTXT.clear();
 
-            for(unsigned int x = 0; x < Layers.size(); ++x)
+            for(unsigned long x = 0; x < Layers.size(); ++x)
                 delete Layers[x];
             Layers.clear();
 
             VTEX.clear();
             }
 
-        void VisitFormIDs(FormIDOp &op)
+        bool VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
-                return;
+                return false;
 
-            for(unsigned int x = 0; x < BTXT.size(); ++x)
+            for(unsigned long x = 0; x < BTXT.size(); ++x)
                 if(BTXT[x] != NULL)
                     op.Accept(BTXT[x]->value.texture);
-            for(unsigned int x = 0; x < Layers.size(); ++x)
+            for(unsigned long x = 0; x < Layers.size(); ++x)
                 op.Accept(Layers[x]->ATXT.value.texture);
-            for(unsigned int x = 0; x < VTEX.size(); x++)
+            for(unsigned long x = 0; x < VTEX.size(); x++)
                 op.Accept(VTEX[x]);
+
+            return op.Stop();
             }
 
         #ifdef _DEBUG
-        void Debug(int debugLevel);
+        void Debug(signed long debugLevel);
         #endif
 
-        int CreateListElement(const unsigned int subField);
-        int DeleteListElement(const unsigned int subField);
-        int GetOtherFieldType(const unsigned int Field);
-        void * GetOtherField(const unsigned int Field);
-        int GetListFieldType(const unsigned int subField, const unsigned int listField);
-        int GetListX2FieldType(const unsigned int subField, const unsigned int listField, const unsigned int listX2Field);
-        unsigned int GetListSize(const unsigned int Field);
-        unsigned int GetListX2Size(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
-        unsigned int GetListArraySize(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
-        unsigned int GetListX2ArraySize(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field);
-        unsigned int GetFieldArraySize(const unsigned int Field);
-        void GetFieldArray(const unsigned int Field, void **FieldValues);
-        void GetListArray(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, void **FieldValues);
-        void GetListX2Array(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, void **FieldValues);
-        void * GetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
-        void * GetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field);
-        void SetField(const unsigned int Field, float FieldValue);
-        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, short FieldValue);
-        void SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned char FieldValue);
-        void SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, char FieldValue);
-        void SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned short FieldValue);
-        void SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, float FieldValue);
-        void SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned int FieldValue);
+        signed long CreateListElement(const unsigned long subField);
+        signed long DeleteListElement(const unsigned long subField);
+        signed long GetOtherFieldType(const unsigned long Field);
+        void * GetOtherField(const unsigned long Field);
+        signed long GetListFieldType(const unsigned long subField, const unsigned long listField);
+        signed long GetListX2FieldType(const unsigned long subField, const unsigned long listField, const unsigned long listX2Field);
+        unsigned long GetListSize(const unsigned long Field);
+        unsigned long GetListX2Size(const unsigned long subField, const unsigned long listIndex, const unsigned long listField);
+        unsigned long GetListArraySize(const unsigned long subField, const unsigned long listIndex, const unsigned long listField);
+        unsigned long GetListX2ArraySize(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, const unsigned long listX2Index, const unsigned long listX2Field);
+        unsigned long GetFieldArraySize(const unsigned long Field);
+        void GetFieldArray(const unsigned long Field, void **FieldValues);
+        void GetListArray(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, void **FieldValues);
+        void GetListX2Array(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, const unsigned long listX2Index, const unsigned long listX2Field, void **FieldValues);
+        void * GetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField);
+        void * GetListX2Field(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, const unsigned long listX2Index, const unsigned long listX2Field);
+        void SetField(const unsigned long Field, float FieldValue);
+        void SetField(const unsigned long Field, unsigned char *FieldValue, unsigned long nSize);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, unsigned long FieldValue);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, unsigned char FieldValue);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, unsigned char *FieldValue, unsigned long nSize);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, short FieldValue);
+        void SetListX2Field(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, const unsigned long listX2Index, const unsigned long listX2Field, unsigned char FieldValue);
+        void SetListX2Field(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, const unsigned long listX2Index, const unsigned long listX2Field, char FieldValue);
+        void SetListX2Field(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, const unsigned long listX2Index, const unsigned long listX2Field, unsigned short FieldValue);
+        void SetListX2Field(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, const unsigned long listX2Index, const unsigned long listX2Field, unsigned char *FieldValue, unsigned long nSize);
+        void SetListX2Field(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, const unsigned long listX2Index, const unsigned long listX2Field, float FieldValue);
+        void SetListX2Field(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, const unsigned long listX2Index, const unsigned long listX2Field, unsigned long FieldValue);
 
-        unsigned char CalcQuadrant(const unsigned int &row, const unsigned int &column);
-        unsigned int CalcPosition(const unsigned int &curQuadrant, const unsigned int &row, const unsigned int &column);
-        float CalcHeight(const unsigned int &row, const unsigned int &column);
+        unsigned char CalcQuadrant(const unsigned long &row, const unsigned long &column);
+        unsigned short CalcPosition(const unsigned char &curQuadrant, const unsigned long &row, const unsigned long &column);
+        float CalcHeight(const unsigned long &row, const unsigned long &column);
 
-        int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize(bool forceCalc=false);
-        unsigned int GetType() {return eLAND;}
-        char * GetStrType() {return "LAND";}
-        int WriteRecord(_FileHandler &SaveHandler);
+        signed long ParseRecord(unsigned char *buffer, const unsigned long &recSize);
+        unsigned long GetSize(bool forceCalc=false);
+        unsigned long GetType() {return eLAND;}
+        char *GetStrType() {return "LAND";}
+        unsigned long GetParentType() {return eCELL;}
+        signed long WriteRecord(_FileHandler &SaveHandler);
     };

@@ -85,7 +85,7 @@ class CREARecord : public Record
                 memset(&unused2, 0x00, 2);
                 }
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -162,7 +162,7 @@ class CREARecord : public Record
             unsigned char attackReach;
             CREARNAM():attackReach(0) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -187,7 +187,7 @@ class CREARecord : public Record
             float turningSpeed;
             CREATNAM():turningSpeed(0.0f) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -212,7 +212,7 @@ class CREARecord : public Record
             float baseScale;
             CREABNAM():baseScale(0.0f) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -237,7 +237,7 @@ class CREARecord : public Record
             float footWeight;
             CREAWNAM():footWeight(0.0f) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -259,10 +259,10 @@ class CREARecord : public Record
             };
         struct CREACSDT
             {
-            unsigned int type;
+            unsigned long type;
             CREACSDT():type(0) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -287,7 +287,7 @@ class CREARecord : public Record
             unsigned char chance;
             CREACSDC():chance(0) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -313,7 +313,7 @@ class CREARecord : public Record
             ReqSubRecord<GENFID> CSDI;
             ReqSubRecord<CREACSDC> CSDC;
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -393,20 +393,20 @@ class CREARecord : public Record
             eGreater = 4,
             eGrand   = 5
             };
-        STRING EDID;
-        STRING FULL;
+        StringRecord EDID;
+        StringRecord FULL;
         OptSubRecord<GENMODEL> MODL;
-        std::vector<unsigned int *> SPLO;
-        std::vector<ISTRING> NIFZ;
-        RAWBYTES NIFT;
+        std::vector<unsigned long *> SPLO;
+        std::vector<InsensitiveStringRecord> NIFZ;
+        RawRecord NIFT;
         ReqSubRecord<GENACBS> ACBS;
         std::vector<ReqSubRecord<GENSNAM> *> SNAM;
         OptSubRecord<GENFID> INAM;
         OptSubRecord<GENFID> SCRI;
         std::vector<ReqSubRecord<GENCNTO> *> CNTO;
         ReqSubRecord<GENAIDT> AIDT;
-        std::vector<unsigned int *> PKID;
-        std::vector<STRING> KFFZ;
+        std::vector<unsigned long *> PKID;
+        std::vector<StringRecord> KFFZ;
         ReqSubRecord<CREADATA> DATA;
         ReqSubRecord<CREARNAM> RNAM;
         OptSubRecord<GENFID> ZNAM;
@@ -414,8 +414,8 @@ class CREARecord : public Record
         ReqSubRecord<CREABNAM> BNAM;
         ReqSubRecord<CREAWNAM> WNAM;
         OptSubRecord<GENFID> CSCR;
-        STRING NAM0;
-        STRING NAM1;
+        StringRecord NAM0;
+        StringRecord NAM1;
         std::vector<CREASound *> Sounds;
 
         CREARecord(bool newRecord=false):Record(newRecord) {}
@@ -438,17 +438,17 @@ class CREARecord : public Record
                 }
             SPLO.clear();
             SPLO.resize(srcRecord->SPLO.size());
-            for(unsigned int x = 0; x < srcRecord->SPLO.size(); x++)
-                SPLO[x] = new unsigned int(*srcRecord->SPLO[x]);
+            for(unsigned long x = 0; x < srcRecord->SPLO.size(); x++)
+                SPLO[x] = new unsigned long(*srcRecord->SPLO[x]);
             NIFZ.clear();
             NIFZ.resize(srcRecord->NIFZ.size());
-            for(unsigned int x = 0; x < srcRecord->NIFZ.size(); x++)
+            for(unsigned long x = 0; x < srcRecord->NIFZ.size(); x++)
                 NIFZ[x].Copy(srcRecord->NIFZ[x]);
             NIFT = srcRecord->NIFT;
             ACBS = srcRecord->ACBS;
             SNAM.clear();
             SNAM.resize(srcRecord->SNAM.size());
-            for(unsigned int x = 0; x < srcRecord->SNAM.size(); x++)
+            for(unsigned long x = 0; x < srcRecord->SNAM.size(); x++)
                 {
                 SNAM[x] = new ReqSubRecord<GENSNAM>;
                 *SNAM[x] = *srcRecord->SNAM[x];
@@ -457,7 +457,7 @@ class CREARecord : public Record
             SCRI = srcRecord->SCRI;
             CNTO.clear();
             CNTO.resize(srcRecord->CNTO.size());
-            for(unsigned int x = 0; x < srcRecord->CNTO.size(); x++)
+            for(unsigned long x = 0; x < srcRecord->CNTO.size(); x++)
                 {
                 CNTO[x] = new ReqSubRecord<GENCNTO>;
                 *CNTO[x] = *srcRecord->CNTO[x];
@@ -465,11 +465,11 @@ class CREARecord : public Record
             AIDT = srcRecord->AIDT;
             PKID.clear();
             PKID.resize(srcRecord->PKID.size());
-            for(unsigned int x = 0; x < srcRecord->PKID.size(); x++)
-                PKID[x] = new unsigned int(*srcRecord->PKID[x]);
+            for(unsigned long x = 0; x < srcRecord->PKID.size(); x++)
+                PKID[x] = new unsigned long(*srcRecord->PKID[x]);
             KFFZ.clear();
             KFFZ.resize(srcRecord->KFFZ.size());
-            for(unsigned int x = 0; x < srcRecord->KFFZ.size(); x++)
+            for(unsigned long x = 0; x < srcRecord->KFFZ.size(); x++)
                 KFFZ[x].Copy(srcRecord->KFFZ[x]);
 
             DATA = srcRecord->DATA;
@@ -483,7 +483,7 @@ class CREARecord : public Record
             NAM1 = srcRecord->NAM1;
             Sounds.clear();
             Sounds.resize(srcRecord->Sounds.size());
-            for(unsigned int x = 0; x < srcRecord->Sounds.size(); x++)
+            for(unsigned long x = 0; x < srcRecord->Sounds.size(); x++)
                 {
                 Sounds[x] = new CREASound;
                 Sounds[x]->CSDT = srcRecord->Sounds[x]->CSDT;
@@ -494,15 +494,15 @@ class CREARecord : public Record
             }
         ~CREARecord()
             {
-            for(unsigned int x = 0; x < SPLO.size(); x++)
+            for(unsigned long x = 0; x < SPLO.size(); x++)
                 delete SPLO[x];
-            for(unsigned int x = 0; x < SNAM.size(); x++)
+            for(unsigned long x = 0; x < SNAM.size(); x++)
                 delete SNAM[x];
-            for(unsigned int x = 0; x < CNTO.size(); x++)
+            for(unsigned long x = 0; x < CNTO.size(); x++)
                 delete CNTO[x];
-            for(unsigned int x = 0; x < PKID.size(); x++)
+            for(unsigned long x = 0; x < PKID.size(); x++)
                 delete PKID[x];
-            for(unsigned int x = 0; x < Sounds.size(); x++)
+            for(unsigned long x = 0; x < Sounds.size(); x++)
                 delete Sounds[x];
             }
         void Unload()
@@ -512,7 +512,7 @@ class CREARecord : public Record
             FULL.Unload();
             MODL.Unload();
 
-            for(unsigned int x = 0; x < SPLO.size(); x++)
+            for(unsigned long x = 0; x < SPLO.size(); x++)
                 delete SPLO[x];
             SPLO.clear();
 
@@ -521,20 +521,20 @@ class CREARecord : public Record
             NIFT.Unload();
             ACBS.Unload();
 
-            for(unsigned int x = 0; x < SNAM.size(); x++)
+            for(unsigned long x = 0; x < SNAM.size(); x++)
                 delete SNAM[x];
             SNAM.clear();
 
             INAM.Unload();
             SCRI.Unload();
 
-            for(unsigned int x = 0; x < CNTO.size(); x++)
+            for(unsigned long x = 0; x < CNTO.size(); x++)
                 delete CNTO[x];
             CNTO.clear();
 
             AIDT.Unload();
 
-            for(unsigned int x = 0; x < PKID.size(); x++)
+            for(unsigned long x = 0; x < PKID.size(); x++)
                 delete PKID[x];
             PKID.clear();
 
@@ -550,74 +550,76 @@ class CREARecord : public Record
             NAM0.Unload();
             NAM1.Unload();
 
-            for(unsigned int x = 0; x < Sounds.size(); x++)
+            for(unsigned long x = 0; x < Sounds.size(); x++)
                 delete Sounds[x];
             Sounds.clear();
             }
 
-        void VisitFormIDs(FormIDOp &op)
+        bool VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
-                return;
+                return false;
 
-            for(unsigned int x = 0; x < SPLO.size(); x++)
+            for(unsigned long x = 0; x < SPLO.size(); x++)
                 op.Accept(*SPLO[x]);
-            for(unsigned int x = 0; x < SNAM.size(); x++)
+            for(unsigned long x = 0; x < SNAM.size(); x++)
                 op.Accept(SNAM[x]->value.faction);
             if(INAM.IsLoaded())
                 op.Accept(INAM->fid);
             if(SCRI.IsLoaded())
                 op.Accept(SCRI->fid);
-            for(unsigned int x = 0; x < CNTO.size(); x++)
+            for(unsigned long x = 0; x < CNTO.size(); x++)
                 op.Accept(CNTO[x]->value.item);
-            for(unsigned int x = 0; x < PKID.size(); x++)
+            for(unsigned long x = 0; x < PKID.size(); x++)
                 op.Accept(*PKID[x]);
             if(ZNAM.IsLoaded())
                 op.Accept(ZNAM->fid);
             if(CSCR.IsLoaded())
                 op.Accept(CSCR->fid);
-            for(unsigned int x = 0; x < Sounds.size(); x++)
+            for(unsigned long x = 0; x < Sounds.size(); x++)
                 op.Accept(Sounds[x]->CSDI.value.fid);
+
+            return op.Stop();
             }
 
         #ifdef _DEBUG
-        void Debug(int debugLevel);
+        void Debug(signed long debugLevel);
         #endif
 
-        int CreateListElement(const unsigned int subField);
-        int DeleteListElement(const unsigned int subField);
-        int GetOtherFieldType(const unsigned int Field);
-        void * GetOtherField(const unsigned int Field);
-        unsigned int GetFieldArraySize(const unsigned int Field);
-        void GetFieldArray(const unsigned int Field, void **FieldValues);
-        int GetListFieldType(const unsigned int subField, const unsigned int listField);
-        unsigned int GetListSize(const unsigned int Field);
-        unsigned int GetListArraySize(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
-        void GetListArray(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, void **FieldValues);
-        void * GetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
-        void SetField(const unsigned int Field, char *FieldValue);
-        void SetField(const unsigned int Field, float FieldValue);
-        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetOtherField(const unsigned int Field, unsigned int FieldValue);
-        void SetField(const unsigned int Field, unsigned short FieldValue);
-        void SetField(const unsigned int Field, short FieldValue);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, int FieldValue);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize);
-        void SetField(const unsigned int Field, unsigned int FieldValue[], unsigned int nSize);
-        void SetField(const unsigned int Field, unsigned char FieldValue);
-        void SetField(const unsigned int Field, char FieldValue);
-        void SetField(const unsigned int Field, char **FieldValue, unsigned int nSize);
+        signed long CreateListElement(const unsigned long subField);
+        signed long DeleteListElement(const unsigned long subField);
+        signed long GetOtherFieldType(const unsigned long Field);
+        void * GetOtherField(const unsigned long Field);
+        unsigned long GetFieldArraySize(const unsigned long Field);
+        void GetFieldArray(const unsigned long Field, void **FieldValues);
+        signed long GetListFieldType(const unsigned long subField, const unsigned long listField);
+        unsigned long GetListSize(const unsigned long Field);
+        unsigned long GetListArraySize(const unsigned long subField, const unsigned long listIndex, const unsigned long listField);
+        void GetListArray(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, void **FieldValues);
+        void * GetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField);
+        void SetField(const unsigned long Field, char *FieldValue);
+        void SetField(const unsigned long Field, float FieldValue);
+        void SetField(const unsigned long Field, unsigned char *FieldValue, unsigned long nSize);
+        void SetOtherField(const unsigned long Field, unsigned long FieldValue);
+        void SetField(const unsigned long Field, unsigned short FieldValue);
+        void SetField(const unsigned long Field, short FieldValue);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, unsigned long FieldValue);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, unsigned char FieldValue);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, signed long FieldValue);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, unsigned char *FieldValue, unsigned long nSize);
+        void SetField(const unsigned long Field, unsigned long FieldValue[], unsigned long nSize);
+        void SetField(const unsigned long Field, unsigned char FieldValue);
+        void SetField(const unsigned long Field, char FieldValue);
+        void SetField(const unsigned long Field, char **FieldValue, unsigned long nSize);
 
-        int DeleteField(const unsigned int Field);
-        int DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
+        signed long DeleteField(const unsigned long Field);
+        signed long DeleteListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField);
 
-        int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize(bool forceCalc=false);
-        unsigned int GetType() {return eCREA;}
-        char * GetStrType() {return "CREA";}
-        int WriteRecord(_FileHandler &SaveHandler);
+        signed long ParseRecord(unsigned char *buffer, const unsigned long &recSize);
+        unsigned long GetSize(bool forceCalc=false);
+        unsigned long GetType() {return eCREA;}
+        char *GetStrType() {return "CREA";}
+        signed long WriteRecord(_FileHandler &SaveHandler);
         bool IsBiped()
             {
             return (ACBS.value.flags & fIsBiped) != 0;
@@ -877,14 +879,14 @@ class CREARecord : public Record
             {
             IsNoCorpseCheck(!value);
             }
-        bool IsFlagMask(unsigned int Mask, bool Exact=false)
+        bool IsFlagMask(unsigned long Mask, bool Exact=false)
             {
             if(Exact)
                 return (ACBS.value.flags & Mask) == Mask;
             else
                 return (ACBS.value.flags & Mask) != 0;
             }
-        void SetFlagMask(unsigned int Mask)
+        void SetFlagMask(unsigned long Mask)
             {
             ACBS.value.flags = Mask;
             }
@@ -1190,14 +1192,14 @@ class CREARecord : public Record
             else
                 AIDT.value.flags &= ~fRepair;
             }
-        bool IsServicesFlagMask(unsigned int Mask, bool Exact=false)
+        bool IsServicesFlagMask(unsigned long Mask, bool Exact=false)
             {
             if(Exact)
                 return (AIDT.value.flags & Mask) == Mask;
             else
                 return (AIDT.value.flags & Mask) != 0;
             }
-        void SetServicesFlagMask(unsigned int Mask)
+        void SetServicesFlagMask(unsigned long Mask)
             {
             AIDT.value.flags = Mask;
             }

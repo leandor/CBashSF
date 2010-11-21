@@ -39,7 +39,7 @@ class PGRDRecord : public Record
             unsigned short count;
             PGRDDATA():count(0) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -65,7 +65,7 @@ class PGRDRecord : public Record
         //    unsigned short start, end;
         //    PGRDPGRR():start(0), end(0) {}
         //    #ifdef _DEBUG
-        //    void Debug(int debugLevel, size_t &indentation)
+        //    void Debug(signed long debugLevel, size_t &indentation)
         //        {
         //        if(debugLevel > 3)
         //            {
@@ -90,7 +90,7 @@ class PGRDRecord : public Record
                 memset(&unused1, 0x00, 2);
                 }
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -127,10 +127,10 @@ class PGRDRecord : public Record
 
         struct PGRDPGRL
             {
-            std::vector<unsigned int> points;
+            std::vector<unsigned long> points;
             PGRDPGRL() {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -140,7 +140,7 @@ class PGRDRecord : public Record
                     if(debugLevel > 5)
                         {
                         indentation += 2;
-                        for(unsigned int x = 1; x < points.size(); ++x)
+                        for(unsigned long x = 1; x < points.size(); ++x)
                             {
                             PrintIndent(indentation);
                             printf("Point %u = %u\n", x - 1, points[x]);
@@ -163,8 +163,8 @@ class PGRDRecord : public Record
     public:
         ReqSubRecord<PGRDDATA> DATA;
         std::vector<GENPGRP> PGRP;
-        RAWBYTES PGAG;
-        RAWBYTES PGRR;
+        RawRecord PGAG;
+        RawRecord PGRR;
         std::vector<PGRDPGRI> PGRI;
         std::vector<PGRDPGRL *> PGRL;
 
@@ -186,7 +186,7 @@ class PGRDRecord : public Record
 
             PGRL.clear();
             PGRL.resize(srcRecord->PGRL.size());
-            for(unsigned int x = 0; x < srcRecord->PGRL.size(); x++)
+            for(unsigned long x = 0; x < srcRecord->PGRL.size(); x++)
                 {
                 PGRL[x] = new PGRDPGRL;
                 *PGRL[x] = *srcRecord->PGRL[x];
@@ -195,7 +195,7 @@ class PGRDRecord : public Record
             }
         ~PGRDRecord()
             {
-            for(unsigned int x = 0; x < PGRL.size(); x++)
+            for(unsigned long x = 0; x < PGRL.size(); x++)
                 delete PGRL[x];
             }
         void Unload()
@@ -206,50 +206,53 @@ class PGRDRecord : public Record
             PGAG.Unload();
             PGRR.Unload();
             PGRI.clear();
-            for(unsigned int x = 0; x < PGRL.size(); x++)
+            for(unsigned long x = 0; x < PGRL.size(); x++)
                 delete PGRL[x];
             PGRL.clear();
             }
 
-        void VisitFormIDs(FormIDOp &op)
+        bool VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
-                return;
+                return false;
 
-            for(unsigned int x = 0; x < PGRL.size(); x++)
+            for(unsigned long x = 0; x < PGRL.size(); x++)
                 op.Accept(PGRL[x]->points[0]);
+
+            return op.Stop();
             }
 
         #ifdef _DEBUG
-        void Debug(int debugLevel);
+        void Debug(signed long debugLevel);
         #endif
 
-        int CreateListElement(const unsigned int subField);
-        int DeleteListElement(const unsigned int subField);
-        int GetOtherFieldType(const unsigned int Field);
-        void * GetOtherField(const unsigned int Field);
-        int GetListFieldType(const unsigned int subField, const unsigned int listField);
-        unsigned int GetListSize(const unsigned int Field);
-        unsigned int GetListArraySize(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
-        unsigned int GetFieldArraySize(const unsigned int Field);
-        void GetFieldArray(const unsigned int Field, void **FieldValues);
-        void GetListArray(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, void **FieldValues);
-        void * GetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
-        void SetField(const unsigned int Field, unsigned short FieldValue);
-        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, float FieldValue);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned short FieldValue);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue[], unsigned int nSize);
+        signed long CreateListElement(const unsigned long subField);
+        signed long DeleteListElement(const unsigned long subField);
+        signed long GetOtherFieldType(const unsigned long Field);
+        void * GetOtherField(const unsigned long Field);
+        signed long GetListFieldType(const unsigned long subField, const unsigned long listField);
+        unsigned long GetListSize(const unsigned long Field);
+        unsigned long GetListArraySize(const unsigned long subField, const unsigned long listIndex, const unsigned long listField);
+        unsigned long GetFieldArraySize(const unsigned long Field);
+        void GetFieldArray(const unsigned long Field, void **FieldValues);
+        void GetListArray(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, void **FieldValues);
+        void * GetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField);
+        void SetField(const unsigned long Field, unsigned short FieldValue);
+        void SetField(const unsigned long Field, unsigned char *FieldValue, unsigned long nSize);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, float FieldValue);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, unsigned char FieldValue);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, unsigned char *FieldValue, unsigned long nSize);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, unsigned short FieldValue);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, unsigned long FieldValue);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, unsigned long FieldValue[], unsigned long nSize);
 
-        int DeleteField(const unsigned int Field);
-        int DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
+        signed long DeleteField(const unsigned long Field);
+        signed long DeleteListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField);
 
-        int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize(bool forceCalc=false);
-        unsigned int GetType() {return ePGRD;}
-        char * GetStrType() {return "PGRD";}
-        int WriteRecord(_FileHandler &SaveHandler);
+        signed long ParseRecord(unsigned char *buffer, const unsigned long &recSize);
+        unsigned long GetSize(bool forceCalc=false);
+        unsigned long GetType() {return ePGRD;}
+        char *GetStrType() {return "PGRD";}
+        unsigned long GetParentType() {return eCELL;}
+        signed long WriteRecord(_FileHandler &SaveHandler);
     };

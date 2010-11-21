@@ -22,14 +22,14 @@ GPL License and Copyright Notice ============================================
 #include "..\Common.h"
 #include "PGRDRecord.h"
 
-int PGRDRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
+signed long PGRDRecord::ParseRecord(unsigned char *buffer, const unsigned long &recSize)
     {
     if(IsLoaded())
         return -1;
     IsLoaded(true);
-    unsigned int subType = 0;
-    unsigned int subSize = 0;
-    unsigned int curPos = 0;
+    unsigned long subType = 0;
+    unsigned long subSize = 0;
+    unsigned long curPos = 0;
     PGRDPGRL *curPGRL = NULL;
     while(curPos < recSize){
         _readBuffer(&subType,buffer,4,curPos);
@@ -99,12 +99,12 @@ int PGRDRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                     }
                 break;
             case ePGRL:
-                if(subSize % sizeof(unsigned int) == 0)
+                if(subSize % sizeof(unsigned long) == 0)
                     {
                     if(subSize == 0)
                         break;
                     curPGRL = new PGRDPGRL;
-                    curPGRL->points.resize(subSize / sizeof(unsigned int));
+                    curPGRL->points.resize(subSize / sizeof(unsigned long));
                     _readBuffer(&curPGRL->points[0], buffer, subSize, curPos);
                     PGRL.push_back(curPGRL);
                     }
@@ -126,17 +126,17 @@ int PGRDRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
     return 0;
     }
 
-unsigned int PGRDRecord::GetSize(bool forceCalc)
+unsigned long PGRDRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && recData != NULL)
-        return *(unsigned int*)&recData[-16];
-    unsigned int cSize = 0;
-    unsigned int TotSize = 0;
+        return *(unsigned long*)&recData[-16];
+    unsigned long cSize = 0;
+    unsigned long TotSize = 0;
     if(DATA.IsLoaded())
         TotSize += DATA.GetSize() + 6;
     if(PGRP.size())
         {
-        cSize = (sizeof(GENPGRP) * (unsigned int)PGRP.size());
+        cSize = (sizeof(GENPGRP) * (unsigned long)PGRP.size());
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
         }
@@ -153,38 +153,38 @@ unsigned int PGRDRecord::GetSize(bool forceCalc)
         TotSize += cSize += 6;
         }
     //if(PGRR.size())
-    //    cSize += 6 + (sizeof(PGRDPGRR) * (unsigned int)PGRR.size());
+    //    cSize += 6 + (sizeof(PGRDPGRR) * (unsigned long)PGRR.size());
     if(PGRI.size())
         {
-        cSize = (sizeof(PGRDPGRI) * (unsigned int)PGRI.size());
+        cSize = (sizeof(PGRDPGRI) * (unsigned long)PGRI.size());
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
         }
-    for(unsigned int x = 0; x < PGRL.size(); ++x)
+    for(unsigned long x = 0; x < PGRL.size(); ++x)
         {
-        cSize = (sizeof(unsigned int) * (unsigned int)PGRL[x]->points.size());
+        cSize = (sizeof(unsigned long) * (unsigned long)PGRL[x]->points.size());
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
         }
     return TotSize;
     }
 
-int PGRDRecord::WriteRecord(_FileHandler &SaveHandler)
+signed long PGRDRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(DATA.IsLoaded())
         SaveHandler.writeSubRecord(eDATA, &DATA.value, DATA.GetSize());
     if(PGRP.size())
-        SaveHandler.writeSubRecord(ePGRP, &PGRP[0], sizeof(GENPGRP) * (unsigned int)PGRP.size());
+        SaveHandler.writeSubRecord(ePGRP, &PGRP[0], sizeof(GENPGRP) * (unsigned long)PGRP.size());
     if(PGAG.IsLoaded())
         SaveHandler.writeSubRecord(ePGAG, PGAG.value, PGAG.GetSize());
     if(PGRR.IsLoaded())
         SaveHandler.writeSubRecord(ePGRR, PGRR.value, PGRR.GetSize());
     //if(PGRR.size())
-    //    SaveHandler.writeSubRecord(ePGRR, &PGRR[0], sizeof(PGRDPGRR) * (unsigned int)PGRR.size());
+    //    SaveHandler.writeSubRecord(ePGRR, &PGRR[0], sizeof(PGRDPGRR) * (unsigned long)PGRR.size());
     if(PGRI.size())
-        SaveHandler.writeSubRecord(ePGRI, &PGRI[0], sizeof(PGRDPGRI) * (unsigned int)PGRI.size());
-    for(unsigned int x = 0; x < PGRL.size(); ++x)
-        SaveHandler.writeSubRecord(ePGRL, &PGRL[x]->points[0], (sizeof(unsigned int) * (unsigned int)PGRL[x]->points.size()));
+        SaveHandler.writeSubRecord(ePGRI, &PGRI[0], sizeof(PGRDPGRI) * (unsigned long)PGRI.size());
+    for(unsigned long x = 0; x < PGRL.size(); ++x)
+        SaveHandler.writeSubRecord(ePGRL, &PGRL[x]->points[0], (sizeof(unsigned long) * (unsigned long)PGRL[x]->points.size()));
     return -1;
     }
 
@@ -193,7 +193,7 @@ void PGRDRecord::Debug(int debugLevel)
     {
     if(!IsLoaded())
         return;
-    unsigned int indentation = 4;
+    unsigned long indentation = 4;
     printf("  PGRD\n");
     if(Header.IsLoaded())
         Header.Debug(debugLevel, indentation);
@@ -205,7 +205,7 @@ void PGRDRecord::Debug(int debugLevel)
         PrintIndent(indentation);
         printf("PGRP:\n");
         indentation += 2;
-        for(unsigned int p = 0;p < PGRP.size();p++)
+        for(unsigned long p = 0;p < PGRP.size();p++)
             {
             PrintIndent(indentation);
             PGRP[p].Debug(debugLevel, indentation);
@@ -220,7 +220,7 @@ void PGRDRecord::Debug(int debugLevel)
         PrintIndent(indentation);
         printf("PGRR:\n");
         indentation += 2;
-        for(unsigned int p = 0;p < PGRR.size();p++)
+        for(unsigned long p = 0;p < PGRR.size();p++)
             {
             PrintIndent(indentation);
             PGRR[p].Debug(debugLevel, indentation);
@@ -233,7 +233,7 @@ void PGRDRecord::Debug(int debugLevel)
         PrintIndent(indentation);
         printf("PGRI:\n");
         indentation += 2;
-        for(unsigned int p = 0;p < PGRI.size();p++)
+        for(unsigned long p = 0;p < PGRI.size();p++)
             {
             PrintIndent(indentation);
             PGRI[p].Debug(debugLevel, indentation);
@@ -246,7 +246,7 @@ void PGRDRecord::Debug(int debugLevel)
         PrintIndent(indentation);
         printf("PGRL:\n");
         indentation += 2;
-        for(unsigned int p = 0;p < PGRL.size();p++)
+        for(unsigned long p = 0;p < PGRL.size();p++)
             {
             PrintIndent(indentation);
             PGRL[p]->Debug(debugLevel, indentation);

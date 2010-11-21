@@ -23,14 +23,14 @@ GPL License and Copyright Notice ============================================
 #include "DIALRecord.h"
 #include <vector>
 
-int DIALRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
+signed long DIALRecord::ParseRecord(unsigned char *buffer, const unsigned long &recSize)
     {
     if(IsLoaded())
         return -1;
     IsLoaded(true);
-    unsigned int subType = 0;
-    unsigned int subSize = 0;
-    unsigned int curPos = 0;
+    unsigned long subType = 0;
+    unsigned long subSize = 0;
+    unsigned long curPos = 0;
     FormID curFormID = NULL;
     while(curPos < recSize){
         _readBuffer(&subType,buffer,4,curPos);
@@ -53,12 +53,12 @@ int DIALRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 EDID.Read(buffer, subSize, curPos);
                 break;
             case eQSTI:
-                curFormID = new unsigned int;
+                curFormID = new unsigned long;
                 _readBuffer(curFormID,buffer,subSize,curPos);
                 QSTI.push_back(curFormID);
                 break;
             case eQSTR:
-                curFormID = new unsigned int;
+                curFormID = new unsigned long;
                 _readBuffer(curFormID,buffer,subSize,curPos);
                 QSTR.push_back(curFormID);
                 break;
@@ -80,12 +80,12 @@ int DIALRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
     return 0;
     }
 
-unsigned int DIALRecord::GetSize(bool forceCalc)
+unsigned long DIALRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && recData != NULL)
-        return *(unsigned int*)&recData[-16];
-    unsigned int cSize = 0;
-    unsigned int TotSize = 0;
+        return *(unsigned long*)&recData[-16];
+    unsigned long cSize = 0;
+    unsigned long TotSize = 0;
     if(EDID.IsLoaded())
         {
         cSize = EDID.GetSize();
@@ -93,9 +93,9 @@ unsigned int DIALRecord::GetSize(bool forceCalc)
         TotSize += cSize += 6;
         }
     if(QSTI.size())
-        TotSize += (unsigned int)QSTI.size() * (sizeof(unsigned int) + 6);
+        TotSize += (unsigned long)QSTI.size() * (sizeof(unsigned long) + 6);
     if(QSTR.size())
-        TotSize += (unsigned int)QSTR.size() * (sizeof(unsigned int) + 6);
+        TotSize += (unsigned long)QSTR.size() * (sizeof(unsigned long) + 6);
     if(FULL.IsLoaded())
         {
         cSize = FULL.GetSize();
@@ -107,16 +107,16 @@ unsigned int DIALRecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int DIALRecord::WriteRecord(_FileHandler &SaveHandler)
+signed long DIALRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord(eEDID, EDID.value, EDID.GetSize());
     if(QSTI.size())
-        for(unsigned int p = 0; p < QSTI.size(); p++)
-            SaveHandler.writeSubRecord(eQSTI, QSTI[p], sizeof(unsigned int));
+        for(unsigned long p = 0; p < QSTI.size(); p++)
+            SaveHandler.writeSubRecord(eQSTI, QSTI[p], sizeof(unsigned long));
     if(QSTR.size())
-        for(unsigned int p = 0; p < QSTR.size(); p++)
-            SaveHandler.writeSubRecord(eQSTR, QSTR[p], sizeof(unsigned int));
+        for(unsigned long p = 0; p < QSTR.size(); p++)
+            SaveHandler.writeSubRecord(eQSTR, QSTR[p], sizeof(unsigned long));
     if(FULL.IsLoaded())
         SaveHandler.writeSubRecord(eFULL, FULL.value, FULL.GetSize());
     if(DATA.IsLoaded())
@@ -129,7 +129,7 @@ void DIALRecord::Debug(int debugLevel)
     {
     if(!IsLoaded())
         return;
-    unsigned int indentation = 4;
+    unsigned long indentation = 4;
     printf("  DIAL\n");
     if(Header.IsLoaded())
         Header.Debug(debugLevel, indentation);
@@ -141,7 +141,7 @@ void DIALRecord::Debug(int debugLevel)
         PrintIndent(indentation);
         printf("QSTI:\n");
         indentation += 2;
-        for(unsigned int p = 0;p < QSTI.size();p++)
+        for(unsigned long p = 0;p < QSTI.size();p++)
             {
             PrintIndent(indentation);
             printf("%u:%s\n", p, PrintFormID(QSTI[p]));
@@ -154,7 +154,7 @@ void DIALRecord::Debug(int debugLevel)
         PrintIndent(indentation);
         printf("QSTR:\n");
         indentation += 2;
-        for(unsigned int p = 0;p < QSTR.size();p++)
+        for(unsigned long p = 0;p < QSTR.size();p++)
             {
             PrintIndent(indentation);
             printf("%u:%s\n", p, PrintFormID(QSTR[p]));

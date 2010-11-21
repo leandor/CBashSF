@@ -36,7 +36,7 @@ class SBSPRecord : public Record
             float sizeX, sizeY, sizeZ;
             SBSPDNAM():sizeX(0.0f), sizeY(0.0f), sizeZ(0.0f) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, unsigned int &indentation)
+            void Debug(signed long debugLevel, unsigned long &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -63,7 +63,7 @@ class SBSPRecord : public Record
                 }
             };
     public:
-        STRING EDID;
+        StringRecord EDID;
         ReqSubRecord<SBSPDNAM> DNAM;
 
         SBSPRecord(bool newRecord=false):Record(newRecord) {}
@@ -88,19 +88,19 @@ class SBSPRecord : public Record
             }
 
         #ifdef _DEBUG
-        void Debug(int debugLevel);
+        void Debug(signed long debugLevel);
         #endif
 
-        int GetOtherFieldType(const unsigned int Field);
-        void * GetOtherField(const unsigned int Field);
-        void SetField(const unsigned int Field, char *FieldValue);
-        void SetField(const unsigned int Field, float FieldValue);
+        signed long GetOtherFieldType(const unsigned long Field);
+        void * GetOtherField(const unsigned long Field);
+        void SetField(const unsigned long Field, char *FieldValue);
+        void SetField(const unsigned long Field, float FieldValue);
 
-        int DeleteField(const unsigned int Field);
+        signed long DeleteField(const unsigned long Field);
 
-        int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize(bool forceCalc=false);
-        unsigned int GetType() {return eSBSP;}
-        char * GetStrType() {return "SBSP";}
-        int WriteRecord(_FileHandler &SaveHandler);
+        signed long ParseRecord(unsigned char *buffer, const unsigned long &recSize);
+        unsigned long GetSize(bool forceCalc=false);
+        unsigned long GetType() {return eSBSP;}
+        char *GetStrType() {return "SBSP";}
+        signed long WriteRecord(_FileHandler &SaveHandler);
     };

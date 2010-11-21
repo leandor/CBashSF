@@ -35,11 +35,11 @@ class LSCRRecord : public Record
             };
         struct LSCRLNAM
             {
-            unsigned int direct, indirect;
+            unsigned long direct, indirect;
             short gridY, gridX;
             LSCRLNAM():direct(0), indirect(0), gridY(0), gridX(0) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -74,9 +74,9 @@ class LSCRRecord : public Record
                 }
             };
     public:
-        STRING EDID;
-        STRING ICON;
-        STRING DESC;
+        StringRecord EDID;
+        StringRecord ICON;
+        StringRecord DESC;
         std::vector<ReqSubRecord<LSCRLNAM> *> LNAM;
 
         LSCRRecord(bool newRecord=false):Record(newRecord) {}
@@ -93,7 +93,7 @@ class LSCRRecord : public Record
             DESC = srcRecord->DESC;
             LNAM.clear();
             LNAM.resize(srcRecord->LNAM.size());
-            for(unsigned int x = 0; x < srcRecord->LNAM.size(); x++)
+            for(unsigned long x = 0; x < srcRecord->LNAM.size(); x++)
                 {
                 LNAM[x] = new ReqSubRecord<LSCRLNAM>;
                 *LNAM[x] = *srcRecord->LNAM[x];
@@ -102,7 +102,7 @@ class LSCRRecord : public Record
             }
         ~LSCRRecord()
             {
-            for(unsigned int x = 0; x < LNAM.size(); x++)
+            for(unsigned long x = 0; x < LNAM.size(); x++)
                 delete LNAM[x];
             }
         void Unload()
@@ -111,44 +111,46 @@ class LSCRRecord : public Record
             EDID.Unload();
             ICON.Unload();
             DESC.Unload();
-            for(unsigned int x = 0; x < LNAM.size(); x++)
+            for(unsigned long x = 0; x < LNAM.size(); x++)
                 delete LNAM[x];
             LNAM.clear();
             }
 
-        void VisitFormIDs(FormIDOp &op)
+        bool VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
-                return;
+                return false;
 
-            for(unsigned int x = 0; x < LNAM.size(); x++)
+            for(unsigned long x = 0; x < LNAM.size(); x++)
                 {
                 op.Accept(LNAM[x]->value.direct);
                 op.Accept(LNAM[x]->value.indirect);
                 }
+
+            return op.Stop();
             }
 
         #ifdef _DEBUG
-        void Debug(int debugLevel);
+        void Debug(signed long debugLevel);
         #endif
 
-        int CreateListElement(const unsigned int subField);
-        int DeleteListElement(const unsigned int subField);
-        int GetOtherFieldType(const unsigned int Field);
-        void * GetOtherField(const unsigned int Field);
-        int GetListFieldType(const unsigned int subField, const unsigned int listField);
-        unsigned int GetListSize(const unsigned int Field);
-        void * GetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
-        void SetField(const unsigned int Field, char *FieldValue);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, short FieldValue);
+        signed long CreateListElement(const unsigned long subField);
+        signed long DeleteListElement(const unsigned long subField);
+        signed long GetOtherFieldType(const unsigned long Field);
+        void * GetOtherField(const unsigned long Field);
+        signed long GetListFieldType(const unsigned long subField, const unsigned long listField);
+        unsigned long GetListSize(const unsigned long Field);
+        void * GetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField);
+        void SetField(const unsigned long Field, char *FieldValue);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, unsigned long FieldValue);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, short FieldValue);
 
-        int DeleteField(const unsigned int Field);
-        int DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
+        signed long DeleteField(const unsigned long Field);
+        signed long DeleteListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField);
 
-        int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize(bool forceCalc=false);
-        unsigned int GetType() {return eLSCR;}
-        char * GetStrType() {return "LSCR";}
-        int WriteRecord(_FileHandler &SaveHandler);
+        signed long ParseRecord(unsigned char *buffer, const unsigned long &recSize);
+        unsigned long GetSize(bool forceCalc=false);
+        unsigned long GetType() {return eLSCR;}
+        char *GetStrType() {return "LSCR";}
+        signed long WriteRecord(_FileHandler &SaveHandler);
     };

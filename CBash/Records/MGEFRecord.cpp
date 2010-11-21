@@ -23,14 +23,14 @@ GPL License and Copyright Notice ============================================
 #include "MGEFRecord.h"
 #include <vector>
 
-int MGEFRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
+signed long MGEFRecord::ParseRecord(unsigned char *buffer, const unsigned long &recSize)
     {
     if(IsLoaded())
         return -1;
     IsLoaded(true);
-    unsigned int subType = 0;
-    unsigned int subSize = 0;
-    unsigned int curPos = 0;
+    unsigned long subType = 0;
+    unsigned long subSize = 0;
+    unsigned long curPos = 0;
     while(curPos < recSize){
         _readBuffer(&subType,buffer,4,curPos);
         switch(subType)
@@ -58,7 +58,7 @@ int MGEFRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
             case eEDDX:
                 OBME.Load();
                 OBME->EDDX.Load();
-                OBME->EDDX.value.mgefCode = *(unsigned int *)EDID.value;
+                OBME->EDDX.value.mgefCode = *(unsigned long *)EDID.value;
                 EDID.Unload();
                 EDID.Read(buffer, subSize, curPos);
                 break;
@@ -91,11 +91,11 @@ int MGEFRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
                 OBME->DATX.Read(buffer, subSize, curPos);
                 break;
             case eESCE:
-                if(subSize % sizeof(unsigned int) == 0)
+                if(subSize % sizeof(unsigned long) == 0)
                     {
                     if(subSize == 0)
                         break;
-                    ESCE.resize(subSize / sizeof(unsigned int));
+                    ESCE.resize(subSize / sizeof(unsigned long));
                     _readBuffer(&ESCE[0], buffer, subSize, curPos);
                     }
                 else
@@ -116,12 +116,12 @@ int MGEFRecord::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
     return 0;
     }
 
-unsigned int MGEFRecord::GetSize(bool forceCalc)
+unsigned long MGEFRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && recData != NULL)
-        return *(unsigned int*)&recData[-16];
-    unsigned int cSize = 0;
-    unsigned int TotSize = 0;
+        return *(unsigned long*)&recData[-16];
+    unsigned long cSize = 0;
+    unsigned long TotSize = 0;
     if(EDID.IsLoaded())
         {
         cSize = EDID.GetSize();
@@ -180,7 +180,7 @@ unsigned int MGEFRecord::GetSize(bool forceCalc)
 
     if(ESCE.size())
         {
-        cSize = (sizeof(unsigned int) * (unsigned int)ESCE.size());
+        cSize = (sizeof(unsigned long) * (unsigned long)ESCE.size());
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
         }
@@ -188,7 +188,7 @@ unsigned int MGEFRecord::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int MGEFRecord::WriteRecord(_FileHandler &SaveHandler)
+signed long MGEFRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(OBME.IsLoaded())
         {
@@ -226,7 +226,7 @@ int MGEFRecord::WriteRecord(_FileHandler &SaveHandler)
         if(OBME->DATX.IsLoaded())
             SaveHandler.writeSubRecord(eDATX, OBME->DATX.value, OBME->DATX.GetSize());
         if(ESCE.size())
-            SaveHandler.writeSubRecord(eESCE, &ESCE[0], (unsigned int)ESCE.size() * sizeof(unsigned int));
+            SaveHandler.writeSubRecord(eESCE, &ESCE[0], (unsigned long)ESCE.size() * sizeof(unsigned long));
         }
     else
         {
@@ -249,7 +249,7 @@ int MGEFRecord::WriteRecord(_FileHandler &SaveHandler)
         if(DATA.IsLoaded())
             SaveHandler.writeSubRecord(eDATA, &DATA.value, DATA.GetSize());
         if(ESCE.size())
-            SaveHandler.writeSubRecord(eESCE, &ESCE[0], (unsigned int)ESCE.size() * sizeof(unsigned int));
+            SaveHandler.writeSubRecord(eESCE, &ESCE[0], (unsigned long)ESCE.size() * sizeof(unsigned long));
         }
 
     return -1;
@@ -260,7 +260,7 @@ void MGEFRecord::Debug(int debugLevel)
     {
     if(!IsLoaded())
         return;
-    unsigned int indentation = 4;
+    unsigned long indentation = 4;
     printf("  MGEF\n");
     if(Header.IsLoaded())
         Header.Debug(debugLevel, indentation);
@@ -288,7 +288,7 @@ void MGEFRecord::Debug(int debugLevel)
         PrintIndent(indentation);
         printf("ESCE:\n");
         indentation += 2;
-        for(unsigned int p=0;p < ESCE.size();p++)
+        for(unsigned long p=0;p < ESCE.size();p++)
             {
             PrintIndent(indentation);
             printf("%u:%04X\n", p, ESCE[p]);

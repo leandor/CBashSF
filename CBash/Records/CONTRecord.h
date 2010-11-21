@@ -49,7 +49,7 @@ class CONTRecord : public Record
             float weight;
             CONTDATA():flags(0), weight(0.0f) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -81,8 +81,8 @@ class CONTRecord : public Record
             {
             fIsRespawn = 0x00000001
             };
-        STRING EDID;
-        STRING FULL;
+        StringRecord EDID;
+        StringRecord FULL;
         OptSubRecord<GENMODEL> MODL;
         OptSubRecord<GENFID> SCRI;
         std::vector<ReqSubRecord<GENCNTO> *> CNTO;
@@ -112,7 +112,7 @@ class CONTRecord : public Record
 
             CNTO.clear();
             CNTO.resize(srcRecord->CNTO.size());
-            for(unsigned int x = 0; x < srcRecord->CNTO.size(); x++)
+            for(unsigned long x = 0; x < srcRecord->CNTO.size(); x++)
                 {
                 CNTO[x] = new ReqSubRecord<GENCNTO>;
                 *CNTO[x] = *srcRecord->CNTO[x];
@@ -125,7 +125,7 @@ class CONTRecord : public Record
             }
         ~CONTRecord()
             {
-            for(unsigned int x = 0; x < CNTO.size(); x++)
+            for(unsigned long x = 0; x < CNTO.size(); x++)
                 delete CNTO[x];
             }
         void Unload()
@@ -136,7 +136,7 @@ class CONTRecord : public Record
             MODL.Unload();
             SCRI.Unload();
 
-            for(unsigned int x = 0; x < CNTO.size(); x++)
+            for(unsigned long x = 0; x < CNTO.size(); x++)
                 delete CNTO[x];
             CNTO.clear();
 
@@ -145,50 +145,52 @@ class CONTRecord : public Record
             QNAM.Unload();
             }
 
-        void VisitFormIDs(FormIDOp &op)
+        bool VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
-                return;
+                return false;
 
             if(SCRI.IsLoaded())
                 op.Accept(SCRI->fid);
-            for(unsigned int x = 0; x < CNTO.size(); x++)
+            for(unsigned long x = 0; x < CNTO.size(); x++)
                 op.Accept(CNTO[x]->value.item);
             if(SNAM.IsLoaded())
                 op.Accept(SNAM->fid);
             if(QNAM.IsLoaded())
                 op.Accept(QNAM->fid);
+
+            return op.Stop();
             }
 
         #ifdef _DEBUG
-        void Debug(int debugLevel);
+        void Debug(signed long debugLevel);
         #endif
 
-        int CreateListElement(const unsigned int subField);
-        int DeleteListElement(const unsigned int subField);
-        int GetOtherFieldType(const unsigned int Field);
-        void * GetOtherField(const unsigned int Field);
-        unsigned int GetFieldArraySize(const unsigned int Field);
-        void GetFieldArray(const unsigned int Field, void **FieldValues);
-        int GetListFieldType(const unsigned int subField, const unsigned int listField);
-        unsigned int GetListSize(const unsigned int Field);
-        void * GetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
-        void SetField(const unsigned int Field, char *FieldValue);
-        void SetField(const unsigned int Field, float FieldValue);
-        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetOtherField(const unsigned int Field, unsigned int FieldValue);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, int FieldValue);
-        void SetField(const unsigned int Field, unsigned char FieldValue);
+        signed long CreateListElement(const unsigned long subField);
+        signed long DeleteListElement(const unsigned long subField);
+        signed long GetOtherFieldType(const unsigned long Field);
+        void * GetOtherField(const unsigned long Field);
+        unsigned long GetFieldArraySize(const unsigned long Field);
+        void GetFieldArray(const unsigned long Field, void **FieldValues);
+        signed long GetListFieldType(const unsigned long subField, const unsigned long listField);
+        unsigned long GetListSize(const unsigned long Field);
+        void * GetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField);
+        void SetField(const unsigned long Field, char *FieldValue);
+        void SetField(const unsigned long Field, float FieldValue);
+        void SetField(const unsigned long Field, unsigned char *FieldValue, unsigned long nSize);
+        void SetOtherField(const unsigned long Field, unsigned long FieldValue);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, unsigned long FieldValue);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, signed long FieldValue);
+        void SetField(const unsigned long Field, unsigned char FieldValue);
 
-        int DeleteField(const unsigned int Field);
-        int DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
+        signed long DeleteField(const unsigned long Field);
+        signed long DeleteListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField);
 
-        int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize(bool forceCalc=false);
-        unsigned int GetType() {return eCONT;}
-        char * GetStrType() {return "CONT";}
-        int WriteRecord(_FileHandler &SaveHandler);
+        signed long ParseRecord(unsigned char *buffer, const unsigned long &recSize);
+        unsigned long GetSize(bool forceCalc=false);
+        unsigned long GetType() {return eCONT;}
+        char *GetStrType() {return "CONT";}
+        signed long WriteRecord(_FileHandler &SaveHandler);
         bool IsRespawn()
             {
             return (DATA.value.flags & fIsRespawn) != 0;

@@ -47,7 +47,7 @@ class REGNRecord : public Record
             float posX, posY;
             REGNRPLD():posX(0.0f), posY(0.0f){}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -72,10 +72,10 @@ class REGNRecord : public Record
             };
         struct REGNRPLI
             {
-            unsigned int edgeFalloff;
+            unsigned long edgeFalloff;
             REGNRPLI():edgeFalloff(0) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -100,7 +100,7 @@ class REGNRecord : public Record
             ReqSubRecord<REGNRPLI> RPLI;
             std::vector<REGNRPLD> RPLD;
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -111,7 +111,7 @@ class REGNRecord : public Record
                         PrintIndent(indentation);
                         printf("RPLD:\n");
                         indentation += 2;
-                        for(unsigned int p = 0;p < RPLD.size();p++)
+                        for(unsigned long p = 0;p < RPLD.size();p++)
                             {
                             PrintIndent(indentation);
                             printf("Index: %u\n", p);
@@ -130,7 +130,7 @@ class REGNRecord : public Record
                         PrintIndent(indentation);
                         printf("RPLD:\n");
                         indentation += 2;
-                        for(unsigned int p = 0;p < RPLD.size();p++)
+                        for(unsigned long p = 0;p < RPLD.size();p++)
                             {
                             PrintIndent(indentation);
                             printf("Index: %u\n", p);
@@ -154,11 +154,11 @@ class REGNRecord : public Record
             };
         struct REGNRDWT
             {
-            unsigned int weather;
-            unsigned int chance;
+            unsigned long weather;
+            unsigned long chance;
             REGNRDWT():weather(0), chance(0) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -183,11 +183,11 @@ class REGNRecord : public Record
             };
         struct REGNRDSD
             {
-            unsigned int sound;
-            unsigned int flags, chance;
+            unsigned long sound;
+            unsigned long flags, chance;
             REGNRDSD():sound(0), flags(0), chance(0) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -266,24 +266,24 @@ class REGNRecord : public Record
                 else
                     flags &= ~fIsSnowy;
                 }
-            bool IsFlagMask(unsigned int Mask, bool Exact=false)
+            bool IsFlagMask(unsigned long Mask, bool Exact=false)
                 {
                 if(Exact)
                     return (flags & Mask) == Mask;
                 else
                     return (flags & Mask) != 0;
                 }
-            void SetFlagMask(unsigned int Mask)
+            void SetFlagMask(unsigned long Mask)
                 {
                 flags = Mask;
                 }
             };
         struct REGNRDMD
             {
-            unsigned int type;
+            unsigned long type;
             REGNRDMD():type(0) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -305,14 +305,14 @@ class REGNRecord : public Record
             };
         struct REGNRDGS
             {
-            unsigned int grass;
+            unsigned long grass;
             unsigned char unk1[4];
             REGNRDGS():grass(0)
                 {
                 memset(&unk1, 0x00, 4);
                 }
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -339,7 +339,7 @@ class REGNRecord : public Record
             };
         struct REGNRDOT
             {
-            unsigned int objectId;
+            unsigned long objectId;
             unsigned short parentIndex;
             unsigned char unused1[2];
             float density;
@@ -362,7 +362,7 @@ class REGNRecord : public Record
                 memset(&unk2, 0x00, 4);
                 }
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -559,14 +559,14 @@ class REGNRecord : public Record
             };
         struct REGNRDAT
             {
-            unsigned int entryType;
+            unsigned long entryType;
             unsigned char flags, priority, unused1[2];
             REGNRDAT():entryType(0), flags(0), priority(0)
                 {
                 memset(&unused1, 0x00, 2);
                 }
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -601,14 +601,14 @@ class REGNRecord : public Record
             {
             ReqSubRecord<REGNRDAT> RDAT;
             std::vector<REGNRDOT> RDOT;
-            STRING RDMP;
-            STRING ICON;
+            StringRecord RDMP;
+            StringRecord ICON;
             std::vector<REGNRDGS> RDGS;
             SemiOptSubRecord<REGNRDMD> RDMD;
             std::vector<REGNRDSD> RDSD;
             std::vector<REGNRDWT> RDWT;
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -619,7 +619,7 @@ class REGNRecord : public Record
                         PrintIndent(indentation);
                         printf("RDOT:\n");
                         indentation += 2;
-                        for(unsigned int p = 0;p < RDOT.size();p++)
+                        for(unsigned long p = 0;p < RDOT.size();p++)
                             {
                             PrintIndent(indentation);
                             printf("Index: %u\n", p);
@@ -634,7 +634,7 @@ class REGNRecord : public Record
                         PrintIndent(indentation);
                         printf("RDGS:\n");
                         indentation += 2;
-                        for(unsigned int p = 0;p < RDGS.size();p++)
+                        for(unsigned long p = 0;p < RDGS.size();p++)
                             {
                             PrintIndent(indentation);
                             printf("Index: %u\n", p);
@@ -648,7 +648,7 @@ class REGNRecord : public Record
                         PrintIndent(indentation);
                         printf("RDSD:\n");
                         indentation += 2;
-                        for(unsigned int p = 0;p < RDSD.size();p++)
+                        for(unsigned long p = 0;p < RDSD.size();p++)
                             {
                             PrintIndent(indentation);
                             printf("Index: %u\n", p);
@@ -661,7 +661,7 @@ class REGNRecord : public Record
                         PrintIndent(indentation);
                         printf("RDWT:\n");
                         indentation += 2;
-                        for(unsigned int p = 0;p < RDWT.size();p++)
+                        for(unsigned long p = 0;p < RDWT.size();p++)
                             {
                             PrintIndent(indentation);
                             printf("Index: %u\n", p);
@@ -795,11 +795,11 @@ class REGNRecord : public Record
                 else if(IsSound())
                     RDAT.value.entryType = eObject;
                 }
-            bool IsType(unsigned int Type)
+            bool IsType(unsigned long Type)
                 {
                 return (RDAT.value.entryType == Type);
                 }
-            void SetType(unsigned int Type)
+            void SetType(unsigned long Type)
                 {
                 RDAT.value.entryType = Type;
                 }
@@ -836,11 +836,11 @@ class REGNRecord : public Record
                 else if(IsDungeonMusic())
                     RDMD->type = eDefault;
                 }
-            bool IsMusicType(unsigned int Type)
+            bool IsMusicType(unsigned long Type)
                 {
                 return (RDMD->type == Type);
                 }
-            void SetMusicType(unsigned int Type)
+            void SetMusicType(unsigned long Type)
                 {
                 RDMD->type = Type;
                 }
@@ -855,8 +855,8 @@ class REGNRecord : public Record
             eREGNGrasses=6,
             eREGNSounds=7
             };
-        STRING EDID;
-        STRING ICON;
+        StringRecord EDID;
+        StringRecord ICON;
         ReqSubRecord<GENCLR> RCLR;
         SubRecord<GENFID> WNAM;
         std::vector<REGNArea *> Areas;
@@ -878,7 +878,7 @@ class REGNRecord : public Record
 
             Areas.clear();
             Areas.resize(srcRecord->Areas.size());
-            for(unsigned int x = 0; x < srcRecord->Areas.size(); x++)
+            for(unsigned long x = 0; x < srcRecord->Areas.size(); x++)
                 {
                 Areas[x] = new REGNArea;
                 Areas[x]->RPLI = srcRecord->Areas[x]->RPLI;
@@ -887,7 +887,7 @@ class REGNRecord : public Record
 
             Entries.clear();
             Entries.resize(srcRecord->Entries.size());
-            for(unsigned int x = 0; x < srcRecord->Entries.size(); x++)
+            for(unsigned long x = 0; x < srcRecord->Entries.size(); x++)
                 {
                 Entries[x] = new REGNEntry;
                 Entries[x]->RDAT = srcRecord->Entries[x]->RDAT;
@@ -903,9 +903,9 @@ class REGNRecord : public Record
             }
         ~REGNRecord()
             {
-            for(unsigned int x = 0; x < Areas.size(); x++)
+            for(unsigned long x = 0; x < Areas.size(); x++)
                 delete Areas[x];
-            for(unsigned int x = 0; x < Entries.size(); x++)
+            for(unsigned long x = 0; x < Entries.size(); x++)
                 delete Entries[x];
             }
         void Unload()
@@ -915,77 +915,79 @@ class REGNRecord : public Record
             ICON.Unload();
             RCLR.Unload();
             WNAM.Unload();
-            for(unsigned int x = 0; x < Areas.size(); x++)
+            for(unsigned long x = 0; x < Areas.size(); x++)
                 delete Areas[x];
             Areas.clear();
-            for(unsigned int x = 0; x < Entries.size(); x++)
+            for(unsigned long x = 0; x < Entries.size(); x++)
                 delete Entries[x];
             Entries.clear();
             }
 
-        void VisitFormIDs(FormIDOp &op)
+        bool VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
-                return;
+                return false;
 
             if(WNAM.IsLoaded())
                 op.Accept(WNAM.value.fid);
-            for(unsigned int x = 0; x < Entries.size(); x++)
+            for(unsigned long x = 0; x < Entries.size(); x++)
                 {
-                for(unsigned int y = 0; y < Entries[x]->RDOT.size(); y++)
+                for(unsigned long y = 0; y < Entries[x]->RDOT.size(); y++)
                     op.Accept(Entries[x]->RDOT[y].objectId);
-                for(unsigned int y = 0; y < Entries[x]->RDGS.size(); y++)
+                for(unsigned long y = 0; y < Entries[x]->RDGS.size(); y++)
                     op.Accept(Entries[x]->RDGS[y].grass);
-                for(unsigned int y = 0; y < Entries[x]->RDSD.size(); y++)
+                for(unsigned long y = 0; y < Entries[x]->RDSD.size(); y++)
                     op.Accept(Entries[x]->RDSD[y].sound);
-                for(unsigned int y = 0; y < Entries[x]->RDWT.size(); y++)
+                for(unsigned long y = 0; y < Entries[x]->RDWT.size(); y++)
                     op.Accept(Entries[x]->RDWT[y].weather);
                 }
+
+            return op.Stop();
             }
 
         #ifdef _DEBUG
-        void Debug(int debugLevel);
+        void Debug(signed long debugLevel);
         #endif
 
-        int CreateListElement(const unsigned int subField);
-        int DeleteListElement(const unsigned int subField);
-        int CreateListX2Element(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
-        int DeleteListX2Element(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
-        int GetOtherFieldType(const unsigned int Field);
-        void * GetOtherField(const unsigned int Field);
-        unsigned int GetFieldArraySize(const unsigned int Field);
-        void GetFieldArray(const unsigned int Field, void **FieldValues);
-        int GetListFieldType(const unsigned int subField, const unsigned int listField);
-        int GetListX2FieldType(const unsigned int subField, const unsigned int listField, const unsigned int listX2Field);
-        unsigned int GetListSize(const unsigned int Field);
-        unsigned int GetListX2Size(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
-        unsigned int GetListArraySize(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
-        unsigned int GetListX2ArraySize(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field);
-        void GetListArray(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, void **FieldValues);
-        void GetListX2Array(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, void **FieldValues);
-        void * GetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
-        void * GetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field);
-        void SetField(const unsigned int Field, char *FieldValue);
-        void SetField(const unsigned int Field, unsigned char FieldValue);
-        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetOtherField(const unsigned int Field, unsigned int FieldValue);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, char *FieldValue);
-        void SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, float FieldValue);
-        void SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned int FieldValue);
-        void SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned short FieldValue);
-        void SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field, unsigned char FieldValue);
+        signed long CreateListElement(const unsigned long subField);
+        signed long DeleteListElement(const unsigned long subField);
+        signed long CreateListX2Element(const unsigned long subField, const unsigned long listIndex, const unsigned long listField);
+        signed long DeleteListX2Element(const unsigned long subField, const unsigned long listIndex, const unsigned long listField);
+        signed long GetOtherFieldType(const unsigned long Field);
+        void * GetOtherField(const unsigned long Field);
+        unsigned long GetFieldArraySize(const unsigned long Field);
+        void GetFieldArray(const unsigned long Field, void **FieldValues);
+        signed long GetListFieldType(const unsigned long subField, const unsigned long listField);
+        signed long GetListX2FieldType(const unsigned long subField, const unsigned long listField, const unsigned long listX2Field);
+        unsigned long GetListSize(const unsigned long Field);
+        unsigned long GetListX2Size(const unsigned long subField, const unsigned long listIndex, const unsigned long listField);
+        unsigned long GetListArraySize(const unsigned long subField, const unsigned long listIndex, const unsigned long listField);
+        unsigned long GetListX2ArraySize(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, const unsigned long listX2Index, const unsigned long listX2Field);
+        void GetListArray(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, void **FieldValues);
+        void GetListX2Array(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, const unsigned long listX2Index, const unsigned long listX2Field, void **FieldValues);
+        void * GetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField);
+        void * GetListX2Field(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, const unsigned long listX2Index, const unsigned long listX2Field);
+        void SetField(const unsigned long Field, char *FieldValue);
+        void SetField(const unsigned long Field, unsigned char FieldValue);
+        void SetField(const unsigned long Field, unsigned char *FieldValue, unsigned long nSize);
+        void SetOtherField(const unsigned long Field, unsigned long FieldValue);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, unsigned long FieldValue);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, unsigned char FieldValue);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, unsigned char *FieldValue, unsigned long nSize);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, char *FieldValue);
+        void SetListX2Field(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, const unsigned long listX2Index, const unsigned long listX2Field, float FieldValue);
+        void SetListX2Field(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, const unsigned long listX2Index, const unsigned long listX2Field, unsigned long FieldValue);
+        void SetListX2Field(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, const unsigned long listX2Index, const unsigned long listX2Field, unsigned short FieldValue);
+        void SetListX2Field(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, const unsigned long listX2Index, const unsigned long listX2Field, unsigned char *FieldValue, unsigned long nSize);
+        void SetListX2Field(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, const unsigned long listX2Index, const unsigned long listX2Field, unsigned char FieldValue);
 
-        int DeleteField(const unsigned int Field);
-        int DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
-        int DeleteListX2Field(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, const unsigned listX2Index, const unsigned int listX2Field);
+        signed long DeleteField(const unsigned long Field);
+        signed long DeleteListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField);
+        signed long DeleteListX2Field(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, const unsigned long listX2Index, const unsigned long listX2Field);
 
-        int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize(bool forceCalc=false);
-        unsigned int GetType() {return eREGN;}
-        char * GetStrType() {return "REGN";}
-        int WriteRecord(_FileHandler &SaveHandler);
+        signed long ParseRecord(unsigned char *buffer, const unsigned long &recSize);
+        unsigned long GetSize(bool forceCalc=false);
+        unsigned long GetType() {return eREGN;}
+        char *GetStrType() {return "REGN";}
+        signed long WriteRecord(_FileHandler &SaveHandler);
     };

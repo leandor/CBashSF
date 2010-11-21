@@ -22,15 +22,15 @@ GPL License and Copyright Notice ============================================
 #include "..\Common.h"
 #include "TES4Record.h"
 
-int TES4Record::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
+signed long TES4Record::ParseRecord(unsigned char *buffer, const unsigned long &recSize)
     {
     if(IsLoaded())
         return -1;
     IsLoaded(true);
-    unsigned int subType = 0;
-    unsigned int subSize = 0;
-    unsigned int curPos = 0;
-    STRING curMAST;
+    unsigned long subType = 0;
+    unsigned long subSize = 0;
+    unsigned long curPos = 0;
+    StringRecord curMAST;
     while(curPos < recSize){
         _readBuffer(&subType,buffer,4,curPos);
         switch(subType)
@@ -83,12 +83,12 @@ int TES4Record::ParseRecord(unsigned char *buffer, const unsigned int &recSize)
     return 0;
     }
 
-unsigned int TES4Record::GetSize(bool forceCalc)
+unsigned long TES4Record::GetSize(bool forceCalc)
     {
     if(!forceCalc && recData != NULL)
-        return *(unsigned int*)&recData[-16];
-    unsigned int cSize = 0;
-    unsigned int TotSize = 0;
+        return *(unsigned long*)&recData[-16];
+    unsigned long cSize = 0;
+    unsigned long TotSize = 0;
     if(HEDR.IsLoaded())
         TotSize += HEDR.GetSize() + 6;
     if(OFST.IsLoaded())
@@ -115,7 +115,7 @@ unsigned int TES4Record::GetSize(bool forceCalc)
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
         }
-    for(unsigned int p = 0; p < MAST.size(); p++)
+    for(unsigned long p = 0; p < MAST.size(); p++)
         {
         cSize = MAST[p].GetSize();
         if(cSize > 65535) cSize += 10;
@@ -124,7 +124,7 @@ unsigned int TES4Record::GetSize(bool forceCalc)
     return TotSize;
     }
 
-int TES4Record::WriteRecord(_FileHandler &SaveHandler)
+signed long TES4Record::WriteRecord(_FileHandler &SaveHandler)
     {
     TES4DATA DATA;
 
@@ -137,7 +137,7 @@ int TES4Record::WriteRecord(_FileHandler &SaveHandler)
         SaveHandler.writeSubRecord(eCNAM, CNAM.value, CNAM.GetSize());
     if(SNAM.IsLoaded())
         SaveHandler.writeSubRecord(eSNAM, SNAM.value, SNAM.GetSize());
-    for(unsigned int p = 0; p < MAST.size(); p++)
+    for(unsigned long p = 0; p < MAST.size(); p++)
         {
         SaveHandler.writeSubRecord(eMAST, MAST[p].value, MAST[p].GetSize());
         SaveHandler.writeSubRecord(eDATA, &DATA, sizeof(TES4DATA));
@@ -150,7 +150,7 @@ void TES4Record::Debug(int debugLevel)
     {
     if(!IsLoaded())
         return;
-    unsigned int indentation = 4;
+    unsigned long indentation = 4;
     printf("  TES4\n");
     if(Header.IsLoaded())
         Header.Debug(debugLevel, indentation);
@@ -166,7 +166,7 @@ void TES4Record::Debug(int debugLevel)
         if(debugLevel > 3)
             {
             indentation += 2;
-            for(unsigned int p = 0;p < MAST.size();p++)
+            for(unsigned long p = 0;p < MAST.size();p++)
                 {
                 PrintIndent(indentation);
                 printf("%02x: %s\n", p, MAST[p].value);

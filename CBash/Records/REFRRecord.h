@@ -62,11 +62,11 @@ class REFRRecord : public Record
 
         struct REFRXTEL
             {
-            unsigned int destinationFid;
+            unsigned long destinationFid;
             GENPOSDATA destination;
             REFRXTEL():destinationFid(0) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -92,7 +92,7 @@ class REFRRecord : public Record
         struct REFRXLOC
             {
             unsigned char level, unused1[3];
-            unsigned int key;
+            unsigned long key;
             unsigned char unused2[4], flags, unused3[3];
             REFRXLOC():level(0xFF), key(0), flags(0) //Level actually defaults to 0, but this makes it write out if set to 0
                 {
@@ -101,7 +101,7 @@ class REFRRecord : public Record
                 memset(&unused3, 0x00, 3);
                 }
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -150,13 +150,13 @@ class REFRRecord : public Record
             {
             union
                 {
-                unsigned int seed;
+                unsigned long seed;
                 unsigned char offset;
                 };
             bool isOffset;
             REFRXSED():seed(0),isOffset(true) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 indentation += 2;
                 PrintIndent(indentation);
@@ -195,7 +195,7 @@ class REFRRecord : public Record
             float charge;
             REFRXCHG():charge(0.0f) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -218,10 +218,10 @@ class REFRRecord : public Record
 
         struct REFRXHLT
             {
-            int health;
+            signed long health;
             REFRXHLT():health(0) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -244,10 +244,10 @@ class REFRRecord : public Record
 
         struct REFRXLCM
             {
-            int levelMod;
+            signed long levelMod;
             REFRXLCM():levelMod(0) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -270,10 +270,10 @@ class REFRRecord : public Record
 
         struct REFRXCNT
             {
-            int count;
+            signed long count;
             REFRXCNT():count(0) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -299,7 +299,7 @@ class REFRRecord : public Record
             unsigned char markerType, unused1;
             REFRTNAM():markerType(0), unused1(0) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -328,10 +328,10 @@ class REFRRecord : public Record
         struct REFRMAPMARKER
             {
             ReqSubRecord<GENFLAG> FNAM;
-            STRING FULL;
+            StringRecord FULL;
             ReqSubRecord<REFRTNAM> TNAM;
             #ifdef _DEBUG
-            void Debug(char *name, int debugLevel, size_t &indentation)
+            void Debug(char *name, signed long debugLevel, size_t &indentation)
                 {
                 if(name != NULL)
                     {
@@ -408,7 +408,7 @@ class REFRRecord : public Record
             eGrand   = 5
             };
 
-        STRING EDID;
+        StringRecord EDID;
         ReqSubRecord<GENFID> NAME;
         OptSubRecord<REFRXTEL> XTEL;
         SemiOptSubRecord<REFRXLOC> XLOC;
@@ -506,10 +506,10 @@ class REFRRecord : public Record
             DATA.Unload();
             }
 
-        void VisitFormIDs(FormIDOp &op)
+        bool VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
-                return;
+                return false;
 
             op.Accept(NAME.value.fid);
             if(XTEL.IsLoaded())
@@ -531,30 +531,34 @@ class REFRRecord : public Record
                 op.Accept(XPCI->XPCI->fid);
             if(XRTM.IsLoaded())
                 op.Accept(XRTM->fid);
+
+            return op.Stop();
             }
 
         #ifdef _DEBUG
-        void Debug(int debugLevel);
+        void Debug(signed long debugLevel);
         #endif
 
-        int GetOtherFieldType(const unsigned int Field);
-        void * GetOtherField(const unsigned int Field);
-        unsigned int GetFieldArraySize(const unsigned int Field);
-        void GetFieldArray(const unsigned int Field, void **FieldValues);
-        void SetField(const unsigned int Field, char *FieldValue);
-        void SetOtherField(const unsigned int Field, unsigned int FieldValue);
-        void SetField(const unsigned int Field, float FieldValue);
-        void SetField(const unsigned int Field, unsigned char FieldValue);
-        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetField(const unsigned int Field, int FieldValue);
+        signed long GetOtherFieldType(const unsigned long Field);
+        void * GetOtherField(const unsigned long Field);
+        unsigned long GetFieldArraySize(const unsigned long Field);
+        void GetFieldArray(const unsigned long Field, void **FieldValues);
+        void SetField(const unsigned long Field, char *FieldValue);
+        void SetOtherField(const unsigned long Field, unsigned long FieldValue);
+        void SetField(const unsigned long Field, float FieldValue);
+        void SetField(const unsigned long Field, unsigned char FieldValue);
+        void SetField(const unsigned long Field, unsigned char *FieldValue, unsigned long nSize);
+        void SetField(const unsigned long Field, signed long FieldValue);
 
-        int DeleteField(const unsigned int Field);
+        signed long DeleteField(const unsigned long Field);
 
-        int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize(bool forceCalc=false);
-        unsigned int GetType() {return eREFR;}
-        char * GetStrType() {return "REFR";}
-        int WriteRecord(_FileHandler &SaveHandler);
+        signed long ParseRecord(unsigned char *buffer, const unsigned long &recSize);
+        unsigned long GetSize(bool forceCalc=false);
+        unsigned long GetType() {return eREFR;}
+        char *GetStrType() {return "REFR";}
+        unsigned long GetParentType() {return eCELL;}
+        signed long WriteRecord(_FileHandler &SaveHandler);
+
         bool IsOppositeParent()
             {
             if(!XESP.IsLoaded()) return false;
@@ -672,7 +676,7 @@ class REFRRecord : public Record
             else
                 XACT->flags &= ~fOpenByDefault;
             }
-        bool IsActionFlagMask(unsigned int Mask, bool Exact=false)
+        bool IsActionFlagMask(unsigned long Mask, bool Exact=false)
             {
             if(!XACT.IsLoaded()) return false;
             if(Exact)
@@ -680,7 +684,7 @@ class REFRRecord : public Record
             else
                 return (XACT->flags & Mask) != 0;
             }
-        void SetActionFlagMask(unsigned int Mask)
+        void SetActionFlagMask(unsigned long Mask)
             {
             if(!XACT.IsLoaded()) return;
             XACT->flags = Mask;

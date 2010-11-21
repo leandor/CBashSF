@@ -45,7 +45,7 @@ class AMMORecord : public Record
             {
             float speed;
             unsigned char flags, unused1[3];
-            unsigned int value;
+            unsigned long value;
             float weight;
             unsigned short damage;
             AMMODATA():speed(0.0f), flags(0), value(0), weight(0.0f), damage(0)
@@ -53,7 +53,7 @@ class AMMORecord : public Record
                 memset(&unused1, 0xCD, 3);
                 }
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -99,10 +99,10 @@ class AMMORecord : public Record
             {
             fIsNotNormalWeapon = 0x00000001
             };
-        STRING EDID;
-        STRING FULL;
+        StringRecord EDID;
+        StringRecord FULL;
         OptSubRecord<GENMODEL> MODL;
-        STRING ICON;
+        StringRecord ICON;
         OptSubRecord<GENFID> ENAM;
         OptSubRecord<GENANAM> ANAM;
         ReqSubRecord<AMMODATA> DATA;
@@ -144,36 +144,39 @@ class AMMORecord : public Record
             DATA.Unload();
             }
 
-        void VisitFormIDs(FormIDOp &op)
+        bool VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
-                return;
+                return false;
 
             if(ENAM.IsLoaded())
                 op.Accept(ENAM->fid);
+
+            return op.Stop();
             }
 
         #ifdef _DEBUG
-        void Debug(int debugLevel);
+        void Debug(signed long debugLevel);
         #endif
 
-        int GetOtherFieldType(const unsigned int Field);
-        void * GetOtherField(const unsigned int Field);
-        unsigned int GetFieldArraySize(const unsigned int Field);
-        void GetFieldArray(const unsigned int Field, void **FieldValues);
-        void SetField(const unsigned int Field, char *FieldValue);
-        void SetField(const unsigned int Field, float FieldValue);
-        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetOtherField(const unsigned int Field, unsigned int FieldValue);
-        void SetField(const unsigned int Field, unsigned short FieldValue);
+        signed long GetOtherFieldType(const unsigned long Field);
+        void * GetOtherField(const unsigned long Field);
+        unsigned long GetFieldArraySize(const unsigned long Field);
+        void GetFieldArray(const unsigned long Field, void **FieldValues);
+        void SetField(const unsigned long Field, char *FieldValue);
+        void SetField(const unsigned long Field, float FieldValue);
+        void SetField(const unsigned long Field, unsigned char *FieldValue, unsigned long nSize);
+        void SetOtherField(const unsigned long Field, unsigned long FieldValue);
+        void SetField(const unsigned long Field, unsigned short FieldValue);
+        void SetField(const unsigned long Field, unsigned char FieldValue);
 
-        int DeleteField(const unsigned int Field);
+        signed long DeleteField(const unsigned long Field);
 
-        int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize(bool forceCalc=false);
-        unsigned int GetType() {return eAMMO;}
-        char * GetStrType() {return "AMMO";}
-        int WriteRecord(_FileHandler &SaveHandler);
+        signed long ParseRecord(unsigned char *buffer, const unsigned long &recSize);
+        unsigned long GetSize(bool forceCalc=false);
+        unsigned long GetType() {return eAMMO;}
+        char *GetStrType() {return "AMMO";}
+        signed long WriteRecord(_FileHandler &SaveHandler);
         bool IsNotNormalWeapon()
             {
             return (DATA.value.flags & fIsNotNormalWeapon) != 0;

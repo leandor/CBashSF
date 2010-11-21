@@ -36,14 +36,14 @@ class EFSHRecord : public Record
         struct EFSHDATA
             {
             unsigned char flags, unused1[3];
-            unsigned int memSBlend, memBlendOp, memZFunc;
+            unsigned long memSBlend, memBlendOp, memZFunc;
             GENCLR fill;
             float fillAIn, fillAFull, fillAOut, fillAPRatio, fillAAmp,
                 fillAFreq, fillAnimSpdU, fillAnimSpdV, edgeOff;
             GENCLR edge;
             float edgeAIn, edgeAFull, edgeAOut, edgeAPRatio, edgeAAmp,
                 edgeAFreq,  fillAFRatio, edgeAFRatio;
-            unsigned int memDBlend, partSBlend, partBlendOp, partZFunc, partDBlend;
+            unsigned long memDBlend, partSBlend, partBlendOp, partZFunc, partDBlend;
             float partBUp, partBFull, partBDown, partBFRatio, partBPRatio, partLTime,
                 partLDelta, partNSpd, partNAcc, partVel1, partVel2, partVel3,
                 partAcc1, partAcc2, partAcc3, partKey1, partKey2, partKey1Time,
@@ -76,7 +76,7 @@ class EFSHRecord : public Record
                 memset(&unused1, 0xCD, 3);
                 }
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -280,9 +280,9 @@ class EFSHRecord : public Record
             fIsEdgeInverse  = 0x00000010,
             fIsMemSkinOnly  = 0x00000020
             };
-        STRING EDID;
-        STRING ICON;
-        STRING ICO2;
+        StringRecord EDID;
+        StringRecord ICON;
+        StringRecord ICO2;
         ReqSubRecord<EFSHDATA> DATA;
 
         EFSHRecord(bool newRecord=false):Record(newRecord) {}
@@ -311,26 +311,26 @@ class EFSHRecord : public Record
             }
 
         #ifdef _DEBUG
-        void Debug(int debugLevel);
+        void Debug(signed long debugLevel);
         #endif
 
-        int GetOtherFieldType(const unsigned int Field);
-        void * GetOtherField(const unsigned int Field);
-        unsigned int GetFieldArraySize(const unsigned int Field);
-        void GetFieldArray(const unsigned int Field, void **FieldValues);
-        void SetField(const unsigned int Field, char *FieldValue);
-        void SetField(const unsigned int Field, unsigned char FieldValue);
-        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetOtherField(const unsigned int Field, unsigned int FieldValue);
-        void SetField(const unsigned int Field, float FieldValue);
+        signed long GetOtherFieldType(const unsigned long Field);
+        void * GetOtherField(const unsigned long Field);
+        unsigned long GetFieldArraySize(const unsigned long Field);
+        void GetFieldArray(const unsigned long Field, void **FieldValues);
+        void SetField(const unsigned long Field, char *FieldValue);
+        void SetField(const unsigned long Field, unsigned char FieldValue);
+        void SetField(const unsigned long Field, unsigned char *FieldValue, unsigned long nSize);
+        void SetOtherField(const unsigned long Field, unsigned long FieldValue);
+        void SetField(const unsigned long Field, float FieldValue);
 
-        int DeleteField(const unsigned int Field);
+        signed long DeleteField(const unsigned long Field);
 
-        int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize(bool forceCalc=false);
-        unsigned int GetType() {return eEFSH;}
-        char * GetStrType() {return "EFSH";}
-        int WriteRecord(_FileHandler &SaveHandler);
+        signed long ParseRecord(unsigned char *buffer, const unsigned long &recSize);
+        unsigned long GetSize(bool forceCalc=false);
+        unsigned long GetType() {return eEFSH;}
+        char *GetStrType() {return "EFSH";}
+        signed long WriteRecord(_FileHandler &SaveHandler);
         bool IsNoMemShader()
             {
             return (DATA.value.flags & fIsNoMemShader) != 0;

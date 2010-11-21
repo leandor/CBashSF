@@ -91,7 +91,7 @@ class ModFile
         time_t ModTime;
     public:
         ModFlags Settings;
-        _FormIDHandler FormIDHandler;
+        FormIDHandlerClass FormIDHandler;
         char *FileName;
 
         TES4Record TES4;
@@ -226,12 +226,12 @@ class ModFile
         int LoadTES4();
         int Load(boost::threadpool::pool &Threads, const bool &FullLoad);
         bool IsEmpty() {return FormIDHandler.IsEmpty;}
-        unsigned int GetNumRecords(const unsigned int &RecordType);
-        Record * CreateRecord(const unsigned int &RecordType, Record *&SourceRecord, Record *&ParentRecord, CreateRecordOptions &options);
+        unsigned long GetNumRecords(const unsigned long &RecordType);
+        Record * CreateRecord(const unsigned long &RecordType, char *RecordEditorID, Record *&SourceRecord, Record *&ParentRecord, CreateRecordOptions &options);
         int CleanMasters();
         int Save(_FileHandler &SaveHandler, bool CloseMod);
-        void VisitRecords(RecordOp &op);
-        void VisitTopRecords(const unsigned int &RecordType, RecordOp &op);
+        void VisitAllRecords(RecordOp &op);
+        void VisitRecords(const unsigned long &TopRecordType, const unsigned long &RecordType, RecordOp &op, bool DeepVisit=false);
         #ifdef _DEBUG
         void Debug(int debugLevel);
         #endif

@@ -49,7 +49,7 @@ class WTHRRecord : public Record
             GENCLR set;
             GENCLR night;
             #ifdef _DEBUG
-            void Debug(int debugLevel, unsigned int &indentation)
+            void Debug(signed long debugLevel, unsigned long &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -92,7 +92,7 @@ class WTHRRecord : public Record
             WTHRColors horizon;
             WTHRColors upperClouds;
             #ifdef _DEBUG
-            void Debug(int debugLevel, unsigned int &indentation)
+            void Debug(signed long debugLevel, unsigned long &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -154,7 +154,7 @@ class WTHRRecord : public Record
             float fogDayNear, fogDayFar, fogNightNear, fogNightFar;
             WTHRFNAM():fogDayNear(0.0f), fogDayFar(0.0f), fogNightNear(0.0f), fogNightFar(0.0f) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, unsigned int &indentation)
+            void Debug(signed long debugLevel, unsigned long &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -194,7 +194,7 @@ class WTHRRecord : public Record
                 lumRampNoTex(0.0f), lumRampMin(0.0f), lumRampMax(0.0f), sunlightDimmer(0.0f),
                 grassDimmer(0.0f), treeDimmer(0.0f) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, unsigned int &indentation)
+            void Debug(signed long debugLevel, unsigned long &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -264,7 +264,7 @@ class WTHRRecord : public Record
                 rainFadeOut(0), boltFadeIn(0), boltFadeOut(0), boltFrequency(0),
                 weatherType(0), boltRed(0), boltGreen(0), boltBlue(0) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, unsigned int &indentation)
+            void Debug(signed long debugLevel, unsigned long &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -328,11 +328,11 @@ class WTHRRecord : public Record
             };
         struct WTHRSNAM
             {
-            unsigned int sound;
-            unsigned int type;
+            unsigned long sound;
+            unsigned long type;
             WTHRSNAM():sound(0), type(0) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, unsigned int &indentation)
+            void Debug(signed long debugLevel, unsigned long &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -418,11 +418,11 @@ class WTHRRecord : public Record
                 else if(IsThunder())
                     type = eDefault;
                 }
-            bool IsType(unsigned int Type)
+            bool IsType(unsigned long Type)
                 {
                 return (type == Type);
                 }
-            void SetType(unsigned int Type)
+            void SetType(unsigned long Type)
                 {
                 type = Type;
                 }
@@ -438,9 +438,9 @@ class WTHRRecord : public Record
             fUnk1     = 0x40,
             fUnk2     = 0x80
             };
-        STRING EDID;
-        STRING CNAM;
-        STRING DNAM;
+        StringRecord EDID;
+        StringRecord CNAM;
+        StringRecord DNAM;
         OptSubRecord<GENMODEL> MODL;
         ReqSubRecord<WTHRNAM0> NAM0;
         ReqSubRecord<WTHRFNAM> FNAM;
@@ -473,7 +473,7 @@ class WTHRRecord : public Record
             DATA = srcRecord->DATA;
             Sounds.clear();
             Sounds.resize(srcRecord->Sounds.size());
-            for(unsigned int x = 0; x < srcRecord->Sounds.size(); x++)
+            for(unsigned long x = 0; x < srcRecord->Sounds.size(); x++)
                 {
                 Sounds[x] = new ReqSubRecord<WTHRSNAM>;
                 *Sounds[x] = *srcRecord->Sounds[x];
@@ -482,7 +482,7 @@ class WTHRRecord : public Record
             }
         ~WTHRRecord()
             {
-            for(unsigned int x = 0; x < Sounds.size(); x++)
+            for(unsigned long x = 0; x < Sounds.size(); x++)
                 delete Sounds[x];
             }
         void Unload()
@@ -496,47 +496,49 @@ class WTHRRecord : public Record
             FNAM.Unload();
             HNAM.Unload();
             DATA.Unload();
-            for(unsigned int x = 0; x < Sounds.size(); x++)
+            for(unsigned long x = 0; x < Sounds.size(); x++)
                 delete Sounds[x];
             Sounds.clear();
             }
 
-        void VisitFormIDs(FormIDOp &op)
+        bool VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
-                return;
+                return false;
 
-            for(unsigned int x = 0; x < Sounds.size(); x++)
+            for(unsigned long x = 0; x < Sounds.size(); x++)
                 op.Accept(Sounds[x]->value.sound);
+
+            return op.Stop();
             }
 
         #ifdef _DEBUG
-        void Debug(int debugLevel);
+        void Debug(signed long debugLevel);
         #endif
 
-        int CreateListElement(const unsigned int subField);
-        int DeleteListElement(const unsigned int subField);
-        int GetOtherFieldType(const unsigned int Field);
-        void * GetOtherField(const unsigned int Field);
-        unsigned int GetFieldArraySize(const unsigned int Field);
-        void GetFieldArray(const unsigned int Field, void **FieldValues);
-        int GetListFieldType(const unsigned int subField, const unsigned int listField);
-        unsigned int GetListSize(const unsigned int Field);
-        void * GetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
-        void SetField(const unsigned int Field, char *FieldValue);
-        void SetField(const unsigned int Field, float FieldValue);
-        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetField(const unsigned int Field, unsigned char FieldValue);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue);
+        signed long CreateListElement(const unsigned long subField);
+        signed long DeleteListElement(const unsigned long subField);
+        signed long GetOtherFieldType(const unsigned long Field);
+        void * GetOtherField(const unsigned long Field);
+        unsigned long GetFieldArraySize(const unsigned long Field);
+        void GetFieldArray(const unsigned long Field, void **FieldValues);
+        signed long GetListFieldType(const unsigned long subField, const unsigned long listField);
+        unsigned long GetListSize(const unsigned long Field);
+        void * GetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField);
+        void SetField(const unsigned long Field, char *FieldValue);
+        void SetField(const unsigned long Field, float FieldValue);
+        void SetField(const unsigned long Field, unsigned char *FieldValue, unsigned long nSize);
+        void SetField(const unsigned long Field, unsigned char FieldValue);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, unsigned long FieldValue);
 
-        int DeleteField(const unsigned int Field);
-        int DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
+        signed long DeleteField(const unsigned long Field);
+        signed long DeleteListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField);
 
-        int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize(bool forceCalc=false);
-        unsigned int GetType() {return eWTHR;}
-        char * GetStrType() {return "WTHR";}
-        int WriteRecord(_FileHandler &SaveHandler);
+        signed long ParseRecord(unsigned char *buffer, const unsigned long &recSize);
+        unsigned long GetSize(bool forceCalc=false);
+        unsigned long GetType() {return eWTHR;}
+        char *GetStrType() {return "WTHR";}
+        signed long WriteRecord(_FileHandler &SaveHandler);
 
         bool IsPleasant()
             {

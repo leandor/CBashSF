@@ -35,10 +35,10 @@ class CLASRecord : public Record
             };
         struct CLASDATA
             {
-            int primary[2];
-            unsigned int specialization;
-            int major[7];
-            unsigned int flags, services;
+            signed long primary[2];
+            unsigned long specialization;
+            signed long major[7];
+            unsigned long flags, services;
             char trainSkill;
             unsigned char trainLevel;
             char unused1[2];
@@ -57,7 +57,7 @@ class CLASRecord : public Record
                 memset(&unused1, 0x00, 2);
                 }
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -147,10 +147,10 @@ class CLASRecord : public Record
             fRecharge    = 0x00010000,
             fRepair      = 0x00020000
             };
-        STRING EDID;
-        STRING FULL;
-        STRING DESC;
-        STRING ICON;
+        StringRecord EDID;
+        StringRecord FULL;
+        StringRecord DESC;
+        StringRecord ICON;
         ReqSubRecord<CLASDATA> DATA;
 
         CLASRecord(bool newRecord=false):Record(newRecord) {}
@@ -181,27 +181,27 @@ class CLASRecord : public Record
             }
 
         #ifdef _DEBUG
-        void Debug(int debugLevel);
+        void Debug(signed long debugLevel);
         #endif
 
-        int GetOtherFieldType(const unsigned int Field);
-        void * GetOtherField(const unsigned int Field);
-        unsigned int GetFieldArraySize(const unsigned int Field);
-        void GetFieldArray(const unsigned int Field, void **FieldValues);
-        void SetField(const unsigned int Field, char *FieldValue);
-        void SetField(const unsigned int Field, int FieldValue);
-        void SetOtherField(const unsigned int Field, unsigned int FieldValue);
-        void SetField(const unsigned int Field, char FieldValue);
-        void SetField(const unsigned int Field, unsigned char FieldValue);
-        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
+        signed long GetOtherFieldType(const unsigned long Field);
+        void * GetOtherField(const unsigned long Field);
+        unsigned long GetFieldArraySize(const unsigned long Field);
+        void GetFieldArray(const unsigned long Field, void **FieldValues);
+        void SetField(const unsigned long Field, char *FieldValue);
+        void SetField(const unsigned long Field, signed long FieldValue);
+        void SetOtherField(const unsigned long Field, unsigned long FieldValue);
+        void SetField(const unsigned long Field, char FieldValue);
+        void SetField(const unsigned long Field, unsigned char FieldValue);
+        void SetField(const unsigned long Field, unsigned char *FieldValue, unsigned long nSize);
 
-        int DeleteField(const unsigned int Field);
+        signed long DeleteField(const unsigned long Field);
 
-        int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize(bool forceCalc=false);
-        unsigned int GetType() {return eCLAS;}
-        char * GetStrType() {return "CLAS";}
-        int WriteRecord(_FileHandler &SaveHandler);
+        signed long ParseRecord(unsigned char *buffer, const unsigned long &recSize);
+        unsigned long GetSize(bool forceCalc=false);
+        unsigned long GetType() {return eCLAS;}
+        char *GetStrType() {return "CLAS";}
+        signed long WriteRecord(_FileHandler &SaveHandler);
 
         bool IsPlayable()
             {
@@ -379,25 +379,25 @@ class CLASRecord : public Record
             else
                 DATA.value.services &= ~fRepair;
             }
-        bool IsFlagMask(unsigned int Mask, bool Exact=false)
+        bool IsFlagMask(unsigned long Mask, bool Exact=false)
             {
             if(Exact)
                 return (DATA.value.flags & Mask) == Mask;
             else
                 return (DATA.value.flags & Mask) != 0;
             }
-        void SetFlagMask(unsigned int Mask)
+        void SetFlagMask(unsigned long Mask)
             {
             DATA.value.flags = Mask;
             }
-        bool IsServicesFlagMask(unsigned int Mask, bool Exact=false)
+        bool IsServicesFlagMask(unsigned long Mask, bool Exact=false)
             {
             if(Exact)
                 return (DATA.value.services & Mask) == Mask;
             else
                 return (DATA.value.services & Mask) != 0;
             }
-        void SetServicesFlagMask(unsigned int Mask)
+        void SetServicesFlagMask(unsigned long Mask)
             {
             DATA.value.services = Mask;
             }

@@ -78,18 +78,18 @@ class CLOTRecord : public Record
             fIsHideAmulets = 0x00020000,
             fIsNonPlayable = 0x00400000
             };
-        STRING EDID;
-        STRING FULL;
+        StringRecord EDID;
+        StringRecord FULL;
         OptSubRecord<GENFID> SCRI;
         OptSubRecord<GENFID> ENAM;
         OptSubRecord<GENANAM> ANAM;
         ReqSubRecord<GENUFLAG> BMDT;
         OptSubRecord<GENMODEL> MODL;
         OptSubRecord<GENMODEL> MOD2;
-        STRING ICON;
+        StringRecord ICON;
         OptSubRecord<GENMODEL> MOD3;
         OptSubRecord<GENMODEL> MOD4;
-        STRING ICO2;
+        StringRecord ICO2;
         ReqSubRecord<GENVALUEWEIGHT> DATA;
 
         CLOTRecord(bool newRecord=false):Record(newRecord) {}
@@ -159,38 +159,40 @@ class CLOTRecord : public Record
             DATA.Unload();
             }
 
-        void VisitFormIDs(FormIDOp &op)
+        bool VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
-                return;
+                return false;
 
             if(SCRI.IsLoaded())
                 op.Accept(SCRI->fid);
             if(ENAM.IsLoaded())
                 op.Accept(ENAM->fid);
+
+            return op.Stop();
             }
 
         #ifdef _DEBUG
-        void Debug(int debugLevel);
+        void Debug(signed long debugLevel);
         #endif
 
-        int GetOtherFieldType(const unsigned int Field);
-        void * GetOtherField(const unsigned int Field);
-        unsigned int GetFieldArraySize(const unsigned int Field);
-        void GetFieldArray(const unsigned int Field, void **FieldValues);
-        void SetField(const unsigned int Field, char *FieldValue);
-        void SetOtherField(const unsigned int Field, unsigned int FieldValue);
-        void SetField(const unsigned int Field, unsigned short FieldValue);
-        void SetField(const unsigned int Field, float FieldValue);
-        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
+        signed long GetOtherFieldType(const unsigned long Field);
+        void * GetOtherField(const unsigned long Field);
+        unsigned long GetFieldArraySize(const unsigned long Field);
+        void GetFieldArray(const unsigned long Field, void **FieldValues);
+        void SetField(const unsigned long Field, char *FieldValue);
+        void SetOtherField(const unsigned long Field, unsigned long FieldValue);
+        void SetField(const unsigned long Field, unsigned short FieldValue);
+        void SetField(const unsigned long Field, float FieldValue);
+        void SetField(const unsigned long Field, unsigned char *FieldValue, unsigned long nSize);
 
-        int DeleteField(const unsigned int Field);
+        signed long DeleteField(const unsigned long Field);
 
-        int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize(bool forceCalc=false);
-        unsigned int GetType() {return eCLOT;}
-        char * GetStrType() {return "CLOT";}
-        int WriteRecord(_FileHandler &SaveHandler);
+        signed long ParseRecord(unsigned char *buffer, const unsigned long &recSize);
+        unsigned long GetSize(bool forceCalc=false);
+        unsigned long GetType() {return eCLOT;}
+        char *GetStrType() {return "CLOT";}
+        signed long WriteRecord(_FileHandler &SaveHandler);
         bool IsHead()
             {
             return (BMDT.value.flags & fIsHead) != 0;
@@ -400,14 +402,14 @@ class CLOTRecord : public Record
             else
                 BMDT.value.flags &= ~fIsNonPlayable;
             }
-        bool IsFlagMask(unsigned int Mask, bool Exact=false)
+        bool IsFlagMask(unsigned long Mask, bool Exact=false)
             {
             if(Exact)
                 return (BMDT.value.flags & Mask) == Mask;
             else
                 return (BMDT.value.flags & Mask) != 0;
             }
-        void SetFlagMask(unsigned int Mask)
+        void SetFlagMask(unsigned long Mask)
             {
             BMDT.value.flags = Mask;
             }

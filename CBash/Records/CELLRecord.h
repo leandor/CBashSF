@@ -56,11 +56,11 @@ class CELLRecord : public Record
             GENCLR directional;
             GENCLR fog;
             float fogNear, fogFar;
-            int directionalXY, directionalZ;
+            signed long directionalXY, directionalZ;
             float directionalFade, fogClip;
             CELLXCLL():fogNear(0), fogFar(0), directionalXY(0), directionalZ(0), directionalFade(1.0f), fogClip(0) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -106,7 +106,7 @@ class CELLRecord : public Record
             float waterHeight;
             CELLXCLW():waterHeight(-2147483648.0f) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -128,10 +128,10 @@ class CELLRecord : public Record
             };
         struct CELLXCLC
             {
-            int posX, posY;
+            signed long posX, posY;
             CELLXCLC():posX(0), posY(0) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -172,15 +172,15 @@ class CELLRecord : public Record
             ePublic,
             eDungeon
             };
-        STRING EDID;
-        STRING FULL;
+        StringRecord EDID;
+        StringRecord FULL;
         ReqSubRecord<GENFLAG> DATA;
         SemiOptSubRecord<CELLXCLL> XCLL;
         SubRecord<GENFLAG> XCMT;
         OptSubRecord<GENXOWN> Ownership;
         SubRecord<GENFID> XCCM;
         SubRecord<CELLXCLW> XCLW;
-        std::vector<unsigned int> XCLR;
+        std::vector<unsigned long> XCLR;
         SemiOptSubRecord<CELLXCLC> XCLC;
         SubRecord<GENFID> XCWT;
         std::vector<ACHRRecord *> ACHR;
@@ -221,11 +221,11 @@ class CELLRecord : public Record
             }
         ~CELLRecord()
             {
-            for(unsigned int x = 0; x < ACHR.size(); ++x)
+            for(unsigned long x = 0; x < ACHR.size(); ++x)
                 delete ACHR[x];
-            for(unsigned int x = 0; x < ACRE.size(); ++x)
+            for(unsigned long x = 0; x < ACRE.size(); ++x)
                 delete ACRE[x];
-            for(unsigned int x = 0; x < REFR.size(); ++x)
+            for(unsigned long x = 0; x < REFR.size(); ++x)
                 delete REFR[x];
             delete PGRD;
             delete LAND;
@@ -246,10 +246,73 @@ class CELLRecord : public Record
             XCWT.Unload();
             }
 
-        void VisitFormIDs(FormIDOp &op)
+        bool HasSubRecords() {return true;}
+
+        bool VisitSubRecords(const unsigned long &RecordType, RecordOp &op)
+            {
+            bool stop;
+
+            if(RecordType == NULL || RecordType == eACHR)
+                for(unsigned long x = 0; x < ACHR.size();)
+                    {
+                    stop = op.Accept((Record **)&ACHR[x]);
+                    if(ACHR[x] == NULL)
+                        ACHR.erase(ACHR.begin() + x);
+                    else
+                        ++x;
+                    if(stop)
+                        return stop;
+                    }
+
+            if(RecordType == NULL || RecordType == eACRE)
+                for(unsigned long x = 0; x < ACRE.size();)
+                    {
+                    stop = op.Accept((Record **)&ACRE[x]);
+                    if(ACRE[x] == NULL)
+                        ACRE.erase(ACRE.begin() + x);
+                    else
+                        ++x;
+                    if(stop)
+                        return stop;
+                    }
+
+            if(RecordType == NULL || RecordType == eREFR)
+                for(unsigned long x = 0; x < REFR.size();)
+                    {
+                    stop = op.Accept((Record **)&REFR[x]);
+                    if(REFR[x] == NULL)
+                        REFR.erase(REFR.begin() + x);
+                    else
+                        ++x;
+                    if(stop)
+                        return stop;
+                    }
+
+            if(RecordType == NULL || RecordType == ePGRD)
+                {
+                if(PGRD != NULL)
+                    {
+                    if(op.Accept((Record **)&PGRD))
+                        return true;
+                    }
+                }
+
+            if(RecordType == NULL || RecordType == eLAND)
+                {
+                if(LAND != NULL)
+                    {
+                    if(op.Accept((Record **)&LAND))
+                        return true;
+                    }
+                }
+
+            return op.Stop();
+            }
+
+        bool VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
-                return;
+                return false;
 
             if(Ownership.IsLoaded())
                 {
@@ -259,34 +322,42 @@ class CELLRecord : public Record
                     op.Accept(Ownership->XGLB->fid);
                 }
             op.Accept(XCCM.value.fid);
-            for(unsigned int x = 0; x < XCLR.size(); x++)
+            for(unsigned long x = 0; x < XCLR.size(); x++)
                 op.Accept(XCLR[x]);
             op.Accept(XCWT.value.fid);
+
+            return op.Stop();
             }
 
         #ifdef _DEBUG
-        void Debug(int debugLevel);
+        void Debug(signed long debugLevel);
         #endif
 
-        int GetOtherFieldType(const unsigned int Field);
-        void * GetOtherField(const unsigned int Field);
-        unsigned int GetFieldArraySize(const unsigned int Field);
-        void GetFieldArray(const unsigned int Field, void **FieldValues);
-        void SetField(const unsigned int Field, char *FieldValue);
-        void SetField(const unsigned int Field, unsigned char FieldValue);
-        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetField(const unsigned int Field, float FieldValue);
-        void SetField(const unsigned int Field, int FieldValue);
-        void SetOtherField(const unsigned int Field, unsigned int FieldValue);
-        void SetField(const unsigned int Field, unsigned int FieldValue[], unsigned int nSize);
+        signed long GetOtherFieldType(const unsigned long Field);
+        void * GetOtherField(const unsigned long Field);
+        unsigned long GetFieldArraySize(const unsigned long Field);
+        void GetFieldArray(const unsigned long Field, void **FieldValues);
+        void SetField(const unsigned long Field, char *FieldValue);
+        void SetField(const unsigned long Field, unsigned char FieldValue);
+        void SetField(const unsigned long Field, unsigned char *FieldValue, unsigned long nSize);
+        void SetField(const unsigned long Field, float FieldValue);
+        void SetField(const unsigned long Field, signed long FieldValue);
+        void SetOtherField(const unsigned long Field, unsigned long FieldValue);
+        void SetField(const unsigned long Field, unsigned long FieldValue[], unsigned long nSize);
 
-        int DeleteField(const unsigned int Field);
+        signed long DeleteField(const unsigned long Field);
 
-        int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize(bool forceCalc=false);
-        unsigned int GetType() {return eCELL;}
-        char * GetStrType() {return "CELL";}
-        int WriteRecord(_FileHandler &SaveHandler);
+        signed long ParseRecord(unsigned char *buffer, const unsigned long &recSize);
+        unsigned long GetSize(bool forceCalc=false);
+        unsigned long GetType() {return eCELL;}
+        char *GetStrType() {return "CELL";}
+        unsigned long GetParentType()
+            {
+            if(Parent != NULL)
+                return Parent->GetType();
+            return eUnknown;
+            }
+        signed long WriteRecord(_FileHandler &SaveHandler);
 
         bool IsInterior()
             {
@@ -431,12 +502,12 @@ class CELLRecord : public Record
             else if(IsDungeonMusic())
                 XCMT.value.flags = eDefault;
             }
-        bool IsMusicType(unsigned int Type)
+        bool IsMusicType(unsigned char Type)
             {
             if(!XCMT.IsLoaded()) return false;
             return (XCMT.value.flags == Type);
             }
-        void SetMusicType(unsigned int Type)
+        void SetMusicType(unsigned char Type)
             {
             if(!XCMT.IsLoaded()) return;
             XCMT.value.flags = Type;

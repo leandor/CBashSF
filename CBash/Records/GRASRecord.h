@@ -40,7 +40,7 @@ class GRASRecord : public Record
             unsigned char density, minSlope, maxSlope, unused1;
             unsigned short waterDistance;
             unsigned char unused2[2];
-            unsigned int waterOp;
+            unsigned long waterOp;
             float posRange, heightRange, colorRange, wavePeriod;
             unsigned char flags, unused3[3];
             GRASDATA():density(0), minSlope(0), maxSlope(0), unused1(0xCD),
@@ -52,7 +52,7 @@ class GRASRecord : public Record
                 memset(&unused3, 0xCD, 3);
                 }
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -124,7 +124,7 @@ class GRASRecord : public Record
             fIsUScaling  = 0x00000002,
             fIsFitSlope  = 0x00000004
             };
-        STRING EDID;
+        StringRecord EDID;
         OptSubRecord<GENMODEL> MODL;
         ReqSubRecord<GRASDATA> DATA;
 
@@ -158,27 +158,27 @@ class GRASRecord : public Record
             }
 
         #ifdef _DEBUG
-        void Debug(int debugLevel);
+        void Debug(signed long debugLevel);
         #endif
 
-        int GetOtherFieldType(const unsigned int Field);
-        void * GetOtherField(const unsigned int Field);
-        unsigned int GetFieldArraySize(const unsigned int Field);
-        void GetFieldArray(const unsigned int Field, void **FieldValues);
-        void SetField(const unsigned int Field, char *FieldValue);
-        void SetField(const unsigned int Field, float FieldValue);
-        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetField(const unsigned int Field, unsigned char FieldValue);
-        void SetField(const unsigned int Field, unsigned short FieldValue);
-        void SetOtherField(const unsigned int Field, unsigned int FieldValue);
+        signed long GetOtherFieldType(const unsigned long Field);
+        void * GetOtherField(const unsigned long Field);
+        unsigned long GetFieldArraySize(const unsigned long Field);
+        void GetFieldArray(const unsigned long Field, void **FieldValues);
+        void SetField(const unsigned long Field, char *FieldValue);
+        void SetField(const unsigned long Field, float FieldValue);
+        void SetField(const unsigned long Field, unsigned char *FieldValue, unsigned long nSize);
+        void SetField(const unsigned long Field, unsigned char FieldValue);
+        void SetField(const unsigned long Field, unsigned short FieldValue);
+        void SetOtherField(const unsigned long Field, unsigned long FieldValue);
 
-        int DeleteField(const unsigned int Field);
+        signed long DeleteField(const unsigned long Field);
 
-        int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize(bool forceCalc=false);
-        unsigned int GetType() {return eGRAS;}
-        char * GetStrType() {return "GRAS";}
-        int WriteRecord(_FileHandler &SaveHandler);
+        signed long ParseRecord(unsigned char *buffer, const unsigned long &recSize);
+        unsigned long GetSize(bool forceCalc=false);
+        unsigned long GetType() {return eGRAS;}
+        char *GetStrType() {return "GRAS";}
+        signed long WriteRecord(_FileHandler &SaveHandler);
         bool IsVLighting()
             {
             return (DATA.value.flags & fIsVLighting) != 0;

@@ -88,7 +88,7 @@ class NPC_Record : public Record
                 memset(&unused1, 0x00, 2);
                 }
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -206,7 +206,7 @@ class NPC_Record : public Record
             float hairLength;
             NPC_LNAM():hairLength(0.0f) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -231,7 +231,7 @@ class NPC_Record : public Record
             unsigned short fnam;
             NPC_FNAM():fnam(0) {}
             #ifdef _DEBUG
-            void Debug(int debugLevel, size_t &indentation)
+            void Debug(signed long debugLevel, size_t &indentation)
                 {
                 if(debugLevel > 3)
                     {
@@ -282,19 +282,19 @@ class NPC_Record : public Record
             fRecharge    = 0x00010000,
             fRepair      = 0x00020000
             };
-        STRING EDID;
-        STRING FULL;
+        StringRecord EDID;
+        StringRecord FULL;
         OptSubRecord<GENMODEL> MODL;
         ReqSubRecord<GENACBS> ACBS;
         std::vector<ReqSubRecord<GENSNAM> *> SNAM;
         OptSubRecord<GENFID> INAM;
         OptSubRecord<GENFID> RNAM;
-        std::vector<unsigned int *> SPLO;
+        std::vector<unsigned long *> SPLO;
         OptSubRecord<GENFID> SCRI;
         std::vector<ReqSubRecord<GENCNTO> *> CNTO;
         ReqSubRecord<GENAIDT> AIDT;
-        std::vector<unsigned int *> PKID;
-        std::vector<STRING> KFFZ;
+        std::vector<unsigned long *> PKID;
+        std::vector<StringRecord> KFFZ;
         ReqSubRecord<GENFID> CNAM;
         ReqSubRecord<NPC_DATA> DATA;
         OptSubRecord<GENFID> HNAM;
@@ -302,9 +302,9 @@ class NPC_Record : public Record
         OptSubRecord<GENFID> ENAM;
         ReqSubRecord<GENCLR> HCLR;
         OptSubRecord<GENFID> ZNAM;
-        RAWBYTES FGGS;
-        RAWBYTES FGGA;
-        RAWBYTES FGTS;
+        RawRecord FGGS;
+        RawRecord FGGA;
+        RawRecord FGTS;
         ReqSubRecord<NPC_FNAM> FNAM;
 
         NPC_Record(bool newRecord=false):Record(newRecord) {IsCompressed(true);}
@@ -328,7 +328,7 @@ class NPC_Record : public Record
             ACBS = srcRecord->ACBS;
             SNAM.clear();
             SNAM.resize(srcRecord->SNAM.size());
-            for(unsigned int x = 0; x < srcRecord->SNAM.size(); x++)
+            for(unsigned long x = 0; x < srcRecord->SNAM.size(); x++)
                 {
                 SNAM[x] = new ReqSubRecord<GENSNAM>;
                 *SNAM[x] = *srcRecord->SNAM[x];
@@ -337,12 +337,12 @@ class NPC_Record : public Record
             RNAM = srcRecord->RNAM;
             SPLO.clear();
             SPLO.resize(srcRecord->SPLO.size());
-            for(unsigned int x = 0; x < srcRecord->SPLO.size(); x++)
-                SPLO[x] = new unsigned int(*srcRecord->SPLO[x]);
+            for(unsigned long x = 0; x < srcRecord->SPLO.size(); x++)
+                SPLO[x] = new unsigned long(*srcRecord->SPLO[x]);
             SCRI = srcRecord->SCRI;
             CNTO.clear();
             CNTO.resize(srcRecord->CNTO.size());
-            for(unsigned int x = 0; x < srcRecord->CNTO.size(); x++)
+            for(unsigned long x = 0; x < srcRecord->CNTO.size(); x++)
                 {
                 CNTO[x] = new ReqSubRecord<GENCNTO>;
                 *CNTO[x] = *srcRecord->CNTO[x];
@@ -350,11 +350,11 @@ class NPC_Record : public Record
             AIDT = srcRecord->AIDT;
             PKID.clear();
             PKID.resize(srcRecord->PKID.size());
-            for(unsigned int x = 0; x < srcRecord->PKID.size(); x++)
-                PKID[x] = new unsigned int(*srcRecord->PKID[x]);
+            for(unsigned long x = 0; x < srcRecord->PKID.size(); x++)
+                PKID[x] = new unsigned long(*srcRecord->PKID[x]);
             KFFZ.clear();
             KFFZ.resize(srcRecord->KFFZ.size());
-            for(unsigned int x = 0; x < srcRecord->KFFZ.size(); x++)
+            for(unsigned long x = 0; x < srcRecord->KFFZ.size(); x++)
                 KFFZ[x].Copy(srcRecord->KFFZ[x]);
             CNAM = srcRecord->CNAM;
             DATA = srcRecord->DATA;
@@ -371,13 +371,13 @@ class NPC_Record : public Record
             }
         ~NPC_Record()
             {
-            for(unsigned int x = 0; x < SNAM.size(); x++)
+            for(unsigned long x = 0; x < SNAM.size(); x++)
                 delete SNAM[x];
-            for(unsigned int x = 0; x < SPLO.size(); x++)
+            for(unsigned long x = 0; x < SPLO.size(); x++)
                 delete SPLO[x];
-            for(unsigned int x = 0; x < CNTO.size(); x++)
+            for(unsigned long x = 0; x < CNTO.size(); x++)
                 delete CNTO[x];
-            for(unsigned int x = 0; x < PKID.size(); x++)
+            for(unsigned long x = 0; x < PKID.size(); x++)
                 delete PKID[x];
             }
         void Unload()
@@ -388,26 +388,26 @@ class NPC_Record : public Record
             MODL.Unload();
             ACBS.Unload();
 
-            for(unsigned int x = 0; x < SNAM.size(); x++)
+            for(unsigned long x = 0; x < SNAM.size(); x++)
                 delete SNAM[x];
             SNAM.clear();
 
             INAM.Unload();
             RNAM.Unload();
 
-            for(unsigned int x = 0; x < SPLO.size(); x++)
+            for(unsigned long x = 0; x < SPLO.size(); x++)
                 delete SPLO[x];
             SPLO.clear();
 
             SCRI.Unload();
 
-            for(unsigned int x = 0; x < CNTO.size(); x++)
+            for(unsigned long x = 0; x < CNTO.size(); x++)
                 delete CNTO[x];
             CNTO.clear();
 
             AIDT.Unload();
 
-            for(unsigned int x = 0; x < PKID.size(); x++)
+            for(unsigned long x = 0; x < PKID.size(); x++)
                 delete PKID[x];
             PKID.clear();
 
@@ -426,24 +426,24 @@ class NPC_Record : public Record
             FNAM.Unload();
             }
 
-        void VisitFormIDs(FormIDOp &op)
+        bool VisitFormIDs(FormIDOp &op)
             {
             if(!IsLoaded())
-                return;
+                return false;
 
-            for(unsigned int x = 0; x < SNAM.size(); x++)
+            for(unsigned long x = 0; x < SNAM.size(); x++)
                 op.Accept(SNAM[x]->value.faction);
             if(INAM.IsLoaded())
                 op.Accept(INAM->fid);
             if(RNAM.IsLoaded())
                 op.Accept(RNAM->fid);
-            for(unsigned int x = 0; x < SPLO.size(); x++)
+            for(unsigned long x = 0; x < SPLO.size(); x++)
                 op.Accept(*SPLO[x]);
             if(SCRI.IsLoaded())
                 op.Accept(SCRI->fid);
-            for(unsigned int x = 0; x < CNTO.size(); x++)
+            for(unsigned long x = 0; x < CNTO.size(); x++)
                 op.Accept(CNTO[x]->value.item);
-            for(unsigned int x = 0; x < PKID.size(); x++)
+            for(unsigned long x = 0; x < PKID.size(); x++)
                 op.Accept(*PKID[x]);
             if(CNAM.IsLoaded())
                 op.Accept(CNAM.value.fid);
@@ -453,46 +453,48 @@ class NPC_Record : public Record
                 op.Accept(ENAM->fid);
             if(ZNAM.IsLoaded())
                 op.Accept(ZNAM->fid);
+
+            return op.Stop();
             }
 
         #ifdef _DEBUG
-        void Debug(int debugLevel);
+        void Debug(signed long debugLevel);
         #endif
 
-        int CreateListElement(const unsigned int subField);
-        int DeleteListElement(const unsigned int subField);
-        int GetOtherFieldType(const unsigned int Field);
-        void * GetOtherField(const unsigned int Field);
-        unsigned int GetFieldArraySize(const unsigned int Field);
-        void GetFieldArray(const unsigned int Field, void **FieldValues);
-        int GetListFieldType(const unsigned int subField, const unsigned int listField);
-        unsigned int GetListSize(const unsigned int Field);
-        unsigned int GetListArraySize(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
-        void GetListArray(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, void **FieldValues);
-        void * GetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
-        void SetField(const unsigned int Field, char *FieldValue);
-        void SetField(const unsigned int Field, float FieldValue);
-        void SetField(const unsigned int Field, unsigned char *FieldValue, unsigned int nSize);
-        void SetOtherField(const unsigned int Field, unsigned int FieldValue);
-        void SetField(const unsigned int Field, unsigned short FieldValue);
-        void SetField(const unsigned int Field, short FieldValue);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned int FieldValue);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char FieldValue);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, int FieldValue);
-        void SetListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField, unsigned char *FieldValue, unsigned int nSize);
-        void SetField(const unsigned int Field, unsigned int FieldValue[], unsigned int nSize);
-        void SetField(const unsigned int Field, unsigned char FieldValue);
-        void SetField(const unsigned int Field, char FieldValue);
-        void SetField(const unsigned int Field, char **FieldValue, unsigned int nSize);
+        signed long CreateListElement(const unsigned long subField);
+        signed long DeleteListElement(const unsigned long subField);
+        signed long GetOtherFieldType(const unsigned long Field);
+        void * GetOtherField(const unsigned long Field);
+        unsigned long GetFieldArraySize(const unsigned long Field);
+        void GetFieldArray(const unsigned long Field, void **FieldValues);
+        signed long GetListFieldType(const unsigned long subField, const unsigned long listField);
+        unsigned long GetListSize(const unsigned long Field);
+        unsigned long GetListArraySize(const unsigned long subField, const unsigned long listIndex, const unsigned long listField);
+        void GetListArray(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, void **FieldValues);
+        void * GetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField);
+        void SetField(const unsigned long Field, char *FieldValue);
+        void SetField(const unsigned long Field, float FieldValue);
+        void SetField(const unsigned long Field, unsigned char *FieldValue, unsigned long nSize);
+        void SetOtherField(const unsigned long Field, unsigned long FieldValue);
+        void SetField(const unsigned long Field, unsigned short FieldValue);
+        void SetField(const unsigned long Field, short FieldValue);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, unsigned long FieldValue);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, unsigned char FieldValue);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, signed long FieldValue);
+        void SetListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField, unsigned char *FieldValue, unsigned long nSize);
+        void SetField(const unsigned long Field, unsigned long FieldValue[], unsigned long nSize);
+        void SetField(const unsigned long Field, unsigned char FieldValue);
+        void SetField(const unsigned long Field, char FieldValue);
+        void SetField(const unsigned long Field, char **FieldValue, unsigned long nSize);
 
-        int DeleteField(const unsigned int Field);
-        int DeleteListField(const unsigned int subField, const unsigned int listIndex, const unsigned int listField);
+        signed long DeleteField(const unsigned long Field);
+        signed long DeleteListField(const unsigned long subField, const unsigned long listIndex, const unsigned long listField);
 
-        int ParseRecord(unsigned char *buffer, const unsigned int &recSize);
-        unsigned int GetSize(bool forceCalc=false);
-        unsigned int GetType() {return eNPC_;}
-        char * GetStrType() {return "NPC_";}
-        int WriteRecord(_FileHandler &SaveHandler);
+        signed long ParseRecord(unsigned char *buffer, const unsigned long &recSize);
+        unsigned long GetSize(bool forceCalc=false);
+        unsigned long GetType() {return eNPC_;}
+        char *GetStrType() {return "NPC_";}
+        signed long WriteRecord(_FileHandler &SaveHandler);
 
         bool IsFemale()
             {
@@ -636,14 +638,14 @@ class NPC_Record : public Record
             else
                 ACBS.value.flags &= ~fIsCanCorpseCheck;
             }
-        bool IsFlagMask(unsigned int Mask, bool Exact=false)
+        bool IsFlagMask(unsigned long Mask, bool Exact=false)
             {
             if(Exact)
                 return (ACBS.value.flags & Mask) == Mask;
             else
                 return (ACBS.value.flags & Mask) != 0;
             }
-        void SetFlagMask(unsigned int Mask)
+        void SetFlagMask(unsigned long Mask)
             {
             ACBS.value.flags = Mask;
             }
@@ -801,14 +803,14 @@ class NPC_Record : public Record
             else
                 AIDT.value.flags &= ~fRepair;
             }
-        bool IsServicesFlagMask(unsigned int Mask, bool Exact=false)
+        bool IsServicesFlagMask(unsigned long Mask, bool Exact=false)
             {
             if(Exact)
                 return (AIDT.value.flags & Mask) == Mask;
             else
                 return (AIDT.value.flags & Mask) != 0;
             }
-        void SetServicesFlagMask(unsigned int Mask)
+        void SetServicesFlagMask(unsigned long Mask)
             {
             AIDT.value.flags = Mask;
             }
