@@ -1,53 +1,1795 @@
 from cint import *
 
-def TestTemp():
-    Current = Collection()
-    newMod = Current.addMod("SpeedyShowcase.esp")
-    Current.minimalLoad(LoadMasters=True)
-    for cell in newMod.CELL:
-        if cell.eid == 'aveStorageRotateTest':
-            for achr in cell.ACHR:
-                if achr.scale == 2.0:
-                    print achr.fid
-                else:
-                    achr.rotZ_degrees = achr.rotZ_degrees - 9.7862
+RecIndent = -2
+def printRecord(record):
+    global RecIndent
+    RecIndent += 2
+    if hasattr(record, 'copyattrs'):
+        for attr in record.copyattrs:
+            rec = getattr(record, attr)
+            if RecIndent: print " " * (RecIndent - 1),
+            print attr, ":", rec
+            printRecord(rec)
+    elif isinstance(record, list):
+        if len(record) > 0 and hasattr(record[0], 'copyattrs'):
+            for rec in record:
+                printRecord(rec)
+    RecIndent -= 2
 
-            print "Placed Creatures"
-            for acre in cell.ACRE:            
-                if acre.scale == 2.0:
-                    print acre.fid
-                else:
-                    acre.rotZ_degrees = acre.rotZ_degrees - 9.7862
+def regressionTests():
+    Current = ObCollection()
+    Current.addMod("Oblivion.esm")
+    Current.addMod("RegressionTests.esp")
+    Current.load()
+    newMod = Current.LookupModFile("RegressionTests.esp")
 
-            print "Placed Objects"
-            for refr in cell.REFR:            
-                if refr.scale == 2.0:
-                    print refr.fid
-                else:
-                    if refr.base == 0x0003739A:
-                        print refr.posX
-                        print refr.posY
-                        print refr.posZ
-                        print refr.rotX_degrees
-                        print refr.rotY_degrees
-                        print refr.rotZ_degrees
-                    refr.rotZ_degrees = refr.rotZ_degrees - 9.7862
-                    if refr.base == 0x0003739A:
-                        print
-                        print refr.posX
-                        print refr.posY
-                        print refr.posZ
-                        print refr.rotX_degrees
-                        print refr.rotY_degrees
-                        print refr.rotZ_degrees
-    newMod.safeCloseSave()
+    assertTES4(Current, newMod)
+    assertGMST(Current, newMod)
+    assertGLOB(Current, newMod)
+    assertCLAS(Current, newMod)
+    assertFACT(Current, newMod)
+    assertHAIR(Current, newMod)
+    assertEYES(Current, newMod)
+    assertRACE(Current, newMod)
+##    assertSOUN(Current, newMod)
+##    assertSKIL(Current, newMod)
+
+def assertTES4(Current, newMod):
+    record = Current[0].TES4
+    
+    assert record.IsESM
+    assert record.flags1 == 0x80000001
+    assert record.flags2 == 0
+    assert record.version == 1.0
+    assert record.numRecords == 1252095
+    assert record.nextObject == 0xFF09764D
+    assert record.ofst_p == [0, 2, 0, 0, 78, 79, 78, 69, 0, 0, 0, 0, 1, 233, 142, 87,
+                             84, 69, 83, 52, 0, 0, 0, 0, 2, 235, 195, 1, 71, 82, 85,
+                             80, 0, 0, 0, 0, 3, 0, 0, 0, 71, 77, 83, 84, 0, 0, 0, 0,
+                             4, 105, 111, 110, 71, 76, 79, 66, 0, 0, 0, 0, 5, 0, 0,
+                             0, 67, 76, 65, 83, 0, 0, 0, 0, 6, 0, 0, 0, 70, 65, 67,
+                             84, 0, 0, 0, 0, 7, 0, 0, 0, 72, 65, 73, 82, 0, 0, 0, 0,
+                             8, 0, 0, 0, 69, 89, 69, 83, 0, 0, 0, 0, 9, 0, 0, 0, 82,
+                             65, 67, 69, 0, 0, 0, 0, 10, 0, 0, 0, 83, 79, 85, 78, 0,
+                             0, 0, 0, 11, 0, 0,0, 83, 75, 73, 76, 0, 0, 0, 0, 12, 0,
+                             0, 0, 77, 71, 69, 70, 0, 0, 0, 0, 13, 0, 0, 0, 83, 67,
+                             80, 84, 0, 0, 0, 0, 14, 0,0, 0, 76, 84, 69, 88, 0, 0,
+                             0, 0, 15, 0, 0, 0, 69, 78, 67, 72, 0, 0, 0, 0, 16, 0,
+                             0, 0, 83, 80, 69, 76, 0, 0, 0, 0, 17,0, 0, 0, 66, 83,
+                             71, 78, 0, 0, 0, 0, 18, 0, 0, 0, 65, 67, 84, 73, 0, 0,
+                             0, 0, 19, 0, 0, 0, 65, 80, 80, 65, 0, 0, 0, 0, 20, 0,
+                             0, 0, 65, 82, 77, 79, 0, 0, 0, 0, 21, 0, 0, 0, 66, 79,
+                             79, 75, 0, 0, 0, 0, 22, 0, 0, 0, 67, 76, 79, 84, 0, 0,
+                             0, 0, 23, 0, 0, 0, 67, 79, 78, 84, 0, 0, 0, 0, 24, 68,
+                             249, 119, 68, 79, 79, 82, 0, 0, 0, 0, 25, 19, 20, 0,
+                             73, 78, 71, 82,0, 0, 0, 0, 26, 138, 245, 119, 76, 73,
+                             71, 72, 0, 0, 0, 0, 27, 0, 0, 0, 76, 79, 67, 75, 0, 0,
+                             0, 0, 28, 0, 0, 0, 77, 73, 83, 67, 0, 0, 0, 0, 29, 0,
+                             0, 0, 82, 69, 80, 65, 0, 0, 0, 0, 30, 194, 245, 119,
+                             83, 84, 65, 84, 0, 0, 0, 0, 31, 245, 18, 0, 84, 82,
+                             69, 69, 0, 0, 0, 0, 32, 0, 0, 0, 70, 76, 79, 82, 0, 0,
+                             0, 0, 33, 0, 0, 0, 70, 85, 82, 78, 0, 0, 0, 0, 34, 0,
+                             0, 0, 87, 69, 65, 80, 0, 0, 0, 0, 35, 2, 0, 0, 65, 77,
+                             77, 79, 0, 0, 0, 0, 36, 0, 0, 0, 78, 80, 67, 95, 0, 0,
+                             0, 0, 37, 219, 111, 0, 67, 82, 69, 65, 0, 0, 0, 0, 38,
+                             0, 0, 0, 76, 86, 76, 67, 0, 0, 0, 0, 39, 162, 112, 0,
+                             83, 76, 71, 77, 0,0, 0, 0, 40, 0, 0, 0, 75, 69, 89, 77,
+                             0, 0, 0, 0, 41, 107, 143, 0, 65, 76, 67, 72, 0, 0, 0,
+                             0, 42, 245, 18, 0, 76, 86, 76, 73, 0, 0, 0, 0, 43, 167,
+                             111, 0, 83, 78, 68, 71, 0, 0, 0, 0, 44, 220, 111, 0,
+                             67, 76, 77, 84, 0, 0, 0, 0, 45, 222, 111, 0, 82, 69,
+                             71, 78, 0, 0, 0, 0, 46, 217, 111, 0, 67, 69, 76, 76,
+                             65, 254, 121, 17, 47, 107, 143, 0, 82, 69, 70, 82, 0,
+                             0, 0, 0, 48, 29, 228, 1, 65, 67, 72, 82, 0, 0, 0, 0,
+                             49, 0, 0, 0, 65, 67, 82, 69, 0, 0, 0, 0, 50, 0, 0, 0,
+                             80, 71, 82,68, 0, 0, 0, 0, 51, 0, 0, 0, 87, 82, 76, 68,
+                             0, 0, 0, 0, 52, 184, 218, 1, 76, 65, 78, 68, 0, 0, 0,
+                             0, 53, 180, 218, 1, 84, 76, 79, 68, 0, 0, 0, 0, 54, 0,
+                             0, 0, 68, 73, 65, 76, 0, 0, 0, 0, 55, 0, 218, 1, 73,
+                             78, 70, 79, 0, 0, 0, 0, 56, 184, 218, 1, 81, 85, 83,
+                             84, 0, 0, 0, 0]
+    assert record.dele_p == [101, 84, 43, 226, 70, 177, 196, 1]
+    assert record.author == "mlipari"
+    assert record.description == " "
+    assert record.masters == []
+
+    record = newMod.TES4
+    record.flags1 = 5
+    record.flags2 = 12
+    record.version = 1.2
+    record.numRecords = 10
+    record.nextObject = 0x00001000
+    record.ofst_p = [0, 1, 2, 3]
+    record.dele_p = [10, 11, 12, 13]
+    record.author = "Waruddar"
+    record.description = "This is a test string\nand only a test string."
+##    record.masters = ["Oblivion.esm"] #For now, masters shouldn't be set directly. More coding needs to be done to make it safe
+    assert record.flags1 ==  5 | 0x80000000 #CBash sets 0x80000000 for internal use
+    assert record.flags2 == 12
+    assert record.version == 1.2
+    assert record.numRecords == 10
+    assert record.nextObject == 0x00001000
+    assert record.ofst_p == [0, 1, 2, 3]
+    assert record.dele_p == [10, 11, 12, 13]
+    assert record.author == "Waruddar"
+    assert record.author != "WAruddar"
+    assert record.description == "This is a test string\nand only a test string."
+    assert record.description != "This is A test string\nand only a test string."
+##    assert record.masters == ["Oblivion.esm"]
+##    assert record.masters == ["oblivion.esm"] #Masters are case-insensitive
+
+    print "TES4:Finished testing"
+
+def assertGMST(Current, newMod):
+    record = Current[0].GMST[0]
+
+    assert record.fid == ('Oblivion.esm', 0x045D2F)
+    assert record.flags1 == 0x80000000 #CBash sets 0x80000000 for internal use
+    assert record.flags2 == 1583621
+    assert record.eid == "sMiscSEBounty"
+    assert record.eid != "sMiscSEbounty" #GMST edid are case sensitive since they're keyed by it
+    assert record.value == "Shivering Isles Bounty:"
+    assert record.value != "ShiVering Isles Bounty:"
+
+    srecord = newMod.create_GMST("sWarString")
+    irecord = newMod.create_GMST("iWarString")
+    frecord = newMod.create_GMST("fWarString")
+    
+    srecord.flags1 = 10
+    srecord.flags2 = 15
+    srecord.value = "It works!"
+    srecord.value = 1 #Shouldn't work
+    srecord.value = 1.0 #Shouldn't work
+
+    assert srecord.fid == ('RegressionTests.esp', 0x001001)
+    assert srecord.flags1 == 10 | 0x80000000
+    assert srecord.flags2 == 15
+    assert srecord.eid == "sWarString"
+    assert srecord.eid != "sWaRString" #GMST edid are case sensitive since they're keyed by it
+    assert srecord.value == "It works!"
+    assert srecord.value != "IT works!"
+    
+    irecord.flags1 = 11
+    irecord.flags2 = 16
+    irecord.value = 2
+    irecord.value = "It works!"  #Shouldn't work
+    irecord.value = 2.0 #Shouldn't work
+
+    assert irecord.fid == ('RegressionTests.esp', 0x001002)
+    assert irecord.flags1 == 11 | 0x80000000
+    assert irecord.flags2 == 16
+    assert irecord.eid == "iWarString"
+    assert irecord.eid != "IWarString"
+    assert irecord.value == 2
+    
+    frecord.flags1 = 12
+    frecord.flags2 = 17
+    frecord.value = 3.0
+    frecord.value = "It works!"  #Shouldn't work
+    frecord.value = 3 #Shouldn't work
+
+    assert frecord.fid == ('RegressionTests.esp', 0x001003)
+    assert frecord.flags1 == 12 | 0x80000000
+    assert frecord.flags2 == 17
+    assert frecord.eid == "fWarString"
+    assert frecord.eid != "fWarSTRing" #GMST edid are case sensitive since they're keyed by it
+    assert frecord.value == 3.0
+    
+    record = Current[0].GMST[0]
+    newrecord = record.CopyAsOverride(newMod)
+    
+    assert newrecord.fid == ('Oblivion.esm', 0x045D2F)
+    assert newrecord.flags1 == 0x80000000
+    assert newrecord.flags2 == 1583621
+    assert newrecord.eid == "sMiscSEBounty"
+    assert newrecord.eid != "SMiscSEBounty" #GMST edid are case sensitive since they're keyed by it
+    assert newrecord.value == "Shivering Isles Bounty:"
+    assert newrecord.value != "ShiverinG Isles Bounty:"
+
+    newrecord.flags1 = 0    
+    newrecord.flags2 = 5
+    newrecord.eid = "sTestWar"
+    newrecord.eid = "" #Shouldn't work
+    newrecord.value = "Test:"
+
+    assert newrecord.fid == ('Oblivion.esm', 0x045D2F)
+    assert newrecord.flags1 == 0x80000000
+    assert newrecord.flags2 == 5
+    assert newrecord.eid == "sTestWar"
+    assert newrecord.eid != "sTEstWar" #GMST edid are case sensitive since they're keyed by it
+    assert newrecord.value == "Test:"
+    assert newrecord.value != "TeSt:"
+    
+    assert record.fid == ('Oblivion.esm', 0x045D2F)
+    assert record.flags1 == 0x80000000
+    assert record.flags2 == 1583621
+    assert record.eid == "sMiscSEBounty"
+    assert record.eid != "sMiscSEBounTy" #GMST edid are case sensitive since they're keyed by it
+    assert record.value == "Shivering Isles Bounty:"
+    assert record.value != "Shivering Isles BounTy:"
+    
+    print "GMST:Finished testing"
+
+def assertGLOB(Current, newMod):
+    record = Current[0].GLOB[0]
+
+    assert record.fid == ('Oblivion.esm', 0x08D9DA)
+    assert record.flags1 == 0x80000000
+    assert record.flags2 == 1584398
+    assert record.eid == "SEKnightSpawnTime"
+    assert record.eid == "SEKnighTSpawnTime"
+    assert record.format == 's'
+    assert record.format != 'S'
+    assert record.value == 4.0
+
+    record = newMod.create_GLOB()
+    record.flags1 = 0x0102
+    record.flags2 = 0x0201
+    record.eid = "WarGlobalTest"
+    record.format = 'f'
+    record.value = 12.2
+
+    assert record.fid == ('RegressionTests.esp', 0x001004)
+    assert record.flags1 == 0x0102 | 0x80000000
+    assert record.flags2 == 0x0201
+    assert record.eid == "WarGlobalTest"
+    assert record.eid == "WArGlobalTest"
+    assert record.format == 'f'
+    assert record.format != 'F'
+    assert record.value == 12.2
+
+    record = Current[0].GLOB[0]    
+    newrecord = record.CopyAsOverride(newMod)
+    
+    assert newrecord.fid == ('Oblivion.esm', 0x08D9DA)
+    assert newrecord.flags1 == 0x80000000
+    assert newrecord.flags2 == 1584398
+    assert newrecord.eid == "SEKnightSpawnTime"
+    assert newrecord.eid == "SEKnighTSpawnTime"
+    assert newrecord.format == 's'
+    assert newrecord.format != 'S'
+    assert newrecord.value == 4.0
+
+    newrecord.flags1 = 2
+    newrecord.flags2 = 3
+    newrecord.eid = "WarGlobalCopyTest"
+    newrecord.format = 'f'
+    newrecord.value = 16.0
+
+    assert newrecord.flags1 == 2 | 0x80000000 #CBash sets 0x80000000 for internal use
+    assert newrecord.flags2 == 3
+    assert newrecord.eid == "WarGlobalCopyTest"
+    assert newrecord.eid == "WArGlobalCopyTest"
+    assert newrecord.format == 'f'
+    assert newrecord.format != 'F'
+    assert newrecord.value == 16.0
+    
+    assert record.fid == ('Oblivion.esm', 0x08D9DA)
+    assert record.flags1 == 0x80000000
+    assert record.flags2 == 1584398
+    assert record.eid == "SEKnightSpawnTime"
+    assert record.eid == "SEKnighTSpawnTime"
+    assert record.format == 's'
+    assert record.format != 'S'
+    assert record.value == 4.0
+
+    newrecord = record.CopyAsNew(newMod)
+    
+    assert newrecord.fid == ('RegressionTests.esp', 0x001005)
+    assert newrecord.flags1 == 0x80000000
+    assert newrecord.flags2 == 1584398
+    assert newrecord.eid == "SEKnightSpawnTime"
+    assert newrecord.eid == "SEKnighTSpawnTime"
+    assert newrecord.format == 's'
+    assert newrecord.format != 'S'
+    assert newrecord.value == 4.0
+
+    newrecord.flags1 = 4
+    newrecord.flags2 = 8
+    newrecord.eid = "WarGlobalCopyNew"
+    newrecord.format = 's'
+    newrecord.value = 9.0
+
+    assert newrecord.flags1 == 4 | 0x80000000 #CBash sets 0x80000000 for internal use
+    assert newrecord.flags2 == 8
+    assert newrecord.eid == "WarGlobalCopyNew"
+    assert newrecord.eid == "WArGlobalCopyNew"
+    assert newrecord.format == 's'
+    assert newrecord.format != 'S'
+    assert newrecord.value == 9.0
+
+    print "GLOB:Finished testing"
+    
+def assertCLAS(Current, newMod):
+    record = Current[0].CLAS[0]
+
+    assert record.fid == ('Oblivion.esm', 0x09712F)
+    assert record.flags1 == 0x80000000
+    assert record.flags2 == 7024151
+    assert record.eid == "SE32Smith"
+    assert record.eid == "SE32SmiTh"
+    assert record.full == "Vitharn Smith"
+    assert record.full != "Vitharn SmiTh"
+    assert record.description == None
+    assert record.iconPath == None
+    assert record.primary1 == 0
+    assert record.primary2 == 5
+    assert record.specialization == 0
+    assert record.major1 == 12
+    assert record.major2 == 30
+    assert record.major3 == 14
+    assert record.major4 == 15
+    assert record.major5 == 16
+    assert record.major6 == 29
+    assert record.major7 == 18
+    assert record.flags == 0
+    assert record.services == 0
+    assert record.trainSkill == 0
+    assert record.trainLevel == 0
+    assert record.unused1 == [0,0]
+
+    record = newMod.create_CLAS()
+
+    record.flags1 = 0x0102
+    record.flags2 = 0x0201
+    record.eid = "WarCLASTest"
+    record.full = "Waruddar! RARGH!"
+    record.description = "This is just a very long and quick test of a string that is absolutely pointless for the vast majority of cases.!!!"
+    record.iconPath = r"ICON\asdf.ico"
+    record.primary1 = 8
+    record.primary2 = 9
+    record.specialization = 1
+    record.major1 = 1
+    record.major2 = 2
+    record.major3 = 3
+    record.major4 = 4
+    record.major5 = 5
+    record.major6 = 6
+    record.major7 = 7
+    record.flags = 0x07
+    record.services = 0x08
+    record.trainSkill = 13
+    record.trainLevel = 60
+    record.unused1 = [0x01, 0xFF]
+
+    assert record.fid == ('RegressionTests.esp', 0x001006)
+    assert record.flags1 == 0x0102 | 0x80000000
+    assert record.flags2 == 0x0201
+    assert record.eid == "WarCLASTest"
+    assert record.eid == "WarCLAsTest"
+    assert record.full == "Waruddar! RARGH!"
+    assert record.full != "Waruddar! RaRGH!"
+    assert record.description == "This is just a very long and quick test of a string that is absolutely pointless for the vast majority of cases.!!!"
+    assert record.description != "This is just A very long and quick test of a string that is absolutely pointless for the vast majority of cases.!!!"
+    assert record.iconPath == r"ICON\asdf.ico"
+    assert record.iconPath == r"iCoN\asDf.ico" #should be case insensitive
+    assert record.primary1 == 8
+    assert record.primary2 == 9
+    assert record.specialization == 1
+    assert record.major1 == 1
+    assert record.major2 == 2
+    assert record.major3 == 3
+    assert record.major4 == 4
+    assert record.major5 == 5
+    assert record.major6 == 6
+    assert record.major7 == 7
+    assert record.flags == 0x07
+    assert record.services == 0x08
+    assert record.trainSkill == 13
+    assert record.trainLevel == 60
+    assert record.unused1 == [0x01, 0xFF]
+
+    record = Current[0].CLAS[0]    
+    record = record.CopyAsOverride(newMod)
+
+    assert record.fid == ('Oblivion.esm', 0x09712F)
+    assert record.flags1 == 0x80000000
+    assert record.flags2 == 7024151
+    assert record.eid == "SE32Smith"
+    assert record.eid == "SE32SmiTh"
+    assert record.full == "Vitharn Smith"
+    assert record.full != "Vitharn SmiTh"
+    assert record.description == None
+    assert record.iconPath == None
+    assert record.primary1 == 0
+    assert record.primary2 == 5
+    assert record.specialization == 0
+    assert record.major1 == 12
+    assert record.major2 == 30
+    assert record.major3 == 14
+    assert record.major4 == 15
+    assert record.major5 == 16
+    assert record.major6 == 29
+    assert record.major7 == 18
+    assert record.flags == 0
+    assert record.services == 0
+    assert record.trainSkill == 0
+    assert record.trainLevel == 0
+    assert record.unused1 == [0,0]
+
+    record.flags1 = 0x0103
+    record.flags2 = 0x0202
+    record.eid = "WarCLASCopy"
+    record.full = "War! RARGH!"
+    record.description = "This is just a very short test"
+    record.iconPath = r"ICON2\asdf.ico"
+    record.primary1 = 10
+    record.primary2 = 11
+    record.specialization = 5
+    record.major1 = 12
+    record.major2 = 13
+    record.major3 = 14
+    record.major4 = 15
+    record.major5 = 16
+    record.major6 = 17
+    record.major7 = 18
+    record.flags = 0x10
+    record.services = 0x11
+    record.trainSkill = 20
+    record.trainLevel = 30
+    record.unused1 = [0x50, 0x0F]
+
+    assert record.fid == ('Oblivion.esm', 0x09712F)
+    assert record.flags1 == 0x0103 | 0x80000000
+    assert record.flags2 == 0x0202
+    assert record.eid == "WarCLASCopy"
+    assert record.eid == "WarCLaSCopy"
+    assert record.full == "War! RARGH!"
+    assert record.full != "War! RaRGH!"
+    assert record.description == "This is just a very short test"
+    assert record.description != "This is just A very short test"
+    assert record.iconPath == r"ICON2\asdf.ico"
+    assert record.iconPath == r"iCoN2\asDf.ico" #should be case insensitive
+    assert record.primary1 == 10
+    assert record.primary2 == 11
+    assert record.specialization == 5
+    assert record.major1 == 12
+    assert record.major2 == 13
+    assert record.major3 == 14
+    assert record.major4 == 15
+    assert record.major5 == 16
+    assert record.major6 == 17
+    assert record.major7 == 18
+    assert record.flags == 0x10
+    assert record.services == 0x11
+    assert record.trainSkill == 20
+    assert record.trainLevel == 30
+    assert record.unused1 == [0x50, 0x0F]
+    
+    record = Current[0].CLAS[0]    
+    assert record.fid == ('Oblivion.esm', 0x09712F)
+    assert record.flags1 == 0x80000000
+    assert record.flags2 == 7024151
+    assert record.eid == "SE32Smith"
+    assert record.eid == "SE32SmiTh"
+    assert record.full == "Vitharn Smith"
+    assert record.full != "Vitharn SmiTh"
+    assert record.description == None
+    assert record.iconPath == None
+    assert record.primary1 == 0
+    assert record.primary2 == 5
+    assert record.specialization == 0
+    assert record.major1 == 12
+    assert record.major2 == 30
+    assert record.major3 == 14
+    assert record.major4 == 15
+    assert record.major5 == 16
+    assert record.major6 == 29
+    assert record.major7 == 18
+    assert record.flags == 0
+    assert record.services == 0
+    assert record.trainSkill == 0
+    assert record.trainLevel == 0
+    assert record.unused1 == [0,0]
+
+    record = record.CopyAsNew(newMod)
+    
+    assert record.fid == ('RegressionTests.esp', 0x001007)
+    assert record.flags1 == 0x80000000
+    assert record.flags2 == 7024151
+    assert record.eid == "SE32Smith"
+    assert record.eid == "SE32SmiTh"
+    assert record.full == "Vitharn Smith"
+    assert record.full != "Vitharn SmiTh"
+    assert record.description == None
+    assert record.iconPath == None
+    assert record.primary1 == 0
+    assert record.primary2 == 5
+    assert record.specialization == 0
+    assert record.major1 == 12
+    assert record.major2 == 30
+    assert record.major3 == 14
+    assert record.major4 == 15
+    assert record.major5 == 16
+    assert record.major6 == 29
+    assert record.major7 == 18
+    assert record.flags == 0
+    assert record.services == 0
+    assert record.trainSkill == 0
+    assert record.trainLevel == 0
+    assert record.unused1 == [0,0]
+
+    record.flags1 = 0x0103
+    record.flags2 = 0x0202
+    record.eid = "WarCLASAsNew"
+    record.full = "War3! RARGH!"
+    record.description = "This is a very short test"
+    record.iconPath = r"ICON21\asdf.ico"
+    record.primary1 = 101
+    record.primary2 = 111
+    record.specialization = 51
+    record.major1 = 121
+    record.major2 = 131
+    record.major3 = 141
+    record.major4 = 151
+    record.major5 = 161
+    record.major6 = 171
+    record.major7 = 181
+    record.flags = 0x101
+    record.services = 0x111
+    record.trainSkill = -1
+    record.trainLevel = 233
+    record.unused1 = [0x80, 0x2F]
+
+    assert record.fid == ('RegressionTests.esp', 0x001007)
+    assert record.flags1 == 0x0103 | 0x80000000
+    assert record.flags2 == 0x0202
+    assert record.eid == "WarCLASAsNew"
+    assert record.eid == "WarCLaSAsNew"
+    assert record.full == "War3! RARGH!"
+    assert record.full != "War3! RaRGH!"
+    assert record.description == "This is a very short test"
+    assert record.description != "This is A very short test"
+    assert record.iconPath == r"ICON21\asdf.ico"
+    assert record.iconPath == r"iCoN21\asDf.ico" #should be case insensitive
+    assert record.primary1 == 101
+    assert record.primary2 == 111
+    assert record.specialization == 51
+    assert record.major1 == 121
+    assert record.major2 == 131
+    assert record.major3 == 141
+    assert record.major4 == 151
+    assert record.major5 == 161
+    assert record.major6 == 171
+    assert record.major7 == 181
+    assert record.flags == 0x101
+    assert record.services == 0x111
+    assert record.trainSkill == -1
+    assert record.trainLevel == 233
+    assert record.unused1 == [0x80, 0x2F]
+    
+    record = Current[0].CLAS[0]    
+    assert record.fid == ('Oblivion.esm', 0x09712F)
+    assert record.flags1 == 0x80000000
+    assert record.flags2 == 7024151
+    assert record.eid == "SE32Smith"
+    assert record.eid == "SE32SmiTh"
+    assert record.full == "Vitharn Smith"
+    assert record.full != "Vitharn SmiTh"
+    assert record.description == None
+    assert record.iconPath == None
+    assert record.primary1 == 0
+    assert record.primary2 == 5
+    assert record.specialization == 0
+    assert record.major1 == 12
+    assert record.major2 == 30
+    assert record.major3 == 14
+    assert record.major4 == 15
+    assert record.major5 == 16
+    assert record.major6 == 29
+    assert record.major7 == 18
+    assert record.flags == 0
+    assert record.services == 0
+    assert record.trainSkill == 0
+    assert record.trainLevel == 0
+    assert record.unused1 == [0,0]
+
+    print "CLAS:Finished testing"
+
+def assertFACT(Current, newMod):
+    record = Current[0].FACT[9]
+
+    assert record.fid == ('Oblivion.esm', 0x080D18)
+    assert record.flags1 == 0x80000000
+    assert record.flags2 == 2829337
+    assert record.eid == "SERooftopClubFaction"
+    assert record.eid == "SERoofTopClubFaction"
+    assert record.full == "Rooftop Club"
+    assert record.full != "RoofTop Club"
+    assert record.flags == 1
+    assert record.crimeGoldMultiplier == 1.0
+    assert len(record.relations) == 1
+    relation = record.relations[0]
+    assert relation.faction == ('Oblivion.esm',0x080D18)
+    assert relation.mod == 15
+    assert len(record.ranks) == 1
+    rank = record.ranks[0]
+    assert rank.rank == 0
+    assert rank.male == 'Fighter'
+    assert rank.male != 'FiGhter'
+    assert rank.female == 'Fighter'    
+    assert rank.female != 'FigHter'   
+    assert rank.insigniaPath == None
+    
+    record = newMod.create_FACT()
+
+    record.flags1 = 0x0106
+    record.flags2 = 0x0207
+    record.eid = "WarFACTTest"
+    record.full = "RARGH!111!1!"
+    record.flags = 0x4
+    record.crimeGoldMultiplier = 16.1
+    
+    relation = record.create_relation()
+    relation.faction = ('Oblivion.esm', 0x123456)
+    relation.mod = 20
+    
+    relation = record.create_relation()
+    relation.faction = ('Oblivion.esm', 0x789123)
+    relation.mod = 16
+    
+    rank = record.create_rank()
+    rank.rank = 0
+    rank.male = "male_name0"
+    rank.female = "female_name0"
+    rank.insigniaPath = r"insignia\asdf.ico"
+    
+    rank = record.create_rank()
+    rank.rank = 1
+    rank.male = "male_name1"
+    rank.female = "female_name1"
+    rank.insigniaPath = r"insignia1\asdf.ico"
+
+    assert record.fid == ('RegressionTests.esp', 0x001008)
+    assert record.flags1 == 0x0106 | 0x80000000
+    assert record.flags2 == 0x0207
+    assert record.eid == "WarFACTTest"
+    assert record.eid == "WarFACtTest"
+    assert record.full == "RARGH!111!1!"
+    assert record.full != "RaRGH!111!1!"
+    assert record.flags == 0x4
+    assert record.crimeGoldMultiplier == 16.1
+    
+    assert len(record.relations) == 2
+    relation = record.relations[0]
+    assert relation.faction == ('Oblivion.esm',0x123456)
+    assert relation.mod == 20
+    relation = record.relations[1]
+    assert relation.faction == ('Oblivion.esm',0x789123)
+    assert relation.mod == 16
+    
+    assert len(record.ranks) == 2
+    rank = record.ranks[0]
+    assert rank.rank == 0
+    assert rank.male == 'male_name0'
+    assert rank.male != 'male_nAme0'
+    assert rank.female == 'female_name0'    
+    assert rank.female != 'female_nAme0'   
+    assert rank.insigniaPath == r"insignia\asdf.ico"
+    assert rank.insigniaPath == r"insigniA\asdf.ico"
+    rank = record.ranks[1]
+    assert rank.rank == 1
+    assert rank.male == 'male_name1'
+    assert rank.male != 'mAle_name1'
+    assert rank.female == 'female_name1'    
+    assert rank.female != 'femAle_name1'   
+    assert rank.insigniaPath == r"insignia1\asdf.ico"
+    assert rank.insigniaPath == r"insIgnia1\asdf.ico"
+
+    record = Current[0].FACT[9]
+    record = record.CopyAsOverride(newMod)
+
+    assert record.fid == ('Oblivion.esm', 0x080D18)
+    assert record.flags1 == 0x80000000
+    assert record.flags2 == 2829337
+    assert record.eid == "SERooftopClubFaction"
+    assert record.eid == "SERoofTopClubFaction"
+    assert record.full == "Rooftop Club"
+    assert record.full != "RoofTop Club"
+    assert record.flags == 1
+    assert record.crimeGoldMultiplier == 1.0
+    assert len(record.relations) == 1
+    relation = record.relations[0]
+    assert relation.faction == ('Oblivion.esm',0x080D18)
+    assert relation.mod == 15
+    assert len(record.ranks) == 1
+    rank = record.ranks[0]
+    assert rank.rank == 0
+    assert rank.male == 'Fighter'
+    assert rank.male != 'FiGhter'
+    assert rank.female == 'Fighter'    
+    assert rank.female != 'FigHter'   
+    assert rank.insigniaPath == None
+
+    record.flags1 = 0x0101
+    record.flags2 = 0x0201
+    record.eid = "WarFACTCopy"
+    record.full = "RARGH!"
+    record.flags = 0x6
+    record.crimeGoldMultiplier = 13.1
+    
+    relation = record.create_relation()
+    relation.faction = ('Oblivion.esm', 0x133456)
+    relation.mod = 20
+    
+    relation = record.create_relation()
+    relation.faction = ('Oblivion.esm', 0x799123)
+    relation.mod = 16
+    
+    rank = record.create_rank()
+    rank.rank = 0
+    rank.male = "male_name0"
+    rank.female = "female_name0"
+    rank.insigniaPath = r"insignia\asdf.ico"
+    
+    rank = record.create_rank()
+    rank.rank = 1
+    rank.male = "male_name1"
+    rank.female = "female_name1"
+    rank.insigniaPath = r"insignia1\asdf.ico"
+
+    assert record.fid == ('Oblivion.esm', 0x080D18)
+    assert record.flags1 == 0x0101 | 0x80000000
+    assert record.flags2 == 0x0201
+    assert record.eid == "WarFACTCopy"
+    assert record.eid == "WaRFACTCopy"
+    assert record.full == "RARGH!"
+    assert record.full != "RaRGH!"
+    assert record.flags == 0x6
+    assert record.crimeGoldMultiplier == 13.1
+    assert len(record.relations) == 3
+    relation = record.relations[0]
+    assert relation.faction == ('Oblivion.esm',0x080D18)
+    assert relation.mod == 15
+    relation = record.relations[1]
+    assert relation.faction == ('Oblivion.esm',0x133456)
+    assert relation.mod == 20
+    relation = record.relations[2]
+    assert relation.faction == ('Oblivion.esm',0x799123)
+    assert relation.mod == 16
+    assert len(record.ranks) == 3
+    rank = record.ranks[0]
+    assert rank.rank == 0
+    assert rank.male == 'Fighter'
+    assert rank.male != 'FiGhter'
+    assert rank.female == 'Fighter'    
+    assert rank.female != 'FigHter'   
+    assert rank.insigniaPath == None
+    rank = record.ranks[1]
+    assert rank.rank == 0
+    assert rank.male == 'male_name0'
+    assert rank.male != 'male_nAme0'
+    assert rank.female == 'female_name0'    
+    assert rank.female != 'female_nAme0'   
+    assert rank.insigniaPath == r"insignia\asdf.ico"
+    assert rank.insigniaPath == r"insigniA\asdf.ico"
+    rank = record.ranks[2]
+    assert rank.rank == 1
+    assert rank.male == 'male_name1'
+    assert rank.male != 'mAle_name1'
+    assert rank.female == 'female_name1'    
+    assert rank.female != 'femAle_name1'   
+    assert rank.insigniaPath == r"insignia1\asdf.ico"
+    assert rank.insigniaPath == r"insIgnia1\asdf.ico"
+
+    record = Current[0].FACT[9]
+    assert record.fid == ('Oblivion.esm', 0x080D18)
+    assert record.flags1 == 0x80000000
+    assert record.flags2 == 2829337
+    assert record.eid == "SERooftopClubFaction"
+    assert record.eid == "SERoofTopClubFaction"
+    assert record.full == "Rooftop Club"
+    assert record.full != "RoofTop Club"
+    assert record.flags == 1
+    assert record.crimeGoldMultiplier == 1.0
+    assert len(record.relations) == 1
+    relation = record.relations[0]
+    assert relation.faction == ('Oblivion.esm',0x080D18)
+    assert relation.mod == 15
+    assert len(record.ranks) == 1
+    rank = record.ranks[0]
+    assert rank.rank == 0
+    assert rank.male == 'Fighter'
+    assert rank.male != 'FiGhter'
+    assert rank.female == 'Fighter'    
+    assert rank.female != 'FigHter'   
+    assert rank.insigniaPath == None
+
+    record = record.CopyAsNew(newMod)
+    
+    assert record.fid == ('RegressionTests.esp', 0x001009)
+    assert record.flags1 == 0x80000000
+    assert record.flags2 == 2829337
+    assert record.eid == "SERooftopClubFaction"
+    assert record.eid == "SERoofTopClubFaction"
+    assert record.full == "Rooftop Club"
+    assert record.full != "RoofTop Club"
+    assert record.flags == 1
+    assert record.crimeGoldMultiplier == 1.0
+    assert len(record.relations) == 1
+    relation = record.relations[0]
+    assert relation.faction == ('Oblivion.esm',0x080D18)
+    assert relation.mod == 15
+    assert len(record.ranks) == 1
+    rank = record.ranks[0]
+    assert rank.rank == 0
+    assert rank.male == 'Fighter'
+    assert rank.male != 'FiGhter'
+    assert rank.female == 'Fighter'    
+    assert rank.female != 'FigHter'   
+    assert rank.insigniaPath == None
+
+    record.flags1 = 0x0101
+    record.flags2 = 0x0201
+    record.eid = "WarFACTCopy2"
+    record.full = "RARGH2!"
+    record.flags = 0x6
+    record.crimeGoldMultiplier = 13.1
+    
+    relation = record.create_relation()
+    relation.faction = ('Oblivion.esm', 0x133456)
+    relation.mod = 20
+    
+    relation = record.create_relation()
+    relation.faction = ('Oblivion.esm', 0x799123)
+    relation.mod = 16
+    
+    rank = record.create_rank()
+    rank.rank = 0
+    rank.male = "male_name0"
+    rank.female = "female_name0"
+    rank.insigniaPath = r"insignia\asdf.ico"
+    
+    rank = record.create_rank()
+    rank.rank = 1
+    rank.male = "male_name1"
+    rank.female = "female_name1"
+    rank.insigniaPath = r"insignia1\asdf.ico"
+
+    assert record.fid == ('RegressionTests.esp', 0x001009)
+    assert record.flags1 == 0x0101 | 0x80000000
+    assert record.flags2 == 0x0201
+    assert record.eid == "WarFACTCopy2"
+    assert record.eid == "WaRFACTCopy2"
+    assert record.full == "RARGH2!"
+    assert record.full != "RaRGH2!"
+    assert record.flags == 0x6
+    assert record.crimeGoldMultiplier == 13.1
+    assert len(record.relations) == 3
+    relation = record.relations[0]
+    assert relation.faction == ('Oblivion.esm',0x080D18)
+    assert relation.mod == 15
+    relation = record.relations[1]
+    assert relation.faction == ('Oblivion.esm',0x133456)
+    assert relation.mod == 20
+    relation = record.relations[2]
+    assert relation.faction == ('Oblivion.esm',0x799123)
+    assert relation.mod == 16
+    assert len(record.ranks) == 3
+    rank = record.ranks[0]
+    assert rank.rank == 0
+    assert rank.male == 'Fighter'
+    assert rank.male != 'FiGhter'
+    assert rank.female == 'Fighter'    
+    assert rank.female != 'FigHter'   
+    assert rank.insigniaPath == None
+    rank = record.ranks[1]
+    assert rank.rank == 0
+    assert rank.male == 'male_name0'
+    assert rank.male != 'male_nAme0'
+    assert rank.female == 'female_name0'    
+    assert rank.female != 'female_nAme0'   
+    assert rank.insigniaPath == r"insignia\asdf.ico"
+    assert rank.insigniaPath == r"insigniA\asdf.ico"
+    rank = record.ranks[2]
+    assert rank.rank == 1
+    assert rank.male == 'male_name1'
+    assert rank.male != 'mAle_name1'
+    assert rank.female == 'female_name1'    
+    assert rank.female != 'femAle_name1'   
+    assert rank.insigniaPath == r"insignia1\asdf.ico"
+    assert rank.insigniaPath == r"insIgnia1\asdf.ico"
+    
+    record = Current[0].FACT[9]    
+    assert record.fid == ('Oblivion.esm', 0x080D18)
+    assert record.flags1 == 0x80000000
+    assert record.flags2 == 2829337
+    assert record.eid == "SERooftopClubFaction"
+    assert record.eid == "SERoofTopClubFaction"
+    assert record.full == "Rooftop Club"
+    assert record.full != "RoofTop Club"
+    assert record.flags == 1
+    assert record.crimeGoldMultiplier == 1.0
+    assert len(record.relations) == 1
+    relation = record.relations[0]
+    assert relation.faction == ('Oblivion.esm',0x080D18)
+    assert relation.mod == 15
+    assert len(record.ranks) == 1
+    rank = record.ranks[0]
+    assert rank.rank == 0
+    assert rank.male == 'Fighter'
+    assert rank.male != 'FiGhter'
+    assert rank.female == 'Fighter'    
+    assert rank.female != 'FigHter'   
+    assert rank.insigniaPath == None
+    
+    print "FACT:Finished testing"
+
+def assertHAIR(Current, newMod):
+    record = Current[0].HAIR[0]
+    
+    assert record.fid == ('Oblivion.esm', 0x0C4821)
+    assert record.flags1 == 0x80000000
+    assert record.flags2 == 1712643
+    assert record.eid == "KhajiitWisps"
+    assert record.eid == "KhAjiitWisps"
+    assert record.full == "Wisps"
+    assert record.full != "WiSps"
+    assert record.modPath == r"Characters\Hair\KhajiitWisps.NIF"
+    assert record.modPath == r"ChaRactErs\HAir\KhajIitWisps.NiF" #Should be case insensitive
+    assert record.modb == 0.0
+    assert record.modt_p == []
+    assert record.iconPath == r"Characters\Hair\Mane.dds"
+    assert record.iconPath == r"ChAraCterS\HaIr\ManE.dDs" #Should be case insensitive
+    assert record.flags == 8
+
+    record = newMod.create_HAIR()
+    record.flags1 = 0x0102
+    record.flags2 = 0x0201
+    record.eid = "HAIRWarTest"
+    record.full = "Fancy HAIR"
+    record.modPath = r"Blah\hay\1.nif"
+    record.modb = 2.56
+    record.modt_p = [0x00, 0xFF, 0xFF]
+    record.iconPath = r"hair\path\test.dds"
+    record.flags = 15
+    
+    assert record.fid == ('RegressionTests.esp', 0x00100A)
+    assert record.flags1 == 0x0102 | 0x80000000
+    assert record.flags2 == 0x0201
+    assert record.eid == "HAIRWarTest"
+    assert record.eid == "HaIRWarTest"
+    assert record.full == "Fancy HAIR"
+    assert record.full != "Fancy HaIR"
+    assert record.modPath == r"Blah\hay\1.nif"
+    assert record.modPath == r"BlAh\hAy\1.Nif" #Should be case insensitive
+    assert record.modb == 2.56
+    assert record.modt_p == [0x00, 0xFF, 0xFF]
+    assert record.iconPath == r"hair\path\test.dds"
+    assert record.iconPath == r"hAiR\pATh\tEst.ddS" #Should be case insensitive
+    assert record.flags == 15
+
+    record = Current[0].HAIR[0]    
+    record = record.CopyAsOverride(newMod)
+    
+    assert record.fid == ('Oblivion.esm', 0x0C4821)
+    assert record.flags1 == 0x80000000
+    assert record.flags2 == 1712643
+    assert record.eid == "KhajiitWisps"
+    assert record.eid == "KhAjiitWisps"
+    assert record.full == "Wisps"
+    assert record.full != "WiSps"
+    assert record.modPath == r"Characters\Hair\KhajiitWisps.NIF"
+    assert record.modPath == r"ChaRactErs\HAir\KhajIitWisps.NiF" #Should be case insensitive
+    assert record.modb == 0.0
+    assert record.modt_p == []
+    assert record.iconPath == r"Characters\Hair\Mane.dds"
+    assert record.iconPath == r"ChAraCterS\HaIr\ManE.dDs" #Should be case insensitive
+    assert record.flags == 8
+
+    record.flags1 = 0x0103
+    record.flags2 = 0x0202
+    record.eid = "HAIRWarTest2"
+    record.full = "Fancy2 HAIR"
+    record.modPath = r"Blah\hay\2.nif"
+    record.modb = 2.16
+    record.modt_p = [0x0F, 0x1F, 0xF4]
+    record.iconPath = r"path\test2.dds"
+    record.flags = 17
+
+    assert record.fid == ('Oblivion.esm', 0x0C4821)
+    assert record.flags1 == 0x0103 | 0x80000000
+    assert record.flags2 == 0x0202
+    assert record.eid == "HAIRWarTest2"
+    assert record.eid == "HaIRWarTest2"
+    assert record.full == "Fancy2 HAIR"
+    assert record.full != "Fancy2 HaIR"
+    assert record.modPath == r"Blah\hay\2.nif"
+    assert record.modPath == r"BlAh\hAy\2.Nif" #Should be case insensitive
+    assert record.modb == 2.16
+    assert record.modt_p == [0x0F, 0x1F, 0xF4]
+    assert record.iconPath == r"path\test2.dds"
+    assert record.iconPath == r"paTH\teST2.dds" #Should be case insensitive
+    assert record.flags == 17
+    
+    record = Current[0].HAIR[0]
+    
+    assert record.fid == ('Oblivion.esm', 0x0C4821)
+    assert record.flags1 == 0x80000000
+    assert record.flags2 == 1712643
+    assert record.eid == "KhajiitWisps"
+    assert record.eid == "KhAjiitWisps"
+    assert record.full == "Wisps"
+    assert record.full != "WiSps"
+    assert record.modPath == r"Characters\Hair\KhajiitWisps.NIF"
+    assert record.modPath == r"ChaRactErs\HAir\KhajIitWisps.NiF" #Should be case insensitive
+    assert record.modb == 0.0
+    assert record.modt_p == []
+    assert record.iconPath == r"Characters\Hair\Mane.dds"
+    assert record.iconPath == r"ChAraCterS\HaIr\ManE.dDs" #Should be case insensitive
+    assert record.flags == 8
+
+    record = record.CopyAsNew(newMod)
+    
+    assert record.fid == ('RegressionTests.esp', 0x00100B)
+    assert record.flags1 == 0x80000000
+    assert record.flags2 == 1712643
+    assert record.eid == "KhajiitWisps"
+    assert record.eid == "KhAjiitWisps"
+    assert record.full == "Wisps"
+    assert record.full != "WiSps"
+    assert record.modPath == r"Characters\Hair\KhajiitWisps.NIF"
+    assert record.modPath == r"ChaRactErs\HAir\KhajIitWisps.NiF" #Should be case insensitive
+    assert record.modb == 0.0
+    assert record.modt_p == []
+    assert record.iconPath == r"Characters\Hair\Mane.dds"
+    assert record.iconPath == r"ChAraCterS\HaIr\ManE.dDs" #Should be case insensitive
+    assert record.flags == 8
+
+    record.flags1 = 0x0303
+    record.flags2 = 0x0102
+    record.eid = "HAIRWarTest2CopyNew"
+    record.full = "Fancy2 CopyNew"
+    record.modPath = r"Blah\CopyNew\2.nif"
+    record.modb = 3.16
+    record.modt_p = [0x0F, 0x1F, 0xF4]
+    record.iconPath = r"CopyNew\test2.dds"
+    record.flags = 27
+    
+    assert record.fid == ('RegressionTests.esp', 0x00100B)
+    assert record.flags1 == 0x0303 | 0x80000000
+    assert record.flags2 == 0x0102
+    assert record.eid == "HAIRWarTest2CopyNew"
+    assert record.eid == "HaIRWarTest2CopyNew"
+    assert record.full == "Fancy2 CopyNew"
+    assert record.full != "FAncy2 CopyNew"
+    assert record.modPath == r"Blah\CopyNew\2.nif"
+    assert record.modPath == r"BlAh\CoPyNew\2.Nif" #Should be case insensitive
+    assert record.modb == 3.16
+    assert record.modt_p == [0x0F, 0x1F, 0xF4]
+    assert record.iconPath == r"CopyNew\test2.dds"
+    assert record.iconPath == r"COPyNew\test2.dds" #Should be case insensitive
+    assert record.flags == 27
+
+    print "HAIR:Finished testing"
+
+def assertEYES(Current, newMod):
+    record = Current[0].EYES[0]
+    
+    assert record.fid == ('Oblivion.esm', 0x05FA43)
+    assert record.flags1 == 0x80000000
+    assert record.flags2 == 1714717
+    assert record.eid == "eyeOrdered"
+    assert record.eid == "eYeOrdered"
+    assert record.full == "Order"
+    assert record.full != "ORder"
+    assert record.iconPath == r"Characters\Eyes\EyeOrder.dds"
+    assert record.iconPath == r"Characters\EyEs\EyeOrder.dDs" #Should be case insensitive
+    assert record.flags == 0
+
+    record = newMod.create_EYES()
+
+    record.flags1 = 0x0102
+    record.flags2 = 0x0201
+    record.eid = "EYESWarTest"
+    record.full = "Fancy EYES"
+    record.iconPath = r"EYES\p\nath\test.dds"
+    record.flags = 15
+    
+    assert record.fid == ('RegressionTests.esp', 0x00100C)
+    assert record.flags1 == 0x0102 | 0x80000000
+    assert record.flags2 == 0x0201
+    assert record.eid == "EYESWarTest"
+    assert record.eid == "EYeSWarTest"
+    assert record.full == "Fancy EYES"
+    assert record.full != "FAncy EYES"
+    assert record.iconPath == r"EYES\p\nath\test.dds"
+    assert record.iconPath == r"EYES\p\nath\tEst.dds" #Should be case insensitive
+    assert record.flags == 15
+
+    record = Current[0].EYES[0]    
+    record = record.CopyAsOverride(newMod)
+    
+    assert record.fid == ('Oblivion.esm', 0x05FA43)
+    assert record.flags1 == 0x80000000
+    assert record.flags2 == 1714717
+    assert record.eid == "eyeOrdered"
+    assert record.eid == "eYeOrdered"
+    assert record.full == "Order"
+    assert record.full != "ORder"
+    assert record.iconPath == r"Characters\Eyes\EyeOrder.dds"
+    assert record.iconPath == r"Characters\EyEs\EyeOrder.dDs" #Should be case insensitive
+    assert record.flags == 0
+
+    record.flags1 = 0x0104
+    record.flags2 = 0x0206
+    record.eid = "EYESWarTest2"
+    record.full = "Fancy EYES2"
+    record.iconPath = r"EYES2\p\nath\test.dds"
+    record.flags = 17
+
+    assert record.fid == ('Oblivion.esm', 0x05FA43)
+    assert record.flags1 == 0x0104 | 0x80000000
+    assert record.flags2 == 0x0206
+    assert record.eid == "EYESWarTest2"
+    assert record.eid == "EYeSWarTest2"
+    assert record.full == "Fancy EYES2"
+    assert record.full != "FAncy EYES2"
+    assert record.iconPath == r"EYES2\p\nath\test.dds"
+    assert record.iconPath == r"EYES2\p\nath\tEst.dds" #Should be case insensitive
+    assert record.flags == 17
+    
+    record = Current[0].EYES[0]
+    
+    assert record.fid == ('Oblivion.esm', 0x05FA43)
+    assert record.flags1 == 0x80000000
+    assert record.flags2 == 1714717
+    assert record.eid == "eyeOrdered"
+    assert record.eid == "eYeOrdered"
+    assert record.full == "Order"
+    assert record.full != "ORder"
+    assert record.iconPath == r"Characters\Eyes\EyeOrder.dds"
+    assert record.iconPath == r"Characters\EyEs\EyeOrder.dDs" #Should be case insensitive
+    assert record.flags == 0
+
+
+    record = record.CopyAsNew(newMod)
+    
+    assert record.fid == ('RegressionTests.esp', 0x00100D)
+    assert record.flags1 == 0x80000000
+    assert record.flags2 == 1714717
+    assert record.eid == "eyeOrdered"
+    assert record.eid == "eYeOrdered"
+    assert record.full == "Order"
+    assert record.full != "ORder"
+    assert record.iconPath == r"Characters\Eyes\EyeOrder.dds"
+    assert record.iconPath == r"Characters\EyEs\EyeOrder.dDs" #Should be case insensitive
+    assert record.flags == 0
+
+    record.flags1 = 0x0107
+    record.flags2 = 0x0203
+    record.eid = "EYESWarTest3"
+    record.full = "Fancy EYES3"
+    record.iconPath = r"EYES3\p\nath\test.dds"
+    record.flags = 19
+    
+    assert record.fid == ('RegressionTests.esp', 0x00100D)
+    assert record.flags1 == 0x0107 | 0x80000000
+    assert record.flags2 == 0x0203
+    assert record.eid == "EYESWarTest3"
+    assert record.eid == "EYeSWarTest3"
+    assert record.full == "Fancy EYES3"
+    assert record.full != "FAncy EYES3"
+    assert record.iconPath == r"EYES3\p\nath\test.dds"
+    assert record.iconPath == r"EYES3\p\nath\tEst.dds" #Should be case insensitive
+    assert record.flags == 19
+    
+    print "EYES:Finished testing"
+
+def assertRACE(Current, newMod):
+    record = Current[0].RACE[13]
+
+    assert record.fid == ('Oblivion.esm', 0x000D43)
+    assert record.flags1 == 0x80000000
+    assert record.flags2 == 1712664
+    assert record.eid == "Redguard"
+    assert record.eid == "REdguard"
+    assert record.full == "Redguard"
+    assert record.full != "REdguard"
+    assert record.text == "The most naturally talented warriors in Tamriel.  In addition to their cultural affinities for many weapon and armor styles, they also have a hardy constitution and a natural resistance to disease and poison."
+    assert record.text != "ThE most naturally talented warriors in Tamriel.  In addition to their cultural affinities for many weapon and armor styles, they also have a hardy constitution and a natural resistance to disease and poison."
+    assert len(record.spells) == 3
+    assert record.spells == [('Oblivion.esm', 0x047AE6), ('Oblivion.esm', 0x047AE5), ('Oblivion.esm', 0x047AE7)]
+    assert len(record.relations) == 3
+    assert record.relations_list == [[('Oblivion.esm',0x0224FC), -5], [('Oblivion.esm',0x000907), -5], [('Oblivion.esm',0x000D43), 5]]
+    assert record.skill1 == 13
+    assert record.skill1Boost == 10
+    assert record.skill2 == 16
+    assert record.skill2Boost == 10
+    assert record.skill3 == 18
+    assert record.skill3Boost == 5
+    assert record.skill4 == 27
+    assert record.skill4Boost == 5
+    assert record.skill5 == 14
+    assert record.skill5Boost == 10
+    assert record.skill6 == 29
+    assert record.skill6Boost == 5
+    assert record.skill7 == -1
+    assert record.skill7Boost == 0
+    assert record.unused1 == [0,0]
+    assert record.maleHeight == 1.03
+    assert record.femaleHeight == 1.0
+    assert record.maleWeight == 1.03
+    assert record.femaleWeight == 1.0
+    assert record.flags == 1
+    assert record.maleVoice == None
+    assert record.femaleVoice == None
+    assert record.defaultHairMale == ('Oblivion.esm', 0x64215)
+    assert record.defaultHairFemale == ('Oblivion.esm', 0x64210)
+    assert record.defaultHairColor == 13
+    assert record.mainClamp == None
+    assert record.faceClamp == None
+    assert record.maleStrength == 50
+    assert record.maleIntelligence == 30
+    assert record.maleWillpower == 30
+    assert record.maleAgility == 40
+    assert record.maleSpeed == 40
+    assert record.maleEndurance == 50
+    assert record.malePersonality == 30
+    assert record.maleLuck == 50
+    assert record.femaleStrength == 40
+    assert record.femaleIntelligence == 30
+    assert record.femaleWillpower == 30
+    assert record.femaleAgility == 40
+    assert record.femaleSpeed == 40
+    assert record.femaleEndurance == 50
+    assert record.femalePersonality == 40
+    assert record.femaleLuck == 50    
+    assert record.head.modPath == r'Characters\Imperial\HeadHuman.nif'
+    assert record.head.modPath == r'CharactErs\Imperial\HeadHuman.nif'
+    assert record.head.modb == 0.0
+    assert record.head.iconPath == r'Characters\Imperial\HeadHuman.dds'
+    assert record.head.iconPath == r'CharactErs\Imperial\HeadHuman.dds'
+    assert record.head.modt_p == []    
+    assert record.maleEars.modPath == r'Characters\Imperial\EarsHuman.nif'
+    assert record.maleEars.modPath == r'CharactErs\Imperial\EarsHuman.nif'
+    assert record.maleEars.modb == 0.0
+    assert record.maleEars.iconPath == r'Characters\Imperial\EarsHuman.dds'
+    assert record.maleEars.iconPath == r'CharactErs\Imperial\EarsHuman.dds'
+    assert record.maleEars.modt_p == []    
+    assert record.femaleEars.modPath == r'Characters\Imperial\EarsHuman.nif'
+    assert record.femaleEars.modPath == r'CharactErs\Imperial\EarsHuman.nif'
+    assert record.femaleEars.modb == 0.0
+    assert record.femaleEars.iconPath == r'Characters\Imperial\EarsHuman.dds'
+    assert record.femaleEars.iconPath == r'CharactErs\Imperial\EarsHuman.dds'
+    assert record.femaleEars.modt_p == []    
+    assert record.mouth.modPath == r'Characters\Imperial\MouthHuman.nif'
+    assert record.mouth.modPath == r'CharactErs\Imperial\MouthHuman.nif'
+    assert record.mouth.modb == 0.0
+    assert record.mouth.iconPath == r'Characters\Imperial\MouthHuman.dds'
+    assert record.mouth.iconPath == r'CharactErs\Imperial\MouthHuman.dds'
+    assert record.mouth.modt_p == []    
+    assert record.teethLower.modPath == r'Characters\Imperial\TeethLowerHuman.nif'
+    assert record.teethLower.modPath == r'CharactErs\Imperial\TeethLowerHuman.nif'
+    assert record.teethLower.modb == 0.0
+    assert record.teethLower.iconPath == r'Characters\Imperial\TeethLowerHuman.dds'
+    assert record.teethLower.iconPath == r'CharactErs\Imperial\TeethLowerHuman.dds'
+    assert record.teethLower.modt_p == []    
+    assert record.teethUpper.modPath == r'Characters\Imperial\TeethUpperHuman.nif'
+    assert record.teethUpper.modPath == r'CharactErs\Imperial\TeethUpperHuman.nif'
+    assert record.teethUpper.modb == 0.0
+    assert record.teethUpper.iconPath == r'Characters\Imperial\TeethUpperHuman.dds'
+    assert record.teethUpper.iconPath == r'CharactErs\Imperial\TeethUpperHuman.dds'
+    assert record.teethUpper.modt_p == []    
+    assert record.tongue.modPath == r'Characters\Imperial\TongueHuman.nif'
+    assert record.tongue.modPath == r'CharactErs\Imperial\TongueHuman.nif'
+    assert record.tongue.modb == 0.0
+    assert record.tongue.iconPath == r'Characters\Imperial\TongueHuman.dds'
+    assert record.tongue.iconPath == r'CharactErs\Imperial\TongueHuman.dds'
+    assert record.tongue.modt_p == []    
+    assert record.leftEye.modPath == r'Characters\Imperial\EyeLeftHuman.nif'
+    assert record.leftEye.modPath == r'CharactErs\Imperial\EyeLeftHuman.nif'
+    assert record.leftEye.modb == 0.0
+    assert record.leftEye.iconPath == None
+    assert record.leftEye.modt_p == []    
+    assert record.rightEye.modPath == r'Characters\Imperial\EyeRightHuman.nif'
+    assert record.rightEye.modPath == r'CharactErs\Imperial\EyeRightHuman.nif'
+    assert record.rightEye.modb == 0.0
+    assert record.rightEye.iconPath == None
+    assert record.rightEye.modt_p == []    
+    assert record.maleTail.modPath == None
+    assert record.maleTail.modb == None
+    assert record.maleTail.modt_p == []
+    assert record.maleUpperBodyPath == r'Characters\Imperial\Male\UpperBodyMale.dds'
+    assert record.maleUpperBodyPath == r'CharactErs\Imperial\Male\UpperBodyMale.dds'
+    assert record.maleLowerBodyPath == r'Characters\Imperial\Male\LegMale.dds'
+    assert record.maleLowerBodyPath == r'CharactErs\Imperial\Male\LegMale.dds'
+    assert record.maleHandPath == r'Characters\Imperial\Male\HandMale.dds'
+    assert record.maleHandPath == r'CharactErs\Imperial\Male\HandMale.dds'
+    assert record.maleFootPath == r'Characters\Imperial\Male\FootMale.dds'
+    assert record.maleFootPath == r'CharactErs\Imperial\Male\FootMale.dds'
+    assert record.maleTailPath == None
+    assert record.femaleTail.modPath == None
+    assert record.femaleTail.modb == None
+    assert record.femaleTail.modt_p == []
+    assert record.femaleUpperBodyPath == r'Characters\Imperial\Female\UpperBodyFemale.dds'
+    assert record.femaleUpperBodyPath == r'CharactErs\Imperial\Female\UpperBodyFemale.dds'
+    assert record.femaleLowerBodyPath == r'Characters\Imperial\Female\LegFemale.dds'
+    assert record.femaleLowerBodyPath == r'CharactErs\Imperial\Female\LegFemale.dds'
+    assert record.femaleHandPath == r'Characters\Imperial\Female\HandFemale.dds'
+    assert record.femaleHandPath == r'CharactErs\Imperial\Female\HandFemale.dds'
+    assert record.femaleFootPath == r'Characters\Imperial\Female\FootFemale.dds'
+    assert record.femaleFootPath == r'CharactErs\Imperial\Female\FootFemale.dds'
+    assert record.femaleTailPath == None
+    assert len(record.hairs) == 20
+    assert record.hairs == [('Oblivion.esm', 0x064213), ('Oblivion.esm', 0x18A891), ('Oblivion.esm', 0x0690C2),
+                            ('Oblivion.esm', 0x0690BB), ('Oblivion.esm', 0x01DA83), ('Oblivion.esm', 0x01DA82),
+                            ('Oblivion.esm', 0x07B792), ('Oblivion.esm', 0x069474), ('Oblivion.esm', 0x069472),
+                            ('Oblivion.esm', 0x064C7D), ('Oblivion.esm', 0x064211), ('Oblivion.esm', 0x090475),
+                            ('Oblivion.esm', 0x027FF2), ('Oblivion.esm', 0x06420E), ('Oblivion.esm', 0x02C4D0),
+                            ('Oblivion.esm', 0x0950EB), ('Oblivion.esm', 0x064215), ('Oblivion.esm', 0x064210),
+                            ('Oblivion.esm', 0x064216), ('Oblivion.esm', 0x066F21)]
+    assert len(record.eyes) == 3
+    assert record.eyes == [('Oblivion.esm', 0x027306), ('Oblivion.esm', 0x027308), ('Oblivion.esm', 0x027309)]
+    assert record.fggs_p == [98, 46, 20, 63, 9, 226, 81, 60, 20, 53, 65, 191, 58, 23, 125, 191, 179, 78, 204,
+                             191, 25, 242, 74, 191, 32, 76, 30, 58, 49, 50, 113, 62, 203, 44, 247, 191, 240,
+                             108, 97, 191, 152, 76, 225, 63, 205, 77, 34, 63, 73, 226, 178, 189, 32, 202, 130,
+                             191, 247, 184, 212, 190, 113, 133, 131, 190, 46, 55, 245, 62, 52, 132, 239, 63,
+                             136, 53, 57, 63, 182, 97, 116, 63, 112, 1, 138, 191, 92, 26, 220, 187, 24, 246,
+                             5, 191, 43, 19, 119, 191, 132, 138, 68, 191, 24, 172, 163, 62, 252, 90, 1, 191,
+                             140, 90, 188, 63, 65, 74, 206, 190, 207, 161, 55, 63, 2, 253, 230, 62, 160, 244,
+                             224, 59, 41, 72, 149, 191, 219, 53, 5, 190, 0, 120, 180, 57, 180, 6, 175, 191,
+                             170, 210, 163, 63, 50, 122, 142, 191, 166, 234, 92, 63, 126, 196, 214, 61, 36,
+                             180, 113, 63, 202, 102, 118, 63, 223, 178, 29, 191, 13, 29, 139, 62, 85, 20, 145,
+                             62, 47, 160, 50, 62, 147, 100, 145, 62, 215, 20, 189, 63, 81, 162, 165, 191, 228,
+                             118, 100, 63]
+    assert record.fgga_p == [64, 216, 0, 63, 222, 89, 196, 191, 173, 161, 97, 191, 181, 48, 43, 63, 189, 192,
+                             12, 62, 65, 172, 209, 190, 197, 147, 79, 63, 176, 239, 94, 63, 207, 184, 103, 189,
+                             165, 253, 131, 191, 176, 215, 137, 62, 76, 65, 149, 191, 189, 216, 9, 191, 150,
+                             252, 27, 190, 50, 226, 21, 190, 43, 157, 77, 62, 6, 28, 191, 191, 223, 215, 125,
+                             191, 58, 33, 231, 62, 80, 31, 15, 63, 160, 99, 113, 191, 206, 126, 160, 62, 168,
+                             128, 40, 63, 29, 219, 152, 190, 192, 175, 21, 191, 160, 201, 103, 191, 43, 160,
+                             226, 191, 112, 150, 239, 61, 105, 57, 246, 62, 218, 238, 251, 190]
+    assert record.fgts_p == [20, 174, 71, 192, 143, 22, 240, 63, 113, 227, 64, 62, 28, 86, 22, 190, 144, 255,
+                             41, 63, 229, 182, 12, 192, 205, 164, 132, 190, 108, 26, 159, 190, 196, 170, 193,
+                             63, 230, 152, 55, 190, 165, 96, 4, 192, 141, 138, 35, 192, 81, 91, 157, 62, 63,
+                             71, 21, 191, 186, 243, 154, 191, 42, 206, 31, 61, 163, 69, 103, 64, 23, 110, 79,
+                             191, 182, 149, 64, 63, 75, 14, 219, 191, 162, 51, 10, 192, 22, 15, 38, 64, 229,
+                             202, 204, 190, 204, 13, 205, 63, 196, 249, 144, 64, 76, 98, 164, 63, 50, 194,
+                             247, 191, 162, 3, 121, 191, 104, 56, 146, 190, 70, 102, 136, 63, 219, 33, 234,
+                             191, 67, 189, 174, 191, 227, 251, 17, 190, 141, 220, 93, 192, 7, 58, 41, 63, 247,
+                             217, 210, 190, 42, 227, 131, 190, 2, 25, 83, 63, 50, 245, 167, 61, 182, 156, 145,
+                             63, 148, 221, 149, 191, 230, 112, 200, 61, 24, 174, 69, 64, 42, 234, 11, 64, 52,
+                             120, 54, 64, 183, 156, 50, 192, 105, 123, 23, 64, 20, 217, 52, 64, 223, 122, 162,
+                             191, 101, 153, 48, 191]
+    assert record.snam_p == [169, 97]
+    
+    record = newMod.create_RACE()
+    record.flags1 = 0x0102
+    record.flags2 = 0x0201
+    record.eid = "RACEWarTest"
+    record.full = "Fancy RACE"
+    record.text = "BLAH BLAH BLHARGH"
+    record.spells = [0x00000121, 0x00000222]
+    relation = record.create_relation()
+    relation.faction = 0x00000800
+    relation.mod = 100
+    relation = record.create_relation()
+    relation.faction = 0x00000801
+    relation.mod = 50
+    relation = record.create_relation()
+    relation.faction = 0x00000802
+    relation.mod = 60
+    relation = record.create_relation()
+    relation.faction = 0x00000803
+    relation.mod = 70
+    relations = record.relations
+    record.relations = [relations[1],relations[0],relations[2],relations[3]]
+    relations_list = record.relations_list
+    relations_list.append([('Oblivion.esm', 0x001234),15])
+    record.relations_list = relations_list
+    record.skill1 = 1
+    record.skill1Boost = 11
+    record.skill2 = 2
+    record.skill2Boost = 12
+    record.skill3 = 3
+    record.skill3Boost = 13
+    record.skill4 = 4
+    record.skill4Boost = 14
+    record.skill5 = 5
+    record.skill5Boost = 15
+    record.skill6 = 6
+    record.skill6Boost = 16
+    record.skill7 = 7
+    record.skill7Boost = 17
+    record.unused1 = [0x00, 0xFF]
+    record.maleHeight = 1.5
+    record.femaleHeight = 1.6
+    record.maleWeight = 2.1
+    record.femaleWeight = 2.2
+    record.flags = 0x00000010
+    record.maleVoice = 0x00000011
+    record.femaleVoice = 0x00000012
+    record.defaultHairMale = 0x00000013
+    record.defaultHairFemale = 0x00000014
+    record.defaultHairColor = 1
+    record.mainClamp = 10.1
+    record.faceClamp = 1.2
+    record.maleStrength = 25
+    record.maleIntelligence = 26
+    record.maleWillpower = 27
+    record.maleAgility = 28
+    record.maleSpeed = 29
+    record.maleEndurance = 30
+    record.malePersonality = 31
+    record.maleLuck = 32
+    record.femaleStrength = 51
+    record.femaleIntelligence = 52
+    record.femaleWillpower = 53
+    record.femaleAgility = 54
+    record.femaleSpeed = 55
+    record.femaleEndurance = 56
+    record.femalePersonality = 57
+    record.femaleLuck = 58
+    record.head.modPath = r"asdf"
+    record.head.modb = 1.3
+    record.head.iconPath = r"fqeasdf"
+    record.head.modt_p = [0x01, 0x10]
+    record.maleEars.modPath = r"maleEars"
+    record.maleEars.modb = 1.4
+    record.maleEars.iconPath = r"maleEarsP"
+    record.maleEars.modt_p = [0x01, 0x11]
+    record.femaleEars.modPath = r"femaleEars"
+    record.femaleEars.modb = 1.5
+    record.femaleEars.iconPath = r"femaleEarsP"
+    record.femaleEars.modt_p = [0x01, 0x12]
+    record.mouth.modPath = r"mouth"
+    record.mouth.modb = 1.6
+    record.mouth.iconPath = r"mouth\P"
+    record.mouth.modt_p = [0x01, 0x13]
+    record.teethLower.modPath = r"teeth\Lower"
+    record.teethLower.modb = 1.7
+    record.teethLower.iconPath = r"teeth\LowerP"
+    record.teethLower.modt_p = [0x01, 0x14]
+    record.teethUpper.modPath = r"teeth\Upper"
+    record.teethUpper.modb = 1.8
+    record.teethUpper.iconPath = r"teethUpper\P"
+    record.teethUpper.modt_p = [0x01, 0x15]
+    record.tongue.modPath = r"tongu\e"
+    record.tongue.modb = 1.9
+    record.tongue.iconPath = r"tongu\e"
+    record.tongue.modt_p = [0x01, 0x16]
+    record.leftEye.modPath = r"left\Eye"
+    record.leftEye.modb = 2.0
+    record.leftEye.iconPath = r"left\Eye"
+    record.leftEye.modt_p = [0x01, 0x20]
+    record.rightEye.modPath = r"right\Eye"
+    record.rightEye.modb = 2.1
+    record.rightEye.iconPath = r"right\Eye"
+    record.rightEye.modt_p = [0x01, 0x17]
+    record.maleTail.modPath = r"maleTail\Model"
+    record.maleTail.modb = 2.2
+    record.maleTail.modt_p = [0x01, 0x18]
+    record.maleUpperBodyPath = r"maleUpperBody\Path"
+    record.maleLowerBodyPath = r"maleLowerBody\Path"
+    record.maleHandPath = r"maleHand\Path"
+    record.maleFootPath = r"maleFoot\Path"
+    record.maleTailPath = r"maleTail\Path"
+    record.femaleTail.modPath = r"femaleTail\Model"
+    record.femaleTail.modb = 2.3
+    record.femaleTail.modt_p = [0x01, 0x19]
+    record.femaleUpperBodyPath = ""
+    record.femaleLowerBodyPath = r"female\Path"
+    record.femaleHandPath = r"female\Hand\Path"
+    record.femaleFootPath = r"female\Foot\Path"
+    record.femaleTailPath = r"female\Tail\Path"
+    record.hairs = [0x00000001, 0x01000002]
+    record.eyes = [0x00000003, 0x01000004]
+    record.fggs_p = [0x01, 0x20]
+    record.fgga_p = [0x01, 0x21]
+    record.fgts_p = [0x01, 0x22]
+    record.snam_p = [0x01, 0x23]
+
+##    assert record.fid == ('Oblivion.esm', 0x000D43)
+##    assert record.flags1 == 0x80000000
+##    assert record.flags2 == 1712664
+##    assert record.eid == "Redguard"
+##    assert record.eid == "REdguard"
+##    assert record.full == "Redguard"
+##    assert record.full != "REdguard"
+##    assert record.text == "The most naturally talented warriors in Tamriel.  In addition to their cultural affinities for many weapon and armor styles, they also have a hardy constitution and a natural resistance to disease and poison."
+##    assert record.text != "ThE most naturally talented warriors in Tamriel.  In addition to their cultural affinities for many weapon and armor styles, they also have a hardy constitution and a natural resistance to disease and poison."
+##    assert len(record.spells) == 3
+##    assert record.spells == [('Oblivion.esm', 0x047AE6), ('Oblivion.esm', 0x047AE5), ('Oblivion.esm', 0x047AE7)]
+##    assert len(record.relations) == 3
+##    assert record.relations_list == [[('Oblivion.esm',0x0224FC), -5], [('Oblivion.esm',0x000907), -5], [('Oblivion.esm',0x000D43), 5]]
+##    assert record.skill1 == 13
+##    assert record.skill1Boost == 10
+##    assert record.skill2 == 16
+##    assert record.skill2Boost == 10
+##    assert record.skill3 == 18
+##    assert record.skill3Boost == 5
+##    assert record.skill4 == 27
+##    assert record.skill4Boost == 5
+##    assert record.skill5 == 14
+##    assert record.skill5Boost == 10
+##    assert record.skill6 == 29
+##    assert record.skill6Boost == 5
+##    assert record.skill7 == -1
+##    assert record.skill7Boost == 0
+##    assert record.unused1 == [0,0]
+##    assert record.maleHeight == 1.03
+##    assert record.femaleHeight == 1.0
+##    assert record.maleWeight == 1.03
+##    assert record.femaleWeight == 1.0
+##    assert record.flags == 1
+##    assert record.maleVoice == None
+##    assert record.femaleVoice == None
+##    assert record.defaultHairMale == ('Oblivion.esm', 0x64215)
+##    assert record.defaultHairFemale == ('Oblivion.esm', 0x64210)
+##    assert record.defaultHairColor == 13
+##    assert record.mainClamp == None
+##    assert record.faceClamp == None
+##    assert record.maleStrength == 50
+##    assert record.maleIntelligence == 30
+##    assert record.maleWillpower == 30
+##    assert record.maleAgility == 40
+##    assert record.maleSpeed == 40
+##    assert record.maleEndurance == 50
+##    assert record.malePersonality == 30
+##    assert record.maleLuck == 50
+##    assert record.femaleStrength == 40
+##    assert record.femaleIntelligence == 30
+##    assert record.femaleWillpower == 30
+##    assert record.femaleAgility == 40
+##    assert record.femaleSpeed == 40
+##    assert record.femaleEndurance == 50
+##    assert record.femalePersonality == 40
+##    assert record.femaleLuck == 50    
+##    assert record.head.modPath == r'Characters\Imperial\HeadHuman.nif'
+##    assert record.head.modPath == r'CharactErs\Imperial\HeadHuman.nif'
+##    assert record.head.modb == 0.0
+##    assert record.head.iconPath == r'Characters\Imperial\HeadHuman.dds'
+##    assert record.head.iconPath == r'CharactErs\Imperial\HeadHuman.dds'
+##    assert record.head.modt_p == []    
+##    assert record.maleEars.modPath == r'Characters\Imperial\EarsHuman.nif'
+##    assert record.maleEars.modPath == r'CharactErs\Imperial\EarsHuman.nif'
+##    assert record.maleEars.modb == 0.0
+##    assert record.maleEars.iconPath == r'Characters\Imperial\EarsHuman.dds'
+##    assert record.maleEars.iconPath == r'CharactErs\Imperial\EarsHuman.dds'
+##    assert record.maleEars.modt_p == []    
+##    assert record.femaleEars.modPath == r'Characters\Imperial\EarsHuman.nif'
+##    assert record.femaleEars.modPath == r'CharactErs\Imperial\EarsHuman.nif'
+##    assert record.femaleEars.modb == 0.0
+##    assert record.femaleEars.iconPath == r'Characters\Imperial\EarsHuman.dds'
+##    assert record.femaleEars.iconPath == r'CharactErs\Imperial\EarsHuman.dds'
+##    assert record.femaleEars.modt_p == []    
+##    assert record.mouth.modPath == r'Characters\Imperial\MouthHuman.nif'
+##    assert record.mouth.modPath == r'CharactErs\Imperial\MouthHuman.nif'
+##    assert record.mouth.modb == 0.0
+##    assert record.mouth.iconPath == r'Characters\Imperial\MouthHuman.dds'
+##    assert record.mouth.iconPath == r'CharactErs\Imperial\MouthHuman.dds'
+##    assert record.mouth.modt_p == []    
+##    assert record.teethLower.modPath == r'Characters\Imperial\TeethLowerHuman.nif'
+##    assert record.teethLower.modPath == r'CharactErs\Imperial\TeethLowerHuman.nif'
+##    assert record.teethLower.modb == 0.0
+##    assert record.teethLower.iconPath == r'Characters\Imperial\TeethLowerHuman.dds'
+##    assert record.teethLower.iconPath == r'CharactErs\Imperial\TeethLowerHuman.dds'
+##    assert record.teethLower.modt_p == []    
+##    assert record.teethUpper.modPath == r'Characters\Imperial\TeethUpperHuman.nif'
+##    assert record.teethUpper.modPath == r'CharactErs\Imperial\TeethUpperHuman.nif'
+##    assert record.teethUpper.modb == 0.0
+##    assert record.teethUpper.iconPath == r'Characters\Imperial\TeethUpperHuman.dds'
+##    assert record.teethUpper.iconPath == r'CharactErs\Imperial\TeethUpperHuman.dds'
+##    assert record.teethUpper.modt_p == []    
+##    assert record.tongue.modPath == r'Characters\Imperial\TongueHuman.nif'
+##    assert record.tongue.modPath == r'CharactErs\Imperial\TongueHuman.nif'
+##    assert record.tongue.modb == 0.0
+##    assert record.tongue.iconPath == r'Characters\Imperial\TongueHuman.dds'
+##    assert record.tongue.iconPath == r'CharactErs\Imperial\TongueHuman.dds'
+##    assert record.tongue.modt_p == []    
+    assert record.leftEye.modPath == r'left\Eye'
+    assert record.leftEye.modPath == r'lEft\Eye'
+    assert record.leftEye.modb == 2.0
+    assert record.leftEye.iconPath == r'left\Eye'
+    assert record.leftEye.iconPath == r'lEft\Eye'
+    assert record.leftEye.modt_p == [1, 32]
+    assert record.rightEye.modPath == r'right\Eye'
+    assert record.rightEye.modPath == r'rIght\Eye'
+    assert record.rightEye.modb == 2.1
+    assert record.rightEye.iconPath == r'right\Eye'
+    assert record.rightEye.iconPath == r'rIght\Eye'
+    assert record.rightEye.modt_p == [1, 23]
+    assert record.maleTail.modPath == r'maleTail\Model'
+    assert record.maleTail.modPath == r'mAleTail\Model'
+    assert record.maleTail.modb == 2.2
+    assert record.maleTail.modt_p == [1, 24]
+    assert record.maleUpperBodyPath == r'maleUpperBody\Path'
+    assert record.maleUpperBodyPath == r'mAleUpperBody\Path'
+    assert record.maleLowerBodyPath == r'maleLowerBody\Path'
+    assert record.maleLowerBodyPath == r'mAleLowerBody\Path'
+    assert record.maleHandPath == r'maleHand\Path'
+    assert record.maleHandPath == r'mAleHand\Path'
+    assert record.maleFootPath == r'maleFoot\Path'
+    assert record.maleFootPath == r'mAleFoot\Path'
+    assert record.maleTailPath == r'maleTail\Path'
+    assert record.maleTailPath == r'mAleTail\Path'
+    assert record.femaleTail.modPath == r'femaleTail\Model'
+    assert record.femaleTail.modPath == r'femAleTail\Model'
+    assert record.femaleTail.modb == 2.3
+    assert record.femaleTail.modt_p == [1, 25]
+    assert record.femaleUpperBodyPath == None
+    assert record.femaleLowerBodyPath == r'female\Path'
+    assert record.femaleLowerBodyPath == r'femAle\Path'
+    assert record.femaleHandPath == r'female\Hand\Path'
+    assert record.femaleHandPath == r'femAle\Hand\Path'
+    assert record.femaleFootPath == r'female\Foot\Path'
+    assert record.femaleFootPath == r'femAle\Foot\Path'
+    assert record.femaleTailPath == r'female\Tail\Path'
+    assert record.femaleTailPath == r'femAle\Tail\Path'
+    assert len(record.hairs) == 2
+    assert record.hairs == [('Oblivion.esm', 1), ('RegressionTests.esp', 2)]
+    assert len(record.eyes) == 2
+    assert record.eyes == [('Oblivion.esm', 3), ('RegressionTests.esp', 4)]
+    assert record.fggs_p == []
+    assert record.fgga_p == []
+    assert record.fgts_p == []
+    assert record.snam_p == [0x01, 0x23]
+
+    return
+    print "RACE:Finished testing"
+
+
+def assertSOUN(Current, newMod):
+    record = Current[0].SOUN[0]
+
+    for record in Current[0].SOUN:
+        print
+        print "fid     :", PrintFormID(record.fid)
+        print "flags1  :", record.flags1
+        print "flags2  :", record.flags2
+        print "eid     :", record.eid
+
+        print "soundPath      :", record.soundPath
+        print "minDistance    :", record.minDistance
+        print "maxDistance    :", record.maxDistance
+        print "freqAdjustment :", record.freqAdjustment
+        print "unused1        :", record.unused1
+        print "flags          :", record.flags
+        print "unused2        :", record.unused2
+        print "staticAtten    :", record.staticAtten
+        print "stopTime       :", record.stopTime
+        print "startTime      :", record.startTime
+        break
+    return
+
+    print "SOUN:Create Record Test"
+    newRecord = newMod.create_SOUN()
+    print "SOUN:Set Test"
+    print "flags1..."
+    newRecord.flags1 = 0x0102
+    print "flags2..."
+    newRecord.flags2 = 0x0201
+    print "eid..."
+    newRecord.eid = "SOUNWarTest"
+    print "soundPath..."
+    newRecord.soundPath = "Fancy SOUN"
+    newRecord.minDistance = 1
+    newRecord.maxDistance = 55
+    newRecord.freqAdjustment = -3
+    newRecord.unused1 = 15
+    newRecord.flags = 16
+    newRecord.unused2 = [0x01, 0xFF]
+    newRecord.staticAtten = 5
+    newRecord.stopTime = 12
+    newRecord.startTime = 24
+
+    print "SOUN:Set Test Results"
+    print
+    print "fid    :", PrintFormID(newRecord.fid)
+    print "flags1 :", newRecord.flags1
+    print "flags2 :", newRecord.flags2
+    print "eid    :", newRecord.eid
+
+    print "soundPath      :", newRecord.soundPath
+    print "minDistance    :", newRecord.minDistance
+    print "maxDistance    :", newRecord.maxDistance
+    print "freqAdjustment :", newRecord.freqAdjustment
+    print "unused1        :", newRecord.unused1
+    print "flags          :", newRecord.flags
+    print "unused2        :", newRecord.unused2
+    print "staticAtten    :", newRecord.staticAtten
+    print "stopTime       :", newRecord.stopTime
+    print "startTime      :", newRecord.startTime
+
+    print "SOUN:CopyAsOverride Test"
+    for record in Current[0].SOUN:
+        record.CopyAsOverride(newMod)
+
+    print "SOUN:CopyAsNew Test"
+    for record in Current[0].SOUN:
+        record.CopyAsNew(newMod)
+
+    print "SOUN:Save Test - TestSOUN.esp"
+    newMod.save()
+    print "SOUN:Finished testing"
+
+def assertSKIL(Current, newMod):
+    record = Current[0].SKIL[0]
+
+    for record in Current[0].SKIL:
+        print
+        print "fid     :", PrintFormID(record.fid)
+        print "flags1  :", record.flags1
+        print "flags2  :", record.flags2
+        print "eid     :", record.eid
+
+        print "skill          :", record.skill
+        print "description    :", record.description
+        print "iconPath       :", record.iconPath
+        print "action         :", record.action
+        print "attribute      :", record.attribute
+        print "specialization :", record.specialization
+        print "use0           :", record.use0
+        print "use1           :", record.use1
+        print "apprentice     :", record.apprentice
+        print "journeyman     :", record.journeyman
+        print "expert         :", record.expert
+        print "master         :", record.master
+        break
+    return
+    print "SKIL:Create Record Test"
+    newRecord = newMod.create_SKIL()
+    print "SKIL:Set Test"
+    print "flags1..."
+    newRecord.flags1 = 0x0102
+    print "flags2..."
+    newRecord.flags2 = 0x0201
+    print "eid..."
+    newRecord.eid = "SKILWarTest"
+    print "skill..."
+    newRecord.skill = 1
+    newRecord.description = "Fancy SKIL"
+    newRecord.iconPath = r"ICON\Path\1.dds"
+    newRecord.action = 2
+    newRecord.attribute = 28
+    newRecord.specialization = 1
+    newRecord.use0 = 1.0
+    newRecord.use1 = 2.0
+    newRecord.apprentice = "of nothing"
+    newRecord.journeyman = "Little bit"
+    newRecord.expert = "Jack of none"
+    newRecord.master = "Master of all"
+
+    print "SKIL:Set Test Results"
+    print
+    print "fid    :", PrintFormID(newRecord.fid)
+    print "flags1 :", newRecord.flags1
+    print "flags2 :", newRecord.flags2
+    print "eid    :", newRecord.eid
+
+    print "skill          :", newRecord.skill
+    print "description    :", newRecord.description
+    print "iconPath       :", newRecord.iconPath
+    print "action         :", newRecord.action
+    print "attribute      :", newRecord.attribute
+    print "specialization :", newRecord.specialization
+    print "use0           :", newRecord.use0
+    print "use1           :", newRecord.use1
+    print "apprentice     :", newRecord.apprentice
+    print "journeyman     :", newRecord.journeyman
+    print "expert         :", newRecord.expert
+    print "master         :", newRecord.master
+
+    print "SKIL:CopyAsOverride Test"
+    for record in Current[0].SKIL:
+        record.CopyAsOverride(newMod)
+
+    print "SKIL:CopyAsNew Test"
+    for record in Current[0].SKIL:
+        record.CopyAsNew(newMod)
+
+    print "SKIL:Save Test - TestSKIL.esp"
+    newMod.save()
+    print "SKIL:Finished testing"
 
 def TestAttrReport():
-    Current = Collection()
-    newMod = Current.addMod("Oblivion.esm")
+    Current = ObCollection()
+    Current.addMod("Oblivion.esm")
 ##    Current.addMod("Oscuro's_Oblivion_Overhaul.esm")
 ##    Current.addMod("Oscuro's_Oblivion_Overhaul.esp")
-    Current.minimalLoad(LoadMasters=False)
+    Current.load()
+    newMod = Current.LookupModFile("Oblivion.esm")
     healths = []
     enchantPointss = []
     weights = []
@@ -134,48 +1876,26 @@ def TestAttrReport():
             if hasattr(record,'IsPlayable'):
                 if not record.IsPlayable:
                     continue
-##            if hasattr(record, 'health'):
-##                if record.health is not None:
-##                    healths.append(record.health)
-##            if hasattr(record, 'enchantPoints'):
-##                if record.enchantPoints > 5000:
-##                    print PrintFormID(record.fid)
-##                    print record.eid
-##                else:
-##                    if record.enchantPoints is not None:
-##                        enchantPointss.append(record.enchantPoints)
-##            if hasattr(record, 'weight'):
-##                if record.weight == 1000.0:
-##                    print PrintFormID(record.fid)
-##                    print record.eid
-##                else:
-##                    if record.weight is not None:
-##                        weights.append(record.weight)
+            if hasattr(record, 'health'):
+                if record.health is not None:
+                    healths.append(record.health)
+            if hasattr(record, 'enchantPoints'):
+                if record.enchantPoints is not None:
+                    enchantPointss.append(record.enchantPoints)
+            if hasattr(record, 'weight'):
+                if record.weight is not None:
+                    weights.append(record.weight)
             if hasattr(record, 'value'):
-                if record.value == 10000000:
-                    print PrintFormID(record.fid)
-                    print record.eid
-                else:
-                    if record.value is not None:
-                        values.append(record.value)
+                if record.value is not None:
+                    values.append(record.value)
             if hasattr(record, 'value') and hasattr(record, 'weight'):
                 value = getValue(record)
-##                print record.full, ":::", value, ":::", '"Oblivion.esm" "%s"' % PrintFormID(record.fid)
                 if value == 0:
                     vwratios.append(0.0)
                 elif record.weight is None or record.weight == 0:
                     infvwratios.append(record.fid)
                 else:
-                    if 'Receipt' in record.eid:
-                        continue
-                    if value > 100000:
-                        continue
                     vwratio = round(value/record.weight,3)
-                    if vwratio == 216000.0:
-                        print record.full
-                        print record.eid
-                        print value
-                        print record.weight
                     vwratios.append(vwratio)
             if hasattr(record, 'weight') and hasattr(record, 'value'):
                 value = getValue(record)
@@ -186,50 +1906,46 @@ def TestAttrReport():
                 else:
                     wvratio = round(record.weight/value,3)
                     wvratios.append(wvratio)
-##            if hasattr(record, 'value'):
-##                if record.value == 10000000:
-##                    print PrintFormID(record.fid)
-##                    print record.eid
-##                else:
-##                    if record.value is not None:
-##                        values.append(record.value)
-##            if hasattr(record, 'damage'):
-##                if record.damage is not None:
-##                    attacks.append(record.damage)
-##            if hasattr(record, 'reach'):
-##                if record.reach is not None:
-##                    reachs.append(record.reach)
-##            if hasattr(record, 'speed'):
-##                if record.speed is not None:
-##                    speeds.append(record.speed)
+            if hasattr(record, 'value'):
+                if record.value is not None:
+                    values.append(record.value)
+            if hasattr(record, 'damage'):
+                if record.damage is not None:
+                    attacks.append(record.damage)
+            if hasattr(record, 'reach'):
+                if record.reach is not None:
+                    reachs.append(record.reach)
+            if hasattr(record, 'speed'):
+                if record.speed is not None:
+                    speeds.append(record.speed)
 
-##    print "Min health:", min(healths)
-##    print "Max health:", max(healths)
-##    print "Avg health:", sum(healths) / len(healths)
-##
-##    print "Min enchantPoints:", min(enchantPointss)
-##    print "Max enchantPoints:", max(enchantPointss)
-##    print "Avg enchantPoints:", sum(enchantPointss) / len(enchantPointss)
-##
-##    print "Min weight:", min(weights)
-##    print "Max weight:", max(weights)
-##    print "Avg weight:", sum(weights) / len(weights)
-##
+    print "Min health:", min(healths)
+    print "Max health:", max(healths)
+    print "Avg health:", sum(healths) / len(healths)
+
+    print "Min enchantPoints:", min(enchantPointss)
+    print "Max enchantPoints:", max(enchantPointss)
+    print "Avg enchantPoints:", sum(enchantPointss) / len(enchantPointss)
+
+    print "Min weight:", min(weights)
+    print "Max weight:", max(weights)
+    print "Avg weight:", sum(weights) / len(weights)
+
     print "Min value:", min(values)
     print "Max value:", max(values)
     print "Avg value:", sum(values) / len(values)
 
-##    print "Min attack:", min(attacks)
-##    print "Max attack:", max(attacks)
-##    print "Avg attack:", sum(attacks) / len(attacks)
-##
-##    print "Min reach:", min(reachs)
-##    print "Max reach:", max(reachs)
-##    print "Avg reach:", sum(reachs) / len(reachs)
-##                
-##    print "Min Speed:", min(speeds)
-##    print "Max Speed:", max(speeds)
-##    print "Avg Speed:", sum(speeds) / len(speeds)
+    print "Min attack:", min(attacks)
+    print "Max attack:", max(attacks)
+    print "Avg attack:", sum(attacks) / len(attacks)
+
+    print "Min reach:", min(reachs)
+    print "Max reach:", max(reachs)
+    print "Avg reach:", sum(reachs) / len(reachs)
+                
+    print "Min Speed:", min(speeds)
+    print "Max Speed:", max(speeds)
+    print "Avg Speed:", sum(speeds) / len(speeds)
 
     print "Inf Value/Weight:", len(infvwratios)
     print "Min Value/Weight:", min(vwratios)
@@ -239,40 +1955,44 @@ def TestAttrReport():
     print "Inf Weight/Value:", len(infwvratios)
     print "Min Weight/Value:", min(wvratios)
     print "Max Weight/Value:", max(wvratios)
-    print "Avg Weight/Value:", sum(wvratios) / len(wvratios)    
+    print "Avg Weight/Value:", sum(wvratios) / len(wvratios)
+    
 def TestCopyAttrs():
-    Current = Collection()
-    srcFile = Current.addMod("Oblivion.esm")
-    destFile = Current.addMod("Clothing.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current = ObCollection()
+    Current.addMod("Oblivion.esm")
+    Current.load()
+    srcFile = Current.LookupModFile("Oblivion.esm")
+    
     for armor in srcFile.ARMO:
-        clothing = srcFile.createCLOTRecord()
+        clothing = srcFile.create_CLOT()
         for attr in clothing.copyattrs:
             setattr(clothing, attr, getattr(armor, attr))
         origFid = armor.fid
         newFid = clothing.fid
         armor.DeleteRecord()
         print srcFile.UpdateReferences(origFid, newFid)
-    srcFile.safeCloseSave()
+    srcFile.save()
 
 def TestCleanMasters():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("Speedy Disrobe OBSE.esp")
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("Speedy Disrobe OBSE.esp")
+    Current.load()
+    newMod = Current.LookupModFile("Speedy Disrobe OBSE.esp")
     print newMod.CleanMasters()
-    newMod.safeSave()
+    newMod.save()
 
 def TestLoadMasters():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("OOO Patch - Geomancy - Activator.esp")
-    Current.minimalLoad(LoadMasters=False)
+    Current.load()
 
 def TestDeleteRecord():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestDelete.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestDelete.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestDelete.esp")
     print "Delete Test"
     for record in Current[0].GMST:
         newRecord = record.CopyAsOverride(newMod)
@@ -410,17 +2130,17 @@ def TestDeleteRecord():
         trgCellOver = record.CopyAsOverride(newMod)
         for npcRef in record.ACHR:
             newRecord = npcRef.CopyAsOverride(trgCellOver)
-            newRecord.DeleteRecord(trgCellOver)
+            newRecord.DeleteRecord()
         for creaRef in record.ACRE:
             newRecord = creaRef.CopyAsOverride(trgCellOver)
-            newRecord.DeleteRecord(trgCellOver)
+            newRecord.DeleteRecord()
         for objRef in record.REFR:
             newRecord = objRef.CopyAsOverride(trgCellOver)
-            newRecord.DeleteRecord(trgCellOver)
+            newRecord.DeleteRecord()
         Pgrd = record.PGRD
         if(Pgrd):
             newRecord = Pgrd.CopyAsOverride(trgCellOver)
-            newRecord.DeleteRecord(trgCellOver)
+            newRecord.DeleteRecord()
         trgCellOver.DeleteRecord()
 
     for record in Current[0].WRLD:
@@ -428,55 +2148,55 @@ def TestDeleteRecord():
         road = record.ROAD
         if(road != None):
             newRecord = road.CopyAsOverride(trgWrldOver)
-            newRecord.DeleteRecord(trgWrldOver)
-        cell = record.CELL
+            newRecord.DeleteRecord()
+        cell = record.WorldCELL
         if(cell != None):
-            trgCellOver = cell.CopyAsOverride(trgWrldOver,isWorldCell=True)
+            trgCellOver = cell.CopyAsOverride(trgWrldOver)
             cLand = cell.LAND
             if(cLand != None):
                 newRecord = cLand.CopyAsOverride(trgCellOver)
-                newRecord.DeleteRecord(trgCellOver)
+                newRecord.DeleteRecord()
             for npcRef in cell.ACHR:
                 newRecord = npcRef.CopyAsOverride(trgCellOver)
-                newRecord.DeleteRecord(trgCellOver)
+                newRecord.DeleteRecord()
             for creaRef in cell.ACRE:
                 newRecord = creaRef.CopyAsOverride(trgCellOver)
-                newRecord.DeleteRecord(trgCellOver)
+                newRecord.DeleteRecord()
             for objRef in cell.REFR:
                 newRecord = objRef.CopyAsOverride(trgCellOver)
-                newRecord.DeleteRecord(trgCellOver)
+                newRecord.DeleteRecord()
             Pgrd = cell.PGRD
             if(Pgrd != None):
                 newRecord = Pgrd.CopyAsOverride(trgCellOver)
-                newRecord.DeleteRecord(trgCellOver)
-            trgCellOver.DeleteRecord(trgWrldOver)
+                newRecord.DeleteRecord()
+            trgCellOver.DeleteRecord()
         for wrldCell in record.CELLS:
             trgCellOver = wrldCell.CopyAsOverride(trgWrldOver)
             cLand = wrldCell.LAND
             if(cLand != None):
                 newRecord = cLand.CopyAsOverride(trgCellOver)
-                newRecord.DeleteRecord(trgCellOver)
+                newRecord.DeleteRecord()
             for npcRef in wrldCell.ACHR:
                 newRecord = npcRef.CopyAsOverride(trgCellOver)
-                newRecord.DeleteRecord(trgCellOver)
+                newRecord.DeleteRecord()
             for creaRef in wrldCell.ACRE:
                 newRecord = creaRef.CopyAsOverride(trgCellOver)
-                newRecord.DeleteRecord(trgCellOver)
+                newRecord.DeleteRecord()
             for objRef in wrldCell.REFR:
                 newRecord = objRef.CopyAsOverride(trgCellOver)
-                newRecord.DeleteRecord(trgCellOver)
+                newRecord.DeleteRecord()
             Pgrd = wrldCell.PGRD
             if(Pgrd != None):
                 newRecord = Pgrd.CopyAsOverride(trgCellOver)
-                newRecord.DeleteRecord(trgCellOver)
-            trgCellOver.DeleteRecord(trgWrldOver)
+                newRecord.DeleteRecord()
+            trgCellOver.DeleteRecord()
         trgWrldOver.DeleteRecord()
 
     for record in Current[0].DIAL:
         newOver = record.CopyAsOverride(newMod)
         for info in record.INFO:
             newRecord = info.CopyAsOverride(newOver)
-            newRecord.DeleteRecord(newOver)
+            newRecord.DeleteRecord()
         newOver.DeleteRecord()
     for record in Current[0].QUST:
         newRecord = record.CopyAsOverride(newMod)
@@ -507,32 +2227,36 @@ def TestDeleteRecord():
         newRecord.DeleteRecord()
 
     print "Delete:Save Test - TestDelete.esp"
-    newMod.safeCloseSave()
+    newMod.save()
 
 def TestMinimalLoad():
-    Current = Collection()
-    modFile = Current.addMod("GTAesgaard.esp")
-    Current.minimalLoad(LoadMasters=True)
-    
-    modFile.safeSave()
+    Current = ObCollection()
+    Current.addMod("Oblivion.esm", MinLoad=True)
+    Current.load()
+##    newMod = Current.LookupModFile("Oblivion.esm")
+##    newMod.save()
 
 def TestFullLoad():
-    Current = Collection()
-    newMod = Current.addMod("Oblivion.esm")
-    Current.fullLoad(LoadMasters=False)
-    newMod.safeSave()
+    Current = ObCollection()
+    Current.addMod("Oblivion.esm", MinLoad=False)
+    Current.load()
+##    newMod = Current.LookupModFile("Oblivion.esm")
+##    newMod.save()
 
 def TestReadWriteAll():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestALL.esp", CreateIfNotExist=True)
+    Current.addMod("TestALL.esp")
     ##Preloading seems to have almost no effect (~2ms on all simple, CopyAsNew) on speed when later reading...
     ##Not preloading would make it faster if not all records being iterated, and save memory...
 
-    Current.minimalLoad(LoadMasters=True)
+    Current.load()
+    newMod = Current.LookupModFile("TestAll.esp")
 
     for record in Current[0].GMST:
         record.CopyAsOverride(newMod)
+        record.CopyAsNew(newMod, record.eid + "WarCopy")
+        record.DeleteRecord()
     for record in Current[0].GLOB:
         record.CopyAsNew(newMod)
         record.CopyAsOverride(newMod)
@@ -567,8 +2291,8 @@ def TestReadWriteAll():
         record.DeleteRecord()
     for record in Current[0].MGEF:
         record.CopyAsOverride(newMod)
-        record.CopyAsNew(newMod)
-        record.UnloadRecord()
+        record.CopyAsNew(newMod, record.eid + "WarCopy")
+        record.DeleteRecord()
     for record in Current[0].SCPT:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
@@ -711,20 +2435,20 @@ def TestReadWriteAll():
         for npcRef in record.ACHR:
             npcRef.CopyAsOverride(trgCellOver)
             npcRef.CopyAsNew(trgCellNew)
-            npcRef.DeleteRecord(record)
+            npcRef.DeleteRecord()
         for creaRef in record.ACRE:
             creaRef.CopyAsOverride(trgCellOver)
             creaRef.CopyAsNew(trgCellNew)
-            creaRef.DeleteRecord(record)
+            creaRef.DeleteRecord()
         for objRef in record.REFR:
             objRef.CopyAsOverride(trgCellOver)
             objRef.CopyAsNew(trgCellNew)
-            objRef.DeleteRecord(record)
+            objRef.DeleteRecord()
         Pgrd = record.PGRD
         if(Pgrd):
             Pgrd.CopyAsOverride(trgCellOver)
             Pgrd.CopyAsNew(trgCellNew)
-            Pgrd.DeleteRecord(record)
+            Pgrd.DeleteRecord()
         record.DeleteRecord()
 
     for record in Current[0].WRLD:
@@ -734,34 +2458,34 @@ def TestReadWriteAll():
         if(road != None):
             road.CopyAsOverride(trgWrldOver)
             road.CopyAsNew(trgWrldNew)
-            road.DeleteRecord(record)
-        cell = record.CELL
+            road.DeleteRecord()
+        cell = record.WorldCELL
         if(cell != None):
-            trgCellOver = cell.CopyAsOverride(trgWrldOver,isWorldCell=True)
-            trgCellNew = cell.CopyAsNew(trgWrldNew,isWorldCell=True)
+            trgCellOver = cell.CopyAsOverride(trgWrldOver)
+            trgCellNew = cell.CopyAsNew(trgWrldNew)
             cLand = cell.LAND
             if(cLand != None):
                 cLand.CopyAsOverride(trgCellOver)
                 cLand.CopyAsNew(trgCellNew)
-                cLand.DeleteRecord(cell)
+                cLand.DeleteRecord()
             for npcRef in cell.ACHR:
                 npcRef.CopyAsOverride(trgCellOver)
                 npcRef.CopyAsNew(trgCellNew)
-                npcRef.DeleteRecord(cell)
+                npcRef.DeleteRecord()
             for creaRef in cell.ACRE:
                 creaRef.CopyAsOverride(trgCellOver)
                 creaRef.CopyAsNew(trgCellNew)
-                creaRef.DeleteRecord(cell)
+                creaRef.DeleteRecord()
             for objRef in cell.REFR:
                 objRef.CopyAsOverride(trgCellOver)
                 objRef.CopyAsNew(trgCellNew)
-                objRef.DeleteRecord(cell)
+                objRef.DeleteRecord()
             Pgrd = cell.PGRD
             if(Pgrd != None):
                 Pgrd.CopyAsOverride(trgCellOver)
                 Pgrd.CopyAsNew(trgCellNew)
-                Pgrd.DeleteRecord(cell)
-            cell.DeleteRecord(record)
+                Pgrd.DeleteRecord()
+            cell.DeleteRecord()
         for wrldCell in record.CELLS:
             trgCellOver = wrldCell.CopyAsOverride(trgWrldOver)
             trgCellNew = wrldCell.CopyAsNew(trgWrldNew)
@@ -769,25 +2493,25 @@ def TestReadWriteAll():
             if(cLand != None):
                 cLand.CopyAsOverride(trgCellOver)
                 cLand.CopyAsNew(trgCellNew)
-                cLand.DeleteRecord(wrldCell)
+                cLand.DeleteRecord()
             for npcRef in wrldCell.ACHR:
                 npcRef.CopyAsOverride(trgCellOver)
                 npcRef.CopyAsNew(trgCellNew)
-                npcRef.DeleteRecord(wrldCell)
+                npcRef.DeleteRecord()
             for creaRef in wrldCell.ACRE:
                 creaRef.CopyAsOverride(trgCellOver)
                 creaRef.CopyAsNew(trgCellNew)
-                creaRef.DeleteRecord(wrldCell)
+                creaRef.DeleteRecord()
             for objRef in wrldCell.REFR:
                 objRef.CopyAsOverride(trgCellOver)
                 objRef.CopyAsNew(trgCellNew)
-                objRef.DeleteRecord(wrldCell)
+                objRef.DeleteRecord()
             Pgrd = wrldCell.PGRD
             if(Pgrd != None):
                 Pgrd.CopyAsOverride(trgCellOver)
                 Pgrd.CopyAsNew(trgCellNew)
-                Pgrd.DeleteRecord(wrldCell)
-            wrldCell.DeleteRecord(record)
+                Pgrd.DeleteRecord()
+            wrldCell.DeleteRecord()
         record.DeleteRecord()
 
     for record in Current[0].DIAL:
@@ -796,7 +2520,7 @@ def TestReadWriteAll():
         for info in record.INFO:
             info.CopyAsOverride(newOver)
             info.CopyAsNew(newNew)
-            info.DeleteRecord(record)
+            info.DeleteRecord()
         record.DeleteRecord()
     for record in Current[0].QUST:
         record.CopyAsOverride(newMod)
@@ -838,30 +2562,23 @@ def TestReadWriteAll():
     print "ALL:Save Test - TestALL.esp"
 
     phonenumber = raw_input(">")
-    newMod.safeCloseSave()
+    newMod.save()
     phonenumber = raw_input("!")
     print "ALL:Finished testing"
 
 def TestTES4():
-    Current = Collection()
+    Current = ObCollection()
+##    CBash.SetLogging(Current._CollectionIndex, Logging2Callback, 0, 0)
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestTES4.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestTES4.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestTES4.esp")
     print "TES4:Read Test"
     for modFile in Current:
         record = modFile.TES4
         print
-        print "ModName    :", record._ModName
-        print "flags1     :", record.flags1
-        print "flags2     :", record.flags2
-        print "version    :", record.version
-        print "numRecords :", record.numRecords
-        print "nextObject : %06X" % record.nextObject
-        print "ofst_p     :", record.ofst_p
-        print "dele_p     :", record.dele_p
-        print "author     :", record.author
-        print "description:", record.description
-        print "masters    :", record.masters
+        print "ModName    :", modFile.ModName
+        printRecord(record)
         break
     print "TES4:Set Test"
     print "version..."
@@ -882,39 +2599,28 @@ def TestTES4():
 ##    newMod.TES4.masters = Current[0].TES4.masters
     newMod.TES4.masters = ["Oblivion.esm"]
     print "TES4:Set Test Results"
-    print "ModName   :", newMod.TES4._ModName
-    print "flags1     :", newMod.TES4.flags1
-    print "flags2     :", newMod.TES4.flags2
-    print "version    :", newMod.TES4.version
-    print "numRecords :", newMod.TES4.numRecords
-    print "nextObject : %06X" % newMod.TES4.nextObject
-    print "ofst_p     :", newMod.TES4.ofst_p
-    print "dele_p     :", newMod.TES4.dele_p
-    print "author     :", newMod.TES4.author
-    print "description:", newMod.TES4.description
-    print "masters    :", newMod.TES4.masters
+    print "ModName   :", newMod.ModName
+    printRecord(newMod.TES4)
 
     print "TES4:Save Test - TestTES4.esp"
-    newMod.safeSave()
+    newMod.save()
     print "TES4:Finished testing"
 
 def TestGMST():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestGMST.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestGMST.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestGMST.esp")
     print "GMST:Read Test"
     for record in Current[0].GMST:
         print
-        print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
         print "eid     :", record.eid
-        print "value  :", record.value
+        printRecord(record)
         break
 
     print "GMST:Create Record Test"
-    newRecord = newMod.createGMSTRecord("sWarString")
+    newRecord = newMod.create_GMST("sWarString")
     print "GMST:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -923,36 +2629,36 @@ def TestGMST():
     print "value..."
     newRecord.value = "It works!"
     print "GMST:Set Test Results"
-    print "fid    :", PrintFormID(newRecord.fid)
-    print "flags1 :", newRecord.flags1
-    print "flags2 :", newRecord.flags2
-    print "eid    :", newRecord.eid
-    print "value  :", newRecord.value
+    print
+    print "eid     :", newRecord.eid
+    printRecord(newRecord)
+
     print "GMST:CopyAsOverride Test"
     for record in Current[0].GMST:
         record.CopyAsOverride(newMod)
+    print "GMST:CopyAsNew Test"
+    for record in Current[0].GMST:
+        rec = record.CopyAsNew(newMod, record.eid + 'WarCopy')
+
     print "GMST:Save Test - TestGMST.esp"
-    newMod.safeSave()
+    newMod.save()
     print "GMST:Finished testing"
 
 def TestGLOB():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestGLOB.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestGLOB.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestGLOB.esp")
     print "GLOB:Read Test"
     for record in Current[0].GLOB:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-        print "format :", record.format
-        print "value  :", record.value
+        printRecord(record)
         break
 
     print "GLOB:Create Record Test"
-    newRecord = newMod.createGLOBRecord()
+    newRecord = newMod.create_GLOB()
     print "GLOB:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -978,44 +2684,24 @@ def TestGLOB():
     for record in Current[0].GLOB:
         record.CopyAsNew(newMod)
     print "GLOB:Save Test - TestGLOB.esp"
-    newMod.safeSave()
+    newMod.save()
     print "GLOB:Finished testing"
 
 def TestCLAS():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestCLAS.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestCLAS.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestCLAS.esp")
     print "CLAS:Read Test"
     for record in Current[0].CLAS:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "full          :", record.full
-        print "description   :", record.description
-        print "iconPath      :", record.iconPath
-        print "primary1      :", record.primary1
-        print "primary2      :", record.primary2
-        print "specialization:", record.specialization
-        print "major1        :", record.major1
-        print "major2        :", record.major2
-        print "major3        :", record.major3
-        print "major4        :", record.major4
-        print "major5        :", record.major5
-        print "major6        :", record.major6
-        print "major7        :", record.major7
-        print "flags         :", record.flags
-        print "services      :", record.services
-        print "trainSkill    :", record.trainSkill
-        print "trainLevel    :", record.trainLevel
-        print "unused1       :", record.unused1
+        printRecord(record)
         break
 
     print "CLAS:Create Record Test"
-    newRecord = newMod.createCLASRecord()
+    newRecord = newMod.create_CLAS()
     print "CLAS:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -1093,37 +2779,25 @@ def TestCLAS():
     for record in Current[0].CLAS:
         record.CopyAsNew(newMod)
     print "CLAS:Save Test - TestCLAS.esp"
-    newMod.safeSave()
+    newMod.save()
     print "CLAS:Finished testing"
 
 
 def TestFACT():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestFACT.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestFACT.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestFACT.esp")
 
     for record in Current[0].FACT:
-        print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "full                :", record.full
-        print "relations           :"
-        for relation in record.relations:
-            print "  %i: Faction: %s, Mod: %i" % (relation._listIndex, PrintFormID(relation.faction), relation.mod)
-
-        print "flags               :", record.flags
-        print "crimeGoldMultiplier :", record.crimeGoldMultiplier
-        print "ranks               :"
-        for rank in record.ranks:
-            print "  rank: %i\n    male:%s\n    female:%s\n    insigniaPath:%s" % (rank.rank, rank.male, rank.female, rank.insigniaPath)
         print
+        print "fid     :", PrintFormID(record.fid)
+        printRecord(record)
         break
 
     print "FACT:Create Record Test"
-    newRecord = newMod.createFACTRecord()
+    newRecord = newMod.create_FACT()
     print "FACT:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -1134,13 +2808,13 @@ def TestFACT():
     print "full..."
     newRecord.full = "Waruddar's Faction"
     print "relations..."
-    newRelation = newRecord.newRelationsElement()
+    newRelation = newRecord.create_relation()
     newRelation.faction = 1
     newRelation.mod = -69
-    newRelation = newRecord.newRelationsElement()
+    newRelation = newRecord.create_relation()
     newRelation.faction = 2
     newRelation.mod = 67
-    newRelation = newRecord.newRelationsElement()
+    newRelation = newRecord.create_relation()
     newRelation.faction = 15
     newRelation.mod = 100
     print "flags..."
@@ -1148,17 +2822,17 @@ def TestFACT():
     print "crimeGoldMultiplier..."
     newRecord.crimeGoldMultiplier = 1.5
     print "ranks..."
-    newRank = newRecord.newRanksElement()
+    newRank = newRecord.create_rank()
     newRank.rank = 0
     newRank.male = "HELP ME"
     newRank.female = "LOST MY MIND"
     newRank.insigniaPath = "WHERE is IT?"
-    newRank = newRecord.newRanksElement()
+    newRank = newRecord.create_rank()
     newRank.rank = 1
     newRank.male = "Is it here?"
     newRank.female = "Or, there?"
     newRank.insigniaPath = "Where?"
-    newRank = newRecord.newRanksElement()
+    newRank = newRecord.create_rank()
     newRank.rank = 2
     newRank.male = "Silly me"
     newRank.female = "Here it is"
@@ -1173,7 +2847,7 @@ def TestFACT():
     print "full               :", newRecord.full
     print "relations          :"
     for relation in newRecord.relations:
-        print "  %i: Faction: %s, Mod: %i" % (relation._listIndex, PrintFormID(relation.faction), relation.mod)
+        print "  %i: Faction: %s, Mod: %i" % (relation._ListIndex, PrintFormID(relation.faction), relation.mod)
     print "flags              :", newRecord.flags
     print "crimeGoldMultiplier:", newRecord.crimeGoldMultiplier
     print "ranks              :"
@@ -1189,35 +2863,26 @@ def TestFACT():
         record.CopyAsNew(newMod)
 
     print "FACT:Save Test - TestFACT.esp"
-    newMod.safeSave()
+    newMod.save()
     print "FACT:Finished testing"
 
 def TestHAIR():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestHAIR.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestHAIR.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestHAIR.esp")
 
     for record in Current[0].HAIR:
-        print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "full    :", record.full
-        print "modPath :", record.modPath
-        print "modb    :", record.modb
-        print "modt_p  :", record.modt_p
-
-        print "iconPath:", record.iconPath
-        print "flags   :", record.flags
         print
+        print "fid     :", PrintFormID(record.fid)
+        printRecord(record)
         break
 
 
 
     print "HAIR:Create Record Test"
-    newRecord = newMod.createHAIRRecord()
+    newRecord = newMod.create_HAIR()
     print "HAIR:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -1265,31 +2930,26 @@ def TestHAIR():
         record.CopyAsNew(newMod)
 
     print "HAIR:Save Test - TestHAIR.esp"
-    newMod.safeSave()
+    newMod.save()
     print "HAIR:Finished testing"
 
 def TestEYES():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestEYES.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestEYES.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestEYES.esp")
 
     for record in Current[0].EYES:
-        print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "full    :", record.full
-        print "iconPath:", record.iconPath
-        print "flags   :", record.flags
         print
+        print "fid     :", PrintFormID(record.fid)
+        printRecord(record)
         break
 
 
 
     print "EYES:Create Record Test"
-    newRecord = newMod.createEYESRecord()
+    newRecord = newMod.create_EYES()
     print "EYES:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -1323,157 +2983,23 @@ def TestEYES():
         record.CopyAsNew(newMod)
 
     print "EYES:Save Test - TestEYES.esp"
-    newMod.safeSave()
+    newMod.save()
     print "EYES:Finished testing"
 
 def TestRACE():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestRACE.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestRACE.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestRACE.esp")
     for record in Current[0].RACE:
         print
-        print "fid    :", PrintFormID(record.fid)
-        print "flags1 :", record.flags1
-        print "flags2 :", record.flags2
-        print "eid    :", record.eid
-
-        print "full      :", record.full
-        print "text      :", record.text
-        print "spells    :"
-        for spell in record.spells:
-            print "  ", PrintFormID(spell)
-
-        print "relations :"
-        for relation in record.relations:
-            print "  %i: Faction: %s, Mod: %i" % (relation._listIndex, PrintFormID(relation.faction), relation.mod)
-
-        print "  skill1:", record.skill1, ", boost:", record.skill1Boost
-        print "  skill2:", record.skill2, ", boost:", record.skill2Boost
-        print "  skill3:", record.skill3, ", boost:", record.skill3Boost
-        print "  skill4:", record.skill4, ", boost:", record.skill4Boost
-        print "  skill5:", record.skill5, ", boost:", record.skill5Boost
-        print "  skill6:", record.skill6, ", boost:", record.skill6Boost
-        print "  skill7:", record.skill7, ", boost:", record.skill7Boost
-
-        print "unused1          :", record.unused1
-
-        print "maleHeight       :", record.maleHeight
-        print "femaleHeight     :", record.femaleHeight
-        print "maleWeight       :", record.maleWeight
-        print "femaleWeight     :", record.femaleWeight
-        print "flags            :", record.flags
-
-        print "maleVoice        :", record.maleVoice
-        print "femaleVoice      :", record.femaleVoice
-
-        print "defaultHairMale  :", record.defaultHairMale
-        print "defaultHairFemale:", record.defaultHairFemale
-        print "defaultHairColor :", record.defaultHairColor
-
-        print "mainClamp        :", record.mainClamp
-        print "faceClamp        :", record.faceClamp
-
-        print "maleStrength     :", record.maleStrength
-        print "maleIntelligence :", record.maleIntelligence
-        print "maleWillpower    :", record.maleWillpower
-        print "maleAgility      :", record.maleAgility
-        print "maleSpeed        :", record.maleSpeed
-        print "maleEndurance    :", record.maleEndurance
-        print "malePersonality  :", record.malePersonality
-        print "maleLuck         :", record.maleLuck
-
-        print "femaleStrength     :", record.femaleStrength
-        print "femaleIntelligence :", record.femaleIntelligence
-        print "femaleWillpower    :", record.femaleWillpower
-        print "femaleAgility      :", record.femaleAgility
-        print "femaleSpeed        :", record.femaleSpeed
-        print "femaleEndurance    :", record.femaleEndurance
-        print "femalePersonality  :", record.femalePersonality
-        print "femaleLuck         :", record.femaleLuck
-
-        print "head.modPath       :", record.head.modPath
-        print "head.modb          :", record.head.modb
-        print "head.iconPath      :", record.head.iconPath
-        print "head.modt_p        :", record.head.modt_p
-
-        print "maleEars.modPath   :", record.maleEars.modPath
-        print "maleEars.modb      :", record.maleEars.modb
-        print "maleEars.iconPath  :", record.maleEars.iconPath
-        print "maleEars.modt_p    :", record.maleEars.modt_p
-
-        print "femaleEars.modPath :", record.femaleEars.modPath
-        print "femaleEars.modb    :", record.femaleEars.modb
-        print "femaleEars.iconPath:", record.femaleEars.iconPath
-        print "femaleEars.modt_p  :", record.femaleEars.modt_p
-
-        print "mouth.modPath      :", record.mouth.modPath
-        print "mouth.modb         :", record.mouth.modb
-        print "mouth.iconPath     :", record.mouth.iconPath
-        print "mouth.modt_p       :", record.mouth.modt_p
-
-        print "teethLower.modPath :", record.teethLower.modPath
-        print "teethLower.modb    :", record.teethLower.modb
-        print "teethLower.iconPath:", record.teethLower.iconPath
-        print "teethLower.modt_p  :", record.teethLower.modt_p
-
-        print "teethUpper.modPath :", record.teethUpper.modPath
-        print "teethUpper.modb    :", record.teethUpper.modb
-        print "teethUpper.iconPath:", record.teethUpper.iconPath
-        print "teethUpper.modt_p  :", record.teethUpper.modt_p
-
-        print "tongue.modPath     :", record.tongue.modPath
-        print "tongue.modb        :", record.tongue.modb
-        print "tongue.iconPath    :", record.tongue.iconPath
-        print "tongue.modt_p      :", record.tongue.modt_p
-
-        print "leftEye.modPath    :", record.leftEye.modPath
-        print "leftEye.modb       :", record.leftEye.modb
-        print "leftEye.iconPath   :", record.leftEye.iconPath
-        print "leftEye.modt_p     :", record.leftEye.modt_p
-
-        print "rightEye.modPath   :", record.rightEye.modPath
-        print "rightEye.modb      :", record.rightEye.modb
-        print "rightEye.iconPath  :", record.rightEye.iconPath
-        print "rightEye.modt_p    :", record.rightEye.modt_p
-
-        print "maleTailModel.modPath :", record.maleTailModel.modPath
-        print "maleTailModel.modb    :", record.maleTailModel.modb
-        print "maleTailModel.modt_p  :", record.maleTailModel.modt_p
-
-        print "maleUpperBodyPath     :", record.maleUpperBodyPath
-        print "maleLowerBodyPath     :", record.maleLowerBodyPath
-        print "maleHandPath          :", record.maleHandPath
-        print "maleFootPath          :", record.maleFootPath
-        print "maleTailPath          :", record.maleTailPath
-
-        print "femaleTailModel.modPath :", record.femaleTailModel.modPath
-        print "femaleTailModel.modb    :", record.femaleTailModel.modb
-        print "femaleTailModel.modt_p  :", record.femaleTailModel.modt_p
-
-        print "femaleUpperBodyPath     :", record.femaleUpperBodyPath
-        print "femaleLowerBodyPath     :", record.femaleLowerBodyPath
-        print "femaleHandPath          :", record.femaleHandPath
-        print "femaleFootPath          :", record.femaleFootPath
-        print "femaleTailPath          :", record.femaleTailPath
-
-        print "hairs :"
-        for hair in record.hairs:
-            print "  ", PrintFormID(hair)
-
-        print "eyes :"
-        for eye in record.eyes:
-            print "  ", PrintFormID(eye)
-
-        print "fggs_p:", record.fggs_p
-        print "fgga_p:", record.fgga_p
-        print "fgts_p:", record.fgts_p
-
-        print "snam:", record.snam
+        print "fid     :", PrintFormID(record.fid)
+        printRecord(record)
         break
 
     print "RACE:Create Record Test"
-    newRecord = newMod.createRACERecord()
+    newRecord = newMod.create_RACE()
     print "RACE:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -1486,16 +3012,16 @@ def TestRACE():
 
     newRecord.text = "BLAH BLAH BLHARGH"
     newRecord.spells = [0xFF000121, 0xFE000222]
-    newRelation = newRecord.newRelationsElement()
+    newRelation = newRecord.create_relation()
     newRelation.faction = 0x00000800
     newRelation.mod = 100
-    newRelation = newRecord.newRelationsElement()
+    newRelation = newRecord.create_relation()
     newRelation.faction = 0x00000801
     newRelation.mod = 50
-    newRelation = newRecord.newRelationsElement()
+    newRelation = newRecord.create_relation()
     newRelation.faction = 0x00000802
     newRelation.mod = 60
-    newRelation = newRecord.newRelationsElement()
+    newRelation = newRecord.create_relation()
     newRelation.faction = 0x00000803
     newRelation.mod = 70
     nRelations = newRecord.relations
@@ -1599,9 +3125,9 @@ def TestRACE():
     newRecord.rightEye.iconPath = "rightEye"
     newRecord.rightEye.modt_p = [0x01, 0x20]
 
-    newRecord.maleTailModel.modPath = "maleTailModel"
-    newRecord.maleTailModel.modb = 2.2
-    newRecord.maleTailModel.modt_p = [0x01, 0x20]
+    newRecord.maleTail.modPath = "maleTail"
+    newRecord.maleTail.modb = 2.2
+    newRecord.maleTail.modt_p = [0x01, 0x20]
 
     newRecord.maleUpperBodyPath = "maleUpperBodyPath"
     newRecord.maleLowerBodyPath = "maleLowerBodyPath"
@@ -1609,9 +3135,9 @@ def TestRACE():
     newRecord.maleFootPath = "maleFootPath"
     newRecord.maleTailPath = "maleTailPath"
 
-    newRecord.femaleTailModel.modPath = "femaleTailModel"
-    newRecord.femaleTailModel.modb = 2.3
-    newRecord.femaleTailModel.modt_p = [0x01, 0x20]
+    newRecord.femaleTail.modPath = "femaleTail"
+    newRecord.femaleTail.modb = 2.3
+    newRecord.femaleTail.modt_p = [0x01, 0x20]
 
     newRecord.femaleUpperBodyPath = ""
     newRecord.femaleLowerBodyPath = "femaleLowerBodyPath"
@@ -1625,7 +3151,7 @@ def TestRACE():
     newRecord.fgga_p = [0x01, 0x20]
     newRecord.fgts_p = [0x01, 0x20]
 
-    newRecord.snam = [0x01, 0x20]
+    newRecord.snam_p = [0x01, 0x20]
 
     print "RACE:Set Test Results"
     print
@@ -1642,7 +3168,7 @@ def TestRACE():
 
     print "relations :"
     for relation in newRecord.relations:
-        print "  %i: Faction: %s, Mod: %i" % (relation._listIndex, PrintFormID(relation.faction), relation.mod)
+        print "  %i: Faction: %s, Mod: %i" % (relation._ListIndex, PrintFormID(relation.faction), relation.mod)
 
     print "  skill1:", newRecord.skill1, ", boost:", newRecord.skill1Boost
     print "  skill2:", newRecord.skill2, ", boost:", newRecord.skill2Boost
@@ -1733,9 +3259,9 @@ def TestRACE():
     print "rightEye.iconPath  :", newRecord.rightEye.iconPath
     print "rightEye.modt_p    :", newRecord.rightEye.modt_p
 
-    print "maleTailModel.modPath :", newRecord.maleTailModel.modPath
-    print "maleTailModel.modb    :", newRecord.maleTailModel.modb
-    print "maleTailModel.modt_p  :", newRecord.maleTailModel.modt_p
+    print "maleTail.modPath :", newRecord.maleTail.modPath
+    print "maleTail.modb    :", newRecord.maleTail.modb
+    print "maleTail.modt_p  :", newRecord.maleTail.modt_p
 
     print "maleUpperBodyPath     :", newRecord.maleUpperBodyPath
     print "maleLowerBodyPath     :", newRecord.maleLowerBodyPath
@@ -1743,9 +3269,9 @@ def TestRACE():
     print "maleFootPath          :", newRecord.maleFootPath
     print "maleTailPath          :", newRecord.maleTailPath
 
-    print "femaleTailModel.modPath :", newRecord.femaleTailModel.modPath
-    print "femaleTailModel.modb    :", newRecord.femaleTailModel.modb
-    print "femaleTailModel.modt_p  :", newRecord.femaleTailModel.modt_p
+    print "femaleTail.modPath :", newRecord.femaleTail.modPath
+    print "femaleTail.modb    :", newRecord.femaleTail.modb
+    print "femaleTail.modt_p  :", newRecord.femaleTail.modt_p
 
     print "femaleUpperBodyPath     :", newRecord.femaleUpperBodyPath
     print "femaleLowerBodyPath     :", newRecord.femaleLowerBodyPath
@@ -1765,7 +3291,7 @@ def TestRACE():
     print "fgga_p:", newRecord.fgga_p
     print "fgts_p:", newRecord.fgts_p
 
-    print "snam:", newRecord.snam
+    print "snam_p:", newRecord.snam_p
 
     print "RACE:CopyAsOverride Test"
     for record in Current[0].RACE:
@@ -1776,37 +3302,25 @@ def TestRACE():
         record.CopyAsNew(newMod)
 
     print "RACE:Save Test - TestRACE.esp"
-    newMod.safeSave()
+    newMod.save()
     print "RACE:Finished testing"
 
 
 def TestSOUN():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestSOUN.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestSOUN.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestSOUN.esp")
 
     for record in Current[0].SOUN:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "soundFile      :", record.soundFile
-        print "minDistance    :", record.minDistance
-        print "maxDistance    :", record.maxDistance
-        print "freqAdjustment :", record.freqAdjustment
-        print "unused1        :", record.unused1
-        print "flags          :", record.flags
-        print "unused2        :", record.unused2
-        print "staticAtten    :", record.staticAtten
-        print "stopTime       :", record.stopTime
-        print "startTime      :", record.startTime
+        printRecord(record)
         break
 
     print "SOUN:Create Record Test"
-    newRecord = newMod.createSOUNRecord()
+    newRecord = newMod.create_SOUN()
     print "SOUN:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -1814,12 +3328,12 @@ def TestSOUN():
     newRecord.flags2 = 0x0201
     print "eid..."
     newRecord.eid = "SOUNWarTest"
-    print "soundFile..."
-    newRecord.soundFile = "Fancy SOUN"
+    print "soundPath..."
+    newRecord.soundPath = "Fancy SOUN"
     newRecord.minDistance = 1
     newRecord.maxDistance = 55
     newRecord.freqAdjustment = -3
-    newRecord.unused1 = 15
+    newRecord.unused1 = [15]
     newRecord.flags = 16
     newRecord.unused2 = [0x01, 0xFF]
     newRecord.staticAtten = 5
@@ -1833,7 +3347,7 @@ def TestSOUN():
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
 
-    print "soundFile      :", newRecord.soundFile
+    print "soundPath      :", newRecord.soundPath
     print "minDistance    :", newRecord.minDistance
     print "maxDistance    :", newRecord.maxDistance
     print "freqAdjustment :", newRecord.freqAdjustment
@@ -1853,37 +3367,24 @@ def TestSOUN():
         record.CopyAsNew(newMod)
 
     print "SOUN:Save Test - TestSOUN.esp"
-    newMod.safeSave()
+    newMod.save()
     print "SOUN:Finished testing"
 
 def TestSKIL():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestSKIL.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestSKIL.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestSKIL.esp")
 
     for record in Current[0].SKIL:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "skill          :", record.skill
-        print "description    :", record.description
-        print "iconPath       :", record.iconPath
-        print "action         :", record.action
-        print "attribute      :", record.attribute
-        print "specialization :", record.specialization
-        print "use0           :", record.use0
-        print "use1           :", record.use1
-        print "apprentice     :", record.apprentice
-        print "journeyman     :", record.journeyman
-        print "expert         :", record.expert
-        print "master         :", record.master
+        printRecord(record)
+        break
 
     print "SKIL:Create Record Test"
-    newRecord = newMod.createSKILRecord()
+    newRecord = newMod.create_SKIL()
     print "SKIL:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -1934,50 +3435,22 @@ def TestSKIL():
         record.CopyAsNew(newMod)
 
     print "SKIL:Save Test - TestSKIL.esp"
-    newMod.safeSave()
+    newMod.save()
     print "SKIL:Finished testing"
 def TestMGEF():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestMGEF.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestMGEF.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestMGEF.esp")
 
     for record in Current[0].MGEF:
         print
-        print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
         print "eid     :", record.eid
-
-        print "full            :", record.full
-        print "text            :", record.text
-        print "iconPath        :", record.iconPath
-        print "modPath         :", record.modPath
-        print "modb            :", record.modb
-        print "modt_p          :", record.modt_p
-        print "flags           :", record.flags
-        print "baseCost        :", record.baseCost
-        print "associated      :", PrintFormID(record.associated)
-        print "school          :", record.school
-        print "resistValue     :", record.resistValue
-        print "unk1            :", record.unk1
-        print "unused1         :", record.unused1
-        print "light           :", PrintFormID(record.light)
-        print "projectileSpeed :", record.projectileSpeed
-        print "effectShader    :", PrintFormID(record.effectShader)
-        print "enchantEffect   :", PrintFormID(record.enchantEffect)
-        print "castingSound    :", PrintFormID(record.castingSound)
-        print "boltSound       :", PrintFormID(record.boltSound)
-        print "hitSound        :", PrintFormID(record.hitSound)
-        print "areaSound       :", PrintFormID(record.areaSound)
-        print "cefEnchantment  :", record.cefEnchantment
-        print "cefBarter       :", record.cefBarter
-        print "counterEffects  :"
-        for effect in record.counterEffects:
-            print "  ", string_at(addressof(c_uint(effect)), 4)
+        printRecord(record)
         break
     print "MGEF:Create Record Test"
-    newRecord = newMod.createMGEFRecord()
+    newRecord = newMod.create_MGEF("MGEFWarTest0")
     print "MGEF:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -2010,87 +3483,35 @@ def TestMGEF():
 
     print "MGEF:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
-    print "flags1 :", newRecord.flags1
-    print "flags2 :", newRecord.flags2
-    print "eid    :", newRecord.eid
-
-    print "full            :", newRecord.full
-    print "text            :", newRecord.text
-    print "iconPath        :", newRecord.iconPath
-    print "modPath         :", newRecord.modPath
-    print "modb            :", newRecord.modb
-    print "modt_p          :", newRecord.modt_p
-    print "flags           :", newRecord.flags
-    print "baseCost        :", newRecord.baseCost
-    print "associated      :", PrintFormID(newRecord.associated)
-    print "school          :", newRecord.school
-    print "resistValue     :", newRecord.resistValue
-    print "unk1            :", newRecord.unk1
-    print "unused1         :", newRecord.unused1
-    print "light           :", PrintFormID(newRecord.light)
-    print "projectileSpeed :", newRecord.projectileSpeed
-    print "effectShader    :", PrintFormID(newRecord.effectShader)
-    print "enchantEffect   :", PrintFormID(newRecord.enchantEffect)
-    print "castingSound    :", PrintFormID(newRecord.castingSound)
-    print "boltSound       :", PrintFormID(newRecord.boltSound)
-    print "hitSound        :", PrintFormID(newRecord.hitSound)
-    print "areaSound       :", PrintFormID(newRecord.areaSound)
-    print "cefEnchantment  :", newRecord.cefEnchantment
-    print "cefBarter       :", newRecord.cefBarter
-    print "counterEffects  :"
-    for effect in newRecord.counterEffects:
-        print "  ", string_at(addressof(c_uint(effect)), 4)
-
+    print "eid     :", newRecord.eid
+    printRecord(newRecord)
+    
     print "MGEF:CopyAsOverride Test"
     for record in Current[0].MGEF:
         record.CopyAsOverride(newMod)
 
     print "MGEF:CopyAsNew Test"
     for record in Current[0].MGEF:
-        record.CopyAsNew(newMod)
+        record.CopyAsNew(newMod, record.eid + 'WarCopy')
 
     print "MGEF:Save Test - TestMGEF.esp"
-    newMod.safeSave()
+    newMod.save()
     print "MGEF:Finished testing"
 def TestSCPT():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestSCPT.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestSCPT.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestSCPT.esp")
     x = 0
     for record in Current[0].SCPT:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "unused1      :", record.unused1
-        print "numRefs      :", record.numRefs
-        print "compiledSize :", record.compiledSize
-        print "lastIndex    :", record.lastIndex
-        print "scriptType   :", record.scriptType
-        print "compiled_p   :", record.compiled_p
-        print "scriptText   :\n", record.scriptText
-        print "vars"
-        for var in record.vars:
-            print
-            print "  index   :", var.index
-            print "  unused1 :", var.unused1
-            print "  flags   :", var.flags
-            print "  unused2 :", var.unused2
-            print "  name    :", var.name
-        print "references"
-        for reference in record.references:
-            if(reference.IsSCRO):
-                print "  SCRO:", PrintFormID(reference.reference)
-            else:
-                print "  SCRV:", reference.reference
+        printRecord(record)
         break
 
     print "SCPT:Create Record Test"
-    newRecord = newMod.createSCPTRecord()
+    newRecord = newMod.create_SCPT()
     print "SCPT:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -2107,40 +3528,28 @@ def TestSCPT():
     newRecord.compiled_p = [0x00, 0xFF]
     newRecord.scriptText = "scn WarTest\nshort Didit\nend"
 
-    newRelation = newRecord.newVarsElement()
-    newRelation.index = 1
-    newRelation.unused1 = [0,1,2,3,4,5,6,7,8,9,10,11]
-    newRelation.flags = 1
-    newRelation.unused2 = [0,1,2,3,4,5,6]
-    newRelation.name = "Didit"
+    newVar = newRecord.create_var()
+    newVar.index = 1
+    newVar.unused1 = [0,1,2,3,4,5,6,7,8,9,10,11]
+    newVar.flags = 1
+    newVar.unused2 = [0,1,2,3,4,5,6]
+    newVar.name = "Didit"
 
-    newRelation = newRecord.newVarsElement()
-    newRelation.index = 2
-    newRelation.unused1 = [0,1,2,3,4,5,6,7,8,9,10,11]
-    newRelation.flags = 2
-    newRelation.unused2 = [0,1,2,3,4,5,6]
-    newRelation.name = "Did1it"
+    newVar = newRecord.create_var()
+    newVar.index = 2
+    newVar.unused1 = [0,1,2,3,4,5,6,7,8,9,10,11]
+    newVar.flags = 2
+    newVar.unused2 = [0,1,2,3,4,5,6]
+    newVar.name = "Did1it"
 
-    newRelation = newRecord.newVarsElement()
-    newRelation.index = 3
-    newRelation.unused1 = [0,1,2,3,4,5,6,7,8,9,10,11]
-    newRelation.flags = 2
-    newRelation.unused2 = [0,1,2,3,4,5,6]
-    newRelation.name = "Did2it"
+    newVar = newRecord.create_var()
+    newVar.index = 3
+    newVar.unused1 = [0,1,2,3,4,5,6,7,8,9,10,11]
+    newVar.flags = 2
+    newVar.unused2 = [0,1,2,3,4,5,6]
+    newVar.name = "Did2it"
 
-    newReference = newRecord.newReferencesElement()
-    newReference.reference = 7
-    newReference.IsSCRO = True
-
-    newReference = newRecord.newReferencesElement()
-    newReference.reference = 8
-    newReference.IsSCRO = False
-    newReference = newRecord.newReferencesElement()
-    newReference.reference = 9
-    newReference.IsSCRO = 1
-    newReference = newRecord.newReferencesElement()
-    newReference.reference = 10
-    newReference.IsSCRO =0
+    newRecord.references = [('Oblivion.esm',0x000007), 8, ('Oblivion.esm',0x000009), 10]
 
     print "SCPT:Set Test Results"
     print
@@ -2166,10 +3575,10 @@ def TestSCPT():
         print "  name    :", var.name
     print "references   :"
     for reference in newRecord.references:
-        if(reference.IsSCRO):
-            print "  SCRO:", PrintFormID(reference.reference)
+        if isinstance(reference, tuple):
+            print "  SCRO:", PrintFormID(reference)
         else:
-            print "  SCRV:", reference.reference
+            print "  SCRV:", reference
 
     print "SCPT:CopyAsOverride Test"
     for record in Current[0].SCPT:
@@ -2180,35 +3589,24 @@ def TestSCPT():
         record.CopyAsNew(newMod)
 
     print "SCPT:Save Test - TestSCPT.esp"
-    newMod.safeSave()
+    newMod.save()
     print "SCPT:Finished testing"
 
-
 def TestLTEX():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestLTEX.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestLTEX.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestLTEX.esp")
 
     for record in Current[0].LTEX:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "iconPath    :", record.iconPath
-        print "flags       :", record.flags
-        print "friction    :", record.friction
-        print "restitution :", record.restitution
-        print "specular    :", record.specular
-        print "grass    :"
-        for grass in record.grass:
-            print "  ", PrintFormID(grass)
+        printRecord(record)
         break
 
     print "LTEX:Create Record Test"
-    newRecord = newMod.createLTEXRecord()
+    newRecord = newMod.create_LTEX()
     print "LTEX:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -2250,49 +3648,25 @@ def TestLTEX():
         record.CopyAsNew(newMod)
 
     print "LTEX:Save Test - TestLTEX.esp"
-    newMod.safeSave()
+    newMod.save()
     print "LTEX:Finished testing"
 
 
 def TestENCH():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestENCH.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestENCH.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestENCH.esp")
 
     for record in Current[0].ENCH:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "full         :", record.full
-        print "itemType     :", record.itemType
-        print "chargeAmount :", record.chargeAmount
-        print "enchantCost  :", record.enchantCost
-        print "flags        :", record.flags
-        print "unused1      :", record.unused1
-        print "effects :"
-        for effect in record.effects:
-            print "  name0      :", effect.name0
-            print "  name       :", effect.name
-            print "  magnitude  :", effect.magnitude
-            print "  area       :", effect.area
-            print "  duration   :", effect.duration
-            print "  recipient  :", effect.recipient
-            print "  actorValue :", effect.actorValue
-            print "  script     :", PrintFormID(effect.script)
-            print "  school     :", effect.school
-            print "  visual     :", effect.visual
-            print "  flags      :", effect.flags
-            print "  unused1    :", effect.unused1
-            print "  full       :", effect.full
-            print
+        printRecord(record)
         break
 
     print "ENCH:Create Record Test"
-    newRecord = newMod.createENCHRecord()
+    newRecord = newMod.create_ENCH()
     print "ENCH:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -2308,7 +3682,7 @@ def TestENCH():
     newRecord.flags = 4
     newRecord.unused1 = [0,1,2]
 
-    newEffect = newRecord.newEffectsElement()
+    newEffect = newRecord.create_effect()
     newEffect.name0 = "SEFF"
     newEffect.name = "SEFF"
     newEffect.magnitude = 1
@@ -2323,7 +3697,7 @@ def TestENCH():
     newEffect.unused1 = [3,4,5]
     newEffect.full = "ENCH?"
 
-    newEffect = newRecord.newEffectsElement()
+    newEffect = newRecord.create_effect()
     newEffect.name0 = "SEFF"
     newEffect.name = "SEFF"
     newEffect.magnitude = 6
@@ -2375,49 +3749,25 @@ def TestENCH():
         record.CopyAsNew(newMod)
 
     print "ENCH:Save Test - TestENCH.esp"
-    newMod.safeSave()
+    newMod.save()
     print "ENCH:Finished testing"
 
 
 def TestSPEL():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestSPEL.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestSPEL.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestSPEL.esp")
 
     for record in Current[0].SPEL:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "full         :", record.full
-        print "spellType    :", record.spellType
-        print "cost         :", record.cost
-        print "level        :", record.level
-        print "flags        :", record.flags
-        print "unused1      :", record.unused1
-        print "effects :"
-        for effect in record.effects:
-            print "  name0      :", effect.name0
-            print "  name       :", effect.name
-            print "  magnitude  :", effect.magnitude
-            print "  area       :", effect.area
-            print "  duration   :", effect.duration
-            print "  recipient  :", effect.recipient
-            print "  actorValue :", effect.actorValue
-            print "  script     :", PrintFormID(effect.script)
-            print "  school     :", effect.school
-            print "  visual     :", effect.visual
-            print "  flags      :", effect.flags
-            print "  unused1    :", effect.unused1
-            print "  full       :", effect.full
-            print
+        printRecord(record)
         break
 
     print "SPEL:Create Record Test"
-    newRecord = newMod.createSPELRecord()
+    newRecord = newMod.create_SPEL()
     print "SPEL:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -2433,7 +3783,7 @@ def TestSPEL():
     newRecord.flags = 4
     newRecord.unused1 = [0,1,2]
 
-    newEffect = newRecord.newEffectsElement()
+    newEffect = newRecord.create_effect()
     newEffect.name0 = "SEFF"
     newEffect.name = "SEFF"
     newEffect.magnitude = 1
@@ -2448,7 +3798,7 @@ def TestSPEL():
     newEffect.unused1 = [3,4,5]
     newEffect.full = "SPEL?"
 
-    newEffect = newRecord.newEffectsElement()
+    newEffect = newRecord.create_effect()
     newEffect.name0 = "SEFF"
     newEffect.name = "SEFF"
     newEffect.magnitude = 6
@@ -2499,32 +3849,24 @@ def TestSPEL():
         record.CopyAsNew(newMod)
 
     print "SPEL:Save Test - TestSPEL.esp"
-    newMod.safeSave()
+    newMod.save()
     print "SPEL:Finished testing"
 
 def TestBSGN():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestBSGN.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestBSGN.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestBSGN.esp")
 
     for record in Current[0].BSGN:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "full      :", record.full
-        print "iconPath  :", record.iconPath
-        print "text      :", record.text
-        print "spells    :"
-        for spell in record.spells:
-            print "  ", PrintFormID(spell)
+        printRecord(record)
         break
 
     print "BSGN:Create Record Test"
-    newRecord = newMod.createBSGNRecord()
+    newRecord = newMod.create_BSGN()
     print "BSGN:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -2559,35 +3901,26 @@ def TestBSGN():
         record.CopyAsNew(newMod)
 
     print "BSGN:Save Test - TestBSGN.esp"
-    newMod.safeSave()
+    newMod.save()
     print "BSGN:Finished testing"
 
 
 
 def TestACTI():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestACTI.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestACTI.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestACTI.esp")
 
     for record in Current[0].ACTI:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "full    :", record.full
-        print "modPath :", record.modPath
-        print "modb    :", record.modb
-        print "modt_p  :", record.modt_p
-
-        print "script  :", record.script
-        print "sound   :", record.sound
+        printRecord(record)
         break
 
     print "ACTI:Create Record Test"
-    newRecord = newMod.createACTIRecord()
+    newRecord = newMod.create_ACTI()
     print "ACTI:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -2630,38 +3963,25 @@ def TestACTI():
         record.CopyAsNew(newMod)
 
     print "ACTI:Save Test - TestACTI.esp"
-    newMod.safeSave()
+    newMod.save()
     print "ACTI:Finished testing"
 
 
 def TestAPPA():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestAPPA.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestAPPA.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestAPPA.esp")
 
     for record in Current[0].APPA:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "full    :", record.full
-        print "modPath :", record.modPath
-        print "modb    :", record.modb
-        print "modt_p  :", record.modt_p
-
-        print "iconPath  :", record.iconPath
-        print "script    :", record.script
-        print "apparatus :", record.apparatus
-        print "value     :", record.value
-        print "weight    :", record.weight
-        print "quality   :", record.quality
+        printRecord(record)
         break
 
     print "APPA:Create Record Test"
-    newRecord = newMod.createAPPARecord()
+    newRecord = newMod.create_APPA()
     print "APPA:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -2713,51 +4033,25 @@ def TestAPPA():
         record.CopyAsNew(newMod)
 
     print "APPA:Save Test - TestAPPA.esp"
-    newMod.safeSave()
+    newMod.save()
     print "APPA:Finished testing"
 
 
 def TestARMO():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestARMO.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestARMO.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestARMO.esp")
 
     for record in Current[0].ARMO:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "full          :", record.full
-        print "script        :", PrintFormID(record.script)
-        print "enchantment   :", PrintFormID(record.enchantment)
-        print "enchantPoints :", record.enchantPoints
-        print "flags         :", record.flags
-        print "maleBody.modPath  :", record.maleBody.modPath
-        print "maleBody.modb     :", record.maleBody.modb
-        print "maleBody.modt_p   :", record.maleBody.modt_p
-        print "maleWorld.modPath :", record.maleWorld.modPath
-        print "maleWorld.modb    :", record.maleWorld.modb
-        print "maleWorld.modt_p  :", record.maleWorld.modt_p
-        print "maleIconPath      :", record.maleIconPath
-        print "femaleBody.modPath  :", record.femaleBody.modPath
-        print "femaleBody.modb     :", record.femaleBody.modb
-        print "femaleBody.modt_p   :", record.femaleBody.modt_p
-        print "femaleWorld.modPath :", record.femaleWorld.modPath
-        print "femaleWorld.modb    :", record.femaleWorld.modb
-        print "femaleWorld.modt_p  :", record.femaleWorld.modt_p
-        print "femaleIconPath      :", record.femaleIconPath
-        print "strength       :", record.strength
-        print "value          :", record.value
-        print "health         :", record.health
-        print "weight         :", record.weight
-
+        printRecord(record)
         break
 
     print "ARMO:Create Record Test"
-    newRecord = newMod.createARMORecord()
+    newRecord = newMod.create_ARMO()
     print "ARMO:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -2829,41 +4123,25 @@ def TestARMO():
         record.CopyAsNew(newMod)
 
     print "ARMO:Save Test - TestARMO.esp"
-    newMod.safeSave()
+    newMod.save()
     print "ARMO:Finished testing"
 
 
 def TestBOOK():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestBOOK.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestBOOK.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestBOOK.esp")
 
     for record in Current[0].BOOK:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "full    :", record.full
-        print "modPath :", record.modPath
-        print "modb    :", record.modb
-        print "modt_p  :", record.modt_p
-
-        print "iconPath      :", record.iconPath
-        print "text          :", record.text
-        print "script        :", PrintFormID(record.script)
-        print "enchantment   :", PrintFormID(record.enchantment)
-        print "enchantPoints :", record.enchantPoints
-        print "flags         :", record.flags
-        print "teaches       :", record.teaches
-        print "value         :", record.value
-        print "weight        :", record.weight
+        printRecord(record)
         break
 
     print "BOOK:Create Record Test"
-    newRecord = newMod.createBOOKRecord()
+    newRecord = newMod.create_BOOK()
     print "BOOK:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -2923,49 +4201,25 @@ def TestBOOK():
         record.CopyAsNew(newMod)
 
     print "BOOK:Save Test - TestBOOK.esp"
-    newMod.safeSave()
+    newMod.save()
     print "BOOK:Finished testing"
 
 
 def TestCLOT():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestCLOT.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestCLOT.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestCLOT.esp")
 
     for record in Current[0].CLOT:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "full          :", record.full
-        print "script        :", PrintFormID(record.script)
-        print "enchantment   :", PrintFormID(record.enchantment)
-        print "enchantPoints :", record.enchantPoints
-        print "flags         :", record.flags
-        print "maleBody.modPath  :", record.maleBody.modPath
-        print "maleBody.modb     :", record.maleBody.modb
-        print "maleBody.modt_p   :", record.maleBody.modt_p
-        print "maleWorld.modPath :", record.maleWorld.modPath
-        print "maleWorld.modb    :", record.maleWorld.modb
-        print "maleWorld.modt_p  :", record.maleWorld.modt_p
-        print "maleIconPath      :", record.maleIconPath
-        print "femaleBody.modPath  :", record.femaleBody.modPath
-        print "femaleBody.modb     :", record.femaleBody.modb
-        print "femaleBody.modt_p   :", record.femaleBody.modt_p
-        print "femaleWorld.modPath :", record.femaleWorld.modPath
-        print "femaleWorld.modb    :", record.femaleWorld.modb
-        print "femaleWorld.modt_p  :", record.femaleWorld.modt_p
-        print "femaleIconPath      :", record.femaleIconPath
-        print "value          :", record.value
-        print "weight         :", record.weight
-
+        printRecord(record)
         break
 
     print "CLOT:Create Record Test"
-    newRecord = newMod.createCLOTRecord()
+    newRecord = newMod.create_CLOT()
     print "CLOT:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -3031,41 +4285,25 @@ def TestCLOT():
         record.CopyAsNew(newMod)
 
     print "CLOT:Save Test - TestCLOT.esp"
-    newMod.safeSave()
+    newMod.save()
     print "CLOT:Finished testing"
 
 
 def TestCONT():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestCONT.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestCONT.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestCONT.esp")
 
     for record in Current[0].CONT:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "full    :", record.full
-        print "modPath :", record.modPath
-        print "modb    :", record.modb
-        print "modt_p  :", record.modt_p
-
-        print "script     :", PrintFormID(record.script)
-        print "items      :"
-        for item in record.items:
-            print "  %i: item: %s, count: %i" % (item._listIndex, PrintFormID(item.item), item.count)
-        print "flags      :", record.flags
-        print "weight     :", record.weight
-        print "soundOpen  :", PrintFormID(record.soundOpen)
-        print "soundClose :", PrintFormID(record.soundClose)
-
+        printRecord(record)
         break
 
     print "CONT:Create Record Test"
-    newRecord = newMod.createCONTRecord()
+    newRecord = newMod.create_CONT()
     print "CONT:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -3084,22 +4322,29 @@ def TestCONT():
     newRecord.modt_p = [0x00, 0xFF, 0xFF]
 
     newRecord.script = 7
-    item = newRecord.newItemsElement()
+    item = newRecord.create_item()
     item.item = 0x0100000A
     item.count = 50
-    item = newRecord.newItemsElement()
+    item = newRecord.create_item()
     item.item = 0x0000000B
     item.count = 1
-    item = newRecord.newItemsElement()
+    item = newRecord.create_item()
     item.item = 0x0000000C
     item.count = 2
-    item = newRecord.newItemsElement()
+    item = newRecord.create_item()
     item.item = 0x0000000D
     item.count = 3
+    print newRecord.items
+    printRecord(newRecord.items)
+    print
     newRecord.items = [newRecord.items[3], newRecord.items[2], newRecord.items[0]]
+    print 6
     newRecord.flags = 1
+    print 7
     newRecord.weight = 3.56
+    print 8
     newRecord.soundOpen  = 0x00000007
+    print 9
     newRecord.soundClose = 0x00000008
 
     print "CONT:Set Test Results"
@@ -3117,7 +4362,7 @@ def TestCONT():
     print "script     :", PrintFormID(newRecord.script)
     print "items      :"
     for item in newRecord.items:
-        print "  %i: item: %s, count: %i" % (item._listIndex, PrintFormID(item.item), item.count)
+        print "  %i: item: %s, count: %i" % (item._ListIndex, PrintFormID(item.item), item.count)
     print "flags      :", newRecord.flags
     print "weight     :", newRecord.weight
     print "soundOpen  :", PrintFormID(newRecord.soundOpen)
@@ -3132,41 +4377,25 @@ def TestCONT():
         record.CopyAsNew(newMod)
 
     print "CONT:Save Test - TestCONT.esp"
-    newMod.safeSave()
+    newMod.save()
     print "CONT:Finished testing"
 
 
 def TestDOOR():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestDOOR.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestDOOR.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestDOOR.esp")
 
     for record in Current[0].DOOR:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "full    :", record.full
-        print "modPath :", record.modPath
-        print "modb    :", record.modb
-        print "modt_p  :", record.modt_p
-
-        print "script     :", PrintFormID(record.script)
-        print "soundOpen  :", PrintFormID(record.soundOpen)
-        print "soundClose :", PrintFormID(record.soundClose)
-        print "soundLoop  :", PrintFormID(record.soundLoop)
-
-        print "flags   :", record.flags
-        print "destinations :"
-        for destination in record.destinations:
-            print "  ", PrintFormID(destination)
+        printRecord(record)
         break
 
     print "DOOR:Create Record Test"
-    newRecord = newMod.createDOORRecord()
+    newRecord = newMod.create_DOOR()
     print "DOOR:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -3222,56 +4451,25 @@ def TestDOOR():
         record.CopyAsNew(newMod)
 
     print "DOOR:Save Test - TestDOOR.esp"
-    newMod.safeSave()
+    newMod.save()
     print "DOOR:Finished testing"
 
 
 def TestINGR():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestINGR.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestINGR.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestINGR.esp")
 
     for record in Current[0].INGR:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "full    :", record.full
-        print "modPath :", record.modPath
-        print "modb    :", record.modb
-        print "modt_p  :", record.modt_p
-
-        print "iconPath:", record.iconPath
-        print "script  :", PrintFormID(record.script)
-        print "weight  :", record.weight
-        print "value   :", record.value
-        print "flags   :", record.flags
-
-        print "unused1 :", record.unused1
-
-        print "effects :"
-        for effect in record.effects:
-            print "  name0      :", effect.name0
-            print "  name       :", effect.name
-            print "  magnitude  :", effect.magnitude
-            print "  area       :", effect.area
-            print "  duration   :", effect.duration
-            print "  recipient  :", effect.recipient
-            print "  actorValue :", effect.actorValue
-            print "  script     :", PrintFormID(effect.script)
-            print "  school     :", effect.school
-            print "  visual     :", effect.visual
-            print "  flags      :", effect.flags
-            print "  unused1    :", effect.unused1
-            print "  full       :", effect.full
-            print
+        printRecord(record)
         break
 
     print "INGR:Create Record Test"
-    newRecord = newMod.createINGRRecord()
+    newRecord = newMod.create_INGR()
     print "INGR:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -3299,7 +4497,7 @@ def TestINGR():
 
     newRecord.unused1 = [0x00, 0xFE, 0xFD]
 
-    newEffect = newRecord.newEffectsElement()
+    newEffect = newRecord.create_effect()
     newEffect.name0 = "SEFF"
     newEffect.name = "SEFF"
     newEffect.magnitude = 1
@@ -3314,7 +4512,7 @@ def TestINGR():
     newEffect.unused1 = [3,4,5]
     newEffect.full = "INGR?"
 
-    newEffect = newRecord.newEffectsElement()
+    newEffect = newRecord.create_effect()
     newEffect.name0 = "SEFF"
     newEffect.name = "SEFF"
     newEffect.magnitude = 6
@@ -3374,48 +4572,25 @@ def TestINGR():
         record.CopyAsNew(newMod)
 
     print "INGR:Save Test - TestINGR.esp"
-    newMod.safeSave()
+    newMod.save()
     print "INGR:Finished testing"
 
 
 def TestLIGH():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestLIGH.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestLIGH.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestLIGH.esp")
 
     for record in Current[0].LIGH:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "modPath :", record.modPath
-        print "modb    :", record.modb
-        print "modt_p  :", record.modt_p
-        print "script  :", PrintFormID(record.script)
-        print "full    :", record.full
-        print "iconPath:", record.iconPath
-        print "duration:", record.duration
-        print "radius  :", record.radius
-
-        print "red     :", record.red
-        print "green   :", record.green
-        print "blue    :", record.blue
-        print "unused1 :", record.unused1
-
-        print "flags   :", record.flags
-        print "falloff :", record.falloff
-        print "fov     :", record.fov
-        print "value   :", record.value
-        print "weight  :", record.weight
-        print "fade    :", record.fade
-        print "sound   :", PrintFormID(record.sound)
+        printRecord(record)
         break
 
     print "LIGH:Create Record Test"
-    newRecord = newMod.createLIGHRecord()
+    newRecord = newMod.create_LIGH()
     print "LIGH:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -3492,36 +4667,25 @@ def TestLIGH():
         record.CopyAsNew(newMod)
 
     print "LIGH:Save Test - TestLIGH.esp"
-    newMod.safeSave()
+    newMod.save()
     print "LIGH:Finished testing"
 
 
 def TestMISC():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestMISC.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestMISC.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestMISC.esp")
 
     for record in Current[0].MISC:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "full    :", record.full
-        print "modPath :", record.modPath
-        print "modb    :", record.modb
-        print "modt_p  :", record.modt_p
-
-        print "iconPath:", record.iconPath
-        print "script  :", PrintFormID(record.script)
-        print "value   :", record.value
-        print "weight  :", record.weight
+        printRecord(record)
         break
 
     print "MISC:Create Record Test"
-    newRecord = newMod.createMISCRecord()
+    newRecord = newMod.create_MISC()
     print "MISC:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -3570,29 +4734,24 @@ def TestMISC():
         record.CopyAsNew(newMod)
 
     print "MISC:Save Test - TestMISC.esp"
-    newMod.safeSave()
+    newMod.save()
     print "MISC:Finished testing"
 
 def TestSTAT():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestSTAT.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestSTAT.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestSTAT.esp")
 
     for record in Current[0].STAT:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "modPath :", record.modPath
-        print "modb    :", record.modb
-        print "modt_p  :", record.modt_p
+        printRecord(record)
         break
 
     print "STAT:Create Record Test"
-    newRecord = newMod.createSTATRecord()
+    newRecord = newMod.create_STAT()
     print "STAT:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -3628,43 +4787,24 @@ def TestSTAT():
         record.CopyAsNew(newMod)
 
     print "STAT:Save Test - TestSTAT.esp"
-    newMod.safeSave()
+    newMod.save()
     print "STAT:Finished testing"
 
 def TestGRAS():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestGRAS.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestGRAS.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestGRAS.esp")
 
     for record in Current[0].GRAS:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "modPath :", record.modPath
-        print "modb    :", record.modb
-        print "modt_p  :", record.modt_p
-
-        print "density       :", record.density
-        print "minSlope      :", record.minSlope
-        print "maxSlope      :", record.maxSlope
-        print "unused1       :", record.unused1
-        print "waterDistance :", record.waterDistance
-        print "unused2       :", record.unused2
-        print "waterOp       :", record.waterOp
-        print "posRange      :", record.posRange
-        print "heightRange   :", record.heightRange
-        print "colorRange    :", record.colorRange
-        print "wavePeriod    :", record.wavePeriod
-        print "flags         :", record.flags
-        print "unused3       :", record.unused3
+        printRecord(record)
         break
 
     print "GRAS:Create Record Test"
-    newRecord = newMod.createGRASRecord()
+    newRecord = newMod.create_GRAS()
     print "GRAS:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -3724,47 +4864,25 @@ def TestGRAS():
         record.CopyAsNew(newMod)
 
     print "GRAS:Save Test - TestGRAS.esp"
-    newMod.safeSave()
+    newMod.save()
     print "GRAS:Finished testing"
 
 
 def TestTREE():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestTREE.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestTREE.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestTREE.esp")
 
     for record in Current[0].TREE:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "modPath      :", record.modPath
-        print "modb         :", record.modb
-        print "modt_p       :", record.modt_p
-        print "iconPath     :", record.iconPath
-        print "speedTree    :", record.speedTree
-        print "curvature    :", record.curvature
-        print "minAngle     :", record.minAngle
-        print "maxAngle     :", record.maxAngle
-        print "branchDim    :", record.branchDim
-        print "leafDim      :", record.leafDim
-        print "shadowRadius :", record.shadowRadius
-        print "rockSpeed    :", record.rockSpeed
-        print "rustleSpeed  :", record.rustleSpeed
-        print "widthBill    :", record.widthBill
-        print "heightBill   :", record.heightBill
-        print
-        print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
+        printRecord(record)
         break
 
     print "TREE:Create Record Test"
-    newRecord = newMod.createTREERecord()
+    newRecord = newMod.create_TREE()
     print "TREE:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -3821,37 +4939,25 @@ def TestTREE():
         record.CopyAsNew(newMod)
 
     print "TREE:Save Test - TestTREE.esp"
-    newMod.safeSave()
+    newMod.save()
     print "TREE:Finished testing"
 
 
 def TestFLOR():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestFLOR.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestFLOR.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestFLOR.esp")
 
     for record in Current[0].FLOR:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "full       :", record.full
-        print "modPath    :", record.modPath
-        print "modb       :", record.modb
-        print "modt_p     :", record.modt_p
-        print "script     :", record.script
-        print "ingredient :", record.ingredient
-        print "spring     :", record.spring
-        print "summer     :", record.summer
-        print "fall       :", record.fall
-        print "winter     :", record.winter
+        printRecord(record)
         break
 
     print "FLOR:Create Record Test"
-    newRecord = newMod.createFLORRecord()
+    newRecord = newMod.create_FLOR()
     print "FLOR:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -3897,34 +5003,25 @@ def TestFLOR():
         record.CopyAsNew(newMod)
 
     print "FLOR:Save Test - TestFLOR.esp"
-    newMod.safeSave()
+    newMod.save()
     print "FLOR:Finished testing"
 
 
 def TestFURN():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestFURN.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestFURN.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestFURN.esp")
 
     for record in Current[0].FURN:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "full    :", record.full
-        print "modPath :", record.modPath
-        print "modb    :", record.modb
-        print "modt_p  :", record.modt_p
-
-        print "script  :", record.script
-        print "flags   :", record.flags
+        printRecord(record)
         break
 
     print "FURN:Create Record Test"
-    newRecord = newMod.createFURNRecord()
+    newRecord = newMod.create_FURN()
     print "FURN:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -3969,44 +5066,25 @@ def TestFURN():
         record.CopyAsNew(newMod)
 
     print "FURN:Save Test - TestFURN.esp"
-    newMod.safeSave()
+    newMod.save()
     print "FURN:Finished testing"
 
 
 def TestWEAP():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestWEAP.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestWEAP.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestWEAP.esp")
 
     for record in Current[0].WEAP:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "full          :", record.full
-        print "modPath       :", record.modPath
-        print "modb          :", record.modb
-        print "modt_p        :", record.modt_p
-        print "iconPath      :", record.iconPath
-        print "script        :", PrintFormID(record.script)
-        print "enchantment   :", PrintFormID(record.enchantment)
-        print "enchantPoints :", record.enchantPoints
-        print "weaponType    :", record.weaponType
-        print "speed         :", record.speed
-        print "reach         :", record.reach
-        print "flags         :", record.flags
-        print "value         :", record.value
-        print "health        :", record.health
-        print "weight        :", record.weight
-        print "damage        :", record.damage
-
+        printRecord(record)
         break
 
     print "WEAP:Create Record Test"
-    newRecord = newMod.createWEAPRecord()
+    newRecord = newMod.create_WEAP()
     print "WEAP:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -4072,40 +5150,25 @@ def TestWEAP():
         record.CopyAsNew(newMod)
 
     print "WEAP:Save Test - TestWEAP.esp"
-    newMod.safeSave()
+    newMod.save()
     print "WEAP:Finished testing"
 
 
 def TestAMMO():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestAMMO.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestAMMO.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestAMMO.esp")
 
     for record in Current[0].AMMO:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "full          :", record.full
-        print "modPath       :", record.modPath
-        print "modb          :", record.modb
-        print "modt_p        :", record.modt_p
-        print "iconPath      :", record.iconPath
-        print "enchantment   :", PrintFormID(record.enchantment)
-        print "enchantPoints :", record.enchantPoints
-        print "speed         :", record.speed
-        print "flags         :", record.flags
-        print "unused1       :", record.unused1
-        print "value         :", record.value
-        print "weight        :", record.weight
-        print "damage        :", record.damage
+        printRecord(record)
         break
 
     print "AMMO:Create Record Test"
-    newRecord = newMod.createAMMORecord()
+    newRecord = newMod.create_AMMO()
     print "AMMO:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -4165,114 +5228,25 @@ def TestAMMO():
         record.CopyAsNew(newMod)
 
     print "AMMO:Save Test - TestAMMO.esp"
-    newMod.safeSave()
+    newMod.save()
     print "AMMO:Finished testing"
 
 
 def TestNPC_():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestNPC_.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestNPC_.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestNPC_.esp")
 
     for record in Current[0].NPC_:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "full       :", record.full
-        print "modPath    :", record.modPath
-        print "modb       :", record.modb
-        print "modt_p     :", record.modt_p
-        print "flags      :", record.flags
-        print "baseSpell  :", record.baseSpell
-        print "fatigue    :", record.fatigue
-        print "barterGold :", record.barterGold
-        print "level      :", record.level
-        print "calcMin    :", record.calcMin
-        print "calcMax    :", record.calcMax
-        print "factions"
-        for faction in record.factions:
-             print "  %i: Faction: %s, Rank: %i, Unused1:" % (faction._listIndex, PrintFormID(faction.faction), faction.rank), faction.unused1
-        print "deathItem :", PrintFormID(record.deathItem)
-        print "race      :", PrintFormID(record.race)
-
-        print "spells    :"
-        for spell in record.spells:
-            print "  ", PrintFormID(spell)
-
-        print "script    :", PrintFormID(record.script)
-        print "items     :"
-        for item in record.items:
-            print "  %i: item: %s, count: %i" % (item._listIndex, PrintFormID(item.item), item.count)
-        print "aggression     :", record.aggression
-        print "confidence     :", record.confidence
-        print "energyLevel    :", record.energyLevel
-        print "responsibility :", record.responsibility
-        print "services       :", record.services
-        print "trainSkill     :", record.trainSkill
-        print "trainLevel     :", record.trainLevel
-        print "unused1        :", record.unused1
-
-        print "aiPackages     :"
-        for package in record.aiPackages:
-            print "  ", PrintFormID(package)
-
-        print "animations     :"
-        for animation in record.animations:
-            print "  ", animation
-
-        print "iclass         :", PrintFormID(record.iclass)
-        print "armorer      :", record.armorer
-        print "athletics    :", record.athletics
-        print "blade        :", record.blade
-        print "block        :", record.block
-        print "blunt        :", record.blunt
-        print "h2h          :", record.h2h
-        print "heavyArmor   :", record.heavyArmor
-        print "alchemy      :", record.alchemy
-        print "alteration   :", record.alteration
-        print "conjuration  :", record.conjuration
-        print "destruction  :", record.destruction
-        print "illusion     :", record.illusion
-        print "mysticism    :", record.mysticism
-        print "restoration  :", record.restoration
-        print "acrobatics   :", record.acrobatics
-        print "lightArmor   :", record.lightArmor
-        print "marksman     :", record.marksman
-        print "mercantile   :", record.mercantile
-        print "security     :", record.security
-        print "sneak        :", record.sneak
-        print "speechcraft  :", record.speechcraft
-        print "health       :", record.health
-        print "unused2      :", record.unused2
-        print "strength     :", record.strength
-        print "intelligence :", record.intelligence
-        print "willpower    :", record.willpower
-        print "agility      :", record.agility
-        print "speed        :", record.speed
-        print "endurance    :", record.endurance
-        print "personality  :", record.personality
-        print "luck         :", record.luck
-        print "hair        :", PrintFormID(record.hair)
-        print "hairLength  :", record.hairLength
-        print "eye         :", PrintFormID(record.eye)
-        print "hairRed     :", record.hairRed
-        print "hairGreen   :", record.hairGreen
-        print "hairBlue    :", record.hairBlue
-        print "unused3     :", record.unused3
-        print "combatStyle :", PrintFormID(record.combatStyle)
-        print "fggs_p :", record.fggs_p
-        print "fgga_p :", record.fgga_p
-        print "fgts_p :", record.fgts_p
-        print "fnam :", record.fnam
-
+        printRecord(record)
         break
 
     print "NPC_:Create Record Test"
-    newRecord = newMod.createNPC_Record()
+    newRecord = newMod.create_NPC_()
     print "NPC_:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -4299,22 +5273,22 @@ def TestNPC_():
     newRecord.calcMax = 60
 
     print "factions..."
-    newFaction = newRecord.newFactionsElement()
+    newFaction = newRecord.create_faction()
     newFaction.faction = 1
     newFaction.rank = 2
     newFaction.unused1 = [1,2,3]
 
-    newFaction = newRecord.newFactionsElement()
+    newFaction = newRecord.create_faction()
     newFaction.faction = 3
     newFaction.rank = 4
     newFaction.unused1 = [4,5,6]
 
-    newFaction = newRecord.newFactionsElement()
+    newFaction = newRecord.create_faction()
     newFaction.faction = 5
     newFaction.rank = 6
     newFaction.unused1 = [7,8,9]
 
-    newFaction = newRecord.newFactionsElement()
+    newFaction = newRecord.create_faction()
     newFaction.faction = 7
     newFaction.rank = 8
     newFaction.unused1 = [10,11,12]
@@ -4325,16 +5299,16 @@ def TestNPC_():
     newRecord.spells = [0xFF000121, 0xFE000222]
     newRecord.script = 7
 
-    item = newRecord.newItemsElement()
+    item = newRecord.create_item()
     item.item = 0x0100000A
     item.count = 50
-    item = newRecord.newItemsElement()
+    item = newRecord.create_item()
     item.item = 0x0000000B
     item.count = 1
-    item = newRecord.newItemsElement()
+    item = newRecord.create_item()
     item.item = 0x0000000C
     item.count = 2
-    item = newRecord.newItemsElement()
+    item = newRecord.create_item()
     item.item = 0x0000000D
     item.count = 3
     newRecord.items = [newRecord.items[3], newRecord.items[2], newRecord.items[0]]
@@ -4417,7 +5391,7 @@ def TestNPC_():
     print "calcMax    :", newRecord.calcMax
     print "factions"
     for faction in newRecord.factions:
-         print "  %i: Faction: %s, Rank: %i, Unused1:" % (faction._listIndex, PrintFormID(faction.faction), faction.rank), faction.unused1
+         print "  %i: Faction: %s, Rank: %i, Unused1:" % (faction._ListIndex, PrintFormID(faction.faction), faction.rank), faction.unused1
     print "deathItem :", PrintFormID(newRecord.deathItem)
     print "race      :", PrintFormID(newRecord.race)
 
@@ -4428,7 +5402,7 @@ def TestNPC_():
     print "script    :", PrintFormID(newRecord.script)
     print "items     :"
     for item in newRecord.items:
-        print "  %i: item: %s, count: %i" % (item._listIndex, PrintFormID(item.item), item.count)
+        print "  %i: item: %s, count: %i" % (item._ListIndex, PrintFormID(item.item), item.count)
     print "aggression     :", newRecord.aggression
     print "confidence     :", newRecord.confidence
     print "energyLevel    :", newRecord.energyLevel
@@ -4499,108 +5473,25 @@ def TestNPC_():
         record.CopyAsNew(newMod)
 
     print "NPC_:Save Test - TestNPC_.esp"
-    newMod.safeSave()
+    newMod.save()
     print "NPC_:Finished testing"
 
 
 def TestCREA():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestCREA.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestCREA.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestCREA.esp")
 
     for record in Current[0].CREA:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "full       :", record.full
-        print "modPath    :", record.modPath
-        print "modb       :", record.modb
-        print "modt_p     :", record.modt_p
-
-        print "spells"
-        for spell in record.spells:
-            print "  ", PrintFormID(spell)
-
-        print "bodyParts"
-        for bodyPart in record.bodyParts:
-            print "  ", bodyPart
-
-        print "nift_p     :", record.nift_p
-
-        print "flags      :", record.flags
-        print "baseSpell  :", record.baseSpell
-        print "fatigue    :", record.fatigue
-        print "barterGold :", record.barterGold
-        print "level      :", record.level
-        print "calcMin    :", record.calcMin
-        print "calcMax    :", record.calcMax
-
-        print "factions"
-        for faction in record.factions:
-             print "  %i: Faction: %s, Rank: %i, Unused1:" % (faction._listIndex, PrintFormID(faction.faction), faction.rank), faction.unused1
-
-        print "deathItem :", PrintFormID(record.deathItem)
-        print "script    :", PrintFormID(record.script)
-
-        print "items"
-        for item in record.items:
-            print "  %i: item: %s, count: %i" % (item._listIndex, PrintFormID(item.item), item.count)
-
-        print "aggression     :", record.aggression
-        print "confidence     :", record.confidence
-        print "energyLevel    :", record.energyLevel
-        print "responsibility :", record.responsibility
-        print "services       :", record.services
-        print "trainSkill     :", record.trainSkill
-        print "trainLevel     :", record.trainLevel
-        print "unused1        :", record.unused1
-
-        print "aiPackages     :"
-        for package in record.aiPackages:
-            print "  ", PrintFormID(package)
-
-        print "animations     :"
-        for animation in record.animations:
-            print "  ", animation
-
-        print "creatureType :", record.creatureType
-        print "combat       :", record.combat
-        print "magic        :", record.magic
-        print "stealth      :", record.stealth
-        print "soul         :", record.soul
-        print "unused2      :", record.unused2
-        print "health       :", record.health
-        print "unused3      :", record.unused3
-        print "attackDamage :", record.attackDamage
-        print "strength     :", record.strength
-        print "intelligence :", record.intelligence
-        print "willpower    :", record.willpower
-        print "agility      :", record.agility
-        print "speed        :", record.speed
-        print "endurance    :", record.endurance
-        print "personality  :", record.personality
-        print "luck         :", record.luck
-
-        print "attackReach  :", record.attackReach
-        print "combatStyle  :", PrintFormID(record.combatStyle)
-        print "turningSpeed :", record.turningSpeed
-        print "baseScale    :", record.baseScale
-        print "footWeight   :", record.footWeight
-        print "inheritsSoundsFrom  :", PrintFormID(record.inheritsSoundsFrom)
-        print "bloodSprayPath      :", record.bloodSprayPath
-        print "bloodDecalPath      :", record.bloodDecalPath
-
-        print "sounds"
-        for sound in record.sounds:
-            print "  %i: type: %u, sound: %s, chance:%i" % (sound._listIndex, sound.type, PrintFormID(sound.sound), sound.chance)
+        printRecord(record)
         break
 
     print "CREA:Create Record Test"
-    newRecord = newMod.createCREARecord()
+    newRecord = newMod.create_CREA()
     print "CREA:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -4632,22 +5523,22 @@ def TestCREA():
     newRecord.calcMax = 60
 
     print "factions..."
-    newFaction = newRecord.newFactionsElement()
+    newFaction = newRecord.create_faction()
     newFaction.faction = 1
     newFaction.rank = 2
     newFaction.unused1 = [1,2,3]
 
-    newFaction = newRecord.newFactionsElement()
+    newFaction = newRecord.create_faction()
     newFaction.faction = 3
     newFaction.rank = 4
     newFaction.unused1 = [4,5,6]
 
-    newFaction = newRecord.newFactionsElement()
+    newFaction = newRecord.create_faction()
     newFaction.faction = 5
     newFaction.rank = 6
     newFaction.unused1 = [7,8,9]
 
-    newFaction = newRecord.newFactionsElement()
+    newFaction = newRecord.create_faction()
     newFaction.faction = 7
     newFaction.rank = 8
     newFaction.unused1 = [10,11,12]
@@ -4656,16 +5547,16 @@ def TestCREA():
     newRecord.deathItem = 14
     newRecord.script = 7
 
-    item = newRecord.newItemsElement()
+    item = newRecord.create_item()
     item.item = 0x0100000A
     item.count = 50
-    item = newRecord.newItemsElement()
+    item = newRecord.create_item()
     item.item = 0x0000000B
     item.count = 1
-    item = newRecord.newItemsElement()
+    item = newRecord.create_item()
     item.item = 0x0000000C
     item.count = 2
-    item = newRecord.newItemsElement()
+    item = newRecord.create_item()
     item.item = 0x0000000D
     item.count = 3
     newRecord.items = [newRecord.items[3], newRecord.items[2], newRecord.items[0]]
@@ -4687,7 +5578,7 @@ def TestCREA():
     newRecord.combat = 7
     newRecord.magic = 8
     newRecord.stealth = 9
-    newRecord.soul = 1
+    newRecord.soulType = 1
     newRecord.unused2 = [3]
     newRecord.health = 27
     newRecord.unused3 = [4,5]
@@ -4709,19 +5600,19 @@ def TestCREA():
     newRecord.bloodSprayPath = r"CREA\bloodSprayPath\anim1.dds"
     newRecord.bloodDecalPath = r"CREA\bloodDecalPath\anim1.dds"
 
-    sound = newRecord.newSoundsElement()
+    sound = newRecord.create_sound()
     sound.type = 0
     sound.sound = 0x0100000A
     sound.chance = 0
-    sound = newRecord.newSoundsElement()
+    sound = newRecord.create_sound()
     sound.type = 1
     sound.sound = 0x0000000B
     sound.chance = 1
-    sound = newRecord.newSoundsElement()
+    sound = newRecord.create_sound()
     sound.type = 2
     sound.sound = 0x0000000C
     sound.chance = 2
-    sound = newRecord.newSoundsElement()
+    sound = newRecord.create_sound()
     sound.type = 3
     sound.sound = 0x0000000D
     sound.chance = 3
@@ -4759,14 +5650,14 @@ def TestCREA():
 
     print "factions"
     for faction in newRecord.factions:
-         print "  %i: Faction: %s, Rank: %i, Unused1:" % (faction._listIndex, PrintFormID(faction.faction), faction.rank), faction.unused1
+         print "  %i: Faction: %s, Rank: %i, Unused1:" % (faction._ListIndex, PrintFormID(faction.faction), faction.rank), faction.unused1
 
     print "deathItem :", PrintFormID(newRecord.deathItem)
     print "script    :", PrintFormID(newRecord.script)
 
     print "items"
     for item in newRecord.items:
-        print "  %i: item: %s, count: %i" % (item._listIndex, PrintFormID(item.item), item.count)
+        print "  %i: item: %s, count: %i" % (item._ListIndex, PrintFormID(item.item), item.count)
 
     print "aggression     :", newRecord.aggression
     print "confidence     :", newRecord.confidence
@@ -4789,7 +5680,7 @@ def TestCREA():
     print "combat       :", newRecord.combat
     print "magic        :", newRecord.magic
     print "stealth      :", newRecord.stealth
-    print "soul         :", newRecord.soul
+    print "soulType         :", newRecord.soulType
     print "unused2      :", newRecord.unused2
     print "health       :", newRecord.health
     print "unused3      :", newRecord.unused3
@@ -4814,7 +5705,7 @@ def TestCREA():
 
     print "sounds"
     for sound in newRecord.sounds:
-        print "  %i: type: %u, sound: %s, chance:%i" % (sound._listIndex, sound.type, PrintFormID(sound.sound), sound.chance)
+        print "  %i: type: %u, sound: %s, chance:%i" % (sound._ListIndex, sound.type, PrintFormID(sound.sound), sound.chance)
     print "CREA:CopyAsOverride Test"
     for record in Current[0].CREA:
         record.CopyAsOverride(newMod)
@@ -4824,39 +5715,25 @@ def TestCREA():
         record.CopyAsNew(newMod)
 
     print "CREA:Save Test - TestCREA.esp"
-    newMod.safeSave()
+    newMod.save()
     print "CREA:Finished testing"
 
 
 def TestLVLC():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestLVLC.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestLVLC.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestLVLC.esp")
 
     for record in Current[0].LVLC:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "chanceNone :", record.chanceNone
-        print "flags      :", record.flags
-        print "script     :", PrintFormID(record.script)
-        print "template   :", PrintFormID(record.template)
-        print "entries"
-        for entry in record.entries:
-            print
-            print "  level   :", entry.level
-            print "  unused1 :", entry.unused1
-            print "  listId  :", PrintFormID(entry.listId)
-            print "  count   :", entry.count
-            print "  unused2 :", entry.unused2
+        printRecord(record)
         break
 
     print "LVLC:Create Record Test"
-    newRecord = newMod.createLVLCRecord()
+    newRecord = newMod.create_LVLC()
     print "LVLC:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -4870,25 +5747,25 @@ def TestLVLC():
     newRecord.script = 7
     newRecord.template = 0x14
 
-    entry = newRecord.newEntriesElement()
+    entry = newRecord.create_entry()
     entry.level = 1
     entry.unused1 = [0x14, 0xFF]
     entry.listId = 0x0100000A
     entry.count = 2
     entry.unused2 = [0x15, 0xFF]
-    entry = newRecord.newEntriesElement()
+    entry = newRecord.create_entry()
     entry.level = 3
     entry.unused1 = [0x16, 0xFF]
     entry.listId = 0x0000000B
     entry.count = 4
     entry.unused2 = [0x17, 0xFF]
-    entry = newRecord.newEntriesElement()
+    entry = newRecord.create_entry()
     entry.level = 5
     entry.unused1 = [0x18, 0xFF]
     entry.listId = 0x0000000C
     entry.count = 6
     entry.unused2 = [0x19, 0xFF]
-    entry = newRecord.newEntriesElement()
+    entry = newRecord.create_entry()
     entry.level = 7
     entry.unused1 = [0x20, 0xFF]
     entry.listId = 0x0000000D
@@ -4926,39 +5803,25 @@ def TestLVLC():
         record.CopyAsNew(newMod)
 
     print "LVLC:Save Test - TestLVLC.esp"
-    newMod.safeSave()
+    newMod.save()
     print "LVLC:Finished testing"
 
 
 def TestSLGM():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestSLGM.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestSLGM.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestSLGM.esp")
 
     for record in Current[0].SLGM:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "full    :", record.full
-        print "modPath :", record.modPath
-        print "modb    :", record.modb
-        print "modt_p  :", record.modt_p
-
-        print "iconPath:", record.iconPath
-        print "script  :", PrintFormID(record.script)
-        print "value   :", record.value
-        print "weight  :", record.weight
-
-        print "soul     :", record.soul
-        print "capacity :", record.capacity
+        printRecord(record)
         break
 
     print "SLGM:Create Record Test"
-    newRecord = newMod.createSLGMRecord()
+    newRecord = newMod.create_SLGM()
     print "SLGM:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -4982,7 +5845,7 @@ def TestSLGM():
     newRecord.value = 150
     newRecord.weight = 3.56
 
-    newRecord.soul = 1
+    newRecord.soulType = 1
     newRecord.capacity = 50
 
     print "SLGM:Set Test Results"
@@ -5002,7 +5865,7 @@ def TestSLGM():
     print "value   :", newRecord.value
     print "weight  :", newRecord.weight
 
-    print "soul     :", newRecord.soul
+    print "soulType     :", newRecord.soulType
     print "capacity :", newRecord.capacity
 
     print "SLGM:CopyAsOverride Test"
@@ -5014,36 +5877,25 @@ def TestSLGM():
         record.CopyAsNew(newMod)
 
     print "SLGM:Save Test - TestSLGM.esp"
-    newMod.safeSave()
+    newMod.save()
     print "SLGM:Finished testing"
 
 
 def TestKEYM():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestKEYM.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestKEYM.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestKEYM.esp")
 
     for record in Current[0].KEYM:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "full    :", record.full
-        print "modPath :", record.modPath
-        print "modb    :", record.modb
-        print "modt_p  :", record.modt_p
-
-        print "iconPath:", record.iconPath
-        print "script  :", PrintFormID(record.script)
-        print "value   :", record.value
-        print "weight  :", record.weight
+        printRecord(record)
         break
 
     print "KEYM:Create Record Test"
-    newRecord = newMod.createKEYMRecord()
+    newRecord = newMod.create_KEYM()
     print "KEYM:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -5092,55 +5944,24 @@ def TestKEYM():
         record.CopyAsNew(newMod)
 
     print "KEYM:Save Test - TestKEYM.esp"
-    newMod.safeSave()
+    newMod.save()
     print "KEYM:Finished testing"
 
 def TestALCH():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestALCH.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestALCH.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestALCH.esp")
 
     for record in Current[0].ALCH:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "full    :", record.full
-        print "modPath :", record.modPath
-        print "modb    :", record.modb
-        print "modt_p  :", record.modt_p
-
-        print "iconPath:", record.iconPath
-        print "script  :", PrintFormID(record.script)
-        print "weight  :", record.weight
-        print "value   :", record.value
-        print "flags   :", record.flags
-
-        print "unused1 :", record.unused1
-
-        print "effects :"
-        for effect in record.effects:
-            print "  name0      :", effect.name0
-            print "  name       :", effect.name
-            print "  magnitude  :", effect.magnitude
-            print "  area       :", effect.area
-            print "  duration   :", effect.duration
-            print "  recipient  :", effect.recipient
-            print "  actorValue :", effect.actorValue
-            print "  script     :", PrintFormID(effect.script)
-            print "  school     :", effect.school
-            print "  visual     :", effect.visual
-            print "  flags      :", effect.flags
-            print "  unused1    :", effect.unused1
-            print "  full       :", effect.full
-            print
+        printRecord(record)
         break
 
     print "ALCH:Create Record Test"
-    newRecord = newMod.createALCHRecord()
+    newRecord = newMod.create_ALCH()
     print "ALCH:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -5168,7 +5989,7 @@ def TestALCH():
 
     newRecord.unused1 = [0x00, 0xFE, 0xFD]
 
-    newEffect = newRecord.newEffectsElement()
+    newEffect = newRecord.create_effect()
     newEffect.name0 = "SEFF"
     newEffect.name = "SEFF"
     newEffect.magnitude = 1
@@ -5183,7 +6004,7 @@ def TestALCH():
     newEffect.unused1 = [3,4,5]
     newEffect.full = "ALCH?"
 
-    newEffect = newRecord.newEffectsElement()
+    newEffect = newRecord.create_effect()
     newEffect.name0 = "SEFF"
     newEffect.name = "SEFF"
     newEffect.magnitude = 6
@@ -5243,26 +6064,24 @@ def TestALCH():
         record.CopyAsNew(newMod)
 
     print "ALCH:Save Test - TestALCH.esp"
-    newMod.safeSave()
+    newMod.save()
     print "ALCH:Finished testing"
 
 def TestSBSP():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestSBSP.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestSBSP.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestSBSP.esp")
 
     for record in Current[0].SBSP:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
+        printRecord(record)
         break
 
     print "SBSP:Create Record Test"
-    newRecord = newMod.createSBSPRecord()
+    newRecord = newMod.create_SBSP()
     print "SBSP:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -5289,57 +6108,25 @@ def TestSBSP():
         record.CopyAsNew(newMod)
 
     print "SBSP:Save Test - TestSBSP.esp"
-    newMod.safeSave()
+    newMod.save()
     print "SBSP:Finished testing"
 
 
 def TestSGST():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestSGST.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestSGST.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestSGST.esp")
 
     for record in Current[0].SGST:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "full    :", record.full
-        print "modPath :", record.modPath
-        print "modb    :", record.modb
-        print "modt_p  :", record.modt_p
-
-        print "iconPath:", record.iconPath
-        print "script  :", PrintFormID(record.script)
-
-        print "effects :"
-        for effect in record.effects:
-            print "  name0      :", effect.name0
-            print "  name       :", effect.name
-            print "  magnitude  :", effect.magnitude
-            print "  area       :", effect.area
-            print "  duration   :", effect.duration
-            print "  recipient  :", effect.recipient
-            print "  actorValue :", effect.actorValue
-            print "  script     :", PrintFormID(effect.script)
-            print "  school     :", effect.school
-            print "  visual     :", effect.visual
-            print "  flags      :", effect.flags
-            print "  unused1    :", effect.unused1
-            print "  full       :", effect.full
-            print
-
-        print "uses   :", record.uses
-        print "value   :", record.value
-        print "weight  :", record.weight
-
-
+        printRecord(record)
         break
 
     print "SGST:Create Record Test"
-    newRecord = newMod.createSGSTRecord()
+    newRecord = newMod.create_SGST()
     print "SGST:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -5361,7 +6148,7 @@ def TestSGST():
     newRecord.iconPath = r"SGST\path\test.dds"
     newRecord.script = 7
 
-    newEffect = newRecord.newEffectsElement()
+    newEffect = newRecord.create_effect()
     newEffect.name0 = "SEFF"
     newEffect.name = "SEFF"
     newEffect.magnitude = 1
@@ -5369,14 +6156,14 @@ def TestSGST():
     newEffect.duration = 6
     newEffect.recipient = 6
     newEffect.actorValue = 5
-    newEffect.script = 0xFF000007
+    newEffect.script = 0x00000007
     newEffect.school = 324
     newEffect.visual = "SEFF"
     newEffect.flags = 16
     newEffect.unused1 = [3,4,5]
     newEffect.full = "SGST?"
 
-    newEffect = newRecord.newEffectsElement()
+    newEffect = newRecord.create_effect()
     newEffect.name0 = "SEFF"
     newEffect.name = "SEFF"
     newEffect.magnitude = 6
@@ -5384,7 +6171,7 @@ def TestSGST():
     newEffect.duration = 7
     newEffect.recipient = 9
     newEffect.actorValue = 10
-    newEffect.script = 0xFF00000A
+    newEffect.script = 0x0000000A
     newEffect.school = 11
     newEffect.visual = "SEFF"
     newEffect.flags = 13
@@ -5392,7 +6179,7 @@ def TestSGST():
     newEffect.full = "SGST??"
 
 
-    newEffect = newRecord.newEffectsElement()
+    newEffect = newRecord.create_effect()
     newEffect.name0 = "SEFF"
     newEffect.name = "SEFF"
     newEffect.magnitude = 6
@@ -5400,7 +6187,7 @@ def TestSGST():
     newEffect.duration = 8
     newEffect.recipient = 9
     newEffect.actorValue = 10
-    newEffect.script = 0xFF00000A
+    newEffect.script = 0x0000000A
     newEffect.school = 11
     newEffect.visual = "SEFF"
     newEffect.flags = 13
@@ -5458,37 +6245,25 @@ def TestSGST():
         record.CopyAsNew(newMod)
 
     print "SGST:Save Test - TestSGST.esp"
-    newMod.safeSave()
+    newMod.save()
     print "SGST:Finished testing"
 
 
 def TestLVLI():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestLVLI.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestLVLI.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestLVLI.esp")
 
     for record in Current[0].LVLI:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "chanceNone :", record.chanceNone
-        print "flags      :", record.flags
-        print "entries"
-        for entry in record.entries:
-            print
-            print "  level   :", entry.level
-            print "  unused1 :", entry.unused1
-            print "  listId  :", PrintFormID(entry.listId)
-            print "  count   :", entry.count
-            print "  unused2 :", entry.unused2
+        printRecord(record)
         break
 
     print "LVLI:Create Record Test"
-    newRecord = newMod.createLVLIRecord()
+    newRecord = newMod.create_LVLI()
     print "LVLI:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -5500,25 +6275,25 @@ def TestLVLI():
     newRecord.chanceNone = 20
     newRecord.flags = 1
 
-    entry = newRecord.newEntriesElement()
+    entry = newRecord.create_entry()
     entry.level = 1
     entry.unused1 = [0x14, 0xFF]
     entry.listId = 0x0100000A
     entry.count = 2
     entry.unused2 = [0x15, 0xFF]
-    entry = newRecord.newEntriesElement()
+    entry = newRecord.create_entry()
     entry.level = 3
     entry.unused1 = [0x16, 0xFF]
     entry.listId = 0x0000000B
     entry.count = 4
     entry.unused2 = [0x17, 0xFF]
-    entry = newRecord.newEntriesElement()
+    entry = newRecord.create_entry()
     entry.level = 5
     entry.unused1 = [0x18, 0xFF]
     entry.listId = 0x0000000C
     entry.count = 6
     entry.unused2 = [0x19, 0xFF]
-    entry = newRecord.newEntriesElement()
+    entry = newRecord.create_entry()
     entry.level = 7
     entry.unused1 = [0x20, 0xFF]
     entry.listId = 0x0000000D
@@ -5552,242 +6327,25 @@ def TestLVLI():
         record.CopyAsNew(newMod)
 
     print "LVLI:Save Test - TestLVLI.esp"
-    newMod.safeSave()
+    newMod.save()
     print "LVLI:Finished testing"
 
 
 def TestWTHR():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestWTHR.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestWTHR.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestWTHR.esp")
 
     for record in Current[0].WTHR:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "lowerLayer :", record.lowerLayer
-        print "upperLayer :", record.upperLayer
-
-        print "modPath :", record.modPath
-        print "modb    :", record.modb
-        print "modt_p  :", record.modt_p
-
-        print "upperSky.riseRed    :", record.upperSky.riseRed
-        print "upperSky.riseGreen  :", record.upperSky.riseGreen
-        print "upperSky.riseBlue   :", record.upperSky.riseBlue
-        print "upperSky.unused1    :", record.upperSky.unused1
-        print "upperSky.dayRed     :", record.upperSky.dayRed
-        print "upperSky.dayGreen   :", record.upperSky.dayGreen
-        print "upperSky.dayBlue    :", record.upperSky.dayBlue
-        print "upperSky.unused2    :", record.upperSky.unused2
-        print "upperSky.setRed     :", record.upperSky.setRed
-        print "upperSky.setGreen   :", record.upperSky.setGreen
-        print "upperSky.setBlue    :", record.upperSky.setBlue
-        print "upperSky.unused3    :", record.upperSky.unused3
-        print "upperSky.nightRed   :", record.upperSky.nightRed
-        print "upperSky.nightGreen :", record.upperSky.nightGreen
-        print "upperSky.nightBlue  :", record.upperSky.nightBlue
-        print "upperSky.unused4    :", record.upperSky.unused4
-
-        print "fog.riseRed    :", record.fog.riseRed
-        print "fog.riseGreen  :", record.fog.riseGreen
-        print "fog.riseBlue   :", record.fog.riseBlue
-        print "fog.unused1    :", record.fog.unused1
-        print "fog.dayRed     :", record.fog.dayRed
-        print "fog.dayGreen   :", record.fog.dayGreen
-        print "fog.dayBlue    :", record.fog.dayBlue
-        print "fog.unused2    :", record.fog.unused2
-        print "fog.setRed     :", record.fog.setRed
-        print "fog.setGreen   :", record.fog.setGreen
-        print "fog.setBlue    :", record.fog.setBlue
-        print "fog.unused3    :", record.fog.unused3
-        print "fog.nightRed   :", record.fog.nightRed
-        print "fog.nightGreen :", record.fog.nightGreen
-        print "fog.nightBlue  :", record.fog.nightBlue
-        print "fog.unused4    :", record.fog.unused4
-
-        print "lowerClouds.riseRed    :", record.lowerClouds.riseRed
-        print "lowerClouds.riseGreen  :", record.lowerClouds.riseGreen
-        print "lowerClouds.riseBlue   :", record.lowerClouds.riseBlue
-        print "lowerClouds.unused1    :", record.lowerClouds.unused1
-        print "lowerClouds.dayRed     :", record.lowerClouds.dayRed
-        print "lowerClouds.dayGreen   :", record.lowerClouds.dayGreen
-        print "lowerClouds.dayBlue    :", record.lowerClouds.dayBlue
-        print "lowerClouds.unused2    :", record.lowerClouds.unused2
-        print "lowerClouds.setRed     :", record.lowerClouds.setRed
-        print "lowerClouds.setGreen   :", record.lowerClouds.setGreen
-        print "lowerClouds.setBlue    :", record.lowerClouds.setBlue
-        print "lowerClouds.unused3    :", record.lowerClouds.unused3
-        print "lowerClouds.nightRed   :", record.lowerClouds.nightRed
-        print "lowerClouds.nightGreen :", record.lowerClouds.nightGreen
-        print "lowerClouds.nightBlue  :", record.lowerClouds.nightBlue
-        print "lowerClouds.unused4    :", record.lowerClouds.unused4
-
-        print "ambient.riseRed    :", record.ambient.riseRed
-        print "ambient.riseGreen  :", record.ambient.riseGreen
-        print "ambient.riseBlue   :", record.ambient.riseBlue
-        print "ambient.unused1    :", record.ambient.unused1
-        print "ambient.dayRed     :", record.ambient.dayRed
-        print "ambient.dayGreen   :", record.ambient.dayGreen
-        print "ambient.dayBlue    :", record.ambient.dayBlue
-        print "ambient.unused2    :", record.ambient.unused2
-        print "ambient.setRed     :", record.ambient.setRed
-        print "ambient.setGreen   :", record.ambient.setGreen
-        print "ambient.setBlue    :", record.ambient.setBlue
-        print "ambient.unused3    :", record.ambient.unused3
-        print "ambient.nightRed   :", record.ambient.nightRed
-        print "ambient.nightGreen :", record.ambient.nightGreen
-        print "ambient.nightBlue  :", record.ambient.nightBlue
-        print "ambient.unused4    :", record.ambient.unused4
-
-        print "sunlight.riseRed    :", record.sunlight.riseRed
-        print "sunlight.riseGreen  :", record.sunlight.riseGreen
-        print "sunlight.riseBlue   :", record.sunlight.riseBlue
-        print "sunlight.unused1    :", record.sunlight.unused1
-        print "sunlight.dayRed     :", record.sunlight.dayRed
-        print "sunlight.dayGreen   :", record.sunlight.dayGreen
-        print "sunlight.dayBlue    :", record.sunlight.dayBlue
-        print "sunlight.unused2    :", record.sunlight.unused2
-        print "sunlight.setRed     :", record.sunlight.setRed
-        print "sunlight.setGreen   :", record.sunlight.setGreen
-        print "sunlight.setBlue    :", record.sunlight.setBlue
-        print "sunlight.unused3    :", record.sunlight.unused3
-        print "sunlight.nightRed   :", record.sunlight.nightRed
-        print "sunlight.nightGreen :", record.sunlight.nightGreen
-        print "sunlight.nightBlue  :", record.sunlight.nightBlue
-        print "sunlight.unused4    :", record.sunlight.unused4
-
-        print "sun.riseRed    :", record.sun.riseRed
-        print "sun.riseGreen  :", record.sun.riseGreen
-        print "sun.riseBlue   :", record.sun.riseBlue
-        print "sun.unused1    :", record.sun.unused1
-        print "sun.dayRed     :", record.sun.dayRed
-        print "sun.dayGreen   :", record.sun.dayGreen
-        print "sun.dayBlue    :", record.sun.dayBlue
-        print "sun.unused2    :", record.sun.unused2
-        print "sun.setRed     :", record.sun.setRed
-        print "sun.setGreen   :", record.sun.setGreen
-        print "sun.setBlue    :", record.sun.setBlue
-        print "sun.unused3    :", record.sun.unused3
-        print "sun.nightRed   :", record.sun.nightRed
-        print "sun.nightGreen :", record.sun.nightGreen
-        print "sun.nightBlue  :", record.sun.nightBlue
-        print "sun.unused4    :", record.sun.unused4
-
-        print "stars.riseRed    :", record.stars.riseRed
-        print "stars.riseGreen  :", record.stars.riseGreen
-        print "stars.riseBlue   :", record.stars.riseBlue
-        print "stars.unused1    :", record.stars.unused1
-        print "stars.dayRed     :", record.stars.dayRed
-        print "stars.dayGreen   :", record.stars.dayGreen
-        print "stars.dayBlue    :", record.stars.dayBlue
-        print "stars.unused2    :", record.stars.unused2
-        print "stars.setRed     :", record.stars.setRed
-        print "stars.setGreen   :", record.stars.setGreen
-        print "stars.setBlue    :", record.stars.setBlue
-        print "stars.unused3    :", record.stars.unused3
-        print "stars.nightRed   :", record.stars.nightRed
-        print "stars.nightGreen :", record.stars.nightGreen
-        print "stars.nightBlue  :", record.stars.nightBlue
-        print "stars.unused4    :", record.stars.unused4
-
-        print "lowerSky.riseRed    :", record.lowerSky.riseRed
-        print "lowerSky.riseGreen  :", record.lowerSky.riseGreen
-        print "lowerSky.riseBlue   :", record.lowerSky.riseBlue
-        print "lowerSky.unused1    :", record.lowerSky.unused1
-        print "lowerSky.dayRed     :", record.lowerSky.dayRed
-        print "lowerSky.dayGreen   :", record.lowerSky.dayGreen
-        print "lowerSky.dayBlue    :", record.lowerSky.dayBlue
-        print "lowerSky.unused2    :", record.lowerSky.unused2
-        print "lowerSky.setRed     :", record.lowerSky.setRed
-        print "lowerSky.setGreen   :", record.lowerSky.setGreen
-        print "lowerSky.setBlue    :", record.lowerSky.setBlue
-        print "lowerSky.unused3    :", record.lowerSky.unused3
-        print "lowerSky.nightRed   :", record.lowerSky.nightRed
-        print "lowerSky.nightGreen :", record.lowerSky.nightGreen
-        print "lowerSky.nightBlue  :", record.lowerSky.nightBlue
-        print "lowerSky.unused4    :", record.lowerSky.unused4
-
-        print "horizon.riseRed    :", record.horizon.riseRed
-        print "horizon.riseGreen  :", record.horizon.riseGreen
-        print "horizon.riseBlue   :", record.horizon.riseBlue
-        print "horizon.unused1    :", record.horizon.unused1
-        print "horizon.dayRed     :", record.horizon.dayRed
-        print "horizon.dayGreen   :", record.horizon.dayGreen
-        print "horizon.dayBlue    :", record.horizon.dayBlue
-        print "horizon.unused2    :", record.horizon.unused2
-        print "horizon.setRed     :", record.horizon.setRed
-        print "horizon.setGreen   :", record.horizon.setGreen
-        print "horizon.setBlue    :", record.horizon.setBlue
-        print "horizon.unused3    :", record.horizon.unused3
-        print "horizon.nightRed   :", record.horizon.nightRed
-        print "horizon.nightGreen :", record.horizon.nightGreen
-        print "horizon.nightBlue  :", record.horizon.nightBlue
-        print "horizon.unused4    :", record.horizon.unused4
-
-        print "upperClouds.riseRed    :", record.upperClouds.riseRed
-        print "upperClouds.riseGreen  :", record.upperClouds.riseGreen
-        print "upperClouds.riseBlue   :", record.upperClouds.riseBlue
-        print "upperClouds.unused1    :", record.upperClouds.unused1
-        print "upperClouds.dayRed     :", record.upperClouds.dayRed
-        print "upperClouds.dayGreen   :", record.upperClouds.dayGreen
-        print "upperClouds.dayBlue    :", record.upperClouds.dayBlue
-        print "upperClouds.unused2    :", record.upperClouds.unused2
-        print "upperClouds.setRed     :", record.upperClouds.setRed
-        print "upperClouds.setGreen   :", record.upperClouds.setGreen
-        print "upperClouds.setBlue    :", record.upperClouds.setBlue
-        print "upperClouds.unused3    :", record.upperClouds.unused3
-        print "upperClouds.nightRed   :", record.upperClouds.nightRed
-        print "upperClouds.nightGreen :", record.upperClouds.nightGreen
-        print "upperClouds.nightBlue  :", record.upperClouds.nightBlue
-        print "upperClouds.unused4    :", record.upperClouds.unused4
-
-        print "fogDayNear   :", record.fogDayNear
-        print "fogDayFar    :", record.fogDayFar
-        print "fogNightNear :", record.fogNightNear
-        print "fogNightFar  :", record.fogNightFar
-
-        print "eyeAdaptSpeed  :", record.eyeAdaptSpeed
-        print "blurRadius     :", record.blurRadius
-        print "blurPasses     :", record.blurPasses
-        print "emissiveMult   :", record.emissiveMult
-        print "targetLum      :", record.targetLum
-        print "upperLumClamp  :", record.upperLumClamp
-        print "brightScale    :", record.brightScale
-        print "brightClamp    :", record.brightClamp
-        print "lumRampNoTex   :", record.lumRampNoTex
-        print "lumRampMin     :", record.lumRampMin
-        print "lumRampMax     :", record.lumRampMax
-        print "sunlightDimmer :", record.sunlightDimmer
-        print "grassDimmer    :", record.grassDimmer
-        print "treeDimmer     :", record.treeDimmer
-
-        print "windSpeed       :", record.windSpeed
-        print "lowerCloudSpeed :", record.lowerCloudSpeed
-        print "upperCloudSpeed :", record.upperCloudSpeed
-        print "transDelta      :", record.transDelta
-        print "sunGlare        :", record.sunGlare
-        print "sunDamage       :", record.sunDamage
-        print "rainFadeIn      :", record.rainFadeIn
-        print "rainFadeOut     :", record.rainFadeOut
-        print "boltFadeIn      :", record.boltFadeIn
-        print "boltFadeOut     :", record.boltFadeOut
-        print "boltFrequency   :", record.boltFrequency
-        print "weatherType     :", record.weatherType
-        print "boltRed         :", record.boltRed
-        print "boltGreen       :", record.boltGreen
-        print "boltBlue        :", record.boltBlue
-        print "sounds"
-        for sound in record.sounds:
-            print "  sound: %s, type: %u" % (PrintFormID(sound.sound), sound.type)
+        printRecord(record)
         break
 
     print "WTHR:Create Record Test"
-    newRecord = newMod.createWTHRRecord()
+    newRecord = newMod.create_WTHR()
     print "WTHR:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -6000,19 +6558,19 @@ def TestWTHR():
     newRecord.boltGreen = 14
     newRecord.boltBlue = 15
 
-    newSound = newRecord.newSoundsElement()
+    newSound = newRecord.create_sound()
     newSound.sound = 7
     newSound.type = 0
 
-    newSound = newRecord.newSoundsElement()
+    newSound = newRecord.create_sound()
     newSound.sound = 8
     newSound.type = 1
 
-    newSound = newRecord.newSoundsElement()
+    newSound = newRecord.create_sound()
     newSound.sound = 9
     newSound.type = 2
 
-    newSound = newRecord.newSoundsElement()
+    newSound = newRecord.create_sound()
     newSound.sound = 10
     newSound.type = 3
 
@@ -6250,42 +6808,25 @@ def TestWTHR():
         record.CopyAsNew(newMod)
 
     print "WTHR:Save Test - TestWTHR.esp"
-    newMod.safeSave()
+    newMod.save()
     print "WTHR:Finished testing"
 
 
 def TestCLMT():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestCLMT.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestCLMT.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestCLMT.esp")
 
     for record in Current[0].CLMT:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "weathers"
-        for weather in record.weathers:
-            print "  weather: %s, chance: %u" % (PrintFormID(weather.weather), weather.chance)
-        print "sunPath     :", record.sunPath
-        print "glarePath   :", record.glarePath
-        print "modPath     :", record.modPath
-        print "modb        :", record.modb
-        print "modt_p      :", record.modt_p
-        print "riseBegin   :", record.riseBegin
-        print "riseEnd     :", record.riseEnd
-        print "setBegin    :", record.setBegin
-        print "setEnd      :", record.setEnd
-        print "volatility  :", record.volatility
-        print "phaseLength :", record.phaseLength
-
+        printRecord(record)
         break
 
     print "CLMT:Create Record Test"
-    newRecord = newMod.createCLMTRecord()
+    newRecord = newMod.create_CLMT()
     print "CLMT:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -6294,19 +6835,19 @@ def TestCLMT():
     print "eid..."
     newRecord.eid = "CLMTWarTest"
 
-    newWeather = newRecord.newWeathersElement()
+    newWeather = newRecord.create_weather()
     newWeather.weather = 7
     newWeather.chance = 31
 
-    newWeather = newRecord.newWeathersElement()
+    newWeather = newRecord.create_weather()
     newWeather.weather = 8
     newWeather.chance = 32
 
-    newWeather = newRecord.newWeathersElement()
+    newWeather = newRecord.create_weather()
     newWeather.weather = 9
     newWeather.chance = 33
 
-    newWeather = newRecord.newWeathersElement()
+    newWeather = newRecord.create_weather()
     newWeather.weather = 10
     newWeather.chance = 34
 
@@ -6356,88 +6897,25 @@ def TestCLMT():
         record.CopyAsNew(newMod)
 
     print "CLMT:Save Test - TestCLMT.esp"
-    newMod.safeSave()
+    newMod.save()
     print "CLMT:Finished testing"
 
 
 def TestREGN():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestREGN.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestREGN.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestREGN.esp")
 
     for record in Current[0].REGN:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "iconPath   :", record.iconPath
-        print "mapRed     :", record.mapRed
-        print "mapGreen   :", record.mapGreen
-        print "mapBlue    :", record.mapBlue
-        print "unused1    :", record.unused1
-        print "worldspace :", PrintFormID(record.worldspace)
-        print "areas"
-        for area in record.areas:
-            print "  edgeFalloff :", area.edgeFalloff
-            print "  points"
-            for point in area.points:
-                print "    posX:%.6f, posY:%.6f" % (point.posX, point.posY)
-            print
-        print "entries"
-        for entry in record.entries:
-            print "  entryType :", entry.entryType
-            print "  flags     :", entry.flags
-            print "  priority  :", entry.priority
-            print "  unused1   :", entry.unused1
-            print "  objects"
-            for recObject in entry.objects:
-                print "    objectId        :", PrintFormID(recObject.objectId)
-                print "    parentIndex     :", recObject.parentIndex
-                print "    unused1         :", recObject.unused1
-                print "    density         :", recObject.density
-                print "    clustering      :", recObject.clustering
-                print "    minSlope        :", recObject.minSlope
-                print "    maxSlope        :", recObject.maxSlope
-                print "    flags           :", recObject.flags
-                print "    radiusWRTParent :", recObject.radiusWRTParent
-                print "    radius          :", recObject.radius
-                print "    unk1            :", recObject.unk1
-                print "    maxHeight       :", recObject.maxHeight
-                print "    sink            :", recObject.sink
-                print "    sinkVar         :", recObject.sinkVar
-                print "    angleVarX       :", recObject.angleVarX
-                print "    angleVarY       :", recObject.angleVarY
-                print "    angleVarZ       :", recObject.angleVarZ
-                print "    unused2         :", recObject.unused2
-                print "    unk2            :", recObject.unk2
-                print
-            print "  mapName   :", entry.mapName
-            print "  iconPath  :", entry.iconPath
-            print "  grasses"
-            for grass in entry.grasses:
-                print "    grass :", PrintFormID(grass.grass,)
-                print ", unk1 :", grass.unk1
-                print
-            print "  musicType :", entry.musicType
-            print "  sounds"
-            for sound in entry.sounds:
-                print "    sound  :", PrintFormID(sound.sound)
-                print "    flags  :", sound.flags
-                print "    chance :", sound.chance
-                print
-            print "  weathers"
-            for weather in entry.weathers:
-                print "    weather :", PrintFormID(weather.weather)
-                print "    chance  :", weather.chance
-                print
-            print
+        printRecord(record)
         break
 
     print "REGN:Create Record Test"
-    newRecord = newMod.createREGNRecord()
+    newRecord = newMod.create_REGN()
     print "REGN:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -6454,101 +6932,101 @@ def TestREGN():
     newRecord.unused1 = [4]
     newRecord.worldspace = 7
 
-    newArea = newRecord.newAreasElement()
+    newArea = newRecord.create_area()
     newArea.edgeFalloff = 1024
-    newPoint = newArea.newPointsElement()
+    newPoint = newArea.create_point()
     newPoint.posX = 1
     newPoint.posY = 2
-    newPoint = newArea.newPointsElement()
+    newPoint = newArea.create_point()
     newPoint.posX = 3.0
     newPoint.posY = 4.0
-    newPoint = newArea.newPointsElement()
+    newPoint = newArea.create_point()
     newPoint.posX = 5.0
     newPoint.posY = 6.0
-    newPoint = newArea.newPointsElement()
+    newPoint = newArea.create_point()
     newPoint.posX = 7.0
     newPoint.posY = 8.0
-    newPoint = newArea.newPointsElement()
+    newPoint = newArea.create_point()
     newPoint.posX = 9.0
     newPoint.posY = 10.0
-    newPoint = newArea.newPointsElement()
+    newPoint = newArea.create_point()
     newPoint.posX = 11.0
     newPoint.posY = 12.0
-    newPoint = newArea.newPointsElement()
+    newPoint = newArea.create_point()
     newPoint.posX = 13.0
     newPoint.posY = 14.0
-    newPoint = newArea.newPointsElement()
+    newPoint = newArea.create_point()
     newPoint.posX = 15.0
     newPoint.posY = 16.0
-    newPoint = newArea.newPointsElement()
+    newPoint = newArea.create_point()
     newPoint.posX = 17.0
     newPoint.posY = 18.0
 
     newArea.points = [newArea.points[0], newArea.points[2], newArea.points[4], newArea.points[6], newArea.points[8]]
 
-    newArea = newRecord.newAreasElement()
+    newArea = newRecord.create_area()
     newArea.edgeFalloff = 1025
-    newPoint = newArea.newPointsElement()
+    newPoint = newArea.create_point()
     newPoint.posX = 1.1
     newPoint.posY = 2.1
-    newPoint = newArea.newPointsElement()
+    newPoint = newArea.create_point()
     newPoint.posX = 3.1
     newPoint.posY = 4.1
-    newPoint = newArea.newPointsElement()
+    newPoint = newArea.create_point()
     newPoint.posX = 5.1
     newPoint.posY = 6.1
-    newPoint = newArea.newPointsElement()
+    newPoint = newArea.create_point()
     newPoint.posX = 7.1
     newPoint.posY = 8.1
-    newPoint = newArea.newPointsElement()
+    newPoint = newArea.create_point()
     newPoint.posX = 9.1
     newPoint.posY = 10.1
-    newPoint = newArea.newPointsElement()
+    newPoint = newArea.create_point()
     newPoint.posX = 11.1
     newPoint.posY = 12.1
-    newPoint = newArea.newPointsElement()
+    newPoint = newArea.create_point()
     newPoint.posX = 13.1
     newPoint.posY = 14.1
-    newPoint = newArea.newPointsElement()
+    newPoint = newArea.create_point()
     newPoint.posX = 15.1
     newPoint.posY = 16.1
-    newPoint = newArea.newPointsElement()
+    newPoint = newArea.create_point()
     newPoint.posX = 17.1
     newPoint.posY = 18.1
 
-    newArea = newRecord.newAreasElement()
+    newArea = newRecord.create_area()
     newArea.edgeFalloff = 1026
-    newPoint = newArea.newPointsElement()
+    newPoint = newArea.create_point()
     newPoint.posX = 1.2
     newPoint.posY = 2.2
-    newPoint = newArea.newPointsElement()
+    newPoint = newArea.create_point()
     newPoint.posX = 3.2
     newPoint.posY = 4.2
-    newPoint = newArea.newPointsElement()
+    newPoint = newArea.create_point()
     newPoint.posX = 5.2
     newPoint.posY = 6.2
-    newPoint = newArea.newPointsElement()
+    newPoint = newArea.create_point()
     newPoint.posX = 7.2
     newPoint.posY = 8.2
-    newPoint = newArea.newPointsElement()
+    newPoint = newArea.create_point()
     newPoint.posX = 9.2
     newPoint.posY = 10.2
-    newPoint = newArea.newPointsElement()
+    newPoint = newArea.create_point()
     newPoint.posX = 11.2
     newPoint.posY = 12.2
-    newPoint = newArea.newPointsElement()
+    newPoint = newArea.create_point()
     newPoint.posX = 13.2
     newPoint.posY = 14.2
-    newPoint = newArea.newPointsElement()
+    newPoint = newArea.create_point()
     newPoint.posX = 15.2
     newPoint.posY = 16.2
-    newPoint = newArea.newPointsElement()
+    newPoint = newArea.create_point()
     newPoint.posX = 17.2
     newPoint.posY = 18.2
 
     newRecord.areas = [newRecord.areas[2], newRecord.areas[0]]
 
-    newEntry = newRecord.newEntriesElement()
+    newEntry = newRecord.create_entry()
     newEntry.entryType = 2 ##Objects
 ##    newEntry.entryType = 3 ##Weathers
 ##    newEntry.entryType = 4 ##map
@@ -6559,7 +7037,7 @@ def TestREGN():
     newEntry.priority = 3
     newEntry.unused1 = [1,2]
 
-    newObject = newEntry.newObjectsElement()
+    newObject = newEntry.create_object()
     newObject.objectId = 7
     newObject.unused1 = [1,2]
     newObject.density = 1
@@ -6579,7 +7057,7 @@ def TestREGN():
     newObject.unused2 = [3,4]
     newObject.unk2 = [1,2,3,4]
 
-    newObject = newEntry.newObjectsElement()
+    newObject = newEntry.create_object()
     newObject.objectId = 8
     newObject.unused1 = [1,2]
     newObject.density = 2
@@ -6599,7 +7077,7 @@ def TestREGN():
     newObject.unused2 = [3,4]
     newObject.unk2 = [1,2,3,4]
 
-    newObject = newEntry.newObjectsElement()
+    newObject = newEntry.create_object()
     newObject.objectId = 9
     newObject.unused1 = [1,2]
     newObject.density = 3
@@ -6621,19 +7099,19 @@ def TestREGN():
 
     newEntry.objects = [newEntry.objects[2], newEntry.objects[0]]
 
-##    newWeather = newEntry.newWeathersElement()
+##    newWeather = newEntry.create_weather()
 ##    newWeather.weather = 7
 ##    newWeather.chance = 10
-##    newWeather = newEntry.newWeathersElement()
+##    newWeather = newEntry.create_weather()
 ##    newWeather.weather = 8
 ##    newWeather.chance = 11
-##    newWeather = newEntry.newWeathersElement()
+##    newWeather = newEntry.create_weather()
 ##    newWeather.weather = 9
 ##    newWeather.chance = 12
-##    newWeather = newEntry.newWeathersElement()
+##    newWeather = newEntry.create_weather()
 ##    newWeather.weather = 10
 ##    newWeather.chance = 13
-##    newWeather = newEntry.newWeathersElement()
+##    newWeather = newEntry.create_weather()
 ##    newWeather.weather = 11
 ##    newWeather.chance = 14
 ##    newEntry.weathers = [newEntry.weathers[3], newEntry.weathers[0], newEntry.weathers[4]]
@@ -6641,33 +7119,33 @@ def TestREGN():
 ##    newEntry.mapName = r"Durgh"
 ##    newEntry.iconPath = r"OBSOLETE\Test\ICON.dds"
 
-##    newGrass = newEntry.newGrassesElement()
+##    newGrass = newEntry.create_grass()
 ##    newGrass.grass = 7
 ##    newGrass.unk1 = [1,2,3,4]
-##    newGrass = newEntry.newGrassesElement()
+##    newGrass = newEntry.create_grass()
 ##    newGrass.grass = 8
 ##    newGrass.unk1 = [2,2,3,4]
-##    newGrass = newEntry.newGrassesElement()
+##    newGrass = newEntry.create_grass()
 ##    newGrass.grass = 9
 ##    newGrass.unk1 = [3,2,3,4]
-##    newGrass = newEntry.newGrassesElement()
+##    newGrass = newEntry.create_grass()
 ##    newGrass.grass = 10
 ##    newGrass.unk1 = [4,2,3,4]
 ##    newEntry.grasses = [newEntry.grasses[2], newEntry.grasses[0]]
 
-##    newSound = newEntry.newSoundsElement()
+##    newSound = newEntry.create_sound()
 ##    newSound.sound = 7
 ##    newSound.flags = 1
 ##    newSound.chance = 10
-##    newSound = newEntry.newSoundsElement()
+##    newSound = newEntry.create_sound()
 ##    newSound.sound = 8
 ##    newSound.flags = 2
 ##    newSound.chance = 11
-##    newSound = newEntry.newSoundsElement()
+##    newSound = newEntry.create_sound()
 ##    newSound.sound = 9
 ##    newSound.flags = 3
 ##    newSound.chance = 12
-##    newSound = newEntry.newSoundsElement()
+##    newSound = newEntry.create_sound()
 ##    newSound.sound = 10
 ##    newSound.flags = 4
 ##    newSound.chance = 13
@@ -6747,209 +7225,54 @@ def TestREGN():
         record.CopyAsNew(newMod)
 
     print "REGN:Save Test - TestREGN.esp"
-    newMod.safeSave()
+    newMod.save()
     print "REGN:Finished testing"
 
 
 
 def TestCELL():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestCELL.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
-    x = 0
+    Current.addMod("TestCELL.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestCELL.esp")
+
     for record in Current[0].CELL:
-        print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "full             :", record.full
-        print "flags            :", record.flags
-        print "ambientRed       :", record.ambientRed
-        print "ambientGreen     :", record.ambientGreen
-        print "ambientBlue      :", record.ambientBlue
-        print "unused1          :", record.unused1
-        print "directionalRed   :", record.directionalRed
-        print "directionalGreen :", record.directionalGreen
-        print "directionalBlue  :", record.directionalBlue
-        print "unused2          :", record.unused2
-        print "fogRed           :", record.fogRed
-        print "fogGreen         :", record.fogGreen
-        print "fogBlue          :", record.fogBlue
-        print "unused3          :", record.unused3
-        print "fogNear          :", record.fogNear
-        print "fogFar           :", record.fogFar
-        print "directionalXY    :", record.directionalXY
-        print "directionalZ     :", record.directionalZ
-        print "directionalFade  :", record.directionalFade
-        print "fogClip          :", record.fogClip
-        print "music            :", record.music
-        print "owner            :", PrintFormID(record.owner)
-
-        print "rank             :", record.rank
-        print "globalVariable   :", PrintFormID(record.globalVariable)
-        print "climate          :", PrintFormID(record.climate)
-        print "waterHeight      :", record.waterHeight
-        print "regions          :", record.regions
-        print "posX             :", record.posX
-        print "posY             :", record.posY
-        print "water            :", PrintFormID(record.water)
+        printRecord(record)
 
         print "Placed NPCs"
         for achr in record.ACHR:
             print
-            print "  fid    :", PrintFormID(achr.fid)
-            print "  flags1 :", achr.flags1
-            print "  flags2 :", achr.flags2
-            print "  eid    :", achr.eid
-
-            print "  base              :", PrintFormID(achr.base)
-            print "  unknownXPCIFormID :", PrintFormID(achr.unknownXPCIFormID)
-            print "  unknownXPCIString :", achr.unknownXPCIString
-            print "  lod1              :", achr.lod1
-            print "  lod2              :", achr.lod2
-            print "  lod3              :", achr.lod3
-            print "  parent            :", PrintFormID(achr.parent)
-            print "  parentFlags       :", achr.parentFlags
-            print "  unused1           :", achr.unused1
-            print "  merchantContainer :", PrintFormID(achr.merchantContainer)
-            print "  horse             :", PrintFormID(achr.horse)
-            print "  xrgd_p            :", achr.xrgd_p
-            print "  scale             :", achr.scale
-            print "  posX              :", achr.posX
-            print "  posY              :", achr.posY
-            print "  posZ              :", achr.posZ
-            print "  rotX              :", achr.rotX
-            print "  rotY              :", achr.rotY
-            print "  rotZ              :", achr.rotZ
+            print "fid     :", PrintFormID(achr.fid)
+            printRecord(achr)
             break
 
         print "Placed Creatures"
         for acre in record.ACRE:
             print
-            print "  fid    :", PrintFormID(acre.fid)
-            print "  flags1 :", acre.flags1
-            print "  flags2 :", acre.flags2
-            print "  eid    :", acre.eid
-
-            print "  base           :", PrintFormID(acre.base)
-            print "  owner          :", PrintFormID(acre.owner)
-
-            print "  rank           :", acre.rank
-            print "  globalVariable :", PrintFormID(acre.globalVariable)
-            print "  parent         :", PrintFormID(acre.parent)
-            print "  parentFlags    :", acre.parentFlags
-            print "  unused1        :", acre.unused1
-            print "  xrgd_p         :", acre.xrgd_p
-            print "  scale          :", acre.scale
-            print "  posX           :", acre.posX
-            print "  posY           :", acre.posY
-            print "  posZ           :", acre.posZ
-            print "  rotX           :", acre.rotX
-            print "  rotY           :", acre.rotY
-            print "  rotZ           :", acre.rotZ
+            print "fid     :", PrintFormID(acre.fid)
+            printRecord(acre)
             break
 
         print "Placed Objects"
         for refr in record.REFR:
             print
-            print "  fid    :", PrintFormID(refr.fid)
-            print "  flags1 :", refr.flags1
-            print "  flags2 :", refr.flags2
-            print "  eid    :", refr.eid
-            print "  base              :", PrintFormID(refr.base)
-            print "  destinationFormID :", PrintFormID(refr.destinationFormID)
-
-            print "  destinationPosX   :", refr.destinationPosX
-            print "  destinationPosY   :", refr.destinationPosY
-            print "  destinationPosZ   :", refr.destinationPosZ
-            print "  destinationRotX   :", refr.destinationRotX
-            print "  destinationRotY   :", refr.destinationRotY
-            print "  destinationRotZ   :", refr.destinationRotZ
-            print "  lockLevel         :", refr.lockLevel
-            print "  unused1           :", refr.unused1
-
-            print "  lockKey           :", PrintFormID(refr.lockKey)
-
-            print "  unused2           :", refr.unused2
-            print "  lockFlags         :", refr.lockFlags
-            print "  unused3           :", refr.unused3
-            print "  owner             :", PrintFormID(refr.owner)
-
-            print "  rank              :", refr.rank
-            print "  globalVariable    :", PrintFormID(refr.globalVariable)
-            print "  parent            :", PrintFormID(refr.parent)
-            print "  parentFlags       :", refr.parentFlags
-            print "  unused4           :", refr.unused4
-            print "  targetFormID      :", PrintFormID(refr.targetFormID)
-            print "  seed              :", refr.seed
-            print "  seedOffset        :", refr.seedOffset
-            print "  lod1              :", refr.lod1
-            print "  lod2              :", refr.lod2
-            print "  lod3              :", refr.lod3
-            print "  charge            :", refr.charge
-            print "  health            :", refr.health
-            print "  unknownXPCIFormID :", PrintFormID(refr.unknownXPCIFormID)
-            print "  unknownXPCIString :", refr.unknownXPCIString
-            print "  levelMod          :", refr.levelMod
-            print "  unknownXRTMFormID :", PrintFormID(refr.unknownXRTMFormID)
-            print "  actionFlags       :", refr.actionFlags
-            print "  count             :", refr.count
-            print "  markerFlags       :", refr.markerFlags
-            print "  markerName        :", refr.markerName
-            print "  markerType        :", refr.markerType
-            print "  markerUnused      :", refr.markerUnused
-            print "  scale             :", refr.scale
-            print "  soul              :", refr.soul
-            print "  posX              :", refr.posX
-            print "  posY              :", refr.posY
-            print "  posZ              :", refr.posZ
-            print "  rotX              :", refr.rotX
-            print "  rotY              :", refr.rotY
-            print "  rotZ              :", refr.rotZ
+            print "fid     :", PrintFormID(refr.fid)
+            printRecord(refr)
             break
 
         print "Pathgrid"
         pgrd = record.PGRD
         if(pgrd != None):
             print
-            print "  fid    :", PrintFormID(pgrd.fid)
-            print "  flags1 :", pgrd.flags1
-            print "  flags2 :", pgrd.flags2
-
-            print "  count :", pgrd.count
-            print "  PGRP"
-            for pgrp in pgrd.PGRP:
-                print "    x           :", pgrp.x
-                print "    y           :", pgrp.y
-                print "    z           :", pgrp.z
-                print "    connections :", pgrp.connections
-                print "    unused1     :", pgrp.unused1
-                break
-
-            print "  PGAG :", pgrd.PGAG
-            print "  PGRR :", pgrd.PGRR
-            print "  PGRI"
-            for pgri in pgrd.PGRI:
-                print "    point   :", pgri.point
-                print "    unused1 :", pgri.unused1
-                print "    x       :", pgri.x
-                print "    y       :", pgri.y
-                print "    z       :", pgri.z
-                break
-            print "  PGRL"
-            for pgrl in pgrd.PGRL:
-                print "    reference :", PrintFormID(pgrl.reference)
-                print "    points"
-                for point in pgrl.points:
-                    print "      ", point
-                break
+            print "fid     :", PrintFormID(pgrd.fid)
+            printRecord(pgrd)
+            break
         break
 
     print "CELL:Create Record Test"
-    newRecord = newMod.createCELLRecord()
+    newRecord = newMod.create_CELL()
     print "CELL:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -6989,7 +7312,7 @@ def TestCELL():
     newRecord.posY = 21
     newRecord.water = 22
 
-    newNPCRef = newRecord.createACHRRecord()
+    newNPCRef = newRecord.create_ACHR()
 
     newNPCRef.eid = "WarACHRTest"
     newNPCRef.base = 7
@@ -7012,7 +7335,7 @@ def TestCELL():
     newNPCRef.rotY = 2
     newNPCRef.rotZ = 3
 
-    newCreaRef = newRecord.createACRERecord()
+    newCreaRef = newRecord.create_ACRE()
 
     newCreaRef.eid = "WarACRETest"
     newCreaRef.base = 7
@@ -7031,11 +7354,11 @@ def TestCELL():
     newCreaRef.rotY = 5
     newCreaRef.rotZ = 6
 
-    newObjRef = newRecord.createREFRRecord()
+    newObjRef = newRecord.create_REFR()
 
     newObjRef.eid = "WarREFRTest"
     newObjRef.base = 7
-    newObjRef.destinationFormID = 8
+    newObjRef.destination = 8
     newObjRef.destinationPosX = 1
     newObjRef.destinationPosY = 2
     newObjRef.destinationPosZ = 3
@@ -7054,7 +7377,7 @@ def TestCELL():
     newObjRef.parent = 16
     newObjRef.parentFlags = 1
     newObjRef.unused4 = [1, 2, 3]
-    newObjRef.targetFormID = 17
+    newObjRef.target = 17
     newObjRef.seed = 1234
     newObjRef.lod1 = 1
     newObjRef.lod2 = 2
@@ -7072,7 +7395,7 @@ def TestCELL():
     newObjRef.markerType = 1
     newObjRef.markerUnused = [1]
     newObjRef.scale = 1.2
-    newObjRef.soul = 6
+    newObjRef.soulType = 6
     newObjRef.posX = 5
     newObjRef.posY = 4
     newObjRef.posZ = 3
@@ -7081,34 +7404,34 @@ def TestCELL():
     newObjRef.rotZ = 11.2
 
     print "pathgrid..."
-    newPgrd = newRecord.createPGRDRecord()
+    newPgrd = newRecord.create_PGRD()
     newPgrd.count = 5
-    newPgrp1 = newPgrd.newPGRPElement()
+    newPgrp1 = newPgrd.create_pgrp()
     newPgrp1.x = 1
     newPgrp1.y = 2
     newPgrp1.z = 3
     newPgrp1.connections = 4
-    newPgrp2 = newPgrd.newPGRPElement()
+    newPgrp2 = newPgrd.create_pgrp()
     newPgrp2.x = 2
     newPgrp2.y = 3
     newPgrp2.z = 4
     newPgrp2.connections = 4
-    newPgrp3 = newPgrd.newPGRPElement()
+    newPgrp3 = newPgrd.create_pgrp()
     newPgrp3.x = 3
     newPgrp3.y = 4
     newPgrp3.z = 5
     newPgrp3.connections = 4
-    newPgrp4 = newPgrd.newPGRPElement()
+    newPgrp4 = newPgrd.create_pgrp()
     newPgrp4.x = 4
     newPgrp4.y = 5
     newPgrp4.z = 6
     newPgrp4.connections = 4
-    newPgrp5 = newPgrd.newPGRPElement()
+    newPgrp5 = newPgrd.create_pgrp()
     newPgrp5.x = 5
     newPgrp5.y = 6
     newPgrp5.z = 7
     newPgrp5.connections = 4
-    newPgrp6 = newPgrd.newPGRPElement()
+    newPgrp6 = newPgrd.create_pgrp()
     newPgrp6.x = 6
     newPgrp6.y = 7
     newPgrp6.z = 8
@@ -7119,37 +7442,37 @@ def TestCELL():
 ####
 ####    newPgrd.PGRR = [0x00, 0xFF, 0x00]
 ##
-    newPgri1 = newPgrd.newPGRIElement()
+    newPgri1 = newPgrd.create_pgri()
     newPgri1.point = 1
     newPgri1.unused1 = [1,2]
     newPgri1.x = 2
     newPgri1.y = 3
     newPgri1.z = 4
-    newPgri2 = newPgrd.newPGRIElement()
+    newPgri2 = newPgrd.create_pgri()
     newPgri2.point = 2
     newPgri2.unused1 = [1,2]
     newPgri2.x = 2
     newPgri2.y = 3
     newPgri2.z = 4
-    newPgri3 = newPgrd.newPGRIElement()
+    newPgri3 = newPgrd.create_pgri()
     newPgri3.point = 3
     newPgri3.unused1 = [1,2]
     newPgri3.x = 2
     newPgri3.y = 3
     newPgri3.z = 4
-    newPgri4 = newPgrd.newPGRIElement()
+    newPgri4 = newPgrd.create_pgri()
     newPgri4.point = 4
     newPgri4.unused1 = [1,2]
     newPgri4.x = 2
     newPgri4.y = 3
     newPgri4.z = 4
-    newPgri5 = newPgrd.newPGRIElement()
+    newPgri5 = newPgrd.create_pgri()
     newPgri5.point = 5
     newPgri5.unused1 = [1,2]
     newPgri5.x = 2
     newPgri5.y = 3
     newPgri5.z = 4
-    newPgri6 = newPgrd.newPGRIElement()
+    newPgri6 = newPgrd.create_pgri()
     newPgri6.point = 6
     newPgri6.unused1 = [1,2]
     newPgri6.x = 2
@@ -7157,25 +7480,35 @@ def TestCELL():
     newPgri6.z = 4
     newPgrd.PGRI = [newPgri6, newPgri1, newPgri2, newPgri3, newPgri4]
 
-    newPgrl1 = newPgrd.newPGRLElement()
+    print 111
+    newPgrl1 = newPgrd.create_pgrl()
+    print 112
     newPgrl1.reference = 7
+    print 11
     newPgrl1.points = [1,2,3]
-    newPgrl2 = newPgrd.newPGRLElement()
+    newPgrl2 = newPgrd.create_pgrl()
+    print 12
     newPgrl2.reference = 8
     newPgrl2.points = [1]
-    newPgrl3 = newPgrd.newPGRLElement()
+    newPgrl3 = newPgrd.create_pgrl()
+    print 13
     newPgrl3.reference = 9
     newPgrl3.points = [1,2]
-    newPgrl4 = newPgrd.newPGRLElement()
+    newPgrl4 = newPgrd.create_pgrl()
+    print 14
     newPgrl4.reference = 10
     newPgrl4.points = [1,2,3,4]
-    newPgrl5 = newPgrd.newPGRLElement()
+    newPgrl5 = newPgrd.create_pgrl()
+    print 15
     newPgrl5.reference = 11
     newPgrl5.points = [1,2,3]
-    newPgrl6 = newPgrd.newPGRLElement()
+    newPgrl6 = newPgrd.create_pgrl()
+    print 16
     newPgrl6.reference = 14
     newPgrl6.points = [1, 2, 3, 4, 5, 6]
+    print 1
     newPgrd.PGRL = [newPgrl6, newPgrl1, newPgrl2, newPgrl3, newPgrl4]
+    print 1
 
     print "CELL:Set Test Results"
     print
@@ -7276,7 +7609,7 @@ def TestCELL():
         print "  flags2 :", refr.flags2
         print "  eid    :", refr.eid
         print "  base              :", PrintFormID(refr.base)
-        print "  destinationFormID :", PrintFormID(refr.destinationFormID)
+        print "  destination :", PrintFormID(refr.destination)
 
         print "  destinationPosX   :", refr.destinationPosX
         print "  destinationPosY   :", refr.destinationPosY
@@ -7299,9 +7632,9 @@ def TestCELL():
         print "  parent            :", PrintFormID(refr.parent)
         print "  parentFlags       :", refr.parentFlags
         print "  unused4           :", refr.unused4
-        print "  targetFormID      :", PrintFormID(refr.targetFormID)
+        print "  target      :", PrintFormID(refr.target)
         print "  seed              :", refr.seed
-        print "  seedOffset        :", refr.seedOffset
+        print "  seed_as_offset        :", refr.seed_as_offset
         print "  lod1              :", refr.lod1
         print "  lod2              :", refr.lod2
         print "  lod3              :", refr.lod3
@@ -7318,7 +7651,7 @@ def TestCELL():
         print "  markerType        :", refr.markerType
         print "  markerUnused      :", refr.markerUnused
         print "  scale             :", refr.scale
-        print "  soul              :", refr.soul
+        print "  soulType              :", refr.soulType
         print "  posX              :", refr.posX
         print "  posY              :", refr.posY
         print "  posZ              :", refr.posZ
@@ -7336,7 +7669,7 @@ def TestCELL():
 
         print "  count :", pgrd.count
         print "  PGRP"
-        for pgrp in pgrd.PGRP:
+        for pgrp in pgrd.pgrp:
             print "    x           :", pgrp.x
             print "    y           :", pgrp.y
             print "    z           :", pgrp.z
@@ -7344,10 +7677,10 @@ def TestCELL():
             print "    unused1     :", pgrp.unused1
             break
 
-        print "  PGAG :", pgrd.PGAG
-        print "  PGRR :", pgrd.PGRR
+        print "  PGAG_p :", pgrd.pgag_p
+        print "  PGRR_p :", pgrd.pgrr_p
         print "  PGRI"
-        for pgri in pgrd.PGRI:
+        for pgri in pgrd.pgri:
             print "    point   :", pgri.point
             print "    unused1 :", pgri.unused1
             print "    x       :", pgri.x
@@ -7355,7 +7688,7 @@ def TestCELL():
             print "    z       :", pgri.z
             break
         print "  PGRL"
-        for pgrl in pgrd.PGRL:
+        for pgrl in pgrd.pgrl:
             print "    reference :", PrintFormID(pgrl.reference)
             print "    points"
             for point in pgrl.points:
@@ -7386,681 +7719,355 @@ def TestCELL():
         if(Pgrd): Pgrd.CopyAsNew(trgCell)
 
     print "CELL:Save Test - TestCELL.esp"
-    newMod.safeSave()
+    newMod.save()
     print "CELL:Finished testing"
 
 def TestWRLD():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestWRLD.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestWRLD.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestWRLD.esp")
 
     for record in Current[0].WRLD:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "full      :", record.full
-        print "parent    :", PrintFormID(record.parent)
-        print "climate   :", PrintFormID(record.climate)
-        print "water     :", PrintFormID(record.water)
-        print "mapPath   :", record.mapPath
-        print "dimX      :", record.dimX
-        print "dimY      :", record.dimY
-        print "NWCellX   :", record.NWCellX
-        print "NWCellY   :", record.NWCellY
-        print "SECellX   :", record.SECellX
-        print "SECellY   :", record.SECellY
-        print "flags     :", record.flags
-        print "unknown00 :", record.unknown00
-        print "unknown01 :", record.unknown01
-        print "unknown90 :", record.unknown90
-        print "unknown91 :", record.unknown91
-        print "sound     :", record.sound
-##        print "ofst_p    :", record.ofst_p
+        printRecord(record)
         print "World CELL"
-        wrldCell = record.CELL
+        wrldCell = record.WorldCELL
         if(wrldCell != None):
             print
             print "fid     :", PrintFormID(wrldCell.fid)
-            print "flags1  :", wrldCell.flags1
-            print "flags2  :", wrldCell.flags2
-            print "eid     :", wrldCell.eid
-
-            print "full             :", wrldCell.full
-            print "flags            :", wrldCell.flags
-            print "ambientRed       :", wrldCell.ambientRed
-            print "ambientGreen     :", wrldCell.ambientGreen
-            print "ambientBlue      :", wrldCell.ambientBlue
-            print "unused1          :", wrldCell.unused1
-            print "directionalRed   :", wrldCell.directionalRed
-            print "directionalGreen :", wrldCell.directionalGreen
-            print "directionalBlue  :", wrldCell.directionalBlue
-            print "unused2          :", wrldCell.unused2
-            print "fogRed           :", wrldCell.fogRed
-            print "fogGreen         :", wrldCell.fogGreen
-            print "fogBlue          :", wrldCell.fogBlue
-            print "unused3          :", wrldCell.unused3
-            print "fogNear          :", wrldCell.fogNear
-            print "fogFar           :", wrldCell.fogFar
-            print "directionalXY    :", wrldCell.directionalXY
-            print "directionalZ     :", wrldCell.directionalZ
-            print "directionalFade  :", wrldCell.directionalFade
-            print "fogClip          :", wrldCell.fogClip
-            print "music            :", wrldCell.music
-            print "owner            :", PrintFormID(wrldCell.owner)
-
-            print "rank             :", wrldCell.rank
-            print "globalVariable   :", PrintFormID(wrldCell.globalVariable)
-            print "climate          :", PrintFormID(wrldCell.climate)
-            print "waterHeight      :", wrldCell.waterHeight
-            print "regions          :", wrldCell.regions
-            print "posX             :", wrldCell.posX
-            print "posY             :", wrldCell.posY
-            print "water            :", PrintFormID(wrldCell.water)
-
+            printRecord(wrldCell)
             print "Placed NPCs"
             for achr in wrldCell.ACHR:
                 print
-                print "  fid    :", PrintFormID(achr.fid)
-                print "  flags1 :", achr.flags1
-                print "  flags2 :", achr.flags2
-                print "  eid    :", achr.eid
-
-                print "  base              :", PrintFormID(achr.base)
-                print "  unknownXPCIFormID :", PrintFormID(achr.unknownXPCIFormID)
-                print "  unknownXPCIString :", achr.unknownXPCIString
-                print "  lod1              :", achr.lod1
-                print "  lod2              :", achr.lod2
-                print "  lod3              :", achr.lod3
-                print "  parent            :", PrintFormID(achr.parent)
-                print "  parentFlags       :", achr.parentFlags
-                print "  unused1           :", achr.unused1
-                print "  merchantContainer :", PrintFormID(achr.merchantContainer)
-                print "  horse             :", PrintFormID(achr.horse)
-                print "  xrgd_p            :", achr.xrgd_p
-                print "  scale             :", achr.scale
-                print "  posX              :", achr.posX
-                print "  posY              :", achr.posY
-                print "  posZ              :", achr.posZ
-                print "  rotX              :", achr.rotX
-                print "  rotY              :", achr.rotY
-                print "  rotZ              :", achr.rotZ
+                print "fid     :", PrintFormID(achr.fid)
+                printRecord(achr)
                 break
 
             print "Placed Creatures"
             for acre in wrldCell.ACRE:
                 print
-                print "  fid    :", PrintFormID(acre.fid)
-                print "  flags1 :", acre.flags1
-                print "  flags2 :", acre.flags2
-                print "  eid    :", acre.eid
-
-                print "  base           :", PrintFormID(acre.base)
-                print "  owner          :", PrintFormID(acre.owner)
-
-                print "  rank           :", acre.rank
-                print "  globalVariable :", PrintFormID(acre.globalVariable)
-                print "  parent         :", PrintFormID(acre.parent)
-                print "  parentFlags    :", acre.parentFlags
-                print "  unused1        :", acre.unused1
-                print "  xrgd_p         :", acre.xrgd_p
-                print "  scale          :", acre.scale
-                print "  posX           :", acre.posX
-                print "  posY           :", acre.posY
-                print "  posZ           :", acre.posZ
-                print "  rotX           :", acre.rotX
-                print "  rotY           :", acre.rotY
-                print "  rotZ           :", acre.rotZ
+                print "fid     :", PrintFormID(acre.fid)
+                printRecord(acre)
                 break
 
             print "Placed Objects"
             for refr in wrldCell.REFR:
                 print
-                print "  fid    :", PrintFormID(refr.fid)
-                print "  flags1 :", refr.flags1
-                print "  flags2 :", refr.flags2
-                print "  eid    :", refr.eid
-                print "  base              :", PrintFormID(refr.base)
-                print "  destinationFormID :", PrintFormID(refr.destinationFormID)
-
-                print "  destinationPosX   :", refr.destinationPosX
-                print "  destinationPosY   :", refr.destinationPosY
-                print "  destinationPosZ   :", refr.destinationPosZ
-                print "  destinationRotX   :", refr.destinationRotX
-                print "  destinationRotY   :", refr.destinationRotY
-                print "  destinationRotZ   :", refr.destinationRotZ
-                print "  lockLevel         :", refr.lockLevel
-                print "  unused1           :", refr.unused1
-
-                print "  lockKey           :", PrintFormID(refr.lockKey)
-
-                print "  unused2           :", refr.unused2
-                print "  lockFlags         :", refr.lockFlags
-                print "  unused3           :", refr.unused3
-                print "  owner             :", PrintFormID(refr.owner)
-
-                print "  rank              :", refr.rank
-                print "  globalVariable    :", PrintFormID(refr.globalVariable)
-                print "  parent            :", PrintFormID(refr.parent)
-                print "  parentFlags       :", refr.parentFlags
-                print "  unused4           :", refr.unused4
-                print "  targetFormID      :", PrintFormID(refr.targetFormID)
-                print "  seed              :", refr.seed
-                print "  seedOffset        :", refr.seedOffset
-                print "  lod1              :", refr.lod1
-                print "  lod2              :", refr.lod2
-                print "  lod3              :", refr.lod3
-                print "  charge            :", refr.charge
-                print "  health            :", refr.health
-                print "  unknownXPCIFormID :", PrintFormID(refr.unknownXPCIFormID)
-                print "  unknownXPCIString :", refr.unknownXPCIString
-                print "  levelMod          :", refr.levelMod
-                print "  unknownXRTMFormID :", PrintFormID(refr.unknownXRTMFormID)
-                print "  actionFlags       :", refr.actionFlags
-                print "  count             :", refr.count
-                print "  markerFlags       :", refr.markerFlags
-                print "  markerName        :", refr.markerName
-                print "  markerType        :", refr.markerType
-                print "  markerUnused      :", refr.markerUnused
-                print "  scale             :", refr.scale
-                print "  soul              :", refr.soul
-                print "  posX              :", refr.posX
-                print "  posY              :", refr.posY
-                print "  posZ              :", refr.posZ
-                print "  rotX              :", refr.rotX
-                print "  rotY              :", refr.rotY
-                print "  rotZ              :", refr.rotZ
+                print "fid     :", PrintFormID(refr.fid)
+                printRecord(refr)
                 break
 
             pgrd = wrldCell.PGRD
             if(pgrd != None):
                 print
-                print "  PGRD"
-                print "  fid    :", PrintFormID(pgrd.fid)
-                print "  flags1 :", pgrd.flags1
-                print "  flags2 :", pgrd.flags2
-
-                print "  count :", pgrd.count
-                print "  PGRP"
-                for pgrp in pgrd.PGRP:
-                    print "    x           :", pgrp.x
-                    print "    y           :", pgrp.y
-                    print "    z           :", pgrp.z
-                    print "    connections :", pgrp.connections
-                    print "    unused1     :", pgrp.unused1
-                    break
-
-                print "  PGAG :", pgrd.PGAG
-                print "  PGRR :", pgrd.PGRR
-                print "  PGRI"
-                for pgri in pgrd.PGRI:
-                    print "    point   :", pgri.point
-                    print "    unused1 :", pgri.unused1
-                    print "    x       :", pgri.x
-                    print "    y       :", pgri.y
-                    print "    z       :", pgri.z
-                    break
-                print "  PGRL"
-                for pgrl in pgrd.PGRL:
-                    print "    reference :", PrintFormID(pgrl.reference)
-                    print "    points"
-                    for point in pgrl.points:
-                        print "      ", point
-                    break
+                print "fid     :", PrintFormID(pgrd.fid)
+                printRecord(pgrd)
+                break
             cLand = wrldCell.LAND
             if(cLand != None):
                 print
-                print "  LAND"
-                print "  fid    :", PrintFormID(cLand.fid)
-                print "  flags1 :", cLand.flags1
-                print "  flags2 :", cLand.flags2
-
-
-                print "  data         :", cLand.data
-                print "  normals"
-                for cRow in cLand.normals:
-                    for cColumn in cRow:
-                        print "    Co-ords : ", cColumn._listIndex, ",", cColumn._listX2Index
-                        print "        x   :", cColumn.x
-                        print "        y   :", cColumn.y
-                        print "        z   :", cColumn.z
-                        print
-                print "  heightOffset :", cLand.heightOffset
-                print "  heights"
-                for cRow in cLand.heights:
-                    for cColumn in cRow:
-                        print "    Co-ords    : ", cColumn._listIndex, ",", cColumn._listX2Index
-                        print "        height :", cColumn.height
-                        print
-                print "  unused1      :", cLand.unused1
-                print "  colors"
-                for cRow in cLand.colors:
-                    for cColumn in cRow:
-                        print "    Co-ords   : ", cColumn._listIndex, ",", cColumn._listX2Index
-                        print "        red   :", cColumn.red
-                        print "        green :", cColumn.green
-                        print "        blue  :", cColumn.blue
-                        print
-                print "  baseTextures"
-                for baseTexture in cLand.baseTextures:
-                    print "    texture  :", PrintFormID(baseTexture.texture)
-                    print "    quadrant :", baseTexture.quadrant
-                    print "    unused1  :", baseTexture.unused1
-                    print "    layer    :", baseTexture.layer
-                    print
-                print "  alphaLayers"
-                for alphaLayer in cLand.alphaLayers:
-                    print "    texture  :", PrintFormID(alphaLayer.texture)
-                    print "    quadrant :", alphaLayer.quadrant
-                    print "    unused1  :", alphaLayer.unused1
-                    print "    layer    :", alphaLayer.layer
-                    print "    opacities"
-                    for cOpacity in alphaLayer.opacities:
-                        print "      position :", cOpacity.position
-                        print "      unused1  :", cOpacity.unused1
-                        print "      opacity  :", cOpacity.opacity
-                        print
-                    print
-                print "  vertexTextures"
-                for vertexTexture in cLand.vertexTextures:
-                    print "    texture  :", PrintFormID(vertexTexture.texture)
-                    print
-
-                print "  Position"
-                for cRow in cLand.Position:
-                    for cColumn in cRow:
-                        print "    Co-ords row:", cColumn._listIndex, ", col:", cColumn._listX2Index
-                        print "        height        :", cColumn.height
-                        print "        normalX       :", cColumn.normalX
-                        print "        normalY       :", cColumn.normalY
-                        print "        normalZ       :", cColumn.normalZ
-                        print "        red           :", cColumn.red
-                        print "        green         :", cColumn.green
-                        print "        blue          :", cColumn.blue
-                        print "        baseTexture   :", PrintFormID(cColumn.baseTexture)
-
-                        print "        layer1Texture :", PrintFormID(cColumn.layer1Texture)
-                        print "        layer1Opacity :", cColumn.layer1Opacity
-
-                        print "        layer2Texture :", PrintFormID(cColumn.layer2Texture)
-                        print "        layer2Opacity :", cColumn.layer2Opacity
-
-                        print "        layer3Texture :", PrintFormID(cColumn.layer3Texture)
-                        print "        layer3Opacity :", cColumn.layer3Opacity
-
-                        print "        layer4Texture :", PrintFormID(cColumn.layer4Texture)
-                        print "        layer4Opacity :", cColumn.layer4Opacity
-
-                        print "        layer5Texture :", PrintFormID(cColumn.layer5Texture)
-                        print "        layer5Opacity :", cColumn.layer5Opacity
-
-                        print "        layer6Texture :", PrintFormID(cColumn.layer6Texture)
-                        print "        layer6Opacity :", cColumn.layer6Opacity
-
-                        print "        layer7Texture :", PrintFormID(cColumn.layer7Texture)
-                        print "        layer7Opacity :", cColumn.layer7Opacity
-
-                        print "        layer8Texture :", PrintFormID(cColumn.layer8Texture)
-                        print "        layer8Opacity :", cColumn.layer8Opacity
-                        print
+                print "fid     :", PrintFormID(cLand.fid)
+                printRecord(cLand)
+                break
+##                print
+##                print "  LAND"
+##                print "  fid    :", PrintFormID(cLand.fid)
+##                print "  flags1 :", cLand.flags1
+##                print "  flags2 :", cLand.flags2
+##
+##
+##                print "  data         :", cLand.data
+##                print "  normals"
+##                for cRow in cLand.normals:
+##                    for cColumn in cRow:
+##                        print "    Co-ords : ", cColumn._ListIndex, ",", cColumn._listX2Index
+##                        print "        x   :", cColumn.x
+##                        print "        y   :", cColumn.y
+##                        print "        z   :", cColumn.z
+##                        print
+##                print "  heightOffset :", cLand.heightOffset
+##                print "  heights"
+##                for cRow in cLand.heights:
+##                    for cColumn in cRow:
+##                        print "    Co-ords    : ", cColumn._ListIndex, ",", cColumn._listX2Index
+##                        print "        height :", cColumn.height
+##                        print
+##                print "  unused1      :", cLand.unused1
+##                print "  colors"
+##                for cRow in cLand.colors:
+##                    for cColumn in cRow:
+##                        print "    Co-ords   : ", cColumn._ListIndex, ",", cColumn._listX2Index
+##                        print "        red   :", cColumn.red
+##                        print "        green :", cColumn.green
+##                        print "        blue  :", cColumn.blue
+##                        print
+##                print "  baseTextures"
+##                for baseTexture in cLand.baseTextures:
+##                    print "    texture  :", PrintFormID(baseTexture.texture)
+##                    print "    quadrant :", baseTexture.quadrant
+##                    print "    unused1  :", baseTexture.unused1
+##                    print "    layer    :", baseTexture.layer
+##                    print
+##                print "  alphaLayers"
+##                for alphaLayer in cLand.alphaLayers:
+##                    print "    texture  :", PrintFormID(alphaLayer.texture)
+##                    print "    quadrant :", alphaLayer.quadrant
+##                    print "    unused1  :", alphaLayer.unused1
+##                    print "    layer    :", alphaLayer.layer
+##                    print "    opacities"
+##                    for cOpacity in alphaLayer.opacities:
+##                        print "      position :", cOpacity.position
+##                        print "      unused1  :", cOpacity.unused1
+##                        print "      opacity  :", cOpacity.opacity
+##                        print
+##                    print
+##                print "  vertexTextures"
+##                for vertexTexture in cLand.vertexTextures:
+##                    print "    texture  :", PrintFormID(vertexTexture.texture)
+##                    print
+##
+##                print "  Position"
+##                for cRow in cLand.Position:
+##                    for cColumn in cRow:
+##                        print "    Co-ords row:", cColumn._ListIndex, ", col:", cColumn._listX2Index
+##                        print "        height        :", cColumn.height
+##                        print "        normalX       :", cColumn.normalX
+##                        print "        normalY       :", cColumn.normalY
+##                        print "        normalZ       :", cColumn.normalZ
+##                        print "        red           :", cColumn.red
+##                        print "        green         :", cColumn.green
+##                        print "        blue          :", cColumn.blue
+##                        print "        baseTexture   :", PrintFormID(cColumn.baseTexture)
+##
+##                        print "        layer1Texture :", PrintFormID(cColumn.layer1Texture)
+##                        print "        layer1Opacity :", cColumn.layer1Opacity
+##
+##                        print "        layer2Texture :", PrintFormID(cColumn.layer2Texture)
+##                        print "        layer2Opacity :", cColumn.layer2Opacity
+##
+##                        print "        layer3Texture :", PrintFormID(cColumn.layer3Texture)
+##                        print "        layer3Opacity :", cColumn.layer3Opacity
+##
+##                        print "        layer4Texture :", PrintFormID(cColumn.layer4Texture)
+##                        print "        layer4Opacity :", cColumn.layer4Opacity
+##
+##                        print "        layer5Texture :", PrintFormID(cColumn.layer5Texture)
+##                        print "        layer5Opacity :", cColumn.layer5Opacity
+##
+##                        print "        layer6Texture :", PrintFormID(cColumn.layer6Texture)
+##                        print "        layer6Opacity :", cColumn.layer6Opacity
+##
+##                        print "        layer7Texture :", PrintFormID(cColumn.layer7Texture)
+##                        print "        layer7Opacity :", cColumn.layer7Opacity
+##
+##                        print "        layer8Texture :", PrintFormID(cColumn.layer8Texture)
+##                        print "        layer8Opacity :", cColumn.layer8Opacity
+##                        print
 
 
         for wrldCell in record.CELLS:
             print
             print "fid     :", PrintFormID(wrldCell.fid)
-            print "flags1  :", wrldCell.flags1
-            print "flags2  :", wrldCell.flags2
-            print "eid     :", wrldCell.eid
-
-            print "full             :", wrldCell.full
-            print "flags            :", wrldCell.flags
-            print "ambientRed       :", wrldCell.ambientRed
-            print "ambientGreen     :", wrldCell.ambientGreen
-            print "ambientBlue      :", wrldCell.ambientBlue
-            print "unused1          :", wrldCell.unused1
-            print "directionalRed   :", wrldCell.directionalRed
-            print "directionalGreen :", wrldCell.directionalGreen
-            print "directionalBlue  :", wrldCell.directionalBlue
-            print "unused2          :", wrldCell.unused2
-            print "fogRed           :", wrldCell.fogRed
-            print "fogGreen         :", wrldCell.fogGreen
-            print "fogBlue          :", wrldCell.fogBlue
-            print "unused3          :", wrldCell.unused3
-            print "fogNear          :", wrldCell.fogNear
-            print "fogFar           :", wrldCell.fogFar
-            print "directionalXY    :", wrldCell.directionalXY
-            print "directionalZ     :", wrldCell.directionalZ
-            print "directionalFade  :", wrldCell.directionalFade
-            print "fogClip          :", wrldCell.fogClip
-            print "music            :", wrldCell.music
-            print "owner            :", PrintFormID(wrldCell.owner)
-
-            print "rank             :", wrldCell.rank
-            print "globalVariable   :", PrintFormID(wrldCell.globalVariable)
-            print "climate          :", PrintFormID(wrldCell.climate)
-            print "waterHeight      :", wrldCell.waterHeight
-            print "regions          :", wrldCell.regions
-            print "posX             :", wrldCell.posX
-            print "posY             :", wrldCell.posY
-            print "water            :", PrintFormID(wrldCell.water)
-
+            printRecord(wrldCell)
             print "Placed NPCs"
             for achr in wrldCell.ACHR:
                 print
-                print "  fid    :", PrintFormID(achr.fid)
-                print "  flags1 :", achr.flags1
-                print "  flags2 :", achr.flags2
-                print "  eid    :", achr.eid
-
-                print "  base              :", PrintFormID(achr.base)
-                print "  unknownXPCIFormID :", PrintFormID(achr.unknownXPCIFormID)
-                print "  unknownXPCIString :", achr.unknownXPCIString
-                print "  lod1              :", achr.lod1
-                print "  lod2              :", achr.lod2
-                print "  lod3              :", achr.lod3
-                print "  parent            :", PrintFormID(achr.parent)
-                print "  parentFlags       :", achr.parentFlags
-                print "  unused1           :", achr.unused1
-                print "  merchantContainer :", PrintFormID(achr.merchantContainer)
-                print "  horse             :", PrintFormID(achr.horse)
-                print "  xrgd_p            :", achr.xrgd_p
-                print "  scale             :", achr.scale
-                print "  posX              :", achr.posX
-                print "  posY              :", achr.posY
-                print "  posZ              :", achr.posZ
-                print "  rotX              :", achr.rotX
-                print "  rotY              :", achr.rotY
-                print "  rotZ              :", achr.rotZ
+                print "fid     :", PrintFormID(achr.fid)
+                printRecord(achr)
                 break
 
             print "Placed Creatures"
             for acre in wrldCell.ACRE:
                 print
-                print "  fid    :", PrintFormID(acre.fid)
-                print "  flags1 :", acre.flags1
-                print "  flags2 :", acre.flags2
-                print "  eid    :", acre.eid
-
-                print "  base           :", PrintFormID(acre.base)
-                print "  owner          :", PrintFormID(acre.owner)
-
-                print "  rank           :", acre.rank
-                print "  globalVariable :", PrintFormID(acre.globalVariable)
-                print "  parent         :", PrintFormID(acre.parent)
-                print "  parentFlags    :", acre.parentFlags
-                print "  unused1        :", acre.unused1
-                print "  xrgd_p         :", acre.xrgd_p
-                print "  scale          :", acre.scale
-                print "  posX           :", acre.posX
-                print "  posY           :", acre.posY
-                print "  posZ           :", acre.posZ
-                print "  rotX           :", acre.rotX
-                print "  rotY           :", acre.rotY
-                print "  rotZ           :", acre.rotZ
+                print "fid     :", PrintFormID(acre.fid)
+                printRecord(acre)
                 break
 
             print "Placed Objects"
             for refr in wrldCell.REFR:
                 print
-                print "  fid    :", PrintFormID(refr.fid)
-                print "  flags1 :", refr.flags1
-                print "  flags2 :", refr.flags2
-                print "  eid    :", refr.eid
-                print "  base              :", PrintFormID(refr.base)
-                print "  destinationFormID :", PrintFormID(refr.destinationFormID)
-
-                print "  destinationPosX   :", refr.destinationPosX
-                print "  destinationPosY   :", refr.destinationPosY
-                print "  destinationPosZ   :", refr.destinationPosZ
-                print "  destinationRotX   :", refr.destinationRotX
-                print "  destinationRotY   :", refr.destinationRotY
-                print "  destinationRotZ   :", refr.destinationRotZ
-                print "  lockLevel         :", refr.lockLevel
-                print "  unused1           :", refr.unused1
-
-                print "  lockKey           :", PrintFormID(refr.lockKey)
-
-                print "  unused2           :", refr.unused2
-                print "  lockFlags         :", refr.lockFlags
-                print "  unused3           :", refr.unused3
-                print "  owner             :", PrintFormID(refr.owner)
-
-                print "  rank              :", refr.rank
-                print "  globalVariable    :", PrintFormID(refr.globalVariable)
-                print "  parent            :", PrintFormID(refr.parent)
-                print "  parentFlags       :", refr.parentFlags
-                print "  unused4           :", refr.unused4
-                print "  targetFormID      :", PrintFormID(refr.targetFormID)
-                print "  seed              :", refr.seed
-                print "  seedOffset        :", refr.seedOffset
-                print "  lod1              :", refr.lod1
-                print "  lod2              :", refr.lod2
-                print "  lod3              :", refr.lod3
-                print "  charge            :", refr.charge
-                print "  health            :", refr.health
-                print "  unknownXPCIFormID :", PrintFormID(refr.unknownXPCIFormID)
-                print "  unknownXPCIString :", refr.unknownXPCIString
-                print "  levelMod          :", refr.levelMod
-                print "  unknownXRTMFormID :", PrintFormID(refr.unknownXRTMFormID)
-                print "  actionFlags       :", refr.actionFlags
-                print "  count             :", refr.count
-                print "  markerFlags       :", refr.markerFlags
-                print "  markerName        :", refr.markerName
-                print "  markerType        :", refr.markerType
-                print "  markerUnused      :", refr.markerUnused
-                print "  scale             :", refr.scale
-                print "  soul              :", refr.soul
-                print "  posX              :", refr.posX
-                print "  posY              :", refr.posY
-                print "  posZ              :", refr.posZ
-                print "  rotX              :", refr.rotX
-                print "  rotY              :", refr.rotY
-                print "  rotZ              :", refr.rotZ
+                print "fid     :", PrintFormID(refr.fid)
+                printRecord(refr)
                 break
 
             pgrd = wrldCell.PGRD
             if(pgrd != None):
                 print
-                print "  PGRD"
-                print "  fid    :", PrintFormID(pgrd.fid)
-                print "  flags1 :", pgrd.flags1
-                print "  flags2 :", pgrd.flags2
-
-                print "  count :", pgrd.count
-                print "  PGRP"
-                for pgrp in pgrd.PGRP:
-                    print "    x           :", pgrp.x
-                    print "    y           :", pgrp.y
-                    print "    z           :", pgrp.z
-                    print "    connections :", pgrp.connections
-                    print "    unused1     :", pgrp.unused1
-                    break
-
-                print "  PGAG :", pgrd.PGAG
-                print "  PGRR :", pgrd.PGRR
-                print "  PGRI"
-                for pgri in pgrd.PGRI:
-                    print "    point   :", pgri.point
-                    print "    unused1 :", pgri.unused1
-                    print "    x       :", pgri.x
-                    print "    y       :", pgri.y
-                    print "    z       :", pgri.z
-                    break
-                print "  PGRL"
-                for pgrl in pgrd.PGRL:
-                    print "    reference :", PrintFormID(pgrl.reference)
-                    print "    points"
-                    for point in pgrl.points:
-                        print "      ", point
-                    break
+                print "fid     :", PrintFormID(pgrd.fid)
+                printRecord(pgrd)
+                break
             cLand = wrldCell.LAND
             if(cLand != None):
                 print
-                print "  LAND"
-                print "  fid    :", PrintFormID(cLand.fid)
-                print "  flags1 :", cLand.flags1
-                print "  flags2 :", cLand.flags2
-
-
-                print "  data         :", cLand.data
-                print "  normals"
-                for cRow in cLand.normals:
-                    for cColumn in cRow:
-                        print "    Co-ords : ", cColumn._listIndex, ",", cColumn._listX2Index
-                        print "        x   :", cColumn.x
-                        print "        y   :", cColumn.y
-                        print "        z   :", cColumn.z
-                        print
-                        break
-                    break
-                print "  heightOffset :", cLand.heightOffset
-                print "  heights"
-                for cRow in cLand.heights:
-                    for cColumn in cRow:
-                        print "    Co-ords    : ", cColumn._listIndex, ",", cColumn._listX2Index
-                        print "        height :", cColumn.height
-                        print
-                        break
-                    break
-                print "  unused1      :", cLand.unused1
-                print "  colors"
-                for cRow in cLand.colors:
-                    for cColumn in cRow:
-                        print "    Co-ords   : ", cColumn._listIndex, ",", cColumn._listX2Index
-                        print "        red   :", cColumn.red
-                        print "        green :", cColumn.green
-                        print "        blue  :", cColumn.blue
-                        print
-                        break
-                    break
-                print "  baseTextures"
-                for baseTexture in cLand.baseTextures:
-                    print "    texture  :", PrintFormID(baseTexture.texture)
-                    print "    quadrant :", baseTexture.quadrant
-                    print "    unused1  :", baseTexture.unused1
-                    print "    layer    :", baseTexture.layer
-                    print
-                    break
-                print "  alphaLayers"
-                for alphaLayer in cLand.alphaLayers:
-                    print "    texture  :", PrintFormID(alphaLayer.texture)
-                    print "    quadrant :", alphaLayer.quadrant
-                    print "    unused1  :", alphaLayer.unused1
-                    print "    layer    :", alphaLayer.layer
-                    print "    opacities"
-                    for cOpacity in alphaLayer.opacities:
-                        print "      position :", cOpacity.position
-                        print "      unused1  :", cOpacity.unused1
-                        print "      opacity  :", cOpacity.opacity
-                        print
-                        break
-                    print
-                    break
-                print "  vertexTextures"
-                for vertexTexture in cLand.vertexTextures:
-                    print "    texture  :", PrintFormID(vertexTexture.texture)
-                    print
-                    break
-
-                print "  Position"
-                for cRow in cLand.Position:
-                    for cColumn in cRow:
-                        print "    Co-ords row:", cColumn._listIndex, ", col:", cColumn._listX2Index
-                        print "        height        :", cColumn.height
-                        print "        normalX       :", cColumn.normalX
-                        print "        normalY       :", cColumn.normalY
-                        print "        normalZ       :", cColumn.normalZ
-                        print "        red           :", cColumn.red
-                        print "        green         :", cColumn.green
-                        print "        blue          :", cColumn.blue
-                        print "        baseTexture   :", PrintFormID(cColumn.baseTexture)
-
-                        print "        layer1Texture :", PrintFormID(cColumn.layer1Texture)
-                        print "        layer1Opacity :", cColumn.layer1Opacity
-
-                        print "        layer2Texture :", PrintFormID(cColumn.layer2Texture)
-                        print "        layer2Opacity :", cColumn.layer2Opacity
-
-                        print "        layer3Texture :", PrintFormID(cColumn.layer3Texture)
-                        print "        layer3Opacity :", cColumn.layer3Opacity
-
-                        print "        layer4Texture :", PrintFormID(cColumn.layer4Texture)
-                        print "        layer4Opacity :", cColumn.layer4Opacity
-
-                        print "        layer5Texture :", PrintFormID(cColumn.layer5Texture)
-                        print "        layer5Opacity :", cColumn.layer5Opacity
-
-                        print "        layer6Texture :", PrintFormID(cColumn.layer6Texture)
-                        print "        layer6Opacity :", cColumn.layer6Opacity
-
-                        print "        layer7Texture :", PrintFormID(cColumn.layer7Texture)
-                        print "        layer7Opacity :", cColumn.layer7Opacity
-
-                        print "        layer8Texture :", PrintFormID(cColumn.layer8Texture)
-                        print "        layer8Opacity :", cColumn.layer8Opacity
-                        print
-                        break
-                    break
+                print "fid     :", PrintFormID(cLand.fid)
+                printRecord(cLand)
+                break
+##                print
+##                print "  LAND"
+##                print "  fid    :", PrintFormID(cLand.fid)
+##                print "  flags1 :", cLand.flags1
+##                print "  flags2 :", cLand.flags2
+##
+##
+##                print "  data         :", cLand.data
+##                print "  normals"
+##                for cRow in cLand.normals:
+##                    for cColumn in cRow:
+##                        print "    Co-ords : ", cColumn._ListIndex, ",", cColumn._listX2Index
+##                        print "        x   :", cColumn.x
+##                        print "        y   :", cColumn.y
+##                        print "        z   :", cColumn.z
+##                        print
+##                        break
+##                    break
+##                print "  heightOffset :", cLand.heightOffset
+##                print "  heights"
+##                for cRow in cLand.heights:
+##                    for cColumn in cRow:
+##                        print "    Co-ords    : ", cColumn._ListIndex, ",", cColumn._listX2Index
+##                        print "        height :", cColumn.height
+##                        print
+##                        break
+##                    break
+##                print "  unused1      :", cLand.unused1
+##                print "  colors"
+##                for cRow in cLand.colors:
+##                    for cColumn in cRow:
+##                        print "    Co-ords   : ", cColumn._ListIndex, ",", cColumn._listX2Index
+##                        print "        red   :", cColumn.red
+##                        print "        green :", cColumn.green
+##                        print "        blue  :", cColumn.blue
+##                        print
+##                        break
+##                    break
+##                print "  baseTextures"
+##                for baseTexture in cLand.baseTextures:
+##                    print "    texture  :", PrintFormID(baseTexture.texture)
+##                    print "    quadrant :", baseTexture.quadrant
+##                    print "    unused1  :", baseTexture.unused1
+##                    print "    layer    :", baseTexture.layer
+##                    print
+##                    break
+##                print "  alphaLayers"
+##                for alphaLayer in cLand.alphaLayers:
+##                    print "    texture  :", PrintFormID(alphaLayer.texture)
+##                    print "    quadrant :", alphaLayer.quadrant
+##                    print "    unused1  :", alphaLayer.unused1
+##                    print "    layer    :", alphaLayer.layer
+##                    print "    opacities"
+##                    for cOpacity in alphaLayer.opacities:
+##                        print "      position :", cOpacity.position
+##                        print "      unused1  :", cOpacity.unused1
+##                        print "      opacity  :", cOpacity.opacity
+##                        print
+##                        break
+##                    print
+##                    break
+##                print "  vertexTextures"
+##                for vertexTexture in cLand.vertexTextures:
+##                    print "    texture  :", PrintFormID(vertexTexture.texture)
+##                    print
+##                    break
+##
+##                print "  Position"
+##                for cRow in cLand.Position:
+##                    for cColumn in cRow:
+##                        print "    Co-ords row:", cColumn._ListIndex, ", col:", cColumn._listX2Index
+##                        print "        height        :", cColumn.height
+##                        print "        normalX       :", cColumn.normalX
+##                        print "        normalY       :", cColumn.normalY
+##                        print "        normalZ       :", cColumn.normalZ
+##                        print "        red           :", cColumn.red
+##                        print "        green         :", cColumn.green
+##                        print "        blue          :", cColumn.blue
+##                        print "        baseTexture   :", PrintFormID(cColumn.baseTexture)
+##
+##                        print "        layer1Texture :", PrintFormID(cColumn.layer1Texture)
+##                        print "        layer1Opacity :", cColumn.layer1Opacity
+##
+##                        print "        layer2Texture :", PrintFormID(cColumn.layer2Texture)
+##                        print "        layer2Opacity :", cColumn.layer2Opacity
+##
+##                        print "        layer3Texture :", PrintFormID(cColumn.layer3Texture)
+##                        print "        layer3Opacity :", cColumn.layer3Opacity
+##
+##                        print "        layer4Texture :", PrintFormID(cColumn.layer4Texture)
+##                        print "        layer4Opacity :", cColumn.layer4Opacity
+##
+##                        print "        layer5Texture :", PrintFormID(cColumn.layer5Texture)
+##                        print "        layer5Opacity :", cColumn.layer5Opacity
+##
+##                        print "        layer6Texture :", PrintFormID(cColumn.layer6Texture)
+##                        print "        layer6Opacity :", cColumn.layer6Opacity
+##
+##                        print "        layer7Texture :", PrintFormID(cColumn.layer7Texture)
+##                        print "        layer7Opacity :", cColumn.layer7Opacity
+##
+##                        print "        layer8Texture :", PrintFormID(cColumn.layer8Texture)
+##                        print "        layer8Opacity :", cColumn.layer8Opacity
+##                        print
+##                        break
+##                    break
             break
         break
 
-##    print "WRLD:Create Record Test"
-##    newRecord = newMod.createWRLDRecord()
-##    print "WRLD:Set Test"
-##    print "flags1..."
-##    newRecord.flags1 = 0x0102
-##    print "flags2..."
-##    newRecord.flags2 = 0x0201
-##    print "eid..."
-##    newRecord.eid = "WRLDWarTest"
-##
-##    newRecord.full =  "TestWarWorld"
-##    newRecord.parent = 7
-##    newRecord.climate = 8
-##    newRecord.water = 9
-##    newRecord.mapPath = r"MapTest\Path\Destination\test.dds"
-##    newRecord.dimX = 10
-##    newRecord.dimY = 11
-##    newRecord.NWCellX = 12
-##    newRecord.NWCellY = 13
-##    newRecord.SECellX = 14
-##    newRecord.SECellY = 15
-##    newRecord.flags = 1
-##    newRecord.unknown00 = 16
-##    newRecord.unknown01 = 17
-##    newRecord.unknown90 = 18
-##    newRecord.unknown91 = 19
-##    newRecord.sound = 20
-##    newRecord.ofst_p = [1,2,3,4,5,6,7,8,9,10]
-##
-##    print "WRLD:Set Test Results"
-##    print
-##    print "fid    :", PrintFormID(newRecord.fid)
-##    print "flags1 :", newRecord.flags1
-##    print "flags2 :", newRecord.flags2
-##    print "eid    :", newRecord.eid
-##
-##    print "full      :", newRecord.full
-##    print "parent    :", PrintFormID(newRecord.parent)
-##    print "climate   :", PrintFormID(newRecord.climate)
-##    print "water     :", PrintFormID(newRecord.water)
-##    print "mapPath   :", newRecord.mapPath
-##    print "dimX      :", newRecord.dimX
-##    print "dimY      :", newRecord.dimY
-##    print "NWCellX   :", newRecord.NWCellX
-##    print "NWCellY   :", newRecord.NWCellY
-##    print "SECellX   :", newRecord.SECellX
-##    print "SECellY   :", newRecord.SECellY
-##    print "flags     :", newRecord.flags
-##    print "unknown00 :", newRecord.unknown00
-##    print "unknown01 :", newRecord.unknown01
-##    print "unknown90 :", newRecord.unknown90
-##    print "unknown91 :", newRecord.unknown91
-##    print "sound     :", newRecord.sound
-##    print "ofst_p    :", newRecord.ofst_p
+    print "WRLD:Create Record Test"
+    newRecord = newMod.create_WRLD()
+    print "WRLD:Set Test"
+    print "flags1..."
+    newRecord.flags1 = 0x0102
+    print "flags2..."
+    newRecord.flags2 = 0x0201
+    print "eid..."
+    newRecord.eid = "WRLDWarTest"
+
+    newRecord.full =  "TestWarWorld"
+    newRecord.parent = 7
+    newRecord.climate = 8
+    newRecord.water = 9
+    newRecord.mapPath = r"MapTest\Path\Destination\test.dds"
+    newRecord.dimX = 10
+    newRecord.dimY = 11
+    newRecord.NWCellX = 12
+    newRecord.NWCellY = 13
+    newRecord.SECellX = 14
+    newRecord.SECellY = 15
+    newRecord.flags = 1
+    newRecord.unknown00 = 16
+    newRecord.unknown01 = 17
+    newRecord.unknown90 = 18
+    newRecord.unknown91 = 19
+    newRecord.sound = 20
+    newRecord.ofst_p = [1,2,3,4,5,6,7,8,9,10]
+
+    print "WRLD:Set Test Results"
+    print
+    print "fid    :", PrintFormID(newRecord.fid)
+    print "flags1 :", newRecord.flags1
+    print "flags2 :", newRecord.flags2
+    print "eid    :", newRecord.eid
+
+    print "full      :", newRecord.full
+    print "parent    :", PrintFormID(newRecord.parent)
+    print "climate   :", PrintFormID(newRecord.climate)
+    print "water     :", PrintFormID(newRecord.water)
+    print "mapPath   :", newRecord.mapPath
+    print "dimX      :", newRecord.dimX
+    print "dimY      :", newRecord.dimY
+    print "NWCellX   :", newRecord.NWCellX
+    print "NWCellY   :", newRecord.NWCellY
+    print "SECellX   :", newRecord.SECellX
+    print "SECellY   :", newRecord.SECellY
+    print "flags     :", newRecord.flags
+    print "unknown00 :", newRecord.unknown00
+    print "unknown01 :", newRecord.unknown01
+    print "unknown90 :", newRecord.unknown90
+    print "unknown91 :", newRecord.unknown91
+    print "sound     :", newRecord.sound
+    print "ofst_p    :", newRecord.ofst_p
 
     print "WRLD:CopyAsOverride Test"
     for record in Current[0].WRLD:
@@ -8069,9 +8076,9 @@ def TestWRLD():
         if(road != None):
             road.CopyAsOverride(trgWrld)
             road.UnloadRecord()
-        cell = record.CELL
+        cell = record.WorldCELL
         if(cell != None):
-            trgCell = cell.CopyAsOverride(trgWrld,isWorldCell=True)
+            trgCell = cell.CopyAsOverride(trgWrld)
             cLand = cell.LAND
             if(cLand != None):
                 cLand.CopyAsOverride(trgCell)
@@ -8112,143 +8119,82 @@ def TestWRLD():
             wrldCell.UnloadRecord()
         record.UnloadRecord()
 
-    print "WRLD:CopyAsNew Test"
-    for record in Current[0].WRLD:
-        trgWrld = record.CopyAsNew(newMod)
-        road = record.ROAD
-        if(road != None):
-            road.CopyAsNew(trgWrld)
-            road.UnloadRecord()
-        cell = record.CELL
-        if(cell != None):
-            trgCell = cell.CopyAsNew(trgWrld,isWorldCell=True)
-            cLand = cell.LAND
-            if(cLand != None):
-                cLand.CopyAsNew(trgCell)
-                cLand.UnloadRecord()
-            for npcRef in cell.ACHR:
-                npcRef.CopyAsNew(trgCell)
-                npcRef.UnloadRecord()
-            for creaRef in cell.ACRE:
-                creaRef.CopyAsNew(trgCell)
-                creaRef.UnloadRecord()
-            for objRef in cell.REFR:
-                objRef.CopyAsNew(trgCell)
-                objRef.UnloadRecord()
-            Pgrd = cell.PGRD
-            if(Pgrd != None):
-                Pgrd.CopyAsNew(trgCell)
-                Pgrd.UnloadRecord()
-            cell.UnloadRecord()
-        for wrldCell in record.CELLS:
-            trgCell = wrldCell.CopyAsNew(trgWrld)
-            cLand = wrldCell.LAND
-            if(cLand != None):
-                cLand.CopyAsNew(trgCell)
-                cLand.UnloadRecord()
-            for npcRef in wrldCell.ACHR:
-                npcRef.CopyAsNew(trgCell)
-                npcRef.UnloadRecord()
-            for creaRef in wrldCell.ACRE:
-                creaRef.CopyAsNew(trgCell)
-                creaRef.UnloadRecord()
-            for objRef in wrldCell.REFR:
-                objRef.CopyAsNew(trgCell)
-                objRef.UnloadRecord()
-            Pgrd = wrldCell.PGRD
-            if(Pgrd != None):
-                Pgrd.CopyAsNew(trgCell)
-                Pgrd.UnloadRecord()
-            wrldCell.UnloadRecord()
-        record.UnloadRecord()
+##    print "WRLD:CopyAsNew Test"
+##    for record in Current[0].WRLD:
+##        trgWrld = record.CopyAsNew(newMod)
+##        road = record.ROAD
+##        if(road != None):
+##            road.CopyAsNew(trgWrld)
+##            road.UnloadRecord()
+##        cell = record.WorldCELL
+##        if(cell != None):
+##            trgCell = cell.CopyAsNew(trgWrld)
+##            cLand = cell.LAND
+##            if(cLand != None):
+##                cLand.CopyAsNew(trgCell)
+##                cLand.UnloadRecord()
+##            for npcRef in cell.ACHR:
+##                npcRef.CopyAsNew(trgCell)
+##                npcRef.UnloadRecord()
+##            for creaRef in cell.ACRE:
+##                creaRef.CopyAsNew(trgCell)
+##                creaRef.UnloadRecord()
+##            for objRef in cell.REFR:
+##                objRef.CopyAsNew(trgCell)
+##                objRef.UnloadRecord()
+##            Pgrd = cell.PGRD
+##            if(Pgrd != None):
+##                Pgrd.CopyAsNew(trgCell)
+##                Pgrd.UnloadRecord()
+##            cell.UnloadRecord()
+##        for wrldCell in record.CELLS:
+##            trgCell = wrldCell.CopyAsNew(trgWrld)
+##            cLand = wrldCell.LAND
+##            if(cLand != None):
+##                cLand.CopyAsNew(trgCell)
+##                cLand.UnloadRecord()
+##            for npcRef in wrldCell.ACHR:
+##                npcRef.CopyAsNew(trgCell)
+##                npcRef.UnloadRecord()
+##            for creaRef in wrldCell.ACRE:
+##                creaRef.CopyAsNew(trgCell)
+##                creaRef.UnloadRecord()
+##            for objRef in wrldCell.REFR:
+##                objRef.CopyAsNew(trgCell)
+##                objRef.UnloadRecord()
+##            Pgrd = wrldCell.PGRD
+##            if(Pgrd != None):
+##                Pgrd.CopyAsNew(trgCell)
+##                Pgrd.UnloadRecord()
+##            wrldCell.UnloadRecord()
+##        record.UnloadRecord()
 
-    phonenumber = raw_input(">")
     print "WRLD:Save Test - TestWRLD.esp"
-    newMod.safeCloseSave()
+    newMod.save()
     print "WRLD:Finished testing"
 
 def TestDIAL():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestDIAL.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestDIAL.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestDIAL.esp")
 
     for record in Current[0].DIAL:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "quests"
-        for quest in record.quests:
-            print "  ", PrintFormID(quest)
-        print "full     :", record.full
-        print "dialType :", record.dialType
+        printRecord(record)
 
         print "infos"
         for info in record.INFO:
             print
-            print "  fid    :", PrintFormID(info.fid)
-            print "  flags1 :", info.flags1
-            print "  flags2 :", info.flags2
-            print "  dialType     :", info.dialType
-            print "  flags        :", info.flags
-            print "  quest        :", PrintFormID(info.quest)
-            print "  topic        :", PrintFormID(info.topic)
-            print "  prevInfo     :", PrintFormID(info.prevInfo)
-            print "  addTopics"
-            for topic in info.addTopics:
-                print "    ", PrintFormID(topic)
-
-            print "  responses"
-            for response in info.responses:
-                print "    emotionType  :", response.emotionType
-                print "    emotionValue :", response.emotionValue
-                print "    unused1      :", response.unused1
-                print "    responseNum  :", response.responseNum
-                print "    unused2      :", response.unused2
-                print "    responseText :", response.responseText
-                print "    actorNotes   :", response.actorNotes
-                print
-
-            print "  conditions"
-            for condition in info.conditions:
-                print "    operType  :", condition.operType
-                print "    unused1   :", condition.unused1
-                print "    compValue :", condition.compValue
-                print "    ifunc     :", condition.ifunc
-                print "    param1    :", condition.param1
-                print "    param2    :", condition.param2
-                print "    unused2   :", condition.unused2
-                print
-
-            print "  choices"
-            for choice in info.choices:
-                print "    ", PrintFormID(choice)
-
-            print "  linksFrom"
-            for linksFrom in info.linksFrom:
-                print "    ", PrintFormID(linksFrom)
-
-            print "  unused1      :", info.unused1
-            print "  numRefs      :", info.numRefs
-            print "  compiledSize :", info.compiledSize
-            print "  lastIndex    :", info.lastIndex
-            print "  scriptType   :", info.scriptType
-            print "  compiled_p   :", info.compiled_p
-            print "  scriptText   :", info.scriptText
-
-            print "  references"
-            for reference in info.references:
-                if(reference.IsSCRO):
-                    print "    SCRO:", PrintFormID(reference.reference)
-                else:
-                    print "    SCRV:", reference.reference
+            print "fid     :", PrintFormID(info.fid)
+            printRecord(info)
+            break
         break
 
     print "DIAL:Create Record Test"
-    newRecord = newMod.createDIALRecord()
+    newRecord = newMod.create_DIAL()
     print "DIAL:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -8263,7 +8209,7 @@ def TestDIAL():
     newRecord.dialType = 1
 
     print "INFO:Set Test"
-    newInfo = newRecord.createINFORecord()
+    newInfo = newRecord.create_INFO()
     newInfo.flags1 = 0x0102
     newInfo.flags2 = 0x0201
 
@@ -8274,7 +8220,7 @@ def TestDIAL():
     newInfo.prevInfo = 15
     newInfo.addTopics = [7,15,22]
 
-    newResponse = newInfo.newResponsesElement()
+    newResponse = newInfo.create_response()
     newResponse.emotionType = 1
     newResponse.emotionValue = 2
     newResponse.unused1 = [1,2,3,4]
@@ -8283,7 +8229,7 @@ def TestDIAL():
     newResponse.responseText = "RARGH!...1..oops"
     newResponse.actorNotes = "Say it with all your might!"
 
-    newResponse = newInfo.newResponsesElement()
+    newResponse = newInfo.create_response()
     newResponse.emotionType = 4
     newResponse.emotionValue = 5
     newResponse.unused1 = [1,2,3,4]
@@ -8292,7 +8238,7 @@ def TestDIAL():
     newResponse.responseText = "RARGH!...2..oops"
     newResponse.actorNotes = "Say it with all your might!"
 
-    newResponse = newInfo.newResponsesElement()
+    newResponse = newInfo.create_response()
     newResponse.emotionType = 7
     newResponse.emotionValue = 8
     newResponse.unused1 = [1,2,3,4]
@@ -8303,7 +8249,7 @@ def TestDIAL():
 
     newInfo.responses = [newInfo.responses[2], newInfo.responses[0], newInfo.responses[0], newInfo.responses[2]]
 
-    newCondition = newInfo.newConditionsElement()
+    newCondition = newInfo.create_condition()
     newCondition.operType = 1
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 2
@@ -8312,7 +8258,7 @@ def TestDIAL():
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newInfo.newConditionsElement()
+    newCondition = newInfo.create_condition()
     newCondition.operType = 2
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 3
@@ -8321,7 +8267,7 @@ def TestDIAL():
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newInfo.newConditionsElement()
+    newCondition = newInfo.create_condition()
     newCondition.operType = 3
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 4
@@ -8330,7 +8276,7 @@ def TestDIAL():
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newInfo.newConditionsElement()
+    newCondition = newInfo.create_condition()
     newCondition.operType = 4
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 5
@@ -8354,23 +8300,11 @@ def TestDIAL():
     newInfo.compiled_p = [1,67,255]
     newInfo.scriptText = "scn DummyScript\nThis won't compile"
 
-    newReference = newInfo.newReferencesElement()
-    newReference.reference = 7
-    newReference.IsSCRO = True
-    newReference = newInfo.newReferencesElement()
-    newReference.reference = 8
-    newReference.IsSCRO = False
-    newReference = newInfo.newReferencesElement()
-    newReference.reference = 9
-    newReference.IsSCRO = 1
-    newReference = newInfo.newReferencesElement()
-    newReference.reference = 10
-    newReference.IsSCRO =0
-
+    newInfo.references = [('Oblivion.esm',0x000007), 8, ('Oblivion.esm',0x000009), 10]
     newInfo.references = [newInfo.references[3], newInfo.references[1], newInfo.references[0]]
 
     print "INFO:Set Test"
-    newInfo = newRecord.createINFORecord()
+    newInfo = newRecord.create_INFO()
     newInfo.flags1 = 0x0102
     newInfo.flags2 = 0x0201
 
@@ -8381,7 +8315,7 @@ def TestDIAL():
     newInfo.prevInfo = 15
     newInfo.addTopics = [7,15,22]
 
-    newResponse = newInfo.newResponsesElement()
+    newResponse = newInfo.create_response()
     newResponse.emotionType = 1
     newResponse.emotionValue = 2
     newResponse.unused1 = [1,2,3,4]
@@ -8390,7 +8324,7 @@ def TestDIAL():
     newResponse.responseText = "1RARGH!...1..oops"
     newResponse.actorNotes = "Say it with all your might!"
 
-    newResponse = newInfo.newResponsesElement()
+    newResponse = newInfo.create_response()
     newResponse.emotionType = 4
     newResponse.emotionValue = 5
     newResponse.unused1 = [1,2,3,4]
@@ -8399,7 +8333,7 @@ def TestDIAL():
     newResponse.responseText = "1RARGH!...2..oops"
     newResponse.actorNotes = "Say it with all your might!"
 
-    newResponse = newInfo.newResponsesElement()
+    newResponse = newInfo.create_response()
     newResponse.emotionType = 7
     newResponse.emotionValue = 8
     newResponse.unused1 = [1,2,3,4]
@@ -8410,7 +8344,7 @@ def TestDIAL():
 
     newInfo.responses = [newInfo.responses[2], newInfo.responses[0], newInfo.responses[0], newInfo.responses[2]]
 
-    newCondition = newInfo.newConditionsElement()
+    newCondition = newInfo.create_condition()
     newCondition.operType = 1
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 2
@@ -8419,7 +8353,7 @@ def TestDIAL():
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newInfo.newConditionsElement()
+    newCondition = newInfo.create_condition()
     newCondition.operType = 2
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 3
@@ -8428,7 +8362,7 @@ def TestDIAL():
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newInfo.newConditionsElement()
+    newCondition = newInfo.create_condition()
     newCondition.operType = 3
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 4
@@ -8437,7 +8371,7 @@ def TestDIAL():
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newInfo.newConditionsElement()
+    newCondition = newInfo.create_condition()
     newCondition.operType = 4
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 5
@@ -8453,7 +8387,7 @@ def TestDIAL():
     newInfo.linksFrom = [0x0D, 0x0E, 0x0F]
 
     print "INFO:Set Test"
-    newInfo = newRecord.createINFORecord()
+    newInfo = newRecord.create_INFO()
     newInfo.flags1 = 0x0102
     newInfo.flags2 = 0x0201
 
@@ -8464,7 +8398,7 @@ def TestDIAL():
     newInfo.prevInfo = 15
     newInfo.addTopics = [7,15,22]
 
-    newResponse = newInfo.newResponsesElement()
+    newResponse = newInfo.create_response()
     newResponse.emotionType = 1
     newResponse.emotionValue = 2
     newResponse.unused1 = [1,2,3,4]
@@ -8473,7 +8407,7 @@ def TestDIAL():
     newResponse.responseText = "2RARGH!...1..oops"
     newResponse.actorNotes = "Say it with all your might!"
 
-    newResponse = newInfo.newResponsesElement()
+    newResponse = newInfo.create_response()
     newResponse.emotionType = 4
     newResponse.emotionValue = 5
     newResponse.unused1 = [1,2,3,4]
@@ -8482,7 +8416,7 @@ def TestDIAL():
     newResponse.responseText = "2RARGH!...2..oops"
     newResponse.actorNotes = "Say it with all your might!"
 
-    newResponse = newInfo.newResponsesElement()
+    newResponse = newInfo.create_response()
     newResponse.emotionType = 7
     newResponse.emotionValue = 8
     newResponse.unused1 = [1,2,3,4]
@@ -8493,7 +8427,7 @@ def TestDIAL():
 
     newInfo.responses = [newInfo.responses[2], newInfo.responses[0], newInfo.responses[0], newInfo.responses[2]]
 
-    newCondition = newInfo.newConditionsElement()
+    newCondition = newInfo.create_condition()
     newCondition.operType = 1
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 2
@@ -8502,7 +8436,7 @@ def TestDIAL():
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newInfo.newConditionsElement()
+    newCondition = newInfo.create_condition()
     newCondition.operType = 2
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 3
@@ -8511,7 +8445,7 @@ def TestDIAL():
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newInfo.newConditionsElement()
+    newCondition = newInfo.create_condition()
     newCondition.operType = 3
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 4
@@ -8520,7 +8454,7 @@ def TestDIAL():
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newInfo.newConditionsElement()
+    newCondition = newInfo.create_condition()
     newCondition.operType = 4
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 5
@@ -8544,19 +8478,7 @@ def TestDIAL():
     newInfo.compiled_p = [1,67,255]
     newInfo.scriptText = "scn DummyScript\nThis won't compile"
 
-    newReference = newInfo.newReferencesElement()
-    newReference.reference = 7
-    newReference.IsSCRO = True
-    newReference = newInfo.newReferencesElement()
-    newReference.reference = 8
-    newReference.IsSCRO = False
-    newReference = newInfo.newReferencesElement()
-    newReference.reference = 9
-    newReference.IsSCRO = 1
-    newReference = newInfo.newReferencesElement()
-    newReference.reference = 10
-    newReference.IsSCRO =0
-
+    newInfo.references = [('Oblivion.esm',0x000007), 8, ('Oblivion.esm',0x000009), 10]
     newInfo.references = [newInfo.references[3], newInfo.references[1], newInfo.references[0]]
 
     print "DIAL:Set Test Results"
@@ -8628,10 +8550,10 @@ def TestDIAL():
 
         print "  references"
         for reference in info.references:
-            if(reference.IsSCRO):
-                print "    SCRO:", PrintFormID(reference.reference)
+            if isinstance(reference, tuple):
+                print "    SCRO:", PrintFormID(reference)
             else:
-                print "    SCRV:", reference.reference
+                print "    SCRV:", reference
 
     print "DIAL:CopyAsOverride Test"
     for record in Current[0].DIAL:
@@ -8647,106 +8569,25 @@ def TestDIAL():
             info.CopyAsNew(newRecord)
 
     print "DIAL:Save Test - TestDIAL.esp"
-    newMod.safeSave()
+    newMod.save()
     print "DIAL:Finished testing"
 
 def TestQUST():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestQUST.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestQUST.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestQUST.esp")
 
-    x = 0
     for record in Current[0].QUST:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "script     :", PrintFormID(record.script)
-        print "full       :", record.full
-        print "iconPath   :", record.iconPath
-        print "flags      :", record.flags
-        print "priority   :", record.priority
-
-        print "conditions"
-        for condition in record.conditions:
-            print "  operType  :", condition.operType
-            print "  unused1   :", condition.unused1
-            print "  compValue :", condition.compValue
-            print "  ifunc     :", condition.ifunc
-            print "  param1    :", condition.param1
-            print "  param2    :", condition.param2
-            print "  unused2   :", condition.unused2
-            print
-            if(x == 0):
-                x = 1
-        print "stages"
-        for stage in record.stages:
-            if(x == 1):
-                x = 2
-            print "  stage :", stage.stage
-            print "  entries"
-            for entry in stage.entries:
-                if(x == 2):
-                    x = 3
-                print "    flags        :", entry.flags
-                print "    conditions"
-                for condition in entry.conditions:
-                    print "      operType  :", condition.operType
-                    print "      unused1   :", condition.unused1
-                    print "      compValue :", condition.compValue
-                    print "      ifunc     :", condition.ifunc
-                    print "      param1    :", condition.param1
-                    print "      param2    :", condition.param2
-                    print "      unused2   :", condition.unused2
-                    print
-                    if(x == 3):
-                        x = 4
-                print "    text         :", entry.text
-                print "    unused1      :", entry.unused1
-                print "    numRefs      :", entry.numRefs
-                print "    compiledSize :", entry.compiledSize
-                print "    lastIndex    :", entry.lastIndex
-                print "    scriptType   :", entry.scriptType
-                print "    compiled_p   :", entry.compiled_p
-                print "    scriptText   :", entry.scriptText
-                print "    references"
-                for reference in entry.references:
-                    if(reference.IsSCRO):
-                        print "      SCRO:", PrintFormID(reference.reference)
-                    else:
-                        print "      SCRV:", reference.reference
-                    if(x == 4):
-                        x = 5
-                print
-            print
-        print "targets"
-        for target in record.targets:
-            if(x == 5):
-                x = 6
-            print "  targetId :", PrintFormID(target.targetId)
-            print "  flags    :", target.flags
-            print "  unused1  :", target.unused1
-            print "  conditions"
-            for condition in target.conditions:
-                print "    operType  :", condition.operType
-                print "    unused1   :", condition.unused1
-                print "    compValue :", condition.compValue
-                print "    ifunc     :", condition.ifunc
-                print "    param1    :", condition.param1
-                print "    param2    :", condition.param2
-                print "    unused2   :", condition.unused2
-                print
-                if(x == 6):
-                    x = 7
-        if(x == 7):
-            break
+        printRecord(record)
+        break
 
 
     print "QUST:Create Record Test"
-    newRecord = newMod.createQUSTRecord()
+    newRecord = newMod.create_QUST()
     print "QUST:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -8761,7 +8602,7 @@ def TestQUST():
     newRecord.flags = 1
     newRecord.priority = 2
 
-    newCondition = newRecord.newConditionsElement()
+    newCondition = newRecord.create_condition()
     newCondition.operType = 1
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 2
@@ -8770,7 +8611,7 @@ def TestQUST():
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newRecord.newConditionsElement()
+    newCondition = newRecord.create_condition()
     newCondition.operType = 2
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 3
@@ -8779,7 +8620,7 @@ def TestQUST():
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newRecord.newConditionsElement()
+    newCondition = newRecord.create_condition()
     newCondition.operType = 3
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 4
@@ -8788,7 +8629,7 @@ def TestQUST():
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newRecord.newConditionsElement()
+    newCondition = newRecord.create_condition()
     newCondition.operType = 4
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 5
@@ -8799,12 +8640,12 @@ def TestQUST():
 
     newRecord.conditions = [newRecord.conditions[3], newRecord.conditions[1], newRecord.conditions[0]]
 
-    newStage = newRecord.newStagesElement()
+    newStage = newRecord.create_stage()
     newStage.stage = 10
-    newEntry = newStage.newEntriesElement()
+    newEntry = newStage.create_entry()
     newEntry.flags = 1
 
-    newCondition = newEntry.newConditionsElement()
+    newCondition = newEntry.create_condition()
     newCondition.operType = 5
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 2
@@ -8813,7 +8654,7 @@ def TestQUST():
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newEntry.newConditionsElement()
+    newCondition = newEntry.create_condition()
     newCondition.operType = 6
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 3
@@ -8822,7 +8663,7 @@ def TestQUST():
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newEntry.newConditionsElement()
+    newCondition = newEntry.create_condition()
     newCondition.operType = 7
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 4
@@ -8831,7 +8672,7 @@ def TestQUST():
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newEntry.newConditionsElement()
+    newCondition = newEntry.create_condition()
     newCondition.operType = 8
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 5
@@ -8850,28 +8691,14 @@ def TestQUST():
     newEntry.scriptType = 1
     newEntry.compiled_p = []
     newEntry.scriptText = "10Another futile attempt at making this thing work"
-    newReference = newEntry.newReferencesElement()
-    newReference.reference = 7
-    newReference.IsSCRO = True
-
-    newReference = newEntry.newReferencesElement()
-    newReference.reference = 8
-    newReference.IsSCRO = False
-
-    newReference = newEntry.newReferencesElement()
-    newReference.reference = 9
-    newReference.IsSCRO = False
-
-    newReference = newEntry.newReferencesElement()
-    newReference.reference = 10
-    newReference.IsSCRO = True
-
+    
+    newEntry.references = [('Oblivion.esm',0x000007), 8, ('Oblivion.esm',0x000009), 10]
     newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]
 
-    newEntry = newStage.newEntriesElement()
+    newEntry = newStage.create_entry()
     newEntry.flags = 1
 
-    newCondition = newEntry.newConditionsElement()
+    newCondition = newEntry.create_condition()
     newCondition.operType = 5
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 2
@@ -8880,7 +8707,7 @@ def TestQUST():
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newEntry.newConditionsElement()
+    newCondition = newEntry.create_condition()
     newCondition.operType = 6
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 3
@@ -8889,7 +8716,7 @@ def TestQUST():
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newEntry.newConditionsElement()
+    newCondition = newEntry.create_condition()
     newCondition.operType = 7
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 4
@@ -8898,7 +8725,7 @@ def TestQUST():
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newEntry.newConditionsElement()
+    newCondition = newEntry.create_condition()
     newCondition.operType = 8
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 5
@@ -8917,28 +8744,14 @@ def TestQUST():
     newEntry.scriptType = 1
     newEntry.compiled_p = []
     newEntry.scriptText = "20Another futile attempt at making this thing work"
-    newReference = newEntry.newReferencesElement()
-    newReference.reference = 7
-    newReference.IsSCRO = True
-
-    newReference = newEntry.newReferencesElement()
-    newReference.reference = 8
-    newReference.IsSCRO = False
-
-    newReference = newEntry.newReferencesElement()
-    newReference.reference = 9
-    newReference.IsSCRO = False
-
-    newReference = newEntry.newReferencesElement()
-    newReference.reference = 10
-    newReference.IsSCRO = True
-
+    
+    newEntry.references = [('Oblivion.esm',0x000007), 8, ('Oblivion.esm',0x000009), 10]
     newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]
 
-    newEntry = newStage.newEntriesElement()
+    newEntry = newStage.create_entry()
     newEntry.flags = 1
 
-    newCondition = newEntry.newConditionsElement()
+    newCondition = newEntry.create_condition()
     newCondition.operType = 5
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 2
@@ -8947,7 +8760,7 @@ def TestQUST():
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newEntry.newConditionsElement()
+    newCondition = newEntry.create_condition()
     newCondition.operType = 6
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 3
@@ -8956,7 +8769,7 @@ def TestQUST():
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newEntry.newConditionsElement()
+    newCondition = newEntry.create_condition()
     newCondition.operType = 7
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 4
@@ -8965,7 +8778,7 @@ def TestQUST():
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newEntry.newConditionsElement()
+    newCondition = newEntry.create_condition()
     newCondition.operType = 8
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 5
@@ -8984,32 +8797,18 @@ def TestQUST():
     newEntry.scriptType = 1
     newEntry.compiled_p = []
     newEntry.scriptText = "30Another futile attempt at making this thing work"
-    newReference = newEntry.newReferencesElement()
-    newReference.reference = 7
-    newReference.IsSCRO = True
-
-    newReference = newEntry.newReferencesElement()
-    newReference.reference = 8
-    newReference.IsSCRO = False
-
-    newReference = newEntry.newReferencesElement()
-    newReference.reference = 9
-    newReference.IsSCRO = False
-
-    newReference = newEntry.newReferencesElement()
-    newReference.reference = 10
-    newReference.IsSCRO = True
-
+    
+    newEntry.references = [('Oblivion.esm',0x000007), 8, ('Oblivion.esm',0x000009), 10]
     newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]
 
     newStage.entries = [newStage.entries[2], newStage.entries[0]]
 
-    newStage = newRecord.newStagesElement()
+    newStage = newRecord.create_stage()
     newStage.stage = 20
-    newEntry = newStage.newEntriesElement()
+    newEntry = newStage.create_entry()
     newEntry.flags = 1
 
-    newCondition = newEntry.newConditionsElement()
+    newCondition = newEntry.create_condition()
     newCondition.operType = 5
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 2
@@ -9018,7 +8817,7 @@ def TestQUST():
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newEntry.newConditionsElement()
+    newCondition = newEntry.create_condition()
     newCondition.operType = 6
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 3
@@ -9027,7 +8826,7 @@ def TestQUST():
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newEntry.newConditionsElement()
+    newCondition = newEntry.create_condition()
     newCondition.operType = 7
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 4
@@ -9036,7 +8835,7 @@ def TestQUST():
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newEntry.newConditionsElement()
+    newCondition = newEntry.create_condition()
     newCondition.operType = 8
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 5
@@ -9055,28 +8854,14 @@ def TestQUST():
     newEntry.scriptType = 1
     newEntry.compiled_p = []
     newEntry.scriptText = "11Another futile attempt at making this thing work"
-    newReference = newEntry.newReferencesElement()
-    newReference.reference = 7
-    newReference.IsSCRO = True
-
-    newReference = newEntry.newReferencesElement()
-    newReference.reference = 8
-    newReference.IsSCRO = False
-
-    newReference = newEntry.newReferencesElement()
-    newReference.reference = 9
-    newReference.IsSCRO = False
-
-    newReference = newEntry.newReferencesElement()
-    newReference.reference = 10
-    newReference.IsSCRO = True
-
+    
+    newEntry.references = [('Oblivion.esm',0x000007), 8, ('Oblivion.esm',0x000009), 10]
     newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]
 
-    newEntry = newStage.newEntriesElement()
+    newEntry = newStage.create_entry()
     newEntry.flags = 1
 
-    newCondition = newEntry.newConditionsElement()
+    newCondition = newEntry.create_condition()
     newCondition.operType = 5
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 2
@@ -9085,7 +8870,7 @@ def TestQUST():
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newEntry.newConditionsElement()
+    newCondition = newEntry.create_condition()
     newCondition.operType = 6
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 3
@@ -9094,7 +8879,7 @@ def TestQUST():
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newEntry.newConditionsElement()
+    newCondition = newEntry.create_condition()
     newCondition.operType = 7
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 4
@@ -9103,7 +8888,7 @@ def TestQUST():
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newEntry.newConditionsElement()
+    newCondition = newEntry.create_condition()
     newCondition.operType = 8
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 5
@@ -9122,28 +8907,14 @@ def TestQUST():
     newEntry.scriptType = 1
     newEntry.compiled_p = []
     newEntry.scriptText = "21Another futile attempt at making this thing work"
-    newReference = newEntry.newReferencesElement()
-    newReference.reference = 7
-    newReference.IsSCRO = True
-
-    newReference = newEntry.newReferencesElement()
-    newReference.reference = 8
-    newReference.IsSCRO = False
-
-    newReference = newEntry.newReferencesElement()
-    newReference.reference = 9
-    newReference.IsSCRO = False
-
-    newReference = newEntry.newReferencesElement()
-    newReference.reference = 10
-    newReference.IsSCRO = True
-
+    
+    newEntry.references = [('Oblivion.esm',0x000007), 8, ('Oblivion.esm',0x000009), 10]
     newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]
 
-    newEntry = newStage.newEntriesElement()
+    newEntry = newStage.create_entry()
     newEntry.flags = 1
 
-    newCondition = newEntry.newConditionsElement()
+    newCondition = newEntry.create_condition()
     newCondition.operType = 5
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 2
@@ -9152,7 +8923,7 @@ def TestQUST():
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newEntry.newConditionsElement()
+    newCondition = newEntry.create_condition()
     newCondition.operType = 6
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 3
@@ -9161,7 +8932,7 @@ def TestQUST():
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newEntry.newConditionsElement()
+    newCondition = newEntry.create_condition()
     newCondition.operType = 7
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 4
@@ -9170,7 +8941,7 @@ def TestQUST():
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newEntry.newConditionsElement()
+    newCondition = newEntry.create_condition()
     newCondition.operType = 8
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 5
@@ -9189,32 +8960,18 @@ def TestQUST():
     newEntry.scriptType = 1
     newEntry.compiled_p = []
     newEntry.scriptText = "31Another futile attempt at making this thing work"
-    newReference = newEntry.newReferencesElement()
-    newReference.reference = 7
-    newReference.IsSCRO = True
-
-    newReference = newEntry.newReferencesElement()
-    newReference.reference = 8
-    newReference.IsSCRO = False
-
-    newReference = newEntry.newReferencesElement()
-    newReference.reference = 9
-    newReference.IsSCRO = False
-
-    newReference = newEntry.newReferencesElement()
-    newReference.reference = 10
-    newReference.IsSCRO = True
-
+    
+    newEntry.references = [('Oblivion.esm',0x000007), 8, ('Oblivion.esm',0x000009), 10]
     newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]
 
     newStage.entries = [newStage.entries[2], newStage.entries[0]]
 
-    newStage = newRecord.newStagesElement()
+    newStage = newRecord.create_stage()
     newStage.stage = 30
-    newEntry = newStage.newEntriesElement()
+    newEntry = newStage.create_entry()
     newEntry.flags = 1
 
-    newCondition = newEntry.newConditionsElement()
+    newCondition = newEntry.create_condition()
     newCondition.operType = 5
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 2
@@ -9223,7 +8980,7 @@ def TestQUST():
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newEntry.newConditionsElement()
+    newCondition = newEntry.create_condition()
     newCondition.operType = 6
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 3
@@ -9232,7 +8989,7 @@ def TestQUST():
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newEntry.newConditionsElement()
+    newCondition = newEntry.create_condition()
     newCondition.operType = 7
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 4
@@ -9241,7 +8998,7 @@ def TestQUST():
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newEntry.newConditionsElement()
+    newCondition = newEntry.create_condition()
     newCondition.operType = 8
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 5
@@ -9260,28 +9017,14 @@ def TestQUST():
     newEntry.scriptType = 1
     newEntry.compiled_p = []
     newEntry.scriptText = "12Another futile attempt at making this thing work"
-    newReference = newEntry.newReferencesElement()
-    newReference.reference = 7
-    newReference.IsSCRO = True
-
-    newReference = newEntry.newReferencesElement()
-    newReference.reference = 8
-    newReference.IsSCRO = False
-
-    newReference = newEntry.newReferencesElement()
-    newReference.reference = 9
-    newReference.IsSCRO = False
-
-    newReference = newEntry.newReferencesElement()
-    newReference.reference = 10
-    newReference.IsSCRO = True
-
+    
+    newEntry.references = [('Oblivion.esm',0x000007), 8, ('Oblivion.esm',0x000009), 10]
     newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]
 
-    newEntry = newStage.newEntriesElement()
+    newEntry = newStage.create_entry()
     newEntry.flags = 1
 
-    newCondition = newEntry.newConditionsElement()
+    newCondition = newEntry.create_condition()
     newCondition.operType = 5
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 2
@@ -9290,7 +9033,7 @@ def TestQUST():
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newEntry.newConditionsElement()
+    newCondition = newEntry.create_condition()
     newCondition.operType = 6
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 3
@@ -9299,7 +9042,7 @@ def TestQUST():
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newEntry.newConditionsElement()
+    newCondition = newEntry.create_condition()
     newCondition.operType = 7
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 4
@@ -9308,7 +9051,7 @@ def TestQUST():
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newEntry.newConditionsElement()
+    newCondition = newEntry.create_condition()
     newCondition.operType = 8
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 5
@@ -9327,28 +9070,14 @@ def TestQUST():
     newEntry.scriptType = 1
     newEntry.compiled_p = []
     newEntry.scriptText = "22Another futile attempt at making this thing work"
-    newReference = newEntry.newReferencesElement()
-    newReference.reference = 7
-    newReference.IsSCRO = True
-
-    newReference = newEntry.newReferencesElement()
-    newReference.reference = 8
-    newReference.IsSCRO = False
-
-    newReference = newEntry.newReferencesElement()
-    newReference.reference = 9
-    newReference.IsSCRO = False
-
-    newReference = newEntry.newReferencesElement()
-    newReference.reference = 10
-    newReference.IsSCRO = True
-
+    
+    newEntry.references = [('Oblivion.esm',0x000007), 8, ('Oblivion.esm',0x000009), 10]
     newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]
 
-    newEntry = newStage.newEntriesElement()
+    newEntry = newStage.create_entry()
     newEntry.flags = 1
 
-    newCondition = newEntry.newConditionsElement()
+    newCondition = newEntry.create_condition()
     newCondition.operType = 5
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 2
@@ -9357,7 +9086,7 @@ def TestQUST():
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newEntry.newConditionsElement()
+    newCondition = newEntry.create_condition()
     newCondition.operType = 6
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 3
@@ -9366,7 +9095,7 @@ def TestQUST():
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newEntry.newConditionsElement()
+    newCondition = newEntry.create_condition()
     newCondition.operType = 7
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 4
@@ -9375,7 +9104,7 @@ def TestQUST():
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newEntry.newConditionsElement()
+    newCondition = newEntry.create_condition()
     newCondition.operType = 8
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 5
@@ -9394,34 +9123,20 @@ def TestQUST():
     newEntry.scriptType = 1
     newEntry.compiled_p = []
     newEntry.scriptText = "32Another futile attempt at making this thing work"
-    newReference = newEntry.newReferencesElement()
-    newReference.reference = 7
-    newReference.IsSCRO = True
-
-    newReference = newEntry.newReferencesElement()
-    newReference.reference = 8
-    newReference.IsSCRO = False
-
-    newReference = newEntry.newReferencesElement()
-    newReference.reference = 9
-    newReference.IsSCRO = False
-
-    newReference = newEntry.newReferencesElement()
-    newReference.reference = 10
-    newReference.IsSCRO = True
-
+    
+    newEntry.references = [('Oblivion.esm',0x000007), 8, ('Oblivion.esm',0x000009), 10]
     newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]
 
     newStage.entries = [newStage.entries[2], newStage.entries[0]]
 
     newRecord.stages = [newRecord.stages[2], newRecord.stages[0]]
 
-    newTarget = newRecord.newTargetsElement()
+    newTarget = newRecord.create_target()
     newTarget.targetId = 7
     newTarget.flags = 1
     newTarget.unused1 = [1,2,3]
 
-    newCondition = newTarget.newConditionsElement()
+    newCondition = newTarget.create_condition()
     newCondition.operType = 5
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 2
@@ -9430,7 +9145,7 @@ def TestQUST():
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newTarget.newConditionsElement()
+    newCondition = newTarget.create_condition()
     newCondition.operType = 6
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 3
@@ -9439,7 +9154,7 @@ def TestQUST():
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newTarget.newConditionsElement()
+    newCondition = newTarget.create_condition()
     newCondition.operType = 7
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 4
@@ -9448,7 +9163,7 @@ def TestQUST():
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newTarget.newConditionsElement()
+    newCondition = newTarget.create_condition()
     newCondition.operType = 8
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 5
@@ -9459,12 +9174,12 @@ def TestQUST():
 
     newTarget.conditions = [newTarget.conditions[3], newTarget.conditions[1], newTarget.conditions[0]]
 
-    newTarget = newRecord.newTargetsElement()
+    newTarget = newRecord.create_target()
     newTarget.targetId = 8
     newTarget.flags = 2
     newTarget.unused1 = [1,2,3]
 
-    newCondition = newTarget.newConditionsElement()
+    newCondition = newTarget.create_condition()
     newCondition.operType = 5
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 2
@@ -9473,7 +9188,7 @@ def TestQUST():
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newTarget.newConditionsElement()
+    newCondition = newTarget.create_condition()
     newCondition.operType = 6
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 3
@@ -9482,7 +9197,7 @@ def TestQUST():
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newTarget.newConditionsElement()
+    newCondition = newTarget.create_condition()
     newCondition.operType = 7
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 4
@@ -9491,7 +9206,7 @@ def TestQUST():
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newTarget.newConditionsElement()
+    newCondition = newTarget.create_condition()
     newCondition.operType = 8
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 5
@@ -9502,12 +9217,12 @@ def TestQUST():
 
     newTarget.conditions = [newTarget.conditions[3], newTarget.conditions[1], newTarget.conditions[0]]
 
-    newTarget = newRecord.newTargetsElement()
+    newTarget = newRecord.create_target()
     newTarget.targetId = 9
     newTarget.flags = 3
     newTarget.unused1 = [1,2,3]
 
-    newCondition = newTarget.newConditionsElement()
+    newCondition = newTarget.create_condition()
     newCondition.operType = 5
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 2
@@ -9516,7 +9231,7 @@ def TestQUST():
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newTarget.newConditionsElement()
+    newCondition = newTarget.create_condition()
     newCondition.operType = 6
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 3
@@ -9525,7 +9240,7 @@ def TestQUST():
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newTarget.newConditionsElement()
+    newCondition = newTarget.create_condition()
     newCondition.operType = 7
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 4
@@ -9534,7 +9249,7 @@ def TestQUST():
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newTarget.newConditionsElement()
+    newCondition = newTarget.create_condition()
     newCondition.operType = 8
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 5
@@ -9596,10 +9311,10 @@ def TestQUST():
             print "    scriptText   :", entry.scriptText
             print "    references"
             for reference in entry.references:
-                if(reference.IsSCRO):
-                    print "      SCRO:", PrintFormID(reference.reference)
+                if isinstance(reference, tuple):
+                    print "      SCRO:", PrintFormID(reference)
                 else:
-                    print "      SCRV:", reference.reference
+                    print "      SCRV:", reference
             print
         print
     print "targets"
@@ -9627,46 +9342,25 @@ def TestQUST():
         record.CopyAsNew(newMod)
 
     print "QUST:Save Test - TestQUST.esp"
-    newMod.safeSave()
+    newMod.save()
     print "QUST:Finished testing"
 
 
 def TestIDLE():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestIDLE.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestIDLE.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestIDLE.esp")
 
     for record in Current[0].IDLE:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "modPath :", record.modPath
-        print "modb    :", record.modb
-        print "modt_p  :", record.modt_p
-
-        print "conditions"
-        for condition in record.conditions:
-            print "  operType  :", condition.operType
-            print "  unused1   :", condition.unused1
-            print "  compValue :", condition.compValue
-            print "  ifunc     :", condition.ifunc
-            print "  param1    :", condition.param1
-            print "  param2    :", condition.param2
-            print "  unused2   :", condition.unused2
-            print
-
-        print "group  :", record.group
-        print "parent :", PrintFormID(record.parent)
-        print "prevId :", PrintFormID(record.prevId)
-
+        printRecord(record)
         break
 
     print "IDLE:Create Record Test"
-    newRecord = newMod.createIDLERecord()
+    newRecord = newMod.create_IDLE()
     print "IDLE:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -9682,7 +9376,7 @@ def TestIDLE():
     print "modt_p..."
     newRecord.modt_p = [0x00, 0xFF, 0xFF]
 
-    newCondition = newRecord.newConditionsElement()
+    newCondition = newRecord.create_condition()
     newCondition.operType = 1
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 2
@@ -9691,7 +9385,7 @@ def TestIDLE():
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newRecord.newConditionsElement()
+    newCondition = newRecord.create_condition()
     newCondition.operType = 2
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 3
@@ -9700,7 +9394,7 @@ def TestIDLE():
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newRecord.newConditionsElement()
+    newCondition = newRecord.create_condition()
     newCondition.operType = 3
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 4
@@ -9709,7 +9403,7 @@ def TestIDLE():
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newRecord.newConditionsElement()
+    newCondition = newRecord.create_condition()
     newCondition.operType = 4
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 5
@@ -9759,62 +9453,25 @@ def TestIDLE():
         record.CopyAsNew(newMod)
 
     print "IDLE:Save Test - TestIDLE.esp"
-    newMod.safeSave()
+    newMod.save()
     print "IDLE:Finished testing"
 
 
 def TestPACK():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestPACK.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestPACK.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestPACK.esp")
 
     for record in Current[0].PACK:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "flags   :", record.flags
-        print "aiType  :", record.aiType
-        print "unused1 :", record.unused1
-
-        print "locType   :", record.locType
-        if(record.locType != 5):
-            print "locId     :", PrintFormID(record.locId)
-        else:
-            print "locId     :", record.locId
-        print "locRadius :", record.locRadius
-
-        print "month    :", record.month
-        print "day      :", record.day
-        print "date     :", record.date
-        print "time     :", record.time
-        print "duration :", record.duration
-
-        print "targetType  :", record.targetType
-        if(record.targetType != 2):
-            print "targetId    :", PrintFormID(record.targetId)
-        else:
-            print "targetId    :", record.targetId
-        print "targetCount :", record.targetCount
-
-        print "conditions"
-        for condition in record.conditions:
-            print "  operType  :", condition.operType
-            print "  unused1   :", condition.unused1
-            print "  compValue :", condition.compValue
-            print "  ifunc     :", condition.ifunc
-            print "  param1    :", condition.param1
-            print "  param2    :", condition.param2
-            print "  unused2   :", condition.unused2
-            print
-
+        printRecord(record)
         break
 
     print "PACK:Create Record Test"
-    newRecord = newMod.createPACKRecord()
+    newRecord = newMod.create_PACK()
     print "PACK:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -9838,7 +9495,7 @@ def TestPACK():
     newRecord.targetId = 12
     newRecord.targetCount = 13
 
-    newCondition = newRecord.newConditionsElement()
+    newCondition = newRecord.create_condition()
     newCondition.operType = 1
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 2
@@ -9847,7 +9504,7 @@ def TestPACK():
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newRecord.newConditionsElement()
+    newCondition = newRecord.create_condition()
     newCondition.operType = 2
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 3
@@ -9856,7 +9513,7 @@ def TestPACK():
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newRecord.newConditionsElement()
+    newCondition = newRecord.create_condition()
     newCondition.operType = 3
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 4
@@ -9865,7 +9522,7 @@ def TestPACK():
     newCondition.param2 = 10
     newCondition.unused2 = [1,2,3,4]
 
-    newCondition = newRecord.newConditionsElement()
+    newCondition = newRecord.create_condition()
     newCondition.operType = 4
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 5
@@ -9927,91 +9584,25 @@ def TestPACK():
         record.CopyAsNew(newMod)
 
     print "PACK:Save Test - TestPACK.esp"
-    newMod.safeSave()
+    newMod.save()
     print "PACK:Finished testing"
 
 
 def TestCSTY():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestCSTY.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestCSTY.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestCSTY.esp")
 
     for record in Current[0].CSTY:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "dodgeChance  :", record.dodgeChance
-        print "lrChance     :", record.lrChance
-        print "unused1      :", record.unused1
-        print "lrTimerMin   :", record.lrTimerMin
-        print "lrTimerMax   :", record.lrTimerMax
-        print "forTimerMin  :", record.forTimerMin
-        print "forTimerMax  :", record.forTimerMax
-        print "backTimerMin :", record.backTimerMin
-        print "backTimerMax :", record.backTimerMax
-        print "idleTimerMin :", record.idleTimerMin
-        print "idleTimerMax :", record.idleTimerMax
-        print "blkChance    :", record.blkChance
-        print "atkChance    :", record.atkChance
-        print "unused2      :", record.unused2
-        print "atkBRecoil   :", record.atkBRecoil
-        print "atkBUnc      :", record.atkBUnc
-        print "atkBh2h      :", record.atkBh2h
-        print "pAtkChance   :", record.pAtkChance
-        print "unused3      :", record.unused3
-        print "pAtkBRecoil  :", record.pAtkBRecoil
-        print "pAtkBUnc     :", record.pAtkBUnc
-        print "pAtkNormal   :", record.pAtkNormal
-        print "pAtkFor      :", record.pAtkFor
-        print "pAtkBack     :", record.pAtkBack
-        print "pAtkL        :", record.pAtkL
-        print "pAtkR        :", record.pAtkR
-        print "unused4      :", record.unused4
-        print "holdTimerMin :", record.holdTimerMin
-        print "holdTimerMax :", record.holdTimerMax
-        print "flagsA       :", record.flagsA
-        print "acroDodge    :", record.acroDodge
-        print "unused5      :", record.unused5
-        print "rMultOpt     :", record.rMultOpt
-        print "rMultMax     :", record.rMultMax
-        print "mDistance    :", record.mDistance
-        print "rDistance    :", record.rDistance
-        print "buffStand    :", record.buffStand
-        print "rStand       :", record.rStand
-        print "groupStand   :", record.groupStand
-        print "rushChance   :", record.rushChance
-        print "unused6      :", record.unused6
-        print "rushMult     :", record.rushMult
-        print "flagsB       :", record.flagsB
-        print "dodgeFMult     :", record.dodgeFMult
-        print "dodgeFBase     :", record.dodgeFBase
-        print "encSBase       :", record.encSBase
-        print "encSMult       :", record.encSMult
-        print "dodgeAtkMult   :", record.dodgeAtkMult
-        print "dodgeNAtkMult  :", record.dodgeNAtkMult
-        print "dodgeBAtkMult  :", record.dodgeBAtkMult
-        print "dodgeBNAtkMult :", record.dodgeBNAtkMult
-        print "dodgeFAtkMult  :", record.dodgeFAtkMult
-        print "dodgeFNAtkMult :", record.dodgeFNAtkMult
-        print "blockMult      :", record.blockMult
-        print "blockBase      :", record.blockBase
-        print "blockAtkMult   :", record.blockAtkMult
-        print "blockNAtkMult  :", record.blockNAtkMult
-        print "atkMult        :", record.atkMult
-        print "atkBase        :", record.atkBase
-        print "atkAtkMult     :", record.atkAtkMult
-        print "atkNAtkMult    :", record.atkNAtkMult
-        print "atkBlockMult   :", record.atkBlockMult
-        print "pAtkFBase      :", record.pAtkFBase
-        print "pAtkFMult      :", record.pAtkFMult
+        printRecord(record)
         break
 
     print "CSTY:Create Record Test"
-    newRecord = newMod.createCSTYRecord()
+    newRecord = newMod.create_CSTY()
     print "CSTY:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -10166,36 +9757,25 @@ def TestCSTY():
         record.CopyAsNew(newMod)
 
     print "CSTY:Save Test - TestCSTY.esp"
-    newMod.safeSave()
+    newMod.save()
     print "CSTY:Finished testing"
 
 
 def TestLSCR():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestLSCR.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestLSCR.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestLSCR.esp")
 
     for record in Current[0].LSCR:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "iconPath :", record.iconPath
-        print "text     :", record.text
-        print "locations"
-        for location in record.locations:
-            print "  direct   :", PrintFormID(location.direct)
-            print "  indirect :", PrintFormID(location.indirect)
-            print "  gridY    :", location.gridY
-            print "  gridX    :", location.gridX
-
+        printRecord(record)
         break
 
     print "LSCR:Create Record Test"
-    newRecord = newMod.createLSCRRecord()
+    newRecord = newMod.create_LSCR()
     print "LSCR:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -10207,25 +9787,25 @@ def TestLSCR():
     newRecord.iconPath = r"LSCR\War\Test\Longer\Than\Usual\Just\Because\Test.dds"
     newRecord.text = "Hrm, what on earth could be going on?\n I don't know what this is all about, but I'm sure it'll be fine"
 
-    newLocation = newRecord.newLocationsElement()
+    newLocation = newRecord.create_location()
     newLocation.direct = 7
     newLocation.indirect = 10
     newLocation.gridY = 0
     newLocation.gridX = 1
 
-    newLocation = newRecord.newLocationsElement()
+    newLocation = newRecord.create_location()
     newLocation.direct = 8
     newLocation.indirect = 11
     newLocation.gridY = 2
     newLocation.gridX = 3
 
-    newLocation = newRecord.newLocationsElement()
+    newLocation = newRecord.create_location()
     newLocation.direct = 9
     newLocation.indirect = 12
     newLocation.gridY = 4
     newLocation.gridX = 5
 
-    newLocation = newRecord.newLocationsElement()
+    newLocation = newRecord.create_location()
     newLocation.direct = 10
     newLocation.indirect = 13
     newLocation.gridY = 6
@@ -10258,37 +9838,25 @@ def TestLSCR():
         record.CopyAsNew(newMod)
 
     print "LSCR:Save Test - TestLSCR.esp"
-    newMod.safeSave()
+    newMod.save()
     print "LSCR:Finished testing"
 
 
 def TestLVSP():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestLVSP.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestLVSP.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestLVSP.esp")
 
     for record in Current[0].LVSP:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "chanceNone :", record.chanceNone
-        print "flags      :", record.flags
-        print "entries"
-        for entry in record.entries:
-            print
-            print "  level   :", entry.level
-            print "  unused1 :", entry.unused1
-            print "  listId  :", PrintFormID(entry.listId)
-            print "  count   :", entry.count
-            print "  unused2 :", entry.unused2
+        printRecord(record)
         break
 
     print "LVSP:Create Record Test"
-    newRecord = newMod.createLVSPRecord()
+    newRecord = newMod.create_LVSP()
     print "LVSP:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -10300,25 +9868,25 @@ def TestLVSP():
     newRecord.chanceNone = 20
     newRecord.flags = 1
 
-    entry = newRecord.newEntriesElement()
+    entry = newRecord.create_entry()
     entry.level = 1
     entry.unused1 = [0x14, 0xFF]
     entry.listId = 0x0100000A
     entry.count = 2
     entry.unused2 = [0x15, 0xFF]
-    entry = newRecord.newEntriesElement()
+    entry = newRecord.create_entry()
     entry.level = 3
     entry.unused1 = [0x16, 0xFF]
     entry.listId = 0x0000000B
     entry.count = 4
     entry.unused2 = [0x17, 0xFF]
-    entry = newRecord.newEntriesElement()
+    entry = newRecord.create_entry()
     entry.level = 5
     entry.unused1 = [0x18, 0xFF]
     entry.listId = 0x0000000C
     entry.count = 6
     entry.unused2 = [0x19, 0xFF]
-    entry = newRecord.newEntriesElement()
+    entry = newRecord.create_entry()
     entry.level = 7
     entry.unused1 = [0x20, 0xFF]
     entry.listId = 0x0000000D
@@ -10353,33 +9921,25 @@ def TestLVSP():
         record.CopyAsNew(newMod)
 
     print "LVSP:Save Test - TestLVSP.esp"
-    newMod.safeSave()
+    newMod.save()
     print "LVSP:Finished testing"
 
 
 def TestANIO():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestANIO.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestANIO.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestANIO.esp")
 
     for record in Current[0].ANIO:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "modPath :", record.modPath
-        print "modb    :", record.modb
-        print "modt_p  :", record.modt_p
-
-        print "animationId :", PrintFormID(record.animationId       )
-
+        printRecord(record)
         break
 
     print "ANIO:Create Record Test"
-    newRecord = newMod.createANIORecord()
+    newRecord = newMod.create_ANIO()
     print "ANIO:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -10418,71 +9978,25 @@ def TestANIO():
         record.CopyAsNew(newMod)
 
     print "ANIO:Save Test - TestANIO.esp"
-    newMod.safeSave()
+    newMod.save()
     print "ANIO:Finished testing"
 
 
 def TestWATR():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestWATR.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestWATR.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestWATR.esp")
 
     for record in Current[0].WATR:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "texture       :", record.texture
-        print "opacity       :", record.opacity
-        print "flags         :", record.flags
-        print "material      :", record.material
-        print "sound         :", PrintFormID(record.sound                    )
-        print "windVelocity  :", record.windVelocity
-        print "windDirection :", record.windDirection
-        print "waveAmp       :", record.waveAmp
-        print "waveFreq      :", record.waveFreq
-        print "sunPower      :", record.sunPower
-        print "reflectAmt    :", record.reflectAmt
-        print "fresnelAmt    :", record.fresnelAmt
-        print "xSpeed        :", record.xSpeed
-        print "ySpeed        :", record.ySpeed
-        print "fogNear       :", record.fogNear
-        print "fogFar        :", record.fogFar
-        print "shallowRed    :", record.shallowRed
-        print "shallowGreen  :", record.shallowGreen
-        print "shallowBlue   :", record.shallowBlue
-        print "unused1       :", record.unused1
-        print "deepRed       :", record.deepRed
-        print "deepGreen     :", record.deepGreen
-        print "deepBlue      :", record.deepBlue
-        print "unused2       :", record.unused2
-        print "reflRed       :", record.reflRed
-        print "reflGreen     :", record.reflGreen
-        print "reflBlue      :", record.reflBlue
-        print "unused3       :", record.unused3
-        print "blend         :", record.blend
-        print "unused4       :", record.unused4
-        print "rainForce     :", record.rainForce
-        print "rainVelocity  :", record.rainVelocity
-        print "rainFalloff   :", record.rainFalloff
-        print "rainDampner   :", record.rainDampner
-        print "rainSize      :", record.rainSize
-        print "dispForce     :", record.dispForce
-        print "dispVelocity  :", record.dispVelocity
-        print "dispFalloff   :", record.dispFalloff
-        print "dispDampner   :", record.dispDampner
-        print "dispSize      :", record.dispSize
-        print "damage        :", record.damage
-        print "dayWater      :", PrintFormID(record.dayWater)
-        print "nightWater    :", PrintFormID(record.nightWater)
-        print "underWater    :", PrintFormID(record.underWater    )
+        printRecord(record)
         break
 
     print "WATR:Create Record Test"
-    newRecord = newMod.createWATRRecord()
+    newRecord = newMod.create_WATR()
     print "WATR:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -10597,102 +10111,25 @@ def TestWATR():
         record.CopyAsNew(newMod)
 
     print "WATR:Save Test - TestWATR.esp"
-    newMod.safeSave()
+    newMod.save()
     print "WATR:Finished testing"
 
 
 def TestEFSH():
-    Current = Collection()
+    Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    newMod = Current.addMod("TestEFSH.esp", CreateIfNotExist=True)
-    Current.minimalLoad(LoadMasters=True)
+    Current.addMod("TestEFSH.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestEFSH.esp")
 
     for record in Current[0].EFSH:
         print
         print "fid     :", PrintFormID(record.fid)
-        print "flags1  :", record.flags1
-        print "flags2  :", record.flags2
-        print "eid     :", record.eid
-
-        print "fillTexture     :", record.fillTexture
-        print "particleTexture :", record.particleTexture
-        print "flags           :", record.flags
-        print "unused1         :", record.unused1
-        print "memSBlend       :", record.memSBlend
-        print "memBlendOp      :", record.memBlendOp
-        print "memZFunc        :", record.memZFunc
-        print "fillRed         :", record.fillRed
-        print "fillGreen       :", record.fillGreen
-        print "fillBlue        :", record.fillBlue
-        print "unused2         :", record.unused2
-        print "fillAIn         :", record.fillAIn
-        print "fillAFull       :", record.fillAFull
-        print "fillAOut        :", record.fillAOut
-        print "fillAPRatio     :", record.fillAPRatio
-        print "fillAAmp        :", record.fillAAmp
-        print "fillAFreq       :", record.fillAFreq
-        print "fillAnimSpdU    :", record.fillAnimSpdU
-        print "fillAnimSpdV    :", record.fillAnimSpdV
-        print "edgeOff         :", record.edgeOff
-        print "edgeRed         :", record.edgeRed
-        print "edgeGreen       :", record.edgeGreen
-        print "edgeBlue        :", record.edgeBlue
-        print "unused3         :", record.unused3
-        print "edgeAIn         :", record.edgeAIn
-        print "edgeAFull       :", record.edgeAFull
-        print "edgeAOut        :", record.edgeAOut
-        print "edgeAPRatio     :", record.edgeAPRatio
-        print "edgeAAmp        :", record.edgeAAmp
-        print "edgeAFreq       :", record.edgeAFreq
-        print "fillAFRatio     :", record.fillAFRatio
-        print "edgeAFRatio     :", record.edgeAFRatio
-        print "memDBlend       :", record.memDBlend
-        print "partSBlend      :", record.partSBlend
-        print "partBlendOp     :", record.partBlendOp
-        print "partZFunc       :", record.partZFunc
-        print "partDBlend      :", record.partDBlend
-        print "partBUp         :", record.partBUp
-        print "partBFull       :", record.partBFull
-        print "partBDown       :", record.partBDown
-        print "partBFRatio     :", record.partBFRatio
-        print "partBPRatio     :", record.partBPRatio
-        print "partLTime       :", record.partLTime
-        print "partLDelta      :", record.partLDelta
-        print "partNSpd        :", record.partNSpd
-        print "partNAcc        :", record.partNAcc
-        print "partVel1        :", record.partVel1
-        print "partVel2        :", record.partVel2
-        print "partVel3        :", record.partVel3
-        print "partAcc1        :", record.partAcc1
-        print "partAcc2        :", record.partAcc2
-        print "partAcc3        :", record.partAcc3
-        print "partKey1        :", record.partKey1
-        print "partKey2        :", record.partKey2
-        print "partKey1Time    :", record.partKey1Time
-        print "partKey2Time    :", record.partKey2Time
-        print "key1Red         :", record.key1Red
-        print "key1Green       :", record.key1Green
-        print "key1Blue        :", record.key1Blue
-        print "unused4         :", record.unused4
-        print "key2Red         :", record.key2Red
-        print "key2Green       :", record.key2Green
-        print "key2Blue        :", record.key2Blue
-        print "unused5         :", record.unused5
-        print "key3Red         :", record.key3Red
-        print "key3Green       :", record.key3Green
-        print "key3Blue        :", record.key3Blue
-        print "unused6         :", record.unused6
-        print "key1A           :", record.key1A
-        print "key2A           :", record.key2A
-        print "key3A           :", record.key3A
-        print "key1Time        :", record.key1Time
-        print "key2Time        :", record.key2Time
-        print "key3Time        :", record.key3Time
-
+        printRecord(record)
         break
 
     print "EFSH:Create Record Test"
-    newRecord = newMod.createEFSHRecord()
+    newRecord = newMod.create_EFSH()
     print "EFSH:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -10867,7 +10304,7 @@ def TestEFSH():
         record.CopyAsNew(newMod)
 
     print "EFSH:Save Test - TestEFSH.esp"
-    newMod.safeSave()
+    newMod.save()
     print "EFSH:Finished testing"
 
 from timeit import Timer
@@ -10893,12 +10330,12 @@ from timeit import Timer
 ##maxi = max(test)
 ##print "Min:%.15f, Avg:%.15f, Max:%.15f" % (mini, avgi, maxi)
 
-##print "10TestFullLoad"
-##test = [Timer('TestFullLoad()', 'from __main__ import TestFullLoad').timeit(1) for x in range(0, 10)]
-##mini = min(test)
-##avgi = sum(test) / len(test)
-##maxi = max(test)
-##print "Min:%.15f, Avg:%.15f, Max:%.15f" % (mini, avgi, maxi)
+print "10TestFullLoad"
+test = [Timer('TestFullLoad()', 'from __main__ import TestFullLoad').timeit(1) for x in range(0, 10)]
+mini = min(test)
+avgi = sum(test) / len(test)
+maxi = max(test)
+print "Min:%.15f, Avg:%.15f, Max:%.15f" % (mini, avgi, maxi)
 
 ##phonenumber = raw_input(">")
 
@@ -10910,18 +10347,23 @@ from timeit import Timer
 ##print "Min:%.15f, Avg:%.15f, Max:%.15f" % (mini, avgi, maxi)
 
 ##phonenumber = raw_input(">")
-##Current = Collection()
-##Current.addMod("Oblivion.esm")
+##Current = ObCollection()
+####Current.addMod("Oblivion.esm")
+####print "MinLoad"
+##Current.addMod("Oblivion.esm", MinLoad=False)
+##print "FullLoad"
 ####Current.addMod("Oscuro's_Oblivion_Overhaul.esp")
 ####Current.fullLoad(LoadMasters=True)
-##Current.minimalLoad(LoadMasters=True)
+##Current.load()
 ##phonenumber = raw_input(">")
 ##del Current
 ##phonenumber = raw_input("!")
 
+##regressionTests()
+
 ##TestTemp()
 ##TestAttrReport()
-TestCopyAttrs()
+##TestCopyAttrs()
 ##TestCleanMasters()
 ##TestFullLoad()
 ##TestMinimalLoad()

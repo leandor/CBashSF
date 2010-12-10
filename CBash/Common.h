@@ -34,1098 +34,96 @@ GPL License and Copyright Notice ============================================
 #include <map>
 #include <boost/interprocess/file_mapping.hpp>
 #include <boost/interprocess/mapped_region.hpp>
+#include "MacroDefinitions.h"
 
-#ifndef UINT8
-    #define UINT8 unsigned char
-#endif
+#ifdef CBASH_USE_LOGGING
+    #include <boost/shared_ptr.hpp>
+    #include <boost/log/common.hpp>
+    #include <boost/log/filters.hpp>
+    #include <boost/log/formatters.hpp>
+    #include <boost/log/attributes.hpp>
+    #include <boost/log/sinks/sync_frontend.hpp>
+    #include <boost/log/sinks/basic_sink_backend.hpp>
+    #include <boost/log/sources/logger.hpp>
 
-#ifndef UINT8ARRAY
-    #define UINT8ARRAY unsigned char *
-#endif
-
-#ifndef UINT16
-    #define UINT16 unsigned short
-#endif
-
-#ifndef UINT32
-    #define UINT32 unsigned long
-#endif
-
-#ifndef SINT8
-    #define SINT8 signed char
-#endif
-
-#ifndef SINT16
-    #define SINT16 signed short
-#endif
-
-#ifndef SINT32
-    #define SINT32 signed long
-#endif
-
-#ifndef UINT32ARRAY
-    #define UINT32ARRAY unsigned long *
-#endif
-
-#ifndef FLOAT32
-    #define FLOAT32 float
-#endif
-
-#ifndef STRING
-    #define STRING char *
-#endif
-
-#ifndef STRINGARRAY
-    #define STRINGARRAY char **
-#endif
-
-#ifndef FORMID
-    #define FORMID unsigned long
-#endif
-
-#ifndef FORMID_OR_UINT32
-    #define FORMID_OR_UINT32 unsigned long
-#endif
-
-#ifndef FORMIDARRAY
-    #define FORMIDARRAY unsigned long *
-#endif
-
-#ifndef NULL
-    #ifdef __cplusplus
-        #define NULL    0
-    #else
-        #define NULL    ((void *)0)
-    #endif
-#endif
-
-#ifndef BUFFERSIZE
-    #define BUFFERSIZE    65536
-#endif
-
-#ifndef END_HARDCODED_IDS
-    #define END_HARDCODED_IDS    0x00000800
-#endif
-
-#ifndef MAJOR_VERSION
-    #define MAJOR_VERSION    0
-#endif
-
-#ifndef MINOR_VERSION
-    #define MINOR_VERSION    5
-#endif
-
-#ifndef REVISION_VERSION
-    #define REVISION_VERSION    0
-#endif
-
-class Ex_NULL : public std::exception
+    // Here we define our application severity levels.
+    enum severity_level
     {
-    public:
-        const char * __CLR_OR_THIS_CALL what() const
-            {return "NULL Pointer";}
+        trace,
+        normal,
+        notification,
+        warning,
+        error,
+        critical
     };
-
-class Ex_INVALIDINDEX : public std::exception
-    {
-    public:
-        const char * __CLR_OR_THIS_CALL what() const
-            {return "Invalid Index";}
-    };
-
-class Ex_INVALIDFORMID : public std::exception
-    {
-    public:
-        const char * __CLR_OR_THIS_CALL what() const
-            {return "Invalid FormID";}
-    };
-
-typedef unsigned long * FormID;
-
-extern time_t lastSave;
-
-extern const std::map<unsigned long, std::pair<unsigned long,unsigned long>> Function_Arguments;
-extern const std::map<unsigned long, char *> Function_Name;
-extern const std::map<unsigned long, char *> Comparison_Name;
-extern const std::map<unsigned long, char *> IDLEGroup_Name;
-extern const std::map<unsigned long, char *> PACKAIType_Name;
-extern const std::map<unsigned long, char *> PACKLocType_Name;
-extern const std::map<unsigned long, char *> PACKTargetType_Name;
-extern const std::map<unsigned long, char *> HardCodedFormID_EDID;
-
-
-
-inline void _readBuffer(void *_DstBuf, const unsigned char *_SrcBuf, const unsigned long &_MaxCharCount, unsigned long &_BufPos)
-    {
-    memcpy(_DstBuf,_SrcBuf + _BufPos,_MaxCharCount);
-    _BufPos += _MaxCharCount;
-    }
-
-#ifdef _DEBUG
-void PrintIndent(const unsigned long &indentation);
-char * PrintFormID(FormID curFormID);
-char * PrintFormID(unsigned long curFormID);
 #endif
-
-//template <class T>
-//class ArrayVisitor
-//    {
-//    private:
-//        const std::vector<T> &VisitedArray;
-//    public:
-//        ArrayVisitor(const std::vector<T> &cVisitedArray):VisitedArray(cVisitedArray) {}
-//
-//        template <class Op>
-//        void Visit(Op& op) const
-//            {
-//            for(unsigned long x = 0; x < VisitedArray.size(); ++x)
-//                op.Accept(VisitedArray[x]);
-//	        }
-//    };
-//
-
-//typedef ArrayVisitor<FormID> FormIDVisitor;
-
-bool AlmostEqual(float A, float B, int maxUlps);
-
-//Base record field. Vestigial.
-//Used when it isn't known if the record is required or optional.
-template<class T>
-struct SubRecord
-    {
-    T value;
-    bool isLoaded;
-    SubRecord():isLoaded(false),value() {}
-    unsigned long GetSize() const
-        {return sizeof(T);}
-    bool IsLoaded() const
-        {
-        T defaultValue;
-        return (isLoaded && value != defaultValue);
-        }
-    void Load()
-        {
-        isLoaded = true;
-        }
-    void Unload()
-        {
-        T newValue;
-        value.~T();
-        value = newValue;
-        isLoaded = false;
-        }
-    bool Read(unsigned char *buffer, unsigned long subSize, unsigned long &curPos)
-        {
-        if(isLoaded)
-            {
-            curPos += subSize;
-            return false;
-            }
-        if(subSize > sizeof(T))
-            {
-            printf("Rec? subSize:%u, sizeof:%u\n", subSize, sizeof(T));
-            memcpy(&value, buffer + curPos, sizeof(T));
-            }
-        else
-            memcpy(&value, buffer + curPos, subSize);
-        isLoaded = true;
-        //size = subSize;
-        curPos += subSize;
-        return true;
-        }
-    T *operator->() const
-        {
-        return &value;
-        }
-    bool operator ==(const SubRecord<T> &other) const
-        {
-        return (value == other.value &&
-                isLoaded == other.isLoaded);
-        }
-    bool operator !=(const SubRecord<T> &other) const
-        {
-        return !(*this == other);
-        }
-    #ifdef _DEBUG
-    void Debug(const char *name, int debugLevel, unsigned long &indentation)
-        {
-        if(isLoaded)
-            {
-            if(name)
-                {
-                PrintIndent(indentation);
-                printf("%s:\n", name);
-                }
-            value.Debug(debugLevel, indentation);
-            }
-        }
-    #endif
-    };
-
-//Used for subrecords that are required
-//Even if not actually loaded from disk, they are always considered loaded even if they're explicitly unloaded.
-//Unloading them simply resets the values to default.
-template<class T>
-struct ReqSubRecord
-    {
-    T value;
-    ReqSubRecord():value() {}
-    unsigned long GetSize() const
-        {return sizeof(T);}
-    bool IsLoaded() const
-        {return true;}
-    void Load() {};
-    void Unload()
-        {
-        T newValue;
-        value.~T();
-        value = newValue;
-        }
-    bool Read(unsigned char *buffer, unsigned long subSize, unsigned long &curPos)
-        {
-        if(subSize > sizeof(T))
-            {
-            printf("Req? subSize:%u, sizeof:%u\n", subSize, sizeof(T));
-            memcpy(&value, buffer + curPos, sizeof(T));
-            }
-        else
-            memcpy(&value, buffer + curPos, subSize);
-        //size = subSize;
-        curPos += subSize;
-        return true;
-        }
-    T *operator->() const
-        {
-        return &value;
-        }
-    bool operator ==(const ReqSubRecord<T> &other) const
-        {
-        return (value == other.value);
-        }
-    bool operator !=(const ReqSubRecord<T> &other) const
-        {
-        return !(*this == other);
-        }
-
-    #ifdef _DEBUG
-    void Debug(const char *name, int debugLevel, unsigned long &indentation)
-        {
-        if(name)
-            {
-            PrintIndent(indentation);
-            printf("%s:\n", name);
-            }
-        value.Debug(debugLevel, indentation);
-        }
-    #endif
-    };
-
-//Used for subrecords that are optional
-//Even if loaded, they are considered unloaded if they're equal to their defaults
-template<class T>
-struct OptSubRecord
-    {
-    T *value;
-    OptSubRecord():value(NULL) {}
-    ~OptSubRecord()
-        {
-        delete value;
-        }
-    unsigned long GetSize() const
-        {return sizeof(T);}
-    bool IsLoaded() const
-        {
-        T defaultValue;
-        return (value != NULL && *value != defaultValue);
-        }
-    void Load()
-        {
-        if(value == NULL)
-            value = new T();
-        }
-    void Unload()
-        {
-        delete value;
-        value = NULL;
-        }
-    bool Read(unsigned char *buffer, unsigned long subSize, unsigned long &curPos)
-        {
-        if(value != NULL)
-            {
-            curPos += subSize;
-            return false;
-            }
-        value = new T();
-        if(subSize > sizeof(T))
-            {
-            printf("Opt? subSize:%u, sizeof:%u\n", subSize, sizeof(T));
-            memcpy(value, buffer + curPos, sizeof(T));
-            }
-        else
-            memcpy(value, buffer + curPos, subSize);
-        curPos += subSize;
-        return true;
-        }
-    T *operator->() const
-        {
-        return value;
-        }
-
-    OptSubRecord<T>& operator = (const OptSubRecord<T> &rhs)
-        {
-        if(this != &rhs)
-            if(rhs.value != NULL)
-                {
-                if(value == NULL)
-                    {
-                    value = new T();
-                    }
-                else
-                    value->~T();
-                *value = *rhs.value;
-                }
-            else
-                {
-                delete value;
-                value = NULL;
-                }
-        return *this;
-        }
-    bool operator ==(const OptSubRecord<T> &other) const
-        {
-        if(!IsLoaded())
-            {
-            if(!other.IsLoaded())
-                return true;
-            }
-        else if(other.IsLoaded() && *value == *other.value)
-            return true;
-        return false;
-        }
-    bool operator !=(const OptSubRecord<T> &other) const
-        {
-        return !(*this == other);
-        }
-
-    #ifdef _DEBUG
-    void Debug(const char *name, int debugLevel, unsigned long &indentation)
-        {
-        if(isLoaded)
-            {
-            if(name)
-                {
-                PrintIndent(indentation);
-                printf("%s:\n", name);
-                }
-            value->Debug(debugLevel, indentation);
-            }
-        }
-    #endif
-    };
-
-//Identical to OptSubRecord except for IsLoaded
-//Once loaded, they are always considered loaded unless they're explicitly unloaded.
-//They don't compare to the default value to see if they're
-// still considered loaded.
-template<class T>
-struct SemiOptSubRecord
-    {
-    T *value;
-    SemiOptSubRecord():value(NULL) {}
-    ~SemiOptSubRecord()
-        {
-        delete value;
-        }
-    unsigned long GetSize() const
-        {return sizeof(T);}
-    bool IsLoaded() const
-        {
-        T defaultValue;
-        return (value != NULL);
-        }
-    void Load()
-        {
-        if(value == NULL)
-            value = new T();
-        }
-    void Unload()
-        {
-        delete value;
-        value = NULL;
-        }
-    bool Read(unsigned char *buffer, unsigned long subSize, unsigned long &curPos)
-        {
-        if(value != NULL)
-            {
-            curPos += subSize;
-            return false;
-            }
-        value = new T();
-        if(subSize > sizeof(T))
-            {
-            printf("Opt? subSize:%u, sizeof:%u\n", subSize, sizeof(T));
-            memcpy(value, buffer + curPos, sizeof(T));
-            }
-        else
-            memcpy(value, buffer + curPos, subSize);
-        curPos += subSize;
-        return true;
-        }
-    T *operator->() const
-        {
-        return value;
-        }
-
-    SemiOptSubRecord<T>& operator = (const SemiOptSubRecord<T> &rhs)
-        {
-        if(this != &rhs)
-            if(rhs.value != NULL)
-                {
-                if(value == NULL)
-                    {
-                    value = new T();
-                    }
-                else
-                    value->~T();
-                *value = *rhs.value;
-                }
-            else
-                {
-                delete value;
-                value = NULL;
-                }
-        return *this;
-        }
-    bool operator ==(const SemiOptSubRecord<T> &other) const
-        {
-        if(!IsLoaded())
-            {
-            if(!other.IsLoaded())
-                return true;
-            }
-        else if(other.IsLoaded() && *value == *other.value)
-            return true;
-        return false;
-        }
-    bool operator !=(const SemiOptSubRecord<T> &other) const
-        {
-        return !(*this == other);
-        }
-
-    #ifdef _DEBUG
-    void Debug(const char *name, int debugLevel, unsigned long &indentation)
-        {
-        if(isLoaded)
-            {
-            if(name)
-                {
-                PrintIndent(indentation);
-                printf("%s:\n", name);
-                }
-            value->Debug(debugLevel, indentation);
-            }
-        }
-    #endif
-    };
-
-struct StringRecord
-    {
-    char *value;
-    StringRecord():value(NULL) {}
-    StringRecord(const StringRecord &p):value(NULL)
-        {
-        if(!p.IsLoaded())
-            return;
-        unsigned long size = p.GetSize();
-        value = new char[size];
-        memcpy(value, p.value, size);
-        }
-    StringRecord(const char *p):value(NULL)
-        {
-        unsigned long size = (unsigned long)strlen(p) + 1;
-        value = new char[size];
-        strcpy_s(value, size, p);
-        }
-    ~StringRecord()
-        {
-        delete []value;
-        }
-    unsigned long GetSize() const
-        {return (unsigned long)strlen(value) + 1;}
-    bool IsLoaded() const
-        {return value != NULL;}
-    void Load() {};
-    void Unload()
-        {
-        delete []value;
-        value = NULL;
-        }
-    bool Read(unsigned char *buffer, const unsigned long &subSize, unsigned long &curPos)
-        {
-        if(IsLoaded())
-            {
-            curPos += subSize;
-            return false;
-            }
-        value = new char[subSize];
-        memcpy(value, buffer + curPos, subSize);
-        curPos += subSize;
-        return true;
-        }
-    void Copy(const StringRecord &FieldValue)
-        {
-        if(!FieldValue.IsLoaded())
-            return;
-        delete []value;
-        unsigned long size = FieldValue.GetSize();
-        value = new char[size];
-        strcpy_s(value, size, FieldValue.value);
-        }
-    void Copy(char *FieldValue)
-        {
-        delete []value;
-        unsigned long size = (unsigned long)strlen(FieldValue) + 1;
-        value = new char[size];
-        strcpy_s(value, size, FieldValue);
-        }
-    StringRecord& operator = (const StringRecord &rhs)
-        {
-        if(this != &rhs)
-            {
-            if(rhs.IsLoaded())
-                Copy(rhs);
-            else
-                Unload();
-            }
-        return *this;
-        }
-    bool operator ==(const StringRecord &other) const
-        {
-        if(!IsLoaded())
-            {
-            if(!other.IsLoaded())
-                return true;
-            }
-        else if(other.IsLoaded() && (strcmp(value, other.value) == 0))
-            return true;
-        return false;
-        }
-    bool operator !=(const StringRecord &other) const
-        {
-        return !(*this == other);
-        }
-
-    #ifdef _DEBUG
-    void Debug(const char *name, int debugLevel, unsigned long &indentation)
-        {
-        if(IsLoaded())
-            {
-            if(name)
-                {
-                PrintIndent(indentation);
-                printf("%s:\n", name);
-                }
-            if(debugLevel > 3)
-                {
-                indentation += 2;
-                PrintIndent(indentation);
-                printf("%s = %s\n", name, value);
-                indentation -= 2;
-                }
-            }
-        }
-    #endif
-    };
-
-struct InsensitiveStringRecord
-    {
-    char *value;
-    InsensitiveStringRecord():value(NULL) {}
-    InsensitiveStringRecord(const InsensitiveStringRecord &p):value(NULL)
-        {
-        if(!p.IsLoaded())
-            return;
-        unsigned long size = p.GetSize();
-        value = new char[size];
-        memcpy(value, p.value, size);
-        }
-    InsensitiveStringRecord(const char *p):value(NULL)
-        {
-        unsigned long size = (unsigned long)strlen(p) + 1;
-        value = new char[size];
-        strcpy_s(value, size, p);
-        unsigned long len = (unsigned long)strlen(value);
-        for (unsigned long i = 0; i < len; ++i)
-           value[i] = tolower(value[i]);
-        }
-    ~InsensitiveStringRecord()
-        {
-        delete []value;
-        }
-    unsigned long GetSize() const
-        {return (unsigned long)strlen(value) + 1;}
-    bool IsLoaded() const
-        {return value != NULL;}
-    void Load() {};
-    void Unload()
-        {
-        delete []value;
-        value = NULL;
-        }
-    bool Read(unsigned char *buffer, const unsigned long &subSize, unsigned long &curPos)
-        {
-        if(IsLoaded())
-            {
-            curPos += subSize;
-            return false;
-            }
-        value = new char[subSize];
-        memcpy(value, buffer + curPos, subSize);
-
-        unsigned long len = (unsigned long)strlen(value);
-        for (unsigned long i = 0; i < len; ++i)
-           value[i] = tolower(value[i]);
-        curPos += subSize;
-        return true;
-        }
-    void Copy(const InsensitiveStringRecord &FieldValue)
-        {
-        if(!FieldValue.IsLoaded())
-            return;
-        delete []value;
-        unsigned long size = FieldValue.GetSize();
-        value = new char[size];
-        strcpy_s(value, size, FieldValue.value);
-        }
-    void Copy(char *FieldValue)
-        {
-        delete []value;
-        unsigned long size = (unsigned long)strlen(FieldValue) + 1;
-        value = new char[size];
-        strcpy_s(value, size, FieldValue);
-        unsigned long len = (unsigned long)strlen(value);
-        for (unsigned long i = 0; i < len; ++i)
-           value[i] = tolower(value[i]);
-        }
-    InsensitiveStringRecord& operator = (const InsensitiveStringRecord &rhs)
-        {
-        if(this != &rhs)
-            {
-            if(rhs.IsLoaded())
-                Copy(rhs);
-            else
-                Unload();
-            }
-        return *this;
-        }
-    bool operator ==(const InsensitiveStringRecord &other) const
-        {
-        if(!IsLoaded())
-            {
-            if(!other.IsLoaded())
-                return true;
-            }
-        else if(other.IsLoaded() && (strcmp(value, other.value) == 0))
-            return true;
-        return false;
-        }
-    bool operator !=(const InsensitiveStringRecord &other) const
-        {
-        return !(*this == other);
-        }
-
-    #ifdef _DEBUG
-    void Debug(const char *name, int debugLevel, unsigned long &indentation)
-        {
-        if(IsLoaded())
-            {
-            if(name)
-                {
-                PrintIndent(indentation);
-                printf("%s:\n", name);
-                }
-            if(debugLevel > 3)
-                {
-                indentation += 2;
-                PrintIndent(indentation);
-                printf("%s = %s\n", name, value);
-                indentation -= 2;
-                }
-            }
-        }
-    #endif
-    };
-
-struct NonNullStringRecord
-    {
-    char *value;
-    NonNullStringRecord():value(NULL) {}
-    NonNullStringRecord(const NonNullStringRecord &p):value(NULL)
-        {
-        if(!p.IsLoaded())
-            return;
-        unsigned long size = p.GetSize();
-        value = new char[size + 1];
-        memcpy(value, p.value, size + 1);
-        }
-    NonNullStringRecord(const char *p):value(NULL)
-        {
-        unsigned long size = (unsigned long)strlen(p) + 1;
-        value = new char[size];
-        strcpy_s(value, size, p);
-        }
-    ~NonNullStringRecord()
-        {
-        delete []value;
-        }
-    unsigned long GetSize() const
-        {return (unsigned long)strlen(value);}
-    bool IsLoaded() const
-        {return value != NULL;}
-    void Load() {};
-    void Unload()
-        {
-        delete []value;
-        value = NULL;
-        }
-    bool Read(unsigned char *buffer, const unsigned long &subSize, unsigned long &curPos)
-        {
-        if(IsLoaded())
-            {
-            curPos += subSize;
-            return false;
-            }
-        value = new char[subSize + 1];
-        value[subSize] = 0x00;
-        memcpy(value, buffer + curPos, subSize);
-        curPos += subSize;
-        return true;
-        }
-    void Copy(const NonNullStringRecord &FieldValue)
-        {
-        if(!FieldValue.IsLoaded())
-            return;
-        delete []value;
-        unsigned long size = FieldValue.GetSize();
-        value = new char[size + 1];
-        memcpy(value, FieldValue.value, size);
-        value[size] = 0x00;
-        }
-    void Copy(char *FieldValue)
-        {
-        delete []value;
-        unsigned long size = (unsigned long)strlen(FieldValue) + 1;
-        value = new char[size];
-        strcpy_s(value, size, FieldValue);
-        }
-    NonNullStringRecord& operator = (const NonNullStringRecord &rhs)
-        {
-        if(this != &rhs)
-            {
-            if(rhs.IsLoaded())
-                Copy(rhs);
-            else
-                Unload();
-            }
-        return *this;
-        }
-    bool operator ==(const NonNullStringRecord &other) const
-        {
-        if(!IsLoaded())
-            {
-            if(!other.IsLoaded())
-                return true;
-            }
-        else if(other.IsLoaded() && (strcmp(value, other.value) == 0))
-            return true;
-        return false;
-        }
-    bool operator !=(const NonNullStringRecord &other) const
-        {
-        return !(*this == other);
-        }
-
-    #ifdef _DEBUG
-    void Debug(const char *name, int debugLevel, unsigned long &indentation)
-        {
-        if(IsLoaded())
-            {
-            if(name)
-                {
-                PrintIndent(indentation);
-                printf("%s:\n", name);
-                }
-            if(debugLevel > 3)
-                {
-                indentation += 2;
-                PrintIndent(indentation);
-                printf("%s = %s\n", name, value);
-                indentation -= 2;
-                }
-            }
-        }
-    #endif
-    };
-
-struct RawRecord
-    {
-    unsigned long size;
-    unsigned char *value;
-    RawRecord():size(0), value(NULL) {}
-    RawRecord(const RawRecord &p):value(NULL)
-        {
-        if(!p.IsLoaded())
-            return;
-        size = p.size;
-        value = new unsigned char[size];
-        memcpy(value,p.value,size);
-        }
-    ~RawRecord()
-        {
-        delete []value;
-        }
-    unsigned long GetSize() const
-        {return size;}
-    bool IsLoaded() const
-        {return value != NULL;}
-    void Load() {};
-    void Unload()
-        {
-        size = 0;
-        delete []value;
-        value = NULL;
-        }
-    bool Read(unsigned char *buffer, unsigned long subSize, unsigned long &curPos)
-        {
-        if(IsLoaded())
-            {
-            curPos += subSize;
-            return false;
-            }
-        size = subSize;
-        value = new unsigned char[size];
-        memcpy(value, buffer + curPos, size);
-        curPos += subSize;
-        return true;
-        }
-    void Copy(unsigned char *FieldValue, unsigned long nSize)
-        {
-        delete []value;
-        size = nSize;
-        value = new unsigned char[size];
-        memcpy(value, FieldValue, size);
-        }
-    RawRecord& operator = (const RawRecord &rhs)
-        {
-        if(this != &rhs)
-            {
-            if(rhs.IsLoaded())
-                Copy(rhs.value, rhs.size);
-            else
-                Unload();
-            }
-        return *this;
-        }
-    bool operator ==(const RawRecord &other) const
-        {
-        if(!IsLoaded())
-            {
-            if(!other.IsLoaded())
-                return true;
-            }
-        else if(other.IsLoaded() && size == other.size && (memcmp(value, other.value, size) == 0))
-            return true;
-        return false;
-        }
-    bool operator !=(const RawRecord &other) const
-        {
-        return !(*this == other);
-        }
-
-    #ifdef _DEBUG
-    void Debug(const char *name, int debugLevel, unsigned long &indentation)
-        {
-        if(IsLoaded())
-            {
-            if(name)
-                {
-                PrintIndent(indentation);
-                printf("%s:\n", name);
-                }
-            if(debugLevel > 3)
-                if(debugLevel > 5)
-                    {
-                    for(unsigned long x = 0;x < size;x++)
-                        printf("%02X", value[x]);
-                    printf("\n");
-                    }
-            }
-        }
-    #endif
-    };
-
-class FormIDHandlerClass
-    {
-    public:
-        char *FileName;
-        std::vector<StringRecord> &MAST;
-        unsigned long &nextObject;
-        unsigned char CollapsedIndex;
-        bool bMastersChanged;
-        unsigned char ExpandTable[255];
-        unsigned char CollapseTable[255];
-        bool IsEmpty;
-
-        boost::unordered_set<unsigned long> NewTypes;
-        std::vector<char *> LoadOrder255;
-        unsigned char ExpandedIndex;
-        FormIDHandlerClass(char *cFileName, std::vector<StringRecord> &cMAST, unsigned long &cNextObject):FileName(cFileName), MAST(cMAST), nextObject(cNextObject),
-                                                                                               ExpandedIndex(0), CollapsedIndex(0), bMastersChanged(false),
-                                                                                               IsEmpty(true) {}
-        ~FormIDHandlerClass() {}
-        void SetLoadOrder(std::vector<char *> &cLoadOrder);
-        unsigned long NextExpandedFID();
-        void CreateFormIDLookup(const unsigned char expandedIndex);
-        void UpdateFormIDLookup();
-        unsigned long AssignToMod(unsigned long curFormID);
-        unsigned long AssignToMod(unsigned long *curFormID);
-        void AddMaster(const char *curMaster);
-        bool MastersChanged();
-        bool IsNewRecord(const unsigned long *&recordFID);
-        bool IsNewRecord(const unsigned long &recordFID);
-    };
-
-bool FileExists(const char *FileName);
-
-class _FileHandler
-    {
-    private:
-        boost::interprocess::mapped_region *m_region;
-        boost::interprocess::file_mapping *f_map;
-        unsigned char *_Buffer;
-        unsigned long _BufSize;
-        unsigned long _BufPos;
-        unsigned long _BufEnd;
-        unsigned long _TotalWritten;
-        int fh;
-    public:
-        _FileHandler():m_region(NULL), f_map(NULL), _Buffer(NULL), _BufSize(0), _BufPos(0), _BufEnd(0), _TotalWritten(0), fh(-1) {}
-        _FileHandler(unsigned long nSize):m_region(NULL), f_map(NULL), _Buffer(NULL), _BufSize(nSize), _BufPos(0), _BufEnd(0), _TotalWritten(0), fh(-1)
-            {
-            if(_BufSize == 0)
-                return;
-            _Buffer = new unsigned char[_BufSize];
-            }
-        ~_FileHandler()
-            {
-            close();
-            if(m_region == NULL && f_map == NULL && _Buffer != NULL)
-                delete []_Buffer;
-            }
-        int open_ReadOnly(const char *FileName);
-        int open_ReadWrite(const char *FileName);
-        bool eof();
-        unsigned long tell();
-        unsigned long set_used(long _Used);
-        void read(void *_DestBuf, unsigned long _MaxCharCount);
-        unsigned char *getBuffer(unsigned long _Offset);
-        unsigned long write(const void *_SrcBuf, unsigned long _MaxCharCount);
-        void writeSubRecord(unsigned long _Type, const void *_SrcBuf, unsigned long _MaxCharCount);
-        unsigned long writeAt(unsigned long _Offset, const void *_SrcBuf, unsigned long _MaxCharCount);
-        unsigned long UnusedCache();
-        bool IsCached(unsigned long _Offset);
-        int close();
-        void reserveBuffer(unsigned long nSize);
-        void flush();
-    };
 
 enum API_FieldTypes {
     UNKNOWN_FIELD = 0,
+    MISSING_FIELD,
     JUNK_FIELD,
-    INT_FIELD,
-    FLOAT_FIELD,
-    STRING_FIELD,
-    UINT_FIELD,
-    BYTES_FIELD,
-    STRINGARRAY_FIELD,
-    ULONG_FIELD,
-    CHAR_FIELD,
-    BYTE_FIELD,
-    UBYTE_FIELD,
-    FID_FIELD,
-    LIST_FIELD,
-    FIDARRAY_FIELD,
-    SHORT_FIELD,
-    USHORT_FIELD,
-    UINTARRAY_FIELD,
-    SUBRECORDS_FIELD,
-    SUBRECORD_FIELD,
-    PARENTRECORD_FIELD,
+    BOOL_FIELD,
+    SINT8_FIELD,
+    UINT8_FIELD,
+    SINT16_FIELD,
+    UINT16_FIELD,
+    SINT32_FIELD,
+    UINT32_FIELD,
+    FLOAT32_FIELD,
     RADIAN_FIELD,
-    FID_OR_UINT_FIELD,
-    BOOL_FIELD
-    };
-
-enum TopRecords {
-    eUnknown=0,
-    eTES4=0x34534554,
-    eGRUP=0x50555247,
-    eGMST=0x54534D47,
-    eGLOB=0x424F4C47,
-    eCLAS=0x53414C43,
-    eFACT=0x54434146,
-    eHAIR=0x52494148,
-    eEYES=0x53455945,
-    eRACE=0x45434152,
-    eSOUN=0x4E554F53,
-    eSKIL=0x4C494B53,
-    eMGEF=0x4645474D,
-    eSCPT=0x54504353,
-    eLTEX=0x5845544C,
-    eENCH=0x48434E45,
-    eSPEL=0x4C455053,
-    eBSGN=0x4E475342,
-    eACTI=0x49544341,
-    eAPPA=0x41505041,
-    eARMO=0x4F4D5241,
-    eBOOK=0x4B4F4F42,
-    eCLOT=0x544F4C43,
-    eCONT=0x544E4F43,
-    eDOOR=0x524F4F44,
-    eINGR=0x52474E49,
-    eLIGH=0x4847494C,
-    eMISC=0x4353494D,
-    eSTAT=0x54415453,
-    eGRAS=0x53415247,
-    eTREE=0x45455254,
-    eFLOR=0x524F4C46,
-    eFURN=0x4E525546,
-    eWEAP=0x50414557,
-    eAMMO=0x4F4D4D41,
-    eNPC_=0x5F43504E,
-    eCREA=0x41455243,
-    eLVLC=0x434C564C,
-    eSLGM=0x4D474C53,
-    eKEYM=0x4D59454B,
-    eALCH=0x48434C41,
-    eSBSP=0x50534253,
-    eSGST=0x54534753,
-    eLVLI=0x494C564C,
-    eWTHR=0x52485457,
-    eCLMT=0x544D4C43,
-    eREGN=0x4E474552,
-    eCELL=0x4C4C4543,
-    eWRLD=0x444C5257,
-    eDIAL=0x4C414944,
-    eQUST=0x54535551,
-    eIDLE=0x454C4449,
-    ePACK=0x4B434150,
-    eCSTY=0x59545343,
-    eLSCR=0x5243534C,
-    eLVSP=0x5053564C,
-    eANIO=0x4F494E41,
-    eWATR=0x52544157,
-    eEFSH=0x48534645
+    FORMID_FIELD,
+    MGEFCODE_FIELD,
+    ACTORVALUE_FIELD,
+    FORMID_OR_UINT32_FIELD,
+    UINT8_OR_UINT32_FIELD,
+    UNKNOWN_OR_FORMID_OR_UINT32_FIELD,
+    UNKNOWN_OR_SINT32_FIELD,
+    MGEFCODE_OR_UINT32_FIELD,
+    FORMID_OR_MGEFCODE_OR_ACTORVALUE_OR_UINT32_FIELD,
+    RESOLVED_MGEFCODE_FIELD,
+    STATIC_MGEFCODE_FIELD,
+    RESOLVED_ACTORVALUE_FIELD,
+    STATIC_ACTORVALUE_FIELD,
+    CHAR_FIELD,
+    CHAR4_FIELD,
+    STRING_FIELD,
+    ISTRING_FIELD,
+    LIST_FIELD,
+    PARENTRECORD_FIELD,
+    SUBRECORD_FIELD,
+    SINT8_FLAG_FIELD,
+    SINT8_TYPE_FIELD,
+    SINT8_FLAG_TYPE_FIELD,
+    SINT8_ARRAY_FIELD,
+    UINT8_FLAG_FIELD,
+    UINT8_TYPE_FIELD,
+    UINT8_FLAG_TYPE_FIELD,
+    UINT8_ARRAY_FIELD,
+    SINT16_FLAG_FIELD,
+    SINT16_TYPE_FIELD,
+    SINT16_FLAG_TYPE_FIELD,
+    SINT16_ARRAY_FIELD,
+    UINT16_FLAG_FIELD,
+    UINT16_TYPE_FIELD,
+    UINT16_FLAG_TYPE_FIELD,
+    UINT16_ARRAY_FIELD,
+    SINT32_FLAG_FIELD,
+    SINT32_TYPE_FIELD,
+    SINT32_FLAG_TYPE_FIELD,
+    SINT32_ARRAY_FIELD,
+    UINT32_FLAG_FIELD,
+    UINT32_TYPE_FIELD,
+    UINT32_FLAG_TYPE_FIELD,
+    UINT32_ARRAY_FIELD,
+    FLOAT32_ARRAY_FIELD,
+    RADIAN_ARRAY_FIELD,
+    FORMID_ARRAY_FIELD,
+    FORMID_OR_UINT32_ARRAY_FIELD,
+    MGEFCODE_OR_UINT32_ARRAY_FIELD,
+    STRING_ARRAY_FIELD,
+    ISTRING_ARRAY_FIELD,
+    SUBRECORD_ARRAY_FIELD,
+    UNDEFINED_FIELD
     };
 
 enum TopTypes {
@@ -1142,22 +140,126 @@ enum TopTypes {
     eCellVWD
     };
 
-enum subRecords {
-    eINFO = 0x4F464E49,
-    eACHR = 0x52484341,
-    eACRE = 0x45524341,
-    eREFR = 0x52464552,
-    ePGRD = 0x44524750,
-    eROAD = 0x44414F52,
-    eLAND = 0x444E414C
+enum varType {
+    eNONE,
+    eUINT32,
+    eFORMID
     };
 
-enum varType {
-    eNULL=0,
-    eString,
-    eInt,
-    eFloat,
-    eFID
+class Ex_NULL : public std::exception
+    {
+    public:
+        const char * __CLR_OR_THIS_CALL what() const;
+    };
+
+class Ex_INVALIDINDEX : public std::exception
+    {
+    public:
+        const char * __CLR_OR_THIS_CALL what() const;
+    };
+
+class ModFile;
+class Record;
+class StringRecord;
+
+struct sameStr
+    {
+    bool operator()( const STRING s1, const STRING s2 ) const;
+    };
+
+typedef std::multimap<UINT32, std::pair<ModFile *, Record *> >   FormID_Map;
+typedef std::multimap<STRING, std::pair<ModFile *, Record *>, sameStr> EditorID_Map;
+
+typedef FormID_Map::iterator FormID_Iterator;
+typedef EditorID_Map::iterator EditorID_Iterator;
+
+typedef std::pair<FormID_Iterator, FormID_Iterator> FormID_Range;
+typedef std::pair<EditorID_Iterator, EditorID_Iterator> EditorID_Range;
+
+extern const std::map<UINT32, std::vector<UINT32>> RecordType_PossibleGroups;
+extern const std::map<UINT32, std::pair<UINT32, UINT32>> Function_Arguments;
+extern const std::map<UINT32, STRING> Function_Name;
+extern const std::map<UINT32, STRING> Comparison_Name;
+extern const std::map<UINT32, STRING> IDLEGroup_Name;
+extern const std::map<UINT32, STRING> PACKAIType_Name;
+extern const std::map<UINT32, STRING> PACKLocType_Name;
+extern const std::map<UINT32, STRING> PACKTargetType_Name;
+extern const std::map<UINT32, STRING> HardCodedFormID_EditorID;
+
+typedef std::map<UINT32, std::pair<varType, varType>>::value_type Function_ArgumentsType;
+typedef std::map<UINT32, STRING>::value_type Function_NameType;
+typedef std::map<UINT32, std::vector<UINT32>>::value_type RecordType_PossibleGroupsType;
+
+inline void _readBuffer(void *_DstBuf, const unsigned char *_SrcBuf, const UINT32 &_MaxCharCount, UINT32 &_BufPos)
+    {
+    memcpy(_DstBuf, _SrcBuf + _BufPos, _MaxCharCount);
+    _BufPos += _MaxCharCount;
+    }
+
+bool FileExists(STRING const FileName);
+bool AlmostEqual(FLOAT32 A, FLOAT32 B, SINT32 maxUlps);
+
+class _FileHandler
+    {
+    private:
+        boost::interprocess::mapped_region *m_region;
+        boost::interprocess::file_mapping *f_map;
+        unsigned char *_Buffer;
+        UINT32 _BufSize;
+        UINT32 _BufPos;
+        UINT32 _BufEnd;
+        UINT32 _TotalWritten;
+        int fh;
+
+    public:
+        _FileHandler();
+        _FileHandler(UINT32 nSize);
+        ~_FileHandler();
+
+        SINT32 open_ReadOnly(STRING const FileName);
+        SINT32 open_ReadWrite(STRING const FileName);
+        bool   IsOpen();
+        bool   eof();
+        UINT32 tell();
+        UINT32 set_used(SINT32 _Used);
+        void   read(void *_DestBuf, UINT32 _MaxCharCount);
+        unsigned char *getBuffer(UINT32 _Offset);
+        UINT32 write(const void *_SrcBuf, UINT32 _MaxCharCount);
+        void   writeSubRecord(UINT32 _Type, const void *_SrcBuf, UINT32 _MaxCharCount);
+        UINT32 writeAt(UINT32 _Offset, const void *_SrcBuf, UINT32 _MaxCharCount);
+        UINT32 UnusedCache();
+        bool   IsCached(UINT32 _Offset);
+        SINT32 close();
+        void   reserveBuffer(UINT32 nSize);
+        void   flush();
+    };
+
+class FormIDHandlerClass
+    {
+    public:
+        STRING FileName;
+        std::vector<StringRecord> &MAST;
+        std::vector<STRING> LoadOrder255;
+        boost::unordered_set<UINT32> NewTypes;
+        UINT32 &nextObject;
+        UINT8  ExpandedIndex;
+        UINT8  CollapsedIndex;
+        UINT8  ExpandTable[256];
+        UINT8  CollapseTable[256];
+        bool   IsEmpty;
+        bool   bMastersChanged;
+
+        FormIDHandlerClass(STRING _FileName, std::vector<StringRecord> &_MAST, UINT32 &_NextObject);
+        ~FormIDHandlerClass();
+
+        void   SetLoadOrder(std::vector<STRING> &cLoadOrder);
+        UINT32 NextExpandedFormID();
+        void   CreateFormIDLookup(const UINT8 expandedIndex);
+        void   UpdateFormIDLookup();
+        void   AddMaster(STRING const curMaster);
+        bool   MastersChanged();
+        bool   IsNewRecord(const UINT32 *&RecordFormID);
+        bool   IsNewRecord(const UINT32 &RecordFormID);
     };
 
 class CreateRecordOptions
@@ -1169,37 +271,292 @@ class CreateRecordOptions
             fSetAsWorldCell      = 0x00000002,
             fCopyWorldCellStatus = 0x00000004
             };
+
     public:
         CreateRecordOptions();
-        CreateRecordOptions(unsigned long nFlags);
+        CreateRecordOptions(UINT32 nFlags);
         ~CreateRecordOptions();
 
         bool SetAsOverride;
         bool SetAsWorldCell;
         bool CopyWorldCellStatus;
 
-        unsigned long GetFlagField();
+        UINT32 GetFlags();
     };
 
 class ModFlags
     {
     private:
-        enum addModFlags
+        //MinLoad and FullLoad are exclusive
+        // If both are set, FullLoad takes priority
+        // If neither is set, the mod isn't loaded
+
+        //SkipNewRecords causes any new record to be ignored when the mod is loaded
+        // This may leave broken records behind (such as a quest override pointing to a new script that was ignored)
+        // So it shouldn't be used if planning on copying records unless you either check that there are no new records being referenced
+
+        //InLoadOrder makes the mod count towards the 255 limit and enables record creation / deletion / copying to.
+        // If it is false, it forces Saveable to be false.
+        // Any mod with new records should have this set unless you're ignoring the new records.
+        // It causes the mod to be reported by GetNumModIDs, GetModIDs
+
+        //Saveable allows the mod to be saved.
+
+        //AddMasters causes the mod's masters to be added to the load order
+        // This is essential for most mod editing functions
+
+        //LoadMasters causes the mod's masters to be loaded into memory after being added
+        // This has no effect if AddMasters is false
+        // This is required if you want to lookup overridden records
+
+        //ExtendedConflicts causes any conflicting records to be ignored by most functions
+        // IsRecordWinning, GetNumRecordConflicts, GetRecordConflicts will report the extended conflicts only if asked
+
+        //TrackNewTypes causes the loader to track which record types in a mod are new and not overrides
+        // Increases load time per mod.
+        // It enables GetModNumTypes and GetModTypes for that mod.
+
+        //IndexLANDs causes LAND records to have extra indexing.
+        // Increases load time per mod.
+        // It allows the safe editing of land records heights. 
+        // Modifying one LAND may require changes in an adjacent LAND to prevent seams
+
+        //FixupPlaceables moves any REFR,ACHR,ACRE records in a world cell to the actual cell they belong to.
+        // Increases load time per mod.
+        // Use if you're planning on iterating through every placeable in a specific cell 
+        //   so that you don't have to check the world cell as well.
+
+        //Only the following combinations are tested via Bash:
+        // Normal:  (fIsMinLoad or fIsFullLoad) + fIsInLoadOrder + fIsSaveable + fIsAddMasters + fIsLoadMasters
+        // Dummy:    fIsAddMasters
+        // Merged:  (fIsMinLoad or fIsFullLoad) + fIsSkipNewRecords
+        // Scanned: (fIsMinLoad or fIsFullLoad) + fIsSkipNewRecords + fIsExtendedConflicts
+        enum modFlags
             {
-            fMerge             = 0x00000001,
-            fScan              = 0x00000002,
-            fCreateIfNotExist  = 0x00000004
+            fIsMinLoad            = 0x00000001,
+            fIsFullLoad           = 0x00000002,
+            fIsSkipNewRecords     = 0x00000004,
+            fIsInLoadOrder        = 0x00000008,
+            fIsSaveable           = 0x00000010,
+            fIsAddMasters         = 0x00000020,
+            fIsLoadMasters        = 0x00000040,
+            fIsExtendedConflicts  = 0x00000080,
+            fIsTrackNewTypes      = 0x00000100,
+            fIsIndexLANDs         = 0x00000200,
+            fIsFixupPlaceables    = 0x00000400
             };
+
     public:
         ModFlags();
-        ModFlags(unsigned long nFlags);
+        ModFlags(UINT32 _Flags);
         ~ModFlags();
 
-        bool Merge;
-        bool Scan;
-        bool CreateIfNotExist;
+        bool IsMinLoad;
+        bool IsFullLoad;
+        bool IsNoLoad;
+        bool IsSkipNewRecords;
+        bool IsInLoadOrder;
+        bool IsSaveable;
+        bool IsAddMasters;
+        bool IsLoadMasters;
+        bool IsExtendedConflicts;
+        bool IsTrackNewTypes;
+        bool IsIndexLANDs;
+        bool IsFixupPlaceables;
 
-        bool IsDummy, IsOpen, LoadedGRUPs, IsNew;
+        //For internal use, may not be set by constructor
+        bool LoadedGRUPs;
 
-        unsigned long GetFlagField();
+        UINT32 GetFlags();
     };
+
+class StringRecord
+    {
+    public:
+        STRING value;
+
+        StringRecord();
+        StringRecord(const StringRecord &p);
+        StringRecord(const STRING p);
+        virtual ~StringRecord();
+
+        virtual UINT32 GetSize() const;
+
+        bool IsLoaded() const;
+        void Load();
+        void Unload();
+
+        virtual bool Read(unsigned char *buffer, const UINT32 &subSize, UINT32 &curPos);
+
+        void Copy(const StringRecord &FieldValue);
+        void Copy(STRING FieldValue);
+
+        bool equals(const StringRecord &other) const;
+        bool equalsi(const StringRecord &other) const;
+        StringRecord& operator = (const StringRecord &rhs);
+    };
+
+class NonNullStringRecord : public StringRecord
+    {
+    public:
+        NonNullStringRecord();
+        NonNullStringRecord(const NonNullStringRecord &p);
+        ~NonNullStringRecord();
+
+        UINT32 GetSize() const;
+
+        bool Read(unsigned char *buffer, const UINT32 &subSize, UINT32 &curPos);
+    };
+
+class RawRecord
+    {
+    public:
+        UINT32 size;
+        unsigned char *value;
+
+        RawRecord();
+        RawRecord(const RawRecord &p);
+        ~RawRecord();
+
+        UINT32 GetSize() const;
+
+        bool IsLoaded() const;
+        void Load();
+        void Unload();
+
+        bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos);
+
+        void Copy(unsigned char *FieldValue, UINT32 nSize);
+
+        RawRecord& operator = (const RawRecord &rhs);
+        bool operator ==(const RawRecord &other) const;
+        bool operator !=(const RawRecord &other) const;
+    };
+
+//Base record field. Vestigial.
+//Used when it isn't known if the record is required or optional.
+template<class T>
+struct SubRecord
+    {
+    T value;
+    bool isLoaded;
+
+    SubRecord();
+    ~SubRecord();
+
+    UINT32 GetSize() const;
+
+    bool IsLoaded() const;
+    void Load();
+    void Unload();
+
+    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos);
+
+    T *operator->() const;
+    bool operator ==(const SubRecord<T> &other) const;
+    bool operator !=(const SubRecord<T> &other) const;
+    };
+
+//Used for subrecords that are required
+//Even if not actually loaded from disk, they are always considered loaded even if they're explicitly unloaded.
+//Unloading them simply resets the values to default.
+template<class T>
+struct ReqSubRecord
+    {
+    T value;
+
+    ReqSubRecord();
+    ~ReqSubRecord();
+
+    UINT32 GetSize() const;
+
+    bool IsLoaded() const;
+    void Load();
+    void Unload();
+
+    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos);
+
+    T *operator->() const;
+    bool operator ==(const ReqSubRecord<T> &other) const;
+    bool operator !=(const ReqSubRecord<T> &other) const;
+    };
+
+//Used for subrecords that are optional
+//Even if loaded, they are considered unloaded if they're equal to their defaults
+template<class T>
+struct OptSubRecord
+    {
+    T *value;
+
+    OptSubRecord();
+    ~OptSubRecord();
+
+    UINT32 GetSize() const;
+
+    bool IsLoaded() const;
+    void Load();
+    void Unload();
+
+    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos);
+
+    T *operator->() const;
+    OptSubRecord<T>& operator = (const OptSubRecord<T> &rhs);
+    bool operator ==(const OptSubRecord<T> &other) const;
+    bool operator !=(const OptSubRecord<T> &other) const;
+    };
+
+//Identical to OptSubRecord except for IsLoaded
+//Once loaded, they are always considered loaded unless they're explicitly unloaded.
+//They don't compare to the default value to see if they're
+// still considered loaded.
+template<class T>
+struct SemiOptSubRecord
+    {
+    T *value;
+
+    SemiOptSubRecord();
+    ~SemiOptSubRecord();
+
+    UINT32 GetSize() const;
+
+    bool IsLoaded() const;
+    void Load();
+    void Unload();
+
+    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos);
+
+    T *operator->() const;
+    SemiOptSubRecord<T>& operator = (const SemiOptSubRecord<T> &rhs);
+    bool operator ==(const SemiOptSubRecord<T> &other) const;
+    bool operator !=(const SemiOptSubRecord<T> &other) const;
+    };
+
+//Hack to support OBMEEFIX
+//Identical to OptSubRecord except for IsLoaded
+//If value->efixOverrides is equal to 0, it unloads itself
+template<class T>
+struct OBMEEFIXSubRecord
+    {
+    T *value;
+
+    OBMEEFIXSubRecord();
+    ~OBMEEFIXSubRecord();
+
+    UINT32 GetSize() const;
+
+    bool IsLoaded();
+    bool Internal_IsLoaded() const;
+    void Load();
+    void Unload();
+
+    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos);
+
+    T *operator->() const;
+    OBMEEFIXSubRecord<T>& operator = (const OBMEEFIXSubRecord<T> &rhs);
+    bool operator ==(const OBMEEFIXSubRecord<T> &other) const;
+    bool operator !=(const OBMEEFIXSubRecord<T> &other) const;
+    };
+
+//Cheap trick to separate the template methods into a separate file
+//Notice that the file is NOT part of the project
+#include "CommonTemplates.cpp"

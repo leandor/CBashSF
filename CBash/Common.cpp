@@ -22,185 +22,81 @@ GPL License and Copyright Notice ============================================
 // Common.cpp
 #include "Common.h"
 
-time_t lastSave = time(NULL);
-
-bool AlmostEqual(float A, float B, int maxUlps)
+const STRING Ex_NULL::__CLR_OR_THIS_CALL what() const
     {
-    int aInt = *(int*)&A;
-    // Make aInt lexicographically ordered as a twos-complement int
-    if (aInt < 0)
-        aInt = 0x80000000 - aInt;
-    // Make bInt lexicographically ordered as a twos-complement int
-    int bInt = *(int*)&B;
-    if (bInt < 0)
-        bInt = 0x80000000 - bInt;
-
-    // Now we can compare aInt and bInt to find out how far apart A and B
-    // are.
-    int intDiff = abs(aInt - bInt);
-    if (intDiff <= maxUlps)
-        return true;
-    return false;
+    return "NULL Pointer";
     }
 
-unsigned long FormIDHandlerClass::AssignToMod(unsigned long curFormID)
+const STRING Ex_INVALIDINDEX::__CLR_OR_THIS_CALL what() const
     {
-    if(curFormID == 0)
-        return 0;
-    return (ExpandedIndex << 24 ) | (curFormID & 0x00FFFFFF);
+    return "Invalid Index";
     }
 
-unsigned long FormIDHandlerClass::AssignToMod(unsigned long *curFormID)
+bool sameStr::operator()( const STRING s1, const STRING s2 ) const
     {
-    unsigned long newFormID = 0;
-    if(*curFormID != 0)
-        newFormID = (ExpandedIndex << 24 ) | (*curFormID & 0x00FFFFFF);
-    return newFormID;
+    return _stricmp( s1, s2 ) < 0;
     }
 
-void FormIDHandlerClass::SetLoadOrder(std::vector<char *> &cLoadOrder)
-    {
-	if(cLoadOrder.size() > 0xFF)
-		{
-        printf("Error: Tried to set load order > 0xFF. Load order size = %i\n", cLoadOrder.size());
-		throw 1;
-        return;
-		}
-    LoadOrder255 = cLoadOrder;
-    return;
-    }
-
-unsigned long FormIDHandlerClass::NextExpandedFID()
-    {
-    //0x00FFFFFF is the highest formID that can be used.
-    if(nextObject >= 0x01000000)
-        nextObject = END_HARDCODED_IDS;
-    return (ExpandedIndex << 24) | ++nextObject;
-    }
-
-void FormIDHandlerClass::UpdateFormIDLookup()
-    {
-    //Each ModFile maintains a formID resolution lookup table of valid modIndexs
-    //both when expanded into a load order corrected format
-    //and for when collapsed back into a writable format
-    //This function populates that table, and allows much, much faster formID resolution
-    //which occurs on every formID that is read, set, and written...
-
-    //The Collapsed lookup table has to be updated anytime the mod's masters change.
-    //It also sorts the masters based on the load order
-    unsigned long numMods = (unsigned long)LoadOrder255.size();
-    char *curMaster = NULL;
-    CollapsedIndex = (unsigned char)MAST.size();
-    for(unsigned char p = 0; p < 255; ++p)
-        CollapseTable[p] = CollapsedIndex;
-
-    std::vector<StringRecord> sortedMAST;
-    sortedMAST.reserve(CollapsedIndex);
-    for(unsigned long x = 0; x < LoadOrder255.size(); ++x)
-        {
-        for(unsigned char y = 0; y < CollapsedIndex; ++y)
-            {
-            if(_stricmp(LoadOrder255[x], MAST[y].value) == 0)
-                {
-                sortedMAST.push_back(MAST[y]);
-                break;
-                }
-            }
-        }
-    //MAST = sortedMAST;
-    MAST.clear();
-    MAST.resize(sortedMAST.size());
-    for(unsigned char p = 0; p < CollapsedIndex; ++p)
-        {
-        MAST[p] = sortedMAST[p];
-        curMaster = MAST[p].value;
-        for(unsigned long y = 0; y < numMods; ++y)
-            if(_stricmp(LoadOrder255[y], curMaster) == 0)
-                {
-                CollapseTable[y] = p;
-                break;
-                }
-        }
-    sortedMAST.clear();
-    return;
-    }
-
-void FormIDHandlerClass::CreateFormIDLookup(const unsigned char expandedIndex)
-    {
-    //Each ModFile maintains a formID resolution lookup table of valid modIndexs
-    //both when expanded into a load order corrected format
-    //and for when collapsed back into a writable format
-    //This function populates that table, and allows much, much faster formID resolution
-    //which occurs on every formID that is read, set, and written...
-
-    //The Expanded lookup table is only created once when the mod is first loaded.
-    //This allows records to be read even after a master has been added, and have the formID
-    //be set to the proper load order corrected value.
-    //This can only be done because the load order is finalized once the mods are loaded.
-
-    unsigned long numMods = (unsigned long)LoadOrder255.size();
-    char *curMaster = NULL;
-    CollapsedIndex = (unsigned char)MAST.size();
-	if(expandedIndex > 0xFF)
-		ExpandedIndex = 0xFF;
-	else
-		ExpandedIndex = expandedIndex;
-    for(unsigned char p = 0; p < 255; ++p)
-        {
-        CollapseTable[p] = CollapsedIndex;
-        ExpandTable[p] = ExpandedIndex;
-        }
-
-    for(unsigned char p = 0; p < CollapsedIndex; ++p)
-        {
-        curMaster = MAST[p].value;
-        for(unsigned long y = 0; y < numMods; ++y)
-            if(_stricmp(LoadOrder255[y], curMaster) == 0)
-                {
-                ExpandTable[p] = (unsigned char)y;
-                CollapseTable[y] = p;
-                break;
-                }
-        }
-    return;
-    }
-
-void FormIDHandlerClass::AddMaster(const char *curMaster)
-    {
-    //Add the master to the end, and update header size
-    MAST.push_back(StringRecord(curMaster));
-    bMastersChanged = true;
-    //Update the formID resolution lookup table
-    UpdateFormIDLookup();
-    return;
-    }
-
-bool FormIDHandlerClass::MastersChanged()
-    {
-    return bMastersChanged;
-    }
-
-bool FormIDHandlerClass::IsNewRecord(const unsigned long *&recordFID)
-    {
-    //if((*recordFID >> 24) >= ExpandedIndex)
-    //    printf("%02X - %08X - %02X\n", (*recordFID >> 24), *recordFID, ExpandedIndex);
-    return ((*recordFID >> 24) >= ExpandedIndex);
-    }
-
-bool FormIDHandlerClass::IsNewRecord(const unsigned long &recordFID)
-    {
-    //if((recordFID >> 24) >= ExpandedIndex)
-    //    printf("%02X - %08X - %02X\n", (recordFID >> 24), recordFID, ExpandedIndex);
-    return ((recordFID >> 24) >= ExpandedIndex);
-    }
-
-bool FileExists(const char *FileName)
+bool FileExists(STRING const FileName)
     {
     struct stat statBuffer;
     return (stat(FileName, &statBuffer) >= 0 && statBuffer.st_mode & S_IFREG);
     }
 
-int _FileHandler::open_ReadOnly(const char *FileName)
+bool AlmostEqual(FLOAT32 A, FLOAT32 B, SINT32 maxUlps)
+    {
+    SINT32 aInt = *(SINT32*)&A;
+    // Make aInt lexicographically ordered as a twos-complement int
+    if (aInt < 0)
+        aInt = 0x80000000 - aInt;
+    // Make bInt lexicographically ordered as a twos-complement int
+    SINT32 bInt = *(SINT32*)&B;
+    if (bInt < 0)
+        bInt = 0x80000000 - bInt;
+
+    // Now we can compare aInt and bInt to find out how far apart A and B
+    // are.
+    if (abs(aInt - bInt) <= maxUlps)
+        return true;
+    return false;
+    }
+
+_FileHandler::_FileHandler():
+    m_region(NULL), 
+    f_map(NULL), 
+    _Buffer(NULL), 
+    _BufSize(0),
+    _BufPos(0),
+    _BufEnd(0),
+    _TotalWritten(0),
+    fh(-1)
+    {
+    //
+    }
+
+_FileHandler::_FileHandler(UINT32 nSize):
+    m_region(NULL),
+    f_map(NULL), 
+    _Buffer(NULL),
+    _BufSize(nSize),
+    _BufPos(0),
+    _BufEnd(0),
+    _TotalWritten(0),
+    fh(-1)
+    {
+    if(_BufSize == 0)
+        return;
+    _Buffer = new unsigned char[_BufSize];
+    }
+
+_FileHandler::~_FileHandler()
+    {
+    close();
+    if(m_region == NULL && f_map == NULL && _Buffer != NULL)
+        delete []_Buffer;
+    }
+
+SINT32 _FileHandler::open_ReadOnly(STRING const FileName)
     {
     if(fh != -1 || f_map != NULL || m_region != NULL)
         return -1;
@@ -222,11 +118,11 @@ int _FileHandler::open_ReadOnly(const char *FileName)
         return -1;
         }
     _Buffer = (unsigned char*)m_region->get_address();
-    _BufEnd = (unsigned long)m_region->get_size();
+    _BufEnd = (UINT32)m_region->get_size();
     return 0;
     }
 
-int _FileHandler::open_ReadWrite(const char *FileName)
+SINT32 _FileHandler::open_ReadWrite(STRING const FileName)
     {
     if(fh != -1 || f_map != NULL || m_region != NULL)
         return -1;
@@ -260,9 +156,14 @@ int _FileHandler::open_ReadWrite(const char *FileName)
     return 0;
     }
 
-unsigned long _FileHandler::tell()
+UINT32 _FileHandler::tell()
     {
     return _BufPos + _TotalWritten;
+    }
+
+bool _FileHandler::IsOpen()
+    {
+    return (fh != -1 || f_map != NULL || m_region != NULL);
     }
 
 bool _FileHandler::eof()
@@ -270,13 +171,13 @@ bool _FileHandler::eof()
     return (_BufPos >= _BufEnd);
     }
 
-unsigned long _FileHandler::set_used(signed long _Used)
+UINT32 _FileHandler::set_used(SINT32 _Used)
     {
     if(_Used == 0)
         return _BufPos;
     else if(_Used < 0)
         {
-        if(((unsigned long)abs(_Used) > _BufPos))
+        if(((UINT32)abs(_Used) > _BufPos))
             _BufPos = 0;
         else
             _BufPos += _Used;
@@ -295,7 +196,7 @@ unsigned long _FileHandler::set_used(signed long _Used)
     //Flush the buffer if it is getting full
     if((_BufPos + _Used) >= _BufSize)
         flush();
-    if((unsigned long)_Used < _BufSize)
+    if((UINT32)_Used < _BufSize)
         _BufPos += _Used;
     else
         {
@@ -305,7 +206,7 @@ unsigned long _FileHandler::set_used(signed long _Used)
     return _BufPos;
     }
 
-void _FileHandler::read(void *_DstBuf, unsigned long _MaxCharCount)
+void _FileHandler::read(void *_DstBuf, UINT32 _MaxCharCount)
     {
     if(_DstBuf == NULL || _Buffer == NULL)
         return;
@@ -313,14 +214,14 @@ void _FileHandler::read(void *_DstBuf, unsigned long _MaxCharCount)
     _BufPos += _MaxCharCount;
     }
 
-unsigned char *_FileHandler::getBuffer(unsigned long _Offset)
+unsigned char *_FileHandler::getBuffer(UINT32 _Offset)
     {
     if(IsCached(_Offset))
         return _Buffer + _Offset - _TotalWritten;
     return NULL;
     }
 
-unsigned long _FileHandler::write(const void *_SrcBuf, unsigned long _MaxCharCount)
+UINT32 _FileHandler::write(const void *_SrcBuf, UINT32 _MaxCharCount)
     {
     if(fh == -1 || _SrcBuf == NULL || _Buffer == NULL || _MaxCharCount == 0)
         return _BufPos;
@@ -343,9 +244,9 @@ unsigned long _FileHandler::write(const void *_SrcBuf, unsigned long _MaxCharCou
     return _BufPos;
     }
 
-void _FileHandler::writeSubRecord(unsigned long _Type, const void *_SrcBuf, unsigned long _MaxCharCount)
+void _FileHandler::writeSubRecord(UINT32 _Type, const void *_SrcBuf, UINT32 _MaxCharCount)
     {
-    unsigned long _Temp = 0;
+    UINT32 _Temp = 0;
     if(_MaxCharCount <= 65535)
         {
         write(&_Type, 4);
@@ -365,7 +266,7 @@ void _FileHandler::writeSubRecord(unsigned long _Type, const void *_SrcBuf, unsi
     return;
     }
 
-unsigned long _FileHandler::writeAt(unsigned long _Offset, const void *_SrcBuf, unsigned long _MaxCharCount)
+UINT32 _FileHandler::writeAt(UINT32 _Offset, const void *_SrcBuf, UINT32 _MaxCharCount)
     {
     if(fh == -1 || _SrcBuf == NULL || _Buffer == NULL || _MaxCharCount == 0 || _Offset > tell())
         return _Offset;
@@ -377,7 +278,7 @@ unsigned long _FileHandler::writeAt(unsigned long _Offset, const void *_SrcBuf, 
     else
         {
         //It has already been written to disk.
-        signed long curPos = _tell(fh);
+        SINT32 curPos = _tell(fh);
         _lseek(fh, _Offset, SEEK_SET);
         _write(fh, _SrcBuf, _MaxCharCount);
         _lseek(fh, curPos, SEEK_SET);
@@ -395,17 +296,17 @@ void _FileHandler::flush()
     return;
     }
 
-unsigned long _FileHandler::UnusedCache()
+UINT32 _FileHandler::UnusedCache()
     {
     return _BufSize - _BufPos;
     }
 
-bool _FileHandler::IsCached(unsigned long _Offset)
+bool _FileHandler::IsCached(UINT32 _Offset)
     {
     return (_Offset >= _TotalWritten && _Offset <= tell());
     }
 
-int _FileHandler::close()
+SINT32 _FileHandler::close()
     {
     flush();
     if(fh != -1)
@@ -421,7 +322,7 @@ int _FileHandler::close()
     return 0;
     }
 
-void _FileHandler::reserveBuffer(unsigned long nSize)
+void _FileHandler::reserveBuffer(UINT32 nSize)
     {
     if(fh == -1 || f_map != NULL || m_region != NULL || nSize <= UnusedCache())
         return;
@@ -437,47 +338,179 @@ void _FileHandler::reserveBuffer(unsigned long nSize)
     return;
     }
 
-#ifdef _DEBUG
-void PrintIndent(const unsigned long &indentation)
+FormIDHandlerClass::FormIDHandlerClass(STRING _FileName, std::vector<StringRecord> &_MAST, UINT32 &_NextObject):
+    FileName(_FileName),
+    MAST(_MAST), 
+    nextObject(_NextObject),
+    ExpandedIndex(0),
+    CollapsedIndex(0),
+    bMastersChanged(false),
+    IsEmpty(true)
     {
-    for(unsigned long x = 0; x < indentation; x++)
-        printf(" ");
+    //
     }
 
-char * PrintFormID(unsigned long formID)
+FormIDHandlerClass::~FormIDHandlerClass()
     {
-    static char buff[9] = {'\0'};
-    sprintf_s(buff, 9, "%08X", formID);
-    return buff;
+    //
     }
 
-char * PrintFormID(FormID formID)
+void FormIDHandlerClass::SetLoadOrder(std::vector<STRING> &cLoadOrder)
     {
-    if(formID == NULL)
-        return "(null)";
-    static char buff[9] = {'\0'};
-    sprintf_s(buff, 9, "%08X", *formID);
-    return buff;
+	if(cLoadOrder.size() > 0xFF)
+		{
+        printf("Error: Tried to set load order > 0xFF. Load order size = %i\n", cLoadOrder.size());
+		throw 1;
+        return;
+		}
+    LoadOrder255 = cLoadOrder;
+    return;
     }
-#endif
+
+UINT32 FormIDHandlerClass::NextExpandedFormID()
+    {
+    //0x00FFFFFF is the highest formID that can be used.
+    if(nextObject >= 0x01000000)
+        nextObject = END_HARDCODED_IDS;
+    //printf("Assigning new: %08X\n", (ExpandedIndex << 24) | (nextObject + 1));
+    return (ExpandedIndex << 24) | ++nextObject;
+    }
+
+void FormIDHandlerClass::UpdateFormIDLookup()
+    {
+    //Each ModFile maintains a formID resolution lookup table of valid modIndexs
+    //both when expanded into a load order corrected format
+    //and for when collapsed back into a writable format
+    //This function populates that table, and allows much, much faster formID resolution
+    //which occurs on every formID that is read, set, and written...
+
+    //The Collapsed lookup table has to be updated anytime the mod's masters change.
+    //It also sorts the masters based on the load order
+    UINT32 numMods = (UINT32)LoadOrder255.size();
+    STRING curMaster = NULL;
+    CollapsedIndex = (UINT8)MAST.size();
+    for(UINT16 p = 0; p <= 0xFF; ++p)
+        CollapseTable[(UINT8)p] = CollapsedIndex;
+
+    std::vector<StringRecord> sortedMAST;
+    sortedMAST.reserve(CollapsedIndex);
+    for(UINT32 x = 0; x < LoadOrder255.size(); ++x)
+        {
+        for(UINT16 y = 0; y < CollapsedIndex; ++y)
+            {
+            if(_stricmp(LoadOrder255[(UINT8)x], MAST[(UINT8)y].value) == 0)
+                {
+                sortedMAST.push_back(MAST[(UINT8)y]);
+                break;
+                }
+            }
+        }
+    //MAST = sortedMAST;
+    MAST.clear();
+    MAST.resize(sortedMAST.size());
+    for(UINT16 p = 0; p < CollapsedIndex; ++p)
+        {
+        MAST[(UINT8)p] = sortedMAST[(UINT8)p];
+        curMaster = MAST[(UINT8)p].value;
+        for(UINT32 y = 0; y < numMods; ++y)
+            if(_stricmp(LoadOrder255[(UINT8)y], curMaster) == 0)
+                {
+                CollapseTable[(UINT8)y] = (UINT8)p;
+                break;
+                }
+        }
+    sortedMAST.clear();
+    return;
+    }
+
+void FormIDHandlerClass::CreateFormIDLookup(const UINT8 expandedIndex)
+    {
+    //Each ModFile maintains a formID resolution lookup table of valid modIndexs
+    //both when expanded into a load order corrected format
+    //and for when collapsed back into a writable format
+    //This function populates that table, and allows much, much faster formID resolution
+    //which occurs on every formID that is read, set, and written...
+
+    //The Expanded lookup table is only created once when the mod is first loaded.
+    //This allows records to be read even after a master has been added, and have the formID
+    //be set to the proper load order corrected value.
+    //This can only be done because the load order is finalized once the mods are loaded.
+
+    UINT32 numMods = (UINT32)LoadOrder255.size();
+    STRING curMaster = NULL;
+    CollapsedIndex = (UINT8)MAST.size();
+	ExpandedIndex = expandedIndex;
+
+    for(UINT16 p = 0; p <= 0xFF; ++p)
+        {
+        CollapseTable[(UINT8)p] = CollapsedIndex;
+        ExpandTable[(UINT8)p] = ExpandedIndex;
+        }
+
+    for(UINT16 p = 0; p < CollapsedIndex; ++p)
+        {
+        curMaster = MAST[(UINT8)p].value;
+        for(UINT32 y = 0; y < numMods; ++y)
+            if(_stricmp(LoadOrder255[(UINT8)y], curMaster) == 0)
+                {
+                ExpandTable[(UINT8)p] = (UINT8)y;
+                CollapseTable[(UINT8)y] = (UINT8)p;
+                break;
+                }
+        }
+    return;
+    }
+
+void FormIDHandlerClass::AddMaster(STRING const curMaster)
+    {
+    //Add the master to the end, and update header size
+    MAST.push_back(StringRecord(curMaster));
+    bMastersChanged = true;
+    //Update the formID resolution lookup table
+    UpdateFormIDLookup();
+    return;
+    }
+
+bool FormIDHandlerClass::MastersChanged()
+    {
+    return bMastersChanged;
+    }
+
+bool FormIDHandlerClass::IsNewRecord(const UINT32 *&RecordFormID)
+    {
+    //if((*RecordFormID >> 24) >= ExpandedIndex)
+    //    printf("%02X - %08X - %02X\n", (*RecordFormID >> 24), *RecordFormID, ExpandedIndex);
+    return ((*RecordFormID >> 24) >= ExpandedIndex);
+    }
+
+bool FormIDHandlerClass::IsNewRecord(const UINT32 &RecordFormID)
+    {
+    //if((RecordFormID >> 24) >= ExpandedIndex)
+    //    printf("%02X - %08X - %02X\n", (RecordFormID >> 24), RecordFormID, ExpandedIndex);
+    return ((RecordFormID >> 24) >= ExpandedIndex);
+    }
 
 CreateRecordOptions::CreateRecordOptions():
     SetAsOverride(false),
     SetAsWorldCell(false),
     CopyWorldCellStatus(false)
-    { }
+    {
+    //
+    }
 
-CreateRecordOptions::CreateRecordOptions(unsigned long nFlags):
+CreateRecordOptions::CreateRecordOptions(UINT32 nFlags):
     SetAsOverride((nFlags & fSetAsOverride) != 0),
     SetAsWorldCell((nFlags & fSetAsWorldCell) != 0),
     CopyWorldCellStatus((nFlags & fCopyWorldCellStatus) != 0)
-    { }
+    {
+    //
+    }
 
 CreateRecordOptions::~CreateRecordOptions() { }
 
-unsigned long CreateRecordOptions::GetFlagField()
+UINT32 CreateRecordOptions::GetFlags()
     {
-    unsigned long flags = 0;
+    UINT32 flags = 0;
     if(SetAsOverride)
         flags |= fSetAsOverride;
     if(SetAsWorldCell)
@@ -488,215 +521,492 @@ unsigned long CreateRecordOptions::GetFlagField()
     }
 
 ModFlags::ModFlags():
-    Merge(false),
-    Scan(false),
-    CreateIfNotExist(false),
-    IsDummy(false),
-    IsOpen(false),
-    LoadedGRUPs(false),
-    IsNew(false)
-    { }
-
-ModFlags::ModFlags(unsigned long nFlags):
-    Merge((nFlags & fMerge) != 0),
-    Scan((nFlags & fScan) != 0),
-    CreateIfNotExist((nFlags & fCreateIfNotExist) != 0),
-    IsDummy(false),
-    IsOpen(false),
-    LoadedGRUPs(false),
-    IsNew(false)
-    { }
-
-ModFlags::~ModFlags() { }
-
-unsigned long ModFlags::GetFlagField()
+    IsMinLoad(true),
+    IsFullLoad(false),
+    IsNoLoad(false),
+    IsSkipNewRecords(false),
+    IsInLoadOrder(true),
+    IsSaveable(true),
+    IsAddMasters(true),
+    IsLoadMasters(true),
+    IsExtendedConflicts(true),
+    IsTrackNewTypes(false),
+    IsIndexLANDs(false),
+    IsFixupPlaceables(false),
+    LoadedGRUPs(false)
     {
-    unsigned long flags = 0;
-    if(Merge)
-        flags |= fMerge;
-    if(Scan)
-        flags |= fScan;
-    if(CreateIfNotExist)
-        flags |= fCreateIfNotExist;
+    //
+    }
+
+ModFlags::ModFlags(UINT32 _Flags):
+    IsMinLoad((_Flags & fIsMinLoad) != 0 && (_Flags & fIsFullLoad) == 0),
+    IsFullLoad((_Flags & fIsFullLoad) != 0),
+    IsNoLoad(!(IsMinLoad || IsFullLoad)),
+    IsSkipNewRecords((_Flags & fIsSkipNewRecords) != 0),
+    IsInLoadOrder((_Flags & fIsInLoadOrder) != 0),
+    IsSaveable(((_Flags & fIsInLoadOrder) != 0) ? ((_Flags & fIsSaveable) != 0) : false),
+    IsAddMasters((_Flags & fIsAddMasters) != 0),
+    IsLoadMasters((_Flags & fIsLoadMasters) != 0),
+    IsExtendedConflicts((_Flags & fIsExtendedConflicts) != 0),
+    IsTrackNewTypes((_Flags & fIsTrackNewTypes) != 0),
+    IsIndexLANDs((_Flags & fIsIndexLANDs) != 0),
+    IsFixupPlaceables((_Flags & fIsFixupPlaceables) != 0),
+    LoadedGRUPs(false)
+    {
+    //
+    }
+
+ModFlags::~ModFlags()
+    {
+    //
+    }
+
+UINT32 ModFlags::GetFlags()
+    {
+    UINT32 flags = 0;
+    if(IsMinLoad)
+        flags |= fIsMinLoad;
+    if(IsFullLoad)
+        {
+        flags |= fIsFullLoad;
+        flags &= ~fIsMinLoad;
+        }
+    if(IsSkipNewRecords)
+        flags |= fIsSkipNewRecords;
+    if(IsInLoadOrder)
+        flags |= fIsInLoadOrder;
+    if(IsSaveable)
+        flags |= fIsSaveable;
+    if(IsAddMasters)
+        flags |= fIsAddMasters;
+    if(IsLoadMasters)
+        flags |= fIsLoadMasters;
+    if(IsExtendedConflicts)
+        flags |= fIsExtendedConflicts;
+    if(IsTrackNewTypes)
+        flags |= fIsTrackNewTypes;
+    if(IsIndexLANDs)
+        flags |= fIsIndexLANDs;
+    if(IsFixupPlaceables)
+        flags |= fIsFixupPlaceables;
     return flags;
     }
 
-typedef std::map<unsigned long, std::pair<varType,varType>>::value_type Function_ArgumentsType;
+StringRecord::StringRecord():value(NULL)
+    {
+    //
+    }
+
+StringRecord::StringRecord(const StringRecord &p):
+    value(NULL)
+    {
+    if(!p.IsLoaded())
+        return;
+    UINT32 size = p.GetSize();
+    value = new char[size];
+    memcpy(value, p.value, size);
+    }
+
+StringRecord::StringRecord(const STRING p):
+    value(NULL)
+    {
+    if(p == NULL)
+        return;
+    UINT32 size = (UINT32)strlen(p) + 1;
+    value = new char[size];
+    strcpy_s(value, size, p);
+    }
+
+StringRecord::~StringRecord()
+    {
+    delete []value;
+    }
+
+UINT32 StringRecord::GetSize() const
+    {
+    return (UINT32)strlen(value) + 1;
+    }
+
+bool StringRecord::IsLoaded() const
+    {
+    return value != NULL;
+    }
+
+void Load()
+    {
+    //
+    }
+
+void StringRecord::Unload()
+    {
+    delete []value;
+    value = NULL;
+    }
+
+bool StringRecord::Read(unsigned char *buffer, const UINT32 &subSize, UINT32 &curPos)
+    {
+    if(IsLoaded())
+        {
+        curPos += subSize;
+        return false;
+        }
+    value = new char[subSize];
+    memcpy(value, buffer + curPos, subSize);
+    curPos += subSize;
+    return true;
+    }
+
+void StringRecord::Copy(const StringRecord &FieldValue)
+    {
+    Copy(FieldValue.value);
+    }
+
+void StringRecord::Copy(STRING FieldValue)
+    {
+    Unload();
+    if(FieldValue != NULL)
+        {
+        UINT32 size = (UINT32)strlen(FieldValue) + 1;
+        value = new char[size];
+        strcpy_s(value, size, FieldValue);
+        }
+    }
+
+bool StringRecord::equals(const StringRecord &other) const
+    {
+    if(!IsLoaded())
+        {
+        if(!other.IsLoaded())
+            return true;
+        }
+    else if(other.IsLoaded() && (strcmp(value, other.value) == 0))
+        return true;
+    return false;
+    }
+
+bool StringRecord::equalsi(const StringRecord &other) const
+    {
+    if(!IsLoaded())
+        {
+        if(!other.IsLoaded())
+            return true;
+        }
+    else if(other.IsLoaded() && (_stricmp(value, other.value) == 0))
+        return true;
+    return false;
+    }
+
+StringRecord& StringRecord::operator = (const StringRecord &rhs)
+    {
+    if(this != &rhs)
+        Copy(rhs);
+    return *this;
+    }
+
+NonNullStringRecord::NonNullStringRecord():
+    StringRecord()
+    {
+    //
+    }
+
+NonNullStringRecord::NonNullStringRecord(const NonNullStringRecord &p):
+    StringRecord()
+    {
+    Copy(p.value);
+    }
+
+NonNullStringRecord::~NonNullStringRecord()
+    {
+    //
+    }
+
+UINT32 NonNullStringRecord::GetSize() const
+    {
+    return (UINT32)strlen(value);
+    }
+
+bool NonNullStringRecord::Read(unsigned char *buffer, const UINT32 &subSize, UINT32 &curPos)
+    {
+    if(IsLoaded())
+        {
+        curPos += subSize;
+        return false;
+        }
+    value = new char[subSize + 1];
+    value[subSize] = 0x00;
+    memcpy(value, buffer + curPos, subSize);
+    curPos += subSize;
+    return true;
+    }
+
+RawRecord::RawRecord():
+    size(0),
+    value(NULL)
+    {
+    //
+    }
+
+RawRecord::RawRecord(const RawRecord &p):
+    value(NULL)
+    {
+    if(!p.IsLoaded())
+        return;
+    size = p.size;
+    value = new unsigned char[size];
+    memcpy(value,p.value,size);
+    }
+
+RawRecord::~RawRecord()
+    {
+    delete []value;
+    }
+
+UINT32 RawRecord::GetSize() const
+    {
+    return size;
+    }
+
+bool RawRecord::IsLoaded() const
+    {
+    return value != NULL;
+    }
+
+void RawRecord::Load()
+    {
+    //
+    }
+
+void RawRecord::Unload()
+    {
+    size = 0;
+    delete []value;
+    value = NULL;
+    }
+
+bool RawRecord::Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+    {
+    if(IsLoaded())
+        {
+        curPos += subSize;
+        return false;
+        }
+    size = subSize;
+    value = new unsigned char[size];
+    memcpy(value, buffer + curPos, size);
+    curPos += subSize;
+    return true;
+    }
+
+void RawRecord::Copy(unsigned char *FieldValue, UINT32 nSize)
+    {
+    delete []value;
+    size = nSize;
+    value = new unsigned char[size];
+    memcpy(value, FieldValue, size);
+    }
+
+RawRecord& RawRecord::operator = (const RawRecord &rhs)
+    {
+    if(this != &rhs)
+        {
+        if(rhs.IsLoaded())
+            Copy(rhs.value, rhs.size);
+        else
+            Unload();
+        }
+    return *this;
+    }
+
+bool RawRecord::operator ==(const RawRecord &other) const
+    {
+    if(!IsLoaded())
+        {
+        if(!other.IsLoaded())
+            return true;
+        }
+    else if(other.IsLoaded() && size == other.size && (memcmp(value, other.value, size) == 0))
+        return true;
+    return false;
+    }
+
+bool RawRecord::operator !=(const RawRecord &other) const
+    {
+    return !(*this == other);
+    }
 
 Function_ArgumentsType Function_ArgumentsInit[] =
     {
-    Function_ArgumentsType(153,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(127,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(14,std::make_pair(eInt,eNULL)),
-    Function_ArgumentsType(61,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(190,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(8,std::make_pair(eInt,eNULL)),
-    Function_ArgumentsType(81,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(274,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(63,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(264,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(277,std::make_pair(eInt,eNULL)),
-    Function_ArgumentsType(229,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(41,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(122,std::make_pair(eFID,eInt)),
-    Function_ArgumentsType(116,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(110,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(143,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(18,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(148,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(170,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(46,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(84,std::make_pair(eFID,eNULL)),
-    Function_ArgumentsType(203,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(45,std::make_pair(eFID,eNULL)),
-    Function_ArgumentsType(180,std::make_pair(eFID,eNULL)),
-    Function_ArgumentsType(35,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(39,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(76,std::make_pair(eFID,eNULL)),
-    Function_ArgumentsType(1,std::make_pair(eFID,eNULL)),
-    Function_ArgumentsType(215,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(182,std::make_pair(eFID,eNULL)),
-    Function_ArgumentsType(73,std::make_pair(eFID,eNULL)),
-    Function_ArgumentsType(60,std::make_pair(eFID,eFID)),
-    Function_ArgumentsType(128,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(288,std::make_pair(eFID,eNULL)),
-    Function_ArgumentsType(160,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(74,std::make_pair(eFID,eNULL)),
-    Function_ArgumentsType(48,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(99,std::make_pair(eFID,eNULL)),
-    Function_ArgumentsType(318,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(338,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(67,std::make_pair(eFID,eNULL)),
-    Function_ArgumentsType(230,std::make_pair(eFID,eFID)),
-    Function_ArgumentsType(71,std::make_pair(eFID,eNULL)),
-    Function_ArgumentsType(32,std::make_pair(eFID,eNULL)),
-    Function_ArgumentsType(305,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(310,std::make_pair(eFID,eNULL)),
-    Function_ArgumentsType(91,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(68,std::make_pair(eFID,eNULL)),
-    Function_ArgumentsType(228,std::make_pair(eFID,eNULL)),
-    Function_ArgumentsType(64,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(161,std::make_pair(eFID,eNULL)),
-    Function_ArgumentsType(149,std::make_pair(eFID,eNULL)),
-    Function_ArgumentsType(237,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(72,std::make_pair(eFID,eNULL)),
-    Function_ArgumentsType(254,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(224,std::make_pair(eFID,eNULL)),
-    Function_ArgumentsType(69,std::make_pair(eFID,eNULL)),
-    Function_ArgumentsType(136,std::make_pair(eFID,eNULL)),
-    Function_ArgumentsType(70,std::make_pair(eInt,eNULL)),
-    Function_ArgumentsType(246,std::make_pair(eFID,eNULL)),
-    Function_ArgumentsType(247,std::make_pair(eInt,eNULL)),
-    Function_ArgumentsType(47,std::make_pair(eFID,eNULL)),
-    Function_ArgumentsType(107,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(80,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(27,std::make_pair(eFID,eNULL)),
-    Function_ArgumentsType(5,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(65,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(320,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(255,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(157,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(193,std::make_pair(eFID,eNULL)),
-    Function_ArgumentsType(199,std::make_pair(eFID,eNULL)),
-    Function_ArgumentsType(195,std::make_pair(eFID,eNULL)),
-    Function_ArgumentsType(197,std::make_pair(eFID,eNULL)),
-    Function_ArgumentsType(201,std::make_pair(eFID,eNULL)),
-    Function_ArgumentsType(249,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(132,std::make_pair(eFID,eNULL)),
-    Function_ArgumentsType(251,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(129,std::make_pair(eFID,eNULL)),
-    Function_ArgumentsType(130,std::make_pair(eFID,eNULL)),
-    Function_ArgumentsType(131,std::make_pair(eInt,eNULL)),
-    Function_ArgumentsType(312,std::make_pair(eInt,eNULL)),
-    Function_ArgumentsType(225,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(98,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(365,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(362,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(6,std::make_pair(eInt,eNULL)),
-    Function_ArgumentsType(56,std::make_pair(eFID,eNULL)),
-    Function_ArgumentsType(79,std::make_pair(eFID,eInt)),
-    Function_ArgumentsType(77,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(244,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(24,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(53,std::make_pair(eFID,eInt)),
-    Function_ArgumentsType(12,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(66,std::make_pair(eFID,eNULL)),
-    Function_ArgumentsType(159,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(49,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(58,std::make_pair(eFID,eNULL)),
-    Function_ArgumentsType(59,std::make_pair(eFID,eInt)),
-    Function_ArgumentsType(11,std::make_pair(eInt,eNULL)),
-    Function_ArgumentsType(10,std::make_pair(eInt,eNULL)),
-    Function_ArgumentsType(50,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(172,std::make_pair(eFID,eNULL)),
-    Function_ArgumentsType(361,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(315,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(144,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(242,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(259,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(258,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(40,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(142,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(108,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(109,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(147,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(154,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(214,std::make_pair(eFID,eNULL)),
-    Function_ArgumentsType(227,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(353,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(314,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(313,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(306,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(280,std::make_pair(eFID,eFID)),
-    Function_ArgumentsType(267,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(150,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(163,std::make_pair(eFID,eNULL)),
-    Function_ArgumentsType(162,std::make_pair(eFID,eNULL)),
-    Function_ArgumentsType(354,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(106,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(125,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(282,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(112,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(289,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(332,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(300,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(146,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(285,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(278,std::make_pair(eFID,eNULL)),
-    Function_ArgumentsType(176,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(175,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(171,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(358,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(339,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(266,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(62,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(327,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(287,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(103,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(286,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(75,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(223,std::make_pair(eFID,eNULL)),
-    Function_ArgumentsType(185,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(141,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(265,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(102,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(145,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(329,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(111,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(101,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(309,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(104,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(36,std::make_pair(eInt,eNULL)),
-    Function_ArgumentsType(42,std::make_pair(eFID,eNULL)),
-    Function_ArgumentsType(133,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(43,std::make_pair(eFID,eNULL)),
-    Function_ArgumentsType(134,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(44,std::make_pair(eFID,eNULL)),
-    Function_ArgumentsType(135,std::make_pair(eNULL,eNULL)),
-    Function_ArgumentsType(323,std::make_pair(eNULL,eNULL))
+    Function_ArgumentsType(153,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(127,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(14,std::make_pair(eUINT32,eNONE)),
+    Function_ArgumentsType(61,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(190,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(8,std::make_pair(eUINT32,eNONE)),
+    Function_ArgumentsType(81,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(274,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(63,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(264,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(277,std::make_pair(eUINT32,eNONE)),
+    Function_ArgumentsType(229,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(41,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(122,std::make_pair(eFORMID,eUINT32)),
+    Function_ArgumentsType(116,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(110,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(143,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(18,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(148,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(170,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(46,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(84,std::make_pair(eFORMID,eNONE)),
+    Function_ArgumentsType(203,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(45,std::make_pair(eFORMID,eNONE)),
+    Function_ArgumentsType(180,std::make_pair(eFORMID,eNONE)),
+    Function_ArgumentsType(35,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(39,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(76,std::make_pair(eFORMID,eNONE)),
+    Function_ArgumentsType(1,std::make_pair(eFORMID,eNONE)),
+    Function_ArgumentsType(215,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(182,std::make_pair(eFORMID,eNONE)),
+    Function_ArgumentsType(73,std::make_pair(eFORMID,eNONE)),
+    Function_ArgumentsType(60,std::make_pair(eFORMID,eFORMID)),
+    Function_ArgumentsType(128,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(288,std::make_pair(eFORMID,eNONE)),
+    Function_ArgumentsType(160,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(74,std::make_pair(eFORMID,eNONE)),
+    Function_ArgumentsType(48,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(99,std::make_pair(eFORMID,eNONE)),
+    Function_ArgumentsType(318,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(338,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(67,std::make_pair(eFORMID,eNONE)),
+    Function_ArgumentsType(230,std::make_pair(eFORMID,eFORMID)),
+    Function_ArgumentsType(71,std::make_pair(eFORMID,eNONE)),
+    Function_ArgumentsType(32,std::make_pair(eFORMID,eNONE)),
+    Function_ArgumentsType(305,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(310,std::make_pair(eFORMID,eNONE)),
+    Function_ArgumentsType(91,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(68,std::make_pair(eFORMID,eNONE)),
+    Function_ArgumentsType(228,std::make_pair(eFORMID,eNONE)),
+    Function_ArgumentsType(64,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(161,std::make_pair(eFORMID,eNONE)),
+    Function_ArgumentsType(149,std::make_pair(eFORMID,eNONE)),
+    Function_ArgumentsType(237,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(72,std::make_pair(eFORMID,eNONE)),
+    Function_ArgumentsType(254,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(224,std::make_pair(eFORMID,eNONE)),
+    Function_ArgumentsType(69,std::make_pair(eFORMID,eNONE)),
+    Function_ArgumentsType(136,std::make_pair(eFORMID,eNONE)),
+    Function_ArgumentsType(70,std::make_pair(eUINT32,eNONE)),
+    Function_ArgumentsType(246,std::make_pair(eFORMID,eNONE)),
+    Function_ArgumentsType(247,std::make_pair(eUINT32,eNONE)),
+    Function_ArgumentsType(47,std::make_pair(eFORMID,eNONE)),
+    Function_ArgumentsType(107,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(80,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(27,std::make_pair(eFORMID,eNONE)),
+    Function_ArgumentsType(5,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(65,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(320,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(255,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(157,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(193,std::make_pair(eFORMID,eNONE)),
+    Function_ArgumentsType(199,std::make_pair(eFORMID,eNONE)),
+    Function_ArgumentsType(195,std::make_pair(eFORMID,eNONE)),
+    Function_ArgumentsType(197,std::make_pair(eFORMID,eNONE)),
+    Function_ArgumentsType(201,std::make_pair(eFORMID,eNONE)),
+    Function_ArgumentsType(249,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(132,std::make_pair(eFORMID,eNONE)),
+    Function_ArgumentsType(251,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(129,std::make_pair(eFORMID,eNONE)),
+    Function_ArgumentsType(130,std::make_pair(eFORMID,eNONE)),
+    Function_ArgumentsType(131,std::make_pair(eUINT32,eNONE)),
+    Function_ArgumentsType(312,std::make_pair(eUINT32,eNONE)),
+    Function_ArgumentsType(225,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(98,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(365,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(362,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(6,std::make_pair(eUINT32,eNONE)),
+    Function_ArgumentsType(56,std::make_pair(eFORMID,eNONE)),
+    Function_ArgumentsType(79,std::make_pair(eFORMID,eUINT32)),
+    Function_ArgumentsType(77,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(244,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(24,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(53,std::make_pair(eFORMID,eUINT32)),
+    Function_ArgumentsType(12,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(66,std::make_pair(eFORMID,eNONE)),
+    Function_ArgumentsType(159,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(49,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(58,std::make_pair(eFORMID,eNONE)),
+    Function_ArgumentsType(59,std::make_pair(eFORMID,eUINT32)),
+    Function_ArgumentsType(11,std::make_pair(eUINT32,eNONE)),
+    Function_ArgumentsType(10,std::make_pair(eUINT32,eNONE)),
+    Function_ArgumentsType(50,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(172,std::make_pair(eFORMID,eNONE)),
+    Function_ArgumentsType(361,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(315,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(144,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(242,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(259,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(258,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(40,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(142,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(108,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(109,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(147,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(154,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(214,std::make_pair(eFORMID,eNONE)),
+    Function_ArgumentsType(227,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(353,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(314,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(313,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(306,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(280,std::make_pair(eFORMID,eFORMID)),
+    Function_ArgumentsType(267,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(150,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(163,std::make_pair(eFORMID,eNONE)),
+    Function_ArgumentsType(162,std::make_pair(eFORMID,eNONE)),
+    Function_ArgumentsType(354,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(106,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(125,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(282,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(112,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(289,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(332,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(300,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(146,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(285,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(278,std::make_pair(eFORMID,eNONE)),
+    Function_ArgumentsType(176,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(175,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(171,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(358,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(339,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(266,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(62,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(327,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(287,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(103,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(286,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(75,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(223,std::make_pair(eFORMID,eNONE)),
+    Function_ArgumentsType(185,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(141,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(265,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(102,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(145,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(329,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(111,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(101,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(309,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(104,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(36,std::make_pair(eUINT32,eNONE)),
+    Function_ArgumentsType(42,std::make_pair(eFORMID,eNONE)),
+    Function_ArgumentsType(133,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(43,std::make_pair(eFORMID,eNONE)),
+    Function_ArgumentsType(134,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(44,std::make_pair(eFORMID,eNONE)),
+    Function_ArgumentsType(135,std::make_pair(eNONE,eNONE)),
+    Function_ArgumentsType(323,std::make_pair(eNONE,eNONE))
     };
 
-typedef std::map<unsigned long, char *>::value_type Function_NameType;
 Function_NameType Function_NameInit[] =
     {
     Function_NameType(153,"CanHaveFlames"),
@@ -973,7 +1283,7 @@ Function_NameType PACKTargetType_NameInit[] =
     Function_NameType(2,"Object type")
     };
 
-Function_NameType HardCodedFormID_EDIDInit[] =
+Function_NameType HardCodedFormID_EditorIDInit[] =
     {
     Function_NameType(0x0001,"DoorMarker"),
     Function_NameType(0x0002,"TravelMarker"),
@@ -1210,12 +1520,83 @@ Function_NameType HardCodedFormID_EDIDInit[] =
     Function_NameType(0x022B,"FSTMetal")
     };
 
-const std::map<unsigned long, std::pair<unsigned long,unsigned long>> Function_Arguments(Function_ArgumentsInit, Function_ArgumentsInit + sizeof(Function_ArgumentsInit) / sizeof(Function_ArgumentsInit[0]));
+UINT32 _AllPossibleGroups[] = {'TCAF', 'ECAR', 'FEGM', 'TPCS', 'XETL', 'HCNE', 'LEPS', 'NGSB', 
+                       'ITCA', 'APPA', 'OMRA', 'KOOB', 'TOLC', 'TNOC', 'ROOD', 'RGNI', 
+                       'HGIL', 'CSIM', 'ROLF', 'NRUF', 'PAEW', 'OMMA', '_CPN', 'AERC', 
+                       'CLVL', 'MGLS', 'MYEK', 'HCLA', 'TSGS', 'ILVL', 'RHTW', 'TMLC', 
+                       'NGER', 'LLEC', 'DLRW', 'LAID', 'TSUQ', 'ELDI', 'KCAP', 'RCSL', 
+                       'PSVL', 'OINA', 'RTAW',};
 
-const std::map<unsigned long, char *> Function_Name(Function_NameInit, Function_NameInit + sizeof(Function_NameInit) / sizeof(Function_NameInit[0]));
-const std::map<unsigned long, char *> Comparison_Name(Comparison_NameInit, Comparison_NameInit + sizeof(Comparison_NameInit) / sizeof(Comparison_NameInit[0]));
-const std::map<unsigned long, char *> IDLEGroup_Name(IDLEGroup_NameInit, IDLEGroup_NameInit + sizeof(IDLEGroup_NameInit) / sizeof(IDLEGroup_NameInit[0]));
-const std::map<unsigned long, char *> PACKAIType_Name(PACKAIType_NameInit, PACKAIType_NameInit + sizeof(PACKAIType_NameInit) / sizeof(PACKAIType_NameInit[0]));
-const std::map<unsigned long, char *> PACKLocType_Name(PACKLocType_NameInit, PACKLocType_NameInit + sizeof(PACKLocType_NameInit) / sizeof(PACKLocType_NameInit[0]));
-const std::map<unsigned long, char *> PACKTargetType_Name(PACKTargetType_NameInit, PACKTargetType_NameInit + sizeof(PACKTargetType_NameInit) / sizeof(PACKTargetType_NameInit[0]));
-const std::map<unsigned long, char *> HardCodedFormID_EDID(HardCodedFormID_EDIDInit, HardCodedFormID_EDIDInit + sizeof(HardCodedFormID_EDIDInit) / sizeof(HardCodedFormID_EDIDInit[0]));
+std::vector<UINT32> AllGroups(_AllPossibleGroups, _AllPossibleGroups + (sizeof(_AllPossibleGroups) / sizeof(_AllPossibleGroups[0])));
+
+RecordType_PossibleGroupsType RecordType_PossibleGroupsInit[] =
+    {
+    RecordType_PossibleGroupsType('TSMG', AllGroups),
+    RecordType_PossibleGroupsType('BOLG', AllGroups),
+    RecordType_PossibleGroupsType('SALC', AllGroups),
+    RecordType_PossibleGroupsType('TCAF', AllGroups),
+    RecordType_PossibleGroupsType('RIAH', AllGroups),
+    RecordType_PossibleGroupsType('SEYE', AllGroups),
+    RecordType_PossibleGroupsType('ECAR', AllGroups),
+    RecordType_PossibleGroupsType('NUOS', AllGroups),
+    RecordType_PossibleGroupsType('LIKS', AllGroups),
+    RecordType_PossibleGroupsType('FEGM', AllGroups),
+    RecordType_PossibleGroupsType('TPCS', AllGroups),
+    RecordType_PossibleGroupsType('XETL', AllGroups),
+    RecordType_PossibleGroupsType('HCNE', AllGroups),
+    RecordType_PossibleGroupsType('LEPS', AllGroups),
+    RecordType_PossibleGroupsType('NGSB', AllGroups),
+    RecordType_PossibleGroupsType('ITCA', AllGroups),
+    RecordType_PossibleGroupsType('APPA', AllGroups),
+    RecordType_PossibleGroupsType('OMRA', AllGroups),
+    RecordType_PossibleGroupsType('KOOB', AllGroups),
+    RecordType_PossibleGroupsType('TOLC', AllGroups),
+    RecordType_PossibleGroupsType('TNOC', AllGroups),
+    RecordType_PossibleGroupsType('ROOD', AllGroups),
+    RecordType_PossibleGroupsType('RGNI', AllGroups),
+    RecordType_PossibleGroupsType('HGIL', AllGroups),
+    RecordType_PossibleGroupsType('CSIM', AllGroups),
+    RecordType_PossibleGroupsType('TATS', AllGroups),
+    RecordType_PossibleGroupsType('SARG', AllGroups),
+    RecordType_PossibleGroupsType('EERT', AllGroups),
+    RecordType_PossibleGroupsType('ROLF', AllGroups),
+    RecordType_PossibleGroupsType('NRUF', AllGroups),
+    RecordType_PossibleGroupsType('PAEW', AllGroups),
+    RecordType_PossibleGroupsType('OMMA', AllGroups),
+    RecordType_PossibleGroupsType('_CPN', AllGroups),
+    RecordType_PossibleGroupsType('AERC', AllGroups),
+    RecordType_PossibleGroupsType('CLVL', AllGroups),
+    RecordType_PossibleGroupsType('MGLS', AllGroups),
+    RecordType_PossibleGroupsType('MYEK', AllGroups),
+    RecordType_PossibleGroupsType('HCLA', AllGroups),
+    RecordType_PossibleGroupsType('PSBS', AllGroups),
+    RecordType_PossibleGroupsType('TSGS', AllGroups),
+    RecordType_PossibleGroupsType('ILVL', AllGroups),
+    RecordType_PossibleGroupsType('RHTW', AllGroups),
+    RecordType_PossibleGroupsType('TMLC', AllGroups),
+    RecordType_PossibleGroupsType('NGER', AllGroups),
+    RecordType_PossibleGroupsType('LLEC', AllGroups),
+    RecordType_PossibleGroupsType('DLRW', AllGroups),
+    RecordType_PossibleGroupsType('LAID', AllGroups),
+    RecordType_PossibleGroupsType('TSUQ', AllGroups),
+    RecordType_PossibleGroupsType('ELDI', AllGroups),
+    RecordType_PossibleGroupsType('KCAP', AllGroups),
+    RecordType_PossibleGroupsType('YTSC', AllGroups),
+    RecordType_PossibleGroupsType('RCSL', AllGroups),
+    RecordType_PossibleGroupsType('PSVL', AllGroups),
+    RecordType_PossibleGroupsType('OINA', AllGroups),
+    RecordType_PossibleGroupsType('RTAW', AllGroups),
+    RecordType_PossibleGroupsType('HSFE', AllGroups)
+    };
+
+const std::map<UINT32, std::vector<UINT32>> RecordType_PossibleGroups(RecordType_PossibleGroupsInit, RecordType_PossibleGroupsInit + sizeof(RecordType_PossibleGroupsInit) / sizeof(RecordType_PossibleGroupsInit[0]));
+
+const std::map<UINT32, std::pair<UINT32,UINT32>> Function_Arguments(Function_ArgumentsInit, Function_ArgumentsInit + sizeof(Function_ArgumentsInit) / sizeof(Function_ArgumentsInit[0]));
+
+const std::map<UINT32, STRING> Function_Name(Function_NameInit, Function_NameInit + sizeof(Function_NameInit) / sizeof(Function_NameInit[0]));
+const std::map<UINT32, STRING> Comparison_Name(Comparison_NameInit, Comparison_NameInit + sizeof(Comparison_NameInit) / sizeof(Comparison_NameInit[0]));
+const std::map<UINT32, STRING> IDLEGroup_Name(IDLEGroup_NameInit, IDLEGroup_NameInit + sizeof(IDLEGroup_NameInit) / sizeof(IDLEGroup_NameInit[0]));
+const std::map<UINT32, STRING> PACKAIType_Name(PACKAIType_NameInit, PACKAIType_NameInit + sizeof(PACKAIType_NameInit) / sizeof(PACKAIType_NameInit[0]));
+const std::map<UINT32, STRING> PACKLocType_Name(PACKLocType_NameInit, PACKLocType_NameInit + sizeof(PACKLocType_NameInit) / sizeof(PACKLocType_NameInit[0]));
+const std::map<UINT32, STRING> PACKTargetType_Name(PACKTargetType_NameInit, PACKTargetType_NameInit + sizeof(PACKTargetType_NameInit) / sizeof(PACKTargetType_NameInit[0]));
+const std::map<UINT32, STRING> HardCodedFormID_EditorID(HardCodedFormID_EditorIDInit, HardCodedFormID_EditorIDInit + sizeof(HardCodedFormID_EditorIDInit) / sizeof(HardCodedFormID_EditorIDInit[0]));
