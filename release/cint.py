@@ -153,6 +153,11 @@ class ISTRING(str):
         return str.count(self.lower(), other.lower(), *args)
 
     def endswith(self, other, *args):
+        if isinstance(other, tuple):
+            for value in other:
+                if str.endswith(self.lower(), value.lower(), *args):
+                    return True
+            return False
         return str.endswith(self.lower(), other.lower(), *args)
 
     def find(self, other, *args):
@@ -168,6 +173,11 @@ class ISTRING(str):
         return str.rindex(self.lower(), other.lower(), *args)
 
     def startswith(self, other, *args):
+        if isinstance(other, tuple):
+            for value in other:
+                if str.startswith(self.lower(), value.lower(), *args):
+                    return True
+            return False
         return str.startswith(self.lower(), other.lower(), *args)
 
 class PrintFormID(object):
@@ -5034,11 +5044,11 @@ class ObModFile(object):
 
     @property
     def ModName(self):
-        return _CGetModName(self._CollectionID, self._ModID)
+        return _CGetModName(self._CollectionID, self._ModID) or 'Missing'
 
     @property
     def NormModName(self):
-        ModName = _CGetModName(self._CollectionID, self._ModID)
+        ModName = _CGetModName(self._CollectionID, self._ModID) or 'Missing'
         if ModName[-6:] == '.ghost':
             return ModName[:-6]
         return ModName
@@ -5072,7 +5082,7 @@ class ObModFile(object):
         if(numRecords > 0):
             cRecords = ((c_char * 4) * numRecords)()
             _CGetModTypes(self._CollectionID, self._ModID, byref(cRecords))
-            return [cRecord for cRecord in cRecords if cRecord]
+            return [cRecord.value for cRecord in cRecords if cRecord]
         return []
 
     def UpdateReferences(self, FormIDToReplace, ReplacementFormID):

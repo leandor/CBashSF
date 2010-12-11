@@ -306,7 +306,7 @@ SINT32 Collection::Load()
                     //Any new mods loaded this way inherit their flags
                     ModFlags preloadFlags(curModFile->Flags.GetFlags());
                     preloadFlags.IsNoLoad = !curModFile->Flags.IsLoadMasters;
-                    preloadFlags.IsInLoadOrder = !preloadFlags.IsNoLoad;
+                    //preloadFlags.IsInLoadOrder = !preloadFlags.IsNoLoad;
                     for(UINT8 x = 0; x < curModFile->TES4.MAST.size(); ++x)
                         Preloading = (AddMod(curModFile->TES4.MAST[x].value, preloadFlags) == 0 || Preloading);
                     }
