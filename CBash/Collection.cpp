@@ -725,6 +725,7 @@ SINT32 Collection::SetRecordIDs(ModFile *curModFile, const FORMID &RecordFormID,
         LookupRecord(curModFile, FormIDValue, curRecord);
 
     //If the EditorIDValue is already in use by the mod, do nothing.
+    //This only cares about records keyed by editorID since they'd get the most confused
     if(bChangingEditorID && EditorIDValue != NULL)
         LookupRecord(curModFile, EditorIDValue, curRecord);
 
@@ -779,5 +780,5 @@ SINT32 Collection::SetRecordIDs(ModFile *curModFile, const FORMID &RecordFormID,
         RecordIndexer indexer(curModFile, curEditorID_Map, curFormID_Map);
         indexer.Accept(&curRecord);
         }
-    return (bChangingFormID || bChangingEditorID) ? 1 : -1;
+    return (bChangingFormID || bChangingEditorID) ? curRecord->IsChanged(true) : -1;
     }

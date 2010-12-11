@@ -1191,7 +1191,7 @@ def assertRACE(Current, newMod):
     assert len(record.spells) == 3
     assert record.spells == [('Oblivion.esm', 0x047AE6), ('Oblivion.esm', 0x047AE5), ('Oblivion.esm', 0x047AE7)]
     assert len(record.relations) == 3
-    assert record.relations_list == [[('Oblivion.esm',0x0224FC), -5], [('Oblivion.esm',0x000907), -5], [('Oblivion.esm',0x000D43), 5]]
+    assert record.relations_list == [(('Oblivion.esm',0x0224FC), -5), (('Oblivion.esm',0x000907), -5), (('Oblivion.esm',0x000D43), 5)]
     assert record.skill1 == 13
     assert record.skill1Boost == 10
     assert record.skill2 == 16
@@ -1376,7 +1376,7 @@ def assertRACE(Current, newMod):
     relations = record.relations
     record.relations = [relations[1],relations[0],relations[2],relations[3]]
     relations_list = record.relations_list
-    relations_list.append([('Oblivion.esm', 0x001234),15])
+    relations_list.append((('Oblivion.esm', 0x001234),15))
     record.relations_list = relations_list
     record.skill1 = 1
     record.skill1Boost = 11
@@ -10330,12 +10330,12 @@ from timeit import Timer
 ##maxi = max(test)
 ##print "Min:%.15f, Avg:%.15f, Max:%.15f" % (mini, avgi, maxi)
 
-print "10TestFullLoad"
-test = [Timer('TestFullLoad()', 'from __main__ import TestFullLoad').timeit(1) for x in range(0, 10)]
-mini = min(test)
-avgi = sum(test) / len(test)
-maxi = max(test)
-print "Min:%.15f, Avg:%.15f, Max:%.15f" % (mini, avgi, maxi)
+##print "10TestFullLoad"
+##test = [Timer('TestFullLoad()', 'from __main__ import TestFullLoad').timeit(1) for x in range(0, 10)]
+##mini = min(test)
+##avgi = sum(test) / len(test)
+##maxi = max(test)
+##print "Min:%.15f, Avg:%.15f, Max:%.15f" % (mini, avgi, maxi)
 
 ##phonenumber = raw_input(">")
 
