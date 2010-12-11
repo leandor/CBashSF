@@ -1443,118 +1443,118 @@ class ListX3Component(object):
         self._ListX3Index = ListX3Index
 
 class Model(BaseComponent):
-    modPath = CBashISTRING_GROUP(0)
-    modb = CBashFLOAT32_GROUP(1)
-    modt_p = CBashUINT8ARRAY_GROUP(2)
+    ISTRING_GROUPEDMACRO(modPath, 0)
+    FLOAT32_GROUPEDMACRO(modb, 1)
+    UINT8_ARRAY_GROUPEDMACRO(modt_p, 2)
     copyattrs = ['modPath', 'modb', 'modt_p']
 
 class Item(ListComponent):
-    item = CBashFORMID_LIST(1)
-    count = CBashGeneric_LIST(2, c_long)
+    FORMID_LISTMACRO(item, self._FieldID, 1)
+    SINT32_LISTMACRO(count, self._FieldID, 2)
     copyattrs = ['item', 'count']
 
 class Condition(ListComponent):
-    operType = CBashGeneric_LIST(1, c_ubyte)
-    unused1 = CBashUINT8ARRAY_LIST(2, 3)
-    compValue = CBashFLOAT32_LIST(3)
-    ifunc = CBashGeneric_LIST(4, c_ulong)
-    param1 = CBashUNKNOWN_OR_FORMID_OR_UINT32_LIST(5)
-    param2 = CBashUNKNOWN_OR_FORMID_OR_UINT32_LIST(6)
-    unused2 = CBashUINT8ARRAY_LIST(7, 4)
-    IsEqual = CBashMaskedType('operType', 0xF0, 0x00, 'IsNotEqual')
-    IsNotEqual = CBashMaskedType('operType', 0xF0, 0x20, 'IsEqual')
-    IsGreater = CBashMaskedType('operType', 0xF0, 0x40, 'IsEqual')
-    IsGreaterOrEqual = CBashMaskedType('operType', 0xF0, 0x60, 'IsEqual')
-    IsLess = CBashMaskedType('operType', 0xF0, 0x80, 'IsEqual')
-    IsLessOrEqual = CBashMaskedType('operType', 0xF0, 0xA0, 'IsEqual')
-    IsOr = CBashBasicFlag('operType', 0x01)
-    IsRunOnTarget = CBashBasicFlag('operType', 0x02)
-    IsUseGlobal = CBashBasicFlag('operType', 0x04)
+    UINT8_FLAG_TYPE_LISTMACRO(operType, self._FieldID, 1)
+    UINT8_ARRAY_LISTMACRO(unused1, self._FieldID, 2, 3)
+    FLOAT32_LISTMACRO(compValue, self._FieldID, 3)
+    UINT32_TYPE_LISTMACRO(ifunc, self._FieldID, 4)
+    UNKNOWN_OR_FORMID_OR_UINT32_LISTMACRO(param1, self._FieldID, 5)
+    UNKNOWN_OR_FORMID_OR_UINT32_LISTMACRO(param2, self._FieldID, 6)
+    UINT8_ARRAY_LISTMACRO(unused2, self._FieldID, 7, 4)
+    MaskedTypeMACRO(IsEqual, operType, 0xF0, 0x00, IsNotEqual)
+    MaskedTypeMACRO(IsNotEqual, operType, 0xF0, 0x20, IsEqual)
+    MaskedTypeMACRO(IsGreater, operType, 0xF0, 0x40, IsEqual)
+    MaskedTypeMACRO(IsGreaterOrEqual, operType, 0xF0, 0x60, IsEqual)
+    MaskedTypeMACRO(IsLess, operType, 0xF0, 0x80, IsEqual)
+    MaskedTypeMACRO(IsLessOrEqual, operType, 0xF0, 0xA0, IsEqual)
+    BasicFlagMACRO(IsOr, operType, 0x01)
+    BasicFlagMACRO(IsRunOnTarget, operType, 0x02)
+    BasicFlagMACRO(IsUseGlobal, operType, 0x04)
     copyattrs = ['operType', 'compValue', 'ifunc', 'param1', 'param2']
 
 class Effect(ListComponent):
     ##name0 and name are both are always the same value, so setting one will set both. They're basically aliases
-    name0 = CBashMGEFCODE_OR_UINT32_LIST(1)
-    name = CBashMGEFCODE_OR_UINT32_LIST(2)
-    magnitude = CBashGeneric_LIST(3, c_ulong)
-    area = CBashGeneric_LIST(4, c_ulong)
-    duration = CBashGeneric_LIST(5, c_ulong)
-    recipient = CBashGeneric_LIST(6, c_ulong)
-    actorValue = CBashFORMID_OR_MGEFCODE_OR_ACTORVALUE_OR_UINT32_LIST(7) #OBME
-    script = CBashFORMID_OR_MGEFCODE_OR_ACTORVALUE_OR_UINT32_LIST(8) #OBME
-    school = CBashGeneric_LIST(9, c_ulong)
-    visual = CBashMGEFCODE_OR_UINT32_LIST(10) #OBME
-    flags = CBashGeneric_LIST(11, c_ubyte)
-    unused1 = CBashUINT8ARRAY_LIST(12, 3)
-    full = CBashSTRING_LIST(13) #OBME
+    MGEFCODE_OR_UINT32_LISTMACRO(name0, self._FieldID, 1)
+    MGEFCODE_OR_UINT32_LISTMACRO(name, self._FieldID, 2)
+    UINT32_LISTMACRO(magnitude, self._FieldID, 3)
+    UINT32_LISTMACRO(area, self._FieldID, 4)
+    UINT32_LISTMACRO(duration, self._FieldID, 5)
+    UINT32_LISTMACRO(recipient, self._FieldID, 6)
+    OBMEFORMID_OR_MGEFCODE_OR_ACTORVALUE_OR_UINT32_LISTMACRO(actorValue, self._FieldID, 7)
+    OBMEFORMID_OR_MGEFCODE_OR_ACTORVALUE_OR_UINT32_LISTMACRO(script, self._FieldID, 8)
+    UINT32_LISTMACRO(school, self._FieldID, 9)
+    OBMEMGEFCODE_OR_UINT32_LISTMACRO(visual, self._FieldID, 10)
+    UINT8_FLAG_LISTMACRO(flags, self._FieldID, 11)
+    UINT8_ARRAY_LISTMACRO(unused1, self._FieldID, 12, 3)
+    OBMESTRING_LISTMACRO(full, self._FieldID, 13)
     ##OBME Fields. Setting any of the below fields will make the mod require JRoush's OBME plugin for OBSE
     ##To see if OBME is in use, check the recordVersion field for a non-None value
-    recordVersion = CBashGeneric_LIST(14, c_ubyte) #OBME
-    betaVersion = CBashGeneric_LIST(15, c_ubyte) #OBME
-    minorVersion = CBashGeneric_LIST(16, c_ubyte) #OBME
-    majorVersion = CBashGeneric_LIST(17, c_ubyte) #OBME
-    efitParamInfo = CBashGeneric_LIST(18, c_ubyte) #OBME
-    efixParamInfo = CBashGeneric_LIST(19, c_ubyte) #OBME
-    reserved1 = CBashUINT8ARRAY_LIST(20, 0xA) #OBME
-    iconPath = CBashISTRING_LIST(21) #OBME
+    OBMEUINT8_LISTMACRO(recordVersion, self._FieldID, 14)
+    OBMEUINT8_LISTMACRO(betaVersion, self._FieldID, 15)
+    OBMEUINT8_LISTMACRO(minorVersion, self._FieldID, 16)
+    OBMEUINT8_LISTMACRO(majorVersion, self._FieldID, 17)
+    OBMEUINT8_LISTMACRO(efitParamInfo, self._FieldID, 18)
+    OBMEUINT8_LISTMACRO(efixParamInfo, self._FieldID, 19)
+    OBMEUINT8_ARRAY_LISTMACRO(reserved1, self._FieldID, 20, 0xA)
+    OBMEISTRING_LISTMACRO(iconPath, self._FieldID, 21)
     ##If efixOverrides ever equals 0, the EFIX chunk will become unloaded
     ##This includes the fields: efixOverrides,  efixFlags, baseCost, resistAV, reserved2
-    efixOverrides = CBashGeneric_LIST(22, c_ulong) #OBME
-    efixFlags = CBashGeneric_LIST(23, c_ulong) #OBME
-    baseCost = CBashFLOAT32_LIST(24) #OBME
-    resistAV = CBashACTORVALUE_LIST(25) #OBME
-    reserved2 = CBashUINT8ARRAY_LIST(26, 0x10) #OBME
-    IsHostile = CBashBasicFlag('flags', 0x01)
-    IsSelf = CBashBasicType('recipient', 0, 'IsTouch')
-    IsTouch = CBashBasicType('recipient', 1, 'IsSelf')
-    IsTarget = CBashBasicType('recipient', 2, 'IsSelf')
+    OBMEUINT32_FLAG_LISTMACRO(efixOverrides, self._FieldID, 22)
+    OBMEUINT32_FLAG_LISTMACRO(efixFlags, self._FieldID, 23)
+    OBMEFLOAT32_LISTMACRO(baseCost, self._FieldID, 24)
+    OBMEACTORVALUE_LISTMACRO(resistAV, self._FieldID, 25)
+    OBMEUINT8_ARRAY_LISTMACRO(reserved2, self._FieldID, 26, 0x10)
+    BasicFlagMACRO(IsHostile, flags, 0x01)
+    BasicTypeMACRO(IsSelf, recipient, 0, IsTouch)
+    BasicTypeMACRO(IsTouch, recipient, 1, IsSelf)
+    BasicTypeMACRO(IsTarget, recipient, 2, IsSelf)
     ##OBME Fields. Setting any of the below fields will make the mod require JRoush's OBME plugin for OBSE
     ##To see if OBME is in use, check the recordVersion field for a non-None value
-    IsUsingHostileOverride = CBashBasicFlag('efixOverrides', 0x00000001) #OBME
-    IsUsingRecoversOverride = CBashBasicFlag('efixOverrides', 0x00000002) #OBME
-    IsUsingParamFlagAOverride = CBashBasicFlag('efixOverrides', 0x00000004) #OBME
-    IsUsingBeneficialOverride = CBashBasicFlag('efixOverrides', 0x00000008) #OBME
-    IsUsingEFIXParamOverride = CBashBasicFlag('efixOverrides', 0x00000010) #OBME
-    IsUsingSchoolOverride = CBashBasicFlag('efixOverrides', 0x00000020) #OBME
-    IsUsingNameOverride = CBashBasicFlag('efixOverrides', 0x00000040) #OBME
-    IsUsingVFXCodeOverride = CBashBasicFlag('efixOverrides', 0x00000080) #OBME
-    IsUsingBaseCostOverride = CBashBasicFlag('efixOverrides', 0x00000100) #OBME
-    IsUsingResistAVOverride = CBashBasicFlag('efixOverrides', 0x00000200) #OBME
-    IsUsingFXPersistsOverride = CBashBasicFlag('efixOverrides', 0x00000400) #OBME
-    IsUsingIconOverride = CBashBasicFlag('efixOverrides', 0x00000800) #OBME
-    IsUsingDoesntTeachOverride = CBashBasicFlag('efixOverrides', 0x00001000) #OBME
-    IsUsingUnknownFOverride = CBashBasicFlag('efixOverrides', 0x00004000) #OBME
-    IsUsingNoRecastOverride = CBashBasicFlag('efixOverrides', 0x00008000) #OBME
-    IsUsingParamFlagBOverride = CBashBasicFlag('efixOverrides', 0x00010000) #OBME
-    IsUsingMagnitudeIsRangeOverride = CBashBasicFlag('efixOverrides', 0x00020000) #OBME
-    IsUsingAtomicResistanceOverride = CBashBasicFlag('efixOverrides', 0x00040000) #OBME
-    IsUsingParamFlagCOverride = CBashBasicFlag('efixOverrides', 0x00080000) #OBME
-    IsUsingParamFlagDOverride = CBashBasicFlag('efixOverrides', 0x00100000) #OBME
-    IsUsingDisabledOverride = CBashBasicFlag('efixOverrides', 0x00400000) #OBME
-    IsUsingUnknownOOverride = CBashBasicFlag('efixOverrides', 0x00800000) #OBME
-    IsUsingNoHitEffectOverride = CBashBasicFlag('efixOverrides', 0x08000000) #OBME
-    IsUsingPersistOnDeathOverride = CBashBasicFlag('efixOverrides', 0x10000000) #OBME
-    IsUsingExplodesWithForceOverride = CBashBasicFlag('efixOverrides', 0x20000000) #OBME
-    IsUsingHiddenOverride = CBashBasicFlag('efixOverrides', 0x40000000) #OBME
+    OBMEBasicFlagMACRO(IsUsingHostileOverride, efixOverrides, 0x00000001)
+    OBMEBasicFlagMACRO(IsUsingRecoversOverride, efixOverrides, 0x00000002)
+    OBMEBasicFlagMACRO(IsUsingParamFlagAOverride, efixOverrides, 0x00000004)
+    OBMEBasicFlagMACRO(IsUsingBeneficialOverride, efixOverrides, 0x00000008)
+    OBMEBasicFlagMACRO(IsUsingEFIXParamOverride, efixOverrides, 0x00000010)
+    OBMEBasicFlagMACRO(IsUsingSchoolOverride, efixOverrides, 0x00000020)
+    OBMEBasicFlagMACRO(IsUsingNameOverride, efixOverrides, 0x00000040)
+    OBMEBasicFlagMACRO(IsUsingVFXCodeOverride, efixOverrides, 0x00000080)
+    OBMEBasicFlagMACRO(IsUsingBaseCostOverride, efixOverrides, 0x00000100)
+    OBMEBasicFlagMACRO(IsUsingResistAVOverride, efixOverrides, 0x00000200)
+    OBMEBasicFlagMACRO(IsUsingFXPersistsOverride, efixOverrides, 0x00000400)
+    OBMEBasicFlagMACRO(IsUsingIconOverride, efixOverrides, 0x00000800)
+    OBMEBasicFlagMACRO(IsUsingDoesntTeachOverride, efixOverrides, 0x00001000)
+    OBMEBasicFlagMACRO(IsUsingUnknownFOverride, efixOverrides, 0x00004000)
+    OBMEBasicFlagMACRO(IsUsingNoRecastOverride, efixOverrides, 0x00008000)
+    OBMEBasicFlagMACRO(IsUsingParamFlagBOverride, efixOverrides, 0x00010000)
+    OBMEBasicFlagMACRO(IsUsingMagnitudeIsRangeOverride, efixOverrides, 0x00020000)
+    OBMEBasicFlagMACRO(IsUsingAtomicResistanceOverride, efixOverrides, 0x00040000)
+    OBMEBasicFlagMACRO(IsUsingParamFlagCOverride, efixOverrides, 0x00080000)
+    OBMEBasicFlagMACRO(IsUsingParamFlagDOverride, efixOverrides, 0x00100000)
+    OBMEBasicFlagMACRO(IsUsingDisabledOverride, efixOverrides, 0x00400000)
+    OBMEBasicFlagMACRO(IsUsingUnknownOOverride, efixOverrides, 0x00800000)
+    OBMEBasicFlagMACRO(IsUsingNoHitEffectOverride, efixOverrides, 0x08000000)
+    OBMEBasicFlagMACRO(IsUsingPersistOnDeathOverride, efixOverrides, 0x10000000)
+    OBMEBasicFlagMACRO(IsUsingExplodesWithForceOverride, efixOverrides, 0x20000000)
+    OBMEBasicFlagMACRO(IsUsingHiddenOverride, efixOverrides, 0x40000000)
     ##The related efixOverrides flag must be set for the following to be used
-    IsHostileOverride = CBashBasicFlag('efixFlags', 0x00000001) #OBME
-    IsRecoversOverride = CBashBasicFlag('efixFlags', 0x00000002) #OBME
-    IsParamFlagAOverride = CBashBasicFlag('efixFlags', 0x00000004) #OBME
-    IsBeneficialOverride = CBashBasicFlag('efixFlags', 0x00000008) #OBME
-    IsFXPersistsOverride = CBashBasicFlag('efixFlags', 0x00000400) #OBME
-    IsUnknownFOverride = CBashBasicFlag('efixFlags', 0x00004000) #OBME
-    IsNoRecastOverride = CBashBasicFlag('efixFlags', 0x00008000) #OBME
-    IsParamFlagBOverride = CBashBasicFlag('efixFlags', 0x00010000) #OBME
-    IsMagnitudeIsRangeOverride = CBashBasicFlag('efixFlags', 0x00020000) #OBME
-    IsAtomicResistanceOverride = CBashBasicFlag('efixFlags', 0x00040000) #OBME
-    IsParamFlagCOverride = CBashBasicFlag('efixFlags', 0x00080000) #OBME
-    IsParamFlagDOverride = CBashBasicFlag('efixFlags', 0x00100000) #OBME
-    IsDisabledOverride = CBashBasicFlag('efixFlags', 0x00400000) #OBME
-    IsUnknownOOverride = CBashBasicFlag('efixFlags', 0x00800000) #OBME
-    IsNoHitEffectOverride = CBashBasicFlag('efixFlags', 0x08000000) #OBME
-    IsPersistOnDeathOverride = CBashBasicFlag('efixFlags', 0x10000000) #OBME
-    IsExplodesWithForceOverride = CBashBasicFlag('efixFlags', 0x20000000) #OBME
-    IsHiddenOverride = CBashBasicFlag('efixFlags', 0x40000000) #OBME
+    OBMEBasicFlagMACRO(IsHostileOverride, efixFlags, 0x00000001)
+    OBMEBasicFlagMACRO(IsRecoversOverride, efixFlags, 0x00000002)
+    OBMEBasicFlagMACRO(IsParamFlagAOverride, efixFlags, 0x00000004)
+    OBMEBasicFlagMACRO(IsBeneficialOverride, efixFlags, 0x00000008)
+    OBMEBasicFlagMACRO(IsFXPersistsOverride, efixFlags, 0x00000400)
+    OBMEBasicFlagMACRO(IsUnknownFOverride, efixFlags, 0x00004000)
+    OBMEBasicFlagMACRO(IsNoRecastOverride, efixFlags, 0x00008000)
+    OBMEBasicFlagMACRO(IsParamFlagBOverride, efixFlags, 0x00010000)
+    OBMEBasicFlagMACRO(IsMagnitudeIsRangeOverride, efixFlags, 0x00020000)
+    OBMEBasicFlagMACRO(IsAtomicResistanceOverride, efixFlags, 0x00040000)
+    OBMEBasicFlagMACRO(IsParamFlagCOverride, efixFlags, 0x00080000)
+    OBMEBasicFlagMACRO(IsParamFlagDOverride, efixFlags, 0x00100000)
+    OBMEBasicFlagMACRO(IsDisabledOverride, efixFlags, 0x00400000)
+    OBMEBasicFlagMACRO(IsUnknownOOverride, efixFlags, 0x00800000)
+    OBMEBasicFlagMACRO(IsNoHitEffectOverride, efixFlags, 0x08000000)
+    OBMEBasicFlagMACRO(IsPersistOnDeathOverride, efixFlags, 0x10000000)
+    OBMEBasicFlagMACRO(IsExplodesWithForceOverride, efixFlags, 0x20000000)
+    OBMEBasicFlagMACRO(IsHiddenOverride, efixFlags, 0x40000000)
     copyattrs = ['name', 'magnitude', 'area', 'duration', 'recipient',
                  'actorValue', 'script', 'school', 'visual', 'flags',
                  'full']
@@ -1566,22 +1566,22 @@ class Effect(ListComponent):
                                  'reserved2']
 
 class Faction(ListComponent):
-    faction = CBashFORMID_LIST(1)
-    rank = CBashGeneric_LIST(2, c_ubyte)
-    unused1 = CBashUINT8ARRAY_LIST(3, 3)
+    FORMID_LISTMACRO(faction, self._FieldID, 1)
+    UINT8_LISTMACRO(rank, self._FieldID, 2)
+    UINT8_ARRAY_LISTMACRO(unused1, self._FieldID, 3, 3)
     copyattrs = ['faction', 'rank']
 
 class Relation(ListComponent):
-    faction = CBashFORMID_LIST(1)
-    mod = CBashGeneric_LIST(2, c_long)
+    FORMID_LISTMACRO(faction, self._FieldID, 1)
+    SINT32_LISTMACRO(mod, self._FieldID, 2)
     copyattrs = ['faction', 'mod']
 
 class PGRP(ListComponent):
-    x = CBashFLOAT32_LIST(1)
-    y = CBashFLOAT32_LIST(2)
-    z = CBashFLOAT32_LIST(3)
-    connections = CBashGeneric_LIST(4, c_ubyte)
-    unused1 = CBashUINT8ARRAY_LIST(5, 3)
+    FLOAT32_LISTMACRO(x, self._FieldID, 1)
+    FLOAT32_LISTMACRO(y, self._FieldID, 2)
+    FLOAT32_LISTMACRO(z, self._FieldID, 3)
+    UINT8_LISTMACRO(connections, self._FieldID, 4)
+    UINT8_ARRAY_LISTMACRO(unused1, self._FieldID, 5, 3)
     copyattrs = ['x', 'y', 'z', 'connections']
 
 #--Accessors
@@ -1732,7 +1732,7 @@ class ObFormIDRecord(object):
         if(retValue): return retValue.value
         return None
 
-    flags1 = CBashGeneric(1, c_ulong)
+    UINT32_FLAG_MACRO(flags1, 1)
 
     def get_fid(self):
         _CGetField.restype = POINTER(c_ulong)
@@ -1748,7 +1748,7 @@ class ObFormIDRecord(object):
             self._RecordID = nValue
     fid = property(get_fid, set_fid)
 
-    flags2 = CBashGeneric(3, c_ulong)
+    UINT32_FLAG_MACRO(flags2, 3)
 
     def get_eid(self):
         _CGetField.restype = c_char_p
@@ -1763,20 +1763,20 @@ class ObFormIDRecord(object):
         _CSetRecordIDs(self._CollectionID, self._ModID, _FormID, _EditorID, _FormID, nValue)
     eid = property(get_eid, set_eid)
     
-    IsDeleted = CBashBasicFlag('flags1', 0x00000020)
-    IsBorderRegion = CBashBasicFlag('flags1', 0x00000040)
-    IsTurnOffFire = CBashBasicFlag('flags1', 0x00000080)
-    IsCastsShadows = CBashBasicFlag('flags1', 0x00000200)
-    IsPersistent = CBashBasicFlag('flags1', 0x00000400)
-    IsQuest = CBashAlias('IsPersistent')
-    IsQuestOrPersistent = CBashAlias('IsPersistent')
-    IsInitiallyDisabled = CBashBasicFlag('flags1', 0x00000800)
-    IsIgnored = CBashBasicFlag('flags1', 0x00001000)
-    IsVisibleWhenDistant = CBashBasicFlag('flags1', 0x00008000)
-    IsVWD = CBashAlias('IsVisibleWhenDistant')
-    IsDangerousOrOffLimits = CBashBasicFlag('flags1', 0x00020000)
-    IsCompressed = CBashBasicFlag('flags1', 0x00040000)
-    IsCantWait = CBashBasicFlag('flags1', 0x00080000)
+    BasicFlagMACRO(IsDeleted, flags1, 0x00000020)
+    BasicFlagMACRO(IsBorderRegion, flags1, 0x00000040)
+    BasicFlagMACRO(IsTurnOffFire, flags1, 0x00000080)
+    BasicFlagMACRO(IsCastsShadows, flags1, 0x00000200)
+    BasicFlagMACRO(IsPersistent, flags1, 0x00000400)
+    BasicAliasMACRO(IsQuest, IsPersistent)
+    BasicAliasMACRO(IsQuestOrPersistent, IsPersistent)
+    BasicFlagMACRO(IsInitiallyDisabled, flags1, 0x00000800)
+    BasicFlagMACRO(IsIgnored, flags1, 0x00001000)
+    BasicFlagMACRO(IsVisibleWhenDistant, flags1, 0x00008000)
+    BasicAliasMACRO(IsVWD, IsVisibleWhenDistant)
+    BasicFlagMACRO(IsDangerousOrOffLimits, flags1, 0x00020000)
+    BasicFlagMACRO(IsCompressed, flags1, 0x00040000)
+    BasicFlagMACRO(IsCantWait, flags1, 0x00080000)
     baseattrs = ['flags1', 'flags2', 'eid']
 
 class ObEditorIDRecord(object):
@@ -1907,7 +1907,7 @@ class ObEditorIDRecord(object):
     def recType(self):
         return self._Type
 
-    flags1 = CBashEDIDGeneric(1, c_ulong)
+    UINT32_FLAG_EDIDMACRO(flags1, 1)
 
     def get_fid(self):
         _CGetField.restype = POINTER(c_ulong)
@@ -1925,7 +1925,7 @@ class ObEditorIDRecord(object):
         _CSetRecordIDs(self._CollectionID, self._ModID, _FormID, _EditorID, nValue, _EditorID)
     fid = property(get_fid, set_fid)
 
-    flags2 = CBashEDIDGeneric(3, c_ulong)
+    UINT32_FLAG_EDIDMACRO(flags2, 3)
 
     def get_eid(self):
         _CGetField.restype = c_char_p
@@ -1944,20 +1944,20 @@ class ObEditorIDRecord(object):
             self._RecordID = nValue
     eid = property(get_eid, set_eid)
     
-    IsDeleted = CBashBasicFlag('flags1', 0x00000020)
-    IsBorderRegion = CBashBasicFlag('flags1', 0x00000040)
-    IsTurnOffFire = CBashBasicFlag('flags1', 0x00000080)
-    IsCastsShadows = CBashBasicFlag('flags1', 0x00000200)
-    IsPersistent = CBashBasicFlag('flags1', 0x00000400)
-    IsQuest = CBashAlias('IsPersistent')
-    IsQuestOrPersistent = CBashAlias('IsPersistent')
-    IsInitiallyDisabled = CBashBasicFlag('flags1', 0x00000800)
-    IsIgnored = CBashBasicFlag('flags1', 0x00001000)
-    IsVisibleWhenDistant = CBashBasicFlag('flags1', 0x00008000)
-    IsVWD = CBashAlias('IsVisibleWhenDistant')
-    IsDangerousOrOffLimits = CBashBasicFlag('flags1', 0x00020000)
-    IsCompressed = CBashBasicFlag('flags1', 0x00040000)
-    IsCantWait = CBashBasicFlag('flags1', 0x00080000)
+    BasicFlagMACRO(IsDeleted, flags1, 0x00000020)
+    BasicFlagMACRO(IsBorderRegion, flags1, 0x00000040)
+    BasicFlagMACRO(IsTurnOffFire, flags1, 0x00000080)
+    BasicFlagMACRO(IsCastsShadows, flags1, 0x00000200)
+    BasicFlagMACRO(IsPersistent, flags1, 0x00000400)
+    BasicAliasMACRO(IsQuest, IsPersistent)
+    BasicAliasMACRO(IsQuestOrPersistent, IsPersistent)
+    BasicFlagMACRO(IsInitiallyDisabled, flags1, 0x00000800)
+    BasicFlagMACRO(IsIgnored, flags1, 0x00001000)
+    BasicFlagMACRO(IsVisibleWhenDistant, flags1, 0x00008000)
+    BasicAliasMACRO(IsVWD, IsVisibleWhenDistant)
+    BasicFlagMACRO(IsDangerousOrOffLimits, flags1, 0x00020000)
+    BasicFlagMACRO(IsCompressed, flags1, 0x00040000)
+    BasicFlagMACRO(IsCantWait, flags1, 0x00080000)
     baseattrs = ['flags1', 'fid', 'flags2']
 
 class ObTES4Record(object):
@@ -1974,18 +1974,18 @@ class ObTES4Record(object):
     def recType(self):
         return self._Type
 
-    flags1 = CBashGeneric(1, c_ulong)
-    flags2 = CBashGeneric(3, c_ulong)
-    version = CBashFLOAT32(5)
-    numRecords = CBashGeneric(6, c_ulong)
-    nextObject = CBashGeneric(7, c_ulong)
-    ofst_p = CBashUINT8ARRAY(8)
-    dele_p = CBashUINT8ARRAY(9)
-    author = CBashSTRING(10)
-    description = CBashSTRING(11)
-    masters = CBashISTRINGARRAY(12)
-    DATA = CBashJunk(13)
-    IsESM = CBashBasicFlag('flags1', 0x00000001)
+    UINT32_FLAG_MACRO(flags1, 1)
+    UINT32_FLAG_MACRO(flags2, 3)
+    FLOAT32_MACRO(version, 5)
+    UINT32_MACRO(numRecords, 6)
+    UINT32_MACRO(nextObject, 7)
+    UINT8_ARRAY_MACRO(ofst_p, 8)
+    UINT8_ARRAY_MACRO(dele_p, 9)
+    STRING_MACRO(author, 10)
+    STRING_MACRO(description, 11)
+    ISTRING_ARRAY_MACRO(masters, 12)
+    JUNK_MACRO(DATA, 13)
+    BasicFlagMACRO(IsESM, flags1, 0x00000001)
     copyattrs = ['flags1', 'flags2', 'version', 'numRecords', 'nextObject',
                  'author', 'description', 'masters']
 
@@ -2026,29 +2026,26 @@ class ObACHRRecord(ObFormIDRecord):
         self._ParentID = ParentID
 
     _Type = 'ACHR'
-    base = CBashFORMID(5)
-    unknownXPCIFormID = CBashFORMID(6)
-    unknownXPCIString = CBashISTRING(7)
-    lod1 = CBashFLOAT32(8)
-    lod2 = CBashFLOAT32(9)
-    lod3 = CBashFLOAT32(10)
-    parent = CBashFORMID(11)
-    parentFlags = CBashGeneric(12, c_ubyte)
-    unused1 = CBashUINT8ARRAY(13, 3)
-    merchantContainer = CBashFORMID(14)
-    horse = CBashFORMID(15)
-    xrgd_p = CBashUINT8ARRAY(16)
-    scale = CBashFLOAT32(17)
-    posX = CBashFLOAT32(18)
-    posY = CBashFLOAT32(19)
-    posZ = CBashFLOAT32(20)
-    rotX = CBashFLOAT32(21)
-    rotX_degrees = CBashDEGREES(21)
-    rotY = CBashFLOAT32(22)
-    rotY_degrees = CBashDEGREES(22)
-    rotZ = CBashFLOAT32(23)
-    rotZ_degrees = CBashDEGREES(23)
-    IsOppositeParent = CBashBasicFlag('parentFlags', 0x00000001)
+    FORMID_MACRO(base, 5)
+    FORMID_MACRO(unknownXPCIFormID, 6)
+    ISTRING_MACRO(unknownXPCIString, 7)
+    FLOAT32_MACRO(lod1, 8)
+    FLOAT32_MACRO(lod2, 9)
+    FLOAT32_MACRO(lod3, 10)
+    FORMID_MACRO(parent, 11)
+    UINT8_FLAG_MACRO(parentFlags, 12)
+    UINT8_ARRAY_MACRO(unused1, 13, 3)
+    FORMID_MACRO(merchantContainer, 14)
+    FORMID_MACRO(horse, 15)
+    UINT8_ARRAY_MACRO(xrgd_p, 16)
+    FLOAT32_MACRO(scale, 17)
+    FLOAT32_MACRO(posX, 18)
+    FLOAT32_MACRO(posY, 19)
+    FLOAT32_MACRO(posZ, 20)
+    RADIAN_MACRO(rotX, 21)
+    RADIAN_MACRO(rotY, 22)
+    RADIAN_MACRO(rotZ, 23)
+    BasicFlagMACRO(IsOppositeParent, parentFlags, 0x00000001)
     copyattrs = ObFormIDRecord.baseattrs + ['base', 'unknownXPCIFormID', 'unknownXPCIString',
                                         'lod1', 'lod2', 'lod3', 'parent', 'parentFlags',
                                         'merchantContainer', 'horse', 'xrgd_p', 'scale',
@@ -2060,28 +2057,25 @@ class ObACRERecord(ObFormIDRecord):
         self._ParentID = ParentID
 
     _Type = 'ACRE'
-    base = CBashFORMID(5)
-    owner = CBashFORMID(6)
-    rank = CBashGeneric(7, c_long)
-    globalVariable = CBashFORMID(8)
-    lod1 = CBashFLOAT32(9)
-    lod2 = CBashFLOAT32(10)
-    lod3 = CBashFLOAT32(11)
-    parent = CBashFORMID(12)
-    parentFlags = CBashGeneric(13, c_ubyte)
-    unused1 = CBashUINT8ARRAY(14, 3)
-    xrgd_p = CBashUINT8ARRAY(15)
-    scale = CBashFLOAT32(16)
-    posX = CBashFLOAT32(17)
-    posY = CBashFLOAT32(18)
-    posZ = CBashFLOAT32(19)
-    rotX = CBashFLOAT32(20)
-    rotX_degrees = CBashDEGREES(20)
-    rotY = CBashFLOAT32(21)
-    rotY_degrees = CBashDEGREES(21)
-    rotZ = CBashFLOAT32(22)
-    rotZ_degrees = CBashDEGREES(22)
-    IsOppositeParent = CBashBasicFlag('parentFlags', 0x00000001)
+    FORMID_MACRO(base, 5)
+    FORMID_MACRO(owner, 6)
+    SINT32_MACRO(rank, 7)
+    FORMID_MACRO(globalVariable, 8)
+    FLOAT32_MACRO(lod1, 9)
+    FLOAT32_MACRO(lod2, 10)
+    FLOAT32_MACRO(lod3, 11)
+    FORMID_MACRO(parent, 12)
+    UINT8_FLAG_MACRO(parentFlags, 13)
+    UINT8_ARRAY_MACRO(unused1, 14, 3)
+    UINT8_ARRAY_MACRO(xrgd_p, 15)
+    FLOAT32_MACRO(scale, 16)
+    FLOAT32_MACRO(posX, 17)
+    FLOAT32_MACRO(posY, 18)
+    FLOAT32_MACRO(posZ, 19)
+    RADIAN_MACRO(rotX, 20)
+    RADIAN_MACRO(rotY, 21)
+    RADIAN_MACRO(rotZ, 22)
+    BasicFlagMACRO(IsOppositeParent, parentFlags, 0x00000001)
     copyattrs = ObFormIDRecord.baseattrs + ['base', 'owner', 'rank', 'globalVariable',
                                         'lod1', 'lod2', 'lod3', 'parent', 'parentFlags',
                                         'xrgd_p', 'scale', 'posX', 'posY', 'posZ', 'rotX',
@@ -2093,85 +2087,78 @@ class ObREFRRecord(ObFormIDRecord):
         self._ParentID = ParentID
 
     _Type = 'REFR'
-    base = CBashFORMID(5)
-    destination = CBashFORMID(6)
-    destinationPosX = CBashFLOAT32(7)
-    destinationPosY = CBashFLOAT32(8)
-    destinationPosZ = CBashFLOAT32(9)
-    destinationRotX = CBashFLOAT32(10)
-    destinationRotX_degrees = CBashDEGREES(10)
-    destinationRotY = CBashFLOAT32(11)
-    destinationRotY_degrees = CBashDEGREES(11)
-    destinationRotZ = CBashFLOAT32(12)
-    destinationRotZ_degrees = CBashDEGREES(12)
-    lockLevel = CBashGeneric(13, c_ubyte)
-    unused1 = CBashUINT8ARRAY(14, 3)
-    lockKey = CBashFORMID(15)
-    unused2 = CBashUINT8ARRAY(16, 4)
-    lockFlags = CBashGeneric(17, c_ubyte)
-    unused3 = CBashUINT8ARRAY(18, 3)
-    owner = CBashFORMID(19)
-    rank = CBashGeneric(20, c_long)
-    globalVariable = CBashFORMID(21)
-    parent = CBashFORMID(22)
-    parentFlags = CBashGeneric(23, c_ubyte)
-    unused4 = CBashUINT8ARRAY(24, 3)
-    target = CBashFORMID(25)
-    seed = CBashXSED(26)
-    seed_as_offset = CBashXSED(26, True)
-    lod1 = CBashFLOAT32(27)
-    lod2 = CBashFLOAT32(28)
-    lod3 = CBashFLOAT32(29)
-    charge = CBashFLOAT32(30)
-    health = CBashGeneric(31, c_long)
-    unknownXPCIFormID = CBashFORMID(32)
-    unknownXPCIString = CBashISTRING(33)
-    levelMod = CBashGeneric(34, c_long)
-    unknownXRTMFormID = CBashFORMID(35)
-    actionFlags = CBashGeneric(36, c_ulong)
-    count = CBashGeneric(37, c_long)
-    markerFlags = CBashGeneric(38, c_ubyte)
-    markerName = CBashSTRING(39)
-    markerType = CBashGeneric(40, c_ubyte)
-    markerUnused = CBashUINT8ARRAY(41, 1)
-    scale = CBashFLOAT32(42)
-    soulType = CBashGeneric(43, c_ubyte)
-    posX = CBashFLOAT32(44)
-    posY = CBashFLOAT32(45)
-    posZ = CBashFLOAT32(46)
-    rotX = CBashFLOAT32(47)
-    rotX_degrees = CBashDEGREES(47)
-    rotY = CBashFLOAT32(48)
-    rotY_degrees = CBashDEGREES(48)
-    rotZ = CBashFLOAT32(49)
-    rotZ_degrees = CBashDEGREES(49)
-    IsLeveledLock = CBashBasicFlag('lockFlags', 0x00000004)
-    IsOppositeParent = CBashBasicFlag('parentFlags', 0x00000001)
-    IsUseDefault = CBashBasicFlag('actionFlags', 0x00000001)
-    IsActivate = CBashBasicFlag('actionFlags', 0x00000002)
-    IsOpen = CBashBasicFlag('actionFlags', 0x00000004)
-    IsOpenByDefault = CBashBasicFlag('actionFlags', 0x00000008)
-    IsVisible = CBashBasicFlag('markerFlags', 0x00000001)
-    IsCanTravelTo = CBashBasicFlag('markerFlags', 0x00000002)
-    IsMarkerNone = CBashBasicType('markerType', 0, 'IsCamp')
-    IsCamp = CBashBasicType('markerType', 1, 'IsMarkerNone')
-    IsCave = CBashBasicType('markerType', 2, 'IsMarkerNone')
-    IsCity = CBashBasicType('markerType', 3, 'IsMarkerNone')
-    IsElvenRuin = CBashBasicType('markerType', 4, 'IsMarkerNone')
-    IsFortRuin = CBashBasicType('markerType', 5, 'IsMarkerNone')
-    IsMine = CBashBasicType('markerType', 6, 'IsMarkerNone')
-    IsLandmark = CBashBasicType('markerType', 7, 'IsMarkerNone')
-    IsTavern = CBashBasicType('markerType', 8, 'IsMarkerNone')
-    IsSettlement = CBashBasicType('markerType', 9, 'IsMarkerNone')
-    IsDaedricShrine = CBashBasicType('markerType', 10, 'IsMarkerNone')
-    IsOblivionGate = CBashBasicType('markerType', 11, 'IsMarkerNone')
-    IsUnknownDoorIcon = CBashBasicType('markerType', 12, 'IsMarkerNone')
-    IsNoSoul = CBashBasicType('soulType', 0, 'IsPettySoul')
-    IsPettySoul = CBashBasicType('soulType', 1, 'IsNoSoul')
-    IsLesserSoul = CBashBasicType('soulType', 2, 'IsNoSoul')
-    IsCommonSoul = CBashBasicType('soulType', 3, 'IsNoSoul')
-    IsGreaterSoul = CBashBasicType('soulType', 4, 'IsNoSoul')
-    IsGrandSoul = CBashBasicType('soulType', 5, 'IsNoSoul')
+    FORMID_MACRO(base, 5)
+    FORMID_MACRO(destination, 6)
+    FLOAT32_MACRO(destinationPosX, 7)
+    FLOAT32_MACRO(destinationPosY, 8)
+    FLOAT32_MACRO(destinationPosZ, 9)
+    RADIAN_MACRO(destinationRotX, 10)
+    RADIAN_MACRO(destinationRotY, 11)
+    RADIAN_MACRO(destinationRotZ, 12)
+    UINT8_MACRO(lockLevel, 13)
+    UINT8_ARRAY_MACRO(unused1, 14, 3)
+    FORMID_MACRO(lockKey, 15)
+    UINT8_ARRAY_MACRO(unused2, 16, 4)
+    UINT8_FLAG_MACRO(lockFlags, 17)
+    UINT8_ARRAY_MACRO(unused3, 18, 3)
+    FORMID_MACRO(owner, 19)
+    SINT32_MACRO(rank, 20)
+    FORMID_MACRO(globalVariable, 21)
+    FORMID_MACRO(parent, 22)
+    UINT8_FLAG_MACRO(parentFlags, 23)
+    UINT8_ARRAY_MACRO(unused4, 24, 3)
+    FORMID_MACRO(target, 25)
+    XSED_MACRO(seed, 26)
+    FLOAT32_MACRO(lod1, 27)
+    FLOAT32_MACRO(lod2, 28)
+    FLOAT32_MACRO(lod3, 29)
+    FLOAT32_MACRO(charge, 30)
+    SINT32_MACRO(health, 31)
+    FORMID_MACRO(unknownXPCIFormID, 32)
+    ISTRING_MACRO(unknownXPCIString, 33)
+    SINT32_MACRO(levelMod, 34)
+    FORMID_MACRO(unknownXRTMFormID, 35)
+    UINT32_FLAG_MACRO(actionFlags, 36)
+    SINT32_MACRO(count, 37)
+    UINT8_FLAG_MACRO(markerFlags, 38)
+    STRING_MACRO(markerName, 39)
+    UINT8_TYPE_MACRO(markerType, 40)
+    UINT8_ARRAY_MACRO(markerUnused, 41, 1)
+    FLOAT32_MACRO(scale, 42)
+    UINT8_TYPE_MACRO(soulType, 43)
+    FLOAT32_MACRO(posX, 44)
+    FLOAT32_MACRO(posY, 45)
+    FLOAT32_MACRO(posZ, 46)
+    RADIAN_MACRO(rotX, 47)
+    RADIAN_MACRO(rotY, 48)
+    RADIAN_MACRO(rotZ, 49)
+    BasicFlagMACRO(IsLeveledLock, lockFlags, 0x00000004)
+    BasicFlagMACRO(IsOppositeParent, parentFlags, 0x00000001)
+    BasicFlagMACRO(IsUseDefault, actionFlags, 0x00000001)
+    BasicFlagMACRO(IsActivate, actionFlags, 0x00000002)
+    BasicFlagMACRO(IsOpen, actionFlags, 0x00000004)
+    BasicFlagMACRO(IsOpenByDefault, actionFlags, 0x00000008)
+    BasicFlagMACRO(IsVisible, markerFlags, 0x00000001)
+    BasicFlagMACRO(IsCanTravelTo, markerFlags, 0x00000002)
+    BasicTypeMACRO(IsMarkerNone, markerType, 0, IsCamp)
+    BasicTypeMACRO(IsCamp, markerType, 1, IsMarkerNone)
+    BasicTypeMACRO(IsCave, markerType, 2, IsMarkerNone)
+    BasicTypeMACRO(IsCity, markerType, 3, IsMarkerNone)
+    BasicTypeMACRO(IsElvenRuin, markerType, 4, IsMarkerNone)
+    BasicTypeMACRO(IsFortRuin, markerType, 5, IsMarkerNone)
+    BasicTypeMACRO(IsMine, markerType, 6, IsMarkerNone)
+    BasicTypeMACRO(IsLandmark, markerType, 7, IsMarkerNone)
+    BasicTypeMACRO(IsTavern, markerType, 8, IsMarkerNone)
+    BasicTypeMACRO(IsSettlement, markerType, 9, IsMarkerNone)
+    BasicTypeMACRO(IsDaedricShrine, markerType, 10, IsMarkerNone)
+    BasicTypeMACRO(IsOblivionGate, markerType, 11, IsMarkerNone)
+    BasicTypeMACRO(IsUnknownDoorIcon, markerType, 12, IsMarkerNone)
+    BasicTypeMACRO(IsNoSoul, soulType, 0, IsPettySoul)
+    BasicTypeMACRO(IsPettySoul, soulType, 1, IsNoSoul)
+    BasicTypeMACRO(IsLesserSoul, soulType, 2, IsNoSoul)
+    BasicTypeMACRO(IsCommonSoul, soulType, 3, IsNoSoul)
+    BasicTypeMACRO(IsGreaterSoul, soulType, 4, IsNoSoul)
+    BasicTypeMACRO(IsGrandSoul, soulType, 5, IsNoSoul)
     copyattrs = ObFormIDRecord.baseattrs + ['base', 'destination',
                                         'destinationPosX', 'destinationPosY',
                                         'destinationPosZ', 'destinationRotX',
@@ -2197,68 +2184,56 @@ class ObINFORecord(ObFormIDRecord):
 
     _Type = 'INFO'
     class Response(ListComponent):
-        emotionType = CBashGeneric_LIST(1, c_ulong)
-        emotionValue = CBashGeneric_LIST(2, c_long)
-        unused1 = CBashUINT8ARRAY_LIST(3)
-        responseNum = CBashGeneric_LIST(4, c_ubyte)
-        unused2 = CBashUINT8ARRAY_LIST(5)
-        responseText = CBashSTRING_LIST(6)
-        actorNotes = CBashISTRING_LIST(7)
-        IsNeutral = CBashBasicType('emotionType', 0, 'IsAnger')
-        IsAnger = CBashBasicType('emotionType', 1, 'IsNeutral')
-        IsDisgust = CBashBasicType('emotionType', 2, 'IsNeutral')
-        IsFear = CBashBasicType('emotionType', 3, 'IsNeutral')
-        IsSad = CBashBasicType('emotionType', 4, 'IsNeutral')
-        IsHappy = CBashBasicType('emotionType', 5, 'IsNeutral')
-        IsSurprise = CBashBasicType('emotionType', 6, 'IsNeutral')
+        UINT32_LISTMACRO(emotionType, 11, 1)
+        SINT32_LISTMACRO(emotionValue, 11, 2)
+        UINT8_ARRAY_LISTMACRO(unused1, 11, 3)
+        UINT8_LISTMACRO(responseNum, 11, 4)
+        UINT8_ARRAY_LISTMACRO(unused2, 11, 5)
+        STRING_LISTMACRO(responseText, 11, 6)
+        ISTRING_LISTMACRO(actorNotes, 11, 7)
+        BasicTypeMACRO(IsNeutral, emotionType, 0, IsAnger)
+        BasicTypeMACRO(IsAnger, emotionType, 1, IsNeutral)
+        BasicTypeMACRO(IsDisgust, emotionType, 2, IsNeutral)
+        BasicTypeMACRO(IsFear, emotionType, 3, IsNeutral)
+        BasicTypeMACRO(IsSad, emotionType, 4, IsNeutral)
+        BasicTypeMACRO(IsHappy, emotionType, 5, IsNeutral)
+        BasicTypeMACRO(IsSurprise, emotionType, 6, IsNeutral)
         copyattrs = ['emotionType', 'emotionValue', 'unused1', 'responseNum',
                      'unused2', 'responseText', 'actorNotes']
 
-    dialType = CBashGeneric(5, c_ushort)
-    flags = CBashGeneric(6, c_ubyte)
-    quest = CBashFORMID(7)
-    topic = CBashFORMID(8)
-    prevInfo = CBashFORMID(9)
-    addTopics = CBashFORMIDARRAY(10)
+    UINT16_TYPE_MACRO(dialType, 5)
+    UINT8_FLAG_MACRO(flags, 6)
+    FORMID_MACRO(quest, 7)
+    FORMID_MACRO(topic, 8)
+    FORMID_MACRO(prevInfo, 9)
+    FORMID_ARRAY_MACRO(addTopics, 10)
 
-    def create_response(self):
-        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 11, 0, 0, 0, 0, 0, 0, 1)
-        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, 11, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
-        return self.Response(self._CollectionID, self._ModID, self._RecordID, 11, length)
-    responses = CBashLIST(11, Response)
-    responses_list = CBashLIST(11, Response, True)
-
-    def create_condition(self):
-        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 12, 0, 0, 0, 0, 0, 0, 1)
-        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, 12, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
-        return Condition(self._CollectionID, self._ModID, self._RecordID, 12, length)
-    conditions = CBashLIST(12, Condition)
-    conditions_list = CBashLIST(12, Condition, True)
-
-    choices = CBashFORMIDARRAY(13)
-    linksFrom = CBashFORMIDARRAY(14)
-    unused1 = CBashUINT8ARRAY(15, 4)
-    numRefs = CBashGeneric(16, c_ulong)
-    compiledSize = CBashGeneric(17, c_ulong)
-    lastIndex = CBashGeneric(18, c_ulong)
-    scriptType = CBashGeneric(19, c_ulong)
-    compiled_p = CBashUINT8ARRAY(20)
-    scriptText = CBashISTRING(21)
-    references = CBashFORMID_OR_UINT32_ARRAY(22)
-    IsTopic = CBashBasicType('dialType', 0, 'IsConversation')
-    IsConversation = CBashBasicType('dialType', 1, 'IsTopic')
-    IsCombat = CBashBasicType('dialType', 2, 'IsTopic')
-    IsPersuasion = CBashBasicType('dialType', 3, 'IsTopic')
-    IsDetection = CBashBasicType('dialType', 4, 'IsTopic')
-    IsService = CBashBasicType('dialType', 5, 'IsTopic')
-    IsMisc = CBashBasicType('dialType', 6, 'IsTopic')
-    IsGoodbye = CBashBasicFlag('flags', 0x00000001)
-    IsRandom = CBashBasicFlag('flags', 0x00000002)
-    IsSayOnce = CBashBasicFlag('flags', 0x00000004)
-    IsRunImmediately = CBashBasicFlag('flags', 0x00000008)
-    IsInfoRefusal = CBashBasicFlag('flags', 0x00000010)
-    IsRandomEnd = CBashBasicFlag('flags', 0x00000020)
-    IsRunForRumors = CBashBasicFlag('flags', 0x00000040)
+    LIST_MACRO(responses, 11, self.Response)
+    LIST_MACRO(conditions, 12, Condition)
+    FORMID_ARRAY_MACRO(choices, 13)
+    FORMID_ARRAY_MACRO(linksFrom, 14)
+    UINT8_ARRAY_MACRO(unused1, 15, 4)
+    UINT32_MACRO(numRefs, 16)
+    UINT32_MACRO(compiledSize, 17)
+    UINT32_MACRO(lastIndex, 18)
+    UINT32_MACRO(scriptType, 19)
+    UINT8_ARRAY_MACRO(compiled_p, 20)
+    ISTRING_MACRO(scriptText, 21)
+    FORMID_OR_UINT32_ARRAY_MACRO(references, 22)
+    BasicTypeMACRO(IsTopic, dialType, 0, IsConversation)
+    BasicTypeMACRO(IsConversation, dialType, 1, IsTopic)
+    BasicTypeMACRO(IsCombat, dialType, 2, IsTopic)
+    BasicTypeMACRO(IsPersuasion, dialType, 3, IsTopic)
+    BasicTypeMACRO(IsDetection, dialType, 4, IsTopic)
+    BasicTypeMACRO(IsService, dialType, 5, IsTopic)
+    BasicTypeMACRO(IsMisc, dialType, 6, IsTopic)
+    BasicFlagMACRO(IsGoodbye, flags, 0x00000001)
+    BasicFlagMACRO(IsRandom, flags, 0x00000002)
+    BasicFlagMACRO(IsSayOnce, flags, 0x00000004)
+    BasicFlagMACRO(IsRunImmediately, flags, 0x00000008)
+    BasicFlagMACRO(IsInfoRefusal, flags, 0x00000010)
+    BasicFlagMACRO(IsRandomEnd, flags, 0x00000020)
+    BasicFlagMACRO(IsRunForRumors, flags, 0x00000040)
     copyattrs = ObFormIDRecord.baseattrs + ['dialType', 'flags', 'quest', 'topic',
                                         'prevInfo', 'addTopics', 'responses_list',
                                         'conditions_list', 'choices', 'linksFrom',
@@ -2273,77 +2248,71 @@ class ObLANDRecord(ObFormIDRecord):
 
     _Type = 'LAND'
     class Normal(ListX2Component):
-        x = CBashGeneric_LISTX2(6, 0, 1, c_ubyte)
-        y = CBashGeneric_LISTX2(6, 0, 2, c_ubyte)
-        z = CBashGeneric_LISTX2(6, 0, 3, c_ubyte)
+        UINT8_LISTX2MACRO(x, 6, 0, 1)
+        UINT8_LISTX2MACRO(y, 6, 0, 2)
+        UINT8_LISTX2MACRO(z, 6, 0, 3)
         copyattrs = ['x', 'y', 'z']
 
     class Height(ListX2Component):
-        height = CBashGeneric_LISTX2(8, 0, 1, c_byte)
+        SINT8_LISTX2MACRO(height, 8, 0, 1)
         copyattrs = ['height']
 
     class Color(ListX2Component):
-        red = CBashGeneric_LISTX2(11, 0, 1, c_ubyte)
-        green = CBashGeneric_LISTX2(11, 0, 2, c_ubyte)
-        blue = CBashGeneric_LISTX2(11, 0, 3, c_ubyte)
+        UINT8_LISTX2MACRO(red, 11, 0, 1)
+        UINT8_LISTX2MACRO(green, 11, 0, 2)
+        UINT8_LISTX2MACRO(blue, 11, 0, 3)
         copyattrs = ['red', 'green', 'blue']
 
     class BaseTexture(ListComponent):
-        texture = CBashFORMID_LIST(1)
-        quadrant = CBashGeneric_LIST(2, c_byte)
-        unused1 = CBashUINT8ARRAY_LIST(3, 1)
-        layer = CBashGeneric_LIST(4, c_short)
+        FORMID_LISTMACRO(texture, self._FieldID, 1)
+        SINT8_LISTMACRO(quadrant, self._FieldID, 2)
+        UINT8_ARRAY_LISTMACRO(unused1, self._FieldID, 3, 1)
+        SINT16_LISTMACRO(layer, self._FieldID, 4)
         copyattrs = ['texture', 'quadrant', 'unused1', 'layer']
 
     class AlphaLayer(ListComponent):
         class Opacity(ListX2Component):
-            position = CBashGeneric_LISTX2(12, 5, 1, c_ushort)
-            unused1 = CBashUINT8ARRAY_LISTX2(12, 5, 2, 2)
-            opacity = CBashFLOAT32_LISTX2(12, 5, 3)
+            UINT16_LISTX2MACRO(position, 12, 5, 1)
+            UINT8_ARRAY_LISTX2MACRO(unused1, 12, 5, 2, 2)
+            FLOAT32_LISTX2MACRO(opacity, 12, 5, 3)
             copyattrs = ['position', 'unused1', 'opacity']
-        texture = CBashFORMID_LIST(1)
-        quadrant = CBashGeneric_LIST(2, c_byte)
-        unused1 = CBashUINT8ARRAY_LIST(3, 1)
-        layer = CBashGeneric_LIST(4, c_short)
+        FORMID_LISTMACRO(texture, 12, 1)
+        SINT8_LISTMACRO(quadrant, 12, 2)
+        UINT8_ARRAY_LISTMACRO(unused1, 12, 3, 1)
+        SINT16_LISTMACRO(layer, 12, 4)
 
-        def create_opacity(self):
-            length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 12, self._ListIndex, 5, 0, 0, 0, 0, 1)
-            CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, 12, self._ListIndex, 5, 0, 0, 0, 0, 0, c_ulong(length + 1))
-            return self.Opacity(self._CollectionID, self._ModID, self._RecordID, 12, self._ListIndex, 5, length)
-        opacities = CBashLIST_LIST(5, Opacity)
-        opacities_list = CBashLIST_LIST(5, Opacity, True)
-
+        LIST_LISTMACRO(opacities, 12, 5, self.Opacity)
         copyattrs = ['texture', 'quadrant', 'unused1', 'layer', 'opacities_list']
 
     class VertexTexture(ListComponent):
-        texture = CBashFORMID_LIST(1)
+        FORMID_LISTMACRO(texture, 13, 1)
         copyattrs = ['texture']
 
     class Position(ListX2Component):
-        height = CBashFLOAT32_LISTX2(14, 0, 1)
-        normalX = CBashGeneric_LISTX2(14, 0, 2, c_ubyte)
-        normalY = CBashGeneric_LISTX2(14, 0, 3, c_ubyte)
-        normalZ = CBashGeneric_LISTX2(14, 0, 4, c_ubyte)
-        red = CBashGeneric_LISTX2(14, 0, 5, c_ubyte)
-        green = CBashGeneric_LISTX2(14, 0, 6, c_ubyte)
-        blue = CBashGeneric_LISTX2(14, 0, 7, c_ubyte)
-        baseTexture = CBashFORMID_LISTX2(14, 0, 8)
-        alphaLayer1Texture = CBashFORMID_LISTX2(14, 0, 9)
-        alphaLayer1Opacity = CBashFLOAT32_LISTX2(14, 0, 10)
-        alphaLayer2Texture = CBashFORMID_LISTX2(14, 0, 11)
-        alphaLayer2Opacity = CBashFLOAT32_LISTX2(14, 0, 12)
-        alphaLayer3Texture = CBashFORMID_LISTX2(14, 0, 13)
-        alphaLayer3Opacity = CBashFLOAT32_LISTX2(14, 0, 14)
-        alphaLayer4Texture = CBashFORMID_LISTX2(14, 0, 15)
-        alphaLayer4Opacity = CBashFLOAT32_LISTX2(14, 0, 16)
-        alphaLayer5Texture = CBashFORMID_LISTX2(14, 0, 17)
-        alphaLayer5Opacity = CBashFLOAT32_LISTX2(14, 0, 18)
-        alphaLayer6Texture = CBashFORMID_LISTX2(14, 0, 19)
-        alphaLayer6Opacity = CBashFLOAT32_LISTX2(14, 0, 20)
-        alphaLayer7Texture = CBashFORMID_LISTX2(14, 0, 21)
-        alphaLayer7Opacity = CBashFLOAT32_LISTX2(14, 0, 22)
-        alphaLayer8Texture = CBashFORMID_LISTX2(14, 0, 23)
-        alphaLayer8Opacity = CBashFLOAT32_LISTX2(14, 0, 24)
+        FLOAT32_LISTX2MACRO(height, 14, 0, 1)
+        UINT8_LISTX2MACRO(normalX, 14, 0, 2)
+        UINT8_LISTX2MACRO(normalY, 14, 0, 3)
+        UINT8_LISTX2MACRO(normalZ, 14, 0, 4)
+        UINT8_LISTX2MACRO(red, 14, 0, 5)
+        UINT8_LISTX2MACRO(green, 14, 0, 6)
+        UINT8_LISTX2MACRO(blue, 14, 0, 7)
+        FORMID_LISTX2MACRO(baseTexture, 14, 0, 8)
+        FORMID_LISTX2MACRO(alphaLayer1Texture, 14, 0, 9)
+        FLOAT32_LISTX2MACRO(alphaLayer1Opacity, 14, 0, 10)
+        FORMID_LISTX2MACRO(alphaLayer2Texture, 14, 0, 11)
+        FLOAT32_LISTX2MACRO(alphaLayer2Opacity, 14, 0, 12)
+        FORMID_LISTX2MACRO(alphaLayer3Texture, 14, 0, 13)
+        FLOAT32_LISTX2MACRO(alphaLayer3Opacity, 14, 0, 14)
+        FORMID_LISTX2MACRO(alphaLayer4Texture, 14, 0, 15)
+        FLOAT32_LISTX2MACRO(alphaLayer4Opacity, 14, 0, 16)
+        FORMID_LISTX2MACRO(alphaLayer5Texture, 14, 0, 17)
+        FLOAT32_LISTX2MACRO(alphaLayer5Opacity, 14, 0, 18)
+        FORMID_LISTX2MACRO(alphaLayer6Texture, 14, 0, 19)
+        FLOAT32_LISTX2MACRO(alphaLayer6Opacity, 14, 0, 20)
+        FORMID_LISTX2MACRO(alphaLayer7Texture, 14, 0, 21)
+        FLOAT32_LISTX2MACRO(alphaLayer7Opacity, 14, 0, 22)
+        FORMID_LISTX2MACRO(alphaLayer8Texture, 14, 0, 23)
+        FLOAT32_LISTX2MACRO(alphaLayer8Opacity, 14, 0, 24)
         copyattrs = ['height', 'normalX', 'normalY', 'normalZ',
                      'red', 'green', 'blue', 'baseTexture',
                      'alphaLayer1Texture', 'alphaLayer1Opacity',
@@ -2355,7 +2324,7 @@ class ObLANDRecord(ObFormIDRecord):
                      'alphaLayer7Texture', 'alphaLayer7Opacity',
                      'alphaLayer8Texture', 'alphaLayer8Opacity']
 
-    data = CBashUINT8ARRAY(5)
+    UINT8_ARRAY_MACRO(data, 5)
 
     def get_normals(self):
         return [[self.Normal(self._CollectionID, self._ModID, self._RecordID, 6, x, 0, y) for y in range(0,33)] for x in range(0,33)]
@@ -2369,7 +2338,7 @@ class ObLANDRecord(ObFormIDRecord):
         return ExtractCopyList(self.normals)
     normals_list = property(get_normals_list, set_normals)
 
-    heightOffset = CBashFLOAT32(7)
+    FLOAT32_MACRO(heightOffset, 7)
 
     def get_heights(self):
         return [[self.Height(self._CollectionID, self._ModID, self._RecordID, 8, x, 0, y) for y in range(0,33)] for x in range(0,33)]
@@ -2383,7 +2352,7 @@ class ObLANDRecord(ObFormIDRecord):
         return ExtractCopyList(self.heights)
     heights_list = property(get_heights_list, set_heights)
 
-    unused1 = CBashUINT8ARRAY(9, 3)
+    UINT8_ARRAY_MACRO(unused1, 9, 3)
 
     def get_colors(self):
         return [[self.Color(self._CollectionID, self._ModID, self._RecordID, 10, x, 0, y) for y in range(0,33)] for x in range(0,33)]
@@ -2397,27 +2366,9 @@ class ObLANDRecord(ObFormIDRecord):
         return ExtractCopyList(self.colors)
     colors_list = property(get_colors_list, set_colors)
 
-    def create_baseTextur(self):
-        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 11, 0, 0, 0, 0, 0, 0, 1)
-        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, 11, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
-        return self.BaseTexture(self._CollectionID, self._ModID, self._RecordID, 11, length)
-    baseTextures = CBashLIST(11, BaseTexture)
-    baseTextures_list = CBashLIST(11, BaseTexture, True)
-
-    def create_alphaLayer(self):
-        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 12, 0, 0, 0, 0, 0, 0, 1)
-        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, 12, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
-        return self.AlphaLayer(self._CollectionID, self._ModID, self._RecordID, 12, length)
-    alphaLayers = CBashLIST(12, AlphaLayer)
-    alphaLayers_list = CBashLIST(12, AlphaLayer, True)
-
-    def create_vertexTextur(self):
-        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 13, 0, 0, 0, 0, 0, 0, 1)
-        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, 13, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
-        return self.VertexTexture(self._CollectionID, self._ModID, self._RecordID, 13, length)
-    vertexTextures = CBashLIST(13, VertexTexture)
-    vertexTextures_list = CBashLIST(13, VertexTexture, True)
-
+    LIST_MACRO(baseTextures, 11, self.BaseTexture)
+    LIST_MACRO(alphaLayers, 12, self.AlphaLayer)
+    LIST_MACRO(vertexTextures, 13, self.VertexTexture)
     ##The Positions accessor is unique in that it duplicates the above accessors. It just presents the data in a more friendly format.
     def get_Positions(self):
         return [[self.Position(self._CollectionID, self._ModID, self._RecordID, 14, row, 0, column) for column in range(0,33)] for row in range(0,33)]
@@ -2441,44 +2392,26 @@ class ObPGRDRecord(ObFormIDRecord):
 
     _Type = 'PGRD'
     class PGRI(ListComponent):
-        point = CBashGeneric_LIST(1, c_ushort)
-        unused1 = CBashUINT8ARRAY_LIST(2, 2)
-        x = CBashFLOAT32_LIST(3)
-        y = CBashFLOAT32_LIST(4)
-        z = CBashFLOAT32_LIST(5)
+        UINT16_LISTMACRO(point, 9, 1)
+        UINT8_ARRAY_LISTMACRO(unused1, 9, 2, 2)
+        FLOAT32_LISTMACRO(x, 9, 3)
+        FLOAT32_LISTMACRO(y, 9, 4)
+        FLOAT32_LISTMACRO(z, 9, 5)
         copyattrs = ['point', 'x', 'y', 'z']
 
     class PGRL(ListComponent):
-        reference = CBashFORMID_LIST(1)
-        points = CBashUINT32ARRAY_LIST(2)
+        FORMID_LISTMACRO(reference, 10, 1)
+        UINT32_ARRAY_LISTMACRO(points, 10, 2)
         copyattrs = ['reference', 'points']
 
-    count = CBashGeneric(5, c_ushort)
+    UINT16_MACRO(count, 5)
 
-    def create_pgrp(self):
-        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 6, 0, 0, 0, 0, 0, 0, 1)
-        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, 6, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
-        return PGRP(self._CollectionID, self._ModID, self._RecordID, 6, length)
-    pgrp = CBashLIST(6, PGRP)
-    pgrp_list = CBashLIST(6, PGRP, True)
+    LIST_MACRO(pgrp, 6, PGRP)
+    UINT8_ARRAY_MACRO(pgag_p, 7)
+    UINT8_ARRAY_MACRO(pgrr_p, 8)
 
-    pgag_p = CBashUINT8ARRAY(7)
-    pgrr_p = CBashUINT8ARRAY(8)
-
-    def create_pgri(self):
-        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 9, 0, 0, 0, 0, 0, 0, 1)
-        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, 9, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
-        return self.PGRI(self._CollectionID, self._ModID, self._RecordID, 9, length)
-    pgri = CBashLIST(9, PGRI)
-    pgri_list = CBashLIST(9, PGRI, True)
-
-    def create_pgrl(self):
-        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 10, 0, 0, 0, 0, 0, 0, 1)
-        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, 10, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
-        return self.PGRL(self._CollectionID, self._ModID, self._RecordID, 10, length)
-    pgrl = CBashLIST(10, PGRL)
-    pgrl_list = CBashLIST(10, PGRL, True)
-
+    LIST_MACRO(pgri, 9, self.PGRI)
+    LIST_MACRO(pgrl, 10, self.PGRL)
     copyattrs = ObFormIDRecord.baseattrs + ['count', 'pgrp_list', 'pgag_p', 'pgrr_p',
                                         'pgri_list', 'pgrl_list']
 
@@ -2489,68 +2422,50 @@ class ObROADRecord(ObFormIDRecord):
 
     _Type = 'ROAD'
     class PGRR(ListComponent):
-        x = CBashFLOAT32_LIST(1)
-        y = CBashFLOAT32_LIST(2)
-        z = CBashFLOAT32_LIST(3)
+        FLOAT32_LISTMACRO(x, 6, 1)
+        FLOAT32_LISTMACRO(y, 6, 2)
+        FLOAT32_LISTMACRO(z, 6, 3)
         copyattrs = ['x', 'y', 'z']
 
-    def create_pgrp(self):
-        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 5, 0, 0, 0, 0, 0, 0, 1)
-        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, 5, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
-        return PGRP(self._CollectionID, self._ModID, self._RecordID, 5, length)
-    pgrp = CBashLIST(5, PGRP)
-    pgrp_list = CBashLIST(5, PGRP, True)
-
-    def create_pgrr(self):
-        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 6, 0, 0, 0, 0, 0, 0, 1)
-        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, 6, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
-        return self.PGRR(self._CollectionID, self._ModID, self._RecordID, 6, length)
-    pgrr = CBashLIST(6, PGRR)
-    pgrr_list = CBashLIST(6, PGRR, True)
-
+    LIST_MACRO(pgrp, 5, PGRP)
+    LIST_MACRO(pgrr, 6, self.PGRR)
     copyattrs = ObFormIDRecord.baseattrs + ['pgrp_list', 'pgrr_list']
 
 class ObACTIRecord(ObFormIDRecord):
     _Type = 'ACTI'
-    full = CBashSTRING(5)
-    modPath = CBashISTRING(6)
-    modb = CBashFLOAT32(7)
-    modt_p = CBashUINT8ARRAY(8)
-    script = CBashFORMID(9)
-    sound = CBashFORMID(10)
+    STRING_MACRO(full, 5)
+    ISTRING_MACRO(modPath, 6)
+    FLOAT32_MACRO(modb, 7)
+    UINT8_ARRAY_MACRO(modt_p, 8)
+    FORMID_MACRO(script, 9)
+    FORMID_MACRO(sound, 10)
     copyattrs = ObFormIDRecord.baseattrs + ['full', 'modPath', 'modb', 'modt_p', 'script',
                                         'sound']
 
 class ObALCHRecord(ObFormIDRecord):
     _Type = 'ALCH'
-    full = CBashSTRING(5)
-    modPath = CBashISTRING(6)
-    modb = CBashFLOAT32(7)
-    modt_p = CBashUINT8ARRAY(8)
-    iconPath = CBashISTRING(9)
-    script = CBashFORMID(10)
-    weight = CBashFLOAT32(11)
-    value = CBashGeneric(12, c_long)
-    flags = CBashGeneric(13, c_ubyte)
-    unused1 = CBashUINT8ARRAY(14, 3)
+    STRING_MACRO(full, 5)
+    ISTRING_MACRO(modPath, 6)
+    FLOAT32_MACRO(modb, 7)
+    UINT8_ARRAY_MACRO(modt_p, 8)
+    ISTRING_MACRO(iconPath, 9)
+    FORMID_MACRO(script, 10)
+    FLOAT32_MACRO(weight, 11)
+    SINT32_MACRO(value, 12)
+    UINT8_FLAG_MACRO(flags, 13)
+    UINT8_ARRAY_MACRO(unused1, 14, 3)
 
-    def create_effect(self):
-        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 15, 0, 0, 0, 0, 0, 0, 1)
-        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, 15, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
-        return Effect(self._CollectionID, self._ModID, self._RecordID, 15, length)
-    effects = CBashLIST(15, Effect)
-    effects_list = CBashLIST(15, Effect, True)
-
-    IsNoAutoCalc = CBashBasicFlag('flags', 0x00000001)
-    IsFood = CBashBasicFlag('flags', 0x00000002)
+    LIST_MACRO(effects, 15, Effect)
+    BasicFlagMACRO(IsNoAutoCalc, flags, 0x00000001)
+    BasicFlagMACRO(IsFood, flags, 0x00000002)
     ##OBME Fields. Setting any of the below fields will make the mod require JRoush's OBME plugin for OBSE
     ##To see if OBME is in use, check the recordVersion field for a non-None value
-    recordVersion = CBashGeneric(16, c_ubyte) #OBME
-    betaVersion = CBashGeneric(17, c_ubyte) #OBME
-    minorVersion = CBashGeneric(18, c_ubyte) #OBME
-    majorVersion = CBashGeneric(19, c_ubyte) #OBME
-    reserved = CBashUINT8ARRAY(20, 0x1C) #OBME
-    datx_p = CBashUINT8ARRAY(21, 0x20) #OBME
+    OBMEUINT8_MACRO(recordVersion, 16)
+    OBMEUINT8_MACRO(betaVersion, 17)
+    OBMEUINT8_MACRO(minorVersion, 18)
+    OBMEUINT8_MACRO(majorVersion, 19)
+    OBMEUINT8_ARRAY_MACRO(reserved, 20, 0x1C)
+    OBMEUINT8_ARRAY_MACRO(datx_p, 21, 0x20)
     copyattrs = ObFormIDRecord.baseattrs + ['full', 'modPath', 'modb', 'modt_p',
                                         'iconPath', 'script', 'weight',
                                         'value', 'flags', 'effects_list']
@@ -2560,23 +2475,23 @@ class ObALCHRecord(ObFormIDRecord):
 
 class ObAMMORecord(ObFormIDRecord):
     _Type = 'AMMO'
-    full = CBashSTRING(5)
-    modPath = CBashISTRING(6)
-    modb = CBashFLOAT32(7)
-    modt_p = CBashUINT8ARRAY(8)
-    iconPath = CBashISTRING(9)
-    enchantment = CBashFORMID(10)
-    enchantPoints = CBashGeneric(11, c_ushort)
-    speed = CBashFLOAT32(12)
-    flags = CBashGeneric(13, c_ubyte)
-    unused1 = CBashUINT8ARRAY(14, 3)
-    value = CBashGeneric(15, c_ulong)
-    weight = CBashFLOAT32(16)
-    damage = CBashGeneric(17, c_ushort)
-    IsNotNormal = CBashBasicFlag('flags', 0x00000001)
-    IsNotNormalWeapon = CBashAlias('IsNotNormal')
-    IsNormal = CBashInvertedFlag('IsNotNormal')
-    IsNormalWeapon = CBashAlias('IsNormal')
+    STRING_MACRO(full, 5)
+    ISTRING_MACRO(modPath, 6)
+    FLOAT32_MACRO(modb, 7)
+    UINT8_ARRAY_MACRO(modt_p, 8)
+    ISTRING_MACRO(iconPath, 9)
+    FORMID_MACRO(enchantment, 10)
+    UINT16_MACRO(enchantPoints, 11)
+    FLOAT32_MACRO(speed, 12)
+    UINT8_FLAG_MACRO(flags, 13)
+    UINT8_ARRAY_MACRO(unused1, 14, 3)
+    UINT32_MACRO(value, 15)
+    FLOAT32_MACRO(weight, 16)
+    UINT16_MACRO(damage, 17)
+    BasicFlagMACRO(IsNotNormal, flags, 0x00000001)
+    BasicAliasMACRO(IsNotNormalWeapon, IsNotNormal)
+    BasicInvertedFlagMACRO(IsNormal, IsNotNormal)
+    BasicAliasMACRO(IsNormalWeapon, IsNormal)
     copyattrs = ObFormIDRecord.baseattrs + ['full', 'modPath', 'modb', 'modt_p',
                                         'iconPath', 'enchantment',
                                         'enchantPoints', 'speed', 'flags',
@@ -2584,70 +2499,70 @@ class ObAMMORecord(ObFormIDRecord):
 
 class ObANIORecord(ObFormIDRecord):
     _Type = 'ANIO'
-    modPath = CBashISTRING(5)
-    modb = CBashFLOAT32(6)
-    modt_p = CBashUINT8ARRAY(7)
-    animationId = CBashFORMID(8)
+    ISTRING_MACRO(modPath, 5)
+    FLOAT32_MACRO(modb, 6)
+    UINT8_ARRAY_MACRO(modt_p, 7)
+    FORMID_MACRO(animationId, 8)
     copyattrs = ObFormIDRecord.baseattrs + ['modPath', 'modb', 'modt_p', 'animationId']
 
 class ObAPPARecord(ObFormIDRecord):
     _Type = 'APPA'
-    full = CBashSTRING(5)
-    modPath = CBashISTRING(6)
-    modb = CBashFLOAT32(7)
-    modt_p = CBashUINT8ARRAY(8)
-    iconPath = CBashISTRING(9)
-    script = CBashFORMID(10)
-    apparatusType = CBashGeneric(11, c_ubyte)
-    value = CBashGeneric(12, c_ulong)
-    weight = CBashFLOAT32(13)
-    quality = CBashFLOAT32(14)
-    IsMortarPestle = CBashBasicType('apparatus', 0, 'IsAlembic')
-    IsAlembic = CBashBasicType('apparatus', 1, 'IsMortarPestle')
-    IsCalcinator = CBashBasicType('apparatus', 2, 'IsMortarPestle')
-    IsRetort = CBashBasicType('apparatus', 3, 'IsMortarPestle')
+    STRING_MACRO(full, 5)
+    ISTRING_MACRO(modPath, 6)
+    FLOAT32_MACRO(modb, 7)
+    UINT8_ARRAY_MACRO(modt_p, 8)
+    ISTRING_MACRO(iconPath, 9)
+    FORMID_MACRO(script, 10)
+    UINT8_TYPE_MACRO(apparatusType, 11)
+    UINT32_MACRO(value, 12)
+    FLOAT32_MACRO(weight, 13)
+    FLOAT32_MACRO(quality, 14)
+    BasicTypeMACRO(IsMortarPestle, apparatus, 0, IsAlembic)
+    BasicTypeMACRO(IsAlembic, apparatus, 1, IsMortarPestle)
+    BasicTypeMACRO(IsCalcinator, apparatus, 2, IsMortarPestle)
+    BasicTypeMACRO(IsRetort, apparatus, 3, IsMortarPestle)
     copyattrs = ObFormIDRecord.baseattrs + ['full', 'modPath', 'modb', 'modt_p',
                                         'iconPath', 'script', 'apparatusType',
                                         'value', 'weight', 'quality']
 
 class ObARMORecord(ObFormIDRecord):
     _Type = 'ARMO'
-    full = CBashSTRING(5)
-    script = CBashFORMID(6)
-    enchantment = CBashFORMID(7)
-    enchantPoints = CBashGeneric(8, c_ushort)
-    flags = CBashGeneric(9, c_ulong)
-    maleBody = CBashGrouped(10, Model)
-    maleWorld = CBashGrouped(13, Model)
-    maleIconPath = CBashISTRING(16)
-    femaleBody = CBashGrouped(17, Model)
-    femaleWorld = CBashGrouped(20, Model)
-    femaleIconPath = CBashISTRING(23)
-    strength = CBashGeneric(24, c_ushort)
-    value = CBashGeneric(25, c_ulong)
-    health = CBashGeneric(26, c_ulong)
-    weight = CBashFLOAT32(27)
-    IsHead = CBashBasicFlag('flags', 0x00000001)
-    IsHair = CBashBasicFlag('flags', 0x00000002)
-    IsUpperBody = CBashBasicFlag('flags', 0x00000004)
-    IsLowerBody = CBashBasicFlag('flags', 0x00000008)
-    IsHand = CBashBasicFlag('flags', 0x00000010)
-    IsFoot = CBashBasicFlag('flags', 0x00000020)
-    IsRightRing = CBashBasicFlag('flags', 0x00000040)
-    IsLeftRing = CBashBasicFlag('flags', 0x00000080)
-    IsAmulet = CBashBasicFlag('flags', 0x00000100)
-    IsWeapon = CBashBasicFlag('flags', 0x00000200)
-    IsBackWeapon = CBashBasicFlag('flags', 0x00000400)
-    IsSideWeapon = CBashBasicFlag('flags', 0x00000800)
-    IsQuiver = CBashBasicFlag('flags', 0x00001000)
-    IsShield = CBashBasicFlag('flags', 0x00002000)
-    IsTorch = CBashBasicFlag('flags', 0x00004000)
-    IsTail = CBashBasicFlag('flags', 0x00008000)
-    IsHideRings = CBashBasicFlag('flags', 0x00010000)
-    IsHideAmulets = CBashBasicFlag('flags', 0x00020000)
-    IsNonPlayable = CBashBasicFlag('flags', 0x00400000)
-    IsPlayable = CBashInvertedFlag('IsNonPlayable')
-    IsHeavyArmor = CBashBasicFlag('flags', 0x00800000)
+    STRING_MACRO(full, 5)
+    FORMID_MACRO(script, 6)
+    FORMID_MACRO(enchantment, 7)
+    UINT16_MACRO(enchantPoints, 8)
+    UINT32_FLAG_MACRO(flags, 9)
+    GroupedValuesMACRO(maleBody, 10, Model)
+    GroupedValuesMACRO(maleWorld, 13, Model)
+    ISTRING_MACRO(maleIconPath, 16)
+    GroupedValuesMACRO(femaleBody, 17, Model)
+    GroupedValuesMACRO(femaleWorld, 20, Model)
+    ISTRING_MACRO(femaleIconPath, 23)
+    UINT16_MACRO(strength, 24)
+    UINT32_MACRO(value, 25)
+    UINT32_MACRO(health, 26)
+    FLOAT32_MACRO(weight, 27)
+    BasicFlagMACRO(IsHead, flags, 0x00000001)
+    BasicFlagMACRO(IsHair, flags, 0x00000002)
+    BasicFlagMACRO(IsUpperBody, flags, 0x00000004)
+    BasicFlagMACRO(IsLowerBody, flags, 0x00000008)
+    BasicFlagMACRO(IsHand, flags, 0x00000010)
+    BasicFlagMACRO(IsFoot, flags, 0x00000020)
+    BasicFlagMACRO(IsRightRing, flags, 0x00000040)
+    BasicFlagMACRO(IsLeftRing, flags, 0x00000080)
+    BasicFlagMACRO(IsAmulet, flags, 0x00000100)
+    BasicFlagMACRO(IsWeapon, flags, 0x00000200)
+    BasicFlagMACRO(IsBackWeapon, flags, 0x00000400)
+    BasicFlagMACRO(IsSideWeapon, flags, 0x00000800)
+    BasicFlagMACRO(IsQuiver, flags, 0x00001000)
+    BasicFlagMACRO(IsShield, flags, 0x00002000)
+    BasicFlagMACRO(IsTorch, flags, 0x00004000)
+    BasicFlagMACRO(IsTail, flags, 0x00008000)
+    BasicFlagMACRO(IsHideRings, flags, 0x00010000)
+    BasicFlagMACRO(IsHideAmulets, flags, 0x00020000)
+    BasicFlagMACRO(IsNonPlayable, flags, 0x00400000)
+    BasicInvertedFlagMACRO(IsPlayable, IsNonPlayable)
+    BasicFlagMACRO(IsHeavyArmor, flags, 0x00800000)
     copyattrs = ObFormIDRecord.baseattrs + ['full', 'script', 'enchantment', 'enchantPoints',
                                         'flags', 'maleBody', 'maleWorld', 'maleIconPath',
                                         'femaleBody', 'femaleWorld', 'femaleIconPath',
@@ -2655,22 +2570,22 @@ class ObARMORecord(ObFormIDRecord):
 
 class ObBOOKRecord(ObFormIDRecord):
     _Type = 'BOOK'
-    full = CBashSTRING(5)
-    modPath = CBashISTRING(6)
-    modb = CBashFLOAT32(7)
-    modt_p = CBashUINT8ARRAY(8)
-    iconPath = CBashISTRING(9)
-    text = CBashSTRING(10)
-    script = CBashFORMID(11)
-    enchantment = CBashFORMID(12)
-    enchantPoints = CBashGeneric(13, c_ushort)
-    flags = CBashGeneric(14, c_ubyte)
-    teaches = CBashGeneric(15, c_byte)
-    value = CBashGeneric(16, c_ulong)
-    weight = CBashFLOAT32(17)
-    IsScroll = CBashBasicFlag('flags', 0x00000001)
-    IsFixed = CBashBasicFlag('flags', 0x00000002)
-    IsCantBeTaken = CBashAlias('IsFixed')
+    STRING_MACRO(full, 5)
+    ISTRING_MACRO(modPath, 6)
+    FLOAT32_MACRO(modb, 7)
+    UINT8_ARRAY_MACRO(modt_p, 8)
+    ISTRING_MACRO(iconPath, 9)
+    STRING_MACRO(text, 10)
+    FORMID_MACRO(script, 11)
+    FORMID_MACRO(enchantment, 12)
+    UINT16_MACRO(enchantPoints, 13)
+    UINT8_FLAG_MACRO(flags, 14)
+    SINT8_MACRO(teaches, 15)
+    UINT32_MACRO(value, 16)
+    FLOAT32_MACRO(weight, 17)
+    BasicFlagMACRO(IsScroll, flags, 0x00000001)
+    BasicFlagMACRO(IsFixed, flags, 0x00000002)
+    BasicAliasMACRO(IsCantBeTaken, IsFixed)
     copyattrs = ObFormIDRecord.baseattrs + ['full', 'modPath', 'modb', 'modt_p',
                                         'iconPath', 'text', 'script',
                                         'enchantment', 'enchantPoints',
@@ -2678,10 +2593,10 @@ class ObBOOKRecord(ObFormIDRecord):
 
 class ObBSGNRecord(ObFormIDRecord):
     _Type = 'BSGN'
-    full = CBashSTRING(5)
-    iconPath = CBashISTRING(6)
-    text = CBashSTRING(7)
-    spells = CBashFORMIDARRAY(8)
+    STRING_MACRO(full, 5)
+    ISTRING_MACRO(iconPath, 6)
+    STRING_MACRO(text, 7)
+    FORMID_ARRAY_MACRO(spells, 8)
     copyattrs = ObFormIDRecord.baseattrs + ['full', 'iconPath', 'text', 'spells']
 
 class ObCELLRecord(ObFormIDRecord):
@@ -2700,76 +2615,51 @@ class ObCELLRecord(ObFormIDRecord):
         if(retValue): return retValue.contents.value
         return 0
 
-    full = CBashSTRING(5)
-    flags = CBashGeneric(6, c_ubyte)
-    ambientRed = CBashGeneric(7, c_ubyte)
-    ambientGreen = CBashGeneric(8, c_ubyte)
-    ambientBlue = CBashGeneric(9, c_ubyte)
-    unused1 = CBashUINT8ARRAY(10, 1)
-    directionalRed = CBashGeneric(11, c_ubyte)
-    directionalGreen = CBashGeneric(12, c_ubyte)
-    directionalBlue = CBashGeneric(13, c_ubyte)
-    unused2 = CBashUINT8ARRAY(14, 1)
-    fogRed = CBashGeneric(15, c_ubyte)
-    fogGreen = CBashGeneric(16, c_ubyte)
-    fogBlue = CBashGeneric(17, c_ubyte)
-    unused3 = CBashUINT8ARRAY(18, 1)
-    fogNear = CBashFLOAT32(19)
-    fogFar = CBashFLOAT32(20)
-    directionalXY = CBashGeneric(21, c_long)
-    directionalZ = CBashGeneric(22, c_long)
-    directionalFade = CBashFLOAT32(23)
-    fogClip = CBashFLOAT32(24)
-    musicType = CBashGeneric(25, c_ubyte)
-    owner = CBashFORMID(26)
-    rank = CBashGeneric(27, c_long)
-    globalVariable = CBashFORMID(28)
-    climate = CBashFORMID(29)
-    waterHeight = CBashFLOAT32(30)
-    regions = CBashFORMIDARRAY(31)
-    posX = CBashSINT32_OR_UNKNOWN(32)
-    posY = CBashSINT32_OR_UNKNOWN(33)
-    water = CBashFORMID(34)
-    def create_ACHR(self):
-        FID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("ACHR", POINTER(c_ulong)).contents.value, 0, 0, self._RecordID, 0)
-        if(FID): return ObACHRRecord(self._CollectionID, self._ModID, FID, self._RecordID, 0)
-        return None
-    ACHR = CBashSUBRECORDARRAY(35, ObACHRRecord, "ACHR", 0)
-
-    def create_ACRE(self):
-        FID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("ACRE", POINTER(c_ulong)).contents.value, 0, 0, self._RecordID, 0)
-        if(FID): return ObACRERecord(self._CollectionID, self._ModID, FID, self._RecordID, 0)
-        return None
-    ACRE = CBashSUBRECORDARRAY(36, ObACRERecord, "ACRE", 0)
-
-    def create_REFR(self):
-        FID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("REFR", POINTER(c_ulong)).contents.value, 0, 0, self._RecordID, 0)
-        if(FID): return ObREFRRecord(self._CollectionID, self._ModID, FID, self._RecordID, 0)
-        return None
-    REFR = CBashSUBRECORDARRAY(37, ObREFRRecord, "REFR", 0)
-
-    def create_PGRD(self):
-        FID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("PGRD", POINTER(c_ulong)).contents.value, 0, 0, self._RecordID, 0)
-        if(FID): return ObPGRDRecord(self._CollectionID, self._ModID, FID, self._RecordID, 0)
-        return None
-    PGRD = CBashSUBRECORD(38, ObPGRDRecord, "PGRD", 0)
-
-    def create_LAND(self):
-        FID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("LAND", POINTER(c_ulong)).contents.value, 0, 0, self._RecordID, 0)
-        if(FID): return ObLANDRecord(self._CollectionID, self._ModID, FID, self._RecordID, 0)
-        return None
-    LAND = CBashSUBRECORD(39, ObLANDRecord, "LAND", 0)
-
-    IsInterior = CBashBasicFlag('flags', 0x00000001)
-    IsHasWater = CBashBasicFlag('flags', 0x00000002)
-    IsInvertFastTravel = CBashBasicFlag('flags', 0x00000004)
-    IsForceHideLand = CBashBasicFlag('flags', 0x00000008)
-    IsPublicPlace = CBashBasicFlag('flags', 0x00000020)
-    IsHandChanged = CBashBasicFlag('flags', 0x00000040)
-    IsBehaveLikeExterior = CBashBasicFlag('flags', 0x00000080)
-    IsDefault = CBashBasicType('music', 0, 'IsPublic')
-    IsPublic = CBashBasicType('music', 1, 'IsDefault')
-    IsDungeon = CBashBasicType('music', 2, 'IsDefault')
+    STRING_MACRO(full, 5)
+    UINT8_FLAG_MACRO(flags, 6)
+    UINT8_MACRO(ambientRed, 7)
+    UINT8_MACRO(ambientGreen, 8)
+    UINT8_MACRO(ambientBlue, 9)
+    UINT8_ARRAY_MACRO(unused1, 10, 1)
+    UINT8_MACRO(directionalRed, 11)
+    UINT8_MACRO(directionalGreen, 12)
+    UINT8_MACRO(directionalBlue, 13)
+    UINT8_ARRAY_MACRO(unused2, 14, 1)
+    UINT8_MACRO(fogRed, 15)
+    UINT8_MACRO(fogGreen, 16)
+    UINT8_MACRO(fogBlue, 17)
+    UINT8_ARRAY_MACRO(unused3, 18, 1)
+    FLOAT32_MACRO(fogNear, 19)
+    FLOAT32_MACRO(fogFar, 20)
+    SINT32_MACRO(directionalXY, 21)
+    SINT32_MACRO(directionalZ, 22)
+    FLOAT32_MACRO(directionalFade, 23)
+    FLOAT32_MACRO(fogClip, 24)
+    UINT8_MACRO(musicType, 25)
+    FORMID_MACRO(owner, 26)
+    SINT32_MACRO(rank, 27)
+    FORMID_MACRO(globalVariable, 28)
+    FORMID_MACRO(climate, 29)
+    FLOAT32_MACRO(waterHeight, 30)
+    FORMID_ARRAY_MACRO(regions, 31)
+    SINT32_OR_UNKNOWN_MACRO(posX, 32)
+    SINT32_OR_UNKNOWN_MACRO(posY, 33)
+    FORMID_MACRO(water, 34)
+    SUBRECORD_ARRAY_MACRO(ACHR, "ACHR", 35, ObACHRRecord, 0)
+    SUBRECORD_ARRAY_MACRO(ACRE, "ACRE", 36, ObACRERecord, 0)
+    SUBRECORD_ARRAY_MACRO(REFR, "REFR", 37, ObREFRRecord, 0)
+    SUBRECORD_MACRO(PGRD, "PGRD", 38, ObPGRDRecord, 0)
+    SUBRECORD_MACRO(LAND, "LAND", 39, ObLANDRecord, 0)
+    BasicFlagMACRO(IsInterior, flags, 0x00000001)
+    BasicFlagMACRO(IsHasWater, flags, 0x00000002)
+    BasicFlagMACRO(IsInvertFastTravel, flags, 0x00000004)
+    BasicFlagMACRO(IsForceHideLand, flags, 0x00000008)
+    BasicFlagMACRO(IsPublicPlace, flags, 0x00000020)
+    BasicFlagMACRO(IsHandChanged, flags, 0x00000040)
+    BasicFlagMACRO(IsBehaveLikeExterior, flags, 0x00000080)
+    BasicTypeMACRO(IsDefault, music, 0, IsPublic)
+    BasicTypeMACRO(IsPublic, music, 1, IsDefault)
+    BasicTypeMACRO(IsDungeon, music, 2, IsDefault)
     copyattrs = ObFormIDRecord.baseattrs + ['full', 'flags', 'ambientRed', 'ambientGreen', 'ambientBlue',
                                         'directionalRed', 'directionalGreen', 'directionalBlue',
                                         'fogRed', 'fogGreen', 'fogBlue', 'fogNear', 'fogFar',
@@ -2780,40 +2670,40 @@ class ObCELLRecord(ObFormIDRecord):
 
 class ObCLASRecord(ObFormIDRecord):
     _Type = 'CLAS'
-    full = CBashSTRING(5)
-    description = CBashSTRING(6)
-    iconPath = CBashISTRING(7)
-    primary1 = CBashGeneric(8, c_long)
-    primary2 = CBashGeneric(9, c_long)
-    specialization = CBashGeneric(10, c_ulong)
-    major1 = CBashGeneric(11, c_long)
-    major2 = CBashGeneric(12, c_long)
-    major3 = CBashGeneric(13, c_long)
-    major4 = CBashGeneric(14, c_long)
-    major5 = CBashGeneric(15, c_long)
-    major6 = CBashGeneric(16, c_long)
-    major7 = CBashGeneric(17, c_long)
-    flags = CBashGeneric(18, c_ulong)
-    services = CBashGeneric(19, c_ulong)
-    trainSkill = CBashGeneric(20, c_byte)
-    trainLevel = CBashGeneric(21, c_ubyte)
-    unused1 = CBashUINT8ARRAY(22, 2)
-    IsPlayable = CBashBasicFlag('flags', 0x00000001)
-    IsGuard = CBashBasicFlag('flags', 0x00000002)
-    IsServicesWeapons = CBashBasicFlag('services', 0x00000001)
-    IsServicesArmor = CBashBasicFlag('services', 0x00000002)
-    IsServicesClothing = CBashBasicFlag('services', 0x00000004)
-    IsServicesBooks = CBashBasicFlag('services', 0x00000008)
-    IsServicesIngredients = CBashBasicFlag('services', 0x00000010)
-    IsServicesLights = CBashBasicFlag('services', 0x00000080)
-    IsServicesApparatus = CBashBasicFlag('services', 0x00000100)
-    IsServicesMiscItems = CBashBasicFlag('services', 0x00000400)
-    IsServicesSpells = CBashBasicFlag('services', 0x00000800)
-    IsServicesMagicItems = CBashBasicFlag('services', 0x00001000)
-    IsServicesPotions = CBashBasicFlag('services', 0x00002000)
-    IsServicesTraining = CBashBasicFlag('services', 0x00004000)
-    IsServicesRecharge = CBashBasicFlag('services', 0x00010000)
-    IsServicesRepair = CBashBasicFlag('services', 0x00020000)
+    STRING_MACRO(full, 5)
+    STRING_MACRO(description, 6)
+    ISTRING_MACRO(iconPath, 7)
+    SINT32_MACRO(primary1, 8)
+    SINT32_MACRO(primary2, 9)
+    UINT32_MACRO(specialization, 10)
+    SINT32_MACRO(major1, 11)
+    SINT32_MACRO(major2, 12)
+    SINT32_MACRO(major3, 13)
+    SINT32_MACRO(major4, 14)
+    SINT32_MACRO(major5, 15)
+    SINT32_MACRO(major6, 16)
+    SINT32_MACRO(major7, 17)
+    UINT32_FLAG_MACRO(flags, 18)
+    UINT32_FLAG_MACRO(services, 19)
+    SINT8_MACRO(trainSkill, 20)
+    UINT8_MACRO(trainLevel, 21)
+    UINT8_ARRAY_MACRO(unused1, 22, 2)
+    BasicFlagMACRO(IsPlayable, flags, 0x00000001)
+    BasicFlagMACRO(IsGuard, flags, 0x00000002)
+    BasicFlagMACRO(IsServicesWeapons, services, 0x00000001)
+    BasicFlagMACRO(IsServicesArmor, services, 0x00000002)
+    BasicFlagMACRO(IsServicesClothing, services, 0x00000004)
+    BasicFlagMACRO(IsServicesBooks, services, 0x00000008)
+    BasicFlagMACRO(IsServicesIngredients, services, 0x00000010)
+    BasicFlagMACRO(IsServicesLights, services, 0x00000080)
+    BasicFlagMACRO(IsServicesApparatus, services, 0x00000100)
+    BasicFlagMACRO(IsServicesMiscItems, services, 0x00000400)
+    BasicFlagMACRO(IsServicesSpells, services, 0x00000800)
+    BasicFlagMACRO(IsServicesMagicItems, services, 0x00001000)
+    BasicFlagMACRO(IsServicesPotions, services, 0x00002000)
+    BasicFlagMACRO(IsServicesTraining, services, 0x00004000)
+    BasicFlagMACRO(IsServicesRecharge, services, 0x00010000)
+    BasicFlagMACRO(IsServicesRepair, services, 0x00020000)
     copyattrs = ObFormIDRecord.baseattrs + ['full', 'description', 'iconPath', 'primary1',
                                         'primary2', 'specialization', 'major1',
                                         'major2', 'major3', 'major4', 'major5',
@@ -2823,67 +2713,61 @@ class ObCLASRecord(ObFormIDRecord):
 class ObCLMTRecord(ObFormIDRecord):
     _Type = 'CLMT'
     class Weather(ListComponent):
-        weather = CBashFORMID_LIST(1)
-        chance = CBashGeneric_LIST(2, c_long)
+        FORMID_LISTMACRO(weather, 5, 1)
+        SINT32_LISTMACRO(chance, 5, 2)
         copyattrs = ['weather', 'chance']
 
-    def create_weather(self):
-        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 5, 0, 0, 0, 0, 0, 0, 1)
-        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, 5, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
-        return self.Weather(self._CollectionID, self._ModID, self._RecordID, 5, length)
-    weathers = CBashLIST(5, Weather)
-    weathers_list = CBashLIST(5, Weather, True)
-
-    sunPath = CBashISTRING(6)
-    glarePath = CBashISTRING(7)
-    modPath = CBashISTRING(8)
-    modb = CBashFLOAT32(9)
-    modt_p = CBashUINT8ARRAY(10)
-    riseBegin = CBashGeneric(11, c_ubyte)
-    riseEnd = CBashGeneric(12, c_ubyte)
-    setBegin = CBashGeneric(13, c_ubyte)
-    setEnd = CBashGeneric(14, c_ubyte)
-    volatility = CBashGeneric(15, c_ubyte)
-    phaseLength = CBashGeneric(16, c_ubyte)
+    LIST_MACRO(weathers, 5, self.Weather)
+    ISTRING_MACRO(sunPath, 6)
+    ISTRING_MACRO(glarePath, 7)
+    ISTRING_MACRO(modPath, 8)
+    FLOAT32_MACRO(modb, 9)
+    UINT8_ARRAY_MACRO(modt_p, 10)
+    UINT8_MACRO(riseBegin, 11)
+    UINT8_MACRO(riseEnd, 12)
+    UINT8_MACRO(setBegin, 13)
+    UINT8_MACRO(setEnd, 14)
+    UINT8_MACRO(volatility, 15)
+    UINT8_MACRO(phaseLength, 16)
     copyattrs = ObFormIDRecord.baseattrs + ['weathers_list', 'sunPath', 'glarePath', 'modPath',
                                         'modb', 'modt_p', 'riseBegin', 'riseEnd',
                                         'setBegin', 'setEnd', 'volatility', 'phaseLength']
 
 class ObCLOTRecord(ObFormIDRecord):
     _Type = 'CLOT'
-    full = CBashSTRING(5)
-    script = CBashFORMID(6)
-    enchantment = CBashFORMID(7)
-    enchantPoints = CBashGeneric(8, c_ushort)
-    flags = CBashGeneric(9, c_ulong)
-    maleBody = CBashGrouped(10, Model)
-    maleWorld = CBashGrouped(13, Model)
-    maleIconPath = CBashISTRING(16)
-    femaleBody = CBashGrouped(17, Model)
-    femaleWorld = CBashGrouped(20, Model)
-    femaleIconPath = CBashISTRING(23)
-    value = CBashGeneric(24, c_ulong)
-    weight = CBashFLOAT32(25)
-    IsHead = CBashBasicFlag('flags', 0x00000001)
-    IsHair = CBashBasicFlag('flags', 0x00000002)
-    IsUpperBody = CBashBasicFlag('flags', 0x00000004)
-    IsLowerBody = CBashBasicFlag('flags', 0x00000008)
-    IsHand = CBashBasicFlag('flags', 0x00000010)
-    IsFoot = CBashBasicFlag('flags', 0x00000020)
-    IsRightRing = CBashBasicFlag('flags', 0x00000040)
-    IsLeftRing = CBashBasicFlag('flags', 0x00000080)
-    IsAmulet = CBashBasicFlag('flags', 0x00000100)
-    IsWeapon = CBashBasicFlag('flags', 0x00000200)
-    IsBackWeapon = CBashBasicFlag('flags', 0x00000400)
-    IsSideWeapon = CBashBasicFlag('flags', 0x00000800)
-    IsQuiver = CBashBasicFlag('flags', 0x00001000)
-    IsShield = CBashBasicFlag('flags', 0x00002000)
-    IsTorch = CBashBasicFlag('flags', 0x00004000)
-    IsTail = CBashBasicFlag('flags', 0x00008000)
-    IsHideRings = CBashBasicFlag('flags', 0x00010000)
-    IsHideAmulets = CBashBasicFlag('flags', 0x00020000)
-    IsNonPlayable = CBashBasicFlag('flags', 0x00400000)
-    IsPlayable = CBashInvertedFlag('IsNonPlayable')
+    STRING_MACRO(full, 5)
+    FORMID_MACRO(script, 6)
+    FORMID_MACRO(enchantment, 7)
+    UINT16_MACRO(enchantPoints, 8)
+    UINT32_FLAG_MACRO(flags, 9)
+    GroupedValuesMACRO(maleBody, 10, Model)
+    GroupedValuesMACRO(maleWorld, 13, Model)
+    ISTRING_MACRO(maleIconPath, 16)
+    GroupedValuesMACRO(femaleBody, 17, Model)
+    GroupedValuesMACRO(femaleWorld, 20, Model)
+    ISTRING_MACRO(femaleIconPath, 23)
+    UINT32_MACRO(value, 24)
+    FLOAT32_MACRO(weight, 25)
+    BasicFlagMACRO(IsHead, flags, 0x00000001)
+    BasicFlagMACRO(IsHair, flags, 0x00000002)
+    BasicFlagMACRO(IsUpperBody, flags, 0x00000004)
+    BasicFlagMACRO(IsLowerBody, flags, 0x00000008)
+    BasicFlagMACRO(IsHand, flags, 0x00000010)
+    BasicFlagMACRO(IsFoot, flags, 0x00000020)
+    BasicFlagMACRO(IsRightRing, flags, 0x00000040)
+    BasicFlagMACRO(IsLeftRing, flags, 0x00000080)
+    BasicFlagMACRO(IsAmulet, flags, 0x00000100)
+    BasicFlagMACRO(IsWeapon, flags, 0x00000200)
+    BasicFlagMACRO(IsBackWeapon, flags, 0x00000400)
+    BasicFlagMACRO(IsSideWeapon, flags, 0x00000800)
+    BasicFlagMACRO(IsQuiver, flags, 0x00001000)
+    BasicFlagMACRO(IsShield, flags, 0x00002000)
+    BasicFlagMACRO(IsTorch, flags, 0x00004000)
+    BasicFlagMACRO(IsTail, flags, 0x00008000)
+    BasicFlagMACRO(IsHideRings, flags, 0x00010000)
+    BasicFlagMACRO(IsHideAmulets, flags, 0x00020000)
+    BasicFlagMACRO(IsNonPlayable, flags, 0x00400000)
+    BasicInvertedFlagMACRO(IsPlayable, IsNonPlayable)
     copyattrs = ObFormIDRecord.baseattrs + ['full', 'script', 'enchantment',
                                         'enchantPoints', 'flags', 'maleBody', 'maleWorld',
                                         'maleIconPath', 'femaleBody', 'femaleWorld',
@@ -2896,24 +2780,18 @@ class ObCONTRecord(ObFormIDRecord):
         Filters items."""
         self.items = [x for x in self.items if (x.item)[0] in modSet]
 
-    full = CBashSTRING(5)
-    modPath = CBashISTRING(6)
-    modb = CBashFLOAT32(7)
-    modt_p = CBashUINT8ARRAY(8)
-    script = CBashFORMID(9)
+    STRING_MACRO(full, 5)
+    ISTRING_MACRO(modPath, 6)
+    FLOAT32_MACRO(modb, 7)
+    UINT8_ARRAY_MACRO(modt_p, 8)
+    FORMID_MACRO(script, 9)
 
-    def create_item(self):
-        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 10, 0, 0, 0, 0, 0, 0, 1)
-        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, 10, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
-        return Item(self._CollectionID, self._ModID, self._RecordID, 10, length)
-    items = CBashLIST(10, Item)
-    items_list = CBashLIST(10, Item, True)
-
-    flags = CBashGeneric(11, c_ubyte)
-    weight = CBashFLOAT32(12)
-    soundOpen = CBashFORMID(13)
-    soundClose = CBashFORMID(14)
-    IsRespawn = CBashBasicFlag('flags', 0x00000001)
+    LIST_MACRO(items, 10, Item)
+    UINT8_FLAG_MACRO(flags, 11)
+    FLOAT32_MACRO(weight, 12)
+    FORMID_MACRO(soundOpen, 13)
+    FORMID_MACRO(soundClose, 14)
+    BasicFlagMACRO(IsRespawn, flags, 0x00000001)
     copyattrs = ObFormIDRecord.baseattrs + ['full', 'modPath', 'modb', 'modt_p',
                                         'script', 'items_list', 'flags', 'weight',
                                         'soundOpen', 'soundClose']
@@ -2928,139 +2806,121 @@ class ObCREARecord(ObFormIDRecord):
         self.items = [x for x in self.items if x.item[0] in modSet]
 
     class Sound(ListComponent):
-        type = CBashGeneric_LIST(1, c_ulong)
-        sound = CBashFORMID_LIST(2)
-        chance = CBashGeneric_LIST(3, c_ubyte)
+        UINT32_LISTMACRO(type, 58, 1)
+        FORMID_LISTMACRO(sound, 58, 2)
+        UINT8_LISTMACRO(chance, 58, 3)
         copyattrs = ['type', 'sound', 'chance']
 
-    full = CBashSTRING(5)
-    modPath = CBashISTRING(6)
-    modb = CBashFLOAT32(7)
-    modt_p = CBashUINT8ARRAY(8)
-    spells = CBashFORMIDARRAY(9)
-    bodyParts = CBashISTRINGARRAY(10)
-    nift_p = CBashUINT8ARRAY(11)
-    flags = CBashGeneric(12, c_ulong)
-    baseSpell = CBashGeneric(13, c_ushort)
-    fatigue = CBashGeneric(14, c_ushort)
-    barterGold = CBashGeneric(15, c_ushort)
-    level = CBashGeneric(16, c_short)
-    calcMin = CBashGeneric(17, c_ushort)
-    calcMax = CBashGeneric(18, c_ushort)
+    STRING_MACRO(full, 5)
+    ISTRING_MACRO(modPath, 6)
+    FLOAT32_MACRO(modb, 7)
+    UINT8_ARRAY_MACRO(modt_p, 8)
+    FORMID_ARRAY_MACRO(spells, 9)
+    ISTRING_ARRAY_MACRO(bodyParts, 10)
+    UINT8_ARRAY_MACRO(nift_p, 11)
+    UINT32_FLAG_MACRO(flags, 12)
+    UINT16_MACRO(baseSpell, 13)
+    UINT16_MACRO(fatigue, 14)
+    UINT16_MACRO(barterGold, 15)
+    SINT16_MACRO(level, 16)
+    UINT16_MACRO(calcMin, 17)
+    UINT16_MACRO(calcMax, 18)
 
-    def create_faction(self):
-        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 19, 0, 0, 0, 0, 0, 0, 1)
-        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, 19, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
-        return Faction(self._CollectionID, self._ModID, self._RecordID, 19, length)
-    factions = CBashLIST(19, Faction)
-    factions_list = CBashLIST(19, Faction, True)
+    LIST_MACRO(factions, 19, Faction)
+    FORMID_MACRO(deathItem, 20)
+    FORMID_MACRO(script, 21)
 
-    deathItem = CBashFORMID(20)
-    script = CBashFORMID(21)
+    LIST_MACRO(items, 22, Item)
+    UINT8_MACRO(aggression, 23)
+    UINT8_MACRO(confidence, 24)
+    UINT8_MACRO(energyLevel, 25)
+    UINT8_MACRO(responsibility, 26)
+    UINT32_FLAG_MACRO(services, 27)
+    SINT8_MACRO(trainSkill, 28)
+    UINT8_MACRO(trainLevel, 29)
+    UINT8_ARRAY_MACRO(unused1, 30, 2)
+    FORMID_ARRAY_MACRO(aiPackages, 31)
+    ISTRING_ARRAY_MACRO(animations, 32)
+    UINT8_TYPE_MACRO(creatureType, 33)
+    UINT8_MACRO(combat, 34)
+    UINT8_MACRO(magic, 35)
+    UINT8_MACRO(stealth, 36)
+    UINT8_TYPE_MACRO(soulType, 37)
+    UINT8_ARRAY_MACRO(unused2, 38, 1)
+    UINT16_MACRO(health, 39)
+    UINT8_ARRAY_MACRO(unused3, 40, 2)
+    UINT16_MACRO(attackDamage, 41)
+    UINT8_MACRO(strength, 42)
+    UINT8_MACRO(intelligence, 43)
+    UINT8_MACRO(willpower, 44)
+    UINT8_MACRO(agility, 45)
+    UINT8_MACRO(speed, 46)
+    UINT8_MACRO(endurance, 47)
+    UINT8_MACRO(personality, 48)
+    UINT8_MACRO(luck, 49)
+    UINT8_MACRO(attackReach, 50)
+    FORMID_MACRO(combatStyle, 51)
+    FLOAT32_MACRO(turningSpeed, 52)
+    FLOAT32_MACRO(baseScale, 53)
+    FLOAT32_MACRO(footWeight, 54)
+    FORMID_MACRO(inheritsSoundsFrom, 55)
+    ISTRING_MACRO(bloodSprayPath, 56)
+    ISTRING_MACRO(bloodDecalPath, 57)
 
-    def create_item(self):
-        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 22, 0, 0, 0, 0, 0, 0, 1)
-        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, 22, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
-        return Item(self._CollectionID, self._ModID, self._RecordID, 22, length)
-    items = CBashLIST(22, Item)
-    items_list = CBashLIST(22, Item, True)
-
-    aggression = CBashGeneric(23, c_ubyte)
-    confidence = CBashGeneric(24, c_ubyte)
-    energyLevel = CBashGeneric(25, c_ubyte)
-    responsibility = CBashGeneric(26, c_ubyte)
-    services = CBashGeneric(27, c_ulong)
-    trainSkill = CBashGeneric(28, c_byte)
-    trainLevel = CBashGeneric(29, c_ubyte)
-    unused1 = CBashUINT8ARRAY(30, 2)
-    aiPackages = CBashFORMIDARRAY(31)
-    animations = CBashISTRINGARRAY(32)
-    creatureType = CBashGeneric(33, c_ubyte)
-    combat = CBashGeneric(34, c_ubyte)
-    magic = CBashGeneric(35, c_ubyte)
-    stealth = CBashGeneric(36, c_ubyte)
-    soulType = CBashGeneric(37, c_ubyte)
-    unused2 = CBashUINT8ARRAY(38, 1)
-    health = CBashGeneric(39, c_ushort)
-    unused3 = CBashUINT8ARRAY(40, 2)
-    attackDamage = CBashGeneric(41, c_ushort)
-    strength = CBashGeneric(42, c_ubyte)
-    intelligence = CBashGeneric(43, c_ubyte)
-    willpower = CBashGeneric(44, c_ubyte)
-    agility = CBashGeneric(45, c_ubyte)
-    speed = CBashGeneric(46, c_ubyte)
-    endurance = CBashGeneric(47, c_ubyte)
-    personality = CBashGeneric(48, c_ubyte)
-    luck = CBashGeneric(49, c_ubyte)
-    attackReach = CBashGeneric(50, c_ubyte)
-    combatStyle = CBashFORMID(51)
-    turningSpeed = CBashFLOAT32(52)
-    baseScale = CBashFLOAT32(53)
-    footWeight = CBashFLOAT32(54)
-    inheritsSoundsFrom = CBashFORMID(55)
-    bloodSprayPath = CBashISTRING(56)
-    bloodDecalPath = CBashISTRING(57)
-
-    def create_sound(self):
-        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 58, 0, 0, 0, 0, 0, 0, 1)
-        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, 58, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
-        return self.Sound(self._CollectionID, self._ModID, self._RecordID, 58, length)
-    sounds = CBashLIST(58, Sound)
-    sounds_list = CBashLIST(58, Sound, True)
-
-    IsBiped = CBashBasicFlag('flags', 0x00000001)
-    IsEssential = CBashBasicFlag('flags', 0x00000002)
-    IsWeaponAndShield = CBashBasicFlag('flags', 0x00000004)
-    IsRespawn = CBashBasicFlag('flags', 0x00000008)
-    IsSwims = CBashBasicFlag('flags', 0x00000010)
-    IsFlies = CBashBasicFlag('flags', 0x00000020)
-    IsWalks = CBashBasicFlag('flags', 0x00000040)
-    IsPCLevelOffset = CBashBasicFlag('flags', 0x00000080)
-    IsNoLowLevel = CBashBasicFlag('flags', 0x00000200)
-    IsLowLevel = CBashInvertedFlag('IsNoLowLevel')
-    IsNoBloodSpray = CBashBasicFlag('flags', 0x00000800)
-    IsBloodSpray = CBashInvertedFlag('IsNoBloodSpray')
-    IsNoBloodDecal = CBashBasicFlag('flags', 0x00001000)
-    IsBloodDecal = CBashInvertedFlag('IsNoBloodDecal')
-    IsSummonable = CBashBasicFlag('flags', 0x00004000)
-    IsNoHead = CBashBasicFlag('flags', 0x00008000)
-    IsHead = CBashInvertedFlag('IsNoHead')
-    IsNoRightArm = CBashBasicFlag('flags', 0x00010000)
-    IsRightArm = CBashInvertedFlag('IsNoRightArm')
-    IsNoLeftArm = CBashBasicFlag('flags', 0x00020000)
-    IsLeftArm = CBashInvertedFlag('IsNoLeftArm')
-    IsNoCombatInWater = CBashBasicFlag('flags', 0x00040000)
-    IsCombatInWater = CBashInvertedFlag('IsNoCombatInWater')
-    IsNoShadow = CBashBasicFlag('flags', 0x00080000)
-    IsShadow = CBashInvertedFlag('IsNoShadow')
-    IsNoCorpseCheck = CBashBasicFlag('flags', 0x00100000)
-    IsCorpseCheck = CBashInvertedFlag('IsNoCorpseCheck')
-    IsServicesWeapons = CBashBasicFlag('services', 0x00000001)
-    IsServicesArmor = CBashBasicFlag('services', 0x00000002)
-    IsServicesClothing = CBashBasicFlag('services', 0x00000004)
-    IsServicesBooks = CBashBasicFlag('services', 0x00000008)
-    IsServicesIngredients = CBashBasicFlag('services', 0x00000010)
-    IsServicesLights = CBashBasicFlag('services', 0x00000080)
-    IsServicesApparatus = CBashBasicFlag('services', 0x00000100)
-    IsServicesMiscItems = CBashBasicFlag('services', 0x00000400)
-    IsServicesSpells = CBashBasicFlag('services', 0x00000800)
-    IsServicesMagicItems = CBashBasicFlag('services', 0x00001000)
-    IsServicesPotions = CBashBasicFlag('services', 0x00002000)
-    IsServicesTraining = CBashBasicFlag('services', 0x00004000)
-    IsServicesRecharge = CBashBasicFlag('services', 0x00010000)
-    IsServicesRepair = CBashBasicFlag('services', 0x00020000)
-    IsCreature = CBashBasicType('creatureType', 0, 'IsDaedra')
-    IsDaedra = CBashBasicType('creatureType', 1, 'IsCreature')
-    IsUndead = CBashBasicType('creatureType', 2, 'IsCreature')
-    IsHumanoid = CBashBasicType('creatureType', 3, 'IsCreature')
-    IsHorse = CBashBasicType('creatureType', 4, 'IsCreature')
-    IsGiant = CBashBasicType('creatureType', 5, 'IsCreature')
-    IsNoSoul = CBashBasicType('soulType', 0, 'IsPettySoul')
-    IsPettySoul = CBashBasicType('soulType', 1, 'IsNoSoul')
-    IsLesserSoul = CBashBasicType('soulType', 2, 'IsNoSoul')
-    IsCommonSoul = CBashBasicType('soulType', 3, 'IsNoSoul')
-    IsGreaterSoul = CBashBasicType('soulType', 4, 'IsNoSoul')
-    IsGrandSoul = CBashBasicType('soulType', 5, 'IsNoSoul')
+    LIST_MACRO(sounds, 58, self.Sound)
+    BasicFlagMACRO(IsBiped, flags, 0x00000001)
+    BasicFlagMACRO(IsEssential, flags, 0x00000002)
+    BasicFlagMACRO(IsWeaponAndShield, flags, 0x00000004)
+    BasicFlagMACRO(IsRespawn, flags, 0x00000008)
+    BasicFlagMACRO(IsSwims, flags, 0x00000010)
+    BasicFlagMACRO(IsFlies, flags, 0x00000020)
+    BasicFlagMACRO(IsWalks, flags, 0x00000040)
+    BasicFlagMACRO(IsPCLevelOffset, flags, 0x00000080)
+    BasicFlagMACRO(IsNoLowLevel, flags, 0x00000200)
+    BasicInvertedFlagMACRO(IsLowLevel, IsNoLowLevel)
+    BasicFlagMACRO(IsNoBloodSpray, flags, 0x00000800)
+    BasicInvertedFlagMACRO(IsBloodSpray, IsNoBloodSpray)
+    BasicFlagMACRO(IsNoBloodDecal, flags, 0x00001000)
+    BasicInvertedFlagMACRO(IsBloodDecal, IsNoBloodDecal)
+    BasicFlagMACRO(IsSummonable, flags, 0x00004000)
+    BasicFlagMACRO(IsNoHead, flags, 0x00008000)
+    BasicInvertedFlagMACRO(IsHead, IsNoHead)
+    BasicFlagMACRO(IsNoRightArm, flags, 0x00010000)
+    BasicInvertedFlagMACRO(IsRightArm, IsNoRightArm)
+    BasicFlagMACRO(IsNoLeftArm, flags, 0x00020000)
+    BasicInvertedFlagMACRO(IsLeftArm, IsNoLeftArm)
+    BasicFlagMACRO(IsNoCombatInWater, flags, 0x00040000)
+    BasicInvertedFlagMACRO(IsCombatInWater, IsNoCombatInWater)
+    BasicFlagMACRO(IsNoShadow, flags, 0x00080000)
+    BasicInvertedFlagMACRO(IsShadow, IsNoShadow)
+    BasicFlagMACRO(IsNoCorpseCheck, flags, 0x00100000)
+    BasicInvertedFlagMACRO(IsCorpseCheck, IsNoCorpseCheck)
+    BasicFlagMACRO(IsServicesWeapons, services, 0x00000001)
+    BasicFlagMACRO(IsServicesArmor, services, 0x00000002)
+    BasicFlagMACRO(IsServicesClothing, services, 0x00000004)
+    BasicFlagMACRO(IsServicesBooks, services, 0x00000008)
+    BasicFlagMACRO(IsServicesIngredients, services, 0x00000010)
+    BasicFlagMACRO(IsServicesLights, services, 0x00000080)
+    BasicFlagMACRO(IsServicesApparatus, services, 0x00000100)
+    BasicFlagMACRO(IsServicesMiscItems, services, 0x00000400)
+    BasicFlagMACRO(IsServicesSpells, services, 0x00000800)
+    BasicFlagMACRO(IsServicesMagicItems, services, 0x00001000)
+    BasicFlagMACRO(IsServicesPotions, services, 0x00002000)
+    BasicFlagMACRO(IsServicesTraining, services, 0x00004000)
+    BasicFlagMACRO(IsServicesRecharge, services, 0x00010000)
+    BasicFlagMACRO(IsServicesRepair, services, 0x00020000)
+    BasicTypeMACRO(IsCreature, creatureType, 0, IsDaedra)
+    BasicTypeMACRO(IsDaedra, creatureType, 1, IsCreature)
+    BasicTypeMACRO(IsUndead, creatureType, 2, IsCreature)
+    BasicTypeMACRO(IsHumanoid, creatureType, 3, IsCreature)
+    BasicTypeMACRO(IsHorse, creatureType, 4, IsCreature)
+    BasicTypeMACRO(IsGiant, creatureType, 5, IsCreature)
+    BasicTypeMACRO(IsNoSoul, soulType, 0, IsPettySoul)
+    BasicTypeMACRO(IsPettySoul, soulType, 1, IsNoSoul)
+    BasicTypeMACRO(IsLesserSoul, soulType, 2, IsNoSoul)
+    BasicTypeMACRO(IsCommonSoul, soulType, 3, IsNoSoul)
+    BasicTypeMACRO(IsGreaterSoul, soulType, 4, IsNoSoul)
+    BasicTypeMACRO(IsGrandSoul, soulType, 5, IsNoSoul)
     copyattrs = ObFormIDRecord.baseattrs + ['full', 'modPath', 'modb', 'modt_p', 'spells',
                                         'bodyParts', 'nift_p', 'flags', 'baseSpell',
                                         'fatigue', 'barterGold', 'level', 'calcMin',
@@ -3079,79 +2939,79 @@ class ObCREARecord(ObFormIDRecord):
 
 class ObCSTYRecord(ObFormIDRecord):
     _Type = 'CSTY'
-    dodgeChance = CBashGeneric(5, c_ubyte)
-    lrChance = CBashGeneric(6, c_ubyte)
-    unused1 = CBashUINT8ARRAY(7, 2)
-    lrTimerMin = CBashFLOAT32(8)
-    lrTimerMax = CBashFLOAT32(9)
-    forTimerMin = CBashFLOAT32(10)
-    forTimerMax = CBashFLOAT32(11)
-    backTimerMin = CBashFLOAT32(12)
-    backTimerMax = CBashFLOAT32(13)
-    idleTimerMin = CBashFLOAT32(14)
-    idleTimerMax = CBashFLOAT32(15)
-    blkChance = CBashGeneric(16, c_ubyte)
-    atkChance = CBashGeneric(17, c_ubyte)
-    unused2 = CBashUINT8ARRAY(18, 2)
-    atkBRecoil = CBashFLOAT32(19)
-    atkBUnc = CBashFLOAT32(20)
-    atkBh2h = CBashFLOAT32(21)
-    pAtkChance = CBashGeneric(22, c_ubyte)
-    unused3 = CBashUINT8ARRAY(23, 3)
-    pAtkBRecoil = CBashFLOAT32(24)
-    pAtkBUnc = CBashFLOAT32(25)
-    pAtkNormal = CBashGeneric(26, c_ubyte)
-    pAtkFor = CBashGeneric(27, c_ubyte)
-    pAtkBack = CBashGeneric(28, c_ubyte)
-    pAtkL = CBashGeneric(29, c_ubyte)
-    pAtkR = CBashGeneric(30, c_ubyte)
-    unused4 = CBashUINT8ARRAY(31, 3)
-    holdTimerMin = CBashFLOAT32(32)
-    holdTimerMax = CBashFLOAT32(33)
-    flagsA = CBashGeneric(34, c_ubyte)
-    acroDodge = CBashGeneric(35, c_ubyte)
-    unused5 = CBashUINT8ARRAY(36, 2)
-    rMultOpt = CBashFLOAT32(37)
-    rMultMax = CBashFLOAT32(38)
-    mDistance = CBashFLOAT32(39)
-    rDistance = CBashFLOAT32(40)
-    buffStand = CBashFLOAT32(41)
-    rStand = CBashFLOAT32(42)
-    groupStand = CBashFLOAT32(43)
-    rushChance = CBashGeneric(44, c_ubyte)
-    unused6 = CBashUINT8ARRAY(45, 3)
-    rushMult = CBashFLOAT32(46)
-    flagsB = CBashGeneric(47, c_ulong)
-    dodgeFMult = CBashFLOAT32(48)
-    dodgeFBase = CBashFLOAT32(49)
-    encSBase = CBashFLOAT32(50)
-    encSMult = CBashFLOAT32(51)
-    dodgeAtkMult = CBashFLOAT32(52)
-    dodgeNAtkMult = CBashFLOAT32(53)
-    dodgeBAtkMult = CBashFLOAT32(54)
-    dodgeBNAtkMult = CBashFLOAT32(55)
-    dodgeFAtkMult = CBashFLOAT32(56)
-    dodgeFNAtkMult = CBashFLOAT32(57)
-    blockMult = CBashFLOAT32(58)
-    blockBase = CBashFLOAT32(59)
-    blockAtkMult = CBashFLOAT32(60)
-    blockNAtkMult = CBashFLOAT32(61)
-    atkMult = CBashFLOAT32(62)
-    atkBase = CBashFLOAT32(63)
-    atkAtkMult = CBashFLOAT32(64)
-    atkNAtkMult = CBashFLOAT32(65)
-    atkBlockMult = CBashFLOAT32(66)
-    pAtkFBase = CBashFLOAT32(67)
-    pAtkFMult = CBashFLOAT32(68)
-    IsUseAdvanced = CBashBasicFlag('flagsA', 0x00000001)
-    IsUseChanceForAttack = CBashBasicFlag('flagsA', 0x00000002)
-    IsIgnoreAllies = CBashBasicFlag('flagsA', 0x00000004)
-    IsWillYield = CBashBasicFlag('flagsA', 0x00000008)
-    IsRejectsYields = CBashBasicFlag('flagsA', 0x00000010)
-    IsFleeingDisabled = CBashBasicFlag('flagsA', 0x00000020)
-    IsPrefersRanged = CBashBasicFlag('flagsA', 0x00000040)
-    IsMeleeAlertOK = CBashBasicFlag('flagsA', 0x00000080)
-    IsDoNotAcquire = CBashBasicFlag('flagsB', 0x00000001)
+    UINT8_MACRO(dodgeChance, 5)
+    UINT8_MACRO(lrChance, 6)
+    UINT8_ARRAY_MACRO(unused1, 7, 2)
+    FLOAT32_MACRO(lrTimerMin, 8)
+    FLOAT32_MACRO(lrTimerMax, 9)
+    FLOAT32_MACRO(forTimerMin, 10)
+    FLOAT32_MACRO(forTimerMax, 11)
+    FLOAT32_MACRO(backTimerMin, 12)
+    FLOAT32_MACRO(backTimerMax, 13)
+    FLOAT32_MACRO(idleTimerMin, 14)
+    FLOAT32_MACRO(idleTimerMax, 15)
+    UINT8_MACRO(blkChance, 16)
+    UINT8_MACRO(atkChance, 17)
+    UINT8_ARRAY_MACRO(unused2, 18, 2)
+    FLOAT32_MACRO(atkBRecoil, 19)
+    FLOAT32_MACRO(atkBUnc, 20)
+    FLOAT32_MACRO(atkBh2h, 21)
+    UINT8_MACRO(pAtkChance, 22)
+    UINT8_ARRAY_MACRO(unused3, 23, 3)
+    FLOAT32_MACRO(pAtkBRecoil, 24)
+    FLOAT32_MACRO(pAtkBUnc, 25)
+    UINT8_MACRO(pAtkNormal, 26)
+    UINT8_MACRO(pAtkFor, 27)
+    UINT8_MACRO(pAtkBack, 28)
+    UINT8_MACRO(pAtkL, 29)
+    UINT8_MACRO(pAtkR, 30)
+    UINT8_ARRAY_MACRO(unused4, 31, 3)
+    FLOAT32_MACRO(holdTimerMin, 32)
+    FLOAT32_MACRO(holdTimerMax, 33)
+    UINT8_FLAG_MACRO(flagsA, 34)
+    UINT8_MACRO(acroDodge, 35)
+    UINT8_ARRAY_MACRO(unused5, 36, 2)
+    FLOAT32_MACRO(rMultOpt, 37)
+    FLOAT32_MACRO(rMultMax, 38)
+    FLOAT32_MACRO(mDistance, 39)
+    FLOAT32_MACRO(rDistance, 40)
+    FLOAT32_MACRO(buffStand, 41)
+    FLOAT32_MACRO(rStand, 42)
+    FLOAT32_MACRO(groupStand, 43)
+    UINT8_MACRO(rushChance, 44)
+    UINT8_ARRAY_MACRO(unused6, 45, 3)
+    FLOAT32_MACRO(rushMult, 46)
+    UINT32_FLAG_MACRO(flagsB, 47)
+    FLOAT32_MACRO(dodgeFMult, 48)
+    FLOAT32_MACRO(dodgeFBase, 49)
+    FLOAT32_MACRO(encSBase, 50)
+    FLOAT32_MACRO(encSMult, 51)
+    FLOAT32_MACRO(dodgeAtkMult, 52)
+    FLOAT32_MACRO(dodgeNAtkMult, 53)
+    FLOAT32_MACRO(dodgeBAtkMult, 54)
+    FLOAT32_MACRO(dodgeBNAtkMult, 55)
+    FLOAT32_MACRO(dodgeFAtkMult, 56)
+    FLOAT32_MACRO(dodgeFNAtkMult, 57)
+    FLOAT32_MACRO(blockMult, 58)
+    FLOAT32_MACRO(blockBase, 59)
+    FLOAT32_MACRO(blockAtkMult, 60)
+    FLOAT32_MACRO(blockNAtkMult, 61)
+    FLOAT32_MACRO(atkMult, 62)
+    FLOAT32_MACRO(atkBase, 63)
+    FLOAT32_MACRO(atkAtkMult, 64)
+    FLOAT32_MACRO(atkNAtkMult, 65)
+    FLOAT32_MACRO(atkBlockMult, 66)
+    FLOAT32_MACRO(pAtkFBase, 67)
+    FLOAT32_MACRO(pAtkFMult, 68)
+    BasicFlagMACRO(IsUseAdvanced, flagsA, 0x00000001)
+    BasicFlagMACRO(IsUseChanceForAttack, flagsA, 0x00000002)
+    BasicFlagMACRO(IsIgnoreAllies, flagsA, 0x00000004)
+    BasicFlagMACRO(IsWillYield, flagsA, 0x00000008)
+    BasicFlagMACRO(IsRejectsYields, flagsA, 0x00000010)
+    BasicFlagMACRO(IsFleeingDisabled, flagsA, 0x00000020)
+    BasicFlagMACRO(IsPrefersRanged, flagsA, 0x00000040)
+    BasicFlagMACRO(IsMeleeAlertOK, flagsA, 0x00000080)
+    BasicFlagMACRO(IsDoNotAcquire, flagsB, 0x00000001)
     copyattrs = ObFormIDRecord.baseattrs + ['dodgeChance', 'lrChance', 'lrTimerMin', 'lrTimerMax',
                                         'forTimerMin', 'forTimerMax', 'backTimerMin',
                                         'backTimerMax', 'idleTimerMin', 'idleTimerMax',
@@ -3170,42 +3030,37 @@ class ObCSTYRecord(ObFormIDRecord):
 
 class ObDIALRecord(ObFormIDRecord):
     _Type = 'DIAL'
-    quests = CBashFORMIDARRAY(5)
-    removedQuests = CBashFORMIDARRAY(6)
-    full = CBashSTRING(7)
-    dialType = CBashGeneric(8, c_ubyte)
-    def create_INFO(self):
-        FID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("INFO", POINTER(c_ulong)).contents.value, 0, 0, self._RecordID, 0)
-        if(FID): return ObINFORecord(self._CollectionID, self._ModID, FID, self._RecordID, 0)
-        return None
-    INFO = CBashSUBRECORDARRAY(9, ObINFORecord, "INFO", 0)
-
-    IsTopic = CBashBasicType('dialType', 0, 'IsConversation')
-    IsConversation = CBashBasicType('dialType', 1, 'IsTopic')
-    IsCombat = CBashBasicType('dialType', 2, 'IsTopic')
-    IsPersuasion = CBashBasicType('dialType', 3, 'IsTopic')
-    IsDetection = CBashBasicType('dialType', 4, 'IsTopic')
-    IsService = CBashBasicType('dialType', 5, 'IsTopic')
-    IsMisc = CBashBasicType('dialType', 6, 'IsTopic')
+    FORMID_ARRAY_MACRO(quests, 5)
+    FORMID_ARRAY_MACRO(removedQuests, 6)
+    STRING_MACRO(full, 7)
+    UINT8_TYPE_MACRO(dialType, 8)
+    SUBRECORD_ARRAY_MACRO(INFO, "INFO", 9, ObINFORecord, 0)
+    BasicTypeMACRO(IsTopic, dialType, 0, IsConversation)
+    BasicTypeMACRO(IsConversation, dialType, 1, IsTopic)
+    BasicTypeMACRO(IsCombat, dialType, 2, IsTopic)
+    BasicTypeMACRO(IsPersuasion, dialType, 3, IsTopic)
+    BasicTypeMACRO(IsDetection, dialType, 4, IsTopic)
+    BasicTypeMACRO(IsService, dialType, 5, IsTopic)
+    BasicTypeMACRO(IsMisc, dialType, 6, IsTopic)
     copyattrs = ObFormIDRecord.baseattrs + ['quests', 'removedQuests',
                                         'full', 'dialType']
 
 class ObDOORRecord(ObFormIDRecord):
     _Type = 'DOOR'
-    full = CBashSTRING(5)
-    modPath = CBashISTRING(6)
-    modb = CBashFLOAT32(7)
-    modt_p = CBashUINT8ARRAY(8)
-    script = CBashFORMID(9)
-    soundOpen = CBashFORMID(10)
-    soundClose = CBashFORMID(11)
-    soundLoop = CBashFORMID(12)
-    flags = CBashGeneric(13, c_ubyte)
-    destinations = CBashFORMIDARRAY(14)
-    IsOblivionGate = CBashBasicFlag('flags', 0x00000001)
-    IsAutomatic = CBashBasicFlag('flags', 0x00000002)
-    IsHidden = CBashBasicFlag('flags', 0x00000004)
-    IsMinimalUse = CBashBasicFlag('flags', 0x00000008)
+    STRING_MACRO(full, 5)
+    ISTRING_MACRO(modPath, 6)
+    FLOAT32_MACRO(modb, 7)
+    UINT8_ARRAY_MACRO(modt_p, 8)
+    FORMID_MACRO(script, 9)
+    FORMID_MACRO(soundOpen, 10)
+    FORMID_MACRO(soundClose, 11)
+    FORMID_MACRO(soundLoop, 12)
+    UINT8_FLAG_MACRO(flags, 13)
+    FORMID_ARRAY_MACRO(destinations, 14)
+    BasicFlagMACRO(IsOblivionGate, flags, 0x00000001)
+    BasicFlagMACRO(IsAutomatic, flags, 0x00000002)
+    BasicFlagMACRO(IsHidden, flags, 0x00000004)
+    BasicFlagMACRO(IsMinimalUse, flags, 0x00000008)
     copyattrs = ObFormIDRecord.baseattrs + ['full', 'modPath', 'modb', 'modt_p',
                                         'script', 'soundOpen',
                                         'soundClose', 'soundLoop',
@@ -3213,88 +3068,88 @@ class ObDOORRecord(ObFormIDRecord):
 
 class ObEFSHRecord(ObFormIDRecord):
     _Type = 'EFSH'
-    fillTexturePath = CBashISTRING(5)
-    particleTexturePath = CBashISTRING(6)
-    flags = CBashGeneric(7, c_ubyte)
-    unused1 = CBashUINT8ARRAY(8, 3)
-    memSBlend = CBashGeneric(9, c_ulong)
-    memBlendOp = CBashGeneric(10, c_ulong)
-    memZFunc = CBashGeneric(11, c_ulong)
-    fillRed = CBashGeneric(12, c_ubyte)
-    fillGreen = CBashGeneric(13, c_ubyte)
-    fillBlue = CBashGeneric(14, c_ubyte)
-    unused2 = CBashUINT8ARRAY(15, 1)
-    fillAIn = CBashFLOAT32(16)
-    fillAFull = CBashFLOAT32(17)
-    fillAOut = CBashFLOAT32(18)
-    fillAPRatio = CBashFLOAT32(19)
-    fillAAmp = CBashFLOAT32(20)
-    fillAFreq = CBashFLOAT32(21)
-    fillAnimSpdU = CBashFLOAT32(22)
-    fillAnimSpdV = CBashFLOAT32(23)
-    edgeOff = CBashFLOAT32(24)
-    edgeRed = CBashGeneric(25, c_ubyte)
-    edgeGreen = CBashGeneric(26, c_ubyte)
-    edgeBlue = CBashGeneric(27, c_ubyte)
-    unused3 = CBashUINT8ARRAY(28, 1)
-    edgeAIn = CBashFLOAT32(29)
-    edgeAFull = CBashFLOAT32(30)
-    edgeAOut = CBashFLOAT32(31)
-    edgeAPRatio = CBashFLOAT32(32)
-    edgeAAmp = CBashFLOAT32(33)
-    edgeAFreq = CBashFLOAT32(34)
-    fillAFRatio = CBashFLOAT32(35)
-    edgeAFRatio = CBashFLOAT32(36)
-    memDBlend = CBashGeneric(37, c_ubyte)
-    partSBlend = CBashGeneric(38, c_ubyte)
-    partBlendOp = CBashGeneric(39, c_ubyte)
-    partZFunc = CBashGeneric(40, c_ubyte)
-    partDBlend = CBashGeneric(41, c_ubyte)
-    partBUp = CBashFLOAT32(42)
-    partBFull = CBashFLOAT32(43)
-    partBDown = CBashFLOAT32(44)
-    partBFRatio = CBashFLOAT32(45)
-    partBPRatio = CBashFLOAT32(46)
-    partLTime = CBashFLOAT32(47)
-    partLDelta = CBashFLOAT32(48)
-    partNSpd = CBashFLOAT32(49)
-    partNAcc = CBashFLOAT32(50)
-    partVel1 = CBashFLOAT32(51)
-    partVel2 = CBashFLOAT32(52)
-    partVel3 = CBashFLOAT32(53)
-    partAcc1 = CBashFLOAT32(54)
-    partAcc2 = CBashFLOAT32(55)
-    partAcc3 = CBashFLOAT32(56)
-    partKey1 = CBashFLOAT32(57)
-    partKey2 = CBashFLOAT32(58)
-    partKey1Time = CBashFLOAT32(59)
-    partKey2Time = CBashFLOAT32(60)
-    key1Red = CBashGeneric(61, c_ubyte)
-    key1Green = CBashGeneric(62, c_ubyte)
-    key1Blue = CBashGeneric(63, c_ubyte)
-    unused4 = CBashUINT8ARRAY(64, 1)
-    key2Red = CBashGeneric(65, c_ubyte)
-    key2Green = CBashGeneric(66, c_ubyte)
-    key2Blue = CBashGeneric(67, c_ubyte)
-    unused5 = CBashUINT8ARRAY(68, 1)
-    key3Red = CBashGeneric(69, c_ubyte)
-    key3Green = CBashGeneric(70, c_ubyte)
-    key3Blue = CBashGeneric(71, c_ubyte)
-    unused6 = CBashUINT8ARRAY(72, 1)
-    key1A = CBashFLOAT32(73)
-    key2A = CBashFLOAT32(74)
-    key3A = CBashFLOAT32(75)
-    key1Time = CBashFLOAT32(76)
-    key2Time = CBashFLOAT32(77)
-    key3Time = CBashFLOAT32(78)
-    IsNoMemShader = CBashBasicFlag('flags', 0x00000001)
-    IsNoMembraneShader = CBashAlias('IsNoMemShader')
-    IsNoPartShader = CBashBasicFlag('flags', 0x00000008)
-    IsNoParticleShader = CBashAlias('IsNoPartShader')
-    IsEdgeInverse = CBashBasicFlag('flags', 0x00000010)
-    IsEdgeEffectInverse = CBashAlias('IsEdgeInverse')
-    IsMemSkinOnly = CBashBasicFlag('flags', 0x00000020)
-    IsMembraneShaderSkinOnly = CBashAlias('IsMemSkinOnly')
+    ISTRING_MACRO(fillTexturePath, 5)
+    ISTRING_MACRO(particleTexturePath, 6)
+    UINT8_FLAG_MACRO(flags, 7)
+    UINT8_ARRAY_MACRO(unused1, 8, 3)
+    UINT32_MACRO(memSBlend, 9)
+    UINT32_MACRO(memBlendOp, 10)
+    UINT32_MACRO(memZFunc, 11)
+    UINT8_MACRO(fillRed, 12)
+    UINT8_MACRO(fillGreen, 13)
+    UINT8_MACRO(fillBlue, 14)
+    UINT8_ARRAY_MACRO(unused2, 15, 1)
+    FLOAT32_MACRO(fillAIn, 16)
+    FLOAT32_MACRO(fillAFull, 17)
+    FLOAT32_MACRO(fillAOut, 18)
+    FLOAT32_MACRO(fillAPRatio, 19)
+    FLOAT32_MACRO(fillAAmp, 20)
+    FLOAT32_MACRO(fillAFreq, 21)
+    FLOAT32_MACRO(fillAnimSpdU, 22)
+    FLOAT32_MACRO(fillAnimSpdV, 23)
+    FLOAT32_MACRO(edgeOff, 24)
+    UINT8_MACRO(edgeRed, 25)
+    UINT8_MACRO(edgeGreen, 26)
+    UINT8_MACRO(edgeBlue, 27)
+    UINT8_ARRAY_MACRO(unused3, 28, 1)
+    FLOAT32_MACRO(edgeAIn, 29)
+    FLOAT32_MACRO(edgeAFull, 30)
+    FLOAT32_MACRO(edgeAOut, 31)
+    FLOAT32_MACRO(edgeAPRatio, 32)
+    FLOAT32_MACRO(edgeAAmp, 33)
+    FLOAT32_MACRO(edgeAFreq, 34)
+    FLOAT32_MACRO(fillAFRatio, 35)
+    FLOAT32_MACRO(edgeAFRatio, 36)
+    UINT8_MACRO(memDBlend, 37)
+    UINT8_MACRO(partSBlend, 38)
+    UINT8_MACRO(partBlendOp, 39)
+    UINT8_MACRO(partZFunc, 40)
+    UINT8_MACRO(partDBlend, 41)
+    FLOAT32_MACRO(partBUp, 42)
+    FLOAT32_MACRO(partBFull, 43)
+    FLOAT32_MACRO(partBDown, 44)
+    FLOAT32_MACRO(partBFRatio, 45)
+    FLOAT32_MACRO(partBPRatio, 46)
+    FLOAT32_MACRO(partLTime, 47)
+    FLOAT32_MACRO(partLDelta, 48)
+    FLOAT32_MACRO(partNSpd, 49)
+    FLOAT32_MACRO(partNAcc, 50)
+    FLOAT32_MACRO(partVel1, 51)
+    FLOAT32_MACRO(partVel2, 52)
+    FLOAT32_MACRO(partVel3, 53)
+    FLOAT32_MACRO(partAcc1, 54)
+    FLOAT32_MACRO(partAcc2, 55)
+    FLOAT32_MACRO(partAcc3, 56)
+    FLOAT32_MACRO(partKey1, 57)
+    FLOAT32_MACRO(partKey2, 58)
+    FLOAT32_MACRO(partKey1Time, 59)
+    FLOAT32_MACRO(partKey2Time, 60)
+    UINT8_MACRO(key1Red, 61)
+    UINT8_MACRO(key1Green, 62)
+    UINT8_MACRO(key1Blue, 63)
+    UINT8_ARRAY_MACRO(unused4, 64, 1)
+    UINT8_MACRO(key2Red, 65)
+    UINT8_MACRO(key2Green, 66)
+    UINT8_MACRO(key2Blue, 67)
+    UINT8_ARRAY_MACRO(unused5, 68, 1)
+    UINT8_MACRO(key3Red, 69)
+    UINT8_MACRO(key3Green, 70)
+    UINT8_MACRO(key3Blue, 71)
+    UINT8_ARRAY_MACRO(unused6, 72, 1)
+    FLOAT32_MACRO(key1A, 73)
+    FLOAT32_MACRO(key2A, 74)
+    FLOAT32_MACRO(key3A, 75)
+    FLOAT32_MACRO(key1Time, 76)
+    FLOAT32_MACRO(key2Time, 77)
+    FLOAT32_MACRO(key3Time, 78)
+    BasicFlagMACRO(IsNoMemShader, flags, 0x00000001)
+    BasicAliasMACRO(IsNoMembraneShader, IsNoMemShader)
+    BasicFlagMACRO(IsNoPartShader, flags, 0x00000008)
+    BasicAliasMACRO(IsNoParticleShader, IsNoPartShader)
+    BasicFlagMACRO(IsEdgeInverse, flags, 0x00000010)
+    BasicAliasMACRO(IsEdgeEffectInverse, IsEdgeInverse)
+    BasicFlagMACRO(IsMemSkinOnly, flags, 0x00000020)
+    BasicAliasMACRO(IsMembraneShaderSkinOnly, IsMemSkinOnly)
     copyattrs = ObFormIDRecord.baseattrs + ['fillTexturePath', 'particleTexturePath', 'flags', 'memSBlend', 'memBlendOp',
                                         'memZFunc', 'fillRed', 'fillGreen', 'fillBlue', 'fillAIn', 'fillAFull',
                                         'fillAOut', 'fillAPRatio', 'fillAAmp', 'fillAFreq', 'fillAnimSpdU',
@@ -3311,33 +3166,27 @@ class ObEFSHRecord(ObFormIDRecord):
 
 class ObENCHRecord(ObFormIDRecord):
     _Type = 'ENCH'
-    full = CBashSTRING(5)
-    itemType = CBashGeneric(6, c_ulong)
-    chargeAmount = CBashGeneric(7, c_ulong)
-    enchantCost = CBashGeneric(8, c_ulong)
-    flags = CBashGeneric(9, c_ubyte)
-    unused1 = CBashUINT8ARRAY(10, 3)
+    STRING_MACRO(full, 5)
+    UINT32_TYPE_MACRO(itemType, 6)
+    UINT32_MACRO(chargeAmount, 7)
+    UINT32_MACRO(enchantCost, 8)
+    UINT8_FLAG_MACRO(flags, 9)
+    UINT8_ARRAY_MACRO(unused1, 10, 3)
 
-    def create_effect(self):
-        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 11, 0, 0, 0, 0, 0, 0, 1)
-        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, 11, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
-        return Effect(self._CollectionID, self._ModID, self._RecordID, 11, length)
-    effects = CBashLIST(11, Effect)
-    effects_list = CBashLIST(11, Effect, True)
-
-    IsNoAutoCalc = CBashBasicFlag('flags', 0x00000001)
-    IsScroll = CBashBasicType('itemType', 0, 'IsStaff')
-    IsStaff = CBashBasicType('itemType', 1, 'IsScroll')
-    IsWeapon = CBashBasicType('itemType', 2, 'IsScroll')
-    IsApparel = CBashBasicType('itemType', 3, 'IsScroll')
+    LIST_MACRO(effects, 11, Effect)
+    BasicFlagMACRO(IsNoAutoCalc, flags, 0x00000001)
+    BasicTypeMACRO(IsScroll, itemType, 0, IsStaff)
+    BasicTypeMACRO(IsStaff, itemType, 1, IsScroll)
+    BasicTypeMACRO(IsWeapon, itemType, 2, IsScroll)
+    BasicTypeMACRO(IsApparel, itemType, 3, IsScroll)
     ##OBME Fields. Setting any of the below fields will make the mod require JRoush's OBME plugin for OBSE
     ##To see if OBME is in use, check the recordVersion field for a non-None value
-    recordVersion = CBashGeneric(12, c_ubyte)
-    betaVersion = CBashGeneric(13, c_ubyte)
-    minorVersion = CBashGeneric(14, c_ubyte)
-    majorVersion = CBashGeneric(15, c_ubyte)
-    reserved = CBashUINT8ARRAY(16, 0x1C)
-    datx_p = CBashUINT8ARRAY(17, 0x20)
+    UINT8_MACRO(recordVersion, 12)
+    UINT8_MACRO(betaVersion, 13)
+    UINT8_MACRO(minorVersion, 14)
+    UINT8_MACRO(majorVersion, 15)
+    UINT8_ARRAY_MACRO(reserved, 16, 0x1C)
+    UINT8_ARRAY_MACRO(datx_p, 17, 0x20)
     copyattrs = ObFormIDRecord.baseattrs + ['full', 'itemType', 'chargeAmount',
                                         'enchantCost', 'flags', 'effects_list']
     copyattrsOBME = copyattrs + ['recordVersion', 'betaVersion',
@@ -3346,135 +3195,123 @@ class ObENCHRecord(ObFormIDRecord):
 
 class ObEYESRecord(ObFormIDRecord):
     _Type = 'EYES'
-    full = CBashSTRING(5)
-    iconPath = CBashISTRING(6)
-    flags = CBashGeneric(7, c_ubyte)
-    IsPlayable = CBashBasicFlag('flags', 0x00000001)
+    STRING_MACRO(full, 5)
+    ISTRING_MACRO(iconPath, 6)
+    UINT8_FLAG_MACRO(flags, 7)
+    BasicFlagMACRO(IsPlayable, flags, 0x00000001)
     copyattrs = ObFormIDRecord.baseattrs + ['full', 'iconPath', 'flags']
 
 class ObFACTRecord(ObFormIDRecord):
     _Type = 'FACT'
     class Rank(ListComponent):
-        rank = CBashGeneric_LIST(1, c_long)
-        male = CBashSTRING_LIST(2)
-        female = CBashSTRING_LIST(3)
-        insigniaPath = CBashISTRING_LIST(4)
+        SINT32_LISTMACRO(rank, 10, 1)
+        STRING_LISTMACRO(male, 10, 2)
+        STRING_LISTMACRO(female, 10, 3)
+        ISTRING_LISTMACRO(insigniaPath, 10, 4)
         copyattrs = ['rank', 'male', 'female', 'insigniaPath']
 
-    full = CBashSTRING(5)
+    STRING_MACRO(full, 5)
 
-    def create_relation(self):
-        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 6, 0, 0, 0, 0, 0, 0, 1)
-        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, 6, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
-        return Relation(self._CollectionID, self._ModID, self._RecordID, 6, length)
-    relations = CBashLIST(6, Relation)
-    relations_list = CBashLIST(6, Relation, True)
+    LIST_MACRO(relations, 6, Relation)
+    UINT8_FLAG_MACRO(flags, 7)
+    FLOAT32_MACRO(crimeGoldMultiplier, 8)
 
-    flags = CBashGeneric(7, c_ubyte)
-    crimeGoldMultiplier = CBashFLOAT32(8)
-
-    def create_rank(self):
-        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 9, 0, 0, 0, 0, 0, 0, 1)
-        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, 9, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
-        return self.Rank(self._CollectionID, self._ModID, self._RecordID, 9, length)
-    ranks = CBashLIST(9, Rank)
-    ranks_list = CBashLIST(9, Rank, True)
-
-    IsHiddenFromPC = CBashBasicFlag('flags', 0x00000001)
-    IsEvil = CBashBasicFlag('flags', 0x00000002)
-    IsSpecialCombat = CBashBasicFlag('flags', 0x00000004)
+    LIST_MACRO(ranks, 9, self.Rank)
+    BasicFlagMACRO(IsHiddenFromPC, flags, 0x00000001)
+    BasicFlagMACRO(IsEvil, flags, 0x00000002)
+    BasicFlagMACRO(IsSpecialCombat, flags, 0x00000004)
     copyattrs = ObFormIDRecord.baseattrs + ['full', 'relations_list', 'flags',
                                         'crimeGoldMultiplier', 'ranks_list']
 
 class ObFLORRecord(ObFormIDRecord):
     _Type = 'FLOR'
-    full = CBashSTRING(5)
-    modPath = CBashISTRING(6)
-    modb = CBashFLOAT32(7)
-    modt_p = CBashUINT8ARRAY(8)
-    script = CBashFORMID(9)
-    ingredient = CBashFORMID(10)
-    spring = CBashGeneric(11, c_ubyte)
-    summer = CBashGeneric(12, c_ubyte)
-    fall = CBashGeneric(13, c_ubyte)
-    winter = CBashGeneric(14, c_ubyte)
+    STRING_MACRO(full, 5)
+    ISTRING_MACRO(modPath, 6)
+    FLOAT32_MACRO(modb, 7)
+    UINT8_ARRAY_MACRO(modt_p, 8)
+    FORMID_MACRO(script, 9)
+    FORMID_MACRO(ingredient, 10)
+    UINT8_MACRO(spring, 11)
+    UINT8_MACRO(summer, 12)
+    UINT8_MACRO(fall, 13)
+    UINT8_MACRO(winter, 14)
     copyattrs = ObFormIDRecord.baseattrs + ['full', 'modPath', 'modb', 'modt_p',
                                         'script', 'ingredient', 'spring',
                                         'summer', 'fall', 'winter']
 
 class ObFURNRecord(ObFormIDRecord):
     _Type = 'FURN'
-    full = CBashSTRING(5)
-    modPath = CBashISTRING(6)
-    modb = CBashFLOAT32(7)
-    modt_p = CBashUINT8ARRAY(8)
-    script = CBashFORMID(9)
-    flags = CBashGeneric(10, c_ulong)
-    IsAnim01 = CBashBasicFlag('flags', 0x00000001)
-    IsAnim02 = CBashBasicFlag('flags', 0x00000002)
-    IsAnim03 = CBashBasicFlag('flags', 0x00000004)
-    IsAnim04 = CBashBasicFlag('flags', 0x00000008)
-    IsAnim05 = CBashBasicFlag('flags', 0x00000010)
-    IsAnim06 = CBashBasicFlag('flags', 0x00000020)
-    IsAnim07 = CBashBasicFlag('flags', 0x00000040)
-    IsAnim08 = CBashBasicFlag('flags', 0x00000080)
-    IsAnim09 = CBashBasicFlag('flags', 0x00000100)
-    IsAnim10 = CBashBasicFlag('flags', 0x00000200)
-    IsAnim11 = CBashBasicFlag('flags', 0x00000400)
-    IsAnim12 = CBashBasicFlag('flags', 0x00000800)
-    IsAnim13 = CBashBasicFlag('flags', 0x00001000)
-    IsAnim14 = CBashBasicFlag('flags', 0x00002000)
-    IsAnim15 = CBashBasicFlag('flags', 0x00004000)
-    IsAnim16 = CBashBasicFlag('flags', 0x00008000)
-    IsAnim17 = CBashBasicFlag('flags', 0x00010000)
-    IsAnim18 = CBashBasicFlag('flags', 0x00020000)
-    IsAnim19 = CBashBasicFlag('flags', 0x00040000)
-    IsAnim20 = CBashBasicFlag('flags', 0x00080000)
-    IsAnim21 = CBashBasicFlag('flags', 0x00100000)
-    IsAnim22 = CBashBasicFlag('flags', 0x00200000)
-    IsAnim23 = CBashBasicFlag('flags', 0x00400000)
-    IsAnim24 = CBashBasicFlag('flags', 0x00800000)
-    IsAnim25 = CBashBasicFlag('flags', 0x01000000)
-    IsAnim26 = CBashBasicFlag('flags', 0x02000000)
-    IsAnim27 = CBashBasicFlag('flags', 0x04000000)
-    IsAnim28 = CBashBasicFlag('flags', 0x08000000)
-    IsAnim29 = CBashBasicFlag('flags', 0x10000000)
-    IsAnim30 = CBashBasicFlag('flags', 0x20000000)
-    IsSitAnim = CBashMaskedType('flags', 0xC0000000, 0x40000000, 'IsSleepAnim')
-    IsSleepAnim = CBashMaskedType('flags', 0xC0000000, 0x80000000, 'IsSitAnim')
+    STRING_MACRO(full, 5)
+    ISTRING_MACRO(modPath, 6)
+    FLOAT32_MACRO(modb, 7)
+    UINT8_ARRAY_MACRO(modt_p, 8)
+    FORMID_MACRO(script, 9)
+    UINT32_FLAG_MACRO(flags, 10)
+    BasicFlagMACRO(IsAnim01, flags, 0x00000001)
+    BasicFlagMACRO(IsAnim02, flags, 0x00000002)
+    BasicFlagMACRO(IsAnim03, flags, 0x00000004)
+    BasicFlagMACRO(IsAnim04, flags, 0x00000008)
+    BasicFlagMACRO(IsAnim05, flags, 0x00000010)
+    BasicFlagMACRO(IsAnim06, flags, 0x00000020)
+    BasicFlagMACRO(IsAnim07, flags, 0x00000040)
+    BasicFlagMACRO(IsAnim08, flags, 0x00000080)
+    BasicFlagMACRO(IsAnim09, flags, 0x00000100)
+    BasicFlagMACRO(IsAnim10, flags, 0x00000200)
+    BasicFlagMACRO(IsAnim11, flags, 0x00000400)
+    BasicFlagMACRO(IsAnim12, flags, 0x00000800)
+    BasicFlagMACRO(IsAnim13, flags, 0x00001000)
+    BasicFlagMACRO(IsAnim14, flags, 0x00002000)
+    BasicFlagMACRO(IsAnim15, flags, 0x00004000)
+    BasicFlagMACRO(IsAnim16, flags, 0x00008000)
+    BasicFlagMACRO(IsAnim17, flags, 0x00010000)
+    BasicFlagMACRO(IsAnim18, flags, 0x00020000)
+    BasicFlagMACRO(IsAnim19, flags, 0x00040000)
+    BasicFlagMACRO(IsAnim20, flags, 0x00080000)
+    BasicFlagMACRO(IsAnim21, flags, 0x00100000)
+    BasicFlagMACRO(IsAnim22, flags, 0x00200000)
+    BasicFlagMACRO(IsAnim23, flags, 0x00400000)
+    BasicFlagMACRO(IsAnim24, flags, 0x00800000)
+    BasicFlagMACRO(IsAnim25, flags, 0x01000000)
+    BasicFlagMACRO(IsAnim26, flags, 0x02000000)
+    BasicFlagMACRO(IsAnim27, flags, 0x04000000)
+    BasicFlagMACRO(IsAnim28, flags, 0x08000000)
+    BasicFlagMACRO(IsAnim29, flags, 0x10000000)
+    BasicFlagMACRO(IsAnim30, flags, 0x20000000)
+    MaskedTypeMACRO(IsSitAnim, flags, 0xC0000000, 0x40000000, IsSleepAnim)
+    MaskedTypeMACRO(IsSleepAnim, flags, 0xC0000000, 0x80000000, IsSitAnim)
     copyattrs = ObFormIDRecord.baseattrs + ['full', 'modPath', 'modb',
                                         'modt_p', 'script', 'flags']
 
 class ObGLOBRecord(ObFormIDRecord):
     _Type = 'GLOB'
-    format = CBashGeneric(5, c_char)
-    value = CBashFLOAT32(6)
+    CHAR_MACRO(format, 5)
+    FLOAT32_MACRO(value, 6)
     copyattrs = ObFormIDRecord.baseattrs + ['format', 'value']
 
 class ObGRASRecord(ObFormIDRecord):
     _Type = 'GRAS'
-    modPath = CBashISTRING(5)
-    modb = CBashFLOAT32(6)
-    modt_p = CBashUINT8ARRAY(7)
-    density = CBashGeneric(8, c_ubyte)
-    minSlope = CBashGeneric(9, c_ubyte)
-    maxSlope = CBashGeneric(10, c_ubyte)
-    unused1 = CBashUINT8ARRAY(11, 1)
-    waterDistance = CBashGeneric(12, c_ushort)
-    unused2 = CBashUINT8ARRAY(13, 2)
-    waterOp = CBashGeneric(14, c_ulong)
-    posRange = CBashFLOAT32(15)
-    heightRange = CBashFLOAT32(16)
-    colorRange = CBashFLOAT32(17)
-    wavePeriod = CBashFLOAT32(18)
-    flags = CBashGeneric(19, c_ubyte)
-    unused3 = CBashUINT8ARRAY(20, 3)
-    IsVLighting = CBashBasicFlag('flags', 0x00000001)
-    IsVertexLighting = CBashAlias('IsVLighting')
-    IsUScaling = CBashBasicFlag('flags', 0x00000002)
-    IsUniformScaling = CBashAlias('IsUScaling')
-    IsFitSlope = CBashBasicFlag('flags', 0x00000004)
-    IsFitToSlope = CBashAlias('IsFitSlope')
+    ISTRING_MACRO(modPath, 5)
+    FLOAT32_MACRO(modb, 6)
+    UINT8_ARRAY_MACRO(modt_p, 7)
+    UINT8_MACRO(density, 8)
+    UINT8_MACRO(minSlope, 9)
+    UINT8_MACRO(maxSlope, 10)
+    UINT8_ARRAY_MACRO(unused1, 11, 1)
+    UINT16_MACRO(waterDistance, 12)
+    UINT8_ARRAY_MACRO(unused2, 13, 2)
+    UINT32_MACRO(waterOp, 14)
+    FLOAT32_MACRO(posRange, 15)
+    FLOAT32_MACRO(heightRange, 16)
+    FLOAT32_MACRO(colorRange, 17)
+    FLOAT32_MACRO(wavePeriod, 18)
+    UINT8_FLAG_MACRO(flags, 19)
+    UINT8_ARRAY_MACRO(unused3, 20, 3)
+    BasicFlagMACRO(IsVLighting, flags, 0x00000001)
+    BasicAliasMACRO(IsVertexLighting, IsVLighting)
+    BasicFlagMACRO(IsUScaling, flags, 0x00000002)
+    BasicAliasMACRO(IsUniformScaling, IsUScaling)
+    BasicFlagMACRO(IsFitSlope, flags, 0x00000004)
+    BasicAliasMACRO(IsFitToSlope, IsFitSlope)
     copyattrs = ObFormIDRecord.baseattrs + ['modPath', 'modb', 'modt_p', 'density',
                                         'minSlope', 'maxSlope', 'waterDistance',
                                         'waterOp', 'posRange', 'heightRange',
@@ -3482,79 +3319,67 @@ class ObGRASRecord(ObFormIDRecord):
 
 class ObHAIRRecord(ObFormIDRecord):
     _Type = 'HAIR'
-    full = CBashSTRING(5)
-    modPath = CBashISTRING(6)
-    modb = CBashFLOAT32(7)
-    modt_p = CBashUINT8ARRAY(8)
-    iconPath = CBashISTRING(9)
-    flags = CBashGeneric(10, c_ubyte)
-    IsPlayable = CBashBasicFlag('flags', 0x00000001)
-    IsNotMale = CBashBasicFlag('flags', 0x00000002)
-    IsMale = CBashInvertedFlag('IsNotMale')
-    IsNotFemale = CBashBasicFlag('flags', 0x00000004)
-    IsFemale = CBashInvertedFlag('IsNotFemale')
-    IsFixedColor = CBashBasicFlag('flags', 0x00000008)
+    STRING_MACRO(full, 5)
+    ISTRING_MACRO(modPath, 6)
+    FLOAT32_MACRO(modb, 7)
+    UINT8_ARRAY_MACRO(modt_p, 8)
+    ISTRING_MACRO(iconPath, 9)
+    UINT8_FLAG_MACRO(flags, 10)
+    BasicFlagMACRO(IsPlayable, flags, 0x00000001)
+    BasicFlagMACRO(IsNotMale, flags, 0x00000002)
+    BasicInvertedFlagMACRO(IsMale, IsNotMale)
+    BasicFlagMACRO(IsNotFemale, flags, 0x00000004)
+    BasicInvertedFlagMACRO(IsFemale, IsNotFemale)
+    BasicFlagMACRO(IsFixedColor, flags, 0x00000008)
     copyattrs = ObFormIDRecord.baseattrs + ['full', 'modPath', 'modb',
                                         'modt_p', 'iconPath', 'flags']
 
 class ObIDLERecord(ObFormIDRecord):
     _Type = 'IDLE'
-    modPath = CBashISTRING(5)
-    modb = CBashFLOAT32(6)
-    modt_p = CBashUINT8ARRAY(7)
+    ISTRING_MACRO(modPath, 5)
+    FLOAT32_MACRO(modb, 6)
+    UINT8_ARRAY_MACRO(modt_p, 7)
 
-    def create_condition(self):
-        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 8, 0, 0, 0, 0, 0, 0, 1)
-        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, 8, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
-        return Condition(self._CollectionID, self._ModID, self._RecordID, 8, length)
-    conditions = CBashLIST(8, Condition)
-    conditions_list = CBashLIST(8, Condition, True)
-
-    group = CBashGeneric(9, c_ubyte)
-    parent = CBashFORMID(10)
-    prevId = CBashFORMID(11)
-    IsLowerBody = CBashMaskedType('group', 0x0F, 0x00, 'IsLeftArm')
-    IsLeftArm = CBashMaskedType('group', 0x0F, 0x01, 'IsLowerBody')
-    IsLeftHand = CBashMaskedType('group', 0x0F, 0x02, 'IsLowerBody')
-    IsRightArm = CBashMaskedType('group', 0x0F, 0x03, 'IsLowerBody')
-    IsSpecialIdle = CBashMaskedType('group', 0x0F, 0x04, 'IsLowerBody')
-    IsWholeBody = CBashMaskedType('group', 0x0F, 0x05, 'IsLowerBody')
-    IsUpperBody = CBashMaskedType('group', 0x0F, 0x06, 'IsLowerBody')
-    IsNotReturnFile = CBashBasicFlag('group', 0x80)
-    IsReturnFile = CBashInvertedFlag('IsNotReturnFile')
+    LIST_MACRO(conditions, 8, Condition)
+    UINT8_FLAG_TYPE_MACRO(group, 9)
+    FORMID_MACRO(parent, 10)
+    FORMID_MACRO(prevId, 11)
+    MaskedTypeMACRO(IsLowerBody, group, 0x0F, 0x00, IsLeftArm)
+    MaskedTypeMACRO(IsLeftArm, group, 0x0F, 0x01, IsLowerBody)
+    MaskedTypeMACRO(IsLeftHand, group, 0x0F, 0x02, IsLowerBody)
+    MaskedTypeMACRO(IsRightArm, group, 0x0F, 0x03, IsLowerBody)
+    MaskedTypeMACRO(IsSpecialIdle, group, 0x0F, 0x04, IsLowerBody)
+    MaskedTypeMACRO(IsWholeBody, group, 0x0F, 0x05, IsLowerBody)
+    MaskedTypeMACRO(IsUpperBody, group, 0x0F, 0x06, IsLowerBody)
+    BasicFlagMACRO(IsNotReturnFile, group, 0x80)
+    BasicInvertedFlagMACRO(IsReturnFile, IsNotReturnFile)
     copyattrs = ObFormIDRecord.baseattrs + ['modPath', 'modb', 'modt_p',
                                         'conditions_list', 'group', 'parent', 'prevId']
 
 class ObINGRRecord(ObFormIDRecord):
     _Type = 'INGR'
-    full = CBashSTRING(5)
-    modPath = CBashISTRING(6)
-    modb = CBashFLOAT32(7)
-    modt_p = CBashUINT8ARRAY(8)
-    iconPath = CBashISTRING(9)
-    script = CBashFORMID(10)
-    weight = CBashFLOAT32(11)
-    value = CBashGeneric(12, c_long)
-    flags = CBashGeneric(13, c_ubyte)
-    unused1 = CBashUINT8ARRAY(14, 3)
+    STRING_MACRO(full, 5)
+    ISTRING_MACRO(modPath, 6)
+    FLOAT32_MACRO(modb, 7)
+    UINT8_ARRAY_MACRO(modt_p, 8)
+    ISTRING_MACRO(iconPath, 9)
+    FORMID_MACRO(script, 10)
+    FLOAT32_MACRO(weight, 11)
+    SINT32_MACRO(value, 12)
+    UINT8_FLAG_MACRO(flags, 13)
+    UINT8_ARRAY_MACRO(unused1, 14, 3)
 
-    def create_effect(self):
-        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 15, 0, 0, 0, 0, 0, 0, 1)
-        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, 15, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
-        return Effect(self._CollectionID, self._ModID, self._RecordID, 15, length)
-    effects = CBashLIST(15, Effect)
-    effects_list = CBashLIST(15, Effect, True)
-
-    IsNoAutoCalc = CBashBasicFlag('flags', 0x00000001)
-    IsFood = CBashBasicFlag('flags', 0x00000002)
+    LIST_MACRO(effects, 15, Effect)
+    BasicFlagMACRO(IsNoAutoCalc, flags, 0x00000001)
+    BasicFlagMACRO(IsFood, flags, 0x00000002)
     ##OBME Fields. Setting any of the below fields will make the mod require JRoush's OBME plugin for OBSE
     ##To see if OBME is in use, check the recordVersion field for a non-None value
-    recordVersion = CBashGeneric(16, c_ubyte)
-    betaVersion = CBashGeneric(17, c_ubyte)
-    minorVersion = CBashGeneric(18, c_ubyte)
-    majorVersion = CBashGeneric(19, c_ubyte)
-    reserved = CBashUINT8ARRAY(20, 0x1C)
-    datx_p = CBashUINT8ARRAY(21, 0x20)
+    UINT8_MACRO(recordVersion, 16)
+    UINT8_MACRO(betaVersion, 17)
+    UINT8_MACRO(minorVersion, 18)
+    UINT8_MACRO(majorVersion, 19)
+    UINT8_ARRAY_MACRO(reserved, 20, 0x1C)
+    UINT8_ARRAY_MACRO(datx_p, 21, 0x20)
     copyattrs = ObFormIDRecord.baseattrs + ['full', 'modPath', 'modb', 'modt_p', 'iconPath',
                                         'script', 'weight', 'value', 'flags',
                                         'effects_list']
@@ -3564,48 +3389,48 @@ class ObINGRRecord(ObFormIDRecord):
 
 class ObKEYMRecord(ObFormIDRecord):
     _Type = 'KEYM'
-    full = CBashSTRING(5)
-    modPath = CBashISTRING(6)
-    modb = CBashFLOAT32(7)
-    modt_p = CBashUINT8ARRAY(8)
-    iconPath = CBashISTRING(9)
-    script = CBashFORMID(10)
-    value = CBashGeneric(11, c_long)
-    weight = CBashFLOAT32(12)
+    STRING_MACRO(full, 5)
+    ISTRING_MACRO(modPath, 6)
+    FLOAT32_MACRO(modb, 7)
+    UINT8_ARRAY_MACRO(modt_p, 8)
+    ISTRING_MACRO(iconPath, 9)
+    FORMID_MACRO(script, 10)
+    SINT32_MACRO(value, 11)
+    FLOAT32_MACRO(weight, 12)
     copyattrs = ObFormIDRecord.baseattrs + ['full', 'modPath', 'modb', 'modt_p', 'iconPath',
                                         'script', 'value', 'weight']
 
 class ObLIGHRecord(ObFormIDRecord):
     _Type = 'LIGH'
-    modPath = CBashISTRING(5)
-    modb = CBashFLOAT32(6)
-    modt_p = CBashUINT8ARRAY(7)
-    script = CBashFORMID(8)
-    full = CBashSTRING(9)
-    iconPath = CBashISTRING(10)
-    duration = CBashGeneric(11, c_long)
-    radius = CBashGeneric(12, c_ulong)
-    red = CBashGeneric(13, c_ubyte)
-    green = CBashGeneric(14, c_ubyte)
-    blue = CBashGeneric(15, c_ubyte)
-    unused1 = CBashUINT8ARRAY(16, 1)
-    flags = CBashGeneric(17, c_ulong)
-    falloff = CBashFLOAT32(18)
-    fov = CBashFLOAT32(19)
-    value = CBashGeneric(20, c_ulong)
-    weight = CBashFLOAT32(21)
-    fade = CBashFLOAT32(22)
-    sound = CBashFORMID(23)
-    IsDynamic = CBashBasicFlag('flags', 0x00000001)
-    IsCanTake = CBashBasicFlag('flags', 0x00000002)
-    IsNegative = CBashBasicFlag('flags', 0x00000004)
-    IsFlickers = CBashBasicFlag('flags', 0x00000008)
-    IsOffByDefault = CBashBasicFlag('flags', 0x00000020)
-    IsFlickerSlow = CBashBasicFlag('flags', 0x00000040)
-    IsPulse = CBashBasicFlag('flags', 0x00000080)
-    IsPulseSlow = CBashBasicFlag('flags', 0x00000100)
-    IsSpotLight = CBashBasicFlag('flags', 0x00000200)
-    IsSpotShadow = CBashBasicFlag('flags', 0x00000400)
+    ISTRING_MACRO(modPath, 5)
+    FLOAT32_MACRO(modb, 6)
+    UINT8_ARRAY_MACRO(modt_p, 7)
+    FORMID_MACRO(script, 8)
+    STRING_MACRO(full, 9)
+    ISTRING_MACRO(iconPath, 10)
+    SINT32_MACRO(duration, 11)
+    UINT32_MACRO(radius, 12)
+    UINT8_MACRO(red, 13)
+    UINT8_MACRO(green, 14)
+    UINT8_MACRO(blue, 15)
+    UINT8_ARRAY_MACRO(unused1, 16, 1)
+    UINT32_FLAG_MACRO(flags, 17)
+    FLOAT32_MACRO(falloff, 18)
+    FLOAT32_MACRO(fov, 19)
+    UINT32_MACRO(value, 20)
+    FLOAT32_MACRO(weight, 21)
+    FLOAT32_MACRO(fade, 22)
+    FORMID_MACRO(sound, 23)
+    BasicFlagMACRO(IsDynamic, flags, 0x00000001)
+    BasicFlagMACRO(IsCanTake, flags, 0x00000002)
+    BasicFlagMACRO(IsNegative, flags, 0x00000004)
+    BasicFlagMACRO(IsFlickers, flags, 0x00000008)
+    BasicFlagMACRO(IsOffByDefault, flags, 0x00000020)
+    BasicFlagMACRO(IsFlickerSlow, flags, 0x00000040)
+    BasicFlagMACRO(IsPulse, flags, 0x00000080)
+    BasicFlagMACRO(IsPulseSlow, flags, 0x00000100)
+    BasicFlagMACRO(IsSpotLight, flags, 0x00000200)
+    BasicFlagMACRO(IsSpotShadow, flags, 0x00000400)
     copyattrs = ObFormIDRecord.baseattrs + ['modPath', 'modb', 'modt_p', 'script', 'full',
                                         'iconPath', 'duration', 'radius', 'red',
                                         'green', 'blue', 'flags', 'falloff', 'fov',
@@ -3614,201 +3439,177 @@ class ObLIGHRecord(ObFormIDRecord):
 class ObLSCRRecord(ObFormIDRecord):
     _Type = 'LSCR'
     class Location(ListComponent):
-        direct = CBashFORMID_LIST(1)
-        indirect = CBashFORMID_LIST(2)
-        gridY = CBashGeneric_LIST(3, c_short)
-        gridX = CBashGeneric_LIST(4, c_short)
+        FORMID_LISTMACRO(direct, 7, 1)
+        FORMID_LISTMACRO(indirect, 7, 2)
+        SINT16_LISTMACRO(gridY, 7, 3)
+        SINT16_LISTMACRO(gridX, 7, 4)
         copyattrs = ['direct', 'indirect', 'gridY', 'gridX']
 
-    iconPath = CBashISTRING(5)
-    text = CBashSTRING(6)
+    ISTRING_MACRO(iconPath, 5)
+    STRING_MACRO(text, 6)
 
-    def create_location(self):
-        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 7, 0, 0, 0, 0, 0, 0, 1)
-        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, 7, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
-        return self.Location(self._CollectionID, self._ModID, self._RecordID, 7, length)
-    locations = CBashLIST(7, Location)
-    locations_list = CBashLIST(7, Location, True)
-
+    LIST_MACRO(locations, 7, self.Location)
     copyattrs = ObFormIDRecord.baseattrs + ['iconPath', 'text', 'locations_list']
 
 class ObLTEXRecord(ObFormIDRecord):
     _Type = 'LTEX'
-    iconPath = CBashISTRING(5)
-    flags = CBashGeneric(6, c_ubyte)
-    friction = CBashGeneric(7, c_ubyte)
-    restitution = CBashGeneric(8, c_ubyte)
-    specular = CBashGeneric(9, c_ubyte)
-    grass = CBashFORMIDARRAY(10)
-    IsStone = CBashBasicFlag('flags', 0x00000001)
-    IsCloth = CBashBasicFlag('flags', 0x00000002)
-    IsDirt = CBashBasicFlag('flags', 0x00000004)
-    IsGlass = CBashBasicFlag('flags', 0x00000008)
-    IsGrass = CBashBasicFlag('flags', 0x00000010)
-    IsMetal = CBashBasicFlag('flags', 0x00000020)
-    IsOrganic = CBashBasicFlag('flags', 0x00000040)
-    IsSkin = CBashBasicFlag('flags', 0x00000080)
-    IsWater = CBashBasicFlag('flags', 0x00000100)
-    IsWood = CBashBasicFlag('flags', 0x00000200)
-    IsHeavyStone = CBashBasicFlag('flags', 0x00000400)
-    IsHeavyMetal = CBashBasicFlag('flags', 0x00000800)
-    IsHeavyWood = CBashBasicFlag('flags', 0x00001000)
-    IsChain = CBashBasicFlag('flags', 0x00002000)
-    IsSnow = CBashBasicFlag('flags', 0x00004000)
+    ISTRING_MACRO(iconPath, 5)
+    UINT8_FLAG_MACRO(flags, 6)
+    UINT8_MACRO(friction, 7)
+    UINT8_MACRO(restitution, 8)
+    UINT8_MACRO(specular, 9)
+    FORMID_ARRAY_MACRO(grass, 10)
+    BasicFlagMACRO(IsStone, flags, 0x00000001)
+    BasicFlagMACRO(IsCloth, flags, 0x00000002)
+    BasicFlagMACRO(IsDirt, flags, 0x00000004)
+    BasicFlagMACRO(IsGlass, flags, 0x00000008)
+    BasicFlagMACRO(IsGrass, flags, 0x00000010)
+    BasicFlagMACRO(IsMetal, flags, 0x00000020)
+    BasicFlagMACRO(IsOrganic, flags, 0x00000040)
+    BasicFlagMACRO(IsSkin, flags, 0x00000080)
+    BasicFlagMACRO(IsWater, flags, 0x00000100)
+    BasicFlagMACRO(IsWood, flags, 0x00000200)
+    BasicFlagMACRO(IsHeavyStone, flags, 0x00000400)
+    BasicFlagMACRO(IsHeavyMetal, flags, 0x00000800)
+    BasicFlagMACRO(IsHeavyWood, flags, 0x00001000)
+    BasicFlagMACRO(IsChain, flags, 0x00002000)
+    BasicFlagMACRO(IsSnow, flags, 0x00004000)
     copyattrs = ObFormIDRecord.baseattrs + ['iconPath', 'flags', 'friction', 'restitution',
                                         'specular', 'grass']
 
 class ObLVLCRecord(ObFormIDRecord):
     _Type = 'LVLC'
     class Entry(ListComponent):
-        level = CBashGeneric_LIST(1, c_short)
-        unused1 = CBashUINT8ARRAY_LIST(2, 2)
-        listId = CBashFORMID_LIST(3)
-        count = CBashGeneric_LIST(4, c_short)
-        unused2 = CBashUINT8ARRAY_LIST(5, 2)
+        SINT16_LISTMACRO(level, 9, 1)
+        UINT8_ARRAY_LISTMACRO(unused1, 9, 2, 2)
+        FORMID_LISTMACRO(listId, 9, 3)
+        SINT16_LISTMACRO(count, 9, 4)
+        UINT8_ARRAY_LISTMACRO(unused2, 9, 5, 2)
         copyattrs = ['level', 'listId', 'count']
 
     def mergeFilter(self,modSet):
         """Filter out items that don't come from specified modSet."""
         self.entries = [entry for entry in self.entries if entry.listId[0] in modSet]
 
-    chanceNone = CBashGeneric(5, c_ubyte)
-    flags = CBashGeneric(6, c_ubyte)
-    script = CBashFORMID(7)
-    template = CBashFORMID(8)
+    UINT8_MACRO(chanceNone, 5)
+    UINT8_FLAG_MACRO(flags, 6)
+    FORMID_MACRO(script, 7)
+    FORMID_MACRO(template, 8)
 
-    def create_entry(self):
-        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 9, 0, 0, 0, 0, 0, 0, 1)
-        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, 9, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
-        return self.Entry(self._CollectionID, self._ModID, self._RecordID, 9, length)
-    entries = CBashLIST(9, Entry)
-    entries_list = CBashLIST(9, Entry, True)
-
-    IsCalcFromAllLevels = CBashBasicFlag('flags', 0x00000001)
-    IsCalcForEachItem = CBashBasicFlag('flags', 0x00000002)
-    IsUseAllSpells = CBashBasicFlag('flags', 0x00000004)
+    LIST_MACRO(entries, 9, self.Entry)
+    BasicFlagMACRO(IsCalcFromAllLevels, flags, 0x00000001)
+    BasicFlagMACRO(IsCalcForEachItem, flags, 0x00000002)
+    BasicFlagMACRO(IsUseAllSpells, flags, 0x00000004)
     copyattrs = ObFormIDRecord.baseattrs + ['chanceNone', 'flags', 'script',
                                         'template', 'entries_list']
 
 class ObLVLIRecord(ObFormIDRecord):
     _Type = 'LVLI'
     class Entry(ListComponent):
-        level = CBashGeneric_LIST(1, c_short)
-        unused1 = CBashUINT8ARRAY_LIST(2, 2)
-        listId = CBashFORMID_LIST(3)
-        count = CBashGeneric_LIST(4, c_short)
-        unused2 = CBashUINT8ARRAY_LIST(5, 2)
+        SINT16_LISTMACRO(level, 9, 1)
+        UINT8_ARRAY_LISTMACRO(unused1, 9, 2, 2)
+        FORMID_LISTMACRO(listId, 9, 3)
+        SINT16_LISTMACRO(count, 9, 4)
+        UINT8_ARRAY_LISTMACRO(unused2, 9, 5, 2)
         copyattrs = ['level', 'listId', 'count']
 
     def mergeFilter(self,modSet):
         """Filter out items that don't come from specified modSet."""
         self.entries = [entry for entry in self.entries if entry.listId[0] in modSet]
 
-    chanceNone = CBashGeneric(5, c_ubyte)
-    flags = CBashGeneric(6, c_ubyte)
+    UINT8_MACRO(chanceNone, 5)
+    UINT8_FLAG_MACRO(flags, 6)
 
-    def create_entry(self):
-        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 9, 0, 0, 0, 0, 0, 0, 1)
-        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, 9, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
-        return self.Entry(self._CollectionID, self._ModID, self._RecordID, 9, length)
-    entries = CBashLIST(9, Entry)
-    entries_list = CBashLIST(9, Entry, True)
-
-    IsCalcFromAllLevels = CBashBasicFlag('flags', 0x00000001)
-    IsCalcForEachItem = CBashBasicFlag('flags', 0x00000002)
-    IsUseAllSpells = CBashBasicFlag('flags', 0x00000004)
+    LIST_MACRO(entries, 9, self.Entry)
+    BasicFlagMACRO(IsCalcFromAllLevels, flags, 0x00000001)
+    BasicFlagMACRO(IsCalcForEachItem, flags, 0x00000002)
+    BasicFlagMACRO(IsUseAllSpells, flags, 0x00000004)
     copyattrs = ObFormIDRecord.baseattrs + ['chanceNone', 'flags', 'entries_list']
 
 class ObLVSPRecord(ObFormIDRecord):
     _Type = 'LVSP'
     class Entry(ListComponent):
-        level = CBashGeneric_LIST(1, c_short)
-        unused1 = CBashUINT8ARRAY_LIST(2, 2)
-        listId = CBashFORMID_LIST(3)
-        count = CBashGeneric_LIST(4, c_short)
-        unused2 = CBashUINT8ARRAY_LIST(5, 2)
+        SINT16_LISTMACRO(level, 9, 1)
+        UINT8_ARRAY_LISTMACRO(unused1, 9, 2, 2)
+        FORMID_LISTMACRO(listId, 9, 3)
+        SINT16_LISTMACRO(count, 9, 4)
+        UINT8_ARRAY_LISTMACRO(unused2, 9, 5, 2)
         copyattrs = ['level', 'listId', 'count']
 
     def mergeFilter(self,modSet):
         """Filter out items that don't come from specified modSet."""
         self.entries = [entry for entry in self.entries if entry.listId[0] in modSet]
 
-    chanceNone = CBashGeneric(5, c_ubyte)
-    flags = CBashGeneric(6, c_ubyte)
+    UINT8_MACRO(chanceNone, 5)
+    UINT8_FLAG_MACRO(flags, 6)
 
-    def create_entry(self):
-        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 9, 0, 0, 0, 0, 0, 0, 1)
-        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, 9, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
-        return self.Entry(self._CollectionID, self._ModID, self._RecordID, 9, length)
-    entries = CBashLIST(9, Entry)
-    entries_list = CBashLIST(9, Entry, True)
-
-    IsCalcFromAllLevels = CBashBasicFlag('flags', 0x00000001)
-    IsCalcForEachItem = CBashBasicFlag('flags', 0x00000002)
-    IsUseAllSpells = CBashBasicFlag('flags', 0x00000004)
+    LIST_MACRO(entries, 9, self.Entry)
+    BasicFlagMACRO(IsCalcFromAllLevels, flags, 0x00000001)
+    BasicFlagMACRO(IsCalcForEachItem, flags, 0x00000002)
+    BasicFlagMACRO(IsUseAllSpells, flags, 0x00000004)
     copyattrs = ObFormIDRecord.baseattrs + ['chanceNone', 'flags', 'entries_list']
 
 class ObMGEFRecord(ObEditorIDRecord):
     _Type = 'MGEF'
-    full = CBashEDIDSTRING(5)
-    text = CBashEDIDSTRING(6)
-    iconPath = CBashEDIDISTRING(7)
-    modPath = CBashEDIDISTRING(8)
-    modb = CBashEDIDFLOAT32(9)
-    modt_p = CBashEDIDUINT8ARRAY(10)
-    flags = CBashEDIDGeneric(11, c_ulong)
-    baseCost = CBashEDIDFLOAT32(12)
-    associated = CBashEDIDFORMID(13)
-    school = CBashEDIDGeneric(14, c_long)
+    STRING_EDIDMACRO(full, 5)
+    STRING_EDIDMACRO(text, 6)
+    ISTRING_EDIDMACRO(iconPath, 7)
+    ISTRING_EDIDMACRO(modPath, 8)
+    FLOAT32_EDIDMACRO(modb, 9)
+    UINT8_ARRAY_EDIDMACRO(modt_p, 10)
+    UINT32_FLAG_EDIDMACRO(flags, 11)
+    FLOAT32_EDIDMACRO(baseCost, 12)
+    FORMID_EDIDMACRO(associated, 13)
+    SINT32_EDIDMACRO(school, 14)
     ##0xFFFFFFFF is None for resistValue
-    resistValue = CBashEDIDGeneric(15, c_ulong)
-    numCounters = CBashEDIDGeneric(16, c_ushort)
-    unused1 = CBashEDIDUINT8ARRAY(17)
-    light = CBashEDIDFORMID(18)
-    projectileSpeed = CBashEDIDFLOAT32(19)
-    effectShader = CBashEDIDFORMID(20)
-    enchantEffect = CBashEDIDFORMID(21)
-    castingSound = CBashEDIDFORMID(22)
-    boltSound = CBashEDIDFORMID(23)
-    hitSound = CBashEDIDFORMID(24)
-    areaSound = CBashEDIDFORMID(25)
-    cefEnchantment = CBashEDIDFLOAT32(26)
-    cefBarter = CBashEDIDFLOAT32(27)
-    counterEffects = CBashEDIDMGEFCODE_OR_UINT32_ARRAY(28)
+    UINT32_EDIDMACRO(resistValue, 15)
+    UINT16_EDIDMACRO(numCounters, 16)
+    UINT8_ARRAY_EDIDMACRO(unused1, 17)
+    FORMID_EDIDMACRO(light, 18)
+    FLOAT32_EDIDMACRO(projectileSpeed, 19)
+    FORMID_EDIDMACRO(effectShader, 20)
+    FORMID_EDIDMACRO(enchantEffect, 21)
+    FORMID_EDIDMACRO(castingSound, 22)
+    FORMID_EDIDMACRO(boltSound, 23)
+    FORMID_EDIDMACRO(hitSound, 24)
+    FORMID_EDIDMACRO(areaSound, 25)
+    FLOAT32_EDIDMACRO(cefEnchantment, 26)
+    FLOAT32_EDIDMACRO(cefBarter, 27)
+    MGEFCODE_OR_UINT32_ARRAY_EDIDMACRO(counterEffects, 28)
     #Note: the vanilla code discards mod changes to most flag bits
     #  only those listed as changeable below may be edited by non-obme mods
     # comments garnered from JRoush's OBME
-    IsHostile = CBashBasicFlag('flags', 0x00000001)
-    IsRecover = CBashBasicFlag('flags', 0x00000002)
-    IsDetrimental = CBashBasicFlag('flags', 0x00000004) #OBME Deprecated, used for ValueModifier effects AV is decreased rather than increased
-    IsMagnitudeIsPercent = CBashBasicFlag('flags', 0x00000008) #OBME Deprecated
-    IsSelf = CBashBasicFlag('flags', 0x00000010)
-    IsTouch = CBashBasicFlag('flags', 0x00000020)
-    IsTarget = CBashBasicFlag('flags', 0x00000040)
-    IsNoDuration = CBashBasicFlag('flags', 0x00000080)
-    IsNoMagnitude = CBashBasicFlag('flags', 0x00000100)
-    IsNoArea = CBashBasicFlag('flags', 0x00000200)
-    IsFXPersist = CBashBasicFlag('flags', 0x00000400) #Changeable
-    IsSpellmaking = CBashBasicFlag('flags', 0x00000800) #Changeable
-    IsEnchanting = CBashBasicFlag('flags', 0x00001000) #Changeable
-    IsNoIngredient = CBashBasicFlag('flags', 0x00002000) #Changeable
-    IsUnknownF = CBashBasicFlag('flags', 0x00004000) #no effects have this flag set
-    IsNoRecast = CBashBasicFlag('flags', 0x00008000) #no effects have this flag set
-    IsUseWeapon = CBashBasicFlag('flags', 0x00010000) #OBME Deprecated
-    IsUseArmor = CBashBasicFlag('flags', 0x00020000) #OBME Deprecated
-    IsUseCreature = CBashBasicFlag('flags', 0x00040000) #OBME Deprecated
-    IsUseSkill = CBashBasicFlag('flags', 0x00080000) #OBME Deprecated
-    IsUseAttr = CBashBasicFlag('flags', 0x00100000) #OBME Deprecated
-    IsPCHasEffect = CBashBasicFlag('flags', 0x00200000) #whether or not PC has effect, forced to zero during loading
-    IsDisabled = CBashBasicFlag('flags', 0x00400000) #Changeable, many if not all methods that loop over effects ignore those with this flag.
+    BasicFlagMACRO(IsHostile, flags, 0x00000001)
+    BasicFlagMACRO(IsRecover, flags, 0x00000002)
+    BasicFlagMACRO(IsDetrimental, flags, 0x00000004) #OBME Deprecated, used for ValueModifier effects AV is decreased rather than increased
+    BasicFlagMACRO(IsMagnitudeIsPercent, flags, 0x00000008) #OBME Deprecated
+    BasicFlagMACRO(IsSelf, flags, 0x00000010)
+    BasicFlagMACRO(IsTouch, flags, 0x00000020)
+    BasicFlagMACRO(IsTarget, flags, 0x00000040)
+    BasicFlagMACRO(IsNoDuration, flags, 0x00000080)
+    BasicFlagMACRO(IsNoMagnitude, flags, 0x00000100)
+    BasicFlagMACRO(IsNoArea, flags, 0x00000200)
+    BasicFlagMACRO(IsFXPersist, flags, 0x00000400) #Changeable
+    BasicFlagMACRO(IsSpellmaking, flags, 0x00000800) #Changeable
+    BasicFlagMACRO(IsEnchanting, flags, 0x00001000) #Changeable
+    BasicFlagMACRO(IsNoIngredient, flags, 0x00002000) #Changeable
+    BasicFlagMACRO(IsUnknownF, flags, 0x00004000) #no effects have this flag set
+    BasicFlagMACRO(IsNoRecast, flags, 0x00008000) #no effects have this flag set
+    BasicFlagMACRO(IsUseWeapon, flags, 0x00010000) #OBME Deprecated
+    BasicFlagMACRO(IsUseArmor, flags, 0x00020000) #OBME Deprecated
+    BasicFlagMACRO(IsUseCreature, flags, 0x00040000) #OBME Deprecated
+    BasicFlagMACRO(IsUseSkill, flags, 0x00080000) #OBME Deprecated
+    BasicFlagMACRO(IsUseAttr, flags, 0x00100000) #OBME Deprecated
+    BasicFlagMACRO(IsPCHasEffect, flags, 0x00200000) #whether or not PC has effect, forced to zero during loading
+    BasicFlagMACRO(IsDisabled, flags, 0x00400000) #Changeable, many if not all methods that loop over effects ignore those with this flag.
                                                     #  Spells with an effect with this flag are apparently uncastable.
-    IsUnknownO = CBashBasicFlag('flags', 0x00800000) #Changeable, POSN,DISE - these effects have *only* this bit set,
+    BasicFlagMACRO(IsUnknownO, flags, 0x00800000) #Changeable, POSN,DISE - these effects have *only* this bit set,
                                                     #  perhaps a flag for meta effects
-    IsUseAV = CBashBasicFlag('flags', 0x01000000) #OBME Deprecated, Changeable, but once set by default or by a previously loaded mod file
+    BasicFlagMACRO(IsUseAV, flags, 0x01000000) #OBME Deprecated, Changeable, but once set by default or by a previously loaded mod file
                                                     #  it cannot be unset by another mod, nor can the mgefParam be overriden
 
-    IsBallType = CBashMaskedType('flags', 0x06000000, 0, 'IsBoltType')  #Changeable
-    IsFogType = CBashMaskedType('flags', 0x06000000, 0x06000000, 'IsBallType')  #Changeable
+    MaskedTypeMACRO(IsBallType, flags, 0x06000000, 0, IsBoltType)  #Changeable
+    MaskedTypeMACRO(IsFogType, flags, 0x06000000, 0x06000000, IsBallType)  #Changeable
 
     def get_IsSprayType(self):
         return self.flags != None and not self.IsFogType and (self.flags & 0x02000000) != 0
@@ -3828,35 +3629,35 @@ class ObMGEFRecord(ObEditorIDRecord):
         elif self.IsBoltType: self.IsBallType = True
     IsBoltType = property(get_IsBoltType, set_IsBoltType)  #Changeable
 
-    IsFogType = CBashBasicFlag('flags', 0x06000000) #Changeable
-    IsNoHitEffect = CBashBasicFlag('flags', 0x08000000) #Changeable, no hit shader on target
-    IsPersistOnDeath = CBashBasicFlag('flags', 0x10000000) #Effect is not automatically removed when its target dies
-    IsExplodesWithForce = CBashBasicFlag('flags', 0x20000000) #causes explosion that can move loose objects (e.g. ragdolls)
-    IsMagnitudeIsLevel = CBashBasicFlag('flags', 0x40000000) #OBME Deprecated
-    IsMagnitudeIsFeet = CBashBasicFlag('flags', 0x80000000)  #OBME Deprecated
+    BasicFlagMACRO(IsFogType, flags, 0x06000000) #Changeable
+    BasicFlagMACRO(IsNoHitEffect, flags, 0x08000000) #Changeable, no hit shader on target
+    BasicFlagMACRO(IsPersistOnDeath, flags, 0x10000000) #Effect is not automatically removed when its target dies
+    BasicFlagMACRO(IsExplodesWithForce, flags, 0x20000000) #causes explosion that can move loose objects (e.g. ragdolls)
+    BasicFlagMACRO(IsMagnitudeIsLevel, flags, 0x40000000) #OBME Deprecated
+    BasicFlagMACRO(IsMagnitudeIsFeet, flags, 0x80000000)  #OBME Deprecated
     ##OBME Fields. Setting any of the below fields will make the mod require JRoush's OBME plugin for OBSE
     ##To see if OBME is in use, check the recordVersion field for a non-None value
-    recordVersion = CBashEDIDGeneric(29, c_ubyte) #OBME
-    betaVersion = CBashEDIDGeneric(30, c_ubyte) #OBME
-    minorVersion = CBashEDIDGeneric(31, c_ubyte) #OBME
-    majorVersion = CBashEDIDGeneric(32, c_ubyte) #OBME
-    mgefParamAInfo = CBashEDIDGeneric(33, c_ubyte) #OBME
-    mgefParamBInfo = CBashEDIDGeneric(34, c_ubyte) #OBME
-    reserved1 = CBashEDIDUINT8ARRAY(35, 0x2) #OBME
-    handlerCode = CBashEDIDGeneric(36, c_ulong) #OBME
-    OBMEFlags = CBashEDIDGeneric(37, c_ulong) #OBME
-    mgefParamB = CBashEDIDGeneric(38, c_ulong) #OBME
-    reserved2 = CBashEDIDUINT8ARRAY(39, 0x1C) #OBME
-    mgefCode = CBashEDIDMGEFCODE(40) #OBME
-    datx_p = CBashEDIDUINT8ARRAY(41, 0x20) #OBME
-    IsBeneficial = CBashBasicFlag('OBMEFlags', 0x00000008) #OBME
-    IsMagnitudeIsRange = CBashBasicFlag('OBMEFlags', 0x00020000) #OBME
-    IsAtomicResistance = CBashBasicFlag('OBMEFlags', 0x00040000) #OBME
-    IsParamFlagA = CBashBasicFlag('OBMEFlags', 0x00000004) #OBME //Meaning varies with effect handler
-    IsParamFlagB = CBashBasicFlag('OBMEFlags', 0x00010000) #OBME //Meaning varies with effect handler
-    IsParamFlagC = CBashBasicFlag('OBMEFlags', 0x00080000) #OBME //Meaning varies with effect handler
-    IsParamFlagD = CBashBasicFlag('OBMEFlags', 0x00100000) #OBME //Meaning varies with effect handler
-    IsHidden = CBashBasicFlag('OBMEFlags', 0x40000000) #OBME
+    OBMEUINT8_EDIDMACRO(recordVersion, 29)
+    OBMEUINT8_EDIDMACRO(betaVersion, 30)
+    OBMEUINT8_EDIDMACRO(minorVersion, 31)
+    OBMEUINT8_EDIDMACRO(majorVersion, 32)
+    OBMEUINT8_EDIDMACRO(mgefParamAInfo, 33)
+    OBMEUINT8_EDIDMACRO(mgefParamBInfo, 34)
+    OBMEUINT8_ARRAY_EDIDMACRO(reserved1, 35, 0x2)
+    OBMEUINT32_EDIDMACRO(handlerCode, 36)
+    OBMEUINT32_FLAG_EDIDMACRO(OBMEFlags, 37)
+    OBMEUINT32_EDIDMACRO(mgefParamB, 38)
+    OBMEUINT8_ARRAY_EDIDMACRO(reserved2, 39, 0x1C)
+    OBMEMGEFCODE_EDIDMACRO(mgefCode, 40)
+    OBMEUINT8_ARRAY_EDIDMACRO(datx_p, 41, 0x20)
+    OBMEBasicFlagMACRO(IsBeneficial, OBMEFlags, 0x00000008)
+    OBMEBasicFlagMACRO(IsMagnitudeIsRange, OBMEFlags, 0x00020000)
+    OBMEBasicFlagMACRO(IsAtomicResistance, OBMEFlags, 0x00040000)
+    OBMEBasicFlagMACRO(IsParamFlagA, OBMEFlags, 0x00000004) //Meaning varies with effect handler
+    OBMEBasicFlagMACRO(IsParamFlagB, OBMEFlags, 0x00010000) //Meaning varies with effect handler
+    OBMEBasicFlagMACRO(IsParamFlagC, OBMEFlags, 0x00080000) //Meaning varies with effect handler
+    OBMEBasicFlagMACRO(IsParamFlagD, OBMEFlags, 0x00100000) //Meaning varies with effect handler
+    OBMEBasicFlagMACRO(IsHidden, OBMEFlags, 0x40000000)
     copyattrs = ObEditorIDRecord.baseattrs + ['full', 'text', 'iconPath', 'modPath',
                                           'modb', 'modt_p', 'flags', 'baseCost',
                                           'associated', 'school', 'resistValue',
@@ -3873,14 +3674,14 @@ class ObMGEFRecord(ObEditorIDRecord):
 
 class ObMISCRecord(ObFormIDRecord):
     _Type = 'MISC'
-    full = CBashSTRING(5)
-    modPath = CBashISTRING(6)
-    modb = CBashFLOAT32(7)
-    modt_p = CBashUINT8ARRAY(8)
-    iconPath = CBashISTRING(9)
-    script = CBashFORMID(10)
-    value = CBashGeneric(11, c_long)
-    weight = CBashFLOAT32(12)
+    STRING_MACRO(full, 5)
+    ISTRING_MACRO(modPath, 6)
+    FLOAT32_MACRO(modb, 7)
+    UINT8_ARRAY_MACRO(modt_p, 8)
+    ISTRING_MACRO(iconPath, 9)
+    FORMID_MACRO(script, 10)
+    SINT32_MACRO(value, 11)
+    FLOAT32_MACRO(weight, 12)
     copyattrs = ObFormIDRecord.baseattrs + ['full', 'modPath', 'modb', 'modt_p', 'iconPath',
                                         'script', 'value', 'weight']
 
@@ -3893,119 +3694,107 @@ class ObNPC_Record(ObFormIDRecord):
         self.factions = [x for x in self.factions if x.faction[0] in modSet]
         self.items = [x for x in self.items if x.item[0] in modSet]
 
-    full = CBashSTRING(5)
-    modPath = CBashISTRING(6)
-    modb = CBashFLOAT32(7)
-    modt_p = CBashUINT8ARRAY(8)
-    flags = CBashGeneric(9, c_ulong)
-    baseSpell = CBashGeneric(10, c_ushort)
-    fatigue = CBashGeneric(11, c_ushort)
-    barterGold = CBashGeneric(12, c_ushort)
-    level = CBashGeneric(13, c_short)
-    calcMin = CBashGeneric(14, c_ushort)
-    calcMax = CBashGeneric(15, c_ushort)
+    STRING_MACRO(full, 5)
+    ISTRING_MACRO(modPath, 6)
+    FLOAT32_MACRO(modb, 7)
+    UINT8_ARRAY_MACRO(modt_p, 8)
+    UINT32_FLAG_MACRO(flags, 9)
+    UINT16_MACRO(baseSpell, 10)
+    UINT16_MACRO(fatigue, 11)
+    UINT16_MACRO(barterGold, 12)
+    SINT16_MACRO(level, 13)
+    UINT16_MACRO(calcMin, 14)
+    UINT16_MACRO(calcMax, 15)
 
-    def create_faction(self):
-        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 16, 0, 0, 0, 0, 0, 0, 1)
-        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, 16, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
-        return Faction(self._CollectionID, self._ModID, self._RecordID, 16, length)
-    factions = CBashLIST(16, Faction)
-    factions_list = CBashLIST(16, Faction, True)
+    LIST_MACRO(factions, 16, Faction)
+    FORMID_MACRO(deathItem, 17)
+    FORMID_MACRO(race, 18)
+    FORMID_ARRAY_MACRO(spells, 19)
+    FORMID_MACRO(script, 20)
 
-    deathItem = CBashFORMID(17)
-    race = CBashFORMID(18)
-    spells = CBashFORMIDARRAY(19)
-    script = CBashFORMID(20)
-
-    def create_item(self):
-        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 21, 0, 0, 0, 0, 0, 0, 1)
-        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, 21, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
-        return Item(self._CollectionID, self._ModID, self._RecordID, 21, length)
-    items = CBashLIST(21, Item)
-    items_list = CBashLIST(21, Item, True)
-
-    aggression = CBashGeneric(22, c_ubyte)
-    confidence = CBashGeneric(23, c_ubyte)
-    energyLevel = CBashGeneric(24, c_ubyte)
-    responsibility = CBashGeneric(25, c_ubyte)
-    services = CBashGeneric(26, c_ulong)
-    trainSkill = CBashGeneric(27, c_byte)
-    trainLevel = CBashGeneric(28, c_ubyte)
-    unused1 = CBashUINT8ARRAY(29, 2)
-    aiPackages = CBashFORMIDARRAY(30)
-    animations = CBashISTRINGARRAY(31)
-    iclass = CBashFORMID(32)
-    armorer = CBashGeneric(33, c_ubyte)
-    athletics = CBashGeneric(34, c_ubyte)
-    blade = CBashGeneric(35, c_ubyte)
-    block = CBashGeneric(36, c_ubyte)
-    blunt = CBashGeneric(37, c_ubyte)
-    h2h = CBashGeneric(38, c_ubyte)
-    heavyArmor = CBashGeneric(39, c_ubyte)
-    alchemy = CBashGeneric(40, c_ubyte)
-    alteration = CBashGeneric(41, c_ubyte)
-    conjuration = CBashGeneric(42, c_ubyte)
-    destruction = CBashGeneric(43, c_ubyte)
-    illusion = CBashGeneric(44, c_ubyte)
-    mysticism = CBashGeneric(45, c_ubyte)
-    restoration = CBashGeneric(46, c_ubyte)
-    acrobatics = CBashGeneric(47, c_ubyte)
-    lightArmor = CBashGeneric(48, c_ubyte)
-    marksman = CBashGeneric(49, c_ubyte)
-    mercantile = CBashGeneric(50, c_ubyte)
-    security = CBashGeneric(51, c_ubyte)
-    sneak = CBashGeneric(52, c_ubyte)
-    speechcraft = CBashGeneric(53, c_ubyte)
-    health = CBashGeneric(54, c_ushort)
-    unused2 = CBashUINT8ARRAY(55, 2)
-    strength = CBashGeneric(56, c_ubyte)
-    intelligence = CBashGeneric(57, c_ubyte)
-    willpower = CBashGeneric(58, c_ubyte)
-    agility = CBashGeneric(59, c_ubyte)
-    speed = CBashGeneric(60, c_ubyte)
-    endurance = CBashGeneric(61, c_ubyte)
-    personality = CBashGeneric(62, c_ubyte)
-    luck = CBashGeneric(63, c_ubyte)
-    hair = CBashFORMID(64)
-    hairLength = CBashFLOAT32(65)
-    eye = CBashFORMID(66)
-    hairRed = CBashGeneric(67, c_ubyte)
-    hairGreen = CBashGeneric(68, c_ubyte)
-    hairBlue = CBashGeneric(69, c_ubyte)
-    unused3 = CBashUINT8ARRAY(70, 1)
-    combatStyle = CBashFORMID(71)
-    fggs_p = CBashUINT8ARRAY(72, 200)
-    fgga_p = CBashUINT8ARRAY(73, 120)
-    fgts_p = CBashUINT8ARRAY(74, 200)
-    fnam = CBashGeneric(75, c_ushort)
-    IsFemale = CBashBasicFlag('flags', 0x00000001)
-    IsMale = CBashInvertedFlag('IsFemale')
-    IsEssential = CBashBasicFlag('flags', 0x00000002)
-    IsRespawn = CBashBasicFlag('flags', 0x00000008)
-    IsAutoCalc = CBashBasicFlag('flags', 0x00000010)
-    IsPCLevelOffset = CBashBasicFlag('flags', 0x00000080)
-    IsNoLowLevel = CBashBasicFlag('flags', 0x00000200)
-    IsLowLevel = CBashInvertedFlag('IsNoLowLevel')
-    IsNoRumors = CBashBasicFlag('flags', 0x00002000)
-    IsRumors = CBashInvertedFlag('IsNoRumors')
-    IsSummonable = CBashBasicFlag('flags', 0x00004000)
-    IsNoPersuasion = CBashBasicFlag('flags', 0x00008000)
-    IsPersuasion = CBashInvertedFlag('IsNoPersuasion')
-    IsCanCorpseCheck = CBashBasicFlag('flags', 0x00100000)
-    IsServicesWeapons = CBashBasicFlag('services', 0x00000001)
-    IsServicesArmor = CBashBasicFlag('services', 0x00000002)
-    IsServicesClothing = CBashBasicFlag('services', 0x00000004)
-    IsServicesBooks = CBashBasicFlag('services', 0x00000008)
-    IsServicesIngredients = CBashBasicFlag('services', 0x00000010)
-    IsServicesLights = CBashBasicFlag('services', 0x00000080)
-    IsServicesApparatus = CBashBasicFlag('services', 0x00000100)
-    IsServicesMiscItems = CBashBasicFlag('services', 0x00000400)
-    IsServicesSpells = CBashBasicFlag('services', 0x00000800)
-    IsServicesMagicItems = CBashBasicFlag('services', 0x00001000)
-    IsServicesPotions = CBashBasicFlag('services', 0x00002000)
-    IsServicesTraining = CBashBasicFlag('services', 0x00004000)
-    IsServicesRecharge = CBashBasicFlag('services', 0x00010000)
-    IsServicesRepair = CBashBasicFlag('services', 0x00020000)
+    LIST_MACRO(items, 21, Item)
+    UINT8_MACRO(aggression, 22)
+    UINT8_MACRO(confidence, 23)
+    UINT8_MACRO(energyLevel, 24)
+    UINT8_MACRO(responsibility, 25)
+    UINT32_FLAG_MACRO(services, 26)
+    SINT8_MACRO(trainSkill, 27)
+    UINT8_MACRO(trainLevel, 28)
+    UINT8_ARRAY_MACRO(unused1, 29, 2)
+    FORMID_ARRAY_MACRO(aiPackages, 30)
+    ISTRING_ARRAY_MACRO(animations, 31)
+    FORMID_MACRO(iclass, 32)
+    UINT8_MACRO(armorer, 33)
+    UINT8_MACRO(athletics, 34)
+    UINT8_MACRO(blade, 35)
+    UINT8_MACRO(block, 36)
+    UINT8_MACRO(blunt, 37)
+    UINT8_MACRO(h2h, 38)
+    UINT8_MACRO(heavyArmor, 39)
+    UINT8_MACRO(alchemy, 40)
+    UINT8_MACRO(alteration, 41)
+    UINT8_MACRO(conjuration, 42)
+    UINT8_MACRO(destruction, 43)
+    UINT8_MACRO(illusion, 44)
+    UINT8_MACRO(mysticism, 45)
+    UINT8_MACRO(restoration, 46)
+    UINT8_MACRO(acrobatics, 47)
+    UINT8_MACRO(lightArmor, 48)
+    UINT8_MACRO(marksman, 49)
+    UINT8_MACRO(mercantile, 50)
+    UINT8_MACRO(security, 51)
+    UINT8_MACRO(sneak, 52)
+    UINT8_MACRO(speechcraft, 53)
+    UINT16_MACRO(health, 54)
+    UINT8_ARRAY_MACRO(unused2, 55, 2)
+    UINT8_MACRO(strength, 56)
+    UINT8_MACRO(intelligence, 57)
+    UINT8_MACRO(willpower, 58)
+    UINT8_MACRO(agility, 59)
+    UINT8_MACRO(speed, 60)
+    UINT8_MACRO(endurance, 61)
+    UINT8_MACRO(personality, 62)
+    UINT8_MACRO(luck, 63)
+    FORMID_MACRO(hair, 64)
+    FLOAT32_MACRO(hairLength, 65)
+    FORMID_MACRO(eye, 66)
+    UINT8_MACRO(hairRed, 67)
+    UINT8_MACRO(hairGreen, 68)
+    UINT8_MACRO(hairBlue, 69)
+    UINT8_ARRAY_MACRO(unused3, 70, 1)
+    FORMID_MACRO(combatStyle, 71)
+    UINT8_ARRAY_MACRO(fggs_p, 72, 200)
+    UINT8_ARRAY_MACRO(fgga_p, 73, 120)
+    UINT8_ARRAY_MACRO(fgts_p, 74, 200)
+    UINT16_MACRO(fnam, 75)
+    BasicFlagMACRO(IsFemale, flags, 0x00000001)
+    BasicInvertedFlagMACRO(IsMale, IsFemale)
+    BasicFlagMACRO(IsEssential, flags, 0x00000002)
+    BasicFlagMACRO(IsRespawn, flags, 0x00000008)
+    BasicFlagMACRO(IsAutoCalc, flags, 0x00000010)
+    BasicFlagMACRO(IsPCLevelOffset, flags, 0x00000080)
+    BasicFlagMACRO(IsNoLowLevel, flags, 0x00000200)
+    BasicInvertedFlagMACRO(IsLowLevel, IsNoLowLevel)
+    BasicFlagMACRO(IsNoRumors, flags, 0x00002000)
+    BasicInvertedFlagMACRO(IsRumors, IsNoRumors)
+    BasicFlagMACRO(IsSummonable, flags, 0x00004000)
+    BasicFlagMACRO(IsNoPersuasion, flags, 0x00008000)
+    BasicInvertedFlagMACRO(IsPersuasion, IsNoPersuasion)
+    BasicFlagMACRO(IsCanCorpseCheck, flags, 0x00100000)
+    BasicFlagMACRO(IsServicesWeapons, services, 0x00000001)
+    BasicFlagMACRO(IsServicesArmor, services, 0x00000002)
+    BasicFlagMACRO(IsServicesClothing, services, 0x00000004)
+    BasicFlagMACRO(IsServicesBooks, services, 0x00000008)
+    BasicFlagMACRO(IsServicesIngredients, services, 0x00000010)
+    BasicFlagMACRO(IsServicesLights, services, 0x00000080)
+    BasicFlagMACRO(IsServicesApparatus, services, 0x00000100)
+    BasicFlagMACRO(IsServicesMiscItems, services, 0x00000400)
+    BasicFlagMACRO(IsServicesSpells, services, 0x00000800)
+    BasicFlagMACRO(IsServicesMagicItems, services, 0x00001000)
+    BasicFlagMACRO(IsServicesPotions, services, 0x00002000)
+    BasicFlagMACRO(IsServicesTraining, services, 0x00004000)
+    BasicFlagMACRO(IsServicesRecharge, services, 0x00010000)
+    BasicFlagMACRO(IsServicesRepair, services, 0x00020000)
     copyattrs = ObFormIDRecord.baseattrs + ['full', 'modPath', 'modb', 'modt_p',
                                         'flags', 'baseSpell', 'fatigue',
                                         'barterGold', 'level', 'calcMin',
@@ -4031,70 +3820,64 @@ class ObNPC_Record(ObFormIDRecord):
 
 class ObPACKRecord(ObFormIDRecord):
     _Type = 'PACK'
-    flags = CBashGeneric(5, c_ulong)
-    aiType = CBashGeneric(6, c_ubyte)
-    unused1 = CBashUINT8ARRAY(7, 3)
-    locType = CBashGeneric(8, c_long)
-    locId = CBashFORMID_OR_UINT32(9)
-    locRadius = CBashGeneric(10, c_long)
-    month = CBashGeneric(11, c_byte)
-    day = CBashGeneric(12, c_byte)
-    date = CBashGeneric(13, c_ubyte)
-    time = CBashGeneric(14, c_byte)
-    duration = CBashGeneric(15, c_long)
-    targetType = CBashGeneric(16, c_long)
-    targetId = CBashFORMID_OR_UINT32(17)
-    targetCount = CBashGeneric(18, c_long)
+    UINT32_FLAG_MACRO(flags, 5)
+    UINT8_TYPE_MACRO(aiType, 6)
+    UINT8_ARRAY_MACRO(unused1, 7, 3)
+    SINT32_TYPE_MACRO(locType, 8)
+    FORMID_OR_UINT32_MACRO(locId, 9)
+    SINT32_MACRO(locRadius, 10)
+    SINT8_MACRO(month, 11)
+    SINT8_MACRO(day, 12)
+    UINT8_MACRO(date, 13)
+    SINT8_MACRO(time, 14)
+    SINT32_MACRO(duration, 15)
+    SINT32_TYPE_MACRO(targetType, 16)
+    FORMID_OR_UINT32_MACRO(targetId, 17)
+    SINT32_MACRO(targetCount, 18)
 
-    def create_condition(self):
-        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 19, 0, 0, 0, 0, 0, 0, 1)
-        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, 19, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
-        return Condition(self._CollectionID, self._ModID, self._RecordID, 19, length)
-    conditions = CBashLIST(19, Condition)
-    conditions_list = CBashLIST(19, Condition, True)
-
-    IsOffersServices = CBashBasicFlag('flags', 0x00000001)
-    IsMustReachLocation = CBashBasicFlag('flags', 0x00000002)
-    IsMustComplete = CBashBasicFlag('flags', 0x00000004)
-    IsLockAtStart = CBashBasicFlag('flags', 0x00000008)
-    IsLockAtEnd = CBashBasicFlag('flags', 0x00000010)
-    IsLockAtLocation = CBashBasicFlag('flags', 0x00000020)
-    IsUnlockAtStart = CBashBasicFlag('flags', 0x00000040)
-    IsUnlockAtEnd = CBashBasicFlag('flags', 0x00000080)
-    IsUnlockAtLocation = CBashBasicFlag('flags', 0x00000100)
-    IsContinueIfPcNear = CBashBasicFlag('flags', 0x00000200)
-    IsOncePerDay = CBashBasicFlag('flags', 0x00000400)
-    IsSkipFallout = CBashBasicFlag('flags', 0x00001000)
-    IsAlwaysRun = CBashBasicFlag('flags', 0x00002000)
-    IsAlwaysSneak = CBashBasicFlag('flags', 0x00020000)
-    IsAllowSwimming = CBashBasicFlag('flags', 0x00040000)
-    IsAllowFalls = CBashBasicFlag('flags', 0x00080000)
-    IsUnequipArmor = CBashBasicFlag('flags', 0x00100000)
-    IsUnequipWeapons = CBashBasicFlag('flags', 0x00200000)
-    IsDefensiveCombat = CBashBasicFlag('flags', 0x00400000)
-    IsUseHorse = CBashBasicFlag('flags', 0x00800000)
-    IsNoIdleAnims = CBashBasicFlag('flags', 0x01000000)
-    IsAIFind = CBashBasicType('aiType', 0, 'IsAIFollow')
-    IsAIFollow = CBashBasicType('aiType', 1, 'IsAIFind')
-    IsAIEscort = CBashBasicType('aiType', 2, 'IsAIFind')
-    IsAIEat = CBashBasicType('aiType', 3, 'IsAIFind')
-    IsAISleep = CBashBasicType('aiType', 4, 'IsAIFind')
-    IsAIWander = CBashBasicType('aiType', 5, 'IsAIFind')
-    IsAITravel = CBashBasicType('aiType', 6, 'IsAIFind')
-    IsAIAccompany = CBashBasicType('aiType', 7, 'IsAIFind')
-    IsAIUseItemAt = CBashBasicType('aiType', 8, 'IsAIFind')
-    IsAIAmbush = CBashBasicType('aiType', 9, 'IsAIFind')
-    IsAIFleeNotCombat = CBashBasicType('aiType', 10, 'IsAIFind')
-    IsAICastMagic = CBashBasicType('aiType', 11, 'IsAIFind')
-    IsLocNearReference = CBashBasicType('locType', 0, 'IsLocInCell')
-    IsLocInCell = CBashBasicType('locType', 1, 'IsLocNearReference')
-    IsLocNearCurrentLocation = CBashBasicType('locType', 2, 'IsLocNearReference')
-    IsLocNearEditorLocation = CBashBasicType('locType', 3, 'IsLocNearReference')
-    IsLocObjectID = CBashBasicType('locType', 4, 'IsLocNearReference')
-    IsLocObjectType = CBashBasicType('locType', 5, 'IsLocNearReference')
-    IsTargetReference = CBashBasicType('locType', 0, 'IsTargetObjectID')
-    IsTargetObjectID = CBashBasicType('locType', 1, 'IsTargetReference')
-    IsTargetObjectType = CBashBasicType('locType', 2, 'IsTargetReference')
+    LIST_MACRO(conditions, 19, Condition)
+    BasicFlagMACRO(IsOffersServices, flags, 0x00000001)
+    BasicFlagMACRO(IsMustReachLocation, flags, 0x00000002)
+    BasicFlagMACRO(IsMustComplete, flags, 0x00000004)
+    BasicFlagMACRO(IsLockAtStart, flags, 0x00000008)
+    BasicFlagMACRO(IsLockAtEnd, flags, 0x00000010)
+    BasicFlagMACRO(IsLockAtLocation, flags, 0x00000020)
+    BasicFlagMACRO(IsUnlockAtStart, flags, 0x00000040)
+    BasicFlagMACRO(IsUnlockAtEnd, flags, 0x00000080)
+    BasicFlagMACRO(IsUnlockAtLocation, flags, 0x00000100)
+    BasicFlagMACRO(IsContinueIfPcNear, flags, 0x00000200)
+    BasicFlagMACRO(IsOncePerDay, flags, 0x00000400)
+    BasicFlagMACRO(IsSkipFallout, flags, 0x00001000)
+    BasicFlagMACRO(IsAlwaysRun, flags, 0x00002000)
+    BasicFlagMACRO(IsAlwaysSneak, flags, 0x00020000)
+    BasicFlagMACRO(IsAllowSwimming, flags, 0x00040000)
+    BasicFlagMACRO(IsAllowFalls, flags, 0x00080000)
+    BasicFlagMACRO(IsUnequipArmor, flags, 0x00100000)
+    BasicFlagMACRO(IsUnequipWeapons, flags, 0x00200000)
+    BasicFlagMACRO(IsDefensiveCombat, flags, 0x00400000)
+    BasicFlagMACRO(IsUseHorse, flags, 0x00800000)
+    BasicFlagMACRO(IsNoIdleAnims, flags, 0x01000000)
+    BasicTypeMACRO(IsAIFind, aiType, 0, IsAIFollow)
+    BasicTypeMACRO(IsAIFollow, aiType, 1, IsAIFind)
+    BasicTypeMACRO(IsAIEscort, aiType, 2, IsAIFind)
+    BasicTypeMACRO(IsAIEat, aiType, 3, IsAIFind)
+    BasicTypeMACRO(IsAISleep, aiType, 4, IsAIFind)
+    BasicTypeMACRO(IsAIWander, aiType, 5, IsAIFind)
+    BasicTypeMACRO(IsAITravel, aiType, 6, IsAIFind)
+    BasicTypeMACRO(IsAIAccompany, aiType, 7, IsAIFind)
+    BasicTypeMACRO(IsAIUseItemAt, aiType, 8, IsAIFind)
+    BasicTypeMACRO(IsAIAmbush, aiType, 9, IsAIFind)
+    BasicTypeMACRO(IsAIFleeNotCombat, aiType, 10, IsAIFind)
+    BasicTypeMACRO(IsAICastMagic, aiType, 11, IsAIFind)
+    BasicTypeMACRO(IsLocNearReference, locType, 0, IsLocInCell)
+    BasicTypeMACRO(IsLocInCell, locType, 1, IsLocNearReference)
+    BasicTypeMACRO(IsLocNearCurrentLocation, locType, 2, IsLocNearReference)
+    BasicTypeMACRO(IsLocNearEditorLocation, locType, 3, IsLocNearReference)
+    BasicTypeMACRO(IsLocObjectID, locType, 4, IsLocNearReference)
+    BasicTypeMACRO(IsLocObjectType, locType, 5, IsLocNearReference)
+    BasicTypeMACRO(IsTargetReference, locType, 0, IsTargetObjectID)
+    BasicTypeMACRO(IsTargetObjectID, locType, 1, IsTargetReference)
+    BasicTypeMACRO(IsTargetObjectType, locType, 2, IsTargetReference)
     copyattrs = ObFormIDRecord.baseattrs + ['flags', 'aiType', 'locType', 'locId',
                                         'locRadius', 'month', 'day', 'date', 'time',
                                         'duration', 'targetType', 'targetId',
@@ -4105,124 +3888,88 @@ class ObQUSTRecord(ObFormIDRecord):
     class Stage(ListComponent):
         class Entry(ListX2Component):
             class ConditionX3(ListX3Component):
-                operType = CBashGeneric_LISTX3(11, 2, 2, 1, c_ubyte)
-                unused1 = CBashUINT8ARRAY_LISTX3(11, 2, 2, 2, 3)
-                compValue = CBashFLOAT32_LISTX3(11, 2, 2, 3)
-                ifunc = CBashGeneric_LISTX3(11, 2, 2, 4, c_ulong)
-                param1 = CBashUNKNOWN_OR_FORMID_OR_UINT32_LISTX3(11, 2, 2, 5)
-                param2 = CBashUNKNOWN_OR_FORMID_OR_UINT32_LISTX3(11, 2, 2, 6)
-                unused2 = CBashUINT8ARRAY_LISTX3(11, 2, 2, 7, 4)
-                IsEqual = CBashMaskedType('operType', 0xF0, 0x00, 'IsNotEqual')
-                IsNotEqual = CBashMaskedType('operType', 0xF0, 0x20, 'IsEqual')
-                IsGreater = CBashMaskedType('operType', 0xF0, 0x40, 'IsEqual')
-                IsGreaterOrEqual = CBashMaskedType('operType', 0xF0, 0x60, 'IsEqual')
-                IsLess = CBashMaskedType('operType', 0xF0, 0x80, 'IsEqual')
-                IsLessOrEqual = CBashMaskedType('operType', 0xF0, 0xA0, 'IsEqual')
-                IsOr = CBashBasicFlag('operType', 0x01)
-                IsRunOnTarget = CBashBasicFlag('operType', 0x02)
-                IsUseGlobal = CBashBasicFlag('operType', 0x04)
+                UINT8_FLAG_TYPE_LISTX3MACRO(operType, 11, 2, 2, 1)
+                UINT8_ARRAY_LISTX3MACRO(unused1, 11, 2, 2, 2, 3)
+                FLOAT32_LISTX3MACRO(compValue, 11, 2, 2, 3)
+                UINT32_TYPE_LISTX3MACRO(ifunc, 11, 2, 2, 4)
+                UNKNOWN_OR_FORMID_OR_UINT32_LISTX3MACRO(param1, 11, 2, 2, 5)
+                UNKNOWN_OR_FORMID_OR_UINT32_LISTX3MACRO(param2, 11, 2, 2, 6)
+                UINT8_ARRAY_LISTX3MACRO(unused2, 11, 2, 2, 7, 4)
+                MaskedTypeMACRO(IsEqual, operType, 0xF0, 0x00, IsNotEqual)
+                MaskedTypeMACRO(IsNotEqual, operType, 0xF0, 0x20, IsEqual)
+                MaskedTypeMACRO(IsGreater, operType, 0xF0, 0x40, IsEqual)
+                MaskedTypeMACRO(IsGreaterOrEqual, operType, 0xF0, 0x60, IsEqual)
+                MaskedTypeMACRO(IsLess, operType, 0xF0, 0x80, IsEqual)
+                MaskedTypeMACRO(IsLessOrEqual, operType, 0xF0, 0xA0, IsEqual)
+                BasicFlagMACRO(IsOr, operType, 0x01)
+                BasicFlagMACRO(IsRunOnTarget, operType, 0x02)
+                BasicFlagMACRO(IsUseGlobal, operType, 0x04)
                 copyattrs = ['operType', 'compValue', 'ifunc', 'param1',
                              'param2']
 
-            flags = CBashGeneric_LISTX2(11, 2, 1, c_ubyte)
+            UINT8_FLAG_LISTX2MACRO(flags, 11, 2, 1)
 
-            def create_condition(self):
-                length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 11, self._ListIndex, 2, self._ListX2Index, 2, 0, 0, 1)
-                CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, 11, self._ListIndex, 2, self._ListX2Index, 2, 0, 0, 0, c_ulong(length + 1))
-                return self.ConditionX3(self._CollectionID, self._ModID, self._RecordID, 11, self._ListIndex, 2, self._ListX2Index, 2, length)
-            conditions = CBashLIST_LISTX2(11, 2, 2, ConditionX3)
-            conditions_list = CBashLIST_LISTX2(11, 2, 2, ConditionX3, True)
-
-            text = CBashSTRING_LISTX2(11, 2, 3)
-            unused1 = CBashUINT8ARRAY_LISTX2(11, 2, 4, 4)
-            numRefs = CBashGeneric_LISTX2(11, 2, 5, c_ulong)
-            compiledSize = CBashGeneric_LISTX2(11, 2, 6, c_ulong)
-            lastIndex = CBashGeneric_LISTX2(11, 2, 7, c_ulong)
-            scriptType = CBashGeneric_LISTX2(11, 2, 8, c_ulong)
-            compiled_p = CBashUINT8ARRAY_LISTX2(11, 2, 9)
-            scriptText = CBashISTRING_LISTX2(11, 2, 10)
-            references = CBashFORMID_OR_UINT32_ARRAY_LISTX2(11, 2, 11)
-            IsCompletes = CBashBasicFlag('flags', 0x00000001)
+            LIST_LISTX2MACRO(conditions, 11, 2, 2, self.ConditionX3)
+            STRING_LISTX2MACRO(text, 11, 2, 3)
+            UINT8_ARRAY_LISTX2MACRO(unused1, 11, 2, 4, 4)
+            UINT32_LISTX2MACRO(numRefs, 11, 2, 5)
+            UINT32_LISTX2MACRO(compiledSize, 11, 2, 6)
+            UINT32_LISTX2MACRO(lastIndex, 11, 2, 7)
+            UINT32_LISTX2MACRO(scriptType, 11, 2, 8)
+            UINT8_ARRAY_LISTX2MACRO(compiled_p, 11, 2, 9)
+            ISTRING_LISTX2MACRO(scriptText, 11, 2, 10)
+            FORMID_OR_UINT32_ARRAY_LISTX2MACRO(references, 11, 2, 11)
+            BasicFlagMACRO(IsCompletes, flags, 0x00000001)
             copyattrs = ['flags', 'conditions_list', 'text', 'numRefs', 'compiledSize',
                          'lastIndex', 'scriptType', 'compiled_p', 'scriptText',
                          'references']
 
-        stage = CBashGeneric_LIST(1, c_ushort)
+        UINT16_LISTMACRO(stage, 11, 1)
 
-        def create_entry(self):
-            length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 11, self._ListIndex, 2, 0, 0, 0, 0, 1)
-            CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, 11, self._ListIndex, 2, 0, 0, 0, 0, 0, c_ulong(length + 1))
-            return self.Entry(self._CollectionID, self._ModID, self._RecordID, 11, self._ListIndex, 2, length)
-        entries = CBashLIST_LIST(2, Entry)
-        entries_list = CBashLIST_LIST(2, Entry, True)
-
+        LIST_LISTMACRO(entries, 11, 2, self.Entry)
         copyattrs = ['stage', 'entries_list']
 
     class Target(ListComponent):
         class ConditionX2(ListX2Component):
-            operType = CBashGeneric_LISTX2(12, 4, 1, c_ubyte)
-            unused1 = CBashUINT8ARRAY_LISTX2(12, 4, 2, 3)
-            compValue = CBashFLOAT32_LISTX2(12, 4, 3)
-            ifunc = CBashGeneric_LISTX2(12, 4, 4, c_ulong)
-            param1 = CBashUNKNOWN_OR_FORMID_OR_UINT32_LISTX2(12, 4, 5)
-            param2 = CBashUNKNOWN_OR_FORMID_OR_UINT32_LISTX2(12, 4, 6)
-            unused2 = CBashUINT8ARRAY_LISTX2(12, 4, 7, 4)
-            IsEqual = CBashMaskedType('operType', 0xF0, 0x00, 'IsNotEqual')
-            IsNotEqual = CBashMaskedType('operType', 0xF0, 0x20, 'IsEqual')
-            IsGreater = CBashMaskedType('operType', 0xF0, 0x40, 'IsEqual')
-            IsGreaterOrEqual = CBashMaskedType('operType', 0xF0, 0x60, 'IsEqual')
-            IsLess = CBashMaskedType('operType', 0xF0, 0x80, 'IsEqual')
-            IsLessOrEqual = CBashMaskedType('operType', 0xF0, 0xA0, 'IsEqual')
-            IsOr = CBashBasicFlag('operType', 0x01)
-            IsRunOnTarget = CBashBasicFlag('operType', 0x02)
-            IsUseGlobal = CBashBasicFlag('operType', 0x04)
+            UINT8_FLAG_TYPE_LISTX2MACRO(operType, 12, 4, 1)
+            UINT8_ARRAY_LISTX2MACRO(unused1, 12, 4, 2, 3)
+            FLOAT32_LISTX2MACRO(compValue, 12, 4, 3)
+            UINT32_TYPE_LISTX2MACRO(ifunc, 12, 4, 4)
+            UNKNOWN_OR_FORMID_OR_UINT32_LISTX2MACRO(param1, 12, 4, 5)
+            UNKNOWN_OR_FORMID_OR_UINT32_LISTX2MACRO(param2, 12, 4, 6)
+            UINT8_ARRAY_LISTX2MACRO(unused2, 12, 4, 7, 4)
+            MaskedTypeMACRO(IsEqual, operType, 0xF0, 0x00, IsNotEqual)
+            MaskedTypeMACRO(IsNotEqual, operType, 0xF0, 0x20, IsEqual)
+            MaskedTypeMACRO(IsGreater, operType, 0xF0, 0x40, IsEqual)
+            MaskedTypeMACRO(IsGreaterOrEqual, operType, 0xF0, 0x60, IsEqual)
+            MaskedTypeMACRO(IsLess, operType, 0xF0, 0x80, IsEqual)
+            MaskedTypeMACRO(IsLessOrEqual, operType, 0xF0, 0xA0, IsEqual)
+            BasicFlagMACRO(IsOr, operType, 0x01)
+            BasicFlagMACRO(IsRunOnTarget, operType, 0x02)
+            BasicFlagMACRO(IsUseGlobal, operType, 0x04)
             copyattrs = ['operType', 'compValue', 'ifunc', 'param1',
                          'param2']
 
-        targetId = CBashFORMID_LIST(1)
-        flags = CBashGeneric_LIST(2, c_ubyte)
-        unused1 = CBashUINT8ARRAY_LIST(3)
+        FORMID_LISTMACRO(targetId, 12, 1)
+        UINT8_FLAG_LISTMACRO(flags, 12, 2)
+        UINT8_ARRAY_LISTMACRO(unused1, 12, 3)
 
-        def create_condition(self):
-            length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 12, self._ListIndex, 4, 0, 0, 0, 0, 1)
-            CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, 12, self._ListIndex, 4, 0, 0, 0, 0, 0, c_ulong(length + 1))
-            return self.ConditionX2(self._CollectionID, self._ModID, self._RecordID, 12, self._ListIndex, 4, length)
-        conditions = CBashLIST_LIST(4, ConditionX2)
-        conditions_list = CBashLIST_LIST(4, ConditionX2, True)
-
-        IsIgnoresLocks = CBashBasicFlag('flags', 0x00000001)
+        LIST_LISTMACRO(conditions, 12, 4, self.ConditionX2)
+        BasicFlagMACRO(IsIgnoresLocks, flags, 0x00000001)
         copyattrs = ['targetId', 'flags', 'conditions_list']
 
-    script = CBashFORMID(5)
-    full = CBashSTRING(6)
-    iconPath = CBashISTRING(7)
-    flags = CBashGeneric(8, c_ubyte)
-    priority = CBashGeneric(9, c_ubyte)
+    FORMID_MACRO(script, 5)
+    STRING_MACRO(full, 6)
+    ISTRING_MACRO(iconPath, 7)
+    UINT8_FLAG_MACRO(flags, 8)
+    UINT8_MACRO(priority, 9)
 
-    def create_condition(self):
-        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 10, 0, 0, 0, 0, 0, 0, 1)
-        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, 10, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
-        return Condition(self._CollectionID, self._ModID, self._RecordID, 10, length)
-    conditions = CBashLIST(10, Condition)
-    conditions_list = CBashLIST(10, Condition, True)
-
-    def create_stage(self):
-        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 11, 0, 0, 0, 0, 0, 0, 1)
-        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, 11, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
-        return self.Stage(self._CollectionID, self._ModID, self._RecordID, 11, length)
-    stages = CBashLIST(11, Stage)
-    stages_list = CBashLIST(11, Stage, True)
-
-    def create_target(self):
-        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 12, 0, 0, 0, 0, 0, 0, 1)
-        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, 12, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
-        return self.Target(self._CollectionID, self._ModID, self._RecordID, 12, length)
-    targets = CBashLIST(12, Target)
-    targets_list = CBashLIST(12, Target, True)
-
-    IsStartEnabled = CBashBasicFlag('flags', 0x00000001)
-    IsRepeatedTopics = CBashBasicFlag('flags', 0x00000004)
-    IsRepeatedStages = CBashBasicFlag('flags', 0x00000008)
+    LIST_MACRO(conditions, 10, Condition)
+    LIST_MACRO(stages, 11, self.Stage)
+    LIST_MACRO(targets, 12, self.Target)
+    BasicFlagMACRO(IsStartEnabled, flags, 0x00000001)
+    BasicFlagMACRO(IsRepeatedTopics, flags, 0x00000004)
+    BasicFlagMACRO(IsRepeatedStages, flags, 0x00000008)
     copyattrs = ObFormIDRecord.baseattrs + ['script', 'full', 'iconPath',
                                         'flags', 'priority', 'conditions_list',
                                         'stages_list', 'targets_list']
@@ -4230,94 +3977,88 @@ class ObQUSTRecord(ObFormIDRecord):
 class ObRACERecord(ObFormIDRecord):
     _Type = 'RACE'
     class RaceModel(BaseComponent):
-        modPath = CBashISTRING_GROUP(0)
-        modb = CBashFLOAT32_GROUP(1)
-        iconPath = CBashISTRING_GROUP(2)
-        modt_p = CBashUINT8ARRAY_GROUP(3)
+        ISTRING_GROUPEDMACRO(modPath, 0)
+        FLOAT32_GROUPEDMACRO(modb, 1)
+        ISTRING_GROUPEDMACRO(iconPath, 2)
+        UINT8_ARRAY_GROUPEDMACRO(modt_p, 3)
         copyattrs = ['modPath', 'modb', 'iconPath', 'modt_p']
 
-    full = CBashSTRING(5)
-    text = CBashSTRING(6)
-    spells = CBashFORMIDARRAY(7)
+    STRING_MACRO(full, 5)
+    STRING_MACRO(text, 6)
+    FORMID_ARRAY_MACRO(spells, 7)
 
-    def create_relation(self):
-        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 8, 0, 0, 0, 0, 0, 0, 1)
-        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, 8, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
-        return Relation(self._CollectionID, self._ModID, self._RecordID, 8, length)
-    relations = CBashLIST(8, Relation)
-    relations_list = CBashLIST(8, Relation, True)
-
-    skill1 = CBashGeneric(9, c_byte)
-    skill1Boost = CBashGeneric(10, c_byte)
-    skill2 = CBashGeneric(11, c_byte)
-    skill2Boost = CBashGeneric(12, c_byte)
-    skill3 = CBashGeneric(13, c_byte)
-    skill3Boost = CBashGeneric(14, c_byte)
-    skill4 = CBashGeneric(15, c_byte)
-    skill4Boost = CBashGeneric(16, c_byte)
-    skill5 = CBashGeneric(17, c_byte)
-    skill5Boost = CBashGeneric(18, c_byte)
-    skill6 = CBashGeneric(19, c_byte)
-    skill6Boost = CBashGeneric(20, c_byte)
-    skill7 = CBashGeneric(21, c_byte)
-    skill7Boost = CBashGeneric(22, c_byte)
-    unused1 = CBashUINT8ARRAY(23, 2)
-    maleHeight = CBashFLOAT32(24)
-    femaleHeight = CBashFLOAT32(25)
-    maleWeight = CBashFLOAT32(26)
-    femaleWeight = CBashFLOAT32(27)
-    flags = CBashGeneric(28, c_ulong)
-    maleVoice = CBashFORMID(29)
-    femaleVoice = CBashFORMID(30)
-    defaultHairMale = CBashFORMID(31)
-    defaultHairFemale = CBashFORMID(32)
-    defaultHairColor = CBashGeneric(33, c_ubyte)
-    mainClamp = CBashFLOAT32(34)
-    faceClamp = CBashFLOAT32(35)
-    maleStrength = CBashGeneric(36, c_ubyte)
-    maleIntelligence = CBashGeneric(37, c_ubyte)
-    maleWillpower = CBashGeneric(38, c_ubyte)
-    maleAgility = CBashGeneric(39, c_ubyte)
-    maleSpeed = CBashGeneric(40, c_ubyte)
-    maleEndurance = CBashGeneric(41, c_ubyte)
-    malePersonality = CBashGeneric(42, c_ubyte)
-    maleLuck = CBashGeneric(43, c_ubyte)
-    femaleStrength = CBashGeneric(44, c_ubyte)
-    femaleIntelligence = CBashGeneric(45, c_ubyte)
-    femaleWillpower = CBashGeneric(46, c_ubyte)
-    femaleAgility = CBashGeneric(47, c_ubyte)
-    femaleSpeed = CBashGeneric(48, c_ubyte)
-    femaleEndurance = CBashGeneric(49, c_ubyte)
-    femalePersonality = CBashGeneric(50, c_ubyte)
-    femaleLuck = CBashGeneric(51, c_ubyte)
-    head = CBashGrouped(52, RaceModel)
-    maleEars = CBashGrouped(56, RaceModel)
-    femaleEars = CBashGrouped(60, RaceModel)
-    mouth = CBashGrouped(64, RaceModel)
-    teethLower = CBashGrouped(68, RaceModel)
-    teethUpper = CBashGrouped(72, RaceModel)
-    tongue = CBashGrouped(76, RaceModel)
-    leftEye = CBashGrouped(80, RaceModel)
-    rightEye = CBashGrouped(84, RaceModel)
-    maleTail = CBashGrouped(88, Model)
-    maleUpperBodyPath = CBashISTRING(91)
-    maleLowerBodyPath = CBashISTRING(92)
-    maleHandPath = CBashISTRING(93)
-    maleFootPath = CBashISTRING(94)
-    maleTailPath = CBashISTRING(95)
-    femaleTail = CBashGrouped(96, Model)
-    femaleUpperBodyPath = CBashISTRING(99)
-    femaleLowerBodyPath = CBashISTRING(100)
-    femaleHandPath = CBashISTRING(101)
-    femaleFootPath = CBashISTRING(102)
-    femaleTailPath = CBashISTRING(103)
-    hairs = CBashFORMIDARRAY(104)
-    eyes = CBashFORMIDARRAY(105)
-    fggs_p = CBashUINT8ARRAY(106, 200)
-    fgga_p = CBashUINT8ARRAY(107, 120)
-    fgts_p = CBashUINT8ARRAY(108, 200)
-    snam_p = CBashUINT8ARRAY(109, 2)
-    IsPlayable = CBashBasicFlag('flags', 0x00000001)
+    LIST_MACRO(relations, 8, Relation)
+    SINT8_MACRO(skill1, 9)
+    SINT8_MACRO(skill1Boost, 10)
+    SINT8_MACRO(skill2, 11)
+    SINT8_MACRO(skill2Boost, 12)
+    SINT8_MACRO(skill3, 13)
+    SINT8_MACRO(skill3Boost, 14)
+    SINT8_MACRO(skill4, 15)
+    SINT8_MACRO(skill4Boost, 16)
+    SINT8_MACRO(skill5, 17)
+    SINT8_MACRO(skill5Boost, 18)
+    SINT8_MACRO(skill6, 19)
+    SINT8_MACRO(skill6Boost, 20)
+    SINT8_MACRO(skill7, 21)
+    SINT8_MACRO(skill7Boost, 22)
+    UINT8_ARRAY_MACRO(unused1, 23, 2)
+    FLOAT32_MACRO(maleHeight, 24)
+    FLOAT32_MACRO(femaleHeight, 25)
+    FLOAT32_MACRO(maleWeight, 26)
+    FLOAT32_MACRO(femaleWeight, 27)
+    UINT32_MACRO(flags, 28)
+    FORMID_MACRO(maleVoice, 29)
+    FORMID_MACRO(femaleVoice, 30)
+    FORMID_MACRO(defaultHairMale, 31)
+    FORMID_MACRO(defaultHairFemale, 32)
+    UINT8_MACRO(defaultHairColor, 33)
+    FLOAT32_MACRO(mainClamp, 34)
+    FLOAT32_MACRO(faceClamp, 35)
+    UINT8_MACRO(maleStrength, 36)
+    UINT8_MACRO(maleIntelligence, 37)
+    UINT8_MACRO(maleWillpower, 38)
+    UINT8_MACRO(maleAgility, 39)
+    UINT8_MACRO(maleSpeed, 40)
+    UINT8_MACRO(maleEndurance, 41)
+    UINT8_MACRO(malePersonality, 42)
+    UINT8_MACRO(maleLuck, 43)
+    UINT8_MACRO(femaleStrength, 44)
+    UINT8_MACRO(femaleIntelligence, 45)
+    UINT8_MACRO(femaleWillpower, 46)
+    UINT8_MACRO(femaleAgility, 47)
+    UINT8_MACRO(femaleSpeed, 48)
+    UINT8_MACRO(femaleEndurance, 49)
+    UINT8_MACRO(femalePersonality, 50)
+    UINT8_MACRO(femaleLuck, 51)
+    GroupedValuesMACRO(head, 52, RaceModel)
+    GroupedValuesMACRO(maleEars, 56, RaceModel)
+    GroupedValuesMACRO(femaleEars, 60, RaceModel)
+    GroupedValuesMACRO(mouth, 64, RaceModel)
+    GroupedValuesMACRO(teethLower, 68, RaceModel)
+    GroupedValuesMACRO(teethUpper, 72, RaceModel)
+    GroupedValuesMACRO(tongue, 76, RaceModel)
+    GroupedValuesMACRO(leftEye, 80, RaceModel)
+    GroupedValuesMACRO(rightEye, 84, RaceModel)
+    GroupedValuesMACRO(maleTail, 88, Model)
+    ISTRING_MACRO(maleUpperBodyPath, 91)
+    ISTRING_MACRO(maleLowerBodyPath, 92)
+    ISTRING_MACRO(maleHandPath, 93)
+    ISTRING_MACRO(maleFootPath, 94)
+    ISTRING_MACRO(maleTailPath, 95)
+    GroupedValuesMACRO(femaleTail, 96, Model)
+    ISTRING_MACRO(femaleUpperBodyPath, 99)
+    ISTRING_MACRO(femaleLowerBodyPath, 100)
+    ISTRING_MACRO(femaleHandPath, 101)
+    ISTRING_MACRO(femaleFootPath, 102)
+    ISTRING_MACRO(femaleTailPath, 103)
+    FORMID_ARRAY_MACRO(hairs, 104)
+    FORMID_ARRAY_MACRO(eyes, 105)
+    UINT8_ARRAY_MACRO(fggs_p, 106, 200)
+    UINT8_ARRAY_MACRO(fgga_p, 107, 120)
+    UINT8_ARRAY_MACRO(fgts_p, 108, 200)
+    UINT8_ARRAY_MACRO(snam_p, 109, 2)
+    BasicFlagMACRO(IsPlayable, flags, 0x00000001)
     copyattrs = ObFormIDRecord.baseattrs + ['full', 'text', 'spells',
                                         'relations_list', 'skill1', 'skill1Boost',
                                         'skill2', 'skill2Boost', 'skill3',
@@ -4354,51 +4095,45 @@ class ObREGNRecord(ObFormIDRecord):
     _Type = 'REGN'
     class Area(ListComponent):
         class Point(ListX2Component):
-            posX = CBashFLOAT32_LISTX2(11, 2, 1)
-            posY = CBashFLOAT32_LISTX2(11, 2, 2)
+            FLOAT32_LISTX2MACRO(posX, 11, 2, 1)
+            FLOAT32_LISTX2MACRO(posY, 11, 2, 2)
             copyattrs = ['posX', 'posY']
 
-        edgeFalloff = CBashFORMID_LIST(1)
+        FORMID_LISTMACRO(edgeFalloff, 11, 1)
 
-        def create_point(self):
-            length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 11, self._ListIndex, 2, 0, 0, 0, 0, 1)
-            CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, 11, self._ListIndex, 2, 0, 0, 0, 0, 0, c_ulong(length + 1))
-            return self.Point(self._CollectionID, self._ModID, self._RecordID, 11, self._ListIndex, 2, length)
-        points = CBashLIST_LIST(2, Point)
-        points_list = CBashLIST_LIST(2, Point, True)
-
+        LIST_LISTMACRO(points, 11, 2, self.Point)
         copyattrs = ['edgeFalloff', 'points_list']
 
     class Entry(ListComponent):
         class Object(ListX2Component):
-            objectId = CBashFORMID_LISTX2(12, 5, 1)
-            parentIndex = CBashGeneric_LISTX2(12, 5, 2, c_ushort)
-            unused1 = CBashUINT8ARRAY_LISTX2(12, 5, 3, 2)
-            density = CBashFLOAT32_LISTX2(12, 5, 4)
-            clustering = CBashGeneric_LISTX2(12, 5, 5, c_ubyte)
-            minSlope = CBashGeneric_LISTX2(12, 5, 6, c_ubyte)
-            maxSlope = CBashGeneric_LISTX2(12, 5, 7, c_ubyte)
-            flags = CBashGeneric_LISTX2(12, 5, 8, c_ubyte)
-            radiusWRTParent = CBashGeneric_LISTX2(12, 5, 9, c_ushort)
-            radius = CBashGeneric_LISTX2(12, 5, 10, c_ushort)
-            unk1 = CBashUINT8ARRAY_LISTX2(12, 5, 11, 4)
-            maxHeight = CBashFLOAT32_LISTX2(12, 5, 12)
-            sink = CBashFLOAT32_LISTX2(12, 5, 13)
-            sinkVar = CBashFLOAT32_LISTX2(12, 5, 14)
-            sizeVar = CBashFLOAT32_LISTX2(12, 5, 15)
-            angleVarX = CBashGeneric_LISTX2(12, 5, 16, c_ushort)
-            angleVarY = CBashGeneric_LISTX2(12, 5, 17, c_ushort)
-            angleVarZ = CBashGeneric_LISTX2(12, 5, 18, c_ushort)
-            unused2 = CBashUINT8ARRAY_LISTX2(12, 5, 19, 1)
-            unk2 = CBashUINT8ARRAY_LISTX2(12, 5, 20, 4)
-            IsConformToSlope = CBashBasicFlag('flags', 0x00000001)
-            IsPaintVertices = CBashBasicFlag('flags', 0x00000002)
-            IsSizeVariance = CBashBasicFlag('flags', 0x00000004)
-            IsXVariance = CBashBasicFlag('flags', 0x00000008)
-            IsYVariance = CBashBasicFlag('flags', 0x00000010)
-            IsZVariance = CBashBasicFlag('flags', 0x00000020)
-            IsTree = CBashBasicFlag('flags', 0x00000040)
-            IsHugeRock = CBashBasicFlag('flags', 0x00000080)
+            FORMID_LISTX2MACRO(objectId, 12, 5, 1)
+            UINT16_LISTX2MACRO(parentIndex, 12, 5, 2)
+            UINT8_ARRAY_LISTX2MACRO(unused1, 12, 5, 3, 2)
+            FLOAT32_LISTX2MACRO(density, 12, 5, 4)
+            UINT8_LISTX2MACRO(clustering, 12, 5, 5)
+            UINT8_LISTX2MACRO(minSlope, 12, 5, 6)
+            UINT8_LISTX2MACRO(maxSlope, 12, 5, 7)
+            UINT8_FLAG_LISTX2MACRO(flags, 12, 5, 8)
+            UINT16_LISTX2MACRO(radiusWRTParent, 12, 5, 9)
+            UINT16_LISTX2MACRO(radius, 12, 5, 10)
+            UINT8_ARRAY_LISTX2MACRO(unk1, 12, 5, 11, 4)
+            FLOAT32_LISTX2MACRO(maxHeight, 12, 5, 12)
+            FLOAT32_LISTX2MACRO(sink, 12, 5, 13)
+            FLOAT32_LISTX2MACRO(sinkVar, 12, 5, 14)
+            FLOAT32_LISTX2MACRO(sizeVar, 12, 5, 15)
+            UINT16_LISTX2MACRO(angleVarX, 12, 5, 16)
+            UINT16_LISTX2MACRO(angleVarY, 12, 5, 17)
+            UINT16_LISTX2MACRO(angleVarZ, 12, 5, 18)
+            UINT8_ARRAY_LISTX2MACRO(unused2, 12, 5, 19, 1)
+            UINT8_ARRAY_LISTX2MACRO(unk2, 12, 5, 20, 4)
+            BasicFlagMACRO(IsConformToSlope, flags, 0x00000001)
+            BasicFlagMACRO(IsPaintVertices, flags, 0x00000002)
+            BasicFlagMACRO(IsSizeVariance, flags, 0x00000004)
+            BasicFlagMACRO(IsXVariance, flags, 0x00000008)
+            BasicFlagMACRO(IsYVariance, flags, 0x00000010)
+            BasicFlagMACRO(IsZVariance, flags, 0x00000020)
+            BasicFlagMACRO(IsTree, flags, 0x00000040)
+            BasicFlagMACRO(IsHugeRock, flags, 0x00000080)
             copyattrs = ['objectId', 'parentIndex', 'density', 'clustering',
                          'minSlope', 'maxSlope', 'flags', 'radiusWRTParent',
                          'radius', 'unk1', 'maxHeight', 'sink', 'sinkVar',
@@ -4406,166 +4141,118 @@ class ObREGNRecord(ObFormIDRecord):
                          'unk2']
 
         class Grass(ListX2Component):
-            grass = CBashFORMID_LISTX2(12, 8, 1)
-            unk1 = CBashUINT8ARRAY_LISTX2(12, 8, 2, 4)
+            FORMID_LISTX2MACRO(grass, 12, 8, 1)
+            UINT8_ARRAY_LISTX2MACRO(unk1, 12, 8, 2, 4)
             copyattrs = ['grass', 'unk1']
 
         class Sound(ListX2Component):
-            sound = CBashFORMID_LISTX2(12, 10, 1)
-            flags = CBashGeneric_LISTX2(12, 10, 2, c_ulong)
-            chance = CBashGeneric_LISTX2(12, 10, 3, c_ulong)
-            IsPleasant = CBashBasicFlag('flags', 0x00000001)
-            IsCloudy = CBashBasicFlag('flags', 0x00000002)
-            IsRainy = CBashBasicFlag('flags', 0x00000004)
-            IsSnowy = CBashBasicFlag('flags', 0x00000008)
+            FORMID_LISTX2MACRO(sound, 12, 10, 1)
+            UINT32_FLAG_LISTX2MACRO(flags, 12, 10, 2)
+            UINT32_LISTX2MACRO(chance, 12, 10, 3)
+            BasicFlagMACRO(IsPleasant, flags, 0x00000001)
+            BasicFlagMACRO(IsCloudy, flags, 0x00000002)
+            BasicFlagMACRO(IsRainy, flags, 0x00000004)
+            BasicFlagMACRO(IsSnowy, flags, 0x00000008)
             copyattrs = ['sound', 'flags', 'chance']
 
         class Weather(ListX2Component):
-            weather = CBashFORMID_LISTX2(12, 11, 1)
-            chance = CBashGeneric_LISTX2(12, 11, 2, c_ulong)
+            FORMID_LISTX2MACRO(weather, 12, 11, 1)
+            UINT32_LISTX2MACRO(chance, 12, 11, 2)
             copyattrs = ['weather', 'chance']
 
-        entryType = CBashGeneric_LIST(1, c_ulong)
-        flags = CBashGeneric_LIST(2, c_ubyte)
-        priority = CBashGeneric_LIST(3, c_ubyte)
-        unused1 = CBashUINT8ARRAY_LIST(4)
+        UINT32_TYPE_LISTMACRO(entryType, 12, 1)
+        UINT8_FLAG_LISTMACRO(flags, 12, 2)
+        UINT8_LISTMACRO(priority, 12, 3)
+        UINT8_ARRAY_LISTMACRO(unused1, 12, 4)
 
-        def create_object(self):
-            length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 12, self._ListIndex, 5, 0, 0, 0, 0, 1)
-            CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, 12, self._ListIndex, 5, 0, 0, 0, 0, 0, c_ulong(length + 1))
-            return self.Object(self._CollectionID, self._ModID, self._RecordID, 12, self._ListIndex, 5, length)
-        objects = CBashLIST_LIST(5, Object)
-        objects_list = CBashLIST_LIST(5, Object, True)
+        LIST_LISTMACRO(objects, 12, 5, self.Object)
+        STRING_LISTMACRO(mapName, 12, 6)
+        ISTRING_LISTMACRO(iconPath, 12, 7)
 
-        mapName = CBashSTRING_LIST(6)
-        iconPath = CBashISTRING_LIST(7)
+        LIST_LISTMACRO(grasses, 12, 8, self.Grass)
+        UINT32_TYPE_LISTMACRO(musicType, 12, 9)
 
-        def create_grass(self):
-            length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 12, self._ListIndex, 8, 0, 0, 0, 0, 1)
-            CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, 12, self._ListIndex, 8, 0, 0, 0, 0, 0, c_ulong(length + 1))
-            return self.Grass(self._CollectionID, self._ModID, self._RecordID, 12, self._ListIndex, 8, length)
-        grasses = CBashLIST_LIST(8, Grass)
-        grasses_list = CBashLIST_LIST(8, Grass, True)
-
-        musicType = CBashGeneric_LIST(9, c_ulong)
-
-        def create_sound(self):
-            length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 12, self._ListIndex, 10, 0, 0, 0, 0, 1)
-            CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, 12, self._ListIndex, 10, 0, 0, 0, 0, 0, c_ulong(length + 1))
-            return self.Sound(self._CollectionID, self._ModID, self._RecordID, 12, self._ListIndex, 10, length)
-        sounds = CBashLIST_LIST(10, Sound)
-        sounds_list = CBashLIST_LIST(10, Sound, True)
-
-        def create_weather(self):
-            length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 12, self._ListIndex, 11, 0, 0, 0, 0, 1)
-            CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, 12, self._ListIndex, 11, 0, 0, 0, 0, 0, c_ulong(length + 1))
-            return self.Weather(self._CollectionID, self._ModID, self._RecordID, 12, self._ListIndex, 11, length)
-        weathers = CBashLIST_LIST(11, Weather)
-        weathers_list = CBashLIST_LIST(11, Weather, True)
-
-        IsObject = CBashBasicType('entryType', 2, 'IsWeather')
-        IsWeather = CBashBasicType('entryType', 3, 'IsObject')
-        IsMap = CBashBasicType('entryType', 4, 'IsObject')
-        IsIcon = CBashBasicType('entryType', 5, 'IsObject')
-        IsGrass = CBashBasicType('entryType', 6, 'IsObject')
-        IsSound = CBashBasicType('entryType', 7, 'IsObject')
-        IsDefault = CBashBasicType('musicType', 0, 'IsPublic')
-        IsPublic = CBashBasicType('musicType', 1, 'IsDefault')
-        IsDungeon = CBashBasicType('musicType', 2, 'IsDefault')
-        IsOverride = CBashBasicFlag('flags', 0x00000001)
+        LIST_LISTMACRO(sounds, 12, 10, self.Sound)
+        LIST_LISTMACRO(weathers, 12, 11, self.Weather)
+        BasicTypeMACRO(IsObject, entryType, 2, IsWeather)
+        BasicTypeMACRO(IsWeather, entryType, 3, IsObject)
+        BasicTypeMACRO(IsMap, entryType, 4, IsObject)
+        BasicTypeMACRO(IsIcon, entryType, 5, IsObject)
+        BasicTypeMACRO(IsGrass, entryType, 6, IsObject)
+        BasicTypeMACRO(IsSound, entryType, 7, IsObject)
+        BasicTypeMACRO(IsDefault, musicType, 0, IsPublic)
+        BasicTypeMACRO(IsPublic, musicType, 1, IsDefault)
+        BasicTypeMACRO(IsDungeon, musicType, 2, IsDefault)
+        BasicFlagMACRO(IsOverride, flags, 0x00000001)
         copyattrs = ['entryType', 'flags', 'priority', 'objects_list', 'mapName',
                      'iconPath', 'grasses_list', 'musicType', 'sounds_list', 'weathers_list']
 
-    iconPath = CBashISTRING(5)
-    mapRed = CBashGeneric(6, c_ubyte)
-    mapGreen = CBashGeneric(7, c_ubyte)
-    mapBlue = CBashGeneric(8, c_ubyte)
-    unused1 = CBashUINT8ARRAY(9, 1)
-    worldspace = CBashFORMID(10)
+    ISTRING_MACRO(iconPath, 5)
+    UINT8_MACRO(mapRed, 6)
+    UINT8_MACRO(mapGreen, 7)
+    UINT8_MACRO(mapBlue, 8)
+    UINT8_ARRAY_MACRO(unused1, 9, 1)
+    FORMID_MACRO(worldspace, 10)
 
-    def create_area(self):
-        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 11, 0, 0, 0, 0, 0, 0, 1)
-        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, 11, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
-        return self.Area(self._CollectionID, self._ModID, self._RecordID, 11, length)
-    areas = CBashLIST(11, Area)
-    areas_list = CBashLIST(11, Area, True)
-
-    def create_entry(self):
-        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 12, 0, 0, 0, 0, 0, 0, 1)
-        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, 12, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
-        return self.Entry(self._CollectionID, self._ModID, self._RecordID, 12, length)
-    entries = CBashLIST(12, Entry)
-    entries_list = CBashLIST(12, Entry, True)
-
+    LIST_MACRO(areas, 11, self.Area)
+    LIST_MACRO(entries, 12, self.Entry)
     copyattrs = ObFormIDRecord.baseattrs + ['iconPath', 'mapRed', 'mapGreen',
                                         'mapBlue', 'worldspace', 'areas_list',
                                         'entries_list']
 
 class ObSBSPRecord(ObFormIDRecord):
     _Type = 'SBSP'
-    sizeX = CBashFLOAT32(5)
-    sizeY = CBashFLOAT32(6)
-    sizeZ = CBashFLOAT32(7)
+    FLOAT32_MACRO(sizeX, 5)
+    FLOAT32_MACRO(sizeY, 6)
+    FLOAT32_MACRO(sizeZ, 7)
     copyattrs = ObFormIDRecord.baseattrs + ['sizeX', 'sizeY', 'sizeZ']
 
 class ObSCPTRecord(ObFormIDRecord):
     _Type = 'SCPT'
     class Var(ListComponent):
-        index = CBashGeneric_LIST(1, c_ulong)
-        unused1 = CBashUINT8ARRAY_LIST(2, 12)
-        flags = CBashGeneric_LIST(3, c_ubyte)
-        unused2 = CBashUINT8ARRAY_LIST(4, 7)
-        name = CBashSTRING_LIST(5)
-        IsLongOrShort = CBashBasicFlag('flags', 0x00000001)
+        UINT32_LISTMACRO(index, 12, 1)
+        UINT8_ARRAY_LISTMACRO(unused1, 12, 2, 12)
+        UINT8_FLAG_LISTMACRO(flags, 12, 3)
+        UINT8_ARRAY_LISTMACRO(unused2, 12, 4, 7)
+        STRING_LISTMACRO(name, 12, 5)
+        BasicFlagMACRO(IsLongOrShort, flags, 0x00000001)
         copyattrs = ['index', 'flags', 'name']
 
-    unused1 = CBashUINT8ARRAY(5, 2)
-    numRefs = CBashGeneric(6, c_ulong)
-    compiledSize = CBashGeneric(7, c_ulong)
-    lastIndex = CBashGeneric(8, c_ulong)
-    scriptType = CBashGeneric(9, c_ulong)
-    compiled_p = CBashUINT8ARRAY(10)
-    scriptText = CBashISTRING(11)
+    UINT8_ARRAY_MACRO(unused1, 5, 2)
+    UINT32_MACRO(numRefs, 6)
+    UINT32_MACRO(compiledSize, 7)
+    UINT32_MACRO(lastIndex, 8)
+    UINT32_MACRO(scriptType, 9)
+    UINT8_ARRAY_MACRO(compiled_p, 10)
+    ISTRING_MACRO(scriptText, 11)
 
-    def create_var(self):
-        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 12, 0, 0, 0, 0, 0, 0, 1)
-        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, 12, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
-        return self.Var(self._CollectionID, self._ModID, self._RecordID, 12, length)
-    vars = CBashLIST(12, Var)
-    vars_list = CBashLIST(12, Var, True)
-
-    references = CBashFORMID_OR_UINT32_ARRAY(13)
+    LIST_MACRO(vars, 12, self.Var)
+    FORMID_OR_UINT32_ARRAY_MACRO(references, 13)
     copyattrs = ObFormIDRecord.baseattrs + ['numRefs', 'compiledSize', 'lastIndex',
                                         'scriptType', 'compiled_p', 'scriptText',
                                         'vars_list', 'references']
 
 class ObSGSTRecord(ObFormIDRecord):
     _Type = 'SGST'
-    full = CBashSTRING(5)
-    modPath = CBashISTRING(6)
-    modb = CBashFLOAT32(7)
-    modt_p = CBashUINT8ARRAY(8)
-    iconPath = CBashISTRING(9)
-    script = CBashFORMID(10)
+    STRING_MACRO(full, 5)
+    ISTRING_MACRO(modPath, 6)
+    FLOAT32_MACRO(modb, 7)
+    UINT8_ARRAY_MACRO(modt_p, 8)
+    ISTRING_MACRO(iconPath, 9)
+    FORMID_MACRO(script, 10)
 
-    def create_effect(self):
-        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 11, 0, 0, 0, 0, 0, 0, 1)
-        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, 11, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
-        return Effect(self._CollectionID, self._ModID, self._RecordID, 11, length)
-    effects = CBashLIST(11, Effect)
-    effects_list = CBashLIST(11, Effect, True)
-
-    uses = CBashGeneric(12, c_ubyte)
-    value = CBashGeneric(13, c_long)
-    weight = CBashFLOAT32(14)
+    LIST_MACRO(effects, 11, Effect)
+    UINT8_MACRO(uses, 12)
+    SINT32_MACRO(value, 13)
+    FLOAT32_MACRO(weight, 14)
     ##OBME Fields. Setting any of the below fields will make the mod require JRoush's OBME plugin for OBSE
     ##To see if OBME is in use, check the recordVersion field for a non-None value
-    recordVersion = CBashGeneric(15, c_ubyte)
-    betaVersion = CBashGeneric(16, c_ubyte)
-    minorVersion = CBashGeneric(17, c_ubyte)
-    majorVersion = CBashGeneric(18, c_ubyte)
-    reserved = CBashUINT8ARRAY(19, 0x1C)
-    datx_p = CBashUINT8ARRAY(20, 0x20)
+    UINT8_MACRO(recordVersion, 15)
+    UINT8_MACRO(betaVersion, 16)
+    UINT8_MACRO(minorVersion, 17)
+    UINT8_MACRO(majorVersion, 18)
+    UINT8_ARRAY_MACRO(reserved, 19, 0x1C)
+    UINT8_ARRAY_MACRO(datx_p, 20, 0x20)
     copyattrs = ObFormIDRecord.baseattrs + ['full', 'modPath', 'modb', 'modt_p',
                                         'iconPath', 'script', 'effects_list',
                                         'uses', 'value', 'weight']
@@ -4575,18 +4262,18 @@ class ObSGSTRecord(ObFormIDRecord):
 
 class ObSKILRecord(ObFormIDRecord):
     _Type = 'SKIL'
-    skill = CBashGeneric(5, c_long)
-    description = CBashSTRING(6)
-    iconPath = CBashISTRING(7)
-    action = CBashGeneric(8, c_long)
-    attribute = CBashGeneric(9, c_long)
-    specialization = CBashGeneric(10, c_ulong)
-    use0 = CBashFLOAT32(11)
-    use1 = CBashFLOAT32(12)
-    apprentice = CBashSTRING(13)
-    journeyman = CBashSTRING(14)
-    expert = CBashSTRING(15)
-    master = CBashSTRING(16)
+    SINT32_MACRO(skill, 5)
+    STRING_MACRO(description, 6)
+    ISTRING_MACRO(iconPath, 7)
+    SINT32_MACRO(action, 8)
+    SINT32_MACRO(attribute, 9)
+    UINT32_MACRO(specialization, 10)
+    FLOAT32_MACRO(use0, 11)
+    FLOAT32_MACRO(use1, 12)
+    STRING_MACRO(apprentice, 13)
+    STRING_MACRO(journeyman, 14)
+    STRING_MACRO(expert, 15)
+    STRING_MACRO(master, 16)
     copyattrs = ObFormIDRecord.baseattrs + ['skill', 'description', 'iconPath',
                                         'action', 'attribute', 'specialization',
                                         'use0', 'use1', 'apprentice',
@@ -4594,102 +4281,96 @@ class ObSKILRecord(ObFormIDRecord):
 
 class ObSLGMRecord(ObFormIDRecord):
     _Type = 'SLGM'
-    full = CBashSTRING(5)
-    modPath = CBashISTRING(6)
-    modb = CBashFLOAT32(7)
-    modt_p = CBashUINT8ARRAY(8)
-    iconPath = CBashISTRING(9)
-    script = CBashFORMID(10)
-    value = CBashGeneric(11, c_long)
-    weight = CBashFLOAT32(12)
-    soulType = CBashGeneric(13, c_ubyte)
-    capacityType = CBashGeneric(14, c_ubyte)
-    IsNoSoul = CBashBasicType('soulType', 0, 'IsPettySoul')
-    IsPettySoul = CBashBasicType('soulType', 1, 'IsNoSoul')
-    IsLesserSoul = CBashBasicType('soulType', 2, 'IsNoSoul')
-    IsCommonSoul = CBashBasicType('soulType', 3, 'IsNoSoul')
-    IsGreaterSoul = CBashBasicType('soulType', 4, 'IsNoSoul')
-    IsGrandSoul = CBashBasicType('soulType', 5, 'IsNoSoul')
-    IsNoCapacity = CBashBasicType('capacityType', 0, 'IsPettyCapacity')
-    IsPettyCapacity = CBashBasicType('capacityType', 1, 'IsNoCapacity')
-    IsLesserCapacity = CBashBasicType('capacityType', 2, 'IsNoCapacity')
-    IsCommonCapacity = CBashBasicType('capacityType', 3, 'IsNoCapacity')
-    IsGreaterCapacity = CBashBasicType('capacityType', 4, 'IsNoCapacity')
-    IsGrandCapacity = CBashBasicType('capacityType', 5, 'IsNoCapacity')
+    STRING_MACRO(full, 5)
+    ISTRING_MACRO(modPath, 6)
+    FLOAT32_MACRO(modb, 7)
+    UINT8_ARRAY_MACRO(modt_p, 8)
+    ISTRING_MACRO(iconPath, 9)
+    FORMID_MACRO(script, 10)
+    SINT32_MACRO(value, 11)
+    FLOAT32_MACRO(weight, 12)
+    UINT8_TYPE_MACRO(soulType, 13)
+    UINT8_TYPE_MACRO(capacityType, 14)
+    BasicTypeMACRO(IsNoSoul, soulType, 0, IsPettySoul)
+    BasicTypeMACRO(IsPettySoul, soulType, 1, IsNoSoul)
+    BasicTypeMACRO(IsLesserSoul, soulType, 2, IsNoSoul)
+    BasicTypeMACRO(IsCommonSoul, soulType, 3, IsNoSoul)
+    BasicTypeMACRO(IsGreaterSoul, soulType, 4, IsNoSoul)
+    BasicTypeMACRO(IsGrandSoul, soulType, 5, IsNoSoul)
+    BasicTypeMACRO(IsNoCapacity, capacityType, 0, IsPettyCapacity)
+    BasicTypeMACRO(IsPettyCapacity, capacityType, 1, IsNoCapacity)
+    BasicTypeMACRO(IsLesserCapacity, capacityType, 2, IsNoCapacity)
+    BasicTypeMACRO(IsCommonCapacity, capacityType, 3, IsNoCapacity)
+    BasicTypeMACRO(IsGreaterCapacity, capacityType, 4, IsNoCapacity)
+    BasicTypeMACRO(IsGrandCapacity, capacityType, 5, IsNoCapacity)
     copyattrs = ObFormIDRecord.baseattrs + ['full', 'modPath', 'modb', 'modt_p',
                                         'iconPath', 'script', 'value',
                                         'weight', 'soulType', 'capacityType']
 
 class ObSOUNRecord(ObFormIDRecord):
     _Type = 'SOUN'
-    soundPath = CBashISTRING(5)
-    minDistance = CBashGeneric(6, c_ubyte)
-    maxDistance = CBashGeneric(7, c_ubyte)
-    freqAdjustment = CBashGeneric(8, c_byte)
-    unused1 = CBashUINT8ARRAY(9, 1)
-    flags = CBashGeneric(10, c_ushort)
-    unused2 = CBashUINT8ARRAY(11, 2)
-    staticAtten = CBashGeneric(12, c_short)
-    stopTime = CBashGeneric(13, c_ubyte)
-    startTime = CBashGeneric(14, c_ubyte)
-    IsRandomFrequencyShift = CBashBasicFlag('flags', 0x00000001)
-    IsPlayAtRandom = CBashBasicFlag('flags', 0x00000002)
-    IsEnvironmentIgnored = CBashBasicFlag('flags', 0x00000004)
-    IsRandomLocation = CBashBasicFlag('flags', 0x00000008)
-    IsLoop = CBashBasicFlag('flags', 0x00000010)
-    IsMenuSound = CBashBasicFlag('flags', 0x00000020)
-    Is2D = CBashBasicFlag('flags', 0x00000040)
-    Is360LFE = CBashBasicFlag('flags', 0x00000080)
+    ISTRING_MACRO(soundPath, 5)
+    UINT8_MACRO(minDistance, 6)
+    UINT8_MACRO(maxDistance, 7)
+    SINT8_MACRO(freqAdjustment, 8)
+    UINT8_ARRAY_MACRO(unused1, 9, 1)
+    UINT16_FLAG_MACRO(flags, 10)
+    UINT8_ARRAY_MACRO(unused2, 11, 2)
+    SINT16_MACRO(staticAtten, 12)
+    UINT8_MACRO(stopTime, 13)
+    UINT8_MACRO(startTime, 14)
+    BasicFlagMACRO(IsRandomFrequencyShift, flags, 0x00000001)
+    BasicFlagMACRO(IsPlayAtRandom, flags, 0x00000002)
+    BasicFlagMACRO(IsEnvironmentIgnored, flags, 0x00000004)
+    BasicFlagMACRO(IsRandomLocation, flags, 0x00000008)
+    BasicFlagMACRO(IsLoop, flags, 0x00000010)
+    BasicFlagMACRO(IsMenuSound, flags, 0x00000020)
+    BasicFlagMACRO(Is2D, flags, 0x00000040)
+    BasicFlagMACRO(Is360LFE, flags, 0x00000080)
     copyattrs = ObFormIDRecord.baseattrs + ['soundPath', 'minDistance', 'maxDistance',
                                         'freqAdjustment', 'flags', 'staticAtten',
                                         'stopTime', 'startTime']
 
 class ObSPELRecord(ObFormIDRecord):
     _Type = 'SPEL'
-    full = CBashSTRING(5)
-    spellType = CBashGeneric(6, c_ulong)
-    cost = CBashGeneric(7, c_ulong)
-    level = CBashGeneric(8, c_ulong)
-    flags = CBashGeneric(9, c_ubyte)
-    unused1 = CBashUINT8ARRAY(10, 3)
+    STRING_MACRO(full, 5)
+    UINT32_TYPE_MACRO(spellType, 6)
+    UINT32_MACRO(cost, 7)
+    UINT32_MACRO(level, 8)
+    UINT8_FLAG_MACRO(flags, 9)
+    UINT8_ARRAY_MACRO(unused1, 10, 3)
 
-    def create_effect(self):
-        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 11, 0, 0, 0, 0, 0, 0, 1)
-        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, 11, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
-        return Effect(self._CollectionID, self._ModID, self._RecordID, 11, length)
-    effects = CBashLIST(11, Effect)
-    effects_list = CBashLIST(11, Effect, True)
-
-    IsManualCost = CBashBasicFlag('flags', 0x00000001)
-    IsStartSpell = CBashBasicFlag('flags', 0x00000004)
-    IsSilenceImmune = CBashBasicFlag('flags', 0x0000000A)
-    IsAreaEffectIgnoresLOS = CBashBasicFlag('flags', 0x00000010)
-    IsAEIgnoresLOS = CBashAlias('IsAreaEffectIgnoresLOS')
-    IsScriptAlwaysApplies = CBashBasicFlag('flags', 0x00000020)
-    IsDisallowAbsorbReflect = CBashBasicFlag('flags', 0x00000040)
-    IsDisallowAbsorb = CBashAlias('IsDisallowAbsorbReflect')
-    IsDisallowReflect = CBashAlias('IsDisallowAbsorbReflect')
-    IsTouchExplodesWOTarget = CBashBasicFlag('flags', 0x00000080)
-    IsTouchExplodes = CBashAlias('IsTouchExplodesWOTarget')
-    IsSpell = CBashBasicType('spellType', 0, 'IsDisease')
-    IsDisease = CBashBasicType('spellType', 1, 'IsSpell')
-    IsPower = CBashBasicType('spellType', 2, 'IsSpell')
-    IsLesserPower = CBashBasicType('spellType', 3, 'IsSpell')
-    IsAbility = CBashBasicType('spellType', 4, 'IsSpell')
-    IsPoison = CBashBasicType('spellType', 5, 'IsSpell')
-    IsNovice = CBashBasicType('level', 0, 'IsApprentice')
-    IsApprentice = CBashBasicType('level', 1, 'IsNovice')
-    IsJourneyman = CBashBasicType('level', 2, 'IsNovice')
-    IsExpert = CBashBasicType('level', 3, 'IsNovice')
-    IsMaster = CBashBasicType('level', 4, 'IsNovice')
+    LIST_MACRO(effects, 11, Effect)
+    BasicFlagMACRO(IsManualCost, flags, 0x00000001)
+    BasicFlagMACRO(IsStartSpell, flags, 0x00000004)
+    BasicFlagMACRO(IsSilenceImmune, flags, 0x0000000A)
+    BasicFlagMACRO(IsAreaEffectIgnoresLOS, flags, 0x00000010)
+    BasicAliasMACRO(IsAEIgnoresLOS, IsAreaEffectIgnoresLOS)
+    BasicFlagMACRO(IsScriptAlwaysApplies, flags, 0x00000020)
+    BasicFlagMACRO(IsDisallowAbsorbReflect, flags, 0x00000040)
+    BasicAliasMACRO(IsDisallowAbsorb, IsDisallowAbsorbReflect)
+    BasicAliasMACRO(IsDisallowReflect, IsDisallowAbsorbReflect)
+    BasicFlagMACRO(IsTouchExplodesWOTarget, flags, 0x00000080)
+    BasicAliasMACRO(IsTouchExplodes, IsTouchExplodesWOTarget)
+    BasicTypeMACRO(IsSpell, spellType, 0, IsDisease)
+    BasicTypeMACRO(IsDisease, spellType, 1, IsSpell)
+    BasicTypeMACRO(IsPower, spellType, 2, IsSpell)
+    BasicTypeMACRO(IsLesserPower, spellType, 3, IsSpell)
+    BasicTypeMACRO(IsAbility, spellType, 4, IsSpell)
+    BasicTypeMACRO(IsPoison, spellType, 5, IsSpell)
+    BasicTypeMACRO(IsNovice, level, 0, IsApprentice)
+    BasicTypeMACRO(IsApprentice, level, 1, IsNovice)
+    BasicTypeMACRO(IsJourneyman, level, 2, IsNovice)
+    BasicTypeMACRO(IsExpert, level, 3, IsNovice)
+    BasicTypeMACRO(IsMaster, level, 4, IsNovice)
     ##OBME Fields. Setting any of the below fields will make the mod require JRoush's OBME plugin for OBSE
     ##To see if OBME is in use, check the recordVersion field for a non-None value
-    recordVersion = CBashGeneric(12, c_ubyte)
-    betaVersion = CBashGeneric(13, c_ubyte)
-    minorVersion = CBashGeneric(14, c_ubyte)
-    majorVersion = CBashGeneric(15, c_ubyte)
-    reserved = CBashUINT8ARRAY(16, 0x1C)
-    datx_p = CBashUINT8ARRAY(17, 0x20)
+    UINT8_MACRO(recordVersion, 12)
+    UINT8_MACRO(betaVersion, 13)
+    UINT8_MACRO(minorVersion, 14)
+    UINT8_MACRO(majorVersion, 15)
+    UINT8_ARRAY_MACRO(reserved, 16, 0x1C)
+    UINT8_ARRAY_MACRO(datx_p, 17, 0x20)
     copyattrs = ObFormIDRecord.baseattrs + ['full', 'spellType', 'cost',
                                         'level', 'flags', 'effects_list']
     copyattrsOBME = copyattrs + ['recordVersion', 'betaVersion',
@@ -4698,28 +4379,28 @@ class ObSPELRecord(ObFormIDRecord):
 
 class ObSTATRecord(ObFormIDRecord):
     _Type = 'STAT'
-    modPath = CBashISTRING(5)
-    modb = CBashFLOAT32(6)
-    modt_p = CBashUINT8ARRAY(7)
+    ISTRING_MACRO(modPath, 5)
+    FLOAT32_MACRO(modb, 6)
+    UINT8_ARRAY_MACRO(modt_p, 7)
     copyattrs = ObFormIDRecord.baseattrs + ['modPath', 'modb', 'modt_p']
 
 class ObTREERecord(ObFormIDRecord):
     _Type = 'TREE'
-    modPath = CBashISTRING(5)
-    modb = CBashFLOAT32(6)
-    modt_p = CBashUINT8ARRAY(7)
-    iconPath = CBashISTRING(8)
-    speedTree = CBashUINT32ARRAY(9)
-    curvature = CBashFLOAT32(10)
-    minAngle = CBashFLOAT32(11)
-    maxAngle = CBashFLOAT32(12)
-    branchDim = CBashFLOAT32(13)
-    leafDim = CBashFLOAT32(14)
-    shadowRadius = CBashGeneric(15, c_long)
-    rockSpeed = CBashFLOAT32(16)
-    rustleSpeed = CBashFLOAT32(17)
-    widthBill = CBashFLOAT32(18)
-    heightBill = CBashFLOAT32(19)
+    ISTRING_MACRO(modPath, 5)
+    FLOAT32_MACRO(modb, 6)
+    UINT8_ARRAY_MACRO(modt_p, 7)
+    ISTRING_MACRO(iconPath, 8)
+    UINT32_ARRAY_MACRO(speedTree, 9)
+    FLOAT32_MACRO(curvature, 10)
+    FLOAT32_MACRO(minAngle, 11)
+    FLOAT32_MACRO(maxAngle, 12)
+    FLOAT32_MACRO(branchDim, 13)
+    FLOAT32_MACRO(leafDim, 14)
+    SINT32_MACRO(shadowRadius, 15)
+    FLOAT32_MACRO(rockSpeed, 16)
+    FLOAT32_MACRO(rustleSpeed, 17)
+    FLOAT32_MACRO(widthBill, 18)
+    FLOAT32_MACRO(heightBill, 19)
     copyattrs = ObFormIDRecord.baseattrs + ['modPath', 'modb', 'modt_p', 'iconPath',
                                         'speedTree', 'curvature', 'minAngle',
                                         'maxAngle', 'branchDim', 'leafDim',
@@ -4728,53 +4409,53 @@ class ObTREERecord(ObFormIDRecord):
 
 class ObWATRRecord(ObFormIDRecord):
     _Type = 'WATR'
-    texturePath = CBashISTRING(5)
-    opacity = CBashGeneric(6, c_ubyte)
-    flags = CBashGeneric(7, c_ubyte)
-    materialPath = CBashISTRING(8)
-    sound = CBashFORMID(9)
-    windVelocity = CBashFLOAT32(10)
-    windDirection = CBashFLOAT32(11)
-    waveAmp = CBashFLOAT32(12)
-    waveFreq = CBashFLOAT32(13)
-    sunPower = CBashFLOAT32(14)
-    reflectAmt = CBashFLOAT32(15)
-    fresnelAmt = CBashFLOAT32(16)
-    xSpeed = CBashFLOAT32(17)
-    ySpeed = CBashFLOAT32(18)
-    fogNear = CBashFLOAT32(19)
-    fogFar = CBashFLOAT32(20)
-    shallowRed = CBashGeneric(21, c_ubyte)
-    shallowGreen = CBashGeneric(22, c_ubyte)
-    shallowBlue = CBashGeneric(23, c_ubyte)
-    unused1 = CBashUINT8ARRAY(24, 1)
-    deepRed = CBashGeneric(25, c_ubyte)
-    deepGreen = CBashGeneric(26, c_ubyte)
-    deepBlue = CBashGeneric(27, c_ubyte)
-    unused2 = CBashUINT8ARRAY(28, 1)
-    reflRed = CBashGeneric(29, c_ubyte)
-    reflGreen = CBashGeneric(30, c_ubyte)
-    reflBlue = CBashGeneric(31, c_ubyte)
-    unused3 = CBashUINT8ARRAY(32, 1)
-    blend = CBashGeneric(33, c_ubyte)
-    unused4 = CBashUINT8ARRAY(34, 3)
-    rainForce = CBashFLOAT32(35)
-    rainVelocity = CBashFLOAT32(36)
-    rainFalloff = CBashFLOAT32(37)
-    rainDampner = CBashFLOAT32(38)
-    rainSize = CBashFLOAT32(39)
-    dispForce = CBashFLOAT32(40)
-    dispVelocity = CBashFLOAT32(41)
-    dispFalloff = CBashFLOAT32(42)
-    dispDampner = CBashFLOAT32(43)
-    dispSize = CBashFLOAT32(44)
-    damage = CBashGeneric(45, c_ushort)
-    dayWater = CBashFORMID(46)
-    nightWater = CBashFORMID(47)
-    underWater = CBashFORMID(48)
-    IsCausesDamage = CBashBasicFlag('flags', 0x00000001)
-    IsCausesDmg = CBashAlias('IsCausesDamage')
-    IsReflective = CBashBasicFlag('flags', 0x00000002)
+    ISTRING_MACRO(texturePath, 5)
+    UINT8_MACRO(opacity, 6)
+    UINT8_FLAG_MACRO(flags, 7)
+    ISTRING_MACRO(materialPath, 8)
+    FORMID_MACRO(sound, 9)
+    FLOAT32_MACRO(windVelocity, 10)
+    FLOAT32_MACRO(windDirection, 11)
+    FLOAT32_MACRO(waveAmp, 12)
+    FLOAT32_MACRO(waveFreq, 13)
+    FLOAT32_MACRO(sunPower, 14)
+    FLOAT32_MACRO(reflectAmt, 15)
+    FLOAT32_MACRO(fresnelAmt, 16)
+    FLOAT32_MACRO(xSpeed, 17)
+    FLOAT32_MACRO(ySpeed, 18)
+    FLOAT32_MACRO(fogNear, 19)
+    FLOAT32_MACRO(fogFar, 20)
+    UINT8_MACRO(shallowRed, 21)
+    UINT8_MACRO(shallowGreen, 22)
+    UINT8_MACRO(shallowBlue, 23)
+    UINT8_ARRAY_MACRO(unused1, 24, 1)
+    UINT8_MACRO(deepRed, 25)
+    UINT8_MACRO(deepGreen, 26)
+    UINT8_MACRO(deepBlue, 27)
+    UINT8_ARRAY_MACRO(unused2, 28, 1)
+    UINT8_MACRO(reflRed, 29)
+    UINT8_MACRO(reflGreen, 30)
+    UINT8_MACRO(reflBlue, 31)
+    UINT8_ARRAY_MACRO(unused3, 32, 1)
+    UINT8_MACRO(blend, 33)
+    UINT8_ARRAY_MACRO(unused4, 34, 3)
+    FLOAT32_MACRO(rainForce, 35)
+    FLOAT32_MACRO(rainVelocity, 36)
+    FLOAT32_MACRO(rainFalloff, 37)
+    FLOAT32_MACRO(rainDampner, 38)
+    FLOAT32_MACRO(rainSize, 39)
+    FLOAT32_MACRO(dispForce, 40)
+    FLOAT32_MACRO(dispVelocity, 41)
+    FLOAT32_MACRO(dispFalloff, 42)
+    FLOAT32_MACRO(dispDampner, 43)
+    FLOAT32_MACRO(dispSize, 44)
+    UINT16_MACRO(damage, 45)
+    FORMID_MACRO(dayWater, 46)
+    FORMID_MACRO(nightWater, 47)
+    FORMID_MACRO(underWater, 48)
+    BasicFlagMACRO(IsCausesDamage, flags, 0x00000001)
+    BasicAliasMACRO(IsCausesDmg, IsCausesDamage)
+    BasicFlagMACRO(IsReflective, flags, 0x00000002)
     copyattrs = ObFormIDRecord.baseattrs + ['texturePath', 'opacity', 'flags', 'materialPath',
                                         'sound', 'windVelocity', 'windDirection',
                                         'waveAmp', 'waveFreq', 'sunPower',
@@ -4791,32 +4472,32 @@ class ObWATRRecord(ObFormIDRecord):
 
 class ObWEAPRecord(ObFormIDRecord):
     _Type = 'WEAP'
-    full = CBashSTRING(5)
-    modPath = CBashISTRING(6)
-    modb = CBashFLOAT32(7)
-    modt_p = CBashUINT8ARRAY(8)
-    iconPath = CBashISTRING(9)
-    script = CBashFORMID(10)
-    enchantment = CBashFORMID(11)
-    enchantPoints = CBashGeneric(12, c_ushort)
-    weaponType = CBashGeneric(13, c_ulong)
-    speed = CBashFLOAT32(14)
-    reach = CBashFLOAT32(15)
-    flags = CBashGeneric(16, c_ulong)
-    value = CBashGeneric(17, c_ulong)
-    health = CBashGeneric(18, c_ulong)
-    weight = CBashFLOAT32(19)
-    damage = CBashGeneric(20, c_ushort)
-    IsBlade1Hand = CBashBasicType('weaponType', 0, 'IsBlade2Hand')
-    IsBlade2Hand = CBashBasicType('weaponType', 1, 'IsBlade1Hand')
-    IsBlunt1Hand = CBashBasicType('weaponType', 2, 'IsBlade1Hand')
-    IsBlunt2Hand = CBashBasicType('weaponType', 3, 'IsBlade1Hand')
-    IsStaff = CBashBasicType('weaponType', 4, 'IsBlade1Hand')
-    IsBow = CBashBasicType('weaponType', 5, 'IsBlade1Hand')
-    IsNotNormalWeapon = CBashBasicFlag('flags', 0x00000001)
-    IsNotNormal = CBashAlias('IsNotNormalWeapon')
-    IsNormalWeapon = CBashInvertedFlag('IsNotNormalWeapon')
-    IsNormal = CBashAlias('IsNormalWeapon')
+    STRING_MACRO(full, 5)
+    ISTRING_MACRO(modPath, 6)
+    FLOAT32_MACRO(modb, 7)
+    UINT8_ARRAY_MACRO(modt_p, 8)
+    ISTRING_MACRO(iconPath, 9)
+    FORMID_MACRO(script, 10)
+    FORMID_MACRO(enchantment, 11)
+    UINT16_MACRO(enchantPoints, 12)
+    UINT32_TYPE_MACRO(weaponType, 13)
+    FLOAT32_MACRO(speed, 14)
+    FLOAT32_MACRO(reach, 15)
+    UINT32_FLAG_MACRO(flags, 16)
+    UINT32_MACRO(value, 17)
+    UINT32_MACRO(health, 18)
+    FLOAT32_MACRO(weight, 19)
+    UINT16_MACRO(damage, 20)
+    BasicTypeMACRO(IsBlade1Hand, weaponType, 0, IsBlade2Hand)
+    BasicTypeMACRO(IsBlade2Hand, weaponType, 1, IsBlade1Hand)
+    BasicTypeMACRO(IsBlunt1Hand, weaponType, 2, IsBlade1Hand)
+    BasicTypeMACRO(IsBlunt2Hand, weaponType, 3, IsBlade1Hand)
+    BasicTypeMACRO(IsStaff, weaponType, 4, IsBlade1Hand)
+    BasicTypeMACRO(IsBow, weaponType, 5, IsBlade1Hand)
+    BasicFlagMACRO(IsNotNormalWeapon, flags, 0x00000001)
+    BasicAliasMACRO(IsNotNormal, IsNotNormalWeapon)
+    BasicInvertedFlagMACRO(IsNormalWeapon, IsNotNormalWeapon)
+    BasicAliasMACRO(IsNormal, IsNormalWeapon)
     copyattrs = ObFormIDRecord.baseattrs + ['full', 'modPath', 'modb', 'modt_p',
                                         'iconPath', 'script', 'enchantment',
                                         'enchantPoints', 'weaponType',
@@ -4825,51 +4506,36 @@ class ObWEAPRecord(ObFormIDRecord):
 
 class ObWRLDRecord(ObFormIDRecord):
     _Type = 'WRLD'
-    full = CBashSTRING(5)
-    parent = CBashFORMID(6)
-    climate = CBashFORMID(7)
-    water = CBashFORMID(8)
-    mapPath = CBashISTRING(9)
-    dimX = CBashGeneric(10, c_long)
-    dimY = CBashGeneric(11, c_long)
-    NWCellX = CBashGeneric(12, c_short)
-    NWCellY = CBashGeneric(13, c_short)
-    SECellX = CBashGeneric(14, c_short)
-    SECellY = CBashGeneric(15, c_short)
-    flags = CBashGeneric(16, c_ubyte)
-    unknown00 = CBashFLOAT32(17)
-    unknown01 = CBashFLOAT32(18)
-    unknown90 = CBashFLOAT32(19)
-    unknown91 = CBashFLOAT32(20)
-    musicType = CBashGeneric(21, c_ulong)
-    ofst_p = CBashUINT8ARRAY(22)
-    def create_ROAD(self):
-        FID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("ROAD", POINTER(c_ulong)).contents.value, 0, 0, self._RecordID, 0)
-        if(FID): return ObROADRecord(self._CollectionID, self._ModID, FID, self._RecordID, 0)
-        return None
-    ROAD = CBashSUBRECORD(23, ObROADRecord, "ROAD", 0)
-
-    def create_WorldCELL(self):
-        FID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("CELL", POINTER(c_ulong)).contents.value, 0, 0, self._RecordID, 2)
-        if(FID): return ObCELLRecord(self._CollectionID, self._ModID, FID, self._RecordID, 2)
-        return None
-    WorldCELL = CBashSUBRECORD(24, ObCELLRecord, "CELL", 2)
-
-    def create_CELLS(self):
-        FID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("CELL", POINTER(c_ulong)).contents.value, 0, 0, self._RecordID, 0)
-        if(FID): return ObCELLRecord(self._CollectionID, self._ModID, FID, self._RecordID, 0)
-        return None
-    CELLS = CBashSUBRECORDARRAY(25, ObCELLRecord, "CELL", 0)
-
-    IsSmallWorld = CBashBasicFlag('flags', 0x00000001)
-    IsNoFastTravel = CBashBasicFlag('flags', 0x00000002)
-    IsFastTravel = CBashInvertedFlag('IsNoFastTravel')
-    IsOblivionWorldspace = CBashBasicFlag('flags', 0x00000004)
-    IsNoLODWater = CBashBasicFlag('flags', 0x00000010)
-    IsLODWater = CBashInvertedFlag('IsNoLODWater')
-    IsDefault = CBashBasicType('musicType', 0, 'IsPublic')
-    IsPublic = CBashBasicType('musicType', 1, 'IsDefault')
-    IsDungeon = CBashBasicType('musicType', 2, 'IsDefault')
+    STRING_MACRO(full, 5)
+    FORMID_MACRO(parent, 6)
+    FORMID_MACRO(climate, 7)
+    FORMID_MACRO(water, 8)
+    ISTRING_MACRO(mapPath, 9)
+    SINT32_MACRO(dimX, 10)
+    SINT32_MACRO(dimY, 11)
+    SINT16_MACRO(NWCellX, 12)
+    SINT16_MACRO(NWCellY, 13)
+    SINT16_MACRO(SECellX, 14)
+    SINT16_MACRO(SECellY, 15)
+    UINT8_FLAG_MACRO(flags, 16)
+    FLOAT32_MACRO(unknown00, 17)
+    FLOAT32_MACRO(unknown01, 18)
+    FLOAT32_MACRO(unknown90, 19)
+    FLOAT32_MACRO(unknown91, 20)
+    UINT32_MACRO(musicType, 21)
+    UINT8_ARRAY_MACRO(ofst_p, 22)
+    SUBRECORD_MACRO(ROAD, "ROAD", 23, ObROADRecord, 0)
+    SUBRECORD_MACRO(WorldCELL, "CELL", 24, ObCELLRecord, 2)
+    SUBRECORD_ARRAY_MACRO(CELLS, "CELL", 25, ObCELLRecord, 0)
+    BasicFlagMACRO(IsSmallWorld, flags, 0x00000001)
+    BasicFlagMACRO(IsNoFastTravel, flags, 0x00000002)
+    BasicInvertedFlagMACRO(IsFastTravel, IsNoFastTravel)
+    BasicFlagMACRO(IsOblivionWorldspace, flags, 0x00000004)
+    BasicFlagMACRO(IsNoLODWater, flags, 0x00000010)
+    BasicInvertedFlagMACRO(IsLODWater, IsNoLODWater)
+    BasicTypeMACRO(IsDefault, musicType, 0, IsPublic)
+    BasicTypeMACRO(IsPublic, musicType, 1, IsDefault)
+    BasicTypeMACRO(IsDungeon, musicType, 2, IsDefault)
     copyattrs = ObFormIDRecord.baseattrs + ['full', 'parent', 'climate', 'water', 'mapPath',
                                         'dimX', 'dimY', 'NWCellX', 'NWCellY', 'SECellX',
                                         'SECellY', 'flags', 'unknown00', 'unknown01',
@@ -4878,102 +4544,96 @@ class ObWRLDRecord(ObFormIDRecord):
 class ObWTHRRecord(ObFormIDRecord):
     _Type = 'WTHR'
     class WTHRColor(BaseComponent):
-        riseRed = CBashGeneric_GROUP(0, c_ubyte)
-        riseGreen = CBashGeneric_GROUP(1, c_ubyte)
-        riseBlue = CBashGeneric_GROUP(2, c_ubyte)
-        unused1 = CBashUINT8ARRAY_GROUP(3, 1)
-        dayRed = CBashGeneric_GROUP(4, c_ubyte)
-        dayGreen = CBashGeneric_GROUP(5, c_ubyte)
-        dayBlue = CBashGeneric_GROUP(6, c_ubyte)
-        unused2 = CBashUINT8ARRAY_GROUP(7, 1)
-        setRed = CBashGeneric_GROUP(8, c_ubyte)
-        setGreen = CBashGeneric_GROUP(9, c_ubyte)
-        setBlue = CBashGeneric_GROUP(10, c_ubyte)
-        unused3 = CBashUINT8ARRAY_GROUP(11, 1)
-        nightRed = CBashGeneric_GROUP(12, c_ubyte)
-        nightGreen = CBashGeneric_GROUP(13, c_ubyte)
-        nightBlue = CBashGeneric_GROUP(14, c_ubyte)
-        unused4 = CBashUINT8ARRAY_GROUP(15, 1)
+        UINT8_GROUPEDMACRO(riseRed, 0)
+        UINT8_GROUPEDMACRO(riseGreen, 1)
+        UINT8_GROUPEDMACRO(riseBlue, 2)
+        UINT8_ARRAY_GROUPEDMACRO(unused1, 3, 1)
+        UINT8_GROUPEDMACRO(dayRed, 4)
+        UINT8_GROUPEDMACRO(dayGreen, 5)
+        UINT8_GROUPEDMACRO(dayBlue, 6)
+        UINT8_ARRAY_GROUPEDMACRO(unused2, 7, 1)
+        UINT8_GROUPEDMACRO(setRed, 8)
+        UINT8_GROUPEDMACRO(setGreen, 9)
+        UINT8_GROUPEDMACRO(setBlue, 10)
+        UINT8_ARRAY_GROUPEDMACRO(unused3, 11, 1)
+        UINT8_GROUPEDMACRO(nightRed, 12)
+        UINT8_GROUPEDMACRO(nightGreen, 13)
+        UINT8_GROUPEDMACRO(nightBlue, 14)
+        UINT8_ARRAY_GROUPEDMACRO(unused4, 15, 1)
         copyattrs = ['riseRed', 'riseGreen', 'riseBlue',
                      'dayRed', 'dayGreen', 'dayBlue',
                      'setRed', 'setGreen', 'setBlue',
                      'nightRed', 'nightGreen', 'nightBlue']
 
     class Sound(ListComponent):
-        sound = CBashFORMID_LIST(1)
-        type = CBashGeneric_LIST(2, c_ulong)
-        IsDefault = CBashBasicType('type', 0, 'IsPrecip')
-        IsPrecipitation = CBashBasicType('type', 1, 'IsDefault')
-        IsPrecip = CBashAlias('IsPrecipitation')
-        IsWind = CBashBasicType('type', 2, 'IsDefault')
-        IsThunder = CBashBasicType('type', 3, 'IsDefault')
+        FORMID_LISTMACRO(sound, 203, 1)
+        UINT32_TYPE_LISTMACRO(type, 203, 2)
+        BasicTypeMACRO(IsDefault, type, 0, IsPrecip)
+        BasicTypeMACRO(IsPrecipitation, type, 1, IsDefault)
+        BasicAliasMACRO(IsPrecip, IsPrecipitation)
+        BasicTypeMACRO(IsWind, type, 2, IsDefault)
+        BasicTypeMACRO(IsThunder, type, 3, IsDefault)
         copyattrs = ['sound', 'type']
 
-    lowerLayerPath = CBashISTRING(5)
-    upperLayerPath = CBashISTRING(6)
-    modPath = CBashISTRING(7)
-    modb = CBashFLOAT32(8)
-    modt_p = CBashUINT8ARRAY(9)
-    upperSky = CBashGrouped(10, WTHRColor)
-    fog = CBashGrouped(26, WTHRColor)
-    lowerClouds = CBashGrouped(42, WTHRColor)
-    ambient = CBashGrouped(58, WTHRColor)
-    sunlight = CBashGrouped(74, WTHRColor)
-    sun = CBashGrouped(90, WTHRColor)
-    stars = CBashGrouped(106, WTHRColor)
-    lowerSky = CBashGrouped(122, WTHRColor)
-    horizon = CBashGrouped(138, WTHRColor)
-    upperClouds = CBashGrouped(154, WTHRColor)
-    fogDayNear = CBashFLOAT32(170)
-    fogDayFar = CBashFLOAT32(171)
-    fogNightNear = CBashFLOAT32(172)
-    fogNightFar = CBashFLOAT32(173)
-    eyeAdaptSpeed = CBashFLOAT32(174)
-    blurRadius = CBashFLOAT32(175)
-    blurPasses = CBashFLOAT32(176)
-    emissiveMult = CBashFLOAT32(177)
-    targetLum = CBashFLOAT32(178)
-    upperLumClamp = CBashFLOAT32(179)
-    brightScale = CBashFLOAT32(180)
-    brightClamp = CBashFLOAT32(181)
-    lumRampNoTex = CBashFLOAT32(182)
-    lumRampMin = CBashFLOAT32(183)
-    lumRampMax = CBashFLOAT32(184)
-    sunlightDimmer = CBashFLOAT32(185)
-    grassDimmer = CBashFLOAT32(186)
-    treeDimmer = CBashFLOAT32(187)
-    windSpeed = CBashGeneric(188, c_ubyte)
-    lowerCloudSpeed = CBashGeneric(189, c_ubyte)
-    upperCloudSpeed = CBashGeneric(190, c_ubyte)
-    transDelta = CBashGeneric(191, c_ubyte)
-    sunGlare = CBashGeneric(192, c_ubyte)
-    sunDamage = CBashGeneric(193, c_ubyte)
-    rainFadeIn = CBashGeneric(194, c_ubyte)
-    rainFadeOut = CBashGeneric(195, c_ubyte)
-    boltFadeIn = CBashGeneric(196, c_ubyte)
-    boltFadeOut = CBashGeneric(197, c_ubyte)
-    boltFrequency = CBashGeneric(198, c_ubyte)
-    weatherType = CBashGeneric(199, c_ubyte)
-    boltRed = CBashGeneric(200, c_ubyte)
-    boltGreen = CBashGeneric(201, c_ubyte)
-    boltBlue = CBashGeneric(202, c_ubyte)
+    ISTRING_MACRO(lowerLayerPath, 5)
+    ISTRING_MACRO(upperLayerPath, 6)
+    ISTRING_MACRO(modPath, 7)
+    FLOAT32_MACRO(modb, 8)
+    UINT8_ARRAY_MACRO(modt_p, 9)
+    GroupedValuesMACRO(upperSky, 10, WTHRColor)
+    GroupedValuesMACRO(fog, 26, WTHRColor)
+    GroupedValuesMACRO(lowerClouds, 42, WTHRColor)
+    GroupedValuesMACRO(ambient, 58, WTHRColor)
+    GroupedValuesMACRO(sunlight, 74, WTHRColor)
+    GroupedValuesMACRO(sun, 90, WTHRColor)
+    GroupedValuesMACRO(stars, 106, WTHRColor)
+    GroupedValuesMACRO(lowerSky, 122, WTHRColor)
+    GroupedValuesMACRO(horizon, 138, WTHRColor)
+    GroupedValuesMACRO(upperClouds, 154, WTHRColor)
+    FLOAT32_MACRO(fogDayNear, 170)
+    FLOAT32_MACRO(fogDayFar, 171)
+    FLOAT32_MACRO(fogNightNear, 172)
+    FLOAT32_MACRO(fogNightFar, 173)
+    FLOAT32_MACRO(eyeAdaptSpeed, 174)
+    FLOAT32_MACRO(blurRadius, 175)
+    FLOAT32_MACRO(blurPasses, 176)
+    FLOAT32_MACRO(emissiveMult, 177)
+    FLOAT32_MACRO(targetLum, 178)
+    FLOAT32_MACRO(upperLumClamp, 179)
+    FLOAT32_MACRO(brightScale, 180)
+    FLOAT32_MACRO(brightClamp, 181)
+    FLOAT32_MACRO(lumRampNoTex, 182)
+    FLOAT32_MACRO(lumRampMin, 183)
+    FLOAT32_MACRO(lumRampMax, 184)
+    FLOAT32_MACRO(sunlightDimmer, 185)
+    FLOAT32_MACRO(grassDimmer, 186)
+    FLOAT32_MACRO(treeDimmer, 187)
+    UINT8_MACRO(windSpeed, 188)
+    UINT8_MACRO(lowerCloudSpeed, 189)
+    UINT8_MACRO(upperCloudSpeed, 190)
+    UINT8_MACRO(transDelta, 191)
+    UINT8_MACRO(sunGlare, 192)
+    UINT8_MACRO(sunDamage, 193)
+    UINT8_MACRO(rainFadeIn, 194)
+    UINT8_MACRO(rainFadeOut, 195)
+    UINT8_MACRO(boltFadeIn, 196)
+    UINT8_MACRO(boltFadeOut, 197)
+    UINT8_MACRO(boltFrequency, 198)
+    UINT8_TYPE_MACRO(weatherType, 199)
+    UINT8_MACRO(boltRed, 200)
+    UINT8_MACRO(boltGreen, 201)
+    UINT8_MACRO(boltBlue, 202)
 
-    def create_sound(self):
-        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 203, 0, 0, 0, 0, 0, 0, 1)
-        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, 203, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
-        return self.Sound(self._CollectionID, self._ModID, self._RecordID, 203, length)
-    sounds = CBashLIST(203, Sound)
-    sounds_list = CBashLIST(203, Sound, True)
-
+    LIST_MACRO(sounds, 203, self.Sound)
     ##actually flags, but all are exclusive(except unknowns)...so like a Type
     ##Manual hackery will make the CS think it is multiple types. It isn't known how the game would react.
-    IsNone = CBashMaskedType('weatherType', 0x0F, 0x00, 'IsPleasant')
-    IsPleasant = CBashMaskedType('weatherType', 0x0F, 0x01, 'IsNone')
-    IsCloudy = CBashMaskedType('weatherType', 0x0F, 0x02, 'IsNone')
-    IsRainy = CBashMaskedType('weatherType', 0x0F, 0x04, 'IsNone')
-    IsSnow = CBashMaskedType('weatherType', 0x0F, 0x08, 'IsNone')
-    IsUnk1 = CBashBasicFlag('weatherType', 0x40)
-    IsUnk2 = CBashBasicFlag('weatherType', 0x80)
+    MaskedTypeMACRO(IsNone, weatherType, 0x0F, 0x00, IsPleasant)
+    MaskedTypeMACRO(IsPleasant, weatherType, 0x0F, 0x01, IsNone)
+    MaskedTypeMACRO(IsCloudy, weatherType, 0x0F, 0x02, IsNone)
+    MaskedTypeMACRO(IsRainy, weatherType, 0x0F, 0x04, IsNone)
+    MaskedTypeMACRO(IsSnow, weatherType, 0x0F, 0x08, IsNone)
+    BasicFlagMACRO(IsUnk1, weatherType, 0x40)
+    BasicFlagMACRO(IsUnk2, weatherType, 0x80)
     copyattrs = ObFormIDRecord.baseattrs + ['lowerLayerPath', 'upperLayerPath', 'modPath',
                                         'modb', 'modt_p', 'upperSky', 'fog',
                                         'lowerClouds', 'ambient', 'sunlight',
@@ -5094,384 +4754,69 @@ class ObModFile(object):
     def TES4(self):
         return ObTES4Record(self._CollectionID, self._ModID, 0, 0, 0)
 
-    def create_GMST(self, RecordID):
-        if(CBash.CreateRecord(self._CollectionID, self._ModID, cast("GMST", POINTER(c_ulong)).contents.value, 0, RecordID, 0, 0)):
-            return ObGMSTRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    GMST = CBashEDIDRECORDARRAY(ObGMSTRecord, 'GMST', 0)
-
-    def create_GLOB(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("GLOB", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObGLOBRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    GLOB = CBashRECORDARRAY(ObGLOBRecord, 'GLOB', 0)
-
-    def create_CLAS(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("CLAS", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObCLASRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    CLAS = CBashRECORDARRAY(ObCLASRecord, 'CLAS', 0)
-
-    def create_FACT(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("FACT", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObFACTRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    FACT = CBashRECORDARRAY(ObFACTRecord, 'FACT', 0)
-
-    def create_HAIR(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("HAIR", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObHAIRRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    HAIR = CBashRECORDARRAY(ObHAIRRecord, 'HAIR', 0)
-
-    def create_EYES(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("EYES", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObEYESRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    EYES = CBashRECORDARRAY(ObEYESRecord, 'EYES', 0)
-
-    def create_RACE(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("RACE", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObRACERecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    RACE = CBashRECORDARRAY(ObRACERecord, 'RACE', 0)
-
-    def create_SOUN(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("SOUN", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObSOUNRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    SOUN = CBashRECORDARRAY(ObSOUNRecord, 'SOUN', 0)
-
-    def create_SKIL(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("SKIL", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObSKILRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    SKIL = CBashRECORDARRAY(ObSKILRecord, 'SKIL', 0)
-
-    def create_MGEF(self, RecordID):
-        if(CBash.CreateRecord(self._CollectionID, self._ModID, cast("MGEF", POINTER(c_ulong)).contents.value, 0, RecordID, 0, 0)):
-            return ObMGEFRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    MGEF = CBashEDIDRECORDARRAY(ObMGEFRecord, 'MGEF', 0)
-
-    def create_SCPT(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("SCPT", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObSCPTRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    SCPT = CBashRECORDARRAY(ObSCPTRecord, 'SCPT', 0)
-
-    def create_LTEX(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("LTEX", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObLTEXRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    LTEX = CBashRECORDARRAY(ObLTEXRecord, 'LTEX', 0)
-
-    def create_ENCH(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("ENCH", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObENCHRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    ENCH = CBashRECORDARRAY(ObENCHRecord, 'ENCH', 0)
-
-    def create_SPEL(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("SPEL", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObSPELRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    SPEL = CBashRECORDARRAY(ObSPELRecord, 'SPEL', 0)
-
-    def create_BSGN(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("BSGN", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObBSGNRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    BSGN = CBashRECORDARRAY(ObBSGNRecord, 'BSGN', 0)
-
-    def create_ACTI(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("ACTI", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObACTIRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    ACTI = CBashRECORDARRAY(ObACTIRecord, 'ACTI', 0)
-
-    def create_APPA(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("APPA", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObAPPARecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    APPA = CBashRECORDARRAY(ObAPPARecord, 'APPA', 0)
-
-    def create_ARMO(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("ARMO", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObARMORecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    ARMO = CBashRECORDARRAY(ObARMORecord, 'ARMO', 0)
-
-    def create_BOOK(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("BOOK", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObBOOKRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    BOOK = CBashRECORDARRAY(ObBOOKRecord, 'BOOK', 0)
-
-    def create_CLOT(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("CLOT", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObCLOTRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    CLOT = CBashRECORDARRAY(ObCLOTRecord, 'CLOT', 0)
-
-    def create_CONT(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("CONT", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObCONTRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    CONT = CBashRECORDARRAY(ObCONTRecord, 'CONT', 0)
-
-    def create_DOOR(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("DOOR", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObDOORRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    DOOR = CBashRECORDARRAY(ObDOORRecord, 'DOOR', 0)
-
-    def create_INGR(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("INGR", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObINGRRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    INGR = CBashRECORDARRAY(ObINGRRecord, 'INGR', 0)
-
-    def create_LIGH(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("LIGH", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObLIGHRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    LIGH = CBashRECORDARRAY(ObLIGHRecord, 'LIGH', 0)
-
-    def create_MISC(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("MISC", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObMISCRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    MISC = CBashRECORDARRAY(ObMISCRecord, 'MISC', 0)
-
-    def create_STAT(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("STAT", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObSTATRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    STAT = CBashRECORDARRAY(ObSTATRecord, 'STAT', 0)
-
-    def create_GRAS(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("GRAS", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObGRASRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    GRAS = CBashRECORDARRAY(ObGRASRecord, 'GRAS', 0)
-
-    def create_TREE(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("TREE", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObTREERecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    TREE = CBashRECORDARRAY(ObTREERecord, 'TREE', 0)
-
-    def create_FLOR(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("FLOR", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObFLORRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    FLOR = CBashRECORDARRAY(ObFLORRecord, 'FLOR', 0)
-
-    def create_FURN(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("FURN", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObFURNRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    FURN = CBashRECORDARRAY(ObFURNRecord, 'FURN', 0)
-
-    def create_WEAP(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("WEAP", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObWEAPRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    WEAP = CBashRECORDARRAY(ObWEAPRecord, 'WEAP', 0)
-
-    def create_AMMO(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("AMMO", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObAMMORecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    AMMO = CBashRECORDARRAY(ObAMMORecord, 'AMMO', 0)
-
-    def create_NPC_(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("NPC_", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObNPC_Record(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    NPC_ = CBashRECORDARRAY(ObNPC_Record, 'NPC_', 0)
-
-    def create_CREA(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("CREA", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObCREARecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    CREA = CBashRECORDARRAY(ObCREARecord, 'CREA', 0)
-
-    def create_LVLC(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("LVLC", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObLVLCRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    LVLC = CBashRECORDARRAY(ObLVLCRecord, 'LVLC', 0)
-
-    def create_SLGM(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("SLGM", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObSLGMRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    SLGM = CBashRECORDARRAY(ObSLGMRecord, 'SLGM', 0)
-
-    def create_KEYM(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("KEYM", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObKEYMRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    KEYM = CBashRECORDARRAY(ObKEYMRecord, 'KEYM', 0)
-
-    def create_ALCH(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("ALCH", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObALCHRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    ALCH = CBashRECORDARRAY(ObALCHRecord, 'ALCH', 0)
-
-    def create_SBSP(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("SBSP", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObSBSPRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    SBSP = CBashRECORDARRAY(ObSBSPRecord, 'SBSP', 0)
-
-    def create_SGST(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("SGST", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObSGSTRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    SGST = CBashRECORDARRAY(ObSGSTRecord, 'SGST', 0)
-
-    def create_LVLI(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("LVLI", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObLVLIRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    LVLI = CBashRECORDARRAY(ObLVLIRecord, 'LVLI', 0)
-
-    def create_WTHR(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("WTHR", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObWTHRRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    WTHR = CBashRECORDARRAY(ObWTHRRecord, 'WTHR', 0)
-
-    def create_CLMT(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("CLMT", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObCLMTRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    CLMT = CBashRECORDARRAY(ObCLMTRecord, 'CLMT', 0)
-
-    def create_REGN(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("REGN", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObREGNRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    REGN = CBashRECORDARRAY(ObREGNRecord, 'REGN', 0)
-
-    def create_WRLD(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("WRLD", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObWRLDRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    WRLD = CBashRECORDARRAY(ObWRLDRecord, 'WRLD', 0)
-
-    def create_CELL(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("CELL", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObCELLRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    CELL = CBashRECORDARRAY(ObCELLRecord, 'CELL', 0)
-
-    def create_ACHR(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("ACHR", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObACHRRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    ACHR = CBashRECORDARRAY(ObACHRRecord, 'ACHR', 0)
-
-    def create_ACRE(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("ACRE", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObACRERecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    ACRE = CBashRECORDARRAY(ObACRERecord, 'ACRE', 0)
-
-    def create_REFR(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("REFR", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObREFRRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    REFR = CBashRECORDARRAY(ObREFRRecord, 'REFR', 0)
-
-    def create_PGRD(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("PGRD", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObPGRDRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    PGRD = CBashRECORDARRAY(ObPGRDRecord, 'PGRD', 0)
-
-    def create_LAND(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("LAND", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObLANDRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    LAND = CBashRECORDARRAY(ObLANDRecord, 'LAND', 0)
-
-    def create_ROAD(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("ROAD", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObROADRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    ROAD = CBashRECORDARRAY(ObROADRecord, 'ROAD', 0)
-
-    def create_DIAL(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("DIAL", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObDIALRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    DIAL = CBashRECORDARRAY(ObDIALRecord, 'DIAL', 0)
-
-    def create_INFO(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("INFO", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObINFORecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    INFO = CBashRECORDARRAY(ObINFORecord, 'INFO', 0)
-
-    def create_QUST(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("QUST", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObQUSTRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    QUST = CBashRECORDARRAY(ObQUSTRecord, 'QUST', 0)
-
-    def create_IDLE(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("IDLE", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObIDLERecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    IDLE = CBashRECORDARRAY(ObIDLERecord, 'IDLE', 0)
-
-    def create_PACK(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("PACK", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObPACKRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    PACK = CBashRECORDARRAY(ObPACKRecord, 'PACK', 0)
-
-    def create_CSTY(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("CSTY", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObCSTYRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    CSTY = CBashRECORDARRAY(ObCSTYRecord, 'CSTY', 0)
-
-    def create_LSCR(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("LSCR", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObLSCRRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    LSCR = CBashRECORDARRAY(ObLSCRRecord, 'LSCR', 0)
-
-    def create_LVSP(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("LVSP", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObLVSPRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    LVSP = CBashRECORDARRAY(ObLVSPRecord, 'LVSP', 0)
-
-    def create_ANIO(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("ANIO", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObANIORecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    ANIO = CBashRECORDARRAY(ObANIORecord, 'ANIO', 0)
-
-    def create_WATR(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("WATR", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObWATRRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    WATR = CBashRECORDARRAY(ObWATRRecord, 'WATR', 0)
-
-    def create_EFSH(self):
-        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("EFSH", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)
-        if(RecordID): return ObEFSHRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-        return None
-    EFSH = CBashRECORDARRAY(ObEFSHRecord, 'EFSH', 0)
-
+    ObModEDIDRecordsMACRO(GMST)
+    ObModRecordsMACRO(GLOB)
+    ObModRecordsMACRO(CLAS)
+    ObModRecordsMACRO(FACT)
+    ObModRecordsMACRO(HAIR)
+    ObModRecordsMACRO(EYES)
+    ObModRecordsMACRO(RACE)
+    ObModRecordsMACRO(SOUN)
+    ObModRecordsMACRO(SKIL)
+    ObModEDIDRecordsMACRO(MGEF)
+    ObModRecordsMACRO(SCPT)
+    ObModRecordsMACRO(LTEX)
+    ObModRecordsMACRO(ENCH)
+    ObModRecordsMACRO(SPEL)
+    ObModRecordsMACRO(BSGN)
+    ObModRecordsMACRO(ACTI)
+    ObModRecordsMACRO(APPA)
+    ObModRecordsMACRO(ARMO)
+    ObModRecordsMACRO(BOOK)
+    ObModRecordsMACRO(CLOT)
+    ObModRecordsMACRO(CONT)
+    ObModRecordsMACRO(DOOR)
+    ObModRecordsMACRO(INGR)
+    ObModRecordsMACRO(LIGH)
+    ObModRecordsMACRO(MISC)
+    ObModRecordsMACRO(STAT)
+    ObModRecordsMACRO(GRAS)
+    ObModRecordsMACRO(TREE)
+    ObModRecordsMACRO(FLOR)
+    ObModRecordsMACRO(FURN)
+    ObModRecordsMACRO(WEAP)
+    ObModRecordsMACRO(AMMO)
+    ObModRecordsMACRO(NPC_)
+    ObModRecordsMACRO(CREA)
+    ObModRecordsMACRO(LVLC)
+    ObModRecordsMACRO(SLGM)
+    ObModRecordsMACRO(KEYM)
+    ObModRecordsMACRO(ALCH)
+    ObModRecordsMACRO(SBSP)
+    ObModRecordsMACRO(SGST)
+    ObModRecordsMACRO(LVLI)
+    ObModRecordsMACRO(WTHR)
+    ObModRecordsMACRO(CLMT)
+    ObModRecordsMACRO(REGN)
+    ObModRecordsMACRO(WRLD)
+    ObModRecordsMACRO(CELL)
+    ObModRecordsMACRO(ACHR)
+    ObModRecordsMACRO(ACRE)
+    ObModRecordsMACRO(REFR)
+    ObModRecordsMACRO(PGRD)
+    ObModRecordsMACRO(LAND)
+    ObModRecordsMACRO(ROAD)
+    ObModRecordsMACRO(DIAL)
+    ObModRecordsMACRO(INFO)
+    ObModRecordsMACRO(QUST)
+    ObModRecordsMACRO(IDLE)
+    ObModRecordsMACRO(PACK)
+    ObModRecordsMACRO(CSTY)
+    ObModRecordsMACRO(LSCR)
+    ObModRecordsMACRO(LVSP)
+    ObModRecordsMACRO(ANIO)
+    ObModRecordsMACRO(WATR)
+    ObModRecordsMACRO(EFSH)
 
     ##Aggregate properties. Useful for iterating through all records without going through the parent records.
     @property
