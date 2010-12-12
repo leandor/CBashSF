@@ -324,8 +324,8 @@ bool QUSTRecord::VisitFormIDs(FormIDOp &op)
     if(!IsLoaded())
         return false;
 
-    std::pair<UINT32, UINT32> CTDAFunction;
-    std::map<UINT32, std::pair<UINT32,UINT32>>::const_iterator curCTDAFunction;
+    FunctionArguments CTDAFunction;
+    Function_Arguments_Iterator curCTDAFunction;
     if(SCRI.IsLoaded())
         op.Accept(SCRI->fid);
     for(UINT32 x = 0; x < CTDA.size(); x++)
@@ -751,8 +751,8 @@ SINT32 QUSTRecord::Unload()
 
 SINT32 QUSTRecord::WriteRecord(_FileHandler &SaveHandler)
     {
-    std::pair<UINT32, UINT32> CTDAFunction;
-    std::map<UINT32, std::pair<UINT32,UINT32>>::const_iterator curCTDAFunction;
+    FunctionArguments CTDAFunction;
+    Function_Arguments_Iterator curCTDAFunction;
 
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());

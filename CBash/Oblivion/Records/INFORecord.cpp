@@ -258,8 +258,8 @@ bool INFORecord::VisitFormIDs(FormIDOp &op)
     if(!IsLoaded())
         return false;
 
-    std::pair<UINT32, UINT32> CTDAFunction;
-    std::map<UINT32, std::pair<UINT32,UINT32>>::const_iterator curCTDAFunction;
+    FunctionArguments CTDAFunction;
+    Function_Arguments_Iterator curCTDAFunction;
     op.Accept(QSTI.value.fid);
     if(TPIC.IsLoaded())
         op.Accept(TPIC->fid);
@@ -711,8 +711,8 @@ SINT32 INFORecord::Unload()
 
 SINT32 INFORecord::WriteRecord(_FileHandler &SaveHandler)
     {
-    std::pair<UINT32, UINT32> CTDAFunction;
-    std::map<UINT32, std::pair<UINT32,UINT32>>::const_iterator curCTDAFunction;
+    FunctionArguments CTDAFunction;
+    Function_Arguments_Iterator curCTDAFunction;
 
     if(DATA.IsLoaded())
         SaveHandler.writeSubRecord('ATAD', &DATA.value, DATA.GetSize());

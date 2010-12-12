@@ -176,8 +176,18 @@ typedef EditorID_Map::iterator EditorID_Iterator;
 typedef std::pair<FormID_Iterator, FormID_Iterator> FormID_Range;
 typedef std::pair<EditorID_Iterator, EditorID_Iterator> EditorID_Range;
 
+typedef std::pair<varType, varType> FunctionArguments;
+
+typedef std::map<UINT32, FunctionArguments>::value_type Function_ArgumentsType;
+typedef std::map<UINT32, STRING>::value_type Function_NameType;
+typedef std::map<UINT32, std::vector<UINT32>>::value_type RecordType_PossibleGroupsType;
+
+typedef std::map<UINT32, std::vector<UINT32>>::const_iterator RecordType_PossibleGroups_Iterator;
+typedef std::map<UINT32, FunctionArguments>::const_iterator Function_Arguments_Iterator;
+typedef std::map<UINT32, STRING>::const_iterator ID_Name_Iterator;
+
 extern const std::map<UINT32, std::vector<UINT32>> RecordType_PossibleGroups;
-extern const std::map<UINT32, std::pair<UINT32, UINT32>> Function_Arguments;
+extern const std::map<UINT32, FunctionArguments> Function_Arguments;
 extern const std::map<UINT32, STRING> Function_Name;
 extern const std::map<UINT32, STRING> Comparison_Name;
 extern const std::map<UINT32, STRING> IDLEGroup_Name;
@@ -185,10 +195,6 @@ extern const std::map<UINT32, STRING> PACKAIType_Name;
 extern const std::map<UINT32, STRING> PACKLocType_Name;
 extern const std::map<UINT32, STRING> PACKTargetType_Name;
 extern const std::map<UINT32, STRING> HardCodedFormID_EditorID;
-
-typedef std::map<UINT32, std::pair<varType, varType>>::value_type Function_ArgumentsType;
-typedef std::map<UINT32, STRING>::value_type Function_NameType;
-typedef std::map<UINT32, std::vector<UINT32>>::value_type RecordType_PossibleGroupsType;
 
 inline void _readBuffer(void *_DstBuf, const unsigned char *_SrcBuf, const UINT32 &_MaxCharCount, UINT32 &_BufPos)
     {

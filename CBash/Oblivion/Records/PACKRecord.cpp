@@ -135,8 +135,8 @@ bool PACKRecord::VisitFormIDs(FormIDOp &op)
     if(!IsLoaded())
         return false;
 
-    std::pair<UINT32, UINT32> CTDAFunction;
-    std::map<UINT32, std::pair<UINT32,UINT32>>::const_iterator curCTDAFunction;
+    FunctionArguments CTDAFunction;
+    Function_Arguments_Iterator curCTDAFunction;
 
     if(PLDT.IsLoaded() && PLDT->locType != 5)
         op.Accept(PLDT->locId);
@@ -856,8 +856,8 @@ SINT32 PACKRecord::Unload()
 
 SINT32 PACKRecord::WriteRecord(_FileHandler &SaveHandler)
     {
-    std::pair<UINT32, UINT32> CTDAFunction;
-    std::map<UINT32, std::pair<UINT32,UINT32>>::const_iterator curCTDAFunction;
+    FunctionArguments CTDAFunction;
+    Function_Arguments_Iterator curCTDAFunction;
 
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());

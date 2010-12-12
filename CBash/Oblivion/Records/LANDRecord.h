@@ -163,7 +163,7 @@ class LANDRecord : public Record
         OptSubRecord<LANDVCLR> VCLR;
         std::vector<ReqSubRecord<LANDGENTXT> *> BTXT;
         std::vector<LANDLAYERS *> Layers;
-        std::vector<UINT32> VTEX;
+        std::vector<FORMID> VTEX;
         //LANDMERGED *Merged;
 
         LANDRecord *WestLand;

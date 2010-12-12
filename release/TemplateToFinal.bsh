@@ -1031,38 +1031,6 @@ SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString("create_entri");
-SearchAndReplace.setReplaceString("create_entry");
-SearchAndReplace.setBeanShellReplace(false);
-SearchAndReplace.setIgnoreCase(true);
-SearchAndReplace.setRegexp(true);
-SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
-SearchAndReplace.replaceAll(view);
-
-SearchAndReplace.setSearchString("create_stag");
-SearchAndReplace.setReplaceString("create_stage");
-SearchAndReplace.setBeanShellReplace(false);
-SearchAndReplace.setIgnoreCase(true);
-SearchAndReplace.setRegexp(true);
-SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
-SearchAndReplace.replaceAll(view);
-
-SearchAndReplace.setSearchString("create_respons");
-SearchAndReplace.setReplaceString("create_response");
-SearchAndReplace.setBeanShellReplace(false);
-SearchAndReplace.setIgnoreCase(true);
-SearchAndReplace.setRegexp(true);
-SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
-SearchAndReplace.replaceAll(view);
-
-SearchAndReplace.setSearchString("create_opaciti");
-SearchAndReplace.setReplaceString("create_opacity");
-SearchAndReplace.setBeanShellReplace(false);
-SearchAndReplace.setIgnoreCase(true);
-SearchAndReplace.setRegexp(true);
-SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
-SearchAndReplace.replaceAll(view);
-
 SearchAndReplace.setSearchString("( *)(.*?) = CBash(.*?)\\(self\\._FieldID, (.*?)\\)");
 SearchAndReplace.setReplaceString("$1self.$2 = CBash$3(self._FieldID, $4)");
 SearchAndReplace.setBeanShellReplace(false);
@@ -1260,6 +1228,54 @@ SearchAndReplace.setSearchString(" UINT8_ARRAY_GROUPEDMACRO\\((.*?), (.*?)\\)");
 SearchAndReplace.setReplaceString(" $1 = CBashUINT8ARRAY_GROUP($2)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+SearchAndReplace.setSearchString("create_entri");
+SearchAndReplace.setReplaceString("create_entry");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(true);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+SearchAndReplace.setSearchString("create_stag");
+SearchAndReplace.setReplaceString("create_stage");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(true);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+SearchAndReplace.setSearchString("create_respons");
+SearchAndReplace.setReplaceString("create_response");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(true);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+SearchAndReplace.setSearchString("create_opaciti");
+SearchAndReplace.setReplaceString("create_opacity");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(true);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+SearchAndReplace.setSearchString("create_baseTextur");
+SearchAndReplace.setReplaceString("create_baseTextures");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(true);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+SearchAndReplace.setSearchString("create_vertexTextur");
+SearchAndReplace.setReplaceString("create_vertexTextures");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(true);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);

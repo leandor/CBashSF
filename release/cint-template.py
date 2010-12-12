@@ -123,62 +123,107 @@ class ISTRING(str):
     """Case insensitive strings class. Performs like str except comparisons are case insensitive."""
 
     def __eq__(self, other):
-        return self.lower() == other.lower()
+        try:
+            return self.lower() == other.lower()
+        except AttributeError:
+            return False
 
     def __lt__(self, other):
-        return self.lower() < other.lower()
+        try:
+            return self.lower() < other.lower()
+        except AttributeError:
+            return False
 
     def __le__(self, other):
-        return self.lower() <= other.lower()
+        try:
+            return self.lower() <= other.lower()
+        except AttributeError:
+            return False
 
     def __gt__(self, other):
-        return self.lower() > other.lower()
+        try:
+            return self.lower() > other.lower()
+        except AttributeError:
+            return False
 
     def __ne__(self, other):
-        return self.lower() != other.lower()
+        try:
+            return self.lower() != other.lower()
+        except AttributeError:
+            return False
 
     def __ge__(self, other):
-        return self.lower() >= other.lower()
+        try:
+            return self.lower() >= other.lower()
+        except AttributeError:
+            return False
 
     def __cmp__(self, other):
-        return cmp(self.lower(), other.lower())
+        try:
+            return cmp(self.lower(), other.lower())
+        except AttributeError:
+            return False
 
     def __hash__(self):
         return hash(self.lower())
 
     def __contains__(self, other):
-        return other.lower() in self.lower()
+        try:
+            return other.lower() in self.lower()
+        except AttributeError:
+            return False
 
     def count(self, other, *args):
-        return str.count(self.lower(), other.lower(), *args)
+        try:
+            return str.count(self.lower(), other.lower(), *args)
+        except AttributeError:
+            return 0
 
     def endswith(self, other, *args):
-        if isinstance(other, tuple):
-            for value in other:
-                if str.endswith(self.lower(), value.lower(), *args):
-                    return True
+        try:
+            if isinstance(other, tuple):
+                for value in other:
+                    if str.endswith(self.lower(), value.lower(), *args):
+                        return True
+                return False
+            return str.endswith(self.lower(), other.lower(), *args)
+        except AttributeError:
             return False
-        return str.endswith(self.lower(), other.lower(), *args)
 
     def find(self, other, *args):
-        return str.find(self.lower(), other.lower(), *args)
+        try:
+            return str.find(self.lower(), other.lower(), *args)
+        except AttributeError:
+            return -1
 
     def index(self, other, *args):
-        return str.index(self.lower(), other.lower(), *args)
+        try:
+            return str.index(self.lower(), other.lower(), *args)
+        except AttributeError:
+            return ValueError
 
     def rfind(self, other, *args):
-        return str.rfind(self.lower(), other.lower(), *args)
+        try:
+            return str.rfind(self.lower(), other.lower(), *args)
+        except AttributeError:
+            return -1
 
     def rindex(self, other, *args):
-        return str.rindex(self.lower(), other.lower(), *args)
+        try:
+            return str.rindex(self.lower(), other.lower(), *args)
+        except AttributeError:
+            return ValueError
 
     def startswith(self, other, *args):
-        if isinstance(other, tuple):
-            for value in other:
-                if str.startswith(self.lower(), value.lower(), *args):
-                    return True
+        try:
+            if isinstance(other, tuple):
+                for value in other:
+                    if str.startswith(self.lower(), value.lower(), *args):
+                        return True
+                return False
+            return str.startswith(self.lower(), other.lower(), *args)
+        except AttributeError:
             return False
-        return str.startswith(self.lower(), other.lower(), *args)
 
 class PrintFormID(object):
     def __init__(self, formID):

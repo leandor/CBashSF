@@ -1525,9 +1525,100 @@ UINT32 _AllPossibleGroups[] = {'TCAF', 'ECAR', 'FEGM', 'TPCS', 'XETL', 'HCNE', '
                        'HGIL', 'CSIM', 'ROLF', 'NRUF', 'PAEW', 'OMMA', '_CPN', 'AERC', 
                        'CLVL', 'MGLS', 'MYEK', 'HCLA', 'TSGS', 'ILVL', 'RHTW', 'TMLC', 
                        'NGER', 'LLEC', 'DLRW', 'LAID', 'TSUQ', 'ELDI', 'KCAP', 'RCSL', 
-                       'PSVL', 'OINA', 'RTAW',};
+                       'PSVL', 'OINA', 'RTAW'};
 
 std::vector<UINT32> AllGroups(_AllPossibleGroups, _AllPossibleGroups + (sizeof(_AllPossibleGroups) / sizeof(_AllPossibleGroups[0])));
+
+//All
+//'SCPT'
+//'QUST'
+//'DIAL' -> 'INFO'
+//'IDLE'
+//'PACK'
+//'QUST'
+//
+//ACHR, REFR, ACRE
+//'WRLD' -> 'CELL(s)'
+//'CELL'
+//'ACHR'
+//'REFR'
+//'ACRE'
+//
+//ROAD
+//'WRLD'
+//
+//SCPT
+//'NPC_'
+//'QUST'
+//'CREA'
+//'LVLI'
+//'DOOR'
+//'ALCH'
+//'ACTI'
+//'ENCH'
+//
+//SGST
+//'NPC_'
+//'CONT'
+//'CREA'
+//'LVLI'
+//'REFR'
+//
+//SKIL
+//'none'
+//
+//SLGM
+//'NPC_'
+//'CONT'
+//'CREA'
+//'LVLI'
+//'REFR'
+//
+//SOUN
+//'REGN'
+//'REFR'
+//'WATR'
+//'DOOR'
+//'ACTI'
+//'WTHR'
+//'LIGH'
+//'CONT'
+//
+//SPEL
+//'NPC_'
+//'CREA'
+//'RACE'
+//'LVSP'
+//
+//STAT
+//'REFR'
+//
+//TREE
+//'REFR'
+//'REGN'
+//
+//WATR
+//'WRLD' & 'CELL(s)'
+//'CELL'
+//'WATR'
+//
+//WEAP
+//'CONT'
+//'LVLI'
+//'REFR'
+//'NPC_'
+//'CREA'
+//
+//WRLD
+//'WRLD'
+//'REGN'
+//'LSCR'
+//'DOOR'
+//
+//WTHR
+//'REGN'
+//'CLMT'
+
 
 RecordType_PossibleGroupsType RecordType_PossibleGroupsInit[] =
     {
@@ -1591,7 +1682,7 @@ RecordType_PossibleGroupsType RecordType_PossibleGroupsInit[] =
 
 const std::map<UINT32, std::vector<UINT32>> RecordType_PossibleGroups(RecordType_PossibleGroupsInit, RecordType_PossibleGroupsInit + sizeof(RecordType_PossibleGroupsInit) / sizeof(RecordType_PossibleGroupsInit[0]));
 
-const std::map<UINT32, std::pair<UINT32,UINT32>> Function_Arguments(Function_ArgumentsInit, Function_ArgumentsInit + sizeof(Function_ArgumentsInit) / sizeof(Function_ArgumentsInit[0]));
+const std::map<UINT32, FunctionArguments> Function_Arguments(Function_ArgumentsInit, Function_ArgumentsInit + sizeof(Function_ArgumentsInit) / sizeof(Function_ArgumentsInit[0]));
 
 const std::map<UINT32, STRING> Function_Name(Function_NameInit, Function_NameInit + sizeof(Function_NameInit) / sizeof(Function_NameInit[0]));
 const std::map<UINT32, STRING> Comparison_Name(Comparison_NameInit, Comparison_NameInit + sizeof(Comparison_NameInit) / sizeof(Comparison_NameInit[0]));

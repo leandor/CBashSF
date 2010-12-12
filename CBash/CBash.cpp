@@ -963,7 +963,8 @@ SINT32 UpdateReferences(const UINT32 CollectionID, const UINT32 ModID, const FOR
 
     try
         {
-        ModFile *curModFile = ValidateModID(ValidateCollectionID(CollectionID), ModID);
+        Collection *curCollection = ValidateCollectionID(CollectionID);
+        ModFile *curModFile = ValidateModID(curCollection, ModID);
         Record *curRecord = NULL;
         RecordFormIDSwapper swapper(FormIDToReplace, ReplacementFormID, curModFile->FormIDHandler);
 
@@ -974,8 +975,12 @@ SINT32 UpdateReferences(const UINT32 CollectionID, const UINT32 ModID, const FOR
             }
         else //Swap all possible uses of FormIDToReplace
             {
-            LookupRecord(CollectionID, ModID, FormIDToReplace, curRecord);
-            std::map<UINT32, std::vector<UINT32>>::const_iterator curTypes = RecordType_PossibleGroups.find(curRecord->GetType());
+            UINT32 SourceModLoadOrderID = FormIDToReplace >> 24;
+            if(SourceModLoadOrderID >= curCollection->LoadOrder255.size())
+                throw Ex_INVALIDINDEX();
+            UINT32 SourceModID = curCollection->LoadOrder255[SourceModLoadOrderID]->ModID;
+            LookupRecord(CollectionID, SourceModID, FormIDToReplace, curRecord); //Lookup the original definition of the record
+            RecordType_PossibleGroups_Iterator curTypes = RecordType_PossibleGroups.find(curRecord->GetType());
             if(curTypes != RecordType_PossibleGroups.end())
                 {
                 for(std::vector<UINT32>::const_iterator x = curTypes->second.begin(); x != curTypes->second.end(); ++x)

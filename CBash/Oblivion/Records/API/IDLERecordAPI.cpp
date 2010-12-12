@@ -24,7 +24,7 @@ GPL License and Copyright Notice ============================================
 
 UINT32 IDLERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
-    std::map<UINT32, std::pair<UINT32,UINT32>>::const_iterator curCTDAFunction;
+    Function_Arguments_Iterator curCTDAFunction;
 
     switch(FieldID)
         {

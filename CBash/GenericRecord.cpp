@@ -92,6 +92,26 @@ RecordOp::~RecordOp()
     //
     }
 
+UINT32 RecordOp::GetCount()
+    {
+    return count;
+    }
+
+void RecordOp::ResetCount()
+    {
+    count = 0;
+    }
+
+bool RecordOp::Stop()
+    {
+    return stop;
+    }
+
+bool RecordOp::GetResult()
+    {
+    return result;
+    }
+
 RecordReader::RecordReader(FormIDHandlerClass &_FormIDHandler):
     RecordOp(),
     expander(_FormIDHandler.ExpandTable)
@@ -113,26 +133,6 @@ bool RecordReader::Accept(Record **curRecord)
         ++count;
         }
     return stop;
-    }
-
-UINT32 RecordOp::GetCount()
-    {
-    return count;
-    }
-
-void RecordOp::ResetCount()
-    {
-    count = 0;
-    }
-
-bool RecordOp::Stop()
-    {
-    return stop;
-    }
-
-bool RecordOp::GetResult()
-    {
-    return result;
     }
 
 Record::Record(unsigned char *_recData):
