@@ -31,12 +31,19 @@ ACHRRecord::ACHRRecord(unsigned char *_recData):
 ACHRRecord::ACHRRecord(ACHRRecord *srcRecord):
     Record()
     {
-    if(srcRecord == NULL || srcRecord->GetType() != 'RHCA')
+    if(srcRecord == NULL)
         return;
 
     flags = srcRecord->flags;
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
+
+    if(!srcRecord->IsChanged())
+        {
+        recData = srcRecord->recData;
+        return;
+        }
+
     EDID = srcRecord->EDID;
     NAME = srcRecord->NAME;
     if(srcRecord->XPCI.IsLoaded())

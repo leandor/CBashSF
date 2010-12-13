@@ -28,6 +28,14 @@
     #endif
 #endif
 
+#ifndef PRINT_RECORD_IDENTIFIERS
+    #define PRINT_RECORD_IDENTIFIERS printf("CollectionID: %i, ModID: %i, RecordID: %08X, RecordEditorID: %s\n", CollectionID, ModID, RecordFormID, RecordEditorID)
+#endif
+
+#ifndef PRINT_FIELD_IDENTIFIERS
+    #define PRINT_FIELD_IDENTIFIERS printf("FieldID: %i, ListIndex: %i, ListFieldID: %i, ListX2Index: %i, ListX2FieldID: %i, ListX3Index: %i, ListX3FieldID: %i \n", FieldID, ListIndex, ListFieldID, ListX2Index, ListX2FieldID, ListX3Index, ListX3FieldID)
+#endif
+
 #ifndef NUMTHREADS
     #define NUMTHREADS    boost::thread::hardware_concurrency()
 #endif

@@ -56,9 +56,11 @@ bool FormIDOp::GetResult()
     return result;
     }
 
-FormIDResolver::FormIDResolver(const UINT8 (&_ResolveTable)[256]):
+FormIDResolver::FormIDResolver(const UINT8 (&_ResolveTable)[256], const unsigned char * const _FileStart, const unsigned char * const _FileEnd):
     FormIDOp(),
-    ResolveTable(_ResolveTable)
+    ResolveTable(_ResolveTable),
+    FileStart(_FileStart),
+    FileEnd(_FileEnd)
     {
     //
     }
@@ -78,6 +80,11 @@ bool FormIDResolver::AcceptMGEF(UINT32 &curMgefCode)
     {
     curMgefCode = (ResolveTable[curMgefCode & 0x000000FF]) | (curMgefCode & 0xFFFFFF00);
     return stop;
+    }
+
+bool FormIDResolver::IsValid(const unsigned char * const _SrcBuf)
+    {
+    return (_SrcBuf >= FileStart && _SrcBuf <= FileEnd);
     }
 
 RecordOp::RecordOp():
@@ -114,7 +121,7 @@ bool RecordOp::GetResult()
 
 RecordReader::RecordReader(FormIDHandlerClass &_FormIDHandler):
     RecordOp(),
-    expander(_FormIDHandler.ExpandTable)
+    expander(_FormIDHandler.ExpandTable, _FormIDHandler.FileStart, _FormIDHandler.FileEnd)
     {
     //
     }
@@ -226,42 +233,82 @@ bool Record::Read()
     return true;
     }
 
-UINT32 Record::Write(_FileHandler &SaveHandler, FormIDHandlerClass &FormIDHandler)
+//FormIDResolver& Record::GetCorrectExpander(std::vector<FormIDResolver *> &Expanders, FormIDResolver &defaultResolver)
+//    {
+//    //if(defaultResolver.IsValid(recData)) //optimization disabled for testing
+//    //    return defaultResolver;
+//    SINT32 index = -1;
+//    for(UINT32 x = 0; x < Expanders.size(); ++x)
+//        if(Expanders[x]->IsValid(recData))
+//            {
+//            if(index != -1)
+//                printf("Multiple 'Correct' expanders found! Returning last one found (likely incorrect unless lucky)\n");
+//            index = x;
+//            }
+//    return index == -1 ? defaultResolver : *Expanders[index];
+//    }
+
+UINT32 Record::Write(_FileHandler &SaveHandler, const bool &bMastersChanged, FormIDResolver &expander, FormIDResolver &collapser, std::vector<FormIDResolver *> &Expanders)
     {
     UINT32 recSize = 0;
-    FormIDResolver expander(FormIDHandler.ExpandTable);
+    UINT32 recType = GetType();
+    collapser.Accept(formID);
+
     if(!IsChanged())
         {
-        if(FormIDHandler.MastersChanged())
+        if(bMastersChanged)
             {
             //if masters have changed, all formIDs have to be updated...
             //so the record can't just be written as is.
             if(Read())
-                VisitFormIDs(expander);
+                {
+                //if(expander.IsValid(recData)) //optimization disabled for testing
+                //    VisitFormIDs(expander);
+                SINT32 index = -1;
+                for(UINT32 x = 0; x < Expanders.size(); ++x)
+                    if(Expanders[x]->IsValid(recData))
+                        {
+                        if(index != -1)
+                            printf("Multiple 'Correct' expanders found! Using last one found (likely incorrect unless lucky)\n");
+                        index = x;
+                        }
+                if(index == -1)
+                    {
+                    printf("Using the wrong expander!\n");
+                    VisitFormIDs(expander);
+                    }
+                else
+                    VisitFormIDs(*Expanders[index]);
+                }
             }
         else
             {
             //if masters have not changed, the record can just be written from the read buffer
             recSize = GetSize();
-            SaveHandler.write(recData - 20, recSize + 20);
+
+            IsLoaded(false);
+            SaveHandler.write(&recType, 4);
+            SaveHandler.write(&recSize, 4);
+            SaveHandler.write(&flags, 4);
+            SaveHandler.write(&formID, 4);
+            SaveHandler.write(&flagsUnk, 4);
+            IsLoaded(true);
+            SaveHandler.write(recData, recSize);
             Unload();
             return recSize + 20;
             }
         }
     recSize = IsDeleted() ? 0 : GetSize(true);
 
-    FormIDResolver collapser(FormIDHandler.CollapseTable);
-    collapser.Accept(formID);
-    VisitFormIDs(collapser);
-
     IsLoaded(false);
-    UINT32 recType = GetType();
     SaveHandler.write(&recType, 4);
     SaveHandler.write(&recSize, 4);
     SaveHandler.write(&flags, 4);
     SaveHandler.write(&formID, 4);
     SaveHandler.write(&flagsUnk, 4);
     IsLoaded(true);
+
+    VisitFormIDs(collapser);
 
     if(!IsDeleted())
         {

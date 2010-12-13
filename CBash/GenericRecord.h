@@ -52,11 +52,15 @@ class FormIDResolver : public FormIDOp
         const UINT8 (&ResolveTable)[256];
 
     public:
-        FormIDResolver(const UINT8 (&_ResolveTable)[256]);
+        const unsigned char * const FileStart;
+        const unsigned char * const FileEnd;
+
+        FormIDResolver(const UINT8 (&_ResolveTable)[256], const unsigned char * const _FileStart, const unsigned char * const _FileEnd);
         ~FormIDResolver();
 
         bool Accept(UINT32 &curFormID);
         bool AcceptMGEF(UINT32 &curMgefCode);
+        bool IsValid(const unsigned char * const _SrcBuf);
     };
 
 class RecordOp
@@ -147,7 +151,8 @@ class Record
         virtual bool VisitFormIDs(FormIDOp &op);
 
         bool Read();
-        UINT32 Write(_FileHandler &SaveHandler, FormIDHandlerClass &FormIDHandler);
+        //FormIDResolver& GetCorrectExpander(std::vector<FormIDResolver *> &Expanders, FormIDResolver &defaultResolver);
+        UINT32 Write(_FileHandler &SaveHandler, const bool &bMastersChanged, FormIDResolver &expander, FormIDResolver &collapser, std::vector<FormIDResolver *> &Expanders);
 
         bool IsDeleted() const;
         void IsDeleted(bool value);

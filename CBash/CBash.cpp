@@ -83,7 +83,7 @@ Collection * ValidateCollectionID(const UINT32 CollectionID)
     {
     //Collections can contain null pointers
     if(CollectionID >= Collections.size() || Collections[CollectionID] == NULL)
-        throw Ex_INVALIDINDEX();
+        throw Ex_INVALIDCOLLECTIONINDEX();
     return Collections[CollectionID];
     }
 
@@ -91,7 +91,7 @@ ModFile * ValidateModID(Collection *curCollection, const UINT32 ModID)
     {
     //ModFiles will never contain null pointers
     if(ModID >= curCollection->ModFiles.size())
-        throw Ex_INVALIDINDEX();
+        throw Ex_INVALIDMODINDEX();
     return curCollection->ModFiles[ModID];
     }
 
@@ -99,7 +99,7 @@ ModFile * ValidateLoadOrderID(Collection *curCollection, const UINT32 ModID)
     {
     //ModFiles will never contain null pointers
     if(ModID >= curCollection->LoadOrder255.size())
-        throw Ex_INVALIDINDEX();
+        throw Ex_INVALIDMODINDEX();
     return curCollection->LoadOrder255[ModID];
     }
 
@@ -114,7 +114,7 @@ void LookupRecord(const UINT32 &CollectionID, const UINT32 &ModID, const FORMID 
     else //If neither is set, lookup the root record
         curRecord = (Record *)&curModFile->TES4;
     if(curRecord == NULL)
-        throw Ex_INVALIDINDEX();
+        throw Ex_INVALIDRECORDINDEX();
     }
 
 void LookupRecord(const UINT32 &CollectionID, const UINT32 &ModID, const FORMID &RecordFormID, STRING const RecordEditorID, ModFile *&curModFile, Record *&curRecord)
@@ -129,7 +129,7 @@ void LookupRecord(const UINT32 &CollectionID, const UINT32 &ModID, const FORMID 
         curRecord = (Record *)&curModFile->TES4;
 
     if(curRecord == NULL)
-        throw Ex_INVALIDINDEX();
+        throw Ex_INVALIDRECORDINDEX();
     }
 
 void LookupRecord(const UINT32 &CollectionID, const UINT32 &ModID, const FORMID &RecordFormID, Record *&curRecord)
@@ -142,7 +142,7 @@ void LookupRecord(const UINT32 &CollectionID, const UINT32 &ModID, const FORMID 
         curRecord = (Record *)&curModFile->TES4;
 
     if(curRecord == NULL)
-        throw Ex_INVALIDINDEX();
+        throw Ex_INVALIDRECORDINDEX();
     }
 
 void LookupRecord(const UINT32 &CollectionID, const UINT32 &ModID, const FORMID &RecordFormID, ModFile *&curModFile, Record *&curRecord)
@@ -154,7 +154,7 @@ void LookupRecord(const UINT32 &CollectionID, const UINT32 &ModID, const FORMID 
     else //If neither is set, lookup the root record
         curRecord = (Record *)&curModFile->TES4;
     if(curRecord == NULL)
-        throw Ex_INVALIDINDEX();
+        throw Ex_INVALIDRECORDINDEX();
     }
 
 void LookupRecord(const UINT32 &CollectionID, const UINT32 &ModID, STRING const RecordEditorID, Record *&curRecord)
@@ -166,7 +166,7 @@ void LookupRecord(const UINT32 &CollectionID, const UINT32 &ModID, STRING const 
     else //If neither is set, lookup the root record
         curRecord = (Record *)&curModFile->TES4;
     if(curRecord == NULL)
-        throw Ex_INVALIDINDEX();
+        throw Ex_INVALIDRECORDINDEX();
     }
 
 void LookupRecord(const UINT32 &CollectionID, const UINT32 &ModID, STRING const RecordEditorID, ModFile *&curModFile, Record *&curRecord)
@@ -178,7 +178,7 @@ void LookupRecord(const UINT32 &CollectionID, const UINT32 &ModID, STRING const 
     else //If neither is set, lookup the root record
         curRecord = (Record *)&curModFile->TES4;
     if(curRecord == NULL)
-        throw Ex_INVALIDINDEX();
+        throw Ex_INVALIDRECORDINDEX();
     }
 
 
@@ -350,7 +350,7 @@ SINT32 CreateCollection(STRING const ModsPath, const UINT32 CollectionType)
     }
 
 #pragma warning( push )
-#pragma warning( disable : 4101 ) //Disable warning about deliberately unused variable (Ex_INVALIDINDEX &ex)
+#pragma warning( disable : 4101 ) //Disable warning about deliberately unused variable (Ex_INVALIDCOLLECTIONINDEX &ex)
 SINT32 DeleteCollection(const UINT32 CollectionID)
     {
     try
@@ -365,7 +365,7 @@ SINT32 DeleteCollection(const UINT32 CollectionID)
             }
         Collections.clear();
         }
-    catch(Ex_INVALIDINDEX &ex) {} //Silently fail if deleting an already deleted collection
+    catch(Ex_INVALIDCOLLECTIONINDEX &ex) {} //Silently fail if deleting an already deleted collection
     catch(std::exception &ex)
         {
         printf("Error erasing collection at pos %i\n  %s\n", CollectionID, ex.what());
@@ -800,7 +800,7 @@ SINT32 UnloadRecord(const UINT32 CollectionID, const UINT32 ModID, const FORMID 
         {
         Record *curRecord = NULL;
         LookupRecord(CollectionID, ModID, RecordFormID, RecordEditorID, curRecord);
-        return curRecord != NULL ? curRecord->Unload() : -1;
+        return curRecord->Unload();
         }
     catch(std::exception &ex)
         {
@@ -1056,10 +1056,16 @@ void SetField(const UINT32 CollectionID, const UINT32 ModID, const FORMID Record
     catch(std::exception &ex)
         {
         printf("SetField: Error\n  %s\n", ex.what());
+        PRINT_RECORD_IDENTIFIERS;
+        PRINT_FIELD_IDENTIFIERS;
+        printf("ArraySize: %i\n\n", ArraySize);
         }
     catch(...)
         {
         printf("SetField: Error\n  Unhandled Exception\n");
+        PRINT_RECORD_IDENTIFIERS;
+        PRINT_FIELD_IDENTIFIERS;
+        printf("ArraySize: %i\n\n", ArraySize);
         }
     }
 
@@ -1083,10 +1089,16 @@ void DeleteField(const UINT32 CollectionID, const UINT32 ModID, const FORMID Rec
     catch(std::exception &ex)
         {
         printf("DeleteField: Error\n  %s\n", ex.what());
+        PRINT_RECORD_IDENTIFIERS;
+        PRINT_FIELD_IDENTIFIERS;
+        printf("\n\n");
         }
     catch(...)
         {
         printf("DeleteField: Error\n  Unhandled Exception\n");
+        PRINT_RECORD_IDENTIFIERS;
+        PRINT_FIELD_IDENTIFIERS;
+        printf("\n\n");
         }
     }
 ////////////////////////////////////////////////////////////////////////
@@ -1095,18 +1107,44 @@ UINT32 GetFieldAttribute(const UINT32 CollectionID, const UINT32 ModID, const FO
     {
     try
         {
+        ModFile *curModFile = NULL;
         Record *curRecord = NULL;
-        LookupRecord(CollectionID, ModID, RecordFormID, RecordEditorID, curRecord);
+        LookupRecord(CollectionID, ModID, RecordFormID, RecordEditorID, curModFile, curRecord);
+        
+        if(WhichAttribute > 0)
+            {
+            //Any attribute other than type requires the record to be read
+            //Ensure the record is fully loaded
+            RecordReader reader(curModFile->FormIDHandler);
+            reader.Accept(&curRecord);
+            }
+
         return curRecord->GetFieldAttribute(FieldID, ListIndex, ListFieldID, ListX2Index, ListX2FieldID, ListX3Index, ListX3FieldID, WhichAttribute);
+        }
+    catch(Ex_INVALIDRECORDINDEX &ex)
+        {
+        if(FieldID == 0) //Was testing if the record exists by check recType (only field with id of 0)
+            return UNKNOWN_FIELD;
+        printf("GetFieldAttribute: Error\n  %s\n", ex.what());
+        PRINT_RECORD_IDENTIFIERS;
+        PRINT_FIELD_IDENTIFIERS;
+        printf("WhichAttribute: %i\n\n", WhichAttribute);
+        return UNKNOWN_FIELD;
         }
     catch(std::exception &ex)
         {
         printf("GetFieldAttribute: Error\n  %s\n", ex.what());
+        PRINT_RECORD_IDENTIFIERS;
+        PRINT_FIELD_IDENTIFIERS;
+        printf("WhichAttribute: %i\n\n", WhichAttribute);
         return UNKNOWN_FIELD;
         }
     catch(...)
         {
         printf("GetFieldAttribute: Error\n  Unhandled Exception\n");
+        PRINT_RECORD_IDENTIFIERS;
+        PRINT_FIELD_IDENTIFIERS;
+        printf("WhichAttribute: %i\n\n", WhichAttribute);
         return UNKNOWN_FIELD;
         }
     return UNKNOWN_FIELD;
@@ -1129,11 +1167,17 @@ void * GetField(const UINT32 CollectionID, const UINT32 ModID, const FORMID Reco
     catch(std::exception &ex)
         {
         printf("GetField: Error\n  %s\n", ex.what());
+        PRINT_RECORD_IDENTIFIERS;
+        PRINT_FIELD_IDENTIFIERS;
+        printf("\n\n");
         return NULL;
         }
     catch(...)
         {
         printf("GetField: Error\n  Unhandled Exception\n");
+        PRINT_RECORD_IDENTIFIERS;
+        PRINT_FIELD_IDENTIFIERS;
+        printf("\n\n");
         return NULL;
         }
     return NULL;

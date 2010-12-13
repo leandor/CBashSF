@@ -946,9 +946,9 @@ SINT32 TES4File::CleanMasters()
         return -1;
 
     UINT32 cleaned = 0;
-    FormIDHandlerClass TempHandler(FileName, TES4.MAST, TES4.HEDR.value.nextObject);
-    TempHandler.SetLoadOrder(FormIDHandler.LoadOrder255);
-    TempHandler.CreateFormIDLookup(FormIDHandler.ExpandedIndex);
+    //FormIDHandlerClass TempHandler(FileName, TES4.MAST, TES4.HEDR.value.nextObject);
+    //TempHandler.SetLoadOrder(FormIDHandler.LoadOrder255);
+    //TempHandler.CreateFormIDLookup(FormIDHandler.ExpandedIndex);
     std::vector<UINT32> ToRemove;
     ToRemove.reserve(TES4.MAST.size());
 
@@ -1025,7 +1025,7 @@ SINT32 TES4File::CleanMasters()
     return cleaned;
     }
 
-SINT32 TES4File::Save(STRING const &SaveName, bool CloseMod)
+SINT32 TES4File::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expanders, bool CloseMod)
     {
     if(!Flags.IsSaveable)
         return -1;
@@ -1035,66 +1035,70 @@ SINT32 TES4File::Save(STRING const &SaveName, bool CloseMod)
         throw std::exception("Unable to open temporary file for writing\n");
 
     UINT32 formCount = 0;
+    FormIDResolver expander(FormIDHandler.ExpandTable, FormIDHandler.FileStart, FormIDHandler.FileEnd);
+    FormIDResolver collapser(FormIDHandler.CollapseTable, FormIDHandler.FileStart, FormIDHandler.FileEnd);
+    //RecordReader reader(FormIDHandler);
+    const bool bMastersChanged = FormIDHandler.MastersChanged();
 
-    TES4.Write(SaveHandler, FormIDHandler);
+    TES4.Write(SaveHandler, bMastersChanged, expander, collapser, Expanders);
 
     //ADD DEFINITIONS HERE
-    formCount += GMST.WriteGRUP('TSMG', SaveHandler, FormIDHandler, CloseMod);
-    formCount += GLOB.WriteGRUP('BOLG', SaveHandler, FormIDHandler, CloseMod);
-    formCount += CLAS.WriteGRUP('SALC', SaveHandler, FormIDHandler, CloseMod);
-    formCount += FACT.WriteGRUP('TCAF', SaveHandler, FormIDHandler, CloseMod);
-    formCount += HAIR.WriteGRUP('RIAH', SaveHandler, FormIDHandler, CloseMod);
-    formCount += EYES.WriteGRUP('SEYE', SaveHandler, FormIDHandler, CloseMod);
-    formCount += RACE.WriteGRUP('ECAR', SaveHandler, FormIDHandler, CloseMod);
-    formCount += SOUN.WriteGRUP('NUOS', SaveHandler, FormIDHandler, CloseMod);
-    formCount += SKIL.WriteGRUP('LIKS', SaveHandler, FormIDHandler, CloseMod);
-    formCount += MGEF.WriteGRUP('FEGM', SaveHandler, FormIDHandler, CloseMod);
-    formCount += SCPT.WriteGRUP('TPCS', SaveHandler, FormIDHandler, CloseMod);
-    formCount += LTEX.WriteGRUP('XETL', SaveHandler, FormIDHandler, CloseMod);
-    formCount += ENCH.WriteGRUP('HCNE', SaveHandler, FormIDHandler, CloseMod);
-    formCount += SPEL.WriteGRUP('LEPS', SaveHandler, FormIDHandler, CloseMod);
-    formCount += BSGN.WriteGRUP('NGSB', SaveHandler, FormIDHandler, CloseMod);
-    formCount += ACTI.WriteGRUP('ITCA', SaveHandler, FormIDHandler, CloseMod);
-    formCount += APPA.WriteGRUP('APPA', SaveHandler, FormIDHandler, CloseMod);
-    formCount += ARMO.WriteGRUP('OMRA', SaveHandler, FormIDHandler, CloseMod);
-    formCount += BOOK.WriteGRUP('KOOB', SaveHandler, FormIDHandler, CloseMod);
-    formCount += CLOT.WriteGRUP('TOLC', SaveHandler, FormIDHandler, CloseMod);
-    formCount += CONT.WriteGRUP('TNOC', SaveHandler, FormIDHandler, CloseMod);
-    formCount += DOOR.WriteGRUP('ROOD', SaveHandler, FormIDHandler, CloseMod);
-    formCount += INGR.WriteGRUP('RGNI', SaveHandler, FormIDHandler, CloseMod);
-    formCount += LIGH.WriteGRUP('HGIL', SaveHandler, FormIDHandler, CloseMod);
-    formCount += MISC.WriteGRUP('CSIM', SaveHandler, FormIDHandler, CloseMod);
-    formCount += STAT.WriteGRUP('TATS', SaveHandler, FormIDHandler, CloseMod);
-    formCount += GRAS.WriteGRUP('SARG', SaveHandler, FormIDHandler, CloseMod);
-    formCount += TREE.WriteGRUP('EERT', SaveHandler, FormIDHandler, CloseMod);
-    formCount += FLOR.WriteGRUP('ROLF', SaveHandler, FormIDHandler, CloseMod);
-    formCount += FURN.WriteGRUP('NRUF', SaveHandler, FormIDHandler, CloseMod);
-    formCount += WEAP.WriteGRUP('PAEW', SaveHandler, FormIDHandler, CloseMod);
-    formCount += AMMO.WriteGRUP('OMMA', SaveHandler, FormIDHandler, CloseMod);
-    formCount += NPC_.WriteGRUP('_CPN', SaveHandler, FormIDHandler, CloseMod);
-    formCount += CREA.WriteGRUP('AERC', SaveHandler, FormIDHandler, CloseMod);
-    formCount += LVLC.WriteGRUP('CLVL', SaveHandler, FormIDHandler, CloseMod);
-    formCount += SLGM.WriteGRUP('MGLS', SaveHandler, FormIDHandler, CloseMod);
-    formCount += KEYM.WriteGRUP('MYEK', SaveHandler, FormIDHandler, CloseMod);
-    formCount += ALCH.WriteGRUP('HCLA', SaveHandler, FormIDHandler, CloseMod);
-    formCount += SBSP.WriteGRUP('PSBS', SaveHandler, FormIDHandler, CloseMod);
-    formCount += SGST.WriteGRUP('TSGS', SaveHandler, FormIDHandler, CloseMod);
-    formCount += LVLI.WriteGRUP('ILVL', SaveHandler, FormIDHandler, CloseMod);
-    formCount += WTHR.WriteGRUP('RHTW', SaveHandler, FormIDHandler, CloseMod);
-    formCount += CLMT.WriteGRUP('TMLC', SaveHandler, FormIDHandler, CloseMod);
-    formCount += REGN.WriteGRUP('NGER', SaveHandler, FormIDHandler, CloseMod);
-    formCount += CELL.WriteGRUP(SaveHandler, FormIDHandler, CloseMod);
-    formCount += WRLD.WriteGRUP(SaveHandler, FormIDHandler, CloseMod);
-    formCount += DIAL.WriteGRUP(SaveHandler, FormIDHandler, CloseMod);
-    formCount += QUST.WriteGRUP('TSUQ', SaveHandler, FormIDHandler, CloseMod);
-    formCount += IDLE.WriteGRUP('ELDI', SaveHandler, FormIDHandler, CloseMod);
-    formCount += PACK.WriteGRUP('KCAP', SaveHandler, FormIDHandler, CloseMod);
-    formCount += CSTY.WriteGRUP('YTSC', SaveHandler, FormIDHandler, CloseMod);
-    formCount += LSCR.WriteGRUP('RCSL', SaveHandler, FormIDHandler, CloseMod);
-    formCount += LVSP.WriteGRUP('PSVL', SaveHandler, FormIDHandler, CloseMod);
-    formCount += ANIO.WriteGRUP('OINA', SaveHandler, FormIDHandler, CloseMod);
-    formCount += WATR.WriteGRUP('RTAW', SaveHandler, FormIDHandler, CloseMod);
-    formCount += EFSH.WriteGRUP('HSFE', SaveHandler, FormIDHandler, CloseMod);
+    formCount += GMST.WriteGRUP('TSMG', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += GLOB.WriteGRUP('BOLG', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += CLAS.WriteGRUP('SALC', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += FACT.WriteGRUP('TCAF', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += HAIR.WriteGRUP('RIAH', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += EYES.WriteGRUP('SEYE', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += RACE.WriteGRUP('ECAR', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += SOUN.WriteGRUP('NUOS', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += SKIL.WriteGRUP('LIKS', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += MGEF.WriteGRUP('FEGM', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += SCPT.WriteGRUP('TPCS', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += LTEX.WriteGRUP('XETL', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += ENCH.WriteGRUP('HCNE', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += SPEL.WriteGRUP('LEPS', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += BSGN.WriteGRUP('NGSB', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += ACTI.WriteGRUP('ITCA', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += APPA.WriteGRUP('APPA', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += ARMO.WriteGRUP('OMRA', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += BOOK.WriteGRUP('KOOB', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += CLOT.WriteGRUP('TOLC', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += CONT.WriteGRUP('TNOC', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += DOOR.WriteGRUP('ROOD', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += INGR.WriteGRUP('RGNI', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += LIGH.WriteGRUP('HGIL', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += MISC.WriteGRUP('CSIM', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += STAT.WriteGRUP('TATS', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += GRAS.WriteGRUP('SARG', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += TREE.WriteGRUP('EERT', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += FLOR.WriteGRUP('ROLF', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += FURN.WriteGRUP('NRUF', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += WEAP.WriteGRUP('PAEW', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += AMMO.WriteGRUP('OMMA', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += NPC_.WriteGRUP('_CPN', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += CREA.WriteGRUP('AERC', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += LVLC.WriteGRUP('CLVL', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += SLGM.WriteGRUP('MGLS', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += KEYM.WriteGRUP('MYEK', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += ALCH.WriteGRUP('HCLA', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += SBSP.WriteGRUP('PSBS', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += SGST.WriteGRUP('TSGS', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += LVLI.WriteGRUP('ILVL', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += WTHR.WriteGRUP('RHTW', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += CLMT.WriteGRUP('TMLC', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += REGN.WriteGRUP('NGER', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += CELL.WriteGRUP(SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += WRLD.WriteGRUP(SaveHandler, FormIDHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += DIAL.WriteGRUP(SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += QUST.WriteGRUP('TSUQ', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += IDLE.WriteGRUP('ELDI', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += PACK.WriteGRUP('KCAP', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += CSTY.WriteGRUP('YTSC', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += LSCR.WriteGRUP('RCSL', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += LVSP.WriteGRUP('PSVL', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += ANIO.WriteGRUP('OINA', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += WATR.WriteGRUP('RTAW', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += EFSH.WriteGRUP('HSFE', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
 
     //update formCount. Cheaper to go back and write it at the end than to calculate it before any writing.
     SaveHandler.writeAt(30, &formCount, 4);

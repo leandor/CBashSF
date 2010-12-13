@@ -95,7 +95,7 @@ struct GENEFID
 struct GENEFIT
     {
     MGEFCODE_OR_UINT32 name;
-    UINT32  magnitude, area, duration, recipient;
+    UINT32  magnitude, area, duration, rangeType;
     FORMID_OR_MGEFCODE_OR_ACTORVALUE_OR_UINT32 actorValue;
 
     GENEFIT();

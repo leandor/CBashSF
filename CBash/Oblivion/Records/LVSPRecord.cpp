@@ -32,12 +32,19 @@ LVSPRecord::LVSPRecord(unsigned char *_recData):
 LVSPRecord::LVSPRecord(LVSPRecord *srcRecord):
     Record()
     {
-    if(srcRecord == NULL || srcRecord->GetType() != 'PSVL')
+    if(srcRecord == NULL)
         return;
 
     flags = srcRecord->flags;
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
+
+    if(!srcRecord->IsChanged())
+        {
+        recData = srcRecord->recData;
+        return;
+        }
+
     EDID = srcRecord->EDID;
     LVLD = srcRecord->LVLD;
     LVLF = srcRecord->LVLF;

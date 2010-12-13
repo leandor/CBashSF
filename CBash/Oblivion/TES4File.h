@@ -152,7 +152,7 @@ class TES4File : public ModFile
         UINT32   GetNumRecords(const UINT32 &RecordType);
         Record * CreateRecord(const UINT32 &RecordType, STRING const &RecordEditorID, Record *&SourceRecord, Record *&ParentRecord, CreateRecordOptions &options);
         SINT32   CleanMasters();
-        SINT32   Save(STRING const &SaveName, bool CloseMod);
+        SINT32   Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expanders, bool CloseMod);
 
         void     VisitAllRecords(RecordOp &op);
         void     VisitRecords(const UINT32 &TopRecordType, const UINT32 &RecordType, RecordOp &op, bool DeepVisit=false);

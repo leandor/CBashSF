@@ -58,12 +58,19 @@ ARMORecord::ARMORecord(unsigned char *_recData):
 ARMORecord::ARMORecord(ARMORecord *srcRecord):
     Record()
     {
-    if(srcRecord == NULL || srcRecord->GetType() != 'OMRA')
+    if(srcRecord == NULL)
         return;
 
     flags = srcRecord->flags;
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
+
+    if(!srcRecord->IsChanged())
+        {
+        recData = srcRecord->recData;
+        return;
+        }
+
     EDID = srcRecord->EDID;
     FULL = srcRecord->FULL;
     SCRI = srcRecord->SCRI;

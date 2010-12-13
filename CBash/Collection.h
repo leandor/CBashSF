@@ -43,6 +43,7 @@ class Collection
     public:
         std::vector<ModFile *> ModFiles;
         std::vector<ModFile *> LoadOrder255;
+        std::vector<FormIDResolver *> Expanders;
 
         EditorID_Map EditorID_ModFile_Record;
         FormID_Map FormID_ModFile_Record;

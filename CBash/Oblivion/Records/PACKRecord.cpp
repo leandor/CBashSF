@@ -744,12 +744,19 @@ STRING PACKRecord::GetStrType()
 PACKRecord::PACKRecord(PACKRecord *srcRecord):
     Record()
     {
-    if(srcRecord == NULL || srcRecord->GetType() != 'KCAP')
+    if(srcRecord == NULL)
         return;
 
     flags = srcRecord->flags;
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
+
+    if(!srcRecord->IsChanged())
+        {
+        recData = srcRecord->recData;
+        return;
+        }
+
     EDID = srcRecord->EDID;
     PKDT = srcRecord->PKDT;
     PLDT = srcRecord->PLDT;

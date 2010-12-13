@@ -57,12 +57,19 @@ ROADRecord::ROADRecord(unsigned char *_recData):
 ROADRecord::ROADRecord(ROADRecord *srcRecord):
     Record()
     {
-    if(srcRecord == NULL || srcRecord->GetType() != 'DAOR')
+    if(srcRecord == NULL)
         return;
 
     flags = srcRecord->flags;
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
+
+    if(!srcRecord->IsChanged())
+        {
+        recData = srcRecord->recData;
+        return;
+        }
+
     PGRP = srcRecord->PGRP;
     PGRR = srcRecord->PGRR;
     return;

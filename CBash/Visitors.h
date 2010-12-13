@@ -27,6 +27,10 @@ class FormIDMasterUpdater : public FormIDOp
     {
     private:
         FormIDHandlerClass &FormIDHandler;
+        const UINT8 &ExpandedIndex;
+        const UINT8 &CollapsedIndex;
+        const UINT8 (&ExpandTable)[256];
+        const UINT8 (&CollapseTable)[256];
 
     public:
         FormIDMasterUpdater(FormIDHandlerClass &_FormIDHandler);

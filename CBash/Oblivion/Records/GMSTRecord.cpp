@@ -91,15 +91,22 @@ GMSTRecord::GMSTRecord(unsigned char *_recData):
 GMSTRecord::GMSTRecord(GMSTRecord *srcRecord):
     Record()
     {
-    if(srcRecord == NULL || srcRecord->GetType() != 'TSMG')
+    if(srcRecord == NULL)
         return;
 
-    UINT32 vSize;
     flags = srcRecord->flags;
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
+
+    if(!srcRecord->IsChanged())
+        {
+        recData = srcRecord->recData;
+        return;
+        }
+
     EDID = srcRecord->EDID;
     DATA.format = srcRecord->DATA.format;
+    UINT32 vSize;
     switch(DATA.format)
         {
         case 'f':
@@ -238,6 +245,9 @@ SINT32 GMSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 break;
             }
         };
+    //GMSTs should always be loaded since they're keyed by editorID
+    //By marking it as changed, it prevents the record from being unloaded
+    IsChanged(true);
     return 0;
     }
 
@@ -251,6 +261,7 @@ SINT32 GMSTRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+    UINT8 null = 0;
     switch(DATA.format)
         {
         case 'i':
@@ -263,7 +274,7 @@ SINT32 GMSTRecord::WriteRecord(_FileHandler &SaveHandler)
             if(DATA.s != NULL)
                 SaveHandler.writeSubRecord('ATAD', DATA.s, (UINT32)strlen(DATA.s) + 1);
             else
-                SaveHandler.writeSubRecord('ATAD', DATA.s, 0);
+                SaveHandler.writeSubRecord('ATAD', &null, 1);
             break;
         default:
             printf("Unknown GMST format when writing: %s\n", EDID.value);

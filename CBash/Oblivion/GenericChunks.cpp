@@ -163,7 +163,7 @@ GENEFIT::GENEFIT():
     magnitude(0),
     area(0),
     duration(0),
-    recipient(0),
+    rangeType(0),
     actorValue(0)
     {
     //
@@ -180,7 +180,7 @@ bool GENEFIT::operator ==(const GENEFIT &other) const
             magnitude == other.magnitude &&
             area == other.area &&
             duration == other.duration &&
-            recipient == other.recipient &&
+            rangeType == other.rangeType &&
             actorValue == other.actorValue);
     }
 
@@ -333,51 +333,51 @@ void GENEffect::SetFlagMask(UINT8 Mask)
 
 bool GENEffect::IsRangeSelf()
     {
-    return (EFIT.value.recipient == eRangeSelf);
+    return (EFIT.value.rangeType == eRangeSelf);
     }
 
 void GENEffect::IsRangeSelf(bool value)
     {
     if(value)
-        EFIT.value.recipient = eRangeSelf;
+        EFIT.value.rangeType = eRangeSelf;
     else
-        EFIT.value.recipient = eRangeTouch;
+        EFIT.value.rangeType = eRangeTouch;
     }
 
 bool GENEffect::IsRangeTouch()
     {
-    return (EFIT.value.recipient == eRangeTouch);
+    return (EFIT.value.rangeType == eRangeTouch);
     }
 
 void GENEffect::IsRangeTouch(bool value)
     {
     if(value)
-        EFIT.value.recipient = eRangeTouch;
+        EFIT.value.rangeType = eRangeTouch;
     else
-        EFIT.value.recipient = eRangeSelf;
+        EFIT.value.rangeType = eRangeSelf;
     }
 
 bool GENEffect::IsRangeTarget()
     {
-    return (EFIT.value.recipient == eRangeTarget);
+    return (EFIT.value.rangeType == eRangeTarget);
     }
 
 void GENEffect::IsRangeTarget(bool value)
     {
     if(value)
-        EFIT.value.recipient = eRangeTarget;
+        EFIT.value.rangeType = eRangeTarget;
     else
-        EFIT.value.recipient = eRangeSelf;
+        EFIT.value.rangeType = eRangeSelf;
     }
 
 bool GENEffect::IsRange(UINT32 Mask)
     {
-    return (EFIT.value.recipient == Mask);
+    return (EFIT.value.rangeType == Mask);
     }
 
 void GENEffect::SetRange(UINT32 Mask)
     {
-    EFIT.value.recipient = Mask;
+    EFIT.value.rangeType = Mask;
     }
 
 bool GENEffect::OBME_IsUsingHostileOverride()

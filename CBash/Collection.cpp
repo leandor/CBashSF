@@ -168,11 +168,13 @@ SINT32 Collection::SaveMod(ModFile *curModFile, bool CloseCollection)
         return -1;
         }
     tName[0] = 'x';
+    for(UINT32 x = 0; x < ModFiles.size(); ++x)
+        Expanders.push_back(new FormIDResolver(ModFiles[x]->FormIDHandler.ExpandTable, ModFiles[x]->FormIDHandler.FileStart, ModFiles[x]->FormIDHandler.FileEnd));
 
     try
         {
         //Save the mod to temp file, using FileBuffer to write in chunks
-        curModFile->Save(tName, CloseCollection);
+        curModFile->Save(tName, Expanders, CloseCollection);
 
         //Rename any existing files to a datestamped backup
         time(&ltime);
@@ -269,9 +271,13 @@ SINT32 Collection::SaveMod(ModFile *curModFile, bool CloseCollection)
             remove(tName);
             printf("  Temp file %s removed.\n", tName);
             }
+        for(UINT32 x = 0; x < Expanders.size(); ++x)
+            delete Expanders[x];
         throw 1;
         return -1;
         }
+    for(UINT32 x = 0; x < Expanders.size(); ++x)
+        delete Expanders[x];
     return 0;
     }
 
@@ -631,10 +637,6 @@ UINT32 Collection::CopyRecord(ModFile *curModFile, const FORMID &RecordFormID, S
     if(curModFile == DestModFile)
         return 0;
 
-    //Ensure the record has been fully read
-    RecordReader reader(curModFile->FormIDHandler);
-    reader.Accept(&curRecord);
-
     //Create the record copy
     RecordCopy = DestModFile->CreateRecord(curRecord->GetType(), DestRecordEditorID ? DestRecordEditorID : RecordEditorID, curRecord, ParentRecord, options);
     if(RecordCopy == NULL)
@@ -649,6 +651,12 @@ UINT32 Collection::CopyRecord(ModFile *curModFile, const FORMID &RecordFormID, S
         RecordCopy->formID = DestRecordFormID ? DestRecordFormID : NextFreeExpandedFormID(DestModFile);
 
     //See if the destination mod masters need updating
+    //Ensure the record has been fully read
+    //Uses the source mod's formID resolution tables
+    RecordReader reader(curModFile->FormIDHandler);
+    reader.Accept(&RecordCopy);
+
+    //Then the destination mod's tables get used so that they can be updated
     FormIDMasterUpdater checker(DestModFile->FormIDHandler);
     checker.Accept(RecordCopy->formID);
     RecordCopy->VisitFormIDs(checker);
@@ -657,6 +665,8 @@ UINT32 Collection::CopyRecord(ModFile *curModFile, const FORMID &RecordFormID, S
     RecordIndexer indexer(DestModFile, curModFile->Flags.IsExtendedConflicts ? ExtendedEditorID_ModFile_Record: EditorID_ModFile_Record, curModFile->Flags.IsExtendedConflicts ? ExtendedFormID_ModFile_Record: FormID_ModFile_Record);
     indexer.Accept(&RecordCopy);
 
+    if(reader.GetResult()) //If the record was read, go ahead and unload it
+        RecordCopy->Unload();
     return RecordCopy->formID;
     }
 
@@ -772,7 +782,13 @@ SINT32 Collection::SetRecordIDs(ModFile *curModFile, const FORMID &RecordFormID,
 
     //Update the editorID
     if(bChangingEditorID)
+        {
+        //Ensure the record is fully loaded, otherwise any changes could be lost when the record is later loaded
+        RecordReader reader(curModFile->FormIDHandler);
+        reader.Accept(&curRecord);
         curRecord->SetField(4, 0, 0, 0, 0, 0, 0, (void *)EditorIDValue, 0);
+        curRecord->IsChanged(true);
+        }
 
     //Re-index the record
     if(bDeIndexed)
@@ -780,5 +796,5 @@ SINT32 Collection::SetRecordIDs(ModFile *curModFile, const FORMID &RecordFormID,
         RecordIndexer indexer(curModFile, curEditorID_Map, curFormID_Map);
         indexer.Accept(&curRecord);
         }
-    return (bChangingFormID || bChangingEditorID) ? curRecord->IsChanged(true) : -1;
+    return (bChangingFormID || bChangingEditorID) ? 1 : -1;
     }

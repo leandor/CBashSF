@@ -59,12 +59,19 @@ LSCRRecord::LSCRRecord(unsigned char *_recData):
 LSCRRecord::LSCRRecord(LSCRRecord *srcRecord):
     Record()
     {
-    if(srcRecord == NULL || srcRecord->GetType() != 'RCSL')
+    if(srcRecord == NULL)
         return;
 
     flags = srcRecord->flags;
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
+
+    if(!srcRecord->IsChanged())
+        {
+        recData = srcRecord->recData;
+        return;
+        }
+
     EDID = srcRecord->EDID;
     ICON = srcRecord->ICON;
     DESC = srcRecord->DESC;

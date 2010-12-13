@@ -64,6 +64,8 @@ bool ModFile::Open()
     if(Flags.IsNoLoad || ReadHandler.IsOpen() || !FileExists(FileName))
         return false;
     ReadHandler.open_ReadOnly(FileName);
+    FormIDHandler.FileStart = ReadHandler.getBuffer(0);
+    FormIDHandler.FileEnd = FormIDHandler.FileStart + ReadHandler.getBufferSize();
     return true;
     }
 

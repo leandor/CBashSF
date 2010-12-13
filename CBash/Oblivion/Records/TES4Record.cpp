@@ -68,12 +68,19 @@ TES4Record::TES4Record(unsigned char *_recData):
 TES4Record::TES4Record(TES4Record *srcRecord):
     Record()
     {
-    if(srcRecord == NULL || srcRecord->GetType() != '4SET')
+    if(srcRecord == NULL)
         return;
 
     flags = srcRecord->flags;
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
+
+    if(!srcRecord->IsChanged())
+        {
+        recData = srcRecord->recData;
+        return;
+        }
+
     //EDID = srcRecord->EDID;
     HEDR = srcRecord->HEDR;
     OFST = srcRecord->OFST;

@@ -25,7 +25,11 @@ GPL License and Copyright Notice ============================================
 
 FormIDMasterUpdater::FormIDMasterUpdater(FormIDHandlerClass &_FormIDHandler):
     FormIDOp(),
-    FormIDHandler(_FormIDHandler)
+    FormIDHandler(_FormIDHandler),
+    ExpandedIndex(_FormIDHandler.ExpandedIndex),
+    CollapsedIndex(_FormIDHandler.CollapsedIndex),
+    ExpandTable(_FormIDHandler.ExpandTable),
+    CollapseTable(_FormIDHandler.CollapseTable)
     {
     //
     }
@@ -37,22 +41,24 @@ FormIDMasterUpdater::~FormIDMasterUpdater()
 
 bool FormIDMasterUpdater::Accept(UINT32 &curFormID)
     {
-    UINT32 modIndex = curFormID >> 24;
-
     //If formID is not set, or the formID belongs to the engine, or the formID belongs to the mod, or if the master is already present, do nothing
-    if((curFormID == 0) || (modIndex == FormIDHandler.ExpandedIndex) || (curFormID < END_HARDCODED_IDS) || (FormIDHandler.CollapseTable[modIndex] != FormIDHandler.CollapsedIndex))
+    if((curFormID == 0) || (curFormID < END_HARDCODED_IDS))
+        return stop;
+
+    UINT32 modIndex = curFormID >> 24;
+    //printf("Checking %08X against %02X, %02X, %02X\n", curFormID, ExpandedIndex, CollapseTable[modIndex], CollapsedIndex);
+    if((modIndex == ExpandedIndex) || (CollapseTable[modIndex] != CollapsedIndex))
         return stop;
 
     //If the modIndex doesn't match to a loaded mod, it gets assigned to the mod that it is in.
     if(modIndex >= FormIDHandler.LoadOrder255.size())
         {
-        FormIDResolver collapser(FormIDHandler.CollapseTable);
-        collapser.Accept(curFormID);
-        FormIDResolver expander(FormIDHandler.ExpandTable);
-        expander.Accept(curFormID);
+        //printf("Assigning %08X to ", curFormID);
+        curFormID = (ExpandTable[CollapseTable[modIndex]] << 24) | (curFormID & 0x00FFFFFF);
+        //printf("%08X\n", curFormID);
         return stop;
         }
-
+    //printf("Adding Master\n");
     FormIDHandler.AddMaster(FormIDHandler.LoadOrder255[modIndex]);
     ++count;
     return stop;
@@ -60,19 +66,18 @@ bool FormIDMasterUpdater::Accept(UINT32 &curFormID)
 
 bool FormIDMasterUpdater::AcceptMGEF(UINT32 &curMgefCode)
     {
-    UINT32 modIndex = curMgefCode << 24;
-
     //If formID is not set, or the formID belongs to the engine, or the formID belongs to the mod, or if the master is already present, do nothing
-    if((curMgefCode == 0) || (curMgefCode < END_HARDCODED_IDS) || (modIndex == FormIDHandler.ExpandedIndex) || (FormIDHandler.CollapseTable[modIndex] != FormIDHandler.CollapsedIndex))
+    if((curMgefCode == 0) || (curMgefCode < END_HARDCODED_IDS))
+        return stop;
+
+    UINT32 modIndex = curMgefCode & 0x000000FF;
+    if((modIndex == ExpandedIndex) || (CollapseTable[modIndex] != CollapsedIndex))
         return stop;
 
     //If the modIndex doesn't match to a loaded mod, it gets assigned to the mod that it is in.
     if(modIndex >= FormIDHandler.LoadOrder255.size())
         {
-        FormIDResolver collapser(FormIDHandler.CollapseTable);
-        collapser.AcceptMGEF(curMgefCode);
-        FormIDResolver expander(FormIDHandler.ExpandTable);
-        expander.AcceptMGEF(curMgefCode);
+        curMgefCode = (ExpandTable[CollapseTable[modIndex]]) | (curMgefCode & 0xFFFFFF00);
         return stop;
         }
 

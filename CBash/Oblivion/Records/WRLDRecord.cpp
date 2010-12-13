@@ -90,12 +90,19 @@ WRLDRecord::WRLDRecord(WRLDRecord *srcRecord):
     ROAD(NULL),
     CELL(NULL)
     {
-    if(srcRecord == NULL || srcRecord->GetType() != 'DLRW')
+    if(srcRecord == NULL)
         return;
 
     flags = srcRecord->flags;
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
+
+    if(!srcRecord->IsChanged())
+        {
+        recData = srcRecord->recData;
+        return;
+        }
+
     EDID = srcRecord->EDID;
     FULL = srcRecord->FULL;
     WNAM = srcRecord->WNAM;

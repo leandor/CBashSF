@@ -10,77 +10,93 @@ except:
     def GPath(obj):
         return obj
 
+_CBashRequiredVersion = (0,5,0)
+
 CBash = None
 if(exists(".\\CBash.dll")):
     CBash = CDLL("CBash.dll")
-    _CGetVersionMajor = CBash.GetVersionMajor
-    _CGetVersionMinor = CBash.GetVersionMinor
-    _CGetVersionRevision = CBash.GetVersionRevision
-    _CCreateCollection = CBash.CreateCollection
-    _CDeleteCollection = CBash.DeleteCollection
-    _CLoadCollection = CBash.LoadCollection
-    _CUnloadCollection = CBash.UnloadCollection
-    _CDeleteAllCollections = CBash.DeleteAllCollections
-    _CAddMod = CBash.AddMod
-    _CLoadMod = CBash.LoadMod
-    _CUnloadMod = CBash.UnloadMod
-    _CCleanModMasters = CBash.CleanModMasters
-    _CSaveMod = CBash.SaveMod
-    _CGetNumMods = CBash.GetNumMods
-    _CGetModIDs = CBash.GetModIDs
-    _CGetModName = CBash.GetModName
-    _CGetModID = CBash.GetModID
-    _CIsModEmpty = CBash.IsModEmpty
-    _CGetModNumTypes = CBash.GetModNumTypes
-    _CGetModTypes = CBash.GetModTypes
-    _CCreateRecord = CBash.CreateRecord
-    _CDeleteRecord = CBash.DeleteRecord
-    _CCopyRecord = CBash.CopyRecord
-    _CLoadRecord = CBash.LoadRecord
-    _CUnloadRecord = CBash.UnloadRecord
-    _CSetRecordIDs = CBash.SetRecordIDs
-    _CGetNumRecords = CBash.GetNumRecords
-    _CGetRecordFormIDs = CBash.GetRecordFormIDs
-    _CGetRecordEditorIDs = CBash.GetRecordEditorIDs
-    _CIsRecordWinning = CBash.IsRecordWinning
-    _CGetNumRecordConflicts = CBash.GetNumRecordConflicts
-    _CGetRecordConflicts = CBash.GetRecordConflicts
-    _CUpdateReferences = CBash.UpdateReferences
-    _CGetNumReferences = CBash.GetNumReferences
-    _CSetField = CBash.SetField
-    _CDeleteField = CBash.DeleteField
-    _CGetFieldAttribute = CBash.GetFieldAttribute
-    _CGetField = CBash.GetField
-    _CGetVersionMajor.restype = c_ulong
-    _CGetVersionMinor.restype = c_ulong
-    _CGetVersionRevision.restype = c_ulong
-    _CCreateCollection.restype = c_long
-    _CDeleteCollection.restype = c_long
-    _CLoadCollection.restype = c_long
-    _CUnloadCollection.restype = c_long
-    _CDeleteAllCollections.restype = c_long
-    _CAddMod.restype = c_long
-    _CLoadMod.restype = c_long
-    _CUnloadMod.restype = c_long
-    _CCleanModMasters.restype = c_long
-    _CGetNumMods.restype = c_long
-    _CGetModIDs.restype = c_long
-    _CGetModName.restype = c_char_p
-    _CGetModID.restype = c_long
-    _CIsModEmpty.restype = c_ulong
-    _CGetModNumTypes.restype = c_long
-    _CCreateRecord.restype = c_ulong
-    _CDeleteRecord.restype = c_long
-    _CCopyRecord.restype = c_ulong
-    _CLoadRecord.restype = c_long
-    _CUnloadRecord.restype = c_long
-    _CSetRecordIDs.restype = c_long
-    _CGetNumRecords.restype = c_long
-    _CIsRecordWinning.restype = c_long
-    _CGetNumRecordConflicts.restype = c_long
-    _CUpdateReferences.restype = c_long
-    _CGetNumReferences.restype = c_long
-    _CGetFieldAttribute.restype = c_ulong
+    try:
+        try:
+            _CGetVersionMajor = CBash.GetVersionMajor
+            _CGetVersionMinor = CBash.GetVersionMinor
+            _CGetVersionRevision = CBash.GetVersionRevision
+        except AttributeError: #Functions were renamed in v0.5.0
+            _CGetVersionMajor = CBash.GetMajor
+            _CGetVersionMinor = CBash.GetMinor
+            _CGetVersionRevision = CBash.GetRevision
+        if (_CGetVersionMajor(),_CGetVersionMinor(),_CGetVersionRevision()) < _CBashRequiredVersion:
+            raise ImportError("cint.py requires CBash v%d.%d.%d or higher! (found v%d.%d.%d)" % (_CBashRequiredVersion + (_CGetVersionMajor(),_CGetVersionMinor(),_CGetVersionRevision())))
+        _CCreateCollection = CBash.CreateCollection
+        _CDeleteCollection = CBash.DeleteCollection
+        _CLoadCollection = CBash.LoadCollection
+        _CUnloadCollection = CBash.UnloadCollection
+        _CDeleteAllCollections = CBash.DeleteAllCollections
+        _CAddMod = CBash.AddMod
+        _CLoadMod = CBash.LoadMod
+        _CUnloadMod = CBash.UnloadMod
+        _CCleanModMasters = CBash.CleanModMasters
+        _CSaveMod = CBash.SaveMod
+        _CGetNumMods = CBash.GetNumMods
+        _CGetModIDs = CBash.GetModIDs
+        _CGetModName = CBash.GetModName
+        _CGetModID = CBash.GetModID
+        _CIsModEmpty = CBash.IsModEmpty
+        _CGetModNumTypes = CBash.GetModNumTypes
+        _CGetModTypes = CBash.GetModTypes
+        _CCreateRecord = CBash.CreateRecord
+        _CDeleteRecord = CBash.DeleteRecord
+        _CCopyRecord = CBash.CopyRecord
+        _CLoadRecord = CBash.LoadRecord
+        _CUnloadRecord = CBash.UnloadRecord
+        _CSetRecordIDs = CBash.SetRecordIDs
+        _CGetNumRecords = CBash.GetNumRecords
+        _CGetRecordFormIDs = CBash.GetRecordFormIDs
+        _CGetRecordEditorIDs = CBash.GetRecordEditorIDs
+        _CIsRecordWinning = CBash.IsRecordWinning
+        _CGetNumRecordConflicts = CBash.GetNumRecordConflicts
+        _CGetRecordConflicts = CBash.GetRecordConflicts
+        _CUpdateReferences = CBash.UpdateReferences
+        _CGetNumReferences = CBash.GetNumReferences
+        _CSetField = CBash.SetField
+        _CDeleteField = CBash.DeleteField
+        _CGetFieldAttribute = CBash.GetFieldAttribute
+        _CGetField = CBash.GetField
+        _CGetVersionMajor.restype = c_ulong
+        _CGetVersionMinor.restype = c_ulong
+        _CGetVersionRevision.restype = c_ulong
+        _CCreateCollection.restype = c_long
+        _CDeleteCollection.restype = c_long
+        _CLoadCollection.restype = c_long
+        _CUnloadCollection.restype = c_long
+        _CDeleteAllCollections.restype = c_long
+        _CAddMod.restype = c_long
+        _CLoadMod.restype = c_long
+        _CUnloadMod.restype = c_long
+        _CCleanModMasters.restype = c_long
+        _CGetNumMods.restype = c_long
+        _CGetModIDs.restype = c_long
+        _CGetModName.restype = c_char_p
+        _CGetModID.restype = c_long
+        _CIsModEmpty.restype = c_ulong
+        _CGetModNumTypes.restype = c_long
+        _CCreateRecord.restype = c_ulong
+        _CDeleteRecord.restype = c_long
+        _CCopyRecord.restype = c_ulong
+        _CLoadRecord.restype = c_long
+        _CUnloadRecord.restype = c_long
+        _CSetRecordIDs.restype = c_long
+        _CGetNumRecords.restype = c_long
+        _CIsRecordWinning.restype = c_long
+        _CGetNumRecordConflicts.restype = c_long
+        _CUpdateReferences.restype = c_long
+        _CGetNumReferences.restype = c_long
+        _CGetFieldAttribute.restype = c_ulong
+    except ImportError as error:
+        CBash = None
+        print error
+    except:
+        CBash = None
+        raise
 
 def LoggingCB(logString):
     print logString
@@ -293,6 +309,12 @@ def SetCopyList(oElements, nValues):
         for nValue, attr in zip(nValueTuple, oElement.copyattrs):
             setattr(oElement, attr, nValue)
 
+def ExtractExportList(Element):
+    try:
+        return [tuple(getattr(listElement, attr) for attr in listElement.exportattrs) for listElement in Element]
+    except TypeError:
+        return [tuple(getattr(Element, attr) for attr in Element.exportattrs)]
+
 # Classes
 # Any level Descriptors
 class CBashAlias(object):
@@ -304,11 +326,14 @@ class CBashAlias(object):
         setattr(instance, self._AttrName, nValue)
 
 class CBashGrouped(object):
-    def __init__(self, FieldID, Type):
+    def __init__(self, FieldID, Type, AsList=False):
         self._FieldID = FieldID
         self._Type = Type
+        self._AsList = AsList
     def __get__(self, instance, owner):
-        return self._Type(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID)
+        oElement = self._Type(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID)
+        if(self._AsList): return tuple([getattr(oElement, attr) for attr in oElement.copyattrs])
+        return oElement
     def __set__(self, instance, nElement):
         oElement = self._Type(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID)
         if nElement is None: nValueList = tuple([None for attr in oElement.copyattrs])
@@ -1502,11 +1527,12 @@ class Model(BaseComponent):
     FLOAT32_GROUPEDMACRO(modb, 1)
     UINT8_ARRAY_GROUPEDMACRO(modt_p, 2)
     copyattrs = ['modPath', 'modb', 'modt_p']
+    exportattrs = ['modPath', 'modb']#, 'modt_p']
 
 class Item(ListComponent):
     FORMID_LISTMACRO(item, self._FieldID, 1)
     SINT32_LISTMACRO(count, self._FieldID, 2)
-    copyattrs = ['item', 'count']
+    exportattrs = copyattrs = ['item', 'count']
 
 class Condition(ListComponent):
     UINT8_FLAG_TYPE_LISTMACRO(operType, self._FieldID, 1)
@@ -1525,7 +1551,7 @@ class Condition(ListComponent):
     BasicFlagMACRO(IsOr, operType, 0x01)
     BasicFlagMACRO(IsRunOnTarget, operType, 0x02)
     BasicFlagMACRO(IsUseGlobal, operType, 0x04)
-    copyattrs = ['operType', 'compValue', 'ifunc', 'param1', 'param2']
+    exportattrs = copyattrs = ['operType', 'compValue', 'ifunc', 'param1', 'param2']
 
 class Effect(ListComponent):
     ##name0 and name are both are always the same value, so setting one will set both. They're basically aliases
@@ -1534,7 +1560,7 @@ class Effect(ListComponent):
     UINT32_LISTMACRO(magnitude, self._FieldID, 3)
     UINT32_LISTMACRO(area, self._FieldID, 4)
     UINT32_LISTMACRO(duration, self._FieldID, 5)
-    UINT32_LISTMACRO(recipient, self._FieldID, 6)
+    UINT32_LISTMACRO(rangeType, self._FieldID, 6)
     OBMEFORMID_OR_MGEFCODE_OR_ACTORVALUE_OR_UINT32_LISTMACRO(actorValue, self._FieldID, 7)
     OBMEFORMID_OR_MGEFCODE_OR_ACTORVALUE_OR_UINT32_LISTMACRO(script, self._FieldID, 8)
     UINT32_LISTMACRO(school, self._FieldID, 9)
@@ -1560,9 +1586,9 @@ class Effect(ListComponent):
     OBMEACTORVALUE_LISTMACRO(resistAV, self._FieldID, 25)
     OBMEUINT8_ARRAY_LISTMACRO(reserved2, self._FieldID, 26, 0x10)
     BasicFlagMACRO(IsHostile, flags, 0x01)
-    BasicTypeMACRO(IsSelf, recipient, 0, IsTouch)
-    BasicTypeMACRO(IsTouch, recipient, 1, IsSelf)
-    BasicTypeMACRO(IsTarget, recipient, 2, IsSelf)
+    BasicTypeMACRO(IsSelf, rangeType, 0, IsTouch)
+    BasicTypeMACRO(IsTouch, rangeType, 1, IsSelf)
+    BasicTypeMACRO(IsTarget, rangeType, 2, IsSelf)
     ##OBME Fields. Setting any of the below fields will make the mod require JRoush's OBME plugin for OBSE
     ##To see if OBME is in use, check the recordVersion field for a non-None value
     OBMEBasicFlagMACRO(IsUsingHostileOverride, efixOverrides, 0x00000001)
@@ -1610,7 +1636,7 @@ class Effect(ListComponent):
     OBMEBasicFlagMACRO(IsPersistOnDeathOverride, efixFlags, 0x10000000)
     OBMEBasicFlagMACRO(IsExplodesWithForceOverride, efixFlags, 0x20000000)
     OBMEBasicFlagMACRO(IsHiddenOverride, efixFlags, 0x40000000)
-    copyattrs = ['name', 'magnitude', 'area', 'duration', 'recipient',
+    exportattrs = copyattrs = ['name', 'magnitude', 'area', 'duration', 'rangeType',
                  'actorValue', 'script', 'school', 'visual', 'flags',
                  'full']
     copyattrsOBME = copyattrs + ['recordVersion', 'betaVersion',
@@ -1624,12 +1650,12 @@ class Faction(ListComponent):
     FORMID_LISTMACRO(faction, self._FieldID, 1)
     UINT8_LISTMACRO(rank, self._FieldID, 2)
     UINT8_ARRAY_LISTMACRO(unused1, self._FieldID, 3, 3)
-    copyattrs = ['faction', 'rank']
+    exportattrs = copyattrs = ['faction', 'rank']
 
 class Relation(ListComponent):
     FORMID_LISTMACRO(faction, self._FieldID, 1)
     SINT32_LISTMACRO(mod, self._FieldID, 2)
-    copyattrs = ['faction', 'mod']
+    exportattrs = copyattrs = ['faction', 'mod']
 
 class PGRP(ListComponent):
     FLOAT32_LISTMACRO(x, self._FieldID, 1)
@@ -1637,7 +1663,7 @@ class PGRP(ListComponent):
     FLOAT32_LISTMACRO(z, self._FieldID, 3)
     UINT8_LISTMACRO(connections, self._FieldID, 4)
     UINT8_ARRAY_LISTMACRO(unused1, self._FieldID, 5, 3)
-    copyattrs = ['x', 'y', 'z', 'connections']
+    exportattrs = copyattrs = ['x', 'y', 'z', 'connections']
 
 #--Accessors
 class ObFormIDRecord(object):
@@ -2041,7 +2067,7 @@ class ObTES4Record(object):
     ISTRING_ARRAY_MACRO(masters, 12)
     JUNK_MACRO(DATA, 13)
     BasicFlagMACRO(IsESM, flags1, 0x00000001)
-    copyattrs = ['flags1', 'flags2', 'version', 'numRecords', 'nextObject',
+    exportattrs = copyattrs = ['flags1', 'flags2', 'version', 'numRecords', 'nextObject',
                  'author', 'description', 'masters']
 
 class ObGMSTRecord(ObEditorIDRecord):
@@ -2073,7 +2099,7 @@ class ObGMSTRecord(ObEditorIDRecord):
             elif(rFormat == API_FIELDS.STRING and type(nValue) is str):
                 _CSetField(self._CollectionID, self._ModID, 0, self._RecordID, 5, 0, 0, 0, 0, 0, 0, nValue, 0)
     value = property(get_value, set_value)
-    copyattrs = ObEditorIDRecord.baseattrs + ['value']
+    exportattrs = copyattrs = ObEditorIDRecord.baseattrs + ['value']
 
 class ObACHRRecord(ObFormIDRecord):
     def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
@@ -2105,6 +2131,10 @@ class ObACHRRecord(ObFormIDRecord):
                                         'lod1', 'lod2', 'lod3', 'parent', 'parentFlags',
                                         'merchantContainer', 'horse', 'xrgd_p', 'scale',
                                         'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']
+    exportattrs = ObFormIDRecord.baseattrs + ['base', 'unknownXPCIFormID', 'unknownXPCIString',
+                                        'lod1', 'lod2', 'lod3', 'parent', 'parentFlags',
+                                        'merchantContainer', 'horse', 'scale',
+                                        'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ'] #'xrgd_p', 
 
 class ObACRERecord(ObFormIDRecord):
     def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
@@ -2135,6 +2165,10 @@ class ObACRERecord(ObFormIDRecord):
                                         'lod1', 'lod2', 'lod3', 'parent', 'parentFlags',
                                         'xrgd_p', 'scale', 'posX', 'posY', 'posZ', 'rotX',
                                         'rotY', 'rotZ']
+    exportattrs = ObFormIDRecord.baseattrs + ['base', 'owner', 'rank', 'globalVariable',
+                                        'lod1', 'lod2', 'lod3', 'parent', 'parentFlags',
+                                        'scale', 'posX', 'posY', 'posZ', 'rotX',
+                                        'rotY', 'rotZ'] #'xrgd_p', 
 
 class ObREFRRecord(ObFormIDRecord):
     def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
@@ -2214,7 +2248,7 @@ class ObREFRRecord(ObFormIDRecord):
     BasicTypeMACRO(IsCommonSoul, soulType, 3, IsNoSoul)
     BasicTypeMACRO(IsGreaterSoul, soulType, 4, IsNoSoul)
     BasicTypeMACRO(IsGrandSoul, soulType, 5, IsNoSoul)
-    copyattrs = ObFormIDRecord.baseattrs + ['base', 'destination',
+    exportattrs = copyattrs = ObFormIDRecord.baseattrs + ['base', 'destination',
                                         'destinationPosX', 'destinationPosY',
                                         'destinationPosZ', 'destinationRotX',
                                         'destinationRotY', 'destinationRotZ',
@@ -2223,13 +2257,10 @@ class ObREFRRecord(ObFormIDRecord):
                                         'globalVariable', 'parent',
                                         'parentFlags', 'target', 'seed',
                                         'seed_as_offset', 'lod1', 'lod2', 'lod3',
-                                        'charge', 'health',
-                                        'unknownXPCIFormID',
-                                        'unknownXPCIString', 'levelMod',
-                                        'unknownXRTMFormID', 'actionFlags',
+                                        'charge', 'health','levelMod','actionFlags',
                                         'count', 'markerFlags', 'markerName',
-                                        'markerType', 'markerUnused', 'scale',
-                                        'soulType', 'posX', 'posY', 'posZ', 'rotX',
+                                        'markerType', 'scale','soulType',
+                                        'posX', 'posY', 'posZ', 'rotX',
                                         'rotY', 'rotZ']
 
 class ObINFORecord(ObFormIDRecord):
@@ -2253,8 +2284,8 @@ class ObINFORecord(ObFormIDRecord):
         BasicTypeMACRO(IsSad, emotionType, 4, IsNeutral)
         BasicTypeMACRO(IsHappy, emotionType, 5, IsNeutral)
         BasicTypeMACRO(IsSurprise, emotionType, 6, IsNeutral)
-        copyattrs = ['emotionType', 'emotionValue', 'unused1', 'responseNum',
-                     'unused2', 'responseText', 'actorNotes']
+        exportattrs = copyattrs = ['emotionType', 'emotionValue', 'responseNum',
+                                   'responseText', 'actorNotes']
 
     UINT16_TYPE_MACRO(dialType, 5)
     UINT8_FLAG_MACRO(flags, 6)
@@ -2295,6 +2326,12 @@ class ObINFORecord(ObFormIDRecord):
                                         'numRefs', 'compiledSize', 'lastIndex',
                                         'scriptType', 'compiled_p', 'scriptText',
                                         'references']
+    exportattrs = ObFormIDRecord.baseattrs + ['dialType', 'flags', 'quest', 'topic',
+                                        'prevInfo', 'addTopics', 'responses_list',
+                                        'conditions_list', 'choices', 'linksFrom',
+                                        'numRefs', 'compiledSize', 'lastIndex',
+                                        'scriptType', 'scriptText',
+                                        'references'] #'compiled_p', 
 
 class ObLANDRecord(ObFormIDRecord):
     def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
@@ -2306,42 +2343,42 @@ class ObLANDRecord(ObFormIDRecord):
         UINT8_LISTX2MACRO(x, 6, 0, 1)
         UINT8_LISTX2MACRO(y, 6, 0, 2)
         UINT8_LISTX2MACRO(z, 6, 0, 3)
-        copyattrs = ['x', 'y', 'z']
+        exportattrs = copyattrs = ['x', 'y', 'z']
 
     class Height(ListX2Component):
         SINT8_LISTX2MACRO(height, 8, 0, 1)
-        copyattrs = ['height']
+        exportattrs = copyattrs = ['height']
 
     class Color(ListX2Component):
         UINT8_LISTX2MACRO(red, 11, 0, 1)
         UINT8_LISTX2MACRO(green, 11, 0, 2)
         UINT8_LISTX2MACRO(blue, 11, 0, 3)
-        copyattrs = ['red', 'green', 'blue']
+        exportattrs = copyattrs = ['red', 'green', 'blue']
 
     class BaseTexture(ListComponent):
         FORMID_LISTMACRO(texture, self._FieldID, 1)
         SINT8_LISTMACRO(quadrant, self._FieldID, 2)
         UINT8_ARRAY_LISTMACRO(unused1, self._FieldID, 3, 1)
         SINT16_LISTMACRO(layer, self._FieldID, 4)
-        copyattrs = ['texture', 'quadrant', 'unused1', 'layer']
+        exportattrs = copyattrs = ['texture', 'quadrant', 'layer']
 
     class AlphaLayer(ListComponent):
         class Opacity(ListX2Component):
             UINT16_LISTX2MACRO(position, 12, 5, 1)
             UINT8_ARRAY_LISTX2MACRO(unused1, 12, 5, 2, 2)
             FLOAT32_LISTX2MACRO(opacity, 12, 5, 3)
-            copyattrs = ['position', 'unused1', 'opacity']
+            exportattrs = copyattrs = ['position', 'opacity']
         FORMID_LISTMACRO(texture, 12, 1)
         SINT8_LISTMACRO(quadrant, 12, 2)
         UINT8_ARRAY_LISTMACRO(unused1, 12, 3, 1)
         SINT16_LISTMACRO(layer, 12, 4)
 
         LIST_LISTMACRO(opacities, 12, 5, self.Opacity)
-        copyattrs = ['texture', 'quadrant', 'unused1', 'layer', 'opacities_list']
+        exportattrs = copyattrs = ['texture', 'quadrant', 'layer', 'opacities_list']
 
     class VertexTexture(ListComponent):
         FORMID_LISTMACRO(texture, 13, 1)
-        copyattrs = ['texture']
+        exportattrs = copyattrs = ['texture']
 
     class Position(ListX2Component):
         FLOAT32_LISTX2MACRO(height, 14, 0, 1)
@@ -2368,7 +2405,7 @@ class ObLANDRecord(ObFormIDRecord):
         FLOAT32_LISTX2MACRO(alphaLayer7Opacity, 14, 0, 22)
         FORMID_LISTX2MACRO(alphaLayer8Texture, 14, 0, 23)
         FLOAT32_LISTX2MACRO(alphaLayer8Opacity, 14, 0, 24)
-        copyattrs = ['height', 'normalX', 'normalY', 'normalZ',
+        exportattrs = copyattrs = ['height', 'normalX', 'normalY', 'normalZ',
                      'red', 'green', 'blue', 'baseTexture',
                      'alphaLayer1Texture', 'alphaLayer1Opacity',
                      'alphaLayer2Texture', 'alphaLayer2Opacity',
@@ -2439,6 +2476,9 @@ class ObLANDRecord(ObFormIDRecord):
     copyattrs = ObFormIDRecord.baseattrs + ['data_p', 'normals_list', 'heights_list', 'heightOffset',
                                         'colors_list', 'baseTextures_list', 'alphaLayers_list',
                                         'vertexTextures_list']
+    exportattrs = ObFormIDRecord.baseattrs + ['normals_list', 'heights_list', 'heightOffset',
+                                        'colors_list', 'baseTextures_list', 'alphaLayers_list',
+                                        'vertexTextures_list'] #'data_p', 
 
 class ObPGRDRecord(ObFormIDRecord):
     def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
@@ -2452,12 +2492,12 @@ class ObPGRDRecord(ObFormIDRecord):
         FLOAT32_LISTMACRO(x, 9, 3)
         FLOAT32_LISTMACRO(y, 9, 4)
         FLOAT32_LISTMACRO(z, 9, 5)
-        copyattrs = ['point', 'x', 'y', 'z']
+        exportattrs = copyattrs = ['point', 'x', 'y', 'z']
 
     class PGRL(ListComponent):
         FORMID_LISTMACRO(reference, 10, 1)
         UINT32_ARRAY_LISTMACRO(points, 10, 2)
-        copyattrs = ['reference', 'points']
+        exportattrs = copyattrs = ['reference', 'points']
 
     UINT16_MACRO(count, 5)
 
@@ -2469,6 +2509,8 @@ class ObPGRDRecord(ObFormIDRecord):
     LIST_MACRO(pgrl, 10, self.PGRL)
     copyattrs = ObFormIDRecord.baseattrs + ['count', 'pgrp_list', 'pgag_p', 'pgrr_p',
                                         'pgri_list', 'pgrl_list']
+    exportattrs = ObFormIDRecord.baseattrs + ['count', 'pgrp_list',
+                                        'pgri_list', 'pgrl_list'] # 'pgag_p', 'pgrr_p',
 
 class ObROADRecord(ObFormIDRecord):
     def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
@@ -2480,11 +2522,11 @@ class ObROADRecord(ObFormIDRecord):
         FLOAT32_LISTMACRO(x, 6, 1)
         FLOAT32_LISTMACRO(y, 6, 2)
         FLOAT32_LISTMACRO(z, 6, 3)
-        copyattrs = ['x', 'y', 'z']
+        exportattrs = copyattrs = ['x', 'y', 'z']
 
     LIST_MACRO(pgrp, 5, PGRP)
     LIST_MACRO(pgrr, 6, self.PGRR)
-    copyattrs = ObFormIDRecord.baseattrs + ['pgrp_list', 'pgrr_list']
+    exportattrs = copyattrs = ObFormIDRecord.baseattrs + ['pgrp_list', 'pgrr_list']
 
 class ObACTIRecord(ObFormIDRecord):
     _Type = 'ACTI'
@@ -2496,6 +2538,7 @@ class ObACTIRecord(ObFormIDRecord):
     FORMID_MACRO(sound, 10)
     copyattrs = ObFormIDRecord.baseattrs + ['full', 'modPath', 'modb', 'modt_p', 'script',
                                         'sound']
+    exportattrs = ObFormIDRecord.baseattrs + ['full', 'modPath', 'modb', 'script', 'sound'] #'modt_p', 
 
 class ObALCHRecord(ObFormIDRecord):
     _Type = 'ALCH'
@@ -2524,9 +2567,12 @@ class ObALCHRecord(ObFormIDRecord):
     copyattrs = ObFormIDRecord.baseattrs + ['full', 'modPath', 'modb', 'modt_p',
                                         'iconPath', 'script', 'weight',
                                         'value', 'flags', 'effects_list']
+    exportattrs = ObFormIDRecord.baseattrs + ['full', 'modPath', 'modb',
+                                        'iconPath', 'script', 'weight',
+                                        'value', 'flags', 'effects_list'] # 'modt_p',
     copyattrsOBME = copyattrs + ['recordVersion', 'betaVersion',
                                  'minorVersion', 'majorVersion',
-                                 'reserved', 'datx_p']
+                                 'reserved'] #, 'datx_p'
 
 class ObAMMORecord(ObFormIDRecord):
     _Type = 'AMMO'
@@ -2552,6 +2598,11 @@ class ObAMMORecord(ObFormIDRecord):
                                         'enchantPoints', 'speed', 'flags',
                                         'value', 'weight', 'damage']
 
+    exportattrs = ObFormIDRecord.baseattrs + ['full', 'modPath', 'modb',
+                                        'iconPath', 'enchantment',
+                                        'enchantPoints', 'speed', 'flags',
+                                        'value', 'weight', 'damage'] # 'modt_p',
+
 class ObANIORecord(ObFormIDRecord):
     _Type = 'ANIO'
     ISTRING_MACRO(modPath, 5)
@@ -2559,6 +2610,7 @@ class ObANIORecord(ObFormIDRecord):
     UINT8_ARRAY_MACRO(modt_p, 7)
     FORMID_MACRO(animationId, 8)
     copyattrs = ObFormIDRecord.baseattrs + ['modPath', 'modb', 'modt_p', 'animationId']
+    exportattrs = ObFormIDRecord.baseattrs + ['modPath', 'modb', 'animationId'] #'modt_p', 
 
 class ObAPPARecord(ObFormIDRecord):
     _Type = 'APPA'
@@ -2579,6 +2631,9 @@ class ObAPPARecord(ObFormIDRecord):
     copyattrs = ObFormIDRecord.baseattrs + ['full', 'modPath', 'modb', 'modt_p',
                                         'iconPath', 'script', 'apparatusType',
                                         'value', 'weight', 'quality']
+    exportattrs = ObFormIDRecord.baseattrs + ['full', 'modPath', 'modb',
+                                        'iconPath', 'script', 'apparatusType',
+                                        'value', 'weight', 'quality'] # 'modt_p',
 
 class ObARMORecord(ObFormIDRecord):
     _Type = 'ARMO'
@@ -2618,9 +2673,9 @@ class ObARMORecord(ObFormIDRecord):
     BasicFlagMACRO(IsNonPlayable, flags, 0x00400000)
     BasicInvertedFlagMACRO(IsPlayable, IsNonPlayable)
     BasicFlagMACRO(IsHeavyArmor, flags, 0x00800000)
-    copyattrs = ObFormIDRecord.baseattrs + ['full', 'script', 'enchantment', 'enchantPoints',
-                                        'flags', 'maleBody', 'maleWorld', 'maleIconPath',
-                                        'femaleBody', 'femaleWorld', 'femaleIconPath',
+    exportattrs = copyattrs = ObFormIDRecord.baseattrs + ['full', 'script', 'enchantment', 'enchantPoints',
+                                        'flags', 'maleBody_list', 'maleWorld_list', 'maleIconPath',
+                                        'femaleBody_list', 'femaleWorld_list', 'femaleIconPath',
                                         'strength', 'value', 'health', 'weight']
 
 class ObBOOKRecord(ObFormIDRecord):
@@ -2645,6 +2700,10 @@ class ObBOOKRecord(ObFormIDRecord):
                                         'iconPath', 'text', 'script',
                                         'enchantment', 'enchantPoints',
                                         'flags', 'teaches', 'value', 'weight']
+    exportattrs = ObFormIDRecord.baseattrs + ['full', 'modPath', 'modb',
+                                        'iconPath', 'text', 'script',
+                                        'enchantment', 'enchantPoints',
+                                        'flags', 'teaches', 'value', 'weight'] # 'modt_p',
 
 class ObBSGNRecord(ObFormIDRecord):
     _Type = 'BSGN'
@@ -2652,7 +2711,7 @@ class ObBSGNRecord(ObFormIDRecord):
     ISTRING_MACRO(iconPath, 6)
     STRING_MACRO(text, 7)
     FORMID_ARRAY_MACRO(spells, 8)
-    copyattrs = ObFormIDRecord.baseattrs + ['full', 'iconPath', 'text', 'spells']
+    exportattrs = copyattrs = ObFormIDRecord.baseattrs + ['full', 'iconPath', 'text', 'spells']
 
 class ObCELLRecord(ObFormIDRecord):
     _Type = 'CELL'
@@ -2715,7 +2774,7 @@ class ObCELLRecord(ObFormIDRecord):
     BasicTypeMACRO(IsDefault, music, 0, IsPublic)
     BasicTypeMACRO(IsPublic, music, 1, IsDefault)
     BasicTypeMACRO(IsDungeon, music, 2, IsDefault)
-    copyattrs = ObFormIDRecord.baseattrs + ['full', 'flags', 'ambientRed', 'ambientGreen', 'ambientBlue',
+    exportattrs = copyattrs = ObFormIDRecord.baseattrs + ['full', 'flags', 'ambientRed', 'ambientGreen', 'ambientBlue',
                                         'directionalRed', 'directionalGreen', 'directionalBlue',
                                         'fogRed', 'fogGreen', 'fogBlue', 'fogNear', 'fogFar',
                                         'directionalXY', 'directionalZ', 'directionalFade', 'fogClip',
@@ -2759,7 +2818,7 @@ class ObCLASRecord(ObFormIDRecord):
     BasicFlagMACRO(IsServicesTraining, services, 0x00004000)
     BasicFlagMACRO(IsServicesRecharge, services, 0x00010000)
     BasicFlagMACRO(IsServicesRepair, services, 0x00020000)
-    copyattrs = ObFormIDRecord.baseattrs + ['full', 'description', 'iconPath', 'primary1',
+    exportattrs = copyattrs = ObFormIDRecord.baseattrs + ['full', 'description', 'iconPath', 'primary1',
                                         'primary2', 'specialization', 'major1',
                                         'major2', 'major3', 'major4', 'major5',
                                         'major6', 'major7', 'flags', 'services',
@@ -2787,6 +2846,9 @@ class ObCLMTRecord(ObFormIDRecord):
     copyattrs = ObFormIDRecord.baseattrs + ['weathers_list', 'sunPath', 'glarePath', 'modPath',
                                         'modb', 'modt_p', 'riseBegin', 'riseEnd',
                                         'setBegin', 'setEnd', 'volatility', 'phaseLength']
+    exportattrs = ObFormIDRecord.baseattrs + ['weathers_list', 'sunPath', 'glarePath', 'modPath',
+                                        'modb', 'riseBegin', 'riseEnd',
+                                        'setBegin', 'setEnd', 'volatility', 'phaseLength'] #'modt_p', 
 
 class ObCLOTRecord(ObFormIDRecord):
     _Type = 'CLOT'
@@ -2823,9 +2885,9 @@ class ObCLOTRecord(ObFormIDRecord):
     BasicFlagMACRO(IsHideAmulets, flags, 0x00020000)
     BasicFlagMACRO(IsNonPlayable, flags, 0x00400000)
     BasicInvertedFlagMACRO(IsPlayable, IsNonPlayable)
-    copyattrs = ObFormIDRecord.baseattrs + ['full', 'script', 'enchantment',
-                                        'enchantPoints', 'flags', 'maleBody', 'maleWorld',
-                                        'maleIconPath', 'femaleBody', 'femaleWorld',
+    exportattrs = copyattrs = ObFormIDRecord.baseattrs + ['full', 'script', 'enchantment',
+                                        'enchantPoints', 'flags', 'maleBody_list', 'maleWorld_list',
+                                        'maleIconPath', 'femaleBody_list', 'femaleWorld_list',
                                         'femaleIconPath', 'value', 'weight']
 
 class ObCONTRecord(ObFormIDRecord):
@@ -2851,6 +2913,10 @@ class ObCONTRecord(ObFormIDRecord):
                                         'script', 'items_list', 'flags', 'weight',
                                         'soundOpen', 'soundClose']
 
+    exportattrs = ObFormIDRecord.baseattrs + ['full', 'modPath', 'modb',
+                                        'script', 'items_list', 'flags', 'weight',
+                                        'soundOpen', 'soundClose'] # 'modt_p',
+
 class ObCREARecord(ObFormIDRecord):
     _Type = 'CREA'
     def mergeFilter(self,modSet):
@@ -2864,7 +2930,7 @@ class ObCREARecord(ObFormIDRecord):
         UINT32_LISTMACRO(type, 58, 1)
         FORMID_LISTMACRO(sound, 58, 2)
         UINT8_LISTMACRO(chance, 58, 3)
-        copyattrs = ['type', 'sound', 'chance']
+        exportattrs = copyattrs = ['type', 'sound', 'chance']
 
     STRING_MACRO(full, 5)
     ISTRING_MACRO(modPath, 6)
@@ -2991,6 +3057,21 @@ class ObCREARecord(ObFormIDRecord):
                                         'baseScale', 'footWeight',
                                         'inheritsSoundsFrom', 'bloodSprayPath',
                                         'bloodDecalPath', 'sounds_list']
+    exportattrs = ObFormIDRecord.baseattrs + ['full', 'modPath', 'modb', 'spells',
+                                        'bodyParts', 'flags', 'baseSpell',
+                                        'fatigue', 'barterGold', 'level', 'calcMin',
+                                        'calcMax', 'factions_list', 'deathItem',
+                                        'script', 'items_list', 'aggression', 'confidence',
+                                        'energyLevel', 'responsibility', 'services',
+                                        'trainSkill', 'trainLevel', 'aiPackages',
+                                        'animations', 'creatureType', 'combat', 'magic',
+                                        'stealth', 'soulType', 'health', 'attackDamage',
+                                        'strength', 'intelligence', 'willpower', 'agility',
+                                        'speed', 'endurance', 'personality', 'luck',
+                                        'attackReach', 'combatStyle', 'turningSpeed',
+                                        'baseScale', 'footWeight',
+                                        'inheritsSoundsFrom', 'bloodSprayPath',
+                                        'bloodDecalPath', 'sounds_list'] #'modt_p', 'nift_p', 
 
 class ObCSTYRecord(ObFormIDRecord):
     _Type = 'CSTY'
@@ -3067,7 +3148,7 @@ class ObCSTYRecord(ObFormIDRecord):
     BasicFlagMACRO(IsPrefersRanged, flagsA, 0x00000040)
     BasicFlagMACRO(IsMeleeAlertOK, flagsA, 0x00000080)
     BasicFlagMACRO(IsDoNotAcquire, flagsB, 0x00000001)
-    copyattrs = ObFormIDRecord.baseattrs + ['dodgeChance', 'lrChance', 'lrTimerMin', 'lrTimerMax',
+    exportattrs = copyattrs = ObFormIDRecord.baseattrs + ['dodgeChance', 'lrChance', 'lrTimerMin', 'lrTimerMax',
                                         'forTimerMin', 'forTimerMax', 'backTimerMin',
                                         'backTimerMax', 'idleTimerMin', 'idleTimerMax',
                                         'blkChance', 'atkChance', 'atkBRecoil', 'atkBUnc',
@@ -3097,7 +3178,7 @@ class ObDIALRecord(ObFormIDRecord):
     BasicTypeMACRO(IsDetection, dialType, 4, IsTopic)
     BasicTypeMACRO(IsService, dialType, 5, IsTopic)
     BasicTypeMACRO(IsMisc, dialType, 6, IsTopic)
-    copyattrs = ObFormIDRecord.baseattrs + ['quests', 'removedQuests',
+    exportattrs = copyattrs = ObFormIDRecord.baseattrs + ['quests', 'removedQuests',
                                         'full', 'dialType']
 
 class ObDOORRecord(ObFormIDRecord):
@@ -3120,6 +3201,10 @@ class ObDOORRecord(ObFormIDRecord):
                                         'script', 'soundOpen',
                                         'soundClose', 'soundLoop',
                                         'flags', 'destinations']
+    exportattrs = ObFormIDRecord.baseattrs + ['full', 'modPath', 'modb',
+                                        'script', 'soundOpen',
+                                        'soundClose', 'soundLoop',
+                                        'flags', 'destinations'] # 'modt_p',
 
 class ObEFSHRecord(ObFormIDRecord):
     _Type = 'EFSH'
@@ -3205,7 +3290,7 @@ class ObEFSHRecord(ObFormIDRecord):
     BasicAliasMACRO(IsEdgeEffectInverse, IsEdgeInverse)
     BasicFlagMACRO(IsMemSkinOnly, flags, 0x00000020)
     BasicAliasMACRO(IsMembraneShaderSkinOnly, IsMemSkinOnly)
-    copyattrs = ObFormIDRecord.baseattrs + ['fillTexturePath', 'particleTexturePath', 'flags', 'memSBlend', 'memBlendOp',
+    exportattrs = copyattrs = ObFormIDRecord.baseattrs + ['fillTexturePath', 'particleTexturePath', 'flags', 'memSBlend', 'memBlendOp',
                                         'memZFunc', 'fillRed', 'fillGreen', 'fillBlue', 'fillAIn', 'fillAFull',
                                         'fillAOut', 'fillAPRatio', 'fillAAmp', 'fillAFreq', 'fillAnimSpdU',
                                         'fillAnimSpdV', 'edgeOff', 'edgeRed', 'edgeGreen', 'edgeBlue', 'edgeAIn',
@@ -3242,11 +3327,11 @@ class ObENCHRecord(ObFormIDRecord):
     UINT8_MACRO(majorVersion, 15)
     UINT8_ARRAY_MACRO(reserved, 16, 0x1C)
     UINT8_ARRAY_MACRO(datx_p, 17, 0x20)
-    copyattrs = ObFormIDRecord.baseattrs + ['full', 'itemType', 'chargeAmount',
+    exportattrs = copyattrs = ObFormIDRecord.baseattrs + ['full', 'itemType', 'chargeAmount',
                                         'enchantCost', 'flags', 'effects_list']
     copyattrsOBME = copyattrs + ['recordVersion', 'betaVersion',
                                  'minorVersion', 'majorVersion',
-                                 'reserved', 'datx_p']
+                                 'reserved'] #, 'datx_p'
 
 class ObEYESRecord(ObFormIDRecord):
     _Type = 'EYES'
@@ -3254,7 +3339,7 @@ class ObEYESRecord(ObFormIDRecord):
     ISTRING_MACRO(iconPath, 6)
     UINT8_FLAG_MACRO(flags, 7)
     BasicFlagMACRO(IsPlayable, flags, 0x00000001)
-    copyattrs = ObFormIDRecord.baseattrs + ['full', 'iconPath', 'flags']
+    exportattrs = copyattrs = ObFormIDRecord.baseattrs + ['full', 'iconPath', 'flags']
 
 class ObFACTRecord(ObFormIDRecord):
     _Type = 'FACT'
@@ -3263,7 +3348,7 @@ class ObFACTRecord(ObFormIDRecord):
         STRING_LISTMACRO(male, 10, 2)
         STRING_LISTMACRO(female, 10, 3)
         ISTRING_LISTMACRO(insigniaPath, 10, 4)
-        copyattrs = ['rank', 'male', 'female', 'insigniaPath']
+        exportattrs = copyattrs = ['rank', 'male', 'female', 'insigniaPath']
 
     STRING_MACRO(full, 5)
 
@@ -3275,7 +3360,7 @@ class ObFACTRecord(ObFormIDRecord):
     BasicFlagMACRO(IsHiddenFromPC, flags, 0x00000001)
     BasicFlagMACRO(IsEvil, flags, 0x00000002)
     BasicFlagMACRO(IsSpecialCombat, flags, 0x00000004)
-    copyattrs = ObFormIDRecord.baseattrs + ['full', 'relations_list', 'flags',
+    exportattrs = copyattrs = ObFormIDRecord.baseattrs + ['full', 'relations_list', 'flags',
                                         'crimeGoldMultiplier', 'ranks_list']
 
 class ObFLORRecord(ObFormIDRecord):
@@ -3293,6 +3378,9 @@ class ObFLORRecord(ObFormIDRecord):
     copyattrs = ObFormIDRecord.baseattrs + ['full', 'modPath', 'modb', 'modt_p',
                                         'script', 'ingredient', 'spring',
                                         'summer', 'fall', 'winter']
+    exportattrs = ObFormIDRecord.baseattrs + ['full', 'modPath', 'modb',
+                                        'script', 'ingredient', 'spring',
+                                        'summer', 'fall', 'winter'] # 'modt_p',
 
 class ObFURNRecord(ObFormIDRecord):
     _Type = 'FURN'
@@ -3336,12 +3424,14 @@ class ObFURNRecord(ObFormIDRecord):
     MaskedTypeMACRO(IsSleepAnim, flags, 0xC0000000, 0x80000000, IsSitAnim)
     copyattrs = ObFormIDRecord.baseattrs + ['full', 'modPath', 'modb',
                                         'modt_p', 'script', 'flags']
+    exportattrs = ObFormIDRecord.baseattrs + ['full', 'modPath', 'modb',
+                                        'script', 'flags'] #'modt_p', 
 
 class ObGLOBRecord(ObFormIDRecord):
     _Type = 'GLOB'
     CHAR_MACRO(format, 5)
     FLOAT32_MACRO(value, 6)
-    copyattrs = ObFormIDRecord.baseattrs + ['format', 'value']
+    exportattrs = copyattrs = ObFormIDRecord.baseattrs + ['format', 'value']
 
 class ObGRASRecord(ObFormIDRecord):
     _Type = 'GRAS'
@@ -3371,6 +3461,10 @@ class ObGRASRecord(ObFormIDRecord):
                                         'minSlope', 'maxSlope', 'waterDistance',
                                         'waterOp', 'posRange', 'heightRange',
                                         'colorRange', 'wavePeriod', 'flags']
+    exportattrs = ObFormIDRecord.baseattrs + ['modPath', 'modb', 'density',
+                                        'minSlope', 'maxSlope', 'waterDistance',
+                                        'waterOp', 'posRange', 'heightRange',
+                                        'colorRange', 'wavePeriod', 'flags'] #'modt_p', 
 
 class ObHAIRRecord(ObFormIDRecord):
     _Type = 'HAIR'
@@ -3388,6 +3482,8 @@ class ObHAIRRecord(ObFormIDRecord):
     BasicFlagMACRO(IsFixedColor, flags, 0x00000008)
     copyattrs = ObFormIDRecord.baseattrs + ['full', 'modPath', 'modb',
                                         'modt_p', 'iconPath', 'flags']
+    exportattrs = ObFormIDRecord.baseattrs + ['full', 'modPath', 'modb',
+                                        'iconPath', 'flags'] #'modt_p', 
 
 class ObIDLERecord(ObFormIDRecord):
     _Type = 'IDLE'
@@ -3410,6 +3506,8 @@ class ObIDLERecord(ObFormIDRecord):
     BasicInvertedFlagMACRO(IsReturnFile, IsNotReturnFile)
     copyattrs = ObFormIDRecord.baseattrs + ['modPath', 'modb', 'modt_p',
                                         'conditions_list', 'group', 'parent', 'prevId']
+    exportattrs = ObFormIDRecord.baseattrs + ['modPath', 'modb', 'conditions_list', 
+                                            'group', 'parent', 'prevId'] # 'modt_p',
 
 class ObINGRRecord(ObFormIDRecord):
     _Type = 'INGR'
@@ -3438,9 +3536,12 @@ class ObINGRRecord(ObFormIDRecord):
     copyattrs = ObFormIDRecord.baseattrs + ['full', 'modPath', 'modb', 'modt_p', 'iconPath',
                                         'script', 'weight', 'value', 'flags',
                                         'effects_list']
+    exportattrs = ObFormIDRecord.baseattrs + ['full', 'modPath', 'modb', 'iconPath',
+                                        'script', 'weight', 'value', 'flags',
+                                        'effects_list'] #'modt_p', 
     copyattrsOBME = copyattrs + ['recordVersion', 'betaVersion',
                                  'minorVersion', 'majorVersion',
-                                 'reserved', 'datx_p']
+                                 'reserved'] #, 'datx_p'
 
 class ObKEYMRecord(ObFormIDRecord):
     _Type = 'KEYM'
@@ -3454,6 +3555,8 @@ class ObKEYMRecord(ObFormIDRecord):
     FLOAT32_MACRO(weight, 12)
     copyattrs = ObFormIDRecord.baseattrs + ['full', 'modPath', 'modb', 'modt_p', 'iconPath',
                                         'script', 'value', 'weight']
+    exportattrs = ObFormIDRecord.baseattrs + ['full', 'modPath', 'modb', 'iconPath',
+                                        'script', 'value', 'weight'] #'modt_p', 
 
 class ObLIGHRecord(ObFormIDRecord):
     _Type = 'LIGH'
@@ -3490,6 +3593,10 @@ class ObLIGHRecord(ObFormIDRecord):
                                         'iconPath', 'duration', 'radius', 'red',
                                         'green', 'blue', 'flags', 'falloff', 'fov',
                                         'value', 'weight', 'fade', 'sound']
+    exportattrs = ObFormIDRecord.baseattrs + ['modPath', 'modb', 'script', 'full',
+                                        'iconPath', 'duration', 'radius', 'red',
+                                        'green', 'blue', 'flags', 'falloff', 'fov',
+                                        'value', 'weight', 'fade', 'sound'] #'modt_p', 
 
 class ObLSCRRecord(ObFormIDRecord):
     _Type = 'LSCR'
@@ -3498,13 +3605,13 @@ class ObLSCRRecord(ObFormIDRecord):
         FORMID_LISTMACRO(indirect, 7, 2)
         SINT16_LISTMACRO(gridY, 7, 3)
         SINT16_LISTMACRO(gridX, 7, 4)
-        copyattrs = ['direct', 'indirect', 'gridY', 'gridX']
+        exportattrs = copyattrs = ['direct', 'indirect', 'gridY', 'gridX']
 
     ISTRING_MACRO(iconPath, 5)
     STRING_MACRO(text, 6)
 
     LIST_MACRO(locations, 7, self.Location)
-    copyattrs = ObFormIDRecord.baseattrs + ['iconPath', 'text', 'locations_list']
+    exportattrs = copyattrs = ObFormIDRecord.baseattrs + ['iconPath', 'text', 'locations_list']
 
 class ObLTEXRecord(ObFormIDRecord):
     _Type = 'LTEX'
@@ -3529,7 +3636,7 @@ class ObLTEXRecord(ObFormIDRecord):
     BasicFlagMACRO(IsHeavyWood, flags, 0x00001000)
     BasicFlagMACRO(IsChain, flags, 0x00002000)
     BasicFlagMACRO(IsSnow, flags, 0x00004000)
-    copyattrs = ObFormIDRecord.baseattrs + ['iconPath', 'flags', 'friction', 'restitution',
+    exportattrs = copyattrs = ObFormIDRecord.baseattrs + ['iconPath', 'flags', 'friction', 'restitution',
                                         'specular', 'grass']
 
 class ObLVLCRecord(ObFormIDRecord):
@@ -3540,7 +3647,7 @@ class ObLVLCRecord(ObFormIDRecord):
         FORMID_LISTMACRO(listId, 9, 3)
         SINT16_LISTMACRO(count, 9, 4)
         UINT8_ARRAY_LISTMACRO(unused2, 9, 5, 2)
-        copyattrs = ['level', 'listId', 'count']
+        exportattrs = copyattrs = ['level', 'listId', 'count']
 
     def mergeFilter(self,modSet):
         """Filter out items that don't come from specified modSet."""
@@ -3555,7 +3662,7 @@ class ObLVLCRecord(ObFormIDRecord):
     BasicFlagMACRO(IsCalcFromAllLevels, flags, 0x00000001)
     BasicFlagMACRO(IsCalcForEachItem, flags, 0x00000002)
     BasicFlagMACRO(IsUseAllSpells, flags, 0x00000004)
-    copyattrs = ObFormIDRecord.baseattrs + ['chanceNone', 'flags', 'script',
+    exportattrs = copyattrs = ObFormIDRecord.baseattrs + ['chanceNone', 'flags', 'script',
                                         'template', 'entries_list']
 
 class ObLVLIRecord(ObFormIDRecord):
@@ -3566,7 +3673,7 @@ class ObLVLIRecord(ObFormIDRecord):
         FORMID_LISTMACRO(listId, 9, 3)
         SINT16_LISTMACRO(count, 9, 4)
         UINT8_ARRAY_LISTMACRO(unused2, 9, 5, 2)
-        copyattrs = ['level', 'listId', 'count']
+        exportattrs = copyattrs = ['level', 'listId', 'count']
 
     def mergeFilter(self,modSet):
         """Filter out items that don't come from specified modSet."""
@@ -3579,7 +3686,7 @@ class ObLVLIRecord(ObFormIDRecord):
     BasicFlagMACRO(IsCalcFromAllLevels, flags, 0x00000001)
     BasicFlagMACRO(IsCalcForEachItem, flags, 0x00000002)
     BasicFlagMACRO(IsUseAllSpells, flags, 0x00000004)
-    copyattrs = ObFormIDRecord.baseattrs + ['chanceNone', 'flags', 'entries_list']
+    exportattrs = copyattrs = ObFormIDRecord.baseattrs + ['chanceNone', 'flags', 'entries_list']
 
 class ObLVSPRecord(ObFormIDRecord):
     _Type = 'LVSP'
@@ -3589,7 +3696,7 @@ class ObLVSPRecord(ObFormIDRecord):
         FORMID_LISTMACRO(listId, 9, 3)
         SINT16_LISTMACRO(count, 9, 4)
         UINT8_ARRAY_LISTMACRO(unused2, 9, 5, 2)
-        copyattrs = ['level', 'listId', 'count']
+        exportattrs = copyattrs = ['level', 'listId', 'count']
 
     def mergeFilter(self,modSet):
         """Filter out items that don't come from specified modSet."""
@@ -3602,7 +3709,7 @@ class ObLVSPRecord(ObFormIDRecord):
     BasicFlagMACRO(IsCalcFromAllLevels, flags, 0x00000001)
     BasicFlagMACRO(IsCalcForEachItem, flags, 0x00000002)
     BasicFlagMACRO(IsUseAllSpells, flags, 0x00000004)
-    copyattrs = ObFormIDRecord.baseattrs + ['chanceNone', 'flags', 'entries_list']
+    exportattrs = copyattrs = ObFormIDRecord.baseattrs + ['chanceNone', 'flags', 'entries_list']
 
 class ObMGEFRecord(ObEditorIDRecord):
     _Type = 'MGEF'
@@ -3721,11 +3828,19 @@ class ObMGEFRecord(ObEditorIDRecord):
                                           'castingSound', 'boltSound', 'hitSound',
                                           'areaSound', 'cefEnchantment', 'cefBarter',
                                           'counterEffects']
+    exportattrs = ObEditorIDRecord.baseattrs + ['full', 'text', 'iconPath', 'modPath',
+                                          'modb', 'flags', 'baseCost',
+                                          'associated', 'school', 'resistValue',
+                                          'numCounters', 'light', 'projectileSpeed',
+                                          'effectShader', 'enchantEffect',
+                                          'castingSound', 'boltSound', 'hitSound',
+                                          'areaSound', 'cefEnchantment', 'cefBarter',
+                                          'counterEffects'] #'modt_p', 
     copyattrsOBME = copyattrs + ['recordVersion', 'betaVersion',
                                  'minorVersion', 'majorVersion',
                                  'mgefParamAInfo', 'mgefParamBInfo',
                                  'reserved1', 'handlerCode', 'OBMEFlags',
-                                 'mgefParamB', 'reserved2', 'mgefCode', 'datx_p']
+                                 'mgefParamB', 'reserved2', 'mgefCode'] #, 'datx_p'
 
 class ObMISCRecord(ObFormIDRecord):
     _Type = 'MISC'
@@ -3739,6 +3854,8 @@ class ObMISCRecord(ObFormIDRecord):
     FLOAT32_MACRO(weight, 12)
     copyattrs = ObFormIDRecord.baseattrs + ['full', 'modPath', 'modb', 'modt_p', 'iconPath',
                                         'script', 'value', 'weight']
+    exportattrs = ObFormIDRecord.baseattrs + ['full', 'modPath', 'modb', 'iconPath',
+                                        'script', 'value', 'weight'] #'modt_p', 
 
 class ObNPC_Record(ObFormIDRecord):
     _Type = 'NPC_'
@@ -3872,6 +3989,28 @@ class ObNPC_Record(ObFormIDRecord):
                                         'hairLength', 'eye', 'hairRed',
                                         'hairGreen', 'hairBlue', 'combatStyle',
                                         'fggs_p', 'fgga_p', 'fgts_p', 'fnam']
+    exportattrs = ObFormIDRecord.baseattrs + ['full', 'modPath', 'modb',
+                                        'flags', 'baseSpell', 'fatigue',
+                                        'barterGold', 'level', 'calcMin',
+                                        'calcMax', 'factions_list', 'deathItem',
+                                        'race', 'spells', 'script',
+                                        'items_list', 'aggression', 'confidence',
+                                        'energyLevel', 'responsibility',
+                                        'services', 'trainSkill', 'trainLevel',
+                                        'aiPackages', 'animations', 'iclass',
+                                        'armorer', 'athletics', 'blade',
+                                        'block', 'blunt', 'h2h', 'heavyArmor',
+                                        'alchemy', 'alteration', 'conjuration',
+                                        'destruction', 'illusion', 'mysticism',
+                                        'restoration', 'acrobatics', 'lightArmor',
+                                        'marksman', 'mercantile', 'security',
+                                        'sneak', 'speechcraft', 'health',
+                                        'strength', 'intelligence', 'willpower',
+                                        'agility', 'speed', 'endurance',
+                                        'personality', 'luck', 'hair',
+                                        'hairLength', 'eye', 'hairRed',
+                                        'hairGreen', 'hairBlue', 'combatStyle',
+                                        'fnam'] # 'modt_p', 'fggs_p', 'fgga_p', 'fgts_p', 
 
 class ObPACKRecord(ObFormIDRecord):
     _Type = 'PACK'
@@ -3933,7 +4072,7 @@ class ObPACKRecord(ObFormIDRecord):
     BasicTypeMACRO(IsTargetReference, locType, 0, IsTargetObjectID)
     BasicTypeMACRO(IsTargetObjectID, locType, 1, IsTargetReference)
     BasicTypeMACRO(IsTargetObjectType, locType, 2, IsTargetReference)
-    copyattrs = ObFormIDRecord.baseattrs + ['flags', 'aiType', 'locType', 'locId',
+    exportattrs = copyattrs = ObFormIDRecord.baseattrs + ['flags', 'aiType', 'locType', 'locId',
                                         'locRadius', 'month', 'day', 'date', 'time',
                                         'duration', 'targetType', 'targetId',
                                         'targetCount', 'conditions_list']
@@ -3959,7 +4098,7 @@ class ObQUSTRecord(ObFormIDRecord):
                 BasicFlagMACRO(IsOr, operType, 0x01)
                 BasicFlagMACRO(IsRunOnTarget, operType, 0x02)
                 BasicFlagMACRO(IsUseGlobal, operType, 0x04)
-                copyattrs = ['operType', 'compValue', 'ifunc', 'param1',
+                exportattrs = copyattrs = ['operType', 'compValue', 'ifunc', 'param1',
                              'param2']
 
             UINT8_FLAG_LISTX2MACRO(flags, 11, 2, 1)
@@ -3978,11 +4117,14 @@ class ObQUSTRecord(ObFormIDRecord):
             copyattrs = ['flags', 'conditions_list', 'text', 'numRefs', 'compiledSize',
                          'lastIndex', 'scriptType', 'compiled_p', 'scriptText',
                          'references']
+            exportattrs = ['flags', 'conditions_list', 'text', 'numRefs', 'compiledSize',
+                         'lastIndex', 'scriptType', 'scriptText',
+                         'references'] #'compiled_p', 
 
         UINT16_LISTMACRO(stage, 11, 1)
 
         LIST_LISTMACRO(entries, 11, 2, self.Entry)
-        copyattrs = ['stage', 'entries_list']
+        exportattrs = copyattrs = ['stage', 'entries_list']
 
     class Target(ListComponent):
         class ConditionX2(ListX2Component):
@@ -4002,7 +4144,7 @@ class ObQUSTRecord(ObFormIDRecord):
             BasicFlagMACRO(IsOr, operType, 0x01)
             BasicFlagMACRO(IsRunOnTarget, operType, 0x02)
             BasicFlagMACRO(IsUseGlobal, operType, 0x04)
-            copyattrs = ['operType', 'compValue', 'ifunc', 'param1',
+            exportattrs = copyattrs = ['operType', 'compValue', 'ifunc', 'param1',
                          'param2']
 
         FORMID_LISTMACRO(targetId, 12, 1)
@@ -4011,7 +4153,7 @@ class ObQUSTRecord(ObFormIDRecord):
 
         LIST_LISTMACRO(conditions, 12, 4, self.ConditionX2)
         BasicFlagMACRO(IsIgnoresLocks, flags, 0x00000001)
-        copyattrs = ['targetId', 'flags', 'conditions_list']
+        exportattrs = copyattrs = ['targetId', 'flags', 'conditions_list']
 
     FORMID_MACRO(script, 5)
     STRING_MACRO(full, 6)
@@ -4025,7 +4167,7 @@ class ObQUSTRecord(ObFormIDRecord):
     BasicFlagMACRO(IsStartEnabled, flags, 0x00000001)
     BasicFlagMACRO(IsRepeatedTopics, flags, 0x00000004)
     BasicFlagMACRO(IsRepeatedStages, flags, 0x00000008)
-    copyattrs = ObFormIDRecord.baseattrs + ['script', 'full', 'iconPath',
+    exportattrs = copyattrs = ObFormIDRecord.baseattrs + ['script', 'full', 'iconPath',
                                         'flags', 'priority', 'conditions_list',
                                         'stages_list', 'targets_list']
 
@@ -4037,6 +4179,7 @@ class ObRACERecord(ObFormIDRecord):
         ISTRING_GROUPEDMACRO(iconPath, 2)
         UINT8_ARRAY_GROUPEDMACRO(modt_p, 3)
         copyattrs = ['modPath', 'modb', 'iconPath', 'modt_p']
+        exportattrs = ['modPath', 'modb', 'iconPath']#, 'modt_p']
 
     STRING_MACRO(full, 5)
     STRING_MACRO(text, 6)
@@ -4134,17 +4277,47 @@ class ObRACERecord(ObFormIDRecord):
                                         'femaleWillpower', 'femaleAgility',
                                         'femaleSpeed', 'femaleEndurance',
                                         'femalePersonality', 'femaleLuck',
-                                        'head', 'maleEars', 'femaleEars',
-                                        'mouth', 'teethLower', 'teethUpper',
-                                        'tongue', 'leftEye', 'rightEye',
-                                        'maleTail', 'maleUpperBodyPath',
+                                        'head_list', 'maleEars_list', 'femaleEars_list',
+                                        'mouth_list', 'teethLower_list', 'teethUpper_list',
+                                        'tongue_list', 'leftEye_list', 'rightEye_list',
+                                        'maleTail_list', 'maleUpperBodyPath',
                                         'maleLowerBodyPath', 'maleHandPath',
                                         'maleFootPath', 'maleTailPath',
-                                        'femaleTail', 'femaleUpperBodyPath',
+                                        'femaleTail_list', 'femaleUpperBodyPath',
                                         'femaleLowerBodyPath', 'femaleHandPath',
                                         'femaleFootPath', 'femaleTailPath',
                                         'hairs', 'eyes', 'fggs_p',
                                         'fgga_p', 'fgts_p', 'snam_p']
+    exportattrs = ObFormIDRecord.baseattrs + ['full', 'text', 'spells',
+                                        'relations_list', 'skill1', 'skill1Boost',
+                                        'skill2', 'skill2Boost', 'skill3',
+                                        'skill3Boost', 'skill4', 'skill4Boost',
+                                        'skill5', 'skill5Boost', 'skill6',
+                                        'skill6Boost', 'skill7', 'skill7Boost',
+                                        'maleHeight', 'femaleHeight',
+                                        'maleWeight', 'femaleWeight', 'flags',
+                                        'maleVoice', 'femaleVoice',
+                                        'defaultHairMale',
+                                        'defaultHairFemale',
+                                        'defaultHairColor', 'mainClamp',
+                                        'faceClamp', 'maleStrength',
+                                        'maleIntelligence', 'maleAgility',
+                                        'maleSpeed', 'maleEndurance',
+                                        'malePersonality', 'maleLuck',
+                                        'femaleStrength', 'femaleIntelligence',
+                                        'femaleWillpower', 'femaleAgility',
+                                        'femaleSpeed', 'femaleEndurance',
+                                        'femalePersonality', 'femaleLuck',
+                                        'head_list', 'maleEars_list', 'femaleEars_list',
+                                        'mouth_list', 'teethLower_list', 'teethUpper_list',
+                                        'tongue_list', 'leftEye_list', 'rightEye_list',
+                                        'maleTail_list', 'maleUpperBodyPath',
+                                        'maleLowerBodyPath', 'maleHandPath',
+                                        'maleFootPath', 'maleTailPath',
+                                        'femaleTail_list', 'femaleUpperBodyPath',
+                                        'femaleLowerBodyPath', 'femaleHandPath',
+                                        'femaleFootPath', 'femaleTailPath',
+                                        'hairs', 'eyes'] # 'fggs_p','fgga_p', 'fgts_p', 'snam_p'
 
 class ObREGNRecord(ObFormIDRecord):
     _Type = 'REGN'
@@ -4152,12 +4325,12 @@ class ObREGNRecord(ObFormIDRecord):
         class Point(ListX2Component):
             FLOAT32_LISTX2MACRO(posX, 11, 2, 1)
             FLOAT32_LISTX2MACRO(posY, 11, 2, 2)
-            copyattrs = ['posX', 'posY']
+            exportattrs = copyattrs = ['posX', 'posY']
 
         FORMID_LISTMACRO(edgeFalloff, 11, 1)
 
         LIST_LISTMACRO(points, 11, 2, self.Point)
-        copyattrs = ['edgeFalloff', 'points_list']
+        exportattrs = copyattrs = ['edgeFalloff', 'points_list']
 
     class Entry(ListComponent):
         class Object(ListX2Component):
@@ -4189,7 +4362,7 @@ class ObREGNRecord(ObFormIDRecord):
             BasicFlagMACRO(IsZVariance, flags, 0x00000020)
             BasicFlagMACRO(IsTree, flags, 0x00000040)
             BasicFlagMACRO(IsHugeRock, flags, 0x00000080)
-            copyattrs = ['objectId', 'parentIndex', 'density', 'clustering',
+            exportattrs = copyattrs = ['objectId', 'parentIndex', 'density', 'clustering',
                          'minSlope', 'maxSlope', 'flags', 'radiusWRTParent',
                          'radius', 'unk1', 'maxHeight', 'sink', 'sinkVar',
                          'sizeVar', 'angleVarX', 'angleVarY', 'angleVarZ',
@@ -4198,7 +4371,7 @@ class ObREGNRecord(ObFormIDRecord):
         class Grass(ListX2Component):
             FORMID_LISTX2MACRO(grass, 12, 8, 1)
             UINT8_ARRAY_LISTX2MACRO(unk1, 12, 8, 2, 4)
-            copyattrs = ['grass', 'unk1']
+            exportattrs = copyattrs = ['grass', 'unk1']
 
         class Sound(ListX2Component):
             FORMID_LISTX2MACRO(sound, 12, 10, 1)
@@ -4208,12 +4381,12 @@ class ObREGNRecord(ObFormIDRecord):
             BasicFlagMACRO(IsCloudy, flags, 0x00000002)
             BasicFlagMACRO(IsRainy, flags, 0x00000004)
             BasicFlagMACRO(IsSnowy, flags, 0x00000008)
-            copyattrs = ['sound', 'flags', 'chance']
+            exportattrs = copyattrs = ['sound', 'flags', 'chance']
 
         class Weather(ListX2Component):
             FORMID_LISTX2MACRO(weather, 12, 11, 1)
             UINT32_LISTX2MACRO(chance, 12, 11, 2)
-            copyattrs = ['weather', 'chance']
+            exportattrs = copyattrs = ['weather', 'chance']
 
         UINT32_TYPE_LISTMACRO(entryType, 12, 1)
         UINT8_FLAG_LISTMACRO(flags, 12, 2)
@@ -4239,7 +4412,7 @@ class ObREGNRecord(ObFormIDRecord):
         BasicTypeMACRO(IsPublic, musicType, 1, IsDefault)
         BasicTypeMACRO(IsDungeon, musicType, 2, IsDefault)
         BasicFlagMACRO(IsOverride, flags, 0x00000001)
-        copyattrs = ['entryType', 'flags', 'priority', 'objects_list', 'mapName',
+        exportattrs = copyattrs = ['entryType', 'flags', 'priority', 'objects_list', 'mapName',
                      'iconPath', 'grasses_list', 'musicType', 'sounds_list', 'weathers_list']
 
     ISTRING_MACRO(iconPath, 5)
@@ -4251,7 +4424,7 @@ class ObREGNRecord(ObFormIDRecord):
 
     LIST_MACRO(areas, 11, self.Area)
     LIST_MACRO(entries, 12, self.Entry)
-    copyattrs = ObFormIDRecord.baseattrs + ['iconPath', 'mapRed', 'mapGreen',
+    exportattrs = copyattrs = ObFormIDRecord.baseattrs + ['iconPath', 'mapRed', 'mapGreen',
                                         'mapBlue', 'worldspace', 'areas_list',
                                         'entries_list']
 
@@ -4260,7 +4433,7 @@ class ObSBSPRecord(ObFormIDRecord):
     FLOAT32_MACRO(sizeX, 5)
     FLOAT32_MACRO(sizeY, 6)
     FLOAT32_MACRO(sizeZ, 7)
-    copyattrs = ObFormIDRecord.baseattrs + ['sizeX', 'sizeY', 'sizeZ']
+    exportattrs = copyattrs = ObFormIDRecord.baseattrs + ['sizeX', 'sizeY', 'sizeZ']
 
 class ObSCPTRecord(ObFormIDRecord):
     _Type = 'SCPT'
@@ -4271,7 +4444,7 @@ class ObSCPTRecord(ObFormIDRecord):
         UINT8_ARRAY_LISTMACRO(unused2, 12, 4, 7)
         STRING_LISTMACRO(name, 12, 5)
         BasicFlagMACRO(IsLongOrShort, flags, 0x00000001)
-        copyattrs = ['index', 'flags', 'name']
+        exportattrs = copyattrs = ['index', 'flags', 'name']
 
     UINT8_ARRAY_MACRO(unused1, 5, 2)
     UINT32_MACRO(numRefs, 6)
@@ -4286,6 +4459,9 @@ class ObSCPTRecord(ObFormIDRecord):
     copyattrs = ObFormIDRecord.baseattrs + ['numRefs', 'compiledSize', 'lastIndex',
                                         'scriptType', 'compiled_p', 'scriptText',
                                         'vars_list', 'references']
+    exportattrs = ObFormIDRecord.baseattrs + ['numRefs', 'compiledSize', 'lastIndex',
+                                        'scriptType', 'scriptText',
+                                        'vars_list', 'references'] #'compiled_p', 
 
 class ObSGSTRecord(ObFormIDRecord):
     _Type = 'SGST'
@@ -4311,9 +4487,12 @@ class ObSGSTRecord(ObFormIDRecord):
     copyattrs = ObFormIDRecord.baseattrs + ['full', 'modPath', 'modb', 'modt_p',
                                         'iconPath', 'script', 'effects_list',
                                         'uses', 'value', 'weight']
+    exportattrs = ObFormIDRecord.baseattrs + ['full', 'modPath', 'modb',
+                                        'iconPath', 'script', 'effects_list',
+                                        'uses', 'value', 'weight'] # 'modt_p',
     copyattrsOBME = copyattrs + ['recordVersion', 'betaVersion',
                                  'minorVersion', 'majorVersion',
-                                 'reserved', 'datx_p']
+                                 'reserved'] #, 'datx_p'
 
 class ObSKILRecord(ObFormIDRecord):
     _Type = 'SKIL'
@@ -4329,7 +4508,7 @@ class ObSKILRecord(ObFormIDRecord):
     STRING_MACRO(journeyman, 14)
     STRING_MACRO(expert, 15)
     STRING_MACRO(master, 16)
-    copyattrs = ObFormIDRecord.baseattrs + ['skill', 'description', 'iconPath',
+    exportattrs = copyattrs = ObFormIDRecord.baseattrs + ['skill', 'description', 'iconPath',
                                         'action', 'attribute', 'specialization',
                                         'use0', 'use1', 'apprentice',
                                         'journeyman', 'expert', 'master']
@@ -4361,6 +4540,9 @@ class ObSLGMRecord(ObFormIDRecord):
     copyattrs = ObFormIDRecord.baseattrs + ['full', 'modPath', 'modb', 'modt_p',
                                         'iconPath', 'script', 'value',
                                         'weight', 'soulType', 'capacityType']
+    exportattrs = ObFormIDRecord.baseattrs + ['full', 'modPath', 'modb',
+                                        'iconPath', 'script', 'value',
+                                        'weight', 'soulType', 'capacityType'] # 'modt_p',
 
 class ObSOUNRecord(ObFormIDRecord):
     _Type = 'SOUN'
@@ -4382,7 +4564,7 @@ class ObSOUNRecord(ObFormIDRecord):
     BasicFlagMACRO(IsMenuSound, flags, 0x00000020)
     BasicFlagMACRO(Is2D, flags, 0x00000040)
     BasicFlagMACRO(Is360LFE, flags, 0x00000080)
-    copyattrs = ObFormIDRecord.baseattrs + ['soundPath', 'minDistance', 'maxDistance',
+    exportattrs = copyattrs = ObFormIDRecord.baseattrs + ['soundPath', 'minDistance', 'maxDistance',
                                         'freqAdjustment', 'flags', 'staticAtten',
                                         'stopTime', 'startTime']
 
@@ -4426,11 +4608,11 @@ class ObSPELRecord(ObFormIDRecord):
     UINT8_MACRO(majorVersion, 15)
     UINT8_ARRAY_MACRO(reserved, 16, 0x1C)
     UINT8_ARRAY_MACRO(datx_p, 17, 0x20)
-    copyattrs = ObFormIDRecord.baseattrs + ['full', 'spellType', 'cost',
+    exportattrs = copyattrs = ObFormIDRecord.baseattrs + ['full', 'spellType', 'cost',
                                         'level', 'flags', 'effects_list']
     copyattrsOBME = copyattrs + ['recordVersion', 'betaVersion',
                                  'minorVersion', 'majorVersion',
-                                 'reserved', 'datx_p']
+                                 'reserved'] #, 'datx_p'
 
 class ObSTATRecord(ObFormIDRecord):
     _Type = 'STAT'
@@ -4438,6 +4620,7 @@ class ObSTATRecord(ObFormIDRecord):
     FLOAT32_MACRO(modb, 6)
     UINT8_ARRAY_MACRO(modt_p, 7)
     copyattrs = ObFormIDRecord.baseattrs + ['modPath', 'modb', 'modt_p']
+    exportattrs = ObFormIDRecord.baseattrs + ['modPath', 'modb']#, 'modt_p']
 
 class ObTREERecord(ObFormIDRecord):
     _Type = 'TREE'
@@ -4461,6 +4644,11 @@ class ObTREERecord(ObFormIDRecord):
                                         'maxAngle', 'branchDim', 'leafDim',
                                         'shadowRadius', 'rockSpeed',
                                         'rustleSpeed', 'widthBill', 'heightBill']
+    exportattrs = ObFormIDRecord.baseattrs + ['modPath', 'modb', 'iconPath',
+                                        'speedTree', 'curvature', 'minAngle',
+                                        'maxAngle', 'branchDim', 'leafDim',
+                                        'shadowRadius', 'rockSpeed',
+                                        'rustleSpeed', 'widthBill', 'heightBill'] #'modt_p', 
 
 class ObWATRRecord(ObFormIDRecord):
     _Type = 'WATR'
@@ -4511,7 +4699,7 @@ class ObWATRRecord(ObFormIDRecord):
     BasicFlagMACRO(IsCausesDamage, flags, 0x00000001)
     BasicAliasMACRO(IsCausesDmg, IsCausesDamage)
     BasicFlagMACRO(IsReflective, flags, 0x00000002)
-    copyattrs = ObFormIDRecord.baseattrs + ['texturePath', 'opacity', 'flags', 'materialPath',
+    exportattrs = copyattrs = ObFormIDRecord.baseattrs + ['texturePath', 'opacity', 'flags', 'materialPath',
                                         'sound', 'windVelocity', 'windDirection',
                                         'waveAmp', 'waveFreq', 'sunPower',
                                         'reflectAmt', 'fresnelAmt', 'xSpeed',
@@ -4558,6 +4746,11 @@ class ObWEAPRecord(ObFormIDRecord):
                                         'enchantPoints', 'weaponType',
                                         'speed', 'reach', 'flags', 'value',
                                         'health', 'weight', 'damage']
+    exportattrs = ObFormIDRecord.baseattrs + ['full', 'modPath', 'modb',
+                                        'iconPath', 'script', 'enchantment',
+                                        'enchantPoints', 'weaponType',
+                                        'speed', 'reach', 'flags', 'value',
+                                        'health', 'weight', 'damage'] # 'modt_p',
 
 class ObWRLDRecord(ObFormIDRecord):
     _Type = 'WRLD'
@@ -4591,10 +4784,10 @@ class ObWRLDRecord(ObFormIDRecord):
     BasicTypeMACRO(IsDefault, musicType, 0, IsPublic)
     BasicTypeMACRO(IsPublic, musicType, 1, IsDefault)
     BasicTypeMACRO(IsDungeon, musicType, 2, IsDefault)
-    copyattrs = ObFormIDRecord.baseattrs + ['full', 'parent', 'climate', 'water', 'mapPath',
+    exportattrs = copyattrs = ObFormIDRecord.baseattrs + ['full', 'parent', 'climate', 'water', 'mapPath',
                                         'dimX', 'dimY', 'NWCellX', 'NWCellY', 'SECellX',
                                         'SECellY', 'flags', 'unknown00', 'unknown01',
-                                        'unknown90', 'unknown91', 'musicType', 'ofst_p', 'ROAD', 'WorldCELL']
+                                        'unknown90', 'unknown91', 'musicType', 'ROAD', 'WorldCELL'] #'ofst_p', 
 
 class ObWTHRRecord(ObFormIDRecord):
     _Type = 'WTHR'
@@ -4615,7 +4808,7 @@ class ObWTHRRecord(ObFormIDRecord):
         UINT8_GROUPEDMACRO(nightGreen, 13)
         UINT8_GROUPEDMACRO(nightBlue, 14)
         UINT8_ARRAY_GROUPEDMACRO(unused4, 15, 1)
-        copyattrs = ['riseRed', 'riseGreen', 'riseBlue',
+        exportattrs = copyattrs = ['riseRed', 'riseGreen', 'riseBlue',
                      'dayRed', 'dayGreen', 'dayBlue',
                      'setRed', 'setGreen', 'setBlue',
                      'nightRed', 'nightGreen', 'nightBlue']
@@ -4628,7 +4821,7 @@ class ObWTHRRecord(ObFormIDRecord):
         BasicAliasMACRO(IsPrecip, IsPrecipitation)
         BasicTypeMACRO(IsWind, type, 2, IsDefault)
         BasicTypeMACRO(IsThunder, type, 3, IsDefault)
-        copyattrs = ['sound', 'type']
+        exportattrs = copyattrs = ['sound', 'type']
 
     ISTRING_MACRO(lowerLayerPath, 5)
     ISTRING_MACRO(upperLayerPath, 6)
@@ -4690,10 +4883,10 @@ class ObWTHRRecord(ObFormIDRecord):
     BasicFlagMACRO(IsUnk1, weatherType, 0x40)
     BasicFlagMACRO(IsUnk2, weatherType, 0x80)
     copyattrs = ObFormIDRecord.baseattrs + ['lowerLayerPath', 'upperLayerPath', 'modPath',
-                                        'modb', 'modt_p', 'upperSky', 'fog',
-                                        'lowerClouds', 'ambient', 'sunlight',
-                                        'sun', 'stars', 'lowerSky', 'horizon',
-                                        'upperClouds', 'fogDayNear', 'fogDayFar',
+                                        'modb', 'modt_p', 'upperSky_list', 'fog_list',
+                                        'lowerClouds_list', 'ambient_list', 'sunlight_list',
+                                        'sun_list', 'stars_list', 'lowerSky_list', 'horizon_list',
+                                        'upperClouds_list', 'fogDayNear', 'fogDayFar',
                                         'fogNightNear', 'fogNightFar', 'eyeAdaptSpeed',
                                         'blurRadius', 'blurPasses', 'emissiveMult',
                                         'targetLum', 'upperLumClamp', 'brightScale',
@@ -4704,6 +4897,21 @@ class ObWTHRRecord(ObFormIDRecord):
                                         'sunDamage', 'rainFadeIn', 'rainFadeOut',
                                         'boltFadeIn', 'boltFadeOut', 'boltFrequency',
                                         'weatherType', 'boltRed', 'boltGreen', 'boltBlue', 'sounds_list']
+    exportattrs = ObFormIDRecord.baseattrs + ['lowerLayerPath', 'upperLayerPath', 'modPath',
+                                        'modb', 'upperSky_list', 'fog_list',
+                                        'lowerClouds_list', 'ambient_list', 'sunlight_list',
+                                        'sun_list', 'stars_list', 'lowerSky_list', 'horizon_list',
+                                        'upperClouds_list', 'fogDayNear', 'fogDayFar',
+                                        'fogNightNear', 'fogNightFar', 'eyeAdaptSpeed',
+                                        'blurRadius', 'blurPasses', 'emissiveMult',
+                                        'targetLum', 'upperLumClamp', 'brightScale',
+                                        'brightClamp', 'lumRampNoTex', 'lumRampMin',
+                                        'lumRampMax', 'sunlightDimmer', 'grassDimmer',
+                                        'treeDimmer', 'windSpeed', 'lowerCloudSpeed',
+                                        'upperCloudSpeed', 'transDelta', 'sunGlare',
+                                        'sunDamage', 'rainFadeIn', 'rainFadeOut',
+                                        'boltFadeIn', 'boltFadeOut', 'boltFrequency',
+                                        'weatherType', 'boltRed', 'boltGreen', 'boltBlue', 'sounds_list'] #'modt_p', 
 
 #Helper functions
 validTypes = set(['GMST','GLOB','CLAS','FACT','HAIR','EYES','RACE',
@@ -4781,16 +4989,18 @@ class ObModFile(object):
         return GPath(self.NormModName)
     
     def HasRecord(self,RecordID):
-        if isinstance(RecordID, basestring): TestRecord = GMSTRecord
-        else: TestRecord = BaseRecord
+        if not RecordID: return False
+        if isinstance(RecordID, basestring): TestRecord = ObEditorIDRecord
+        else: TestRecord = ObFormIDRecord
         return TestRecord(self._CollectionID, self._ModID, RecordID, 0, 0).fid
 
     def LookupRecord(self, RecordID):
         if isinstance(RecordID, basestring):
-            RecordType = GMSTRecord
+            RecordType = ObEditorIDRecord
         else:
             RecordID = MakeShortFid(self._CollectionID, RecordID)
-            RecordType = BaseRecord
+            RecordType = ObFormIDRecord
+        if not RecordID: return None
         testRecord = RecordType(self._CollectionID, self._ModID, RecordID, 0, 0)
         RecordType = type_record[testRecord.recType]
         if RecordType:
@@ -5114,11 +5324,12 @@ class ObCollection:
         if isinstance(RecordID, basestring):
             _FormID = 0
             _EditorID = RecordID
-            RecordType = GMSTRecord
+            RecordType = ObEditorIDRecord
         else:
             _FormID = MakeShortFid(self._CollectionID, RecordID)
             _EditorID = 0
-            RecordType = BaseRecord
+            RecordType = ObFormIDRecord
+        if not (_FormID or _EditorID): return None
         numRecords = _CGetNumRecordConflicts(self._CollectionID, _FormID, _EditorID, c_ulong(GetExtendedConflicts))
         if(numRecords > 0):
             cModIDs = (c_ulong * numRecords)()

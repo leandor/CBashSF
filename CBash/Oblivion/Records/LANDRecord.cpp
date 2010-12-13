@@ -224,12 +224,19 @@ LANDRecord::LANDRecord(LANDRecord *srcRecord):
     NorthLand(NULL),
     SouthLand(NULL)
     {
-    if(srcRecord == NULL || srcRecord->GetType() != 'DNAL')
+    if(srcRecord == NULL)
         return;
 
     flags = srcRecord->flags;
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
+
+    if(!srcRecord->IsChanged())
+        {
+        recData = srcRecord->recData;
+        return;
+        }
+
 
     DATA = srcRecord->DATA;
     VNML = srcRecord->VNML;

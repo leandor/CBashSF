@@ -65,7 +65,7 @@ class GRUPRecords
             //UINT32 recordType = 0;
             UINT32 gEnd = ReadHandler.tell() + gSize - 20;
             UINT32 recordSize = 0;
-            FormIDResolver expander(FormIDHandler.ExpandTable);
+            FormIDResolver expander(FormIDHandler.ExpandTable, FormIDHandler.FileStart, FormIDHandler.FileEnd);
             RecordReader reader(FormIDHandler);
 
             while(ReadHandler.tell() < gEnd){
@@ -113,7 +113,7 @@ class GRUPRecords
                 }
             return stop;
             }
-        UINT32 WriteGRUP(UINT32 TopLabel, _FileHandler &SaveHandler, FormIDHandlerClass &FormIDHandler, bool CloseMod)
+        UINT32 WriteGRUP(UINT32 TopLabel, _FileHandler &SaveHandler, std::vector<FormIDResolver *> &Expanders, FormIDResolver &expander, FormIDResolver &collapser, const bool &bMastersChanged, bool CloseMod)
             {
             UINT32 numRecords = (UINT32)Records.size();
             if(numRecords == 0)
@@ -137,7 +137,7 @@ class GRUPRecords
             formCount += numRecords;
             for(UINT32 p = 0; p < numRecords; p++)
                 {
-                TopSize += Records[p]->Write(SaveHandler, FormIDHandler);
+                TopSize += Records[p]->Write(SaveHandler, bMastersChanged, expander, collapser, Expanders);
                 if(CloseMod)
                     delete Records[p];
                 }
@@ -172,7 +172,7 @@ class GRUPRecords<DIALRecord>
             UINT32 recordType = 0;
             UINT32 gEnd = ReadHandler.tell() + gSize - 20;
             UINT32 recordSize = 0;
-            FormIDResolver expander(FormIDHandler.ExpandTable);
+            FormIDResolver expander(FormIDHandler.ExpandTable, FormIDHandler.FileStart, FormIDHandler.FileEnd);
             RecordReader reader(FormIDHandler);
 
             while(ReadHandler.tell() < gEnd){
@@ -250,7 +250,7 @@ class GRUPRecords<DIALRecord>
                 }
             return stop;
             }
-        UINT32 WriteGRUP(_FileHandler &SaveHandler, FormIDHandlerClass &FormIDHandler, bool CloseMod)
+        UINT32 WriteGRUP(_FileHandler &SaveHandler, std::vector<FormIDResolver *> &Expanders, FormIDResolver &expander, FormIDResolver &collapser, const bool &bMastersChanged, bool CloseMod)
             {
             UINT32 numDIALRecords = (UINT32)Records.size(); //Parent Records
             if(numDIALRecords == 0)
@@ -263,7 +263,6 @@ class GRUPRecords<DIALRecord>
             UINT32 TopLabel = 'LAID';
             UINT32 numINFORecords = 0;
             UINT32 parentFormID = 0;
-            FormIDResolver collapser(FormIDHandler.CollapseTable);
             DIALRecord *curRecord = NULL;
 
             //Top GRUP Header
@@ -284,7 +283,7 @@ class GRUPRecords<DIALRecord>
                 curRecord = (DIALRecord *)Records[p];
                 parentFormID = curRecord->formID;
                 collapser.Accept(parentFormID);
-                TopSize += curRecord->Write(SaveHandler, FormIDHandler);
+                TopSize += curRecord->Write(SaveHandler, bMastersChanged, expander, collapser, Expanders);
 
                 numINFORecords = (UINT32)curRecord->INFO.size();
                 if(numINFORecords)
@@ -301,7 +300,7 @@ class GRUPRecords<DIALRecord>
                     formCount += numINFORecords;
                     for(UINT32 y = 0; y < curRecord->INFO.size(); ++y)
                         {
-                        ChildrenSize += curRecord->INFO[y]->Write(SaveHandler, FormIDHandler);
+                        ChildrenSize += curRecord->INFO[y]->Write(SaveHandler, bMastersChanged, expander, collapser, Expanders);
                         if(CloseMod)
                             delete curRecord->INFO[y];
                         }
@@ -348,7 +347,7 @@ class GRUPRecords<CELLRecord>
             UINT32 recordType = 0;
             UINT32 gEnd = ReadHandler.tell() + gSize - 20;
             UINT32 recordSize = 0;
-            FormIDResolver expander(FormIDHandler.ExpandTable);
+            FormIDResolver expander(FormIDHandler.ExpandTable, FormIDHandler.FileStart, FormIDHandler.FileEnd);
             RecordReader reader(FormIDHandler);
 
             while(ReadHandler.tell() < gEnd){
@@ -479,7 +478,7 @@ class GRUPRecords<CELLRecord>
                 }
             return stop;
             }
-        UINT32 WriteGRUP(_FileHandler &SaveHandler, FormIDHandlerClass &FormIDHandler, bool CloseMod)
+        UINT32 WriteGRUP(_FileHandler &SaveHandler, std::vector<FormIDResolver *> &Expanders, FormIDResolver &expander, FormIDResolver &collapser, const bool &bMastersChanged, bool CloseMod)
             {
             UINT32 numCELLRecords = (UINT32)Records.size();
             if(numCELLRecords == 0)
@@ -505,7 +504,6 @@ class GRUPRecords<CELLRecord>
             UINT32 numChild = 0;
 
             UINT32 parentFormID = 0;
-            FormIDResolver collapser(FormIDHandler.CollapseTable);
             CELLRecord *curRecord = NULL;
             int ObjectID, BlockIndex, SubBlockIndex;
 
@@ -570,7 +568,7 @@ class GRUPRecords<CELLRecord>
                             curRecord = BlockedRecords[curBlock][curSubBlock][p];
                             parentFormID = curRecord->formID;
                             collapser.Accept(parentFormID);
-                            subBlockSize += curRecord->Write(SaveHandler, FormIDHandler);
+                            subBlockSize += curRecord->Write(SaveHandler, bMastersChanged, expander, collapser, Expanders);
                             //Place the PGRD, ACHR, ACRE, and REFR records into their proper GRUP
                             if(curRecord->PGRD != NULL)
                                 Temporary.push_back(curRecord->PGRD);
@@ -642,7 +640,7 @@ class GRUPRecords<CELLRecord>
 
                                     for(UINT32 x = 0; x < numChild; ++x)
                                         {
-                                        childSize += Persistent[x]->Write(SaveHandler, FormIDHandler);
+                                        childSize += Persistent[x]->Write(SaveHandler, bMastersChanged, expander, collapser, Expanders);
                                         if(CloseMod)
                                             delete Persistent[x];
                                         }
@@ -666,7 +664,7 @@ class GRUPRecords<CELLRecord>
 
                                     for(UINT32 x = 0; x < numChild; ++x)
                                         {
-                                        childSize += VWD[x]->Write(SaveHandler, FormIDHandler);
+                                        childSize += VWD[x]->Write(SaveHandler, bMastersChanged, expander, collapser, Expanders);
                                         if(CloseMod)
                                             delete VWD[x];
                                         }
@@ -690,7 +688,7 @@ class GRUPRecords<CELLRecord>
 
                                     for(UINT32 x = 0; x < numChild; ++x)
                                         {
-                                        childSize += Temporary[x]->Write(SaveHandler, FormIDHandler);
+                                        childSize += Temporary[x]->Write(SaveHandler, bMastersChanged, expander, collapser, Expanders);
                                         if(CloseMod)
                                             delete Temporary[x];
                                         }
@@ -761,7 +759,7 @@ class GRUPRecords<WRLDRecord>
             GRUPs.push_back(GRUP_Size);
             UINT32 recordSize = 0;
 
-            FormIDResolver expander(FormIDHandler.ExpandTable);
+            FormIDResolver expander(FormIDHandler.ExpandTable, FormIDHandler.FileStart, FormIDHandler.FileEnd);
             RecordReader reader(FormIDHandler);
 
             while(ReadHandler.tell() < gEnd){
@@ -1104,7 +1102,7 @@ class GRUPRecords<WRLDRecord>
                 }
             return stop;
             }
-        UINT32 WriteGRUP(_FileHandler &SaveHandler, FormIDHandlerClass &FormIDHandler, bool CloseMod)
+        UINT32 WriteGRUP(_FileHandler &SaveHandler, FormIDHandlerClass &FormIDHandler, std::vector<FormIDResolver *> &Expanders, FormIDResolver &expander, FormIDResolver &collapser, const bool &bMastersChanged, bool CloseMod)
             {
             UINT32 numWrldRecords = (UINT32)Records.size();
             if(numWrldRecords == 0)
@@ -1137,8 +1135,6 @@ class GRUPRecords<WRLDRecord>
             CELLRecord *curWorldCell = NULL;
             UINT32 worldFormID = 0;
             UINT32 cellFormID = 0;
-            FormIDResolver collapser(FormIDHandler.CollapseTable);
-            RecordReader reader(FormIDHandler);
             int gridX, gridY;
             UINT32 BlockIndex, SubBlockIndex;
 
@@ -1165,7 +1161,7 @@ class GRUPRecords<WRLDRecord>
                 curWorld = (WRLDRecord *)Records[x];
                 worldFormID = curWorld->formID;
                 collapser.Accept(worldFormID);
-                TopSize += curWorld->Write(SaveHandler, FormIDHandler);
+                TopSize += curWorld->Write(SaveHandler, bMastersChanged, expander, collapser, Expanders);
 
                 curWorldCell = (CELLRecord *)curWorld->CELL;
 
@@ -1187,7 +1183,8 @@ class GRUPRecords<WRLDRecord>
                         if(curCell->REFR[y]->IsPersistent())
                             FixedPersistent.push_back(curCell->REFR[y]);
 
-                    reader.Accept((Record **)&curCell);
+                    if(curCell->Read())
+                        curCell->VisitFormIDs(expander);
                     curCell->XCLC.Load();
                     gridX = (int)floor(curCell->XCLC->posX / 8.0);
                     gridY = (int)floor(curCell->XCLC->posY / 8.0);
@@ -1225,7 +1222,7 @@ class GRUPRecords<WRLDRecord>
 
                     if(curWorld->ROAD != NULL)
                         {
-                        worldSize += curWorld->ROAD->Write(SaveHandler, FormIDHandler);
+                        worldSize += curWorld->ROAD->Write(SaveHandler, bMastersChanged, expander, collapser, Expanders);
                         ++formCount;
                         if(CloseMod)
                             {
@@ -1239,7 +1236,7 @@ class GRUPRecords<WRLDRecord>
                         curCell = curWorldCell;
                         cellFormID = curCell->formID;
                         collapser.Accept(cellFormID);
-                        worldSize += curCell->Write(SaveHandler, FormIDHandler);
+                        worldSize += curCell->Write(SaveHandler, bMastersChanged, expander, collapser, Expanders);
                         ++formCount;
 
                         if(curCell->LAND != NULL)
@@ -1340,7 +1337,7 @@ class GRUPRecords<WRLDRecord>
                             numChild = (UINT32)Persistent.size();
                             for(UINT32 y = 0; y < numChild; ++y)
                                 {
-                                childSize += Persistent[y]->Write(SaveHandler, FormIDHandler);
+                                childSize += Persistent[y]->Write(SaveHandler, bMastersChanged, expander, collapser, Expanders);
                                 if(CloseMod)
                                     delete Persistent[y];
                                 }
@@ -1348,7 +1345,7 @@ class GRUPRecords<WRLDRecord>
                             //The moved persistents will be deleted by their owning cell when its indexed
                             numChild = (UINT32)FixedPersistent.size();
                             for(UINT32 y = 0; y < numChild; ++y)
-                                childSize += FixedPersistent[y]->Write(SaveHandler, FormIDHandler);
+                                childSize += FixedPersistent[y]->Write(SaveHandler, bMastersChanged, expander, collapser, Expanders);
 
                             childrenSize += childSize;
                             SaveHandler.writeAt(childSizePos, &childSize, 4);
@@ -1392,7 +1389,7 @@ class GRUPRecords<WRLDRecord>
                                 curCell = curSubBlock->second[p];
                                 cellFormID = curCell->formID;
                                 collapser.Accept(cellFormID);
-                                subBlockSize += curCell->Write(SaveHandler, FormIDHandler);
+                                subBlockSize += curCell->Write(SaveHandler, bMastersChanged, expander, collapser, Expanders);
                                 //Place the PGRD, ACHR, ACRE, and REFR records into their proper GRUP
 
                                 if(curCell->LAND != NULL)
@@ -1479,7 +1476,7 @@ class GRUPRecords<WRLDRecord>
 
                                         for(UINT32 x = 0; x < numChild; ++x)
                                             {
-                                            childSize += VWD[x]->Write(SaveHandler, FormIDHandler);
+                                            childSize += VWD[x]->Write(SaveHandler, bMastersChanged, expander, collapser, Expanders);
                                             if(CloseMod)
                                                 delete VWD[x];
                                             }
@@ -1503,7 +1500,7 @@ class GRUPRecords<WRLDRecord>
 
                                         for(UINT32 x = 0; x < numChild; ++x)
                                             {
-                                            childSize += Temporary[x]->Write(SaveHandler, FormIDHandler);
+                                            childSize += Temporary[x]->Write(SaveHandler, bMastersChanged, expander, collapser, Expanders);
                                             if(CloseMod)
                                                 delete Temporary[x];
                                             }

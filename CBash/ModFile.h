@@ -55,7 +55,7 @@ class ModFile
         virtual UINT32   GetNumRecords(const UINT32 &RecordType) abstract {};
         virtual Record * CreateRecord(const UINT32 &RecordType, STRING const &RecordEditorID, Record *&SourceRecord, Record *&ParentRecord, CreateRecordOptions &options) abstract {};
         virtual SINT32   CleanMasters() abstract {};
-        virtual SINT32   Save(STRING const &SaveName, bool CloseMod) abstract {};
+        virtual SINT32   Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expanders, bool CloseMod) abstract {};
 
         virtual void     VisitAllRecords(RecordOp &op) abstract {};
         virtual void     VisitRecords(const UINT32 &TopRecordType, const UINT32 &RecordType, RecordOp &op, bool DeepVisit=false) abstract {};

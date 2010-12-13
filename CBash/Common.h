@@ -158,6 +158,24 @@ class Ex_INVALIDINDEX : public std::exception
         const char * __CLR_OR_THIS_CALL what() const;
     };
 
+class Ex_INVALIDCOLLECTIONINDEX : public std::exception
+    {
+    public:
+        const char * __CLR_OR_THIS_CALL what() const;
+    };
+
+class Ex_INVALIDMODINDEX : public std::exception
+    {
+    public:
+        const char * __CLR_OR_THIS_CALL what() const;
+    };
+
+class Ex_INVALIDRECORDINDEX : public std::exception
+    {
+    public:
+        const char * __CLR_OR_THIS_CALL what() const;
+    };
+
 class ModFile;
 class Record;
 class StringRecord;
@@ -230,6 +248,7 @@ class _FileHandler
         UINT32 set_used(SINT32 _Used);
         void   read(void *_DestBuf, UINT32 _MaxCharCount);
         unsigned char *getBuffer(UINT32 _Offset);
+        UINT32 getBufferSize();
         UINT32 write(const void *_SrcBuf, UINT32 _MaxCharCount);
         void   writeSubRecord(UINT32 _Type, const void *_SrcBuf, UINT32 _MaxCharCount);
         UINT32 writeAt(UINT32 _Offset, const void *_SrcBuf, UINT32 _MaxCharCount);
@@ -254,6 +273,8 @@ class FormIDHandlerClass
         UINT8  CollapseTable[256];
         bool   IsEmpty;
         bool   bMastersChanged;
+        unsigned char * FileStart;
+        unsigned char * FileEnd;
 
         FormIDHandlerClass(STRING _FileName, std::vector<StringRecord> &_MAST, UINT32 &_NextObject);
         ~FormIDHandlerClass();
@@ -266,6 +287,7 @@ class FormIDHandlerClass
         bool   MastersChanged();
         bool   IsNewRecord(const UINT32 *&RecordFormID);
         bool   IsNewRecord(const UINT32 &RecordFormID);
+        bool   IsValid(const unsigned char *_SrcBuf);
     };
 
 class CreateRecordOptions

@@ -154,12 +154,19 @@ MGEFRecord::MGEFRecord(unsigned char *_recData):
 MGEFRecord::MGEFRecord(MGEFRecord *srcRecord):
     Record()
     {
-    if(srcRecord == NULL || srcRecord->GetType() != 'FEGM')
+    if(srcRecord == NULL)
         return;
 
     flags = srcRecord->flags;
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
+
+    if(!srcRecord->IsChanged())
+        {
+        recData = srcRecord->recData;
+        return;
+        }
+
     EDID = srcRecord->EDID;
     FULL = srcRecord->FULL;
     DESC = srcRecord->DESC;
@@ -977,6 +984,9 @@ SINT32 MGEFRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 break;
             }
         };
+    //MGEFs should always be loaded since they're keyed by editorID (or mgefCode)
+    //By marking it as changed, it prevents the record from being unloaded
+    IsChanged(true);
     return 0;
     }
 

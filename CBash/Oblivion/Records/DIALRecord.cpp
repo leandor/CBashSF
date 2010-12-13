@@ -32,12 +32,19 @@ DIALRecord::DIALRecord(unsigned char *_recData):
 DIALRecord::DIALRecord(DIALRecord *srcRecord):
     Record()
     {
-    if(srcRecord == NULL || srcRecord->GetType() != 'LAID')
+    if(srcRecord == NULL)
         return;
 
     flags = srcRecord->flags;
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
+
+    if(!srcRecord->IsChanged())
+        {
+        recData = srcRecord->recData;
+        return;
+        }
+
     EDID = srcRecord->EDID;
     QSTI.resize(srcRecord->QSTI.size());
     for(UINT32 x = 0; x < srcRecord->QSTI.size(); x++)

@@ -32,6 +32,21 @@ const STRING Ex_INVALIDINDEX::__CLR_OR_THIS_CALL what() const
     return "Invalid Index";
     }
 
+const STRING Ex_INVALIDCOLLECTIONINDEX::__CLR_OR_THIS_CALL what() const
+    {
+    return "Invalid Collection Index";
+    }
+
+const STRING Ex_INVALIDMODINDEX::__CLR_OR_THIS_CALL what() const
+    {
+    return "Invalid Mod Index";
+    }
+
+const STRING Ex_INVALIDRECORDINDEX::__CLR_OR_THIS_CALL what() const
+    {
+    return "Invalid RecordID or RecordEditorID. Record not found.";
+    }
+
 bool sameStr::operator()( const STRING s1, const STRING s2 ) const
     {
     return _stricmp( s1, s2 ) < 0;
@@ -186,11 +201,7 @@ UINT32 _FileHandler::set_used(SINT32 _Used)
     //If in read mode, simply move the position
     if(fh == -1)
         {
-        //printf("Before seek:%u\n", _BufPos);
         _BufPos += _Used;
-        //printf("After seek:%u\n", _BufPos);
-        //if(eof())
-        //    printf("End!\n");
         return _BufPos;
         }
     //Flush the buffer if it is getting full
@@ -219,6 +230,11 @@ unsigned char *_FileHandler::getBuffer(UINT32 _Offset)
     if(IsCached(_Offset))
         return _Buffer + _Offset - _TotalWritten;
     return NULL;
+    }
+
+UINT32 _FileHandler::getBufferSize()
+    {
+    return _BufEnd;
     }
 
 UINT32 _FileHandler::write(const void *_SrcBuf, UINT32 _MaxCharCount)
@@ -408,17 +424,29 @@ void FormIDHandlerClass::UpdateFormIDLookup()
     //MAST = sortedMAST;
     MAST.clear();
     MAST.resize(sortedMAST.size());
+    //printf("Base collapse table\n");
+    //for(UINT16 p = 0; p <= 0xFF; ++p)
+    //    printf("%02X == %02X\n", (UINT8)p, CollapseTable[(UINT8)p]);
+    //printf("Updating collapse table\n");
     for(UINT16 p = 0; p < CollapsedIndex; ++p)
         {
+        //printf("Accessing %i into %i, %i\n", p, MAST.size(), sortedMAST.size());
         MAST[(UINT8)p] = sortedMAST[(UINT8)p];
         curMaster = MAST[(UINT8)p].value;
+        //printf("master %s\n", curMaster);
         for(UINT32 y = 0; y < numMods; ++y)
             if(_stricmp(LoadOrder255[(UINT8)y], curMaster) == 0)
                 {
                 CollapseTable[(UINT8)y] = (UINT8)p;
+                //printf("%02X == %02X\n", (UINT8)y, (UINT8)p);
                 break;
                 }
         }
+    //printf("Collapse table updated.\n");
+    //printf("Existing expand table\n");
+    //for(UINT32 y = 0; y <= 0xFF; ++y)
+    //    printf("%02X == %02X\n", (UINT8)y, ExpandTable[(UINT8)y]);
+    //printf("End expand table.\n");
     sortedMAST.clear();
     return;
     }
@@ -463,7 +491,6 @@ void FormIDHandlerClass::CreateFormIDLookup(const UINT8 expandedIndex)
 
 void FormIDHandlerClass::AddMaster(STRING const curMaster)
     {
-    //Add the master to the end, and update header size
     MAST.push_back(StringRecord(curMaster));
     bMastersChanged = true;
     //Update the formID resolution lookup table
@@ -488,6 +515,11 @@ bool FormIDHandlerClass::IsNewRecord(const UINT32 &RecordFormID)
     //if((RecordFormID >> 24) >= ExpandedIndex)
     //    printf("%02X - %08X - %02X\n", (RecordFormID >> 24), RecordFormID, ExpandedIndex);
     return ((RecordFormID >> 24) >= ExpandedIndex);
+    }
+
+bool FormIDHandlerClass::IsValid(const unsigned char *_SrcBuf)
+    {
+    return (_SrcBuf >= FileStart && _SrcBuf <= FileEnd);
     }
 
 CreateRecordOptions::CreateRecordOptions():

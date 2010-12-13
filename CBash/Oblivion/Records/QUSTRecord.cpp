@@ -248,12 +248,19 @@ QUSTRecord::QUSTRecord(unsigned char *_recData):
 QUSTRecord::QUSTRecord(QUSTRecord *srcRecord):
     Record()
     {
-    if(srcRecord == NULL || srcRecord->GetType() != 'TSUQ')
+    if(srcRecord == NULL)
         return;
 
     flags = srcRecord->flags;
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
+
+    if(!srcRecord->IsChanged())
+        {
+        recData = srcRecord->recData;
+        return;
+        }
+
     EDID = srcRecord->EDID;
     SCRI = srcRecord->SCRI;
     FULL = srcRecord->FULL;

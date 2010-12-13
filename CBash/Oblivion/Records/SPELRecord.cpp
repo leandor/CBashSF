@@ -58,12 +58,19 @@ SPELRecord::SPELRecord(unsigned char *_recData):
 SPELRecord::SPELRecord(SPELRecord *srcRecord):
     Record()
     {
-    if(srcRecord == NULL || srcRecord->GetType() != 'LEPS')
+    if(srcRecord == NULL)
         return;
 
     flags = srcRecord->flags;
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
+
+    if(!srcRecord->IsChanged())
+        {
+        recData = srcRecord->recData;
+        return;
+        }
+
     EDID = srcRecord->EDID;
     FULL = srcRecord->FULL;
     SPIT = srcRecord->SPIT;
@@ -632,7 +639,7 @@ SINT32 SPELRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 newEffect->OBME->EFME.Read(buffer, subSize, curPos);
                 break;
             case 'DIFE':
-                if(bNoOBME)
+                if(bNoOBME || newEffect == NULL)
                     newEffect = new GENEffect;
                 newEffect->EFID.Read(buffer, subSize, curPos);
                 Effects.push_back(newEffect);

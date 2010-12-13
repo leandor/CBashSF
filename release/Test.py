@@ -2561,9 +2561,9 @@ def TestReadWriteAll():
 
     print "ALL:Save Test - TestALL.esp"
 
-    phonenumber = raw_input(">")
+##    phonenumber = raw_input(">")
     newMod.save()
-    phonenumber = raw_input("!")
+##    phonenumber = raw_input("!")
     print "ALL:Finished testing"
 
 def TestTES4():
@@ -3688,7 +3688,7 @@ def TestENCH():
     newEffect.magnitude = 1
     newEffect.area = 2
     newEffect.duration = 3
-    newEffect.recipient = 4
+    newEffect.rangeType = 4
     newEffect.actorValue = 5
     newEffect.script = 0xFF000007
     newEffect.school = 324
@@ -3703,7 +3703,7 @@ def TestENCH():
     newEffect.magnitude = 6
     newEffect.area = 7
     newEffect.duration = 8
-    newEffect.recipient = 9
+    newEffect.rangeType = 9
     newEffect.actorValue = 10
     newEffect.script = 0xFF00000A
     newEffect.school = 11
@@ -3731,7 +3731,7 @@ def TestENCH():
         print "  magnitude  :", effect.magnitude
         print "  area       :", effect.area
         print "  duration   :", effect.duration
-        print "  recipient  :", effect.recipient
+        print "  rangeType  :", effect.rangeType
         print "  actorValue :", effect.actorValue
         print "  script     :", PrintFormID(effect.script)
         print "  school     :", effect.school
@@ -3789,7 +3789,7 @@ def TestSPEL():
     newEffect.magnitude = 1
     newEffect.area = 2
     newEffect.duration = 3
-    newEffect.recipient = 4
+    newEffect.rangeType = 4
     newEffect.actorValue = 5
     newEffect.script = 0xFF000007
     newEffect.school = 324
@@ -3804,7 +3804,7 @@ def TestSPEL():
     newEffect.magnitude = 6
     newEffect.area = 7
     newEffect.duration = 8
-    newEffect.recipient = 9
+    newEffect.rangeType = 9
     newEffect.actorValue = 10
     newEffect.script = 0xFF00000A
     newEffect.school = 11
@@ -3831,7 +3831,7 @@ def TestSPEL():
         print "  magnitude  :", effect.magnitude
         print "  area       :", effect.area
         print "  duration   :", effect.duration
-        print "  recipient  :", effect.recipient
+        print "  rangeType  :", effect.rangeType
         print "  actorValue :", effect.actorValue
         print "  script     :", PrintFormID(effect.script)
         print "  school     :", effect.school
@@ -4503,7 +4503,7 @@ def TestINGR():
     newEffect.magnitude = 1
     newEffect.area = 2
     newEffect.duration = 3
-    newEffect.recipient = 4
+    newEffect.rangeType = 4
     newEffect.actorValue = 5
     newEffect.script = 0xFF000007
     newEffect.school = 324
@@ -4518,7 +4518,7 @@ def TestINGR():
     newEffect.magnitude = 6
     newEffect.area = 7
     newEffect.duration = 8
-    newEffect.recipient = 9
+    newEffect.rangeType = 9
     newEffect.actorValue = 10
     newEffect.script = 0xFF00000A
     newEffect.school = 11
@@ -4554,7 +4554,7 @@ def TestINGR():
         print "  magnitude  :", effect.magnitude
         print "  area       :", effect.area
         print "  duration   :", effect.duration
-        print "  recipient  :", effect.recipient
+        print "  rangeType  :", effect.rangeType
         print "  actorValue :", effect.actorValue
         print "  script     :", PrintFormID(effect.script)
         print "  school     :", effect.school
@@ -5995,7 +5995,7 @@ def TestALCH():
     newEffect.magnitude = 1
     newEffect.area = 2
     newEffect.duration = 3
-    newEffect.recipient = 4
+    newEffect.rangeType = 4
     newEffect.actorValue = 5
     newEffect.script = 0xFF000007
     newEffect.school = 324
@@ -6010,7 +6010,7 @@ def TestALCH():
     newEffect.magnitude = 6
     newEffect.area = 7
     newEffect.duration = 8
-    newEffect.recipient = 9
+    newEffect.rangeType = 9
     newEffect.actorValue = 10
     newEffect.script = 0xFF00000A
     newEffect.school = 11
@@ -6046,7 +6046,7 @@ def TestALCH():
         print "  magnitude  :", effect.magnitude
         print "  area       :", effect.area
         print "  duration   :", effect.duration
-        print "  recipient  :", effect.recipient
+        print "  rangeType  :", effect.rangeType
         print "  actorValue :", effect.actorValue
         print "  script     :", PrintFormID(effect.script)
         print "  school     :", effect.school
@@ -6154,7 +6154,7 @@ def TestSGST():
     newEffect.magnitude = 1
     newEffect.area = 2
     newEffect.duration = 6
-    newEffect.recipient = 6
+    newEffect.rangeType = 6
     newEffect.actorValue = 5
     newEffect.script = 0x00000007
     newEffect.school = 324
@@ -6169,7 +6169,7 @@ def TestSGST():
     newEffect.magnitude = 6
     newEffect.area = 7
     newEffect.duration = 7
-    newEffect.recipient = 9
+    newEffect.rangeType = 9
     newEffect.actorValue = 10
     newEffect.script = 0x0000000A
     newEffect.school = 11
@@ -6185,7 +6185,7 @@ def TestSGST():
     newEffect.magnitude = 6
     newEffect.area = 8
     newEffect.duration = 8
-    newEffect.recipient = 9
+    newEffect.rangeType = 9
     newEffect.actorValue = 10
     newEffect.script = 0x0000000A
     newEffect.school = 11
@@ -6222,7 +6222,7 @@ def TestSGST():
         print "  magnitude  :", effect.magnitude
         print "  area       :", effect.area
         print "  duration   :", effect.duration
-        print "  recipient  :", effect.recipient
+        print "  rangeType  :", effect.rangeType
         print "  actorValue :", effect.actorValue
         print "  script     :", PrintFormID(effect.script)
         print "  school     :", effect.school
@@ -10369,7 +10369,7 @@ from timeit import Timer
 ##TestMinimalLoad()
 ##TestLoadMasters()
 ##TestDeleteRecord()
-##TestReadWriteAll()
+TestReadWriteAll()
 ##TestTES4()
 ##TestGMST()
 ##TestGLOB()

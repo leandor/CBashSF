@@ -229,12 +229,19 @@ CREARecord::CREARecord(unsigned char *_recData):
 CREARecord::CREARecord(CREARecord *srcRecord):
     Record()
     {
-    if(srcRecord == NULL || srcRecord->GetType() != 'AERC')
+    if(srcRecord == NULL)
         return;
 
     flags = srcRecord->flags;
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
+
+    if(!srcRecord->IsChanged())
+        {
+        recData = srcRecord->recData;
+        return;
+        }
+
     EDID = srcRecord->EDID;
     FULL = srcRecord->FULL;
     if(srcRecord->MODL.IsLoaded())

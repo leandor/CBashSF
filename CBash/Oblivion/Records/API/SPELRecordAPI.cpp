@@ -99,7 +99,7 @@ UINT32 SPELRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UINT32_FIELD;
                 case 5: //duration
                     return UINT32_FIELD;
-                case 6: //recipient
+                case 6: //rangeType
                     return UINT32_FIELD;
                 case 7: //actorValue
                     switch(WhichAttribute)
@@ -343,8 +343,8 @@ void * SPELRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                     return &Effects[ListIndex]->EFIT.value.area;
                 case 5: //duration
                     return &Effects[ListIndex]->EFIT.value.duration;
-                case 6: //recipient
-                    return &Effects[ListIndex]->EFIT.value.recipient;
+                case 6: //rangeType
+                    return &Effects[ListIndex]->EFIT.value.rangeType;
                 case 7: //actorValue
                     return &Effects[ListIndex]->EFIT.value.actorValue;
                 case 8: //script
@@ -484,7 +484,7 @@ bool SPELRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                 case 5: //duration
                     Effects[ListIndex]->EFIT.value.duration = *(UINT32 *)FieldValue;
                     break;
-                case 6: //recipient
+                case 6: //rangeType
                     Effects[ListIndex]->SetRange(*(UINT32 *)FieldValue);
                     break;
                 case 7: //actorValue
@@ -682,8 +682,8 @@ void SPELRecord::DeleteField(FIELD_IDENTIFIERS)
                 case 5: //duration
                     Effects[ListIndex]->EFIT.value.duration = defaultEFIT.duration;
                     return;
-                case 6: //recipient
-                    Effects[ListIndex]->EFIT.value.recipient = defaultEFIT.recipient;
+                case 6: //rangeType
+                    Effects[ListIndex]->EFIT.value.rangeType = defaultEFIT.rangeType;
                     return;
                 case 7: //actorValue
                     Effects[ListIndex]->EFIT.value.actorValue = defaultEFIT.actorValue;

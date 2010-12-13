@@ -73,12 +73,19 @@ GLOBRecord::GLOBRecord(unsigned char *_recData):
 GLOBRecord::GLOBRecord(GLOBRecord *srcRecord):
     Record()
     {
-    if(srcRecord == NULL || srcRecord->GetType() != 'BOLG')
+    if(srcRecord == NULL)
         return;
 
     flags = srcRecord->flags;
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
+
+    if(!srcRecord->IsChanged())
+        {
+        recData = srcRecord->recData;
+        return;
+        }
+
     EDID = srcRecord->EDID;
     FNAM = srcRecord->FNAM;
     FLTV = srcRecord->FLTV;

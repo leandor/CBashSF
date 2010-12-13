@@ -86,12 +86,19 @@ CLMTRecord::CLMTRecord(unsigned char *_recData):
 CLMTRecord::CLMTRecord(CLMTRecord *srcRecord):
     Record()
     {
-    if(srcRecord == NULL || srcRecord->GetType() != 'TMLC')
+    if(srcRecord == NULL)
         return;
 
     flags = srcRecord->flags;
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
+
+    if(!srcRecord->IsChanged())
+        {
+        recData = srcRecord->recData;
+        return;
+        }
+
     EDID = srcRecord->EDID;
     Weathers = srcRecord->Weathers;
     FNAM = srcRecord->FNAM;
