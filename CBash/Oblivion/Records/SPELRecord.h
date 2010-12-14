@@ -29,7 +29,7 @@ class SPELRecord : public Record
     private:
         struct SPELSPIT
             {
-            UINT32  spellType, cost, level;
+            UINT32  spellType, cost, levelType;
             UINT8   flags, unused1[3];
 
             SPELSPIT();

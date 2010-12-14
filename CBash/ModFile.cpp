@@ -37,7 +37,7 @@ ModFile::ModFile(STRING ModName, const UINT32 _flags):
         ModTime = 0;
     else
         ModTime = buf.st_mtime;
-    if(Flags.IsNoLoad || !FileExists(ModName))
+    if(Flags.IsIgnoreExisting || Flags.IsNoLoad || !FileExists(ModName))
         {
         TES4.IsESM(_stricmp(".esm",ModName + strlen(ModName) - 4) == 0 || _stricmp(".esm.ghost",ModName + strlen(ModName) - 10) == 0);
         TES4.IsLoaded(true);
@@ -61,7 +61,7 @@ bool ModFile::operator >(ModFile &other)
 
 bool ModFile::Open()
     {
-    if(Flags.IsNoLoad || ReadHandler.IsOpen() || !FileExists(FileName))
+    if(Flags.IsIgnoreExisting || Flags.IsNoLoad || ReadHandler.IsOpen() || !FileExists(FileName))
         return false;
     ReadHandler.open_ReadOnly(FileName);
     FormIDHandler.FileStart = ReadHandler.getBuffer(0);

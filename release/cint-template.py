@@ -267,14 +267,14 @@ def setattr_deep(obj, attr, value):
     setattr(reduce(getattr, attrs[:-1], obj), attrs[-1], value)
 
 def MakeLongFid(CollectionID, fid):
-    if fid is None or fid == 0: return None
+    if fid is None or fid == 0: return 0
     masterIndex = int(fid >> 24)
     object = int(fid & 0x00FFFFFFL)
     master = _CGetModName(CollectionID, masterIndex)
     return (GPath(master),object)
 
 def MakeShortFid(CollectionID, fid):
-    if fid is None or fid == 0: return None
+    if fid is None or fid == 0: return 0
     if not isinstance(fid,tuple): return fid
     master, object = fid
     masterIndex = _CGetModID(CollectionID, str(master))
@@ -284,7 +284,7 @@ def MakeShortFid(CollectionID, fid):
     return masterIndex | object
 
 def MakeLongMGEFCode(CollectionID, MGEFCode):
-    if MGEFCode is None or MGEFCode == 0: return None
+    if MGEFCode is None or MGEFCode == 0: return 0
     masterIndex = int(MGEFCode & 0x000000FFL)
     object = int(MGEFCode & 0xFFFFFF00L)
     master = _CGetModName(CollectionID, masterIndex)
@@ -292,7 +292,7 @@ def MakeLongMGEFCode(CollectionID, MGEFCode):
 
 def MakeShortMGEFCode(CollectionID, MGEFCode):
     if isinstance(MGEFCode, basestring): MGEFCode = cast(MGEFCode, POINTER(c_ulong)).contents.value
-    if MGEFCode is None or MGEFCode == 0: return None
+    if MGEFCode is None or MGEFCode == 0: return 0
     if not isinstance(MGEFCode,tuple): return MGEFCode
     masterIndex = _CGetModID(CollectionID, str(MGEFCode[0]))
     if(masterIndex == -1):
@@ -311,9 +311,9 @@ def SetCopyList(oElements, nValues):
 
 def ExtractExportList(Element):
     try:
-        return [tuple(getattr(listElement, attr) for attr in listElement.exportattrs) for listElement in Element]
+        return [tuple(ExtractExportList(listElement) if hasattr(listElement, 'exportattrs') else getattr(listElement, attr) for attr in listElement.exportattrs) for listElement in Element]
     except TypeError:
-        return [tuple(getattr(Element, attr) for attr in Element.exportattrs)]
+        return [tuple(ExtractExportList(getattr(Element, attr)) if hasattr(getattr(Element, attr), 'exportattrs') else getattr(Element, attr) for attr in Element.exportattrs)]
 
 # Classes
 # Any level Descriptors
@@ -356,7 +356,8 @@ class CBashBasicFlag(object):
         self._Value = Value
     def __get__(self, instance, owner):
         field = getattr(instance, self._AttrName, None)
-        return field != None and (field & self._Value) != 0
+        if field is None: return None
+        return (field & self._Value) != 0
     def __set__(self, instance, nValue):
         field = getattr(instance, self._AttrName, None)
         if nValue:
@@ -371,7 +372,9 @@ class CBashInvertedFlag(object):
     def __init__(self, AttrName):
         self._AttrName = AttrName
     def __get__(self, instance, owner):
-        return not getattr(instance, self._AttrName, None)
+        field = getattr(instance, self._AttrName, None)
+        if field is None: return None
+        return not field
     def __set__(self, instance, nValue):
         setattr(instance, self._AttrName, not nValue)
 
@@ -382,7 +385,8 @@ class CBashBasicType(object):
         self._DefaultFieldName = default
     def __get__(self, instance, owner):
         field = getattr(instance, self._AttrName, None)
-        return field != None and field == self._Value
+        if field is None: return None
+        return field == self._Value
     def __set__(self, instance, nValue):
         if nValue: setattr(instance, self._AttrName, self._Value)
         else: setattr(instance, self._DefaultFieldName, True)
@@ -395,7 +399,8 @@ class CBashMaskedType(object):
         self._DefaultFieldName = default
     def __get__(self, instance, owner):
         field = getattr(instance, self._AttrName, None)
-        return field != None and (field & self._TypeMask) == self._Value
+        if field is None: return None
+        return (field & self._TypeMask) == self._Value
     def __set__(self, instance, nValue):
         if nValue:
             field = getattr(instance, self._AttrName, 0)
@@ -1637,7 +1642,7 @@ class Effect(ListComponent):
     OBMEBasicFlagMACRO(IsExplodesWithForceOverride, efixFlags, 0x20000000)
     OBMEBasicFlagMACRO(IsHiddenOverride, efixFlags, 0x40000000)
     exportattrs = copyattrs = ['name', 'magnitude', 'area', 'duration', 'rangeType',
-                 'actorValue', 'script', 'school', 'visual', 'flags',
+                 'actorValue', 'script', 'school', 'visual', 'IsHostile',
                  'full']
     copyattrsOBME = copyattrs + ['recordVersion', 'betaVersion',
                                  'minorVersion', 'majorVersion',
@@ -1674,6 +1679,21 @@ class ObFormIDRecord(object):
         self._RecordID = RecordID
         self._CopyFlags = CopyFlags
         #ParentID isn't kept for most records
+        
+    @property
+    def ModName(self):
+        return _CGetModName(self._CollectionID, self._ModID) or 'Missing'
+
+    @property
+    def NormModName(self):
+        ModName = _CGetModName(self._CollectionID, self._ModID) or 'Missing'
+        if ModName[-6:] == '.ghost':
+            return ModName[:-6]
+        return ModName
+
+    @property
+    def GName(self):
+        return GPath(self.NormModName)
 
     def LoadRecord(self):
         _CLoadRecord(self._CollectionID, self._ModID, self._RecordID, 0)
@@ -1867,6 +1887,21 @@ class ObEditorIDRecord(object):
         self._ModID = ModID
         self._RecordID = RecordID
         self._CopyFlags = CopyFlags
+        
+    @property
+    def ModName(self):
+        return _CGetModName(self._CollectionID, self._ModID) or 'Missing'
+
+    @property
+    def NormModName(self):
+        ModName = _CGetModName(self._CollectionID, self._ModID) or 'Missing'
+        if ModName[-6:] == '.ghost':
+            return ModName[:-6]
+        return ModName
+
+    @property
+    def GName(self):
+        return GPath(self.NormModName)
 
     def UnloadRecord(self):
         _CUnloadRecord(self._CollectionID, self._ModID, 0, self._RecordID)
@@ -2885,9 +2920,13 @@ class ObCLOTRecord(ObFormIDRecord):
     BasicFlagMACRO(IsHideAmulets, flags, 0x00020000)
     BasicFlagMACRO(IsNonPlayable, flags, 0x00400000)
     BasicInvertedFlagMACRO(IsPlayable, IsNonPlayable)
-    exportattrs = copyattrs = ObFormIDRecord.baseattrs + ['full', 'script', 'enchantment',
+    copyattrs = ObFormIDRecord.baseattrs + ['full', 'script', 'enchantment',
                                         'enchantPoints', 'flags', 'maleBody_list', 'maleWorld_list',
                                         'maleIconPath', 'femaleBody_list', 'femaleWorld_list',
+                                        'femaleIconPath', 'value', 'weight']
+    exportattrs = ObFormIDRecord.baseattrs + ['full', 'script', 'enchantment',
+                                        'enchantPoints', 'flags', 'maleBody', 'maleWorld',
+                                        'maleIconPath', 'femaleBody', 'femaleWorld',
                                         'femaleIconPath', 'value', 'weight']
 
 class ObCONTRecord(ObFormIDRecord):
@@ -4573,7 +4612,7 @@ class ObSPELRecord(ObFormIDRecord):
     STRING_MACRO(full, 5)
     UINT32_TYPE_MACRO(spellType, 6)
     UINT32_MACRO(cost, 7)
-    UINT32_MACRO(level, 8)
+    UINT32_TYPE_MACRO(levelType, 8)
     UINT8_FLAG_MACRO(flags, 9)
     UINT8_ARRAY_MACRO(unused1, 10, 3)
 
@@ -4595,11 +4634,11 @@ class ObSPELRecord(ObFormIDRecord):
     BasicTypeMACRO(IsLesserPower, spellType, 3, IsSpell)
     BasicTypeMACRO(IsAbility, spellType, 4, IsSpell)
     BasicTypeMACRO(IsPoison, spellType, 5, IsSpell)
-    BasicTypeMACRO(IsNovice, level, 0, IsApprentice)
-    BasicTypeMACRO(IsApprentice, level, 1, IsNovice)
-    BasicTypeMACRO(IsJourneyman, level, 2, IsNovice)
-    BasicTypeMACRO(IsExpert, level, 3, IsNovice)
-    BasicTypeMACRO(IsMaster, level, 4, IsNovice)
+    BasicTypeMACRO(IsNovice, levelType, 0, IsApprentice)
+    BasicTypeMACRO(IsApprentice, levelType, 1, IsNovice)
+    BasicTypeMACRO(IsJourneyman, levelType, 2, IsNovice)
+    BasicTypeMACRO(IsExpert, levelType, 3, IsNovice)
+    BasicTypeMACRO(IsMaster, levelType, 4, IsNovice)
     ##OBME Fields. Setting any of the below fields will make the mod require JRoush's OBME plugin for OBSE
     ##To see if OBME is in use, check the recordVersion field for a non-None value
     UINT8_MACRO(recordVersion, 12)
@@ -5241,7 +5280,7 @@ class ObCollection:
     def __ne__(self, other):
         return not self.__eq__(other)
 
-    def addMod(self, ModName, MinLoad=True, NoLoad=False, Flags=0x00000078):
+    def addMod(self, ModName, MinLoad=True, NoLoad=False, IgnoreExisting=False, Flags=0x00000078):
 ##        //MinLoad and FullLoad are exclusive
 ##        // If both are set, FullLoad takes priority
 ##        // If neither is set, the mod isn't loaded
@@ -5297,7 +5336,11 @@ class ObCollection:
         fIsTrackNewTypes      = 0x00000100
         fIsIndexLANDs         = 0x00000200
         fIsFixupPlaceables    = 0x00000400
-
+        fIsIgnoreExisting     = 0x00000800
+        if IgnoreExisting:
+            Flags |= fIsIgnoreExisting            
+        else:
+            Flags &= ~fIsIgnoreExisting
         if NoLoad:
             Flags &= ~fIsFullLoad
             Flags &= ~fIsMinLoad            

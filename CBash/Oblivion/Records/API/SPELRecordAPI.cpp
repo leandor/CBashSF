@@ -42,7 +42,7 @@ UINT32 SPELRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
             return UINT32_TYPE_FIELD;
         case 7: //cost
             return UINT32_FIELD;
-        case 8: //level
+        case 8: //levelType
             return UINT32_FIELD;
         case 9: //flags
             return UINT8_FLAG_FIELD;
@@ -321,8 +321,8 @@ void * SPELRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return &SPIT.value.spellType;
         case 7: //cost
             return &SPIT.value.cost;
-        case 8: //level
-            return &SPIT.value.level;
+        case 8: //levelType
+            return &SPIT.value.levelType;
         case 9: //flags
             return &SPIT.value.flags;
         case 10: //unused1
@@ -434,8 +434,8 @@ bool SPELRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 7: //cost
             SPIT.value.cost = *(UINT32 *)FieldValue;
             break;
-        case 8: //level
-            SPIT.value.level = *(UINT32 *)FieldValue;
+        case 8: //levelType
+            SPIT.value.levelType = *(UINT32 *)FieldValue;
             break;
         case 9: //flags
             SetFlagMask(*(UINT8 *)FieldValue);
@@ -643,8 +643,8 @@ void SPELRecord::DeleteField(FIELD_IDENTIFIERS)
         case 7: //cost
             SPIT.value.cost = defaultSPIT.cost;
             return;
-        case 8: //level
-            SPIT.value.level = defaultSPIT.level;
+        case 8: //levelType
+            SPIT.value.levelType = defaultSPIT.levelType;
             return;
         case 9: //flags
             SPIT.value.flags = defaultSPIT.flags;

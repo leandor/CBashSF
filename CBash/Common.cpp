@@ -565,6 +565,7 @@ ModFlags::ModFlags():
     IsTrackNewTypes(false),
     IsIndexLANDs(false),
     IsFixupPlaceables(false),
+    IsIgnoreExisting(false),
     LoadedGRUPs(false)
     {
     //
@@ -583,6 +584,7 @@ ModFlags::ModFlags(UINT32 _Flags):
     IsTrackNewTypes((_Flags & fIsTrackNewTypes) != 0),
     IsIndexLANDs((_Flags & fIsIndexLANDs) != 0),
     IsFixupPlaceables((_Flags & fIsFixupPlaceables) != 0),
+    IsIgnoreExisting((_Flags & fIsIgnoreExisting) != 0),
     LoadedGRUPs(false)
     {
     //
@@ -621,6 +623,8 @@ UINT32 ModFlags::GetFlags()
         flags |= fIsIndexLANDs;
     if(IsFixupPlaceables)
         flags |= fIsFixupPlaceables;
+    if(IsIgnoreExisting)
+        flags |= fIsIgnoreExisting;
     return flags;
     }
 

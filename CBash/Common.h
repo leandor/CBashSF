@@ -371,7 +371,8 @@ class ModFlags
             fIsExtendedConflicts  = 0x00000080,
             fIsTrackNewTypes      = 0x00000100,
             fIsIndexLANDs         = 0x00000200,
-            fIsFixupPlaceables    = 0x00000400
+            fIsFixupPlaceables    = 0x00000400,
+            fIsIgnoreExisting     = 0x00000800,
             };
 
     public:
@@ -391,6 +392,7 @@ class ModFlags
         bool IsTrackNewTypes;
         bool IsIndexLANDs;
         bool IsFixupPlaceables;
+        bool IsIgnoreExisting;
 
         //For internal use, may not be set by constructor
         bool LoadedGRUPs;

@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 SPELRecord::SPELSPIT::SPELSPIT():
     spellType(0),
     cost(0),
-    level(0),
+    levelType(0),
     flags(0)
     {
     memset(&unused1, 0x00, 3);
@@ -40,7 +40,7 @@ bool SPELRecord::SPELSPIT::operator ==(const SPELSPIT &other) const
     {
     return (spellType == other.spellType &&
             cost == other.cost &&
-            level == other.level &&
+            levelType == other.levelType &&
             flags == other.flags);
     }
 
@@ -428,77 +428,77 @@ void SPELRecord::SetType(UINT32 Type)
 
 bool SPELRecord::IsNovice()
     {
-    return (SPIT.value.level == eNovice);
+    return (SPIT.value.levelType == eNovice);
     }
 
 void SPELRecord::IsNovice(bool value)
     {
     if(value)
-        SPIT.value.level = eNovice;
+        SPIT.value.levelType = eNovice;
     else if(IsNovice())
-        SPIT.value.level = eApprentice;
+        SPIT.value.levelType = eApprentice;
     }
 
 bool SPELRecord::IsApprentice()
     {
-    return (SPIT.value.level == eApprentice);
+    return (SPIT.value.levelType == eApprentice);
     }
 
 void SPELRecord::IsApprentice(bool value)
     {
     if(value)
-        SPIT.value.level = eApprentice;
+        SPIT.value.levelType = eApprentice;
     else if(IsApprentice())
-        SPIT.value.level = eNovice;
+        SPIT.value.levelType = eNovice;
     }
 
 bool SPELRecord::IsJourneyman()
     {
-    return (SPIT.value.level == eJourneyman);
+    return (SPIT.value.levelType == eJourneyman);
     }
 
 void SPELRecord::IsJourneyman(bool value)
     {
     if(value)
-        SPIT.value.level = eJourneyman;
+        SPIT.value.levelType = eJourneyman;
     else if(IsJourneyman())
-        SPIT.value.level = eNovice;
+        SPIT.value.levelType = eNovice;
     }
 
 bool SPELRecord::IsExpert()
     {
-    return (SPIT.value.level == eExpert);
+    return (SPIT.value.levelType == eExpert);
     }
 
 void SPELRecord::IsExpert(bool value)
     {
     if(value)
-        SPIT.value.level = eExpert;
+        SPIT.value.levelType = eExpert;
     else if(IsExpert())
-        SPIT.value.level = eNovice;
+        SPIT.value.levelType = eNovice;
     }
 
 bool SPELRecord::IsMaster()
     {
-    return (SPIT.value.level == eMaster);
+    return (SPIT.value.levelType == eMaster);
     }
 
 void SPELRecord::IsMaster(bool value)
     {
     if(value)
-        SPIT.value.level = eMaster;
+        SPIT.value.levelType = eMaster;
     else if(IsMaster())
-        SPIT.value.level = eNovice;
+        SPIT.value.levelType = eNovice;
     }
 
 bool SPELRecord::IsLevel(UINT32 Type)
     {
-    return (SPIT.value.level == Type);
+    return (SPIT.value.levelType == Type);
     }
 
 void SPELRecord::SetLevel(UINT32 Type)
     {
-    SPIT.value.level = Type;
+    SPIT.value.levelType = Type;
     }
 
 UINT32 SPELRecord::GetSize(bool forceCalc)

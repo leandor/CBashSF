@@ -59,13 +59,13 @@ bool sortMod(ModFile *lhs, ModFile *rhs)
     //    printf("New mod: %s\n", lhs->FileName);
     //if(rhs->Settings.IsNew)
     //    printf("New mod: %s\n", rhs->FileName);
-    if(!FileExists(lhs->FileName))
+    if(lhs->Flags.IsIgnoreExisting || !FileExists(lhs->FileName))
         {
-        if(!FileExists(rhs->FileName))
+        if(rhs->Flags.IsIgnoreExisting || !FileExists(rhs->FileName))
             return true;
         return false;
         }
-    if(!FileExists(rhs->FileName))
+    if(rhs->Flags.IsIgnoreExisting || !FileExists(rhs->FileName))
         return false;
     if(lhs->ModTime == 0)
         {
