@@ -346,7 +346,7 @@ class CBashJunk(object):
     def __init__(self, FieldID):
         pass
     def __get__(self, instance, owner):
-        return 0
+        return None
     def __set__(self, instance, nValue):
         pass
 
@@ -1132,7 +1132,7 @@ class CBashMGEFCODE_OR_UINT32_LIST(object):
     def __set__(self, instance, nValue):
         if nValue is None: _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, 0, instance._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0)
         else:
-            _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, 0, instance._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0, byref(c_long(MakeShortMGEFCode(instance._CollectionID, nValue))), 0)
+            _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, 0, instance._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0, byref(c_ulong(MakeShortMGEFCode(instance._CollectionID, nValue))), 0)
 
 class CBashFORMID_OR_MGEFCODE_OR_ACTORVALUE_OR_UINT32_LIST(object):
     def __init__(self, ListFieldID):
@@ -2966,10 +2966,20 @@ class ObCREARecord(ObFormIDRecord):
         self.items = [x for x in self.items if x.item[0] in modSet]
 
     class Sound(ListComponent):
-        UINT32_LISTMACRO(type, 58, 1)
+        UINT32_LISTMACRO(soundType, 58, 1)
         FORMID_LISTMACRO(sound, 58, 2)
         UINT8_LISTMACRO(chance, 58, 3)
-        exportattrs = copyattrs = ['type', 'sound', 'chance']
+        BasicTypeMACRO(IsLeftFoot, soundType, 0, IsRightFoot)
+        BasicTypeMACRO(IsRightFoot, soundType, 1, IsLeftFoot)
+        BasicTypeMACRO(IsLeftBackFoot, soundType, 2, IsLeftFoot)
+        BasicTypeMACRO(IsRightBackFoot, soundType, 3, IsLeftFoot)
+        BasicTypeMACRO(IsIdle, soundType, 4, IsLeftFoot)
+        BasicTypeMACRO(IsAware, soundType, 5, IsLeftFoot)
+        BasicTypeMACRO(IsAttack, soundType, 6, IsLeftFoot)
+        BasicTypeMACRO(IsHit, soundType, 7, IsLeftFoot)
+        BasicTypeMACRO(IsDeath, soundType, 8, IsLeftFoot)
+        BasicTypeMACRO(IsWeapon, soundType, 9, IsLeftFoot)
+        exportattrs = copyattrs = ['soundType', 'sound', 'chance']
 
     STRING_MACRO(full, 5)
     ISTRING_MACRO(modPath, 6)
@@ -3720,6 +3730,8 @@ class ObLVLIRecord(ObFormIDRecord):
 
     UINT8_MACRO(chanceNone, 5)
     UINT8_FLAG_MACRO(flags, 6)
+    JUNK_MACRO(script, 7) #Doesn't actually exist, but is here so that LVLC,LVLI,LVSP can be processed similarly
+    JUNK_MACRO(template, 8) #ditto
 
     LIST_MACRO(entries, 9, self.Entry)
     BasicFlagMACRO(IsCalcFromAllLevels, flags, 0x00000001)
@@ -3743,6 +3755,8 @@ class ObLVSPRecord(ObFormIDRecord):
 
     UINT8_MACRO(chanceNone, 5)
     UINT8_FLAG_MACRO(flags, 6)
+    JUNK_MACRO(script, 7) #Doesn't actually exist, but is here so that LVLC,LVLI,LVSP can be processed similarly
+    JUNK_MACRO(template, 8) #ditto
 
     LIST_MACRO(entries, 9, self.Entry)
     BasicFlagMACRO(IsCalcFromAllLevels, flags, 0x00000001)

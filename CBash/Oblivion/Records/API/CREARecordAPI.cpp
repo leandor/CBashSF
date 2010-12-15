@@ -291,7 +291,7 @@ UINT32 CREARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
 
             switch(ListFieldID)
                 {
-                case 1: //type
+                case 1: //soundType
                     return UINT32_FIELD;
                 case 2: //sound
                     return FORMID_FIELD;
@@ -469,8 +469,8 @@ void * CREARecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
 
             switch(ListFieldID)
                 {
-                case 1: //type
-                    return &Sounds[ListIndex]->CSDT.value.type;
+                case 1: //soundType
+                    return &Sounds[ListIndex]->CSDT.value.soundType;
                 case 2: //sound
                     return &Sounds[ListIndex]->CSDI.value.fid;
                 case 3: //chance
@@ -768,7 +768,7 @@ bool CREARecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
 
             switch(ListFieldID)
                 {
-                case 1: //type
+                case 1: //soundType
                     Sounds[ListIndex]->SetType(*(UINT32 *)FieldValue);
                     break;
                 case 2: //sound
@@ -1029,7 +1029,7 @@ void CREARecord::DeleteField(FIELD_IDENTIFIERS)
 
             switch(ListFieldID)
                 {
-                case 1: //type
+                case 1: //soundType
                     Sounds[ListIndex]->CSDT.Unload();
                     return;
                 case 2: //sound

@@ -28,12 +28,12 @@ bool ProcessRecord(_FileHandler &ReadHandler, FormIDHandlerClass &FormIDHandler,
     ReadHandler.read(&curRecord->formID, 4);
     ReadHandler.read(&curRecord->flagsUnk, 4);
     expander.Accept(curRecord->formID);
-
+    curRecord->IsLoaded(false); //just incase the chosen flags were in use, clear them
     //Testing Messages
-    if(curRecord->IsLoaded())
-        printf("_fIsLoaded Flag used!!!! %s - %08X\n", curRecord->GetStrType(), curRecord->formID);
-    if((curRecord->flags & 0x4000) != 0)
-        printf("0x4000 used: %08X!!!!\n", curRecord->formID);
+    //if(curRecord->IsLoaded())
+    //    printf("_fIsLoaded Flag used!!!! %s - %08X\n", curRecord->GetStrType(), curRecord->formID);
+    //if((curRecord->flags & 0x4000) != 0)
+    //    printf("0x4000 used: %08X!!!!\n", curRecord->formID);
 
     if(Flags.IsSkipNewRecords && FormIDHandler.IsNewRecord(curRecord->formID))
         {
@@ -56,7 +56,8 @@ bool ProcessRecord(_FileHandler &ReadHandler, FormIDHandlerClass &FormIDHandler,
         }
     else
         {
-        printf("Record skipped with duplicate formID: %08X\n", curRecord->formID);
+        if(!Flags.IsAddMasters) //Can cause any new records to be given a duplicate ID
+            printf("Record skipped with duplicate formID: %08X\n", curRecord->formID);
         delete curRecord;
         return false;
         }

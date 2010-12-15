@@ -605,6 +605,11 @@ UINT32 ModFlags::GetFlags()
         flags |= fIsFullLoad;
         flags &= ~fIsMinLoad;
         }
+    if(IsNoLoad)
+        {
+        flags &= ~fIsFullLoad;
+        flags &= ~fIsMinLoad;
+        }
     if(IsSkipNewRecords)
         flags |= fIsSkipNewRecords;
     if(IsInLoadOrder)

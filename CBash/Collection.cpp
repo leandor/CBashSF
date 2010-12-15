@@ -32,6 +32,11 @@ bool compMod(ModFile *lhs, ModFile *rhs)
 
 bool sortMod(ModFile *lhs, ModFile *rhs)
     {
+    //Esp's sort after esm's
+    //Non-existent esms sort before existing esps
+    //Non-existent esms retain their relative load order
+    //Existing esps sort by modified date
+    //New esps load last
     if(lhs->TES4.IsESM())
         {
         if(rhs->TES4.IsESM())
@@ -50,30 +55,13 @@ bool sortMod(ModFile *lhs, ModFile *rhs)
         }
     if(rhs->TES4.IsESM())
         return false;
-    //Esp's sort after esp's
-    //Non-existent esps sort before existing esps
-    //Non-existent esps retain their relative load order
-    //Existing esps sort by modified date
-    //New esps load last
-    //if(lhs->Settings.IsNew)
-    //    printf("New mod: %s\n", lhs->FileName);
-    //if(rhs->Settings.IsNew)
-    //    printf("New mod: %s\n", rhs->FileName);
-    if(lhs->Flags.IsIgnoreExisting || !FileExists(lhs->FileName))
+    if(lhs->Flags.IsIgnoreExisting || lhs->ModTime == 0)
         {
-        if(rhs->Flags.IsIgnoreExisting || !FileExists(rhs->FileName))
+        if(rhs->Flags.IsIgnoreExisting || rhs->ModTime == 0)
             return true;
         return false;
         }
-    if(rhs->Flags.IsIgnoreExisting || !FileExists(rhs->FileName))
-        return false;
-    if(lhs->ModTime == 0)
-        {
-        if(rhs->ModTime == 0)
-            return false;
-        return true;
-        }
-    if(rhs->ModTime == 0)
+    if(rhs->Flags.IsIgnoreExisting || rhs->ModTime == 0)
         return false;
     return lhs->ModTime < rhs->ModTime;
     }
@@ -108,7 +96,7 @@ SINT32 Collection::AddMod(STRING const &ModName, ModFlags &flags)
     switch(CollectionType)
         {
         case eTES4:
-            ModFiles.push_back(new TES4File(FileName, flags.GetFlags()));
+            ModFiles.push_back(new TES4File(FileName, flags.GetFlags())); //Sanitizes input by not returning any internal flags
             break;
         case eFO3:
             printf("Unimplemented\n");
@@ -318,36 +306,63 @@ SINT32 Collection::Load()
                     }
                 }
         }while(Preloading);
-
+        //printf("Load order before sort\n");
+        //for(UINT32 x = 0; x < ModFiles.size(); ++x)
+        //    printf("%02X: %s\n", x, ModFiles[x]->FileName);
+        //printf("\n");
         std::_Insertion_sort(ModFiles.begin(), ModFiles.end(), sortMod);
         std::vector<STRING> strLoadOrder255;
-        LoadOrder255.clear();
-        strLoadOrder255.clear();
+        std::vector<STRING> strTempLoadOrder;
+        std::vector< std::vector<STRING> > strAllLoadOrder;
+        LoadOrder255.clear(); //shouldn't be needed
+        //printf("Load order:\n");
         for(UINT32 p = 0; p < (UINT32)ModFiles.size(); ++p)
             {
             curModFile = ModFiles[p];
             curModFile->ModID = p;
+            //printf("ModID %02X: %s", p, curModFile->FileName);
             if(curModFile->Flags.IsInLoadOrder)
                 {
                 if(p >= 255)
                     throw std::exception("Tried to load more than 255 mods.");
                 LoadOrder255.push_back(curModFile);
                 strLoadOrder255.push_back(curModFile->FileName);
+                //printf(" , OrderID %02X", LoadOrder255.size() - 1);
                 }
+            else //every mod not in the std load order exists as if it and its masters are the only ones loaded
+                {//No need to sort since the masters should be in order well enough
+                for(UINT8 x = 0; x < curModFile->TES4.MAST.size(); ++x)
+                    strTempLoadOrder.push_back(curModFile->TES4.MAST[x].value);
+                strAllLoadOrder.push_back(strTempLoadOrder);
+                strTempLoadOrder.clear();
+                }
+            //printf("\n");
             }
 
         UINT8 expandedIndex = 0;
+        UINT32 x = 0;
         for(UINT32 p = 0; p < (UINT32)ModFiles.size(); ++p)
             {
             curModFile = ModFiles[p];
             //Loads GRUP and Record Headers.  Fully loads GMST records.
-            curModFile->FormIDHandler.SetLoadOrder(strLoadOrder255);
+            if(curModFile->Flags.IsInLoadOrder)
+                curModFile->FormIDHandler.SetLoadOrder(strLoadOrder255);
+            else
+                {
+                curModFile->FormIDHandler.SetLoadOrder(strAllLoadOrder[x]);
+                ++x;
+                }
             if(curModFile->Flags.IsSkipNewRecords)
                 curModFile->FormIDHandler.CreateFormIDLookup(0xFF);
             else
                 {
-                curModFile->FormIDHandler.CreateFormIDLookup(expandedIndex);
-                ++expandedIndex;
+                if(curModFile->Flags.IsInLoadOrder)
+                    {
+                    curModFile->FormIDHandler.CreateFormIDLookup(expandedIndex);
+                    ++expandedIndex;
+                    }
+                else
+                    curModFile->FormIDHandler.CreateFormIDLookup(curModFile->TES4.MAST.size());
                 }
             if(curModFile->Flags.IsExtendedConflicts)
                 {
@@ -360,6 +375,7 @@ SINT32 Collection::Load()
                 curModFile->Load(indexer);
                 }
             }
+        strAllLoadOrder.clear();
         IsLoaded = true;
         }
     catch(std::exception& e)

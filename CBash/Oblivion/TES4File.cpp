@@ -129,6 +129,10 @@ SINT32 TES4File::Load(RecordOp &indexer)
         };
     if(!ReadHandler.IsOpen() || Flags.LoadedGRUPs)
         return 0;
+    //printf("%08X\n", Flags.GetFlags());
+    //printf("Loading %s\n", FileName);
+    //for(UINT32 x = 0; x < FormIDHandler.LoadOrder255.size(); ++x)
+    //    printf("Master in load order %02X: %s\n", x, FormIDHandler.LoadOrder255[x]);
     Flags.LoadedGRUPs = true;
     UINT32 GRUPSize;
     UINT32 GRUPLabel;
@@ -429,12 +433,28 @@ SINT32 TES4File::Load(RecordOp &indexer)
                 break;
             default:
                 printf("FileName = %s\n", FileName);
-                printf("  Unimplemented GRUP = ");
-                for(int x = 0;x < 4;x++)
-                    printf("%c", ((STRING)&GRUPLabel)[x]);
-                printf("\n");
-                
-                ReadHandler.set_used(GRUPSize - 16); //Skip type (tops will all == 0)
+                if(GRUPLabel == 0 && GRUPSize == 0)
+                    {
+                    printf("  Bad file structure, zeros found past end of groups\n");
+                    return 1;
+                    }
+                else
+                    {
+                    printf("  Unimplemented GRUP = ");
+                    for(int x = 0;x < 4;x++)
+                        printf("%c", ((STRING)&GRUPLabel)[x]);
+                    printf("\n");
+                    }
+                if(GRUPSize == 0)
+                    {
+                    printf("  Unable to continue loading.\n");
+                    return 1;
+                    }
+                else
+                    {
+                    printf("  Attempting to skip and continue loading.\n");
+                    ReadHandler.set_used(GRUPSize - 16); //Skip type (tops will all == 0)
+                    }
                 break;
             }
         };

@@ -156,7 +156,7 @@ bool CREARecord::CREAWNAM::operator !=(const CREAWNAM &other) const
     return !(*this == other);
     }
 
-CREARecord::CREACSDT::CREACSDT():type(0)
+CREARecord::CREACSDT::CREACSDT():soundType(0)
     {
     //
     }
@@ -168,7 +168,7 @@ CREARecord::CREACSDT::~CREACSDT()
 
 bool CREARecord::CREACSDT::operator ==(const CREACSDT &other) const
     {
-    return (type == other.type);
+    return (soundType == other.soundType);
     }
 
 bool CREARecord::CREACSDT::operator !=(const CREACSDT &other) const
@@ -197,15 +197,144 @@ bool CREARecord::CREACSDC::operator !=(const CREACSDC &other) const
     return !(*this == other);
     }
 
+bool CREARecord::CREASound::IsLeftFoot()
+    {
+    return (CSDT.value.soundType == eLeftFoot);
+    }
+
+void CREARecord::CREASound::IsLeftFoot(bool value)
+    {
+    if(value)
+        CSDT.value.soundType = eLeftFoot;
+    else if(IsLeftFoot())
+        CSDT.value.soundType = eRightFoot;
+    }
+
+bool CREARecord::CREASound::IsRightFoot()
+    {
+    return (CSDT.value.soundType == eRightFoot);
+    }
+
+void CREARecord::CREASound::IsRightFoot(bool value)
+    {
+    if(value)
+        CSDT.value.soundType = eRightFoot;
+    else if(IsRightFoot())
+        CSDT.value.soundType = eLeftFoot;
+    }
+
+bool CREARecord::CREASound::IsLeftBackFoot()
+    {
+    return (CSDT.value.soundType == eLeftBackFoot);
+    }
+
+void CREARecord::CREASound::IsLeftBackFoot(bool value)
+    {
+    if(value)
+        CSDT.value.soundType = eLeftBackFoot;
+    else if(IsLeftBackFoot())
+        CSDT.value.soundType = eLeftFoot;
+    }
+
+bool CREARecord::CREASound::IsRightBackFoot()
+    {
+    return (CSDT.value.soundType == eRightBackFoot);
+    }
+
+void CREARecord::CREASound::IsRightBackFoot(bool value)
+    {
+    if(value)
+        CSDT.value.soundType = eRightBackFoot;
+    else if(IsRightBackFoot())
+        CSDT.value.soundType = eLeftFoot;
+    }
+
+bool CREARecord::CREASound::IsIdle()
+    {
+    return (CSDT.value.soundType == eIdle);
+    }
+
+void CREARecord::CREASound::IsIdle(bool value)
+    {
+    if(value)
+        CSDT.value.soundType = eIdle;
+    else if(IsIdle())
+        CSDT.value.soundType = eLeftFoot;
+    }
+
+bool CREARecord::CREASound::IsAware()
+    {
+    return (CSDT.value.soundType == eAware);
+    }
+
+void CREARecord::CREASound::IsAware(bool value)
+    {
+    if(value)
+        CSDT.value.soundType = eAware;
+    else if(IsAware())
+        CSDT.value.soundType = eLeftFoot;
+    }
+
+bool CREARecord::CREASound::IsAttack()
+    {
+    return (CSDT.value.soundType == eAttack);
+    }
+
+void CREARecord::CREASound::IsAttack(bool value)
+    {
+    if(value)
+        CSDT.value.soundType = eAttack;
+    else if(IsAttack())
+        CSDT.value.soundType = eLeftFoot;
+    }
+
+bool CREARecord::CREASound::IsHit()
+    {
+    return (CSDT.value.soundType == eHit);
+    }
+
+void CREARecord::CREASound::IsHit(bool value)
+    {
+    if(value)
+        CSDT.value.soundType = eHit;
+    else if(IsHit())
+        CSDT.value.soundType = eLeftFoot;
+    }
+
+bool CREARecord::CREASound::IsDeath()
+    {
+    return (CSDT.value.soundType == eDeath);
+    }
+
+void CREARecord::CREASound::IsDeath(bool value)
+    {
+    if(value)
+        CSDT.value.soundType = eDeath;
+    else if(IsDeath())
+        CSDT.value.soundType = eLeftFoot;
+    }
+
+bool CREARecord::CREASound::IsWeapon()
+    {
+    return (CSDT.value.soundType == eWeapon);
+    }
+
+void CREARecord::CREASound::IsWeapon(bool value)
+    {
+    if(value)
+        CSDT.value.soundType = eWeapon;
+    else if(IsWeapon())
+        CSDT.value.soundType = eLeftFoot;
+    }
 
 bool CREARecord::CREASound::IsType(UINT32 Type)
     {
-    return (CSDT.value.type == Type);
+    return (CSDT.value.soundType == Type);
     }
 
 void CREARecord::CREASound::SetType(UINT32 Type)
     {
-    CSDT.value.type = Type;
+    CSDT.value.soundType = Type;
     }
 
 bool CREARecord::CREASound::operator ==(const CREASound &other) const

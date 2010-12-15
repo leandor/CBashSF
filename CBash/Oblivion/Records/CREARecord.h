@@ -89,7 +89,7 @@ class CREARecord : public Record
 
         struct CREACSDT
             {
-            UINT32  type;
+            UINT32  soundType;
 
             CREACSDT();
             ~CREACSDT();
@@ -115,11 +115,45 @@ class CREARecord : public Record
             ReqSubRecord<GENFID> CSDI;
             ReqSubRecord<CREACSDC> CSDC;
 
+            enum eSoundType
+                {
+                eLeftFoot      = 0,
+                eRightFoot     = 1,
+                eLeftBackFoot  = 2,
+                eRightBackFoot = 3,
+                eIdle          = 4,
+                eAware         = 5,
+                eAttack        = 6,
+                eHit           = 7,
+                eDeath         = 8,
+                eWeapon        = 9
+                };
+
+            bool   IsLeftFoot();
+            void   IsLeftFoot(bool value);
+            bool   IsRightFoot();
+            void   IsRightFoot(bool value);
+            bool   IsLeftBackFoot();
+            void   IsLeftBackFoot(bool value);
+            bool   IsRightBackFoot();
+            void   IsRightBackFoot(bool value);
+            bool   IsIdle();
+            void   IsIdle(bool value);
+            bool   IsAware();
+            void   IsAware(bool value);
+            bool   IsAttack();
+            void   IsAttack(bool value);
+            bool   IsHit();
+            void   IsHit(bool value);
+            bool   IsDeath();
+            void   IsDeath(bool value);
+            bool   IsWeapon();
+            void   IsWeapon(bool value);
             bool   IsType(UINT32 Type);
             void   SetType(UINT32 Type);
 
-            bool operator ==(const CREASound &other) const;
-            bool operator !=(const CREASound &other) const;
+            bool   operator ==(const CREASound &other) const;
+            bool   operator !=(const CREASound &other) const;
             };
 
         enum flagsFlags

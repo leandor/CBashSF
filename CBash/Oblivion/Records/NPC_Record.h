@@ -125,9 +125,9 @@ class NPC_Record : public Record
         OptSubRecord<GENFID> ENAM;
         ReqSubRecord<GENCLR> HCLR;
         OptSubRecord<GENFID> ZNAM;
-        RawRecord FGGS;
-        RawRecord FGGA;
-        RawRecord FGTS;
+        RawRecord FGGS; //FaceGen Geometry-Symmetric
+        RawRecord FGGA; //FaceGen Geometry-Asymmetric
+        RawRecord FGTS; //FaceGen Texture-Symmetric
         ReqSubRecord<NPC_FNAM> FNAM;
 
         NPC_Record(unsigned char *_recData=NULL);

@@ -186,9 +186,9 @@ class RACERecord : public Record
         StringRecord FICON4;
         std::vector<FORMID> HNAM;
         std::vector<FORMID> ENAM;
-        RawRecord FGGS;
-        RawRecord FGGA;
-        RawRecord FGTS;
+        RawRecord FGGS; //FaceGen Geometry-Symmetric
+        RawRecord FGGA; //FaceGen Geometry-Asymmetric
+        RawRecord FGTS; //FaceGen Texture-Symmetric
         ReqSubRecord<RACESNAM> SNAM;
 
         RACERecord(unsigned char *_recData=NULL);

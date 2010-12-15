@@ -39,8 +39,8 @@ ModFile::ModFile(STRING ModName, const UINT32 _flags):
         ModTime = buf.st_mtime;
     if(Flags.IsIgnoreExisting || Flags.IsNoLoad || !FileExists(ModName))
         {
-        TES4.IsESM(_stricmp(".esm",ModName + strlen(ModName) - 4) == 0 || _stricmp(".esm.ghost",ModName + strlen(ModName) - 10) == 0);
         TES4.IsLoaded(true);
+        TES4.IsESM(_stricmp(".esm",ModName + strlen(ModName) - 4) == 0 || _stricmp(".esm.ghost",ModName + strlen(ModName) - 10) == 0);
         }
     }
 

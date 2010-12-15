@@ -403,7 +403,12 @@ RecordIndexer::~RecordIndexer()
 bool RecordIndexer::Accept(Record **curRecord)
     {
     if((*curRecord)->IsKeyedByEditorID())
-        EditorID_ModFile_Record.insert(std::make_pair(((*curRecord)->GetType() == 'FEGM' && ((MGEFRecord*)(*curRecord))->OBME.IsLoaded()) ? &(((MGEFRecord*)curRecord)->OBME->EDDX.value.mgefCode)[0] : (STRING)(*curRecord)->GetField(4),std::make_pair(curModFile,*curRecord)));
+        {
+        if((*curRecord)->GetType() == 'FEGM' && ((MGEFRecord*)(*curRecord))->OBME.IsLoaded())
+            EditorID_ModFile_Record.insert(std::make_pair(&(((MGEFRecord*)(*curRecord))->OBME->EDDX.value.mgefCode)[0],std::make_pair(curModFile,*curRecord)));
+        else
+            EditorID_ModFile_Record.insert(std::make_pair((STRING)(*curRecord)->GetField(4),std::make_pair(curModFile,*curRecord)));
+        }
     else
         FormID_ModFile_Record.insert(std::make_pair((*curRecord)->formID,std::make_pair(curModFile,*curRecord)));
     return false;
