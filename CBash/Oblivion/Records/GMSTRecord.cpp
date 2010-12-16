@@ -97,14 +97,15 @@ GMSTRecord::GMSTRecord(GMSTRecord *srcRecord):
     flags = srcRecord->flags;
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
+    EDID = srcRecord->EDID;
 
     if(!srcRecord->IsChanged())
         {
+        IsLoaded(false);
         recData = srcRecord->recData;
         return;
         }
 
-    EDID = srcRecord->EDID;
     DATA.format = srcRecord->DATA.format;
     UINT32 vSize;
     switch(DATA.format)
@@ -163,7 +164,7 @@ UINT32 GMSTRecord::GetSize(bool forceCalc)
             TotSize += cSize += 6;
             break;
         default:
-            printf("Unknown GMST format in GetSize(): %s\n", EDID.value);
+            printf("Unknown GMST format (%c) in GetSize(): %s\n", DATA.format, EDID.value);
             break;
         }
 
@@ -247,13 +248,20 @@ SINT32 GMSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         };
     //GMSTs should always be loaded since they're keyed by editorID
     //By marking it as changed, it prevents the record from being unloaded
-    IsChanged(true);
+    //IsChanged(true);
     return 0;
     }
 
 SINT32 GMSTRecord::Unload()
     {
-    //GMSTs should always be loaded, so do nothing
+    IsChanged(false);
+    IsLoaded(false);
+    //Don't unload EDID since it is used to index the record
+    if(DATA.format == 's')
+        delete []DATA.s;
+    DATA.i = 0;
+    DATA.s = NULL;
+    DATA.format = 0;
     return 1;
     }
 
@@ -277,7 +285,7 @@ SINT32 GMSTRecord::WriteRecord(_FileHandler &SaveHandler)
                 SaveHandler.writeSubRecord('ATAD', &null, 1);
             break;
         default:
-            printf("Unknown GMST format when writing: %s\n", EDID.value);
+            printf("Unknown GMST format (%c) when writing: %s\n", DATA.format, EDID.value);
         }
     return -1;
     }

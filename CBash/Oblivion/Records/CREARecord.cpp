@@ -367,6 +367,7 @@ CREARecord::CREARecord(CREARecord *srcRecord):
 
     if(!srcRecord->IsChanged())
         {
+        IsLoaded(false);
         recData = srcRecord->recData;
         return;
         }
@@ -1377,6 +1378,7 @@ SINT32 CREARecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
 
 SINT32 CREARecord::Unload()
     {
+    IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
     FULL.Unload();

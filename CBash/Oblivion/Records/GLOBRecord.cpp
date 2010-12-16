@@ -82,6 +82,7 @@ GLOBRecord::GLOBRecord(GLOBRecord *srcRecord):
 
     if(!srcRecord->IsChanged())
         {
+        IsLoaded(false);
         recData = srcRecord->recData;
         return;
         }
@@ -175,6 +176,7 @@ SINT32 GLOBRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
 
 SINT32 GLOBRecord::Unload()
     {
+    IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
     FNAM.Unload();

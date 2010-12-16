@@ -163,6 +163,7 @@ MGEFRecord::MGEFRecord(MGEFRecord *srcRecord):
 
     if(!srcRecord->IsChanged())
         {
+        IsLoaded(false);
         recData = srcRecord->recData;
         return;
         }
@@ -201,16 +202,15 @@ bool MGEFRecord::VisitFormIDs(FormIDOp &op)
 
     if(OBME.IsLoaded())
         {
-        if(OBME->EDDX.IsLoaded())
-            //Conditional resolution of mgefCode's based on JRoush's OBME mod
-            //It's resolved just like a formID, except it uses the lower byte instead of the upper
-            if((MGEFCODE)OBME->EDDX.value.mgefCode >= 0x80000000)
-                {
-                MGEFCODE tempMgef = (MGEFCODE)OBME->EDDX.value.mgefCode;
-                op.AcceptMGEF(tempMgef);
-                memcpy(&OBME->EDDX.value.mgefCode[0], &tempMgef, 4);
-                OBME->EDDX.value.mgefCode[4] = 0;
-                }
+        //Conditional resolution of mgefCode's based on JRoush's OBME mod
+        //It's resolved just like a formID, except it uses the lower byte instead of the upper
+        if((MGEFCODE)OBME->EDDX.value.mgefCode >= 0x80000000)
+            {
+            MGEFCODE tempMgef = (MGEFCODE)OBME->EDDX.value.mgefCode;
+            op.AcceptMGEF(tempMgef);
+            memcpy(&OBME->EDDX.value.mgefCode[0], &tempMgef, 4);
+            OBME->EDDX.value.mgefCode[4] = 0;
+            }
 
         if(OBME->OBME.IsLoaded())
             {
@@ -986,21 +986,25 @@ SINT32 MGEFRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         };
     //MGEFs should always be loaded since they're keyed by editorID (or mgefCode)
     //By marking it as changed, it prevents the record from being unloaded
-    IsChanged(true);
+    //IsChanged(true);
     return 0;
     }
 
 SINT32 MGEFRecord::Unload()
     {
+    IsChanged(false);
     IsLoaded(false);
-    EDID.Unload();
+    if(OBME.IsLoaded())
+        EDID.Unload(); //Don't unload OBME since OBME->EDDX.value.mgefCode is used to index the record
+    else
+        OBME.Unload(); //Don't unload EDID since it is used to index the record
+
     FULL.Unload();
     DESC.Unload();
     ICON.Unload();
     MODL.Unload();
     DATA.Unload();
     ESCE.clear();
-    OBME.Unload();
     return 1;
     }
 

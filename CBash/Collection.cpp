@@ -27,7 +27,7 @@ GPL License and Copyright Notice ============================================
 
 bool compMod(ModFile *lhs, ModFile *rhs)
     {
-    return *lhs < *rhs;
+    return *lhs > *rhs;
     }
 
 bool sortMod(ModFile *lhs, ModFile *rhs)
@@ -80,6 +80,8 @@ Collection::~Collection()
     delete []ModsDir;
     for(UINT32 p = 0; p < ModFiles.size(); p++)
         delete ModFiles[p];
+    for(UINT32 p = 0; p < Expanders.size(); p++)
+        delete Expanders[p];
     //LoadOrder255 is shared with ModFiles, so no deleting
     }
 
@@ -93,6 +95,7 @@ SINT32 Collection::AddMod(STRING const &ModName, ModFlags &flags)
 
     STRING FileName = new char[strlen(ModName)+1];
     strcpy_s(FileName, strlen(ModName) + 1, ModName);
+
     switch(CollectionType)
         {
         case eTES4:
@@ -115,7 +118,7 @@ SINT32 Collection::AddMod(STRING const &ModName, ModFlags &flags)
 bool Collection::IsModAdded(STRING const &ModName)
     {
     for(UINT32 p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->FileName, ModName) == 0)
+        if(_stricmp(ModFiles[p]->ReadHandler.getFileName(), ModName) == 0)
             return true;
     return false;
     }
@@ -156,8 +159,6 @@ SINT32 Collection::SaveMod(ModFile *curModFile, bool CloseCollection)
         return -1;
         }
     tName[0] = 'x';
-    for(UINT32 x = 0; x < ModFiles.size(); ++x)
-        Expanders.push_back(new FormIDResolver(ModFiles[x]->FormIDHandler.ExpandTable, ModFiles[x]->FormIDHandler.FileStart, ModFiles[x]->FormIDHandler.FileEnd));
 
     try
         {
@@ -179,16 +180,16 @@ SINT32 Collection::SaveMod(ModFile *curModFile, bool CloseCollection)
         originalTimes.actime = ltime;
         originalTimes.modtime = ltime;
 
-        if(FileExists(curModFile->FileName))
+        if(curModFile->ReadHandler.exists())
             {
-            stat(curModFile->FileName, &oTimes);
+            stat(curModFile->ReadHandler.getFileName(), &oTimes);
             originalTimes.actime = oTimes.st_atime;
             originalTimes.modtime = oTimes.st_mtime;
 
-            bakSize = (UINT32)strlen(curModFile->FileName) + (UINT32)strlen(".bak.XXXX_XX_XX_XX_XX_XX") + 1;
+            bakSize = (UINT32)strlen(curModFile->ReadHandler.getFileName()) + (UINT32)strlen(".bak.XXXX_XX_XX_XX_XX_XX") + 1;
             backupName = new char[bakSize];
-            strcpy_s(backupName, bakSize, curModFile->FileName);
-            strftime(backupName + strlen(curModFile->FileName), bakSize, ".bak.%Y_%m_%d_%H_%M_%S", &currentTime );
+            strcpy_s(backupName, bakSize, curModFile->ReadHandler.getFileName());
+            strftime(backupName + strlen(curModFile->ReadHandler.getFileName()), bakSize, ".bak.%Y_%m_%d_%H_%M_%S", &currentTime );
 
             //If the backup name already exists, wait in 1 second increments until a free name is available
             //If 10 tries pass, then give up.
@@ -200,24 +201,24 @@ SINT32 Collection::SaveMod(ModFile *curModFile, bool CloseCollection)
                 bakAttempts++;
                 currentTime.tm_min++;
                 mktime(&currentTime);
-                strftime(backupName + strlen(curModFile->FileName), bakSize, ".bak.%Y_%m_%d_%H_%M_%S", &currentTime);
+                strftime(backupName + strlen(curModFile->ReadHandler.getFileName()), bakSize, ".bak.%Y_%m_%d_%H_%M_%S", &currentTime);
                 };
-            err = rename(curModFile->FileName, backupName);
+            err = rename(curModFile->ReadHandler.getFileName(), backupName);
             if(err != 0)
-                printf("Error renaming \"%s\" to \"%s\"\n", curModFile->FileName, backupName);
+                printf("Error renaming \"%s\" to \"%s\"\n", curModFile->ReadHandler.getFileName(), backupName);
             delete []backupName;
             }
 
         //Rename temp file to the original ModName
         //If it fails, try to save it to a datestamped .new extension and inform the failure
-        err = rename(tName, curModFile->FileName);
+        err = rename(tName, curModFile->ReadHandler.getFileName());
         if(err != 0)
             {
-            bakSize = (UINT32)strlen(curModFile->FileName) + (UINT32)strlen(".new.XXXX_XX_XX_XX_XX_XX") + 1;
+            bakSize = (UINT32)strlen(curModFile->ReadHandler.getFileName()) + (UINT32)strlen(".new.XXXX_XX_XX_XX_XX_XX") + 1;
             backupName = new char[bakSize];
 
-            strcpy_s(backupName, bakSize, curModFile->FileName);
-            strftime(backupName+strlen(curModFile->FileName), bakSize, ".new.%Y_%m_%d_%H_%M_%S", &currentTime );
+            strcpy_s(backupName, bakSize, curModFile->ReadHandler.getFileName());
+            strftime(backupName+strlen(curModFile->ReadHandler.getFileName()), bakSize, ".new.%Y_%m_%d_%H_%M_%S", &currentTime );
 
             //If the backup name already exists, wait in 1 second increments until a free name is available
             //If 10 tries pass, then give up.
@@ -229,7 +230,7 @@ SINT32 Collection::SaveMod(ModFile *curModFile, bool CloseCollection)
                 bakAttempts++;
                 currentTime.tm_min++;
                 mktime(&currentTime);
-                strftime(backupName + strlen(curModFile->FileName), bakSize, ".new.%Y_%m_%d_%H_%M_%S", &currentTime);
+                strftime(backupName + strlen(curModFile->ReadHandler.getFileName()), bakSize, ".new.%Y_%m_%d_%H_%M_%S", &currentTime);
                 };
 
             err = rename(tName, backupName);
@@ -241,7 +242,7 @@ SINT32 Collection::SaveMod(ModFile *curModFile, bool CloseCollection)
                 }
             else
                 {
-                printf("Error renaming \"%s\" to \"%s\"\n", tName, curModFile->FileName);
+                printf("Error renaming \"%s\" to \"%s\"\n", tName, curModFile->ReadHandler.getFileName());
                 printf("Renamed \"%s\" to \"%s\"\n", tName, backupName);
                 _utime(backupName, &originalTimes);
                 delete []backupName;
@@ -249,23 +250,19 @@ SINT32 Collection::SaveMod(ModFile *curModFile, bool CloseCollection)
                 }
             }
         else
-            _utime(curModFile->FileName, &originalTimes);
+            _utime(curModFile->ReadHandler.getFileName(), &originalTimes);
         }
     catch(...)
         {
-        printf("Error saving: %s\n", curModFile->FileName);
+        printf("Error saving: %s\n", curModFile->ReadHandler.getFileName());
         if(FileExists(tName))
             {
             remove(tName);
             printf("  Temp file %s removed.\n", tName);
             }
-        for(UINT32 x = 0; x < Expanders.size(); ++x)
-            delete Expanders[x];
         throw 1;
         return -1;
         }
-    for(UINT32 x = 0; x < Expanders.size(); ++x)
-        delete Expanders[x];
     return 0;
     }
 
@@ -320,13 +317,13 @@ SINT32 Collection::Load()
             {
             curModFile = ModFiles[p];
             curModFile->ModID = p;
-            //printf("ModID %02X: %s", p, curModFile->FileName);
-            if(curModFile->Flags.IsInLoadOrder)
+            //printf("ModID %02X: %s", p, curModFile->ReadHandler.getFileName());
+            if(curModFile->Flags.IsInLoadOrder || curModFile->Flags.IsIgnoreAbsentMasters)
                 {
                 if(p >= 255)
                     throw std::exception("Tried to load more than 255 mods.");
                 LoadOrder255.push_back(curModFile);
-                strLoadOrder255.push_back(curModFile->FileName);
+                strLoadOrder255.push_back(curModFile->ReadHandler.getFileName());
                 //printf(" , OrderID %02X", LoadOrder255.size() - 1);
                 }
             else //every mod not in the std load order exists as if it and its masters are the only ones loaded
@@ -345,7 +342,7 @@ SINT32 Collection::Load()
             {
             curModFile = ModFiles[p];
             //Loads GRUP and Record Headers.  Fully loads GMST records.
-            if(curModFile->Flags.IsInLoadOrder)
+            if(curModFile->Flags.IsInLoadOrder || curModFile->Flags.IsIgnoreAbsentMasters)
                 curModFile->FormIDHandler.SetLoadOrder(strLoadOrder255);
             else
                 {
@@ -364,15 +361,16 @@ SINT32 Collection::Load()
                 else
                     curModFile->FormIDHandler.CreateFormIDLookup(curModFile->TES4.MAST.size());
                 }
+            Expanders.push_back(new FormIDResolver(curModFile->FormIDHandler.ExpandTable, curModFile->FormIDHandler.FileStart, curModFile->FormIDHandler.FileEnd));
             if(curModFile->Flags.IsExtendedConflicts)
                 {
                 extended_indexer.SetModFile(curModFile);
-                curModFile->Load(extended_indexer);
+                curModFile->Load(extended_indexer, Expanders);
                 }
             else
                 {
                 indexer.SetModFile(curModFile);
-                curModFile->Load(indexer);
+                curModFile->Load(indexer, Expanders);
                 }
             }
         strAllLoadOrder.clear();
@@ -483,7 +481,7 @@ UINT32 Collection::IsRecordWinning(ModFile *curModFile, const FORMID &RecordForm
     if(sortedConflicts.size())
         {
         std::sort(sortedConflicts.begin(), sortedConflicts.end(), compMod);
-        bIsWinning = sortedConflicts[sortedConflicts.size()] == curModFile;
+        bIsWinning = sortedConflicts[0] == curModFile;
         sortedConflicts.clear();
         }
     return bIsWinning;
@@ -536,9 +534,8 @@ void Collection::GetRecordConflicts(const FORMID &RecordFormID, STRING const &Re
     if(sortedConflicts.size())
         {
         std::sort(sortedConflicts.begin(), sortedConflicts.end(), compMod);
-        UINT32 x = 0;
-        for(SINT32 y = (SINT32)sortedConflicts.size() - 1; y >= 0; --y, ++x)
-            ModIDs[x] = sortedConflicts[y]->ModID;
+        for(UINT32 x = 0; x < sortedConflicts.size(); ++x)
+            ModIDs[x] = sortedConflicts[x]->ModID;
         sortedConflicts.clear();
         }
     }
@@ -607,8 +604,11 @@ UINT32 Collection::CreateRecord(ModFile *curModFile, const UINT32 &RecordType, F
 
 UINT32 Collection::CopyRecord(ModFile *curModFile, const FORMID &RecordFormID, STRING const &RecordEditorID, ModFile *DestModFile, FORMID DestParentFormID, const FORMID DestRecordFormID, STRING const DestRecordEditorID, UINT32 CreateFlags)
     {
-    if(!curModFile->Flags.IsInLoadOrder)
+    if(!curModFile->Flags.IsInLoadOrder && !curModFile->Flags.IsIgnoreAbsentMasters)
+        {
+        printf("Source mod is not in the load order and is not ignoring absent masters\n");
         return 0;
+        }
 
     CreateRecordOptions options(CreateFlags);
     Record *curRecord = NULL;
@@ -619,7 +619,10 @@ UINT32 Collection::CopyRecord(ModFile *curModFile, const FORMID &RecordFormID, S
     else if(RecordEditorID != NULL)
         LookupRecord(curModFile, RecordEditorID, curRecord);
     if(curRecord == NULL)
+        {
+        printf("Unable to find source record\n");
         return 0;
+        }
 
     Record *ParentRecord = NULL;
     Record *RecordCopy = NULL;
@@ -647,16 +650,32 @@ UINT32 Collection::CopyRecord(ModFile *curModFile, const FORMID &RecordFormID, S
             DestParentFormID = CopyRecord(curModFile, DestParentFormID, 0, DestModFile, 0, 0, 0, parentOptions.GetFlags());
             LookupRecord(DestModFile, DestParentFormID, ParentRecord);
             if(ParentRecord == NULL)
+                {
+                printf("Unable to find destination parent record\n");
                 return 0;
+                }
             }
         }
-    if(curModFile == DestModFile)
+
+    if(curModFile == DestModFile && options.SetAsOverride)
+        {
+        printf("Source and Destination mods are the same (so can't copy override records to).\n");
         return 0;
+        }
+
+    if(!DestModFile->Flags.IsInLoadOrder && !options.SetAsOverride)
+        {
+        printf("Destination mod not in load order (so can't copy new records to)\n");
+        return 0;
+        }
 
     //Create the record copy
     RecordCopy = DestModFile->CreateRecord(curRecord->GetType(), DestRecordEditorID ? DestRecordEditorID : RecordEditorID, curRecord, ParentRecord, options);
     if(RecordCopy == NULL)
+        {
+        printf("Unable to copy record\n");
         return 0;
+        }
 
     //See if an existing record was returned instead of the requested copy
     if(RecordCopy->formID != curRecord->formID)
@@ -669,7 +688,7 @@ UINT32 Collection::CopyRecord(ModFile *curModFile, const FORMID &RecordFormID, S
     //See if the destination mod masters need updating
     //Ensure the record has been fully read
     //Uses the source mod's formID resolution tables
-    RecordReader reader(curModFile->FormIDHandler);
+    RecordReader reader(curModFile->FormIDHandler, Expanders);
     reader.Accept(&RecordCopy);
 
     //Then the destination mod's tables get used so that they can be updated
@@ -688,9 +707,6 @@ UINT32 Collection::CopyRecord(ModFile *curModFile, const FORMID &RecordFormID, S
 
 SINT32 Collection::DeleteRecord(ModFile *curModFile, const FORMID &RecordFormID, STRING const &RecordEditorID, const FORMID &ParentFormID)
     {
-    if(!curModFile->Flags.IsInLoadOrder)
-        return 0;
-
     Record *curRecord = NULL;
     Record *ParentRecord = NULL;
 
@@ -700,14 +716,14 @@ SINT32 Collection::DeleteRecord(ModFile *curModFile, const FORMID &RecordFormID,
     else if(RecordEditorID != NULL)
         LookupRecord(curModFile, RecordEditorID, curRecord);
     if(curRecord == NULL)
-        throw Ex_INVALIDINDEX();
+        throw Ex_INVALIDRECORDINDEX();
 
     //Lookup the required data, and ensure it exists
     if(ParentFormID)
         {
         LookupRecord(curModFile, ParentFormID, ParentRecord);
         if(ParentRecord == NULL)
-            throw Ex_INVALIDINDEX();
+            throw Ex_INVALIDRECORDINDEX();
         }
 
     RecordDeleter deleter(curRecord, curModFile->Flags.IsExtendedConflicts ? ExtendedEditorID_ModFile_Record: EditorID_ModFile_Record, curModFile->Flags.IsExtendedConflicts ? ExtendedFormID_ModFile_Record: FormID_ModFile_Record);
@@ -800,7 +816,7 @@ SINT32 Collection::SetRecordIDs(ModFile *curModFile, const FORMID &RecordFormID,
     if(bChangingEditorID)
         {
         //Ensure the record is fully loaded, otherwise any changes could be lost when the record is later loaded
-        RecordReader reader(curModFile->FormIDHandler);
+        RecordReader reader(curModFile->FormIDHandler, Expanders);
         reader.Accept(&curRecord);
         curRecord->SetField(4, 0, 0, 0, 0, 0, 0, (void *)EditorIDValue, 0);
         curRecord->IsChanged(true);

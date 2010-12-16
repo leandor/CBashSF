@@ -66,6 +66,7 @@ ROADRecord::ROADRecord(ROADRecord *srcRecord):
 
     if(!srcRecord->IsChanged())
         {
+        IsLoaded(false);
         recData = srcRecord->recData;
         return;
         }
@@ -184,6 +185,7 @@ SINT32 ROADRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
 
 SINT32 ROADRecord::Unload()
     {
+    IsChanged(false);
     IsLoaded(false);
     PGRP.clear();
     PGRR.clear();

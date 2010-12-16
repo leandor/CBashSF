@@ -629,6 +629,7 @@ REGNRecord::REGNRecord(REGNRecord *srcRecord):
 
     if(!srcRecord->IsChanged())
         {
+        IsLoaded(false);
         recData = srcRecord->recData;
         return;
         }
@@ -987,6 +988,7 @@ SINT32 REGNRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
 
 SINT32 REGNRecord::Unload()
     {
+    IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
     ICON.Unload();

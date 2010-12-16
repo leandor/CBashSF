@@ -106,7 +106,7 @@ class RecordMasterChecker : public RecordOp
         RecordReader reader;
 
     public:
-        RecordMasterChecker(FormIDHandlerClass &_FormIDHandler, const UINT8 &_MasterIndex);
+        RecordMasterChecker(FormIDHandlerClass &_FormIDHandler, std::vector<FormIDResolver *> &_Expanders, const UINT8 &_MasterIndex);
         ~RecordMasterChecker();
 
         bool Accept(Record **curRecord);
@@ -133,7 +133,7 @@ class RecordFormIDSwapper : public RecordOp
         RecordReader reader;
 
     public:
-        RecordFormIDSwapper(const UINT32 &_FormIDToMatch, const UINT32 &_FormIDToSwap, FormIDHandlerClass &_FormIDHandler);
+        RecordFormIDSwapper(const UINT32 &_FormIDToMatch, const UINT32 &_FormIDToSwap, FormIDHandlerClass &_FormIDHandler, std::vector<FormIDResolver *> &_Expanders);
         ~RecordFormIDSwapper();
 
         bool Accept(Record **curRecord);

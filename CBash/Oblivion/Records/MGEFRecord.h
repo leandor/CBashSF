@@ -80,7 +80,8 @@ class MGEFRecord : public Record
         struct OBMEMGEF
             {
             ReqSubRecord<MGEFOBME> OBME;
-            ReqSubRecord<OBMEEDDX> EDDX; //Is switched with the normal EDID on read and write so that the EDID field is a char *as expected
+            //Uses SubRecord so that it isn't reloaded everytime the record is parsed
+            SubRecord<OBMEEDDX> EDDX; //Is switched with the normal EDID on read and write so that the EDID field is a char *as expected
             RawRecord DATX;
 
             bool operator ==(const OBMEMGEF &other) const;

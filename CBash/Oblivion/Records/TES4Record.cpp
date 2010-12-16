@@ -77,6 +77,7 @@ TES4Record::TES4Record(TES4Record *srcRecord):
 
     if(!srcRecord->IsChanged())
         {
+        IsLoaded(false);
         recData = srcRecord->recData;
         return;
         }

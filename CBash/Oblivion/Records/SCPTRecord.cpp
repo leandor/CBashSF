@@ -96,6 +96,7 @@ SCPTRecord::SCPTRecord(SCPTRecord *srcRecord):
 
     if(!srcRecord->IsChanged())
         {
+        IsLoaded(false);
         recData = srcRecord->recData;
         return;
         }
@@ -286,6 +287,7 @@ SINT32 SCPTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
 
 SINT32 SCPTRecord::Unload()
     {
+    IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
     SCHR.Unload();

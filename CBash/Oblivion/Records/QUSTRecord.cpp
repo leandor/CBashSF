@@ -257,6 +257,7 @@ QUSTRecord::QUSTRecord(QUSTRecord *srcRecord):
 
     if(!srcRecord->IsChanged())
         {
+        IsLoaded(false);
         recData = srcRecord->recData;
         return;
         }
@@ -735,6 +736,7 @@ SINT32 QUSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
 
 SINT32 QUSTRecord::Unload()
     {
+    IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
     SCRI.Unload();

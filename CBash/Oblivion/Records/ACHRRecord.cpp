@@ -40,6 +40,7 @@ ACHRRecord::ACHRRecord(ACHRRecord *srcRecord):
 
     if(!srcRecord->IsChanged())
         {
+        IsLoaded(false);
         recData = srcRecord->recData;
         return;
         }
@@ -251,6 +252,7 @@ SINT32 ACHRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
 
 SINT32 ACHRRecord::Unload()
     {
+    IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
     NAME.Unload();

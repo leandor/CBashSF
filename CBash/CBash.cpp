@@ -475,8 +475,9 @@ SINT32 LoadMod(const UINT32 CollectionID, const UINT32 ModID)
     {
     try
         {
-        ModFile *curModFile = ValidateModID(ValidateCollectionID(CollectionID), ModID);
-        RecordReader reader(curModFile->FormIDHandler);
+        Collection *curCollection = ValidateCollectionID(CollectionID);
+        ModFile *curModFile = ValidateModID(curCollection, ModID);
+        RecordReader reader(curModFile->FormIDHandler, curCollection->Expanders);
         curModFile->VisitAllRecords(reader);
         }
     catch(std::exception &ex)
@@ -516,7 +517,8 @@ SINT32 CleanModMasters(const UINT32 CollectionID, const UINT32 ModID)
     {
     try
         {
-        return ValidateModID(ValidateCollectionID(CollectionID), ModID)->CleanMasters();
+        Collection *curCollection = ValidateCollectionID(CollectionID);
+        return ValidateModID(curCollection, ModID)->CleanMasters(curCollection->Expanders);
         }
     catch(std::exception &ex)
         {
@@ -601,7 +603,7 @@ STRING GetModName(const UINT32 CollectionID, const UINT32 ModID)
     {
     try
         {
-        return ValidateLoadOrderID(ValidateCollectionID(CollectionID), ModID)->FileName;
+        return ValidateModID(ValidateCollectionID(CollectionID), ModID)->ReadHandler.getFileName();
         }
     catch(std::exception &ex)
         {
@@ -624,7 +626,7 @@ SINT32 GetModID(const UINT32 CollectionID, STRING const ModName)
 
         Collection *curCollection = ValidateCollectionID(CollectionID);
         for(UINT32 x = 0; x < curCollection->ModFiles.size();++x)
-            if(_stricmp(ModName, curCollection->ModFiles[x]->FileName) == 0)
+            if(_stricmp(ModName, curCollection->ModFiles[x]->ReadHandler.getFileName()) == 0)
                 return curCollection->ModFiles[x]->ModID;
 
         return -1;
@@ -759,37 +761,18 @@ UINT32 CopyRecord(const UINT32 CollectionID, const UINT32 ModID, const FORMID Re
     catch(std::exception &ex)
         {
         printf("CopyRecord: Error\n  %s\n", ex.what());
+        PRINT_RECORD_IDENTIFIERS;
+        printf("DestModID: %i, DestParentFormID: %08X, DestRecordFormID: %08X, DestRecordEditorID: %s, CreateFlags:%08X\n", DestModID, DestParentFormID, DestRecordFormID, DestRecordEditorID, CreateFlags);
+        printf("\n\n");
         return 0;
         }
     catch(...)
         {
         printf("CopyRecord: Error\n  Unhandled Exception\n");
+        PRINT_RECORD_IDENTIFIERS;
+        printf("DestModID: %i, DestParentFormID: %08X, DestRecordFormID: %08X, DestRecordEditorID: %s, CreateFlags:%08X\n", DestModID, DestParentFormID, DestRecordFormID, DestRecordEditorID, CreateFlags);
+        printf("\n\n");
         return 0;
-        }
-    return 0;
-    }
-
-SINT32 LoadRecord(const UINT32 CollectionID, const UINT32 ModID, const FORMID RecordFormID, STRING const RecordEditorID)
-    {
-    try
-        {
-        ModFile *curModFile = NULL;
-        Record *curRecord = NULL;
-        LookupRecord(CollectionID, ModID, RecordFormID, RecordEditorID, curModFile, curRecord);
-
-        RecordReader reader(curModFile->FormIDHandler);
-        reader.Accept(&curRecord);
-        return reader.GetCount() ? 1 : -1;
-        }
-    catch(std::exception &ex)
-        {
-        printf("Error loading record: %08X from mod:%i in collection: %i\n  %s\n", RecordFormID, ModID, CollectionID, ex.what());
-        return -1;
-        }
-    catch(...)
-        {
-        printf("Error loading record: %08X from mod:%i in collection: %i\n  Unhandled Exception\n", RecordFormID, ModID, CollectionID);
-        return -1;
         }
     return 0;
     }
@@ -800,7 +783,7 @@ SINT32 UnloadRecord(const UINT32 CollectionID, const UINT32 ModID, const FORMID 
         {
         Record *curRecord = NULL;
         LookupRecord(CollectionID, ModID, RecordFormID, RecordEditorID, curRecord);
-        return curRecord->Unload();
+        return curRecord->IsChanged() ? false : curRecord->Unload();
         }
     catch(std::exception &ex)
         {
@@ -966,7 +949,7 @@ SINT32 UpdateReferences(const UINT32 CollectionID, const UINT32 ModID, const FOR
         Collection *curCollection = ValidateCollectionID(CollectionID);
         ModFile *curModFile = ValidateModID(curCollection, ModID);
         Record *curRecord = NULL;
-        RecordFormIDSwapper swapper(FormIDToReplace, ReplacementFormID, curModFile->FormIDHandler);
+        RecordFormIDSwapper swapper(FormIDToReplace, ReplacementFormID, curModFile->FormIDHandler, curCollection->Expanders);
 
         if(RecordFormID != 0) //Swap possible uses of FormIDToReplace in a specific record only
             {
@@ -1007,8 +990,14 @@ SINT32 GetNumReferences(const UINT32 CollectionID, const UINT32 ModID, const FOR
     {
     try
         {
+        ModFile *curModFile = NULL;
         Record *curRecord = NULL;
-        LookupRecord(CollectionID, ModID, RecordFormID, curRecord);
+        Collection *curCollection = ValidateCollectionID(CollectionID);
+        LookupRecord(CollectionID, ModID, RecordFormID, curModFile, curRecord);
+        
+        //Ensure the record is fully loaded
+        RecordReader reader(curModFile->FormIDHandler, curCollection->Expanders);
+        reader.Accept(&curRecord);
 
         FormIDMatchCounter counter(FormIDToMatch);
         curRecord->VisitFormIDs(counter);
@@ -1035,10 +1024,11 @@ void SetField(const UINT32 CollectionID, const UINT32 ModID, const FORMID Record
         {
         ModFile *curModFile = NULL;
         Record *curRecord = NULL;
+        Collection *curCollection = ValidateCollectionID(CollectionID);
         LookupRecord(CollectionID, ModID, RecordFormID, RecordEditorID, curModFile, curRecord);
         
         //Ensure the record is fully loaded
-        RecordReader reader(curModFile->FormIDHandler);
+        RecordReader reader(curModFile->FormIDHandler, curCollection->Expanders);
         reader.Accept(&curRecord);
 
         if(curRecord->SetField(FieldID, ListIndex, ListFieldID, ListX2Index, ListX2FieldID, ListX3Index, ListX3FieldID, FieldValue, ArraySize))
@@ -1075,10 +1065,11 @@ void DeleteField(const UINT32 CollectionID, const UINT32 ModID, const FORMID Rec
         {
         ModFile *curModFile = NULL;
         Record *curRecord = NULL;
+        Collection *curCollection = ValidateCollectionID(CollectionID);
         LookupRecord(CollectionID, ModID, RecordFormID, RecordEditorID, curModFile, curRecord);
         
         //Ensure the record is fully loaded
-        RecordReader reader(curModFile->FormIDHandler);
+        RecordReader reader(curModFile->FormIDHandler, curCollection->Expanders);
         reader.Accept(&curRecord);
 
         curRecord->DeleteField(FieldID, ListIndex, ListFieldID, ListX2Index, ListX2FieldID, ListX3Index, ListX3FieldID);
@@ -1109,13 +1100,14 @@ UINT32 GetFieldAttribute(const UINT32 CollectionID, const UINT32 ModID, const FO
         {
         ModFile *curModFile = NULL;
         Record *curRecord = NULL;
+        Collection *curCollection = ValidateCollectionID(CollectionID);
         LookupRecord(CollectionID, ModID, RecordFormID, RecordEditorID, curModFile, curRecord);
         
         if(WhichAttribute > 0)
             {
             //Any attribute other than type requires the record to be read
             //Ensure the record is fully loaded
-            RecordReader reader(curModFile->FormIDHandler);
+            RecordReader reader(curModFile->FormIDHandler, curCollection->Expanders);
             reader.Accept(&curRecord);
             }
 
@@ -1156,10 +1148,11 @@ void * GetField(const UINT32 CollectionID, const UINT32 ModID, const FORMID Reco
         {
         ModFile *curModFile = NULL;
         Record *curRecord = NULL;
+        Collection *curCollection = ValidateCollectionID(CollectionID);
         LookupRecord(CollectionID, ModID, RecordFormID, RecordEditorID, curModFile, curRecord);
         
         //Ensure the record is fully loaded
-        RecordReader reader(curModFile->FormIDHandler);
+        RecordReader reader(curModFile->FormIDHandler, curCollection->Expanders);
         reader.Accept(&curRecord);
 
         return curRecord->GetField(FieldID, ListIndex, ListFieldID, ListX2Index, ListX2FieldID, ListX3Index, ListX3FieldID, FieldValues);

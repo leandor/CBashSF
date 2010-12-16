@@ -40,6 +40,7 @@ ACTIRecord::ACTIRecord(ACTIRecord *srcRecord):
 
     if(!srcRecord->IsChanged())
         {
+        IsLoaded(false);
         recData = srcRecord->recData;
         return;
         }
@@ -194,6 +195,7 @@ SINT32 ACTIRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
 
 SINT32 ACTIRecord::Unload()
     {
+    IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
     FULL.Unload();

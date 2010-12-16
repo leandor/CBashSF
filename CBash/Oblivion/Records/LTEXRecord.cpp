@@ -86,6 +86,7 @@ LTEXRecord::LTEXRecord(LTEXRecord *srcRecord):
 
     if(!srcRecord->IsChanged())
         {
+        IsLoaded(false);
         recData = srcRecord->recData;
         return;
         }
@@ -407,6 +408,7 @@ SINT32 LTEXRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
 
 SINT32 LTEXRecord::Unload()
     {
+    IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
     ICON.Unload();

@@ -74,7 +74,7 @@ class RecordOp
         RecordOp();
         ~RecordOp();
 
-        virtual bool Accept(Record **curRecord) abstract {};
+        virtual bool Accept(Record **curRecord);
 
         UINT32 GetCount();
         void ResetCount();
@@ -86,12 +86,36 @@ class RecordReader : public RecordOp
     {
     private:
         FormIDResolver expander;
+        std::vector<FormIDResolver *> &Expanders;
 
     public:
-        RecordReader(FormIDHandlerClass &_FormIDHandler);
+        RecordReader(FormIDHandlerClass &_FormIDHandler, std::vector<FormIDResolver *> &_Expanders);
         ~RecordReader();
 
         bool Accept(Record **curRecord);
+    };
+
+class RecordProcessor
+    {
+    protected:
+        _FileHandler &ReadHandler;
+        FormIDHandlerClass &FormIDHandler;
+        boost::unordered_set<UINT32> &UsedFormIDs;
+
+        bool IsSkipNewRecords;
+        bool IsTrackNewTypes;
+        bool IsAddMasters;
+
+        FormIDResolver expander;
+    public:
+        RecordOp &reader;
+        const ModFlags &Flags;
+
+        RecordProcessor(_FileHandler &_ReadHandler, FormIDHandlerClass &_FormIDHandler, RecordOp &_reader, const ModFlags &_Flags, boost::unordered_set<UINT32> &_UsedFormIDs);
+        ~RecordProcessor();
+
+        bool operator()(Record *&curRecord);
+        void IsEmpty(bool value);
     };
 
 class Record
@@ -151,6 +175,7 @@ class Record
         virtual bool VisitFormIDs(FormIDOp &op);
 
         bool Read();
+        bool IsValid(FormIDResolver &expander);
         //FormIDResolver& GetCorrectExpander(std::vector<FormIDResolver *> &Expanders, FormIDResolver &defaultResolver);
         UINT32 Write(_FileHandler &SaveHandler, const bool &bMastersChanged, FormIDResolver &expander, FormIDResolver &collapser, std::vector<FormIDResolver *> &Expanders);
 

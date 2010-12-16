@@ -203,6 +203,7 @@ INFORecord::INFORecord(INFORecord *srcRecord):
 
     if(!srcRecord->IsChanged())
         {
+        IsLoaded(false);
         recData = srcRecord->recData;
         return;
         }
@@ -686,6 +687,7 @@ SINT32 INFORecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
 
 SINT32 INFORecord::Unload()
     {
+    IsChanged(false);
     IsLoaded(false);
     DATA.Unload();
     QSTI.Unload();

@@ -40,6 +40,7 @@ FURNRecord::FURNRecord(FURNRecord *srcRecord):
 
     if(!srcRecord->IsChanged())
         {
+        IsLoaded(false);
         recData = srcRecord->recData;
         return;
         }
@@ -540,6 +541,7 @@ SINT32 FURNRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
 
 SINT32 FURNRecord::Unload()
     {
+    IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
     FULL.Unload();

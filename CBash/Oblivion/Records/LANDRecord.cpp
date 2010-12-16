@@ -233,6 +233,7 @@ LANDRecord::LANDRecord(LANDRecord *srcRecord):
 
     if(!srcRecord->IsChanged())
         {
+        IsLoaded(false);
         recData = srcRecord->recData;
         return;
         }
@@ -509,6 +510,7 @@ SINT32 LANDRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
 
 SINT32 LANDRecord::Unload()
     {
+    IsChanged(false);
     IsLoaded(false);
     DATA.Unload();
     VNML.Unload();

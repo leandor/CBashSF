@@ -216,9 +216,9 @@ bool RecordMasterChecker::FormIDMasterChecker::AcceptMGEF(UINT32 &curMgefCode)
     return result;
     }
 
-RecordMasterChecker::RecordMasterChecker(FormIDHandlerClass &_FormIDHandler, const UINT8 &_MasterIndex):
+RecordMasterChecker::RecordMasterChecker(FormIDHandlerClass &_FormIDHandler, std::vector<FormIDResolver *> &_Expanders, const UINT8 &_MasterIndex):
     RecordOp(),
-    reader(_FormIDHandler),
+    reader(_FormIDHandler, _Expanders),
     checker(_FormIDHandler.ExpandTable, _MasterIndex)
     {
     //
@@ -286,9 +286,9 @@ bool RecordFormIDSwapper::FormIDSwapper::AcceptMGEF(UINT32 &curMgefCode)
     return stop;
     }
 
-RecordFormIDSwapper::RecordFormIDSwapper(const UINT32 &_FormIDToMatch, const UINT32 &_FormIDToSwap, FormIDHandlerClass &_FormIDHandler):
+RecordFormIDSwapper::RecordFormIDSwapper(const UINT32 &_FormIDToMatch, const UINT32 &_FormIDToSwap, FormIDHandlerClass &_FormIDHandler, std::vector<FormIDResolver *> &_Expanders):
     RecordOp(),
-    reader(_FormIDHandler),
+    reader(_FormIDHandler, _Expanders),
     swapper(_FormIDToMatch, _FormIDToSwap, _FormIDHandler)
     {
     //

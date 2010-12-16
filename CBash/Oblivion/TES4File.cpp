@@ -67,7 +67,7 @@ SINT32 TES4File::LoadTES4()
     return 1;
     }
 
-SINT32 TES4File::Load(RecordOp &indexer)
+SINT32 TES4File::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders)
     {
     enum IgTopRecords {
         eIgGMST=0x54535D47,
@@ -137,7 +137,17 @@ SINT32 TES4File::Load(RecordOp &indexer)
     UINT32 GRUPSize;
     UINT32 GRUPLabel;
     boost::unordered_set<UINT32> UsedFormIDs;
-    bool FullLoad = Flags.IsFullLoad;
+
+    RecordReader fullReader(FormIDHandler, Expanders);
+    RecordOp skipReader;
+
+    RecordProcessor processor_min(ReadHandler, FormIDHandler, skipReader, Flags, UsedFormIDs);
+    RecordProcessor processor_full(ReadHandler, FormIDHandler, fullReader, Flags, UsedFormIDs);
+
+    RecordProcessor &processor = Flags.IsFullLoad ? processor_full : processor_min;
+
+    //RecordProcessFunc RecordProcessor = (Flags.IsSkipNewRecords || Flags.IsTrackNewTypes) ? (Flags.IsSkipNewRecords ? &ProcessRecord_SkipNew : &ProcessRecord_TrackNew) : &ProcessRecord_Base;
+
     while(!ReadHandler.eof()){
         ReadHandler.set_used(4); //Skip "GRUP"
         ReadHandler.read(&GRUPSize, 4);
@@ -150,289 +160,285 @@ SINT32 TES4File::Load(RecordOp &indexer)
             case eIgGMST:
             case 'TSMG':
                 ReadHandler.read(&GMST.stamp, 4);
-                Flags.IsFullLoad = true;
-                GMST.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
-                Flags.IsFullLoad = FullLoad;
+                GMST.Skim(ReadHandler, GRUPSize, processor_full, indexer);
                 break;
             case eIgGLOB:
             case 'BOLG':
                 ReadHandler.read(&GLOB.stamp, 4);
-                GLOB.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                GLOB.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgCLAS:
             case 'SALC':
                 ReadHandler.read(&CLAS.stamp, 4);
-                CLAS.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                CLAS.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgFACT:
             case 'TCAF':
                 ReadHandler.read(&FACT.stamp, 4);
-                FACT.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                FACT.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgHAIR:
             case 'RIAH':
                 ReadHandler.read(&HAIR.stamp, 4);
-                HAIR.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                HAIR.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgEYES:
             case 'SEYE':
                 ReadHandler.read(&EYES.stamp, 4);
-                EYES.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                EYES.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgRACE:
             case 'ECAR':
                 ReadHandler.read(&RACE.stamp, 4);
-                RACE.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                RACE.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgSOUN:
             case 'NUOS':
                 ReadHandler.read(&SOUN.stamp, 4);
-                SOUN.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                SOUN.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgSKIL:
             case 'LIKS':
                 ReadHandler.read(&SKIL.stamp, 4);
-                SKIL.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                SKIL.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgMGEF:
             case 'FEGM':
                 ReadHandler.read(&MGEF.stamp, 4);
-                Flags.IsFullLoad = true;
-                MGEF.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
-                Flags.IsFullLoad = FullLoad;
+                MGEF.Skim(ReadHandler, GRUPSize, processor_full, indexer);
                 break;
             case eIgSCPT:
             case 'TPCS':
                 ReadHandler.read(&SCPT.stamp, 4);
-                SCPT.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                SCPT.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgLTEX:
             case 'XETL':
                 ReadHandler.read(&LTEX.stamp, 4);
-                LTEX.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                LTEX.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgENCH:
             case 'HCNE':
                 ReadHandler.read(&ENCH.stamp, 4);
-                ENCH.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                ENCH.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgSPEL:
             case 'LEPS':
                 ReadHandler.read(&SPEL.stamp, 4);
-                SPEL.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                SPEL.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgBSGN:
             case 'NGSB':
                 ReadHandler.read(&BSGN.stamp, 4);
-                BSGN.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                BSGN.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgACTI:
             case 'ITCA':
                 ReadHandler.read(&ACTI.stamp, 4);
-                ACTI.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                ACTI.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgAPPA:
             case 'APPA':
                 ReadHandler.read(&APPA.stamp, 4);
-                APPA.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                APPA.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgARMO:
             case 'OMRA':
                 ReadHandler.read(&ARMO.stamp, 4);
-                ARMO.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                ARMO.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgBOOK:
             case 'KOOB':
                 ReadHandler.read(&BOOK.stamp, 4);
-                BOOK.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                BOOK.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgCLOT:
             case 'TOLC':
                 ReadHandler.read(&CLOT.stamp, 4);
-                CLOT.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                CLOT.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgCONT:
             case 'TNOC':
                 ReadHandler.read(&CONT.stamp, 4);
-                CONT.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                CONT.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgDOOR:
             case 'ROOD':
                 ReadHandler.read(&DOOR.stamp, 4);
-                DOOR.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                DOOR.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgINGR:
             case 'RGNI':
                 ReadHandler.read(&INGR.stamp, 4);
-                INGR.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                INGR.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgLIGH:
             case 'HGIL':
                 ReadHandler.read(&LIGH.stamp, 4);
-                LIGH.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                LIGH.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgMISC:
             case 'CSIM':
                 ReadHandler.read(&MISC.stamp, 4);
-                MISC.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                MISC.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgSTAT:
             case 'TATS':
                 ReadHandler.read(&STAT.stamp, 4);
-                STAT.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                STAT.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgGRAS:
             case 'SARG':
                 ReadHandler.read(&GRAS.stamp, 4);
-                GRAS.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                GRAS.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgTREE:
             case 'EERT':
                 ReadHandler.read(&TREE.stamp, 4);
-                TREE.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                TREE.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgFLOR:
             case 'ROLF':
                 ReadHandler.read(&FLOR.stamp, 4);
-                FLOR.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                FLOR.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgFURN:
             case 'NRUF':
                 ReadHandler.read(&FURN.stamp, 4);
-                FURN.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                FURN.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgWEAP:
             case 'PAEW':
                 ReadHandler.read(&WEAP.stamp, 4);
-                WEAP.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                WEAP.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgAMMO:
             case 'OMMA':
                 ReadHandler.read(&AMMO.stamp, 4);
-                AMMO.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                AMMO.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgNPC_:
             case '_CPN':
                 ReadHandler.read(&NPC_.stamp, 4);
-                NPC_.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                NPC_.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgCREA:
             case 'AERC':
                 ReadHandler.read(&CREA.stamp, 4);
-                CREA.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                CREA.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgLVLC:
             case 'CLVL':
                 ReadHandler.read(&LVLC.stamp, 4);
-                LVLC.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                LVLC.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgSLGM:
             case 'MGLS':
                 ReadHandler.read(&SLGM.stamp, 4);
-                SLGM.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                SLGM.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgKEYM:
             case 'MYEK':
                 ReadHandler.read(&KEYM.stamp, 4);
-                KEYM.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                KEYM.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgALCH:
             case 'HCLA':
                 ReadHandler.read(&ALCH.stamp, 4);
-                ALCH.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                ALCH.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgSBSP:
             case 'PSBS':
                 ReadHandler.read(&SBSP.stamp, 4);
-                SBSP.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                SBSP.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgSGST:
             case 'TSGS':
                 ReadHandler.read(&SGST.stamp, 4);
-                SGST.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                SGST.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgLVLI:
             case 'ILVL':
                 ReadHandler.read(&LVLI.stamp, 4);
-                LVLI.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                LVLI.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgWTHR:
             case 'RHTW':
                 ReadHandler.read(&WTHR.stamp, 4);
-                WTHR.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                WTHR.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgCLMT:
             case 'TMLC':
                 ReadHandler.read(&CLMT.stamp, 4);
-                CLMT.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                CLMT.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgREGN:
             case 'NGER':
                 ReadHandler.read(&REGN.stamp, 4);
-                REGN.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                REGN.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgCELL:
             case 'LLEC':
                 ReadHandler.read(&CELL.stamp, 4);
-                CELL.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                CELL.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgWRLD:
             case 'DLRW':
                 ReadHandler.read(&WRLD.stamp, 4);
-                WRLD.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                WRLD.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgDIAL:
             case 'LAID':
                 ReadHandler.read(&DIAL.stamp, 4);
-                DIAL.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                DIAL.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgQUST:
             case 'TSUQ':
                 ReadHandler.read(&QUST.stamp, 4);
-                QUST.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                QUST.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgIDLE:
             case 'ELDI':
                 ReadHandler.read(&IDLE.stamp, 4);
-                IDLE.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                IDLE.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgPACK:
             case 'KCAP':
                 ReadHandler.read(&PACK.stamp, 4);
-                PACK.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                PACK.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgCSTY:
             case 'YTSC':
                 ReadHandler.read(&CSTY.stamp, 4);
-                CSTY.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                CSTY.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgLSCR:
             case 'RCSL':
                 ReadHandler.read(&LSCR.stamp, 4);
-                LSCR.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                LSCR.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgLVSP:
             case 'PSVL':
                 ReadHandler.read(&LVSP.stamp, 4);
-                LVSP.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                LVSP.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgANIO:
             case 'OINA':
                 ReadHandler.read(&ANIO.stamp, 4);
-                ANIO.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                ANIO.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgWATR:
             case 'RTAW':
                 ReadHandler.read(&WATR.stamp, 4);
-                WATR.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                WATR.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             case eIgEFSH:
             case 'HSFE':
                 ReadHandler.read(&EFSH.stamp, 4);
-                EFSH.Skim(ReadHandler, FormIDHandler, indexer, Flags, GRUPSize, UsedFormIDs);
+                EFSH.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             default:
-                printf("FileName = %s\n", FileName);
+                printf("FileName = %s\n", ReadHandler.getFileName());
                 if(GRUPLabel == 0 && GRUPSize == 0)
                     {
                     printf("  Bad file structure, zeros found past end of groups\n");
@@ -960,7 +966,7 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
     return newRecord;
     }
 
-SINT32 TES4File::CleanMasters()
+SINT32 TES4File::CleanMasters(std::vector<FormIDResolver *> &Expanders)
     {
     if(Flags.IsNoLoad)
         return -1;
@@ -974,7 +980,7 @@ SINT32 TES4File::CleanMasters()
 
     for(UINT32 p = 0; p < (UINT8)TES4.MAST.size();++p)
         {
-        RecordMasterChecker checker(FormIDHandler, p);
+        RecordMasterChecker checker(FormIDHandler, Expanders, p);
 
         //printf("Checking: %s\n", TES4.MAST[p].value);
         if(GMST.VisitRecords(NULL, checker, false)) continue;
@@ -1050,8 +1056,8 @@ SINT32 TES4File::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Exp
     if(!Flags.IsSaveable)
         return -1;
 
-    _FileHandler SaveHandler(BUFFERSIZE);
-    if(SaveHandler.open_ReadWrite(SaveName) == -1)
+    _FileHandler SaveHandler(SaveName, BUFFERSIZE);
+    if(SaveHandler.open_ReadWrite() == -1)
         throw std::exception("Unable to open temporary file for writing\n");
 
     UINT32 formCount = 0;

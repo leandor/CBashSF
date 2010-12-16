@@ -40,8 +40,6 @@ GPL License and Copyright Notice ============================================
 
 //#include "mmgr.h"
 
-bool ProcessRecord(_FileHandler &ReadHandler, FormIDHandlerClass &FormIDHandler, RecordReader &reader, FormIDResolver &expander, Record *&curRecord, const ModFlags &Flags, boost::unordered_set<UINT32> &UsedFormIDs);
-
 template<class T>
 class GRUPRecords
     {
@@ -56,7 +54,7 @@ class GRUPRecords
                 delete Records[p];
             }
 
-        bool Skim(_FileHandler &ReadHandler, FormIDHandlerClass &FormIDHandler, RecordOp &indexer, const ModFlags &Flags, const UINT32 &gSize, boost::unordered_set<UINT32> &UsedFormIDs)
+        bool Skim(_FileHandler &ReadHandler, const UINT32 &gSize, RecordProcessor &processor, RecordOp &indexer)
             {
             if(SkimmedGRUP || gSize == 0)
                 return false;
@@ -65,14 +63,12 @@ class GRUPRecords
             //UINT32 recordType = 0;
             UINT32 gEnd = ReadHandler.tell() + gSize - 20;
             UINT32 recordSize = 0;
-            FormIDResolver expander(FormIDHandler.ExpandTable, FormIDHandler.FileStart, FormIDHandler.FileEnd);
-            RecordReader reader(FormIDHandler);
 
             while(ReadHandler.tell() < gEnd){
                 curRecord = new T(ReadHandler.getBuffer(ReadHandler.tell()) + 20);
                 ReadHandler.set_used(4); //ReadHandler.read(&recordType, 4);
                 ReadHandler.read(&recordSize, 4);
-                if(ProcessRecord(ReadHandler, FormIDHandler, reader, expander, curRecord, Flags, UsedFormIDs))
+                if(processor(curRecord))
                     {
                     indexer.Accept(&curRecord);
                     Records.push_back(curRecord);
@@ -80,7 +76,7 @@ class GRUPRecords
                 ReadHandler.set_used(recordSize);
                 };
             if(Records.size())
-                FormIDHandler.IsEmpty = false;
+                processor.IsEmpty(false);
             return true;
             }
         bool VisitRecords(const UINT32 &RecordType, RecordOp &op, bool DeepVisit)
@@ -162,7 +158,7 @@ class GRUPRecords<DIALRecord>
             for(UINT32 p = 0;p < Records.size(); p++)
                 delete Records[p];
             }
-        bool Skim(_FileHandler &ReadHandler, FormIDHandlerClass &FormIDHandler, RecordOp &indexer, const ModFlags &Flags, const UINT32 &gSize, boost::unordered_set<UINT32> &UsedFormIDs)
+        bool Skim(_FileHandler &ReadHandler, const UINT32 &gSize, RecordProcessor &processor, RecordOp &indexer)
             {
             if(SkimmedGRUP || gSize == 0)
                 return false;
@@ -172,8 +168,6 @@ class GRUPRecords<DIALRecord>
             UINT32 recordType = 0;
             UINT32 gEnd = ReadHandler.tell() + gSize - 20;
             UINT32 recordSize = 0;
-            FormIDResolver expander(FormIDHandler.ExpandTable, FormIDHandler.FileStart, FormIDHandler.FileEnd);
-            RecordReader reader(FormIDHandler);
 
             while(ReadHandler.tell() < gEnd){
                 ReadHandler.read(&recordType, 4);
@@ -182,7 +176,7 @@ class GRUPRecords<DIALRecord>
                     {
                     case 'LAID':
                         curDIALRecord = new DIALRecord(ReadHandler.getBuffer(ReadHandler.tell()) + 12);
-                        if(ProcessRecord(ReadHandler, FormIDHandler, reader, expander, curDIALRecord, Flags, UsedFormIDs))
+                        if(processor(curDIALRecord))
                             {
                             indexer.Accept(&curDIALRecord);
                             Records.push_back(curDIALRecord);
@@ -194,7 +188,7 @@ class GRUPRecords<DIALRecord>
                         continue;
                     case 'OFNI':
                         curINFORecord = new INFORecord(ReadHandler.getBuffer(ReadHandler.tell()) + 12);
-                        if(ProcessRecord(ReadHandler, FormIDHandler, reader, expander, curINFORecord, Flags, UsedFormIDs))
+                        if(processor(curINFORecord))
                             {
                             if(curDIALRecord != NULL)
                                 {
@@ -203,7 +197,7 @@ class GRUPRecords<DIALRecord>
                                 }
                             else
                                 {
-                                printf("Skipped orphan INFO (%08X) at %08X in %s\n", curINFORecord->formID, ReadHandler.tell(), FormIDHandler.FileName);
+                                printf("Skipped orphan INFO (%08X) at %08X in %s\n", curINFORecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
                                 delete curINFORecord;
                                 }
                             }
@@ -215,7 +209,7 @@ class GRUPRecords<DIALRecord>
                 ReadHandler.set_used(recordSize);
                 };
             if(Records.size())
-                FormIDHandler.IsEmpty = false;
+                processor.IsEmpty(false);
             return true;
             }
         bool VisitRecords(const UINT32 &RecordType, RecordOp &op, bool DeepVisit)
@@ -333,7 +327,7 @@ class GRUPRecords<CELLRecord>
             for(UINT32 p = 0;p < Records.size(); p++)
                 delete Records[p];
             }
-        bool Skim(_FileHandler &ReadHandler, FormIDHandlerClass &FormIDHandler, RecordOp &indexer, const ModFlags &Flags, const UINT32 &gSize, boost::unordered_set<UINT32> &UsedFormIDs)
+        bool Skim(_FileHandler &ReadHandler, const UINT32 &gSize, RecordProcessor &processor, RecordOp &indexer)
             {
             if(SkimmedGRUP || gSize == 0)
                 return false;
@@ -347,8 +341,6 @@ class GRUPRecords<CELLRecord>
             UINT32 recordType = 0;
             UINT32 gEnd = ReadHandler.tell() + gSize - 20;
             UINT32 recordSize = 0;
-            FormIDResolver expander(FormIDHandler.ExpandTable, FormIDHandler.FileStart, FormIDHandler.FileEnd);
-            RecordReader reader(FormIDHandler);
 
             while(ReadHandler.tell() < gEnd){
                 ReadHandler.read(&recordType, 4);
@@ -357,7 +349,7 @@ class GRUPRecords<CELLRecord>
                     {
                     case 'LLEC':
                         curCELLRecord = new CELLRecord(ReadHandler.getBuffer(ReadHandler.tell()) + 12);
-                        if(ProcessRecord(ReadHandler, FormIDHandler, reader, expander, curCELLRecord, Flags, UsedFormIDs))
+                        if(processor(curCELLRecord))
                             {
                             indexer.Accept(&curCELLRecord);
                             Records.push_back(curCELLRecord);
@@ -368,7 +360,7 @@ class GRUPRecords<CELLRecord>
                         continue;
                     case 'RHCA':
                         curACHRRecord = new ACHRRecord(ReadHandler.getBuffer(ReadHandler.tell()) + 12);
-                        if(ProcessRecord(ReadHandler, FormIDHandler, reader, expander, curACHRRecord, Flags, UsedFormIDs))
+                        if(processor(curACHRRecord))
                             {
                             if(curCELLRecord != NULL)
                                 {
@@ -377,14 +369,14 @@ class GRUPRecords<CELLRecord>
                                 }
                             else
                                 {
-                                printf("Skipped orphan ACHR (%08X) at %08X in %s\n", curACHRRecord->formID, ReadHandler.tell(), FormIDHandler.FileName);
+                                printf("Skipped orphan ACHR (%08X) at %08X in %s\n", curACHRRecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
                                 delete curACHRRecord;
                                 }
                             }
                         break;
                     case 'ERCA':
                         curACRERecord = new ACRERecord(ReadHandler.getBuffer(ReadHandler.tell()) + 12);
-                        if(ProcessRecord(ReadHandler, FormIDHandler, reader, expander, curACRERecord, Flags, UsedFormIDs))
+                        if(processor(curACRERecord))
                             {
                             if(curCELLRecord != NULL)
                                 {
@@ -393,14 +385,14 @@ class GRUPRecords<CELLRecord>
                                 }
                             else
                                 {
-                                printf("Skipped orphan ACRE (%08X) at %08X in %s\n", curACRERecord->formID, ReadHandler.tell(), FormIDHandler.FileName);
+                                printf("Skipped orphan ACRE (%08X) at %08X in %s\n", curACRERecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
                                 delete curACRERecord;
                                 }
                             }
                         break;
                     case 'RFER':
                         curREFRRecord = new REFRRecord(ReadHandler.getBuffer(ReadHandler.tell()) + 12);
-                        if(ProcessRecord(ReadHandler, FormIDHandler, reader, expander, curREFRRecord, Flags, UsedFormIDs))
+                        if(processor(curREFRRecord))
                             {
                             if(curCELLRecord != NULL)
                                 {
@@ -409,14 +401,14 @@ class GRUPRecords<CELLRecord>
                                 }
                             else
                                 {
-                                printf("Skipped orphan REFR (%08X) at %08X in %s\n", curREFRRecord->formID, ReadHandler.tell(), FormIDHandler.FileName);
+                                printf("Skipped orphan REFR (%08X) at %08X in %s\n", curREFRRecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
                                 delete curREFRRecord;
                                 }
                             }
                         break;
                     case 'DRGP':
                         curPGRDRecord = new PGRDRecord(ReadHandler.getBuffer(ReadHandler.tell()) + 12);
-                        if(ProcessRecord(ReadHandler, FormIDHandler, reader, expander, curPGRDRecord, Flags, UsedFormIDs))
+                        if(processor(curPGRDRecord))
                             {
                             if(curCELLRecord != NULL)
                                 {
@@ -427,13 +419,13 @@ class GRUPRecords<CELLRecord>
                                     }
                                 else
                                     {
-                                    printf("Skipped extra PGRD (%08X) at %08X in %s\n  CELL (%08X) already has PGRD (%08X)\n", curPGRDRecord->formID, ReadHandler.tell(), FormIDHandler.FileName, curCELLRecord->formID, ((CELLRecord *)curCELLRecord)->PGRD->formID);
+                                    printf("Skipped extra PGRD (%08X) at %08X in %s\n  CELL (%08X) already has PGRD (%08X)\n", curPGRDRecord->formID, ReadHandler.tell(), ReadHandler.getFileName(), curCELLRecord->formID, ((CELLRecord *)curCELLRecord)->PGRD->formID);
                                     delete curPGRDRecord;
                                     }
                                 }
                             else
                                 {
-                                printf("Skipped orphan PGRD (%08X) at %08X in %s\n", curPGRDRecord->formID, ReadHandler.tell(), FormIDHandler.FileName);
+                                printf("Skipped orphan PGRD (%08X) at %08X in %s\n", curPGRDRecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
                                 delete curPGRDRecord;
                                 }
                             }
@@ -445,7 +437,7 @@ class GRUPRecords<CELLRecord>
                 ReadHandler.set_used(recordSize);
                 };
             if(Records.size())
-                FormIDHandler.IsEmpty = false;
+                processor.IsEmpty(false);
             return true;
             }
         bool VisitRecords(const UINT32 &RecordType, RecordOp &op, bool DeepVisit)
@@ -736,7 +728,7 @@ class GRUPRecords<WRLDRecord>
             for(UINT32 p = 0;p < Records.size(); p++)
                 delete Records[p];
             }
-        bool Skim(_FileHandler &ReadHandler, FormIDHandlerClass &FormIDHandler, RecordOp &indexer, const ModFlags &Flags, const UINT32 &gSize, boost::unordered_set<UINT32> &UsedFormIDs)
+        bool Skim(_FileHandler &ReadHandler, const UINT32 &gSize, RecordProcessor &processor, RecordOp &indexer)
             {
             if(SkimmedGRUP || gSize == 0)
                 return false;
@@ -759,9 +751,6 @@ class GRUPRecords<WRLDRecord>
             GRUPs.push_back(GRUP_Size);
             UINT32 recordSize = 0;
 
-            FormIDResolver expander(FormIDHandler.ExpandTable, FormIDHandler.FileStart, FormIDHandler.FileEnd);
-            RecordReader reader(FormIDHandler);
-
             while(ReadHandler.tell() < gEnd){
                 while(ReadHandler.tell() >= GRUP_Size.second)
                     {
@@ -777,7 +766,7 @@ class GRUPRecords<WRLDRecord>
                     {
                     case 'DLRW':
                         curWRLDRecord = new WRLDRecord(ReadHandler.getBuffer(ReadHandler.tell()) + 12);
-                        if(ProcessRecord(ReadHandler, FormIDHandler, reader, expander, curWRLDRecord, Flags, UsedFormIDs))
+                        if(processor(curWRLDRecord))
                             {
                             indexer.Accept(&curWRLDRecord);
                             Records.push_back(curWRLDRecord);
@@ -785,7 +774,7 @@ class GRUPRecords<WRLDRecord>
                         break;
                     case 'LLEC':
                         curCELLRecord = new CELLRecord(ReadHandler.getBuffer(ReadHandler.tell()) + 12);
-                        if(ProcessRecord(ReadHandler, FormIDHandler, reader, expander, curCELLRecord, Flags, UsedFormIDs))
+                        if(processor(curCELLRecord))
                             {
                             if(curWRLDRecord != NULL)
                                 {
@@ -800,7 +789,7 @@ class GRUPRecords<WRLDRecord>
                                             }
                                         else
                                             {
-                                            printf("Skipped extra World CELL (%08X) at %08X in %s\n  WRLD (%08X) already has CELL (%08X)\n", curCELLRecord->formID, ReadHandler.tell(), FormIDHandler.FileName, curWRLDRecord->formID, ((WRLDRecord *)curWRLDRecord)->CELL->formID);
+                                            printf("Skipped extra World CELL (%08X) at %08X in %s\n  WRLD (%08X) already has CELL (%08X)\n", curCELLRecord->formID, ReadHandler.tell(), ReadHandler.getFileName(), curWRLDRecord->formID, ((WRLDRecord *)curWRLDRecord)->CELL->formID);
                                             delete curCELLRecord;
                                             }
                                         break;
@@ -812,7 +801,7 @@ class GRUPRecords<WRLDRecord>
                                 }
                             else
                                 {
-                                printf("Skipped orphan CELL (%08X) at %08X in %s\n", curCELLRecord->formID, ReadHandler.tell(), FormIDHandler.FileName);
+                                printf("Skipped orphan CELL (%08X) at %08X in %s\n", curCELLRecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
                                 delete curCELLRecord;
                                 }
                             }
@@ -826,7 +815,7 @@ class GRUPRecords<WRLDRecord>
                         continue;
                     case 'DAOR':
                         curROADRecord = new ROADRecord(ReadHandler.getBuffer(ReadHandler.tell()) + 12);
-                        if(ProcessRecord(ReadHandler, FormIDHandler, reader, expander, curROADRecord, Flags, UsedFormIDs))
+                        if(processor(curROADRecord))
                             {
                             if(curWRLDRecord != NULL)
                                 {
@@ -837,20 +826,20 @@ class GRUPRecords<WRLDRecord>
                                     }
                                 else
                                     {
-                                    printf("Skipped extra ROAD (%08X) at %08X in %s\n  WRLD (%08X) already has ROAD (%08X)\n", curROADRecord->formID, ReadHandler.tell(), FormIDHandler.FileName, curWRLDRecord->formID, ((WRLDRecord *)curWRLDRecord)->ROAD->formID);
+                                    printf("Skipped extra ROAD (%08X) at %08X in %s\n  WRLD (%08X) already has ROAD (%08X)\n", curROADRecord->formID, ReadHandler.tell(), ReadHandler.getFileName(), curWRLDRecord->formID, ((WRLDRecord *)curWRLDRecord)->ROAD->formID);
                                     delete curROADRecord;
                                     }
                                 }
                             else
                                 {
-                                printf("Skipped orphan ROAD (%08X) at %08X in %s\n", curROADRecord->formID, ReadHandler.tell(), FormIDHandler.FileName);
+                                printf("Skipped orphan ROAD (%08X) at %08X in %s\n", curROADRecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
                                 delete curROADRecord;
                                 }
                             }
                         break;
                     case 'DNAL':
                         curLANDRecord = new LANDRecord(ReadHandler.getBuffer(ReadHandler.tell()) + 12);
-                        if(ProcessRecord(ReadHandler, FormIDHandler, reader, expander, curLANDRecord, Flags, UsedFormIDs))
+                        if(processor(curLANDRecord))
                             {
                             if(curCELLRecord != NULL)
                                 {
@@ -858,9 +847,9 @@ class GRUPRecords<WRLDRecord>
                                     {
                                     indexer.Accept(&curLANDRecord);
                                     ((CELLRecord *)curCELLRecord)->LAND = curLANDRecord;
-                                    if(Flags.IsIndexLANDs)
+                                    if(processor.Flags.IsIndexLANDs)
                                         {
-                                        reader.Accept(&curCELLRecord); //may already be loaded, but just to be sure.
+                                        processor.reader.Accept(&curCELLRecord); //may already be loaded, but just to be sure.
                                         //CELL will be unloaded if needed after a second round of indexing when all records are loaded
                                         ((CELLRecord *)curCELLRecord)->XCLC.Load();
                                         GridXY_LAND[((CELLRecord *)curCELLRecord)->XCLC->posX][((CELLRecord *)curCELLRecord)->XCLC->posY] = (LANDRecord *)curLANDRecord;
@@ -868,20 +857,20 @@ class GRUPRecords<WRLDRecord>
                                     }
                                 else
                                     {
-                                    printf("Skipped extra LAND (%08X) at %08X in %s\n  CELL (%08X) already has LAND (%08X)\n", curLANDRecord->formID, ReadHandler.tell(), FormIDHandler.FileName, curCELLRecord->formID, ((CELLRecord *)curCELLRecord)->LAND->formID);
+                                    printf("Skipped extra LAND (%08X) at %08X in %s\n  CELL (%08X) already has LAND (%08X)\n", curLANDRecord->formID, ReadHandler.tell(), ReadHandler.getFileName(), curCELLRecord->formID, ((CELLRecord *)curCELLRecord)->LAND->formID);
                                     delete curLANDRecord;
                                     }
                                 }
                             else
                                 {
-                                printf("Skipped orphan LAND (%08X) at %08X in %s\n", curLANDRecord->formID, ReadHandler.tell(), FormIDHandler.FileName);
+                                printf("Skipped orphan LAND (%08X) at %08X in %s\n", curLANDRecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
                                 delete curLANDRecord;
                                 }
                             }
                         break;
                     case 'DRGP':
                         curPGRDRecord = new PGRDRecord(ReadHandler.getBuffer(ReadHandler.tell()) + 12);
-                        if(ProcessRecord(ReadHandler, FormIDHandler, reader, expander, curPGRDRecord, Flags, UsedFormIDs))
+                        if(processor(curPGRDRecord))
                             {
                             if(curCELLRecord != NULL)
                                 {
@@ -892,20 +881,20 @@ class GRUPRecords<WRLDRecord>
                                     }
                                 else
                                     {
-                                    printf("Skipped extra PGRD (%08X) at %08X in %s\n  CELL (%08X) already has PGRD (%08X)\n", curPGRDRecord->formID, ReadHandler.tell(), FormIDHandler.FileName, curCELLRecord->formID, ((CELLRecord *)curCELLRecord)->PGRD->formID);
+                                    printf("Skipped extra PGRD (%08X) at %08X in %s\n  CELL (%08X) already has PGRD (%08X)\n", curPGRDRecord->formID, ReadHandler.tell(), ReadHandler.getFileName(), curCELLRecord->formID, ((CELLRecord *)curCELLRecord)->PGRD->formID);
                                     delete curPGRDRecord;
                                     }
                                 }
                             else
                                 {
-                                printf("Skipped orphan PGRD (%08X) at %08X in %s\n", curPGRDRecord->formID, ReadHandler.tell(), FormIDHandler.FileName);
+                                printf("Skipped orphan PGRD (%08X) at %08X in %s\n", curPGRDRecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
                                 delete curPGRDRecord;
                                 }
                             }
                         break;
                     case 'RHCA':
                         curACHRRecord = new ACHRRecord(ReadHandler.getBuffer(ReadHandler.tell()) + 12);
-                        if(ProcessRecord(ReadHandler, FormIDHandler, reader, expander, curACHRRecord, Flags, UsedFormIDs))
+                        if(processor(curACHRRecord))
                             {
                             if(curCELLRecord != NULL)
                                 {
@@ -914,14 +903,14 @@ class GRUPRecords<WRLDRecord>
                                 }
                             else
                                 {
-                                printf("Skipped orphan ACHR (%08X) at %08X in %s\n", curACHRRecord->formID, ReadHandler.tell(), FormIDHandler.FileName);
+                                printf("Skipped orphan ACHR (%08X) at %08X in %s\n", curACHRRecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
                                 delete curACHRRecord;
                                 }
                             }
                         break;
                     case 'ERCA':
                         curACRERecord = new ACRERecord(ReadHandler.getBuffer(ReadHandler.tell()) + 12);
-                        if(ProcessRecord(ReadHandler, FormIDHandler, reader, expander, curACRERecord, Flags, UsedFormIDs))
+                        if(processor(curACRERecord))
                             {
                             if(curCELLRecord != NULL)
                                 {
@@ -930,14 +919,14 @@ class GRUPRecords<WRLDRecord>
                                 }
                             else
                                 {
-                                printf("Skipped orphan ACRE (%08X) at %08X in %s\n", curACRERecord->formID, ReadHandler.tell(), FormIDHandler.FileName);
+                                printf("Skipped orphan ACRE (%08X) at %08X in %s\n", curACRERecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
                                 delete curACRERecord;
                                 }
                             }
                         break;
                     case 'RFER':
                         curREFRRecord = new REFRRecord(ReadHandler.getBuffer(ReadHandler.tell()) + 12);
-                        if(ProcessRecord(ReadHandler, FormIDHandler, reader, expander, curREFRRecord, Flags, UsedFormIDs))
+                        if(processor(curREFRRecord))
                             {
                             if(curCELLRecord != NULL)
                                 {
@@ -946,7 +935,7 @@ class GRUPRecords<WRLDRecord>
                                 }
                             else
                                 {
-                                printf("Skipped orphan REFR (%08X) at %08X in %s\n", curREFRRecord->formID, ReadHandler.tell(), FormIDHandler.FileName);
+                                printf("Skipped orphan REFR (%08X) at %08X in %s\n", curREFRRecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
                                 delete curREFRRecord;
                                 }
                             }
@@ -960,7 +949,7 @@ class GRUPRecords<WRLDRecord>
 
             //Index LAND records by grid
             //There might be ACHR, ACRE, or REFR records in the World CELL
-            if(Flags.IsIndexLANDs || Flags.IsFixupPlaceables)
+            if(processor.Flags.IsIndexLANDs || processor.Flags.IsFixupPlaceables)
                 {
                 SINT32 posX = 0, posY = 0;
                 SINT32 gridX = 0, gridY = 0;
@@ -980,18 +969,18 @@ class GRUPRecords<WRLDRecord>
                         posY = curCELL->XCLC->posY;
 
                         curWRLDCELL = (CELLRecord *)curWRLD->CELL;
-                        if(Flags.IsFixupPlaceables && curWRLDCELL != NULL)
+                        if(processor.Flags.IsFixupPlaceables && curWRLDCELL != NULL)
                             {
                             for(UINT32 x = 0; x < curWRLDCELL->ACHR.size();)
                                 {
                                 //Have to test each record to see if it belongs to the cell. This is determined by its positioning.
                                 curACHRRecord = curWRLDCELL->ACHR[x];
-                                reader.Accept(&curACHRRecord);
+                                processor.reader.Accept(&curACHRRecord);
 
                                 gridX = (SINT32)floor(((ACHRRecord *)curACHRRecord)->DATA.value.posX / 4096.0);
                                 gridY = (SINT32)floor(((ACHRRecord *)curACHRRecord)->DATA.value.posY / 4096.0);
 
-                                if(Flags.IsMinLoad)
+                                if(processor.Flags.IsMinLoad)
                                     curACHRRecord->Unload();
 
                                 if(gridX == posX && gridY == posY)
@@ -1007,12 +996,12 @@ class GRUPRecords<WRLDRecord>
                             for(UINT32 x = 0; x < curWRLDCELL->ACRE.size();)
                                 {
                                 curACRERecord = curWRLDCELL->ACRE[x];
-                                reader.Accept(&curACRERecord);
+                                processor.reader.Accept(&curACRERecord);
 
                                 gridX = (SINT32)floor(((ACRERecord *)curACRERecord)->DATA.value.posX / 4096.0);
                                 gridY = (SINT32)floor(((ACRERecord *)curACRERecord)->DATA.value.posY / 4096.0);
 
-                                if(Flags.IsMinLoad)
+                                if(processor.Flags.IsMinLoad)
                                     curACRERecord->Unload();
 
                                 if(gridX == posX && gridY == posY)
@@ -1026,12 +1015,12 @@ class GRUPRecords<WRLDRecord>
                             for(UINT32 x = 0; x < curWRLDCELL->REFR.size();)
                                 {
                                 curREFRRecord = curWRLDCELL->REFR[x];
-                                reader.Accept(&curREFRRecord);
+                                processor.reader.Accept(&curREFRRecord);
 
                                 gridX = (SINT32)floor(((REFRRecord *)curREFRRecord)->DATA.value.posX / 4096.0);
                                 gridY = (SINT32)floor(((REFRRecord *)curREFRRecord)->DATA.value.posY / 4096.0);
 
-                                if(Flags.IsMinLoad)
+                                if(processor.Flags.IsMinLoad)
                                     curREFRRecord->Unload();
 
                                 if(gridX == posX && gridY == posY)
@@ -1043,7 +1032,7 @@ class GRUPRecords<WRLDRecord>
                                 }
                             }
 
-                        if(Flags.IsIndexLANDs)
+                        if(processor.Flags.IsIndexLANDs)
                             {
                             curLAND = (LANDRecord *)curCELL->LAND;
                             if(curLAND != NULL)
@@ -1055,15 +1044,14 @@ class GRUPRecords<WRLDRecord>
                                 }
                             }
 
-                        if(Flags.IsMinLoad)
+                        if(processor.Flags.IsMinLoad)
                             curCELL->Unload();
                         }
                     }
                 }
 
             if(Records.size())
-                FormIDHandler.IsEmpty = false;
-
+                processor.IsEmpty(false);
             return true;
             }
         bool VisitRecords(const UINT32 &RecordType, RecordOp &op, bool DeepVisit)

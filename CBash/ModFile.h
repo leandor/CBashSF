@@ -28,15 +28,11 @@ GPL License and Copyright Notice ============================================
 
 class ModFile
     {
-    protected:
-        _FileHandler ReadHandler;
-
     public:
-        time_t ModTime;
-
-        ModFlags Flags;
+        _FileHandler ReadHandler;
         FormIDHandlerClass FormIDHandler;
-        STRING FileName;
+        ModFlags Flags;
+        time_t ModTime;
         UINT32 ModID;
 
         TES4Record TES4;
@@ -51,10 +47,10 @@ class ModFile
         bool   Close();
 
         virtual SINT32   LoadTES4() abstract {};
-        virtual SINT32   Load(RecordOp &indexer) abstract {};
+        virtual SINT32   Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders) abstract {};
         virtual UINT32   GetNumRecords(const UINT32 &RecordType) abstract {};
         virtual Record * CreateRecord(const UINT32 &RecordType, STRING const &RecordEditorID, Record *&SourceRecord, Record *&ParentRecord, CreateRecordOptions &options) abstract {};
-        virtual SINT32   CleanMasters() abstract {};
+        virtual SINT32   CleanMasters(std::vector<FormIDResolver *> &Expanders) abstract {};
         virtual SINT32   Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expanders, bool CloseMod) abstract {};
 
         virtual void     VisitAllRecords(RecordOp &op) abstract {};

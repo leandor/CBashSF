@@ -69,6 +69,7 @@ AMMORecord::AMMORecord(AMMORecord *srcRecord):
 
     if(!srcRecord->IsChanged())
         {
+        IsLoaded(false);
         recData = srcRecord->recData;
         return;
         }
@@ -295,6 +296,7 @@ SINT32 AMMORecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
 
 SINT32 AMMORecord::Unload()
     {
+    IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
     FULL.Unload();

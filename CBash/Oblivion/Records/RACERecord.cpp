@@ -285,6 +285,7 @@ RACERecord::RACERecord(RACERecord *srcRecord):
 
     if(!srcRecord->IsChanged())
         {
+        IsLoaded(false);
         recData = srcRecord->recData;
         return;
         }
@@ -911,8 +912,8 @@ SINT32 RACERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    int curNAM = -1;
-    int curINDX = -1;
+    SINT32 curNAM = -1;
+    SINT32 curINDX = -1;
     UINT32 curPos = 0;
     FORMID curFormID = 0;
     ReqSubRecord<GENXNAM> *newXNAM = NULL;
@@ -1368,6 +1369,7 @@ SINT32 RACERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
 
 SINT32 RACERecord::Unload()
     {
+    IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
     FULL.Unload();

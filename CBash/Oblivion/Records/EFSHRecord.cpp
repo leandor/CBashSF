@@ -168,6 +168,7 @@ EFSHRecord::EFSHRecord(EFSHRecord *srcRecord):
 
     if(!srcRecord->IsChanged())
         {
+        IsLoaded(false);
         recData = srcRecord->recData;
         return;
         }
@@ -367,6 +368,7 @@ STRING EFSHRecord::GetStrType()
 
 SINT32 EFSHRecord::Unload()
     {
+    IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
     ICON.Unload();

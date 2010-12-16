@@ -452,6 +452,7 @@ bool MGEFRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             break;
         case 40: //mgefCode
             OBME.Load();
+            OBME->EDDX.Load();
             memcpy(&OBME->EDDX.value.mgefCode[0], FieldValue, 4);   
             OBME->EDDX.value.mgefCode[4] = 0;
             return true;

@@ -82,11 +82,6 @@ bool FormIDResolver::AcceptMGEF(UINT32 &curMgefCode)
     return stop;
     }
 
-bool FormIDResolver::IsValid(const unsigned char * const _SrcBuf)
-    {
-    return (_SrcBuf >= FileStart && _SrcBuf <= FileEnd);
-    }
-
 RecordOp::RecordOp():
     count(0),
     stop(false)
@@ -97,6 +92,11 @@ RecordOp::RecordOp():
 RecordOp::~RecordOp()
     {
     //
+    }
+
+bool RecordOp::Accept(Record **curRecord)
+    {
+    return false;
     }
 
 UINT32 RecordOp::GetCount()
@@ -119,9 +119,10 @@ bool RecordOp::GetResult()
     return result;
     }
 
-RecordReader::RecordReader(FormIDHandlerClass &_FormIDHandler):
+RecordReader::RecordReader(FormIDHandlerClass &_FormIDHandler, std::vector<FormIDResolver *> &_Expanders):
     RecordOp(),
-    expander(_FormIDHandler.ExpandTable, _FormIDHandler.FileStart, _FormIDHandler.FileEnd)
+    expander(_FormIDHandler.ExpandTable, _FormIDHandler.FileStart, _FormIDHandler.FileEnd),
+    Expanders(_Expanders)
     {
     //
     }
@@ -136,10 +137,92 @@ bool RecordReader::Accept(Record **curRecord)
     result = (*curRecord)->Read();
     if(result)
         {
-        (*curRecord)->VisitFormIDs(expander);
+        if((*curRecord)->IsValid(expander))
+            (*curRecord)->VisitFormIDs(expander);
+        else
+            {
+            SINT32 index = -1;
+            for(UINT32 x = 0; x < Expanders.size(); ++x)
+                if((*curRecord)->IsValid(*Expanders[x]))
+                    {
+                    if(index != -1)
+                        printf("Multiple 'Correct' expanders found! Using last one found (likely incorrect unless lucky)\n");
+                    index = x;
+                    }
+            if(index == -1)
+                {
+                printf("Using the wrong expander!\n");
+                (*curRecord)->VisitFormIDs(expander);
+                }
+            else
+                (*curRecord)->VisitFormIDs(*Expanders[index]);
+            }
         ++count;
         }
     return stop;
+    }
+
+RecordProcessor::RecordProcessor(_FileHandler &_ReadHandler, FormIDHandlerClass &_FormIDHandler, RecordOp &_reader, const ModFlags &_Flags, boost::unordered_set<UINT32> &_UsedFormIDs):
+    ReadHandler(_ReadHandler),
+    FormIDHandler(_FormIDHandler),
+    reader(_reader),
+    expander(_FormIDHandler.ExpandTable, _FormIDHandler.FileStart, _FormIDHandler.FileEnd),
+    Flags(_Flags),
+    UsedFormIDs(_UsedFormIDs),
+    IsSkipNewRecords(_Flags.IsSkipNewRecords),
+    IsTrackNewTypes(_Flags.IsTrackNewTypes),
+    IsAddMasters(_Flags.IsAddMasters)
+    {
+    //
+    }
+
+RecordProcessor::~RecordProcessor()
+    {
+    //
+    }
+
+bool RecordProcessor::operator()(Record *&curRecord)
+    {
+    ReadHandler.read(&curRecord->flags, 4);
+    ReadHandler.read(&curRecord->formID, 4);
+    ReadHandler.read(&curRecord->flagsUnk, 4);
+    expander.Accept(curRecord->formID);
+    curRecord->IsLoaded(false); //just incase the chosen flags were in use, clear them
+
+    //Testing Messages
+    //if(curRecord->IsLoaded())
+    //    printf("_fIsLoaded Flag used!!!! %s - %08X\n", curRecord->GetStrType(), curRecord->formID);
+    //if((curRecord->flags & 0x4000) != 0)
+    //    printf("0x4000 used: %08X!!!!\n", curRecord->formID);
+
+    if(IsSkipNewRecords && FormIDHandler.IsNewRecord(curRecord->formID))
+        {
+        delete curRecord;
+        return false;
+        }
+
+    //Make sure the formID is unique within the mod
+    if(UsedFormIDs.insert(curRecord->formID).second == true)
+        {
+        reader.Accept(&curRecord);
+        //Threads.schedule(boost::bind(&RecordReader::Accept, reader, (Record **)&curRecord));
+        if(IsTrackNewTypes && curRecord->GetType() != 'TSMG' && curRecord->GetType() != 'FEGM' && FormIDHandler.IsNewRecord(curRecord->formID))
+            FormIDHandler.NewTypes.insert(curRecord->GetType());
+        return true;
+        }
+    else
+        {
+        if(!IsAddMasters) //Can cause any new records to be given a duplicate ID
+            printf("Record skipped with duplicate formID: %08X\n", curRecord->formID);
+        delete curRecord;
+        return false;
+        }
+    return true;
+    }
+
+void RecordProcessor::IsEmpty(bool value)
+    {
+    FormIDHandler.IsEmpty = value;
     }
 
 Record::Record(unsigned char *_recData):
@@ -208,7 +291,6 @@ bool Record::Read()
     {
     if(IsLoaded() || IsChanged())
         return false;
-
     UINT32 recSize = GetSize();
 
     if (IsCompressed())
@@ -229,8 +311,12 @@ bool Record::Read()
         ParseRecord(recData, recSize);
 
     IsLoaded(true);
-
     return true;
+    }
+
+bool Record::IsValid(FormIDResolver &expander)
+    {
+    return (recData <= expander.FileEnd && recData >= expander.FileStart);
     }
 
 //FormIDResolver& Record::GetCorrectExpander(std::vector<FormIDResolver *> &Expanders, FormIDResolver &defaultResolver)
@@ -264,12 +350,17 @@ UINT32 Record::Write(_FileHandler &SaveHandler, const bool &bMastersChanged, For
                 {
                 //if(expander.IsValid(recData)) //optimization disabled for testing
                 //    VisitFormIDs(expander);
+                //printf("Looking for correct expander\n");
                 SINT32 index = -1;
                 for(UINT32 x = 0; x < Expanders.size(); ++x)
-                    if(Expanders[x]->IsValid(recData))
+                    if(IsValid(*Expanders[x]))
                         {
                         if(index != -1)
-                            printf("Multiple 'Correct' expanders found! Using last one found (likely incorrect unless lucky)\n");
+                            {
+                            printf("Multiple 'Correct' expanders found (%08X)! Using last one found (likely incorrect unless lucky)\n", formID);
+                            printf("  %i:,  %08X, %08X, %08X\n", index, Expanders[x]->FileStart, recData, Expanders[x]->FileEnd);
+                            printf("  %i:   %08X, %08X, %08X\n", x, Expanders[x]->FileStart, recData, Expanders[x]->FileEnd);
+                            }
                         index = x;
                         }
                 if(index == -1)

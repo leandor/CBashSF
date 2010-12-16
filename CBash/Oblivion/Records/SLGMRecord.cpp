@@ -82,6 +82,7 @@ SLGMRecord::SLGMRecord(SLGMRecord *srcRecord):
 
     if(!srcRecord->IsChanged())
         {
+        IsLoaded(false);
         recData = srcRecord->recData;
         return;
         }
@@ -435,6 +436,7 @@ SINT32 SLGMRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
 
 SINT32 SLGMRecord::Unload()
     {
+    IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
     FULL.Unload();

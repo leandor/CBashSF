@@ -76,7 +76,8 @@ bool AlmostEqual(FLOAT32 A, FLOAT32 B, SINT32 maxUlps)
     return false;
     }
 
-_FileHandler::_FileHandler():
+_FileHandler::_FileHandler(STRING _FileName):
+    FileName(_FileName),
     m_region(NULL), 
     f_map(NULL), 
     _Buffer(NULL), 
@@ -89,7 +90,8 @@ _FileHandler::_FileHandler():
     //
     }
 
-_FileHandler::_FileHandler(UINT32 nSize):
+_FileHandler::_FileHandler(STRING _FileName, UINT32 nSize):
+    FileName(_FileName),
     m_region(NULL),
     f_map(NULL), 
     _Buffer(NULL),
@@ -106,14 +108,15 @@ _FileHandler::_FileHandler(UINT32 nSize):
 
 _FileHandler::~_FileHandler()
     {
+    delete []FileName;
     close();
     if(m_region == NULL && f_map == NULL && _Buffer != NULL)
         delete []_Buffer;
     }
 
-SINT32 _FileHandler::open_ReadOnly(STRING const FileName)
+SINT32 _FileHandler::open_ReadOnly()
     {
-    if(fh != -1 || f_map != NULL || m_region != NULL)
+    if(fh != -1 || f_map != NULL || m_region != NULL || FileName == NULL)
         return -1;
     try
         {
@@ -137,9 +140,9 @@ SINT32 _FileHandler::open_ReadOnly(STRING const FileName)
     return 0;
     }
 
-SINT32 _FileHandler::open_ReadWrite(STRING const FileName)
+SINT32 _FileHandler::open_ReadWrite()
     {
-    if(fh != -1 || f_map != NULL || m_region != NULL)
+    if(fh != -1 || f_map != NULL || m_region != NULL || FileName == NULL)
         return -1;
     errno_t err = _sopen_s(&fh, FileName, _O_CREAT | _O_RDWR | _O_BINARY, _SH_DENYWR, _S_IREAD | _S_IWRITE );
     if( err != 0 )
@@ -171,6 +174,11 @@ SINT32 _FileHandler::open_ReadWrite(STRING const FileName)
     return 0;
     }
 
+STRING const _FileHandler::getFileName()
+    {
+    return FileName;
+    }
+
 UINT32 _FileHandler::tell()
     {
     return _BufPos + _TotalWritten;
@@ -179,6 +187,21 @@ UINT32 _FileHandler::tell()
 bool _FileHandler::IsOpen()
     {
     return (fh != -1 || f_map != NULL || m_region != NULL);
+    }
+
+time_t _FileHandler::mtime()
+    {
+    struct stat buf;
+    if(stat(FileName, &buf) < 0)
+        return 0;
+    else
+        return buf.st_mtime;
+    }
+
+bool _FileHandler::exists()
+    {
+    struct stat statBuffer;
+    return (stat(FileName, &statBuffer) >= 0 && statBuffer.st_mode & S_IFREG);
     }
 
 bool _FileHandler::eof()
@@ -354,8 +377,7 @@ void _FileHandler::reserveBuffer(UINT32 nSize)
     return;
     }
 
-FormIDHandlerClass::FormIDHandlerClass(STRING _FileName, std::vector<StringRecord> &_MAST, UINT32 &_NextObject):
-    FileName(_FileName),
+FormIDHandlerClass::FormIDHandlerClass(std::vector<StringRecord> &_MAST, UINT32 &_NextObject):
     MAST(_MAST), 
     nextObject(_NextObject),
     ExpandedIndex(0),
@@ -566,6 +588,7 @@ ModFlags::ModFlags():
     IsIndexLANDs(false),
     IsFixupPlaceables(false),
     IsIgnoreExisting(false),
+    IsIgnoreAbsentMasters(false),
     LoadedGRUPs(false)
     {
     //
@@ -578,13 +601,14 @@ ModFlags::ModFlags(UINT32 _Flags):
     IsSkipNewRecords((_Flags & fIsSkipNewRecords) != 0),
     IsInLoadOrder((_Flags & fIsInLoadOrder) != 0),
     IsSaveable(((_Flags & fIsInLoadOrder) != 0) ? ((_Flags & fIsSaveable) != 0) : false),
-    IsAddMasters((_Flags & fIsAddMasters) != 0),
+    IsAddMasters(((_Flags & fIsIgnoreAbsentMasters) != 0) ? false : ((_Flags & fIsAddMasters) != 0)),
     IsLoadMasters((_Flags & fIsLoadMasters) != 0),
     IsExtendedConflicts((_Flags & fIsExtendedConflicts) != 0),
     IsTrackNewTypes((_Flags & fIsTrackNewTypes) != 0),
     IsIndexLANDs((_Flags & fIsIndexLANDs) != 0),
     IsFixupPlaceables((_Flags & fIsFixupPlaceables) != 0),
     IsIgnoreExisting((_Flags & fIsIgnoreExisting) != 0),
+    IsIgnoreAbsentMasters((_Flags & fIsIgnoreAbsentMasters) != 0),
     LoadedGRUPs(false)
     {
     //
@@ -630,6 +654,11 @@ UINT32 ModFlags::GetFlags()
         flags |= fIsFixupPlaceables;
     if(IsIgnoreExisting)
         flags |= fIsIgnoreExisting;
+    if(IsIgnoreAbsentMasters)
+        {
+        flags &= ~fIsAddMasters;
+        flags |= fIsIgnoreAbsentMasters;
+        }
     return flags;
     }
 

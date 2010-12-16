@@ -26,18 +26,14 @@ GPL License and Copyright Notice ============================================
 
 ModFile::ModFile(STRING ModName, const UINT32 _flags):
     Flags(_flags), 
-    FileName(ModName), 
     TES4(),
-    FormIDHandler(ModName, TES4.MAST, TES4.HEDR.value.nextObject),
+    ReadHandler(ModName),
+    FormIDHandler(TES4.MAST, TES4.HEDR.value.nextObject),
     ModID(0)
     {
     TES4.IsLoaded(false);
-    struct stat buf;
-    if(stat(FileName, &buf) < 0)
-        ModTime = 0;
-    else
-        ModTime = buf.st_mtime;
-    if(Flags.IsIgnoreExisting || Flags.IsNoLoad || !FileExists(ModName))
+    ModTime = ReadHandler.mtime();
+    if(Flags.IsIgnoreExisting || Flags.IsNoLoad || !ReadHandler.exists())
         {
         TES4.IsLoaded(true);
         TES4.IsESM(_stricmp(".esm",ModName + strlen(ModName) - 4) == 0 || _stricmp(".esm.ghost",ModName + strlen(ModName) - 10) == 0);
@@ -46,7 +42,7 @@ ModFile::ModFile(STRING ModName, const UINT32 _flags):
 
 ModFile::~ModFile()
     {
-    delete []FileName;
+    //
     }
 
 bool ModFile::operator <(ModFile &other)
@@ -61,9 +57,9 @@ bool ModFile::operator >(ModFile &other)
 
 bool ModFile::Open()
     {
-    if(Flags.IsIgnoreExisting || Flags.IsNoLoad || ReadHandler.IsOpen() || !FileExists(FileName))
+    if(Flags.IsIgnoreExisting || Flags.IsNoLoad || ReadHandler.IsOpen() || !ReadHandler.exists())
         return false;
-    ReadHandler.open_ReadOnly(FileName);
+    ReadHandler.open_ReadOnly();
     FormIDHandler.FileStart = ReadHandler.getBuffer(0);
     FormIDHandler.FileEnd = FormIDHandler.FileStart + ReadHandler.getBufferSize();
     return true;

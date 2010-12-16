@@ -99,6 +99,7 @@ TREERecord::TREERecord(TREERecord *srcRecord):
 
     if(!srcRecord->IsChanged())
         {
+        IsLoaded(false);
         recData = srcRecord->recData;
         return;
         }
@@ -261,6 +262,7 @@ SINT32 TREERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
 
 SINT32 TREERecord::Unload()
     {
+    IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
     MODL.Unload();

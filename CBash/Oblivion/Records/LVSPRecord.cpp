@@ -41,6 +41,7 @@ LVSPRecord::LVSPRecord(LVSPRecord *srcRecord):
 
     if(!srcRecord->IsChanged())
         {
+        IsLoaded(false);
         recData = srcRecord->recData;
         return;
         }
@@ -217,6 +218,7 @@ SINT32 LVSPRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
 
 SINT32 LVSPRecord::Unload()
     {
+    IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
     LVLD.Unload();

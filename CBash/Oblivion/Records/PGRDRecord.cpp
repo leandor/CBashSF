@@ -115,6 +115,7 @@ PGRDRecord::PGRDRecord(PGRDRecord *srcRecord):
 
     if(!srcRecord->IsChanged())
         {
+        IsLoaded(false);
         recData = srcRecord->recData;
         return;
         }
@@ -321,6 +322,7 @@ SINT32 PGRDRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
 
 SINT32 PGRDRecord::Unload()
     {
+    IsChanged(false);
     IsLoaded(false);
     DATA.Unload();
     PGRP.clear();

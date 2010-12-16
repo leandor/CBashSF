@@ -40,6 +40,7 @@ HAIRRecord::HAIRRecord(HAIRRecord *srcRecord):
 
     if(!srcRecord->IsChanged())
         {
+        IsLoaded(false);
         recData = srcRecord->recData;
         return;
         }
@@ -260,6 +261,7 @@ SINT32 HAIRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
 
 SINT32 HAIRRecord::Unload()
     {
+    IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
     FULL.Unload();

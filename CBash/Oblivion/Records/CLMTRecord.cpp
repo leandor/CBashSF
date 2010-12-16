@@ -95,6 +95,7 @@ CLMTRecord::CLMTRecord(CLMTRecord *srcRecord):
 
     if(!srcRecord->IsChanged())
         {
+        IsLoaded(false);
         recData = srcRecord->recData;
         return;
         }
@@ -272,6 +273,7 @@ SINT32 CLMTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
 
 SINT32 CLMTRecord::Unload()
     {
+    IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
     Weathers.clear();

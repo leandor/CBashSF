@@ -293,6 +293,7 @@ WTHRRecord::WTHRRecord(WTHRRecord *srcRecord):
 
     if(!srcRecord->IsChanged())
         {
+        IsLoaded(false);
         recData = srcRecord->recData;
         return;
         }
@@ -647,6 +648,7 @@ SINT32 WTHRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
 
 SINT32 WTHRRecord::Unload()
     {
+    IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
     CNAM.Unload();

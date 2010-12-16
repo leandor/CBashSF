@@ -234,15 +234,19 @@ class _FileHandler
         UINT32 _BufEnd;
         UINT32 _TotalWritten;
         int fh;
+        STRING FileName;
 
     public:
-        _FileHandler();
-        _FileHandler(UINT32 nSize);
+        _FileHandler(STRING _FileName);
+        _FileHandler(STRING _FileName, UINT32 nSize);
         ~_FileHandler();
 
-        SINT32 open_ReadOnly(STRING const FileName);
-        SINT32 open_ReadWrite(STRING const FileName);
+        SINT32 open_ReadOnly();
+        SINT32 open_ReadWrite();
+        STRING const getFileName();
         bool   IsOpen();
+        time_t mtime();
+        bool   exists();
         bool   eof();
         UINT32 tell();
         UINT32 set_used(SINT32 _Used);
@@ -262,7 +266,6 @@ class _FileHandler
 class FormIDHandlerClass
     {
     public:
-        STRING FileName;
         std::vector<StringRecord> &MAST;
         std::vector<STRING> LoadOrder255;
         boost::unordered_set<UINT32> NewTypes;
@@ -276,7 +279,7 @@ class FormIDHandlerClass
         unsigned char * FileStart;
         unsigned char * FileEnd;
 
-        FormIDHandlerClass(STRING _FileName, std::vector<StringRecord> &_MAST, UINT32 &_NextObject);
+        FormIDHandlerClass(std::vector<StringRecord> &_MAST, UINT32 &_NextObject);
         ~FormIDHandlerClass();
 
         void   SetLoadOrder(std::vector<STRING> &cLoadOrder);
@@ -323,7 +326,7 @@ class ModFlags
         // This may leave broken records behind (such as a quest override pointing to a new script that was ignored)
         // So it shouldn't be used if planning on copying records unless you either check that there are no new records being referenced
 
-        //InLoadOrder makes the mod count towards the 255 limit and enables record creation / deletion / copying to.
+        //InLoadOrder makes the mod count towards the 255 limit and enables record creation and copying as new.
         // If it is false, it forces Saveable to be false.
         // Any mod with new records should have this set unless you're ignoring the new records.
         // It causes the mod to be reported by GetNumModIDs, GetModIDs
@@ -354,25 +357,30 @@ class ModFlags
         // Use if you're planning on iterating through every placeable in a specific cell 
         //   so that you don't have to check the world cell as well.
 
+        //IgnoreAbsentMasters causes any records that override masters not in the load order to be dropped
+        // If it is true, it forces IsAddMasters to be false.
+        // Allows mods not in load order to copy records
+
         //Only the following combinations are tested via Bash:
         // Normal:  (fIsMinLoad or fIsFullLoad) + fIsInLoadOrder + fIsSaveable + fIsAddMasters + fIsLoadMasters
         // Dummy:    fIsAddMasters
-        // Merged:  (fIsMinLoad or fIsFullLoad) + fIsSkipNewRecords
+        // Merged:  (fIsMinLoad or fIsFullLoad) + fIsSkipNewRecords + fIgnoreAbsentMasters
         // Scanned: (fIsMinLoad or fIsFullLoad) + fIsSkipNewRecords + fIsExtendedConflicts
         enum modFlags
             {
-            fIsMinLoad            = 0x00000001,
-            fIsFullLoad           = 0x00000002,
-            fIsSkipNewRecords     = 0x00000004,
-            fIsInLoadOrder        = 0x00000008,
-            fIsSaveable           = 0x00000010,
-            fIsAddMasters         = 0x00000020,
-            fIsLoadMasters        = 0x00000040,
-            fIsExtendedConflicts  = 0x00000080,
-            fIsTrackNewTypes      = 0x00000100,
-            fIsIndexLANDs         = 0x00000200,
-            fIsFixupPlaceables    = 0x00000400,
-            fIsIgnoreExisting     = 0x00000800,
+            fIsMinLoad             = 0x00000001,
+            fIsFullLoad            = 0x00000002,
+            fIsSkipNewRecords      = 0x00000004,
+            fIsInLoadOrder         = 0x00000008,
+            fIsSaveable            = 0x00000010,
+            fIsAddMasters          = 0x00000020,
+            fIsLoadMasters         = 0x00000040,
+            fIsExtendedConflicts   = 0x00000080,
+            fIsTrackNewTypes       = 0x00000100,
+            fIsIndexLANDs          = 0x00000200,
+            fIsFixupPlaceables     = 0x00000400,
+            fIsIgnoreExisting      = 0x00000800,
+            fIsIgnoreAbsentMasters = 0x00001000,
             };
 
     public:
@@ -393,6 +401,7 @@ class ModFlags
         bool IsIndexLANDs;
         bool IsFixupPlaceables;
         bool IsIgnoreExisting;
+        bool IsIgnoreAbsentMasters;
 
         //For internal use, may not be set by constructor
         bool LoadedGRUPs;

@@ -81,6 +81,7 @@ GRASRecord::GRASRecord(GRASRecord *srcRecord):
 
     if(!srcRecord->IsChanged())
         {
+        IsLoaded(false);
         recData = srcRecord->recData;
         return;
         }
@@ -244,6 +245,7 @@ SINT32 GRASRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
 
 SINT32 GRASRecord::Unload()
     {
+    IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
     MODL.Unload();
