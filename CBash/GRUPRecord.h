@@ -82,7 +82,9 @@ class GRUPRecords
         bool VisitRecords(const UINT32 &RecordType, RecordOp &op, bool DeepVisit)
             {
             Record * curRecord = NULL;
-            bool stop;
+
+            bool stop = false;
+
             if(RecordType != NULL && Records.size() > 0 && Records[0]->GetType() != RecordType)
                 return false;
             for(UINT32 p = 0; p < Records.size(); p++)
@@ -215,7 +217,7 @@ class GRUPRecords<DIALRecord>
         bool VisitRecords(const UINT32 &RecordType, RecordOp &op, bool DeepVisit)
             {
             Record * curRecord = NULL;
-            bool stop;
+            bool stop = false;
 
             if(RecordType != NULL && RecordType != 'LAID' && RecordType != 'OFNI')
                 return false;
@@ -443,9 +445,11 @@ class GRUPRecords<CELLRecord>
         bool VisitRecords(const UINT32 &RecordType, RecordOp &op, bool DeepVisit)
             {
             Record * curRecord = NULL;
-            bool stop;
+            bool stop = false;
+
             if(RecordType != NULL && RecordType != 'LLEC' && RecordType != 'DRGP' && RecordType != 'DNAL' && RecordType != 'RFER' && RecordType != 'RHCA' && RecordType != 'ERCA')
                 return false;
+
             for(UINT32 p = 0; p < Records.size(); p++)
                 {
                 curRecord = Records[p];
@@ -1057,7 +1061,8 @@ class GRUPRecords<WRLDRecord>
         bool VisitRecords(const UINT32 &RecordType, RecordOp &op, bool DeepVisit)
             {
             Record *curRecord = NULL;
-            bool stop;
+            bool stop = false;
+
             if(RecordType != NULL && RecordType != 'DLRW' &&
                 RecordType != 'DAOR' && RecordType != 'LLEC' && 
                 RecordType != 'DRGP' && RecordType != 'DNAL' && 
@@ -1066,6 +1071,7 @@ class GRUPRecords<WRLDRecord>
                 {
                 return false;
                 }
+
             for(UINT32 p = 0; p < Records.size(); p++)
                 {
                 curRecord = Records[p];

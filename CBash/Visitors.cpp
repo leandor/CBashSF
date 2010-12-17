@@ -172,9 +172,9 @@ bool EditorIDRecordRetriever::Accept(Record **curRecord)
     return stop;
     }
 
-RecordMasterChecker::FormIDMasterChecker::FormIDMasterChecker(const UINT8 (&_ExpandTable)[256], const UINT8 &_MasterIndex):
+RecordMasterChecker::FormIDMasterChecker::FormIDMasterChecker(const UINT8 (&_CollapseTable)[256], const UINT8 &_MasterIndex):
     FormIDOp(),
-    ExpandTable(_ExpandTable),
+    CollapseTable(_CollapseTable),
     MasterIndex(_MasterIndex)
     {
     //
@@ -196,8 +196,7 @@ bool RecordMasterChecker::FormIDMasterChecker::Accept(UINT32 &curFormID)
         return false;
 
     //Check if the master index is in use
-    result = ExpandTable[MasterIndex] == (curFormID >> 24);
-
+    result = CollapseTable[MasterIndex] == (curFormID >> 24);
     return result;
     }
 
@@ -208,15 +207,14 @@ bool RecordMasterChecker::FormIDMasterChecker::AcceptMGEF(UINT32 &curMgefCode)
         return result;
 
     //Check if the master index is in use
-    result = ExpandTable[MasterIndex] == (curMgefCode & 0x000000FF);
-
+    result = CollapseTable[MasterIndex] == (curMgefCode & 0x000000FF);
     return result;
     }
 
 RecordMasterChecker::RecordMasterChecker(FormIDHandlerClass &_FormIDHandler, std::vector<FormIDResolver *> &_Expanders, const UINT8 &_MasterIndex):
     RecordOp(),
     reader(_FormIDHandler, _Expanders),
-    checker(_FormIDHandler.ExpandTable, _MasterIndex)
+    checker(_FormIDHandler.CollapseTable, _MasterIndex)
     {
     //
     }
@@ -234,7 +232,8 @@ bool RecordMasterChecker::Accept(Record **curRecord)
     //Ensure the record is read
     reader.Accept(curRecord);
 
-    //Perform the swap
+    //See if the master is in use
+    checker.Accept((*curRecord)->formID);
     (*curRecord)->VisitFormIDs(checker);
     stop = checker.GetResult();
 

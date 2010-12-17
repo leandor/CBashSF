@@ -92,11 +92,11 @@ class RecordMasterChecker : public RecordOp
         class FormIDMasterChecker : public FormIDOp
             {
             private:
-                const UINT8 (&ExpandTable)[256];
+                const UINT8 (&CollapseTable)[256];
                 const UINT8 &MasterIndex;
 
             public:
-                FormIDMasterChecker(const UINT8 (&_ExpandTable)[256], const UINT8 &_MasterIndex);
+                FormIDMasterChecker(const UINT8 (&_CollapseTable)[256], const UINT8 &_MasterIndex);
                 ~FormIDMasterChecker();
 
                 bool Accept(UINT32 &curFormID);

@@ -26,7 +26,8 @@ GPL License and Copyright Notice ============================================
 
 FormIDOp::FormIDOp():
     count(0),
-    stop(false)
+    stop(false),
+    result(false)
     {
     //
     }
@@ -84,7 +85,8 @@ bool FormIDResolver::AcceptMGEF(UINT32 &curMgefCode)
 
 RecordOp::RecordOp():
     count(0),
-    stop(false)
+    stop(false),
+    result(false)
     {
     //
     }
