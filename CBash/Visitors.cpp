@@ -53,12 +53,9 @@ bool FormIDMasterUpdater::Accept(UINT32 &curFormID)
     //If the modIndex doesn't match to a loaded mod, it gets assigned to the mod that it is in.
     if(modIndex >= FormIDHandler.LoadOrder255.size())
         {
-        //printf("Assigning %08X to ", curFormID);
         curFormID = (ExpandTable[CollapseTable[modIndex]] << 24) | (curFormID & 0x00FFFFFF);
-        //printf("%08X\n", curFormID);
         return stop;
         }
-    //printf("Adding Master\n");
     FormIDHandler.AddMaster(FormIDHandler.LoadOrder255[modIndex]);
     ++count;
     return stop;

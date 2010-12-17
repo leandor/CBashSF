@@ -318,7 +318,7 @@ SINT32 Collection::Load()
             curModFile = ModFiles[p];
             curModFile->ModID = p;
             //printf("ModID %02X: %s", p, curModFile->ReadHandler.getFileName());
-            if(curModFile->Flags.IsInLoadOrder || curModFile->Flags.IsIgnoreAbsentMasters)
+            if(curModFile->Flags.IsInLoadOrder)
                 {
                 if(p >= 255)
                     throw std::exception("Tried to load more than 255 mods.");
@@ -326,7 +326,7 @@ SINT32 Collection::Load()
                 strLoadOrder255.push_back(curModFile->ReadHandler.getFileName());
                 //printf(" , OrderID %02X", LoadOrder255.size() - 1);
                 }
-            else //every mod not in the std load order exists as if it and its masters are the only ones loaded
+            else if(!curModFile->Flags.IsIgnoreAbsentMasters) //every mod not in the std load order exists as if it and its masters are the only ones loaded
                 {//No need to sort since the masters should be in order well enough
                 for(UINT8 x = 0; x < curModFile->TES4.MAST.size(); ++x)
                     strTempLoadOrder.push_back(curModFile->TES4.MAST[x].value);
@@ -593,7 +593,11 @@ UINT32 Collection::CreateRecord(ModFile *curModFile, const UINT32 &RecordType, F
     if(RecordFormID == 0)
         RecordFormID = curRecord->formID = NextFreeExpandedFormID(curModFile);
     else
+        {
         curRecord->formID = RecordFormID;
+        if(curRecord->IsKeyedByEditorID()) //Assign the formID to the mod so that FormIDMasterUpdater doesn't add unneeded masters
+            curRecord->formID = (curModFile->FormIDHandler.ExpandTable[curModFile->FormIDHandler.CollapseTable[curRecord->formID >> 24]] << 24) | (curRecord->formID & 0x00FFFFFF);
+        }
 
     //Index the new record
     RecordIndexer indexer(curModFile, curModFile->Flags.IsExtendedConflicts ? ExtendedEditorID_ModFile_Record: EditorID_ModFile_Record, curModFile->Flags.IsExtendedConflicts ? ExtendedFormID_ModFile_Record: FormID_ModFile_Record);
@@ -684,6 +688,8 @@ UINT32 Collection::CopyRecord(ModFile *curModFile, const FORMID &RecordFormID, S
     //Give the record a new formID if it isn't an override record
     if(!options.SetAsOverride)
         RecordCopy->formID = DestRecordFormID ? DestRecordFormID : NextFreeExpandedFormID(DestModFile);
+    else if(RecordCopy->IsKeyedByEditorID()) //Assign the formID to the destination mod so that FormIDMasterUpdater doesn't add unneeded masters
+        RecordCopy->formID = (DestModFile->FormIDHandler.ExpandTable[DestModFile->FormIDHandler.CollapseTable[RecordCopy->formID >> 24]] << 24) | (RecordCopy->formID & 0x00FFFFFF);
 
     //See if the destination mod masters need updating
     //Ensure the record has been fully read

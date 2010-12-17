@@ -446,13 +446,12 @@ void FormIDHandlerClass::UpdateFormIDLookup()
     //MAST = sortedMAST;
     MAST.clear();
     MAST.resize(sortedMAST.size());
-    //printf("Base collapse table\n");
+    //printf("Base collapse table: %02X\n", CollapsedIndex);
     //for(UINT16 p = 0; p <= 0xFF; ++p)
     //    printf("%02X == %02X\n", (UINT8)p, CollapseTable[(UINT8)p]);
     //printf("Updating collapse table\n");
     for(UINT16 p = 0; p < CollapsedIndex; ++p)
         {
-        //printf("Accessing %i into %i, %i\n", p, MAST.size(), sortedMAST.size());
         MAST[(UINT8)p] = sortedMAST[(UINT8)p];
         curMaster = MAST[(UINT8)p].value;
         //printf("master %s\n", curMaster);
@@ -465,7 +464,7 @@ void FormIDHandlerClass::UpdateFormIDLookup()
                 }
         }
     //printf("Collapse table updated.\n");
-    //printf("Existing expand table\n");
+    //printf("Existing expand table: %02X\n", ExpandedIndex);
     //for(UINT32 y = 0; y <= 0xFF; ++y)
     //    printf("%02X == %02X\n", (UINT8)y, ExpandTable[(UINT8)y]);
     //printf("End expand table.\n");

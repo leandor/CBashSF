@@ -95,12 +95,34 @@ ModFile * ValidateModID(Collection *curCollection, const UINT32 ModID)
     return curCollection->ModFiles[ModID];
     }
 
-ModFile * ValidateLoadOrderID(Collection *curCollection, const UINT32 ModID)
+ModFile * ValidateModID(Collection *curCollection, STRING const ModName)
+    {
+    ValidatePointer(ModName);
+    //ModFiles will never contain null pointers
+    for(UINT32 x = 0; x < curCollection->ModFiles.size();++x)
+        if(_stricmp(ModName, curCollection->ModFiles[x]->ReadHandler.getFileName()) == 0)
+            return curCollection->ModFiles[x];
+    throw Ex_INVALIDMODINDEX();
+    return NULL;
+    }
+
+ModFile * ValidateLoadOrderIndex(Collection *curCollection, const UINT32 ModIndex)
     {
     //ModFiles will never contain null pointers
-    if(ModID >= curCollection->LoadOrder255.size())
+    if(ModIndex >= curCollection->LoadOrder255.size())
         throw Ex_INVALIDMODINDEX();
-    return curCollection->LoadOrder255[ModID];
+    return curCollection->LoadOrder255[ModIndex];
+    }
+
+ModFile * ValidateLoadOrderIndex(Collection *curCollection, STRING const ModName)
+    {
+    ValidatePointer(ModName);
+    //ModFiles will never contain null pointers
+    for(UINT32 x = 0; x < curCollection->LoadOrder255.size();++x)
+        if(_stricmp(ModName, curCollection->LoadOrder255[x]->ReadHandler.getFileName()) == 0)
+            return curCollection->LoadOrder255[x];
+    throw Ex_INVALIDMODINDEX();
+    return NULL;
     }
 
 void LookupRecord(const UINT32 &CollectionID, const UINT32 &ModID, const FORMID &RecordFormID, STRING const RecordEditorID, Record *&curRecord)
@@ -599,7 +621,7 @@ SINT32 GetModIDs(const UINT32 CollectionID, UINT32ARRAY ModIDs)
     return 0;
     }
 
-STRING GetModName(const UINT32 CollectionID, const UINT32 ModID)
+STRING GetModNameByID(const UINT32 CollectionID, const UINT32 ModID)
     {
     try
         {
@@ -607,38 +629,107 @@ STRING GetModName(const UINT32 CollectionID, const UINT32 ModID)
         }
     catch(std::exception &ex)
         {
-        printf("GetModName: Error\n  %s\n", ex.what());
+        printf("GetModNameByID: Error\n  %s\n", ex.what());
         return NULL;
         }
     catch(...)
         {
-        printf("GetModName: Error\n  Unhandled Exception\n");
+        printf("GetModNameByID: Error\n  Unhandled Exception\n");
         return NULL;
         }
     return NULL;
     }
 
-SINT32 GetModID(const UINT32 CollectionID, STRING const ModName)
+STRING GetModNameByLoadOrder(const UINT32 CollectionID, const UINT32 ModIndex)
     {
     try
         {
-        ValidatePointer(ModName);
-
-        Collection *curCollection = ValidateCollectionID(CollectionID);
-        for(UINT32 x = 0; x < curCollection->ModFiles.size();++x)
-            if(_stricmp(ModName, curCollection->ModFiles[x]->ReadHandler.getFileName()) == 0)
-                return curCollection->ModFiles[x]->ModID;
-
-        return -1;
+        return ValidateLoadOrderIndex(ValidateCollectionID(CollectionID), ModIndex)->ReadHandler.getFileName();
         }
     catch(std::exception &ex)
         {
-        printf("GetModID: Error\n  %s\n", ex.what());
+        printf("GetModNameByLoadOrder: Error\n  %s\n", ex.what());
+        return NULL;
+        }
+    catch(...)
+        {
+        printf("GetModNameByLoadOrder: Error\n  Unhandled Exception\n");
+        return NULL;
+        }
+    return NULL;
+    }
+
+SINT32 GetModIDByName(const UINT32 CollectionID, STRING const ModName)
+    {
+    try
+        {
+        return ValidateModID(ValidateCollectionID(CollectionID), ModName)->ModID;
+        }
+    catch(std::exception &ex)
+        {
+        printf("GetModIDByName: Error\n  %s\n", ex.what());
         return 1;
         }
     catch(...)
         {
-        printf("GetModID: Error\n  Unhandled Exception\n");
+        printf("GetModIDByName: Error\n  Unhandled Exception\n");
+        return 1;
+        }
+    return 1;
+    }
+
+SINT32 GetModIDByLoadOrder(const UINT32 CollectionID, const UINT32 ModIndex)
+    {
+    try
+        {
+        return ValidateLoadOrderIndex(ValidateCollectionID(CollectionID), ModIndex)->ModID;
+        }
+    catch(std::exception &ex)
+        {
+        printf("GetModIDByLoadOrder: Error\n  %s\n", ex.what());
+        return 1;
+        }
+    catch(...)
+        {
+        printf("GetModIDByLoadOrder: Error\n  Unhandled Exception\n");
+        return 1;
+        }
+    return 1;
+    }
+
+SINT32 GetModLoadOrderByName(const UINT32 CollectionID, STRING const ModName)
+    {
+    try
+        {
+        return ValidateLoadOrderIndex(ValidateCollectionID(CollectionID), ModName)->FormIDHandler.ExpandedIndex;
+        }
+    catch(std::exception &ex)
+        {
+        printf("GetModLoadOrderByName: Error\n  %s\n", ex.what());
+        return 1;
+        }
+    catch(...)
+        {
+        printf("GetModLoadOrderByName: Error\n  Unhandled Exception\n");
+        return 1;
+        }
+    return 1;
+    }
+
+SINT32 GetModLoadOrderByID(const UINT32 CollectionID, const UINT32 ModID)
+    {
+    try
+        {
+        return ValidateModID(ValidateCollectionID(CollectionID), ModID)->FormIDHandler.ExpandedIndex;
+        }
+    catch(std::exception &ex)
+        {
+        printf("GetModLoadOrderByID: Error\n  %s\n", ex.what());
+        return 1;
+        }
+    catch(...)
+        {
+        printf("GetModLoadOrderByID: Error\n  Unhandled Exception\n");
         return 1;
         }
     return 1;

@@ -56,8 +56,12 @@ EXPORT_FUNC SINT32 SaveMod(const UINT32 CollectionID, const UINT32 ModID, const 
 //Mod info functions
 EXPORT_FUNC SINT32 GetNumMods(const UINT32 CollectionID);
 EXPORT_FUNC SINT32 GetModIDs(const UINT32 CollectionID, UINT32ARRAY ModIDs);
-EXPORT_FUNC STRING GetModName(const UINT32 CollectionID, const UINT32 ModID);
-EXPORT_FUNC SINT32 GetModID(const UINT32 CollectionID, STRING const ModName);
+EXPORT_FUNC STRING GetModNameByID(const UINT32 CollectionID, const UINT32 ModID);
+EXPORT_FUNC STRING GetModNameByLoadOrder(const UINT32 CollectionID, const UINT32 ModIndex);
+EXPORT_FUNC SINT32 GetModIDByName(const UINT32 CollectionID, STRING const ModName);
+EXPORT_FUNC SINT32 GetModIDByLoadOrder(const UINT32 CollectionID, const UINT32 ModIndex);
+EXPORT_FUNC SINT32 GetModLoadOrderByName(const UINT32 CollectionID, STRING const ModName);
+EXPORT_FUNC SINT32 GetModLoadOrderByID(const UINT32 CollectionID, const UINT32 ModID);
 EXPORT_FUNC UINT32 IsModEmpty(const UINT32 CollectionID, const UINT32 ModID);
 EXPORT_FUNC SINT32 GetModNumTypes(const UINT32 CollectionID, const UINT32 ModID);
 EXPORT_FUNC void   GetModTypes(const UINT32 CollectionID, const UINT32 ModID, UINT32ARRAY RecordTypes);
