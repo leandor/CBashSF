@@ -447,8 +447,6 @@ void FormIDHandlerClass::UpdateFormIDLookup()
     MAST.clear();
     MAST.resize(sortedMAST.size());
     //printf("Base collapse table: %02X\n", CollapsedIndex);
-    //for(UINT16 p = 0; p <= 0xFF; ++p)
-    //    printf("%02X == %02X\n", (UINT8)p, CollapseTable[(UINT8)p]);
     //printf("Updating collapse table\n");
     for(UINT16 p = 0; p < CollapsedIndex; ++p)
         {

@@ -58,6 +58,7 @@ if(exists(".\\CBash.dll")):
         _CIsRecordWinning = CBash.IsRecordWinning
         _CGetNumRecordConflicts = CBash.GetNumRecordConflicts
         _CGetRecordConflicts = CBash.GetRecordConflicts
+        _CGetRecordHistory = CBash.GetRecordHistory
         _CUpdateReferences = CBash.UpdateReferences
         _CGetNumReferences = CBash.GetNumReferences
         _CSetField = CBash.SetField

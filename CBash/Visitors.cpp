@@ -196,7 +196,7 @@ bool RecordMasterChecker::FormIDMasterChecker::Accept(UINT32 &curFormID)
         return false;
 
     //Check if the master index is in use
-    result = CollapseTable[MasterIndex] == (curFormID >> 24);
+    result = CollapseTable[curFormID >> 24] == MasterIndex;
     return result;
     }
 
@@ -207,7 +207,7 @@ bool RecordMasterChecker::FormIDMasterChecker::AcceptMGEF(UINT32 &curMgefCode)
         return result;
 
     //Check if the master index is in use
-    result = CollapseTable[MasterIndex] == (curMgefCode & 0x000000FF);
+    result = CollapseTable[curMgefCode & 0x000000FF] == MasterIndex;
     return result;
     }
 

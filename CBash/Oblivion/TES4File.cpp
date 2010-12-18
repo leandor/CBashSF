@@ -1039,6 +1039,7 @@ SINT32 TES4File::CleanMasters(std::vector<FormIDResolver *> &Expanders)
         if(ANIO.VisitRecords(NULL, checker, false)) continue;
         if(WATR.VisitRecords(NULL, checker, false)) continue;
         if(EFSH.VisitRecords(NULL, checker, false)) continue;
+        //printf("ToRemove: %s\n", TES4.MAST[p].value);
         ToRemove.push_back(p);
         ++cleaned;
         }

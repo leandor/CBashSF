@@ -621,14 +621,10 @@ UINT32 Collection::CreateRecord(ModFile *curModFile, const UINT32 &RecordType, F
         return curRecord->formID;
 
     //Assign the new record an unused formID
-    if(RecordFormID == 0)
+    if(RecordFormID == 0 || curRecord->IsKeyedByEditorID()) //Assign the formID to the mod so that FormIDMasterUpdater doesn't add unneeded masters
         RecordFormID = curRecord->formID = NextFreeExpandedFormID(curModFile);
     else
-        {
         curRecord->formID = RecordFormID;
-        if(curRecord->IsKeyedByEditorID()) //Assign the formID to the mod so that FormIDMasterUpdater doesn't add unneeded masters
-            curRecord->formID = (curModFile->FormIDHandler.ExpandTable[curModFile->FormIDHandler.CollapseTable[curRecord->formID >> 24]] << 24) | (curRecord->formID & 0x00FFFFFF);
-        }
 
     //Index the new record
     RecordIndexer indexer(curModFile, curModFile->Flags.IsExtendedConflicts ? ExtendedEditorID_ModFile_Record: EditorID_ModFile_Record, curModFile->Flags.IsExtendedConflicts ? ExtendedFormID_ModFile_Record: FormID_ModFile_Record);
@@ -720,7 +716,7 @@ UINT32 Collection::CopyRecord(ModFile *curModFile, const FORMID &RecordFormID, S
     if(!options.SetAsOverride)
         RecordCopy->formID = DestRecordFormID ? DestRecordFormID : NextFreeExpandedFormID(DestModFile);
     else if(RecordCopy->IsKeyedByEditorID()) //Assign the formID to the destination mod so that FormIDMasterUpdater doesn't add unneeded masters
-        RecordCopy->formID = (DestModFile->FormIDHandler.ExpandTable[DestModFile->FormIDHandler.CollapseTable[RecordCopy->formID >> 24]] << 24) | (RecordCopy->formID & 0x00FFFFFF);
+        RecordCopy->formID = NextFreeExpandedFormID(DestModFile);
 
     //See if the destination mod masters need updating
     //Ensure the record has been fully read
