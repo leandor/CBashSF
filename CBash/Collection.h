@@ -66,6 +66,7 @@ class Collection
         UINT32 IsRecordWinning(ModFile *curModFile, const FORMID &RecordFormID, STRING const &RecordEditorID, const bool GetExtendedConflicts);
         UINT32 GetNumRecordConflicts(const FORMID &RecordFormID, STRING const &RecordEditorID, const bool GetExtendedConflicts);
         void   GetRecordConflicts(const FORMID &RecordFormID, STRING const &RecordEditorID, UINT32ARRAY ModIDs, const bool GetExtendedConflicts);
+        void   GetRecordHistory(ModFile *curModFile, const FORMID &RecordFormID, STRING const &RecordEditorID, UINT32ARRAY ModIDs);
 
         UINT32 NextFreeExpandedFormID(ModFile *&curModFile, UINT32 depth = 0);
         UINT32 CreateRecord(ModFile *curModFile, const UINT32 &RecordType, FORMID RecordFormID, STRING const &RecordEditorID, const FORMID &ParentFormID, UINT32 CreateFlags);

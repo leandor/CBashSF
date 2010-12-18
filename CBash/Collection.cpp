@@ -540,6 +540,37 @@ void Collection::GetRecordConflicts(const FORMID &RecordFormID, STRING const &Re
         }
     }
 
+void Collection::GetRecordHistory(ModFile *curModFile, const FORMID &RecordFormID, STRING const &RecordEditorID, UINT32ARRAY ModIDs)
+    {
+    std::vector<UINT32> sortedHistory;
+    sortedHistory.reserve(10);
+    UINT8 curCollapsedIndex = curModFile->FormIDHandler.CollapsedIndex;
+    const UINT8 (&CollapseTable)[256] = curModFile->FormIDHandler.CollapseTable;
+
+    if(RecordFormID != 0)
+        {
+        for(FormID_Range range = FormID_ModFile_Record.equal_range(RecordFormID); range.first != range.second; ++range.first)
+            if(CollapseTable[range.first->second.first->FormIDHandler.ExpandedIndex] != curCollapsedIndex)
+                sortedHistory.push_back(range.first->second.first->ModID);
+        }
+    else if(RecordEditorID != NULL)
+        {
+        for(EditorID_Range range = EditorID_ModFile_Record.equal_range(RecordEditorID); range.first != range.second; ++range.first)
+            if(CollapseTable[range.first->second.first->FormIDHandler.ExpandedIndex] != curCollapsedIndex)
+                sortedHistory.push_back(range.first->second.first->ModID);
+        }
+
+    if(sortedHistory.size())
+        {
+        std::sort(sortedHistory.begin(), sortedHistory.end());
+        ModIDs[0] = sortedHistory.size();
+        for(UINT32 x = 0; x < sortedHistory.size(); ++x)
+            ModIDs[x + 1] = sortedHistory[x];
+        sortedHistory.clear();
+        }
+    }
+
+
 UINT32 Collection::NextFreeExpandedFormID(ModFile *&curModFile, UINT32 depth)
     {
     UINT32 curFormID = curModFile->FormIDHandler.NextExpandedFormID();

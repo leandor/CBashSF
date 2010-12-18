@@ -274,6 +274,7 @@ def setattr_deep(obj, attr, value):
 
 def MakeLongFid(CollectionID, fid):
     if fid is None or fid == 0: return 0
+    if isinstance(fid,tuple): return fid
     masterIndex = int(fid >> 24)
     object = int(fid & 0x00FFFFFFL)
     master = _CGetModNameByLoadOrder(CollectionID, masterIndex)
@@ -291,6 +292,7 @@ def MakeShortFid(CollectionID, fid):
 
 def MakeLongMGEFCode(CollectionID, MGEFCode):
     if MGEFCode is None or MGEFCode == 0: return 0
+    if isinstance(MGEFCode,tuple): return MGEFCode
     masterIndex = int(MGEFCode & 0x000000FFL)
     object = int(MGEFCode & 0xFFFFFF00L)
     master = _CGetModNameByLoadOrder(CollectionID, masterIndex)
@@ -1720,6 +1722,12 @@ class ObFormIDRecord(object):
         if not (FormIDToReplace or ReplacementFormID): return 0
         return _CUpdateReferences(self._CollectionID, self._ModID, self._RecordID, FormIDToReplace, ReplacementFormID)
 
+    def History(self):
+        cModIDs = (c_ulong * 257)() #just allocate enough for the max number + size
+        _CGetRecordHistory(self._CollectionID, self._ModID, self._RecordID, 0, byref(cModIDs))
+        parent = getattr(self, '_ParentID', 0)
+        return [self.__class__(self._CollectionID, cModIDs[x], self._RecordID, parent, self._CopyFlags) for x in range(1, cModIDs[0] + 1)]
+
     def IsWinning(self, GetExtendedConflicts=False):
         """Returns true if the record is the last to load.
            If GetExtendedConflicts is True, scanned records will be considered.
@@ -1741,13 +1749,14 @@ class ObFormIDRecord(object):
             attrs = self.copyattrs
         if not attrs:
             return conflicting
-        recordMasters = set(ObModFile(self._CollectionID, self._ModID).TES4.masters)
+        #recordMasters = set(ObModFile(self._CollectionID, self._ModID).TES4.masters)
         #sort oldest to newest rather than newest to oldest
-        conflicts = self.Conflicts(GetExtendedConflicts)
+        #conflicts = self.Conflicts(GetExtendedConflicts)
         #Less pythonic, but optimized for better speed.
         #Equivalent to commented out code.
-        parentRecords = [parent for parent in conflicts if parent.NormModName in recordMasters]
-        parentRecords.reverse()
+        #parentRecords = [parent for parent in conflicts if parent.NormModName in recordMasters]
+        #parentRecords.reverse()
+        parentRecords = self.History()
         if parentRecords:
             conflicting.update([(attr,reduce(getattr, attr.split('.'), self)) for parentRecord in parentRecords for attr in attrs if reduce(getattr, attr.split('.'), self) != reduce(getattr, attr.split('.'), parentRecord)])
         else: #is the first instance of the record
@@ -1920,6 +1929,12 @@ class ObEditorIDRecord(object):
     def UpdateReferences(self, origFid, newFid):
         return 0
 
+    def History(self):
+        cModIDs = (c_ulong * 257)() #just allocate enough for the max number + size
+        _CGetRecordHistory(self._CollectionID, self._ModID, 0, self._RecordID, byref(cModIDs))
+        parent = getattr(self, '_ParentID', 0)
+        return [self.__class__(self._CollectionID, cModIDs[x], self._RecordID, parent, self._CopyFlags) for x in range(1, cModIDs[0] + 1)]
+
     def IsWinning(self, GetExtendedConflicts=False):
         """Returns true if the record is the last to load.
            If GetExtendedConflicts is True, scanned records will be considered.
@@ -1941,12 +1956,13 @@ class ObEditorIDRecord(object):
             attrs = self.copyattrs
         if not attrs:
             return conflicting
-        recordMasters = set(ObModFile(self._CollectionID, self._ModID).TES4.masters)
+        #recordMasters = set(ObModFile(self._CollectionID, self._ModID).TES4.masters)
         #sort oldest to newest rather than newest to oldest
-        conflicts = self.Conflicts(GetExtendedConflicts)
+        #conflicts = self.Conflicts(GetExtendedConflicts)
         #Less pythonic, but optimized for better speed.
         #Equivalent to commented out code.
-        parentRecords = [parent for parent in conflicts if parent.NormModName in recordMasters].reverse()
+        #parentRecords = [parent for parent in conflicts if parent.NormModName in recordMasters].reverse()
+        parentRecords = self.History()
         if parentRecords:
             conflicting.update([(attr,reduce(getattr, attr.split('.'), self)) for parentRecord in parentRecords for attr in attrs if reduce(getattr, attr.split('.'), self) != reduce(getattr, attr.split('.'), parentRecord)])
         else: #is the first instance of the record
@@ -6078,7 +6094,7 @@ class ObCollection:
             _EditorID = RecordID
             RecordType = ObEditorIDRecord
         else:
-            _FormID = MakeShortFid(self._CollectionID, RecordID)
+            RecordID = _FormID = MakeShortFid(self._CollectionID, RecordID)
             _EditorID = 0
             RecordType = ObFormIDRecord
         if not (_FormID or _EditorID): return None

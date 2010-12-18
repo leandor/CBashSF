@@ -81,6 +81,7 @@ EXPORT_FUNC void   GetRecordEditorIDs(const UINT32 CollectionID, const UINT32 Mo
 EXPORT_FUNC SINT32 IsRecordWinning(const UINT32 CollectionID, const UINT32 ModID, const FORMID RecordFormID, STRING const RecordEditorID, const bool GetExtendedConflicts);
 EXPORT_FUNC SINT32 GetNumRecordConflicts(const UINT32 CollectionID, const FORMID RecordFormID, STRING const RecordEditorID, const bool GetExtendedConflicts);
 EXPORT_FUNC void   GetRecordConflicts(const UINT32 CollectionID, const FORMID RecordFormID, STRING const RecordEditorID, UINT32ARRAY ModIDs, const bool GetExtendedConflicts);
+EXPORT_FUNC void   GetRecordHistory(const UINT32 CollectionID, const UINT32 ModID, const FORMID RecordFormID, STRING const RecordEditorID, UINT32ARRAY ModIDs);
 ////////////////////////////////////////////////////////////////////////
 //Mod or Record action functions
 EXPORT_FUNC SINT32 UpdateReferences(const UINT32 CollectionID, const UINT32 ModID, const FORMID RecordFormID, const FORMID FormIDToReplace, const FORMID ReplacementFormID);

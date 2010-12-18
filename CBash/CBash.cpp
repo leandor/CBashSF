@@ -1027,6 +1027,27 @@ void GetRecordConflicts(const UINT32 CollectionID, const FORMID RecordFormID, ST
         }
     return;
     }
+
+void GetRecordHistory(const UINT32 CollectionID, const UINT32 ModID, const FORMID RecordFormID, STRING const RecordEditorID, UINT32ARRAY ModIDs)
+    {
+    try
+        {
+        Collection *curCollection = ValidateCollectionID(CollectionID);
+        curCollection->GetRecordHistory(ValidateModID(curCollection, ModID), RecordFormID, RecordEditorID, ModIDs);
+        return;
+        }
+    catch(std::exception &ex)
+        {
+        printf("GetRecordHistory: Error\n  %s\n", ex.what());
+        return;
+        }
+    catch(...)
+        {
+        printf("GetRecordHistory: Error\n  Unhandled Exception\n");
+        return;
+        }
+    return;
+    }
 ////////////////////////////////////////////////////////////////////////
 //Mod or Record action functions
 SINT32 UpdateReferences(const UINT32 CollectionID, const UINT32 ModID, const FORMID RecordFormID, const FORMID FormIDToReplace, const FORMID ReplacementFormID)
