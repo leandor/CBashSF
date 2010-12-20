@@ -37,14 +37,22 @@ UINT32 GMSTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         case 4: //eid
             return ISTRING_FIELD;
         case 5: //value
-            switch(DATA.format)
+            switch(WhichAttribute)
                 {
-                case 's':
-                    return STRING_FIELD;
-                case 'i':
-                    return SINT32_FIELD;
-                case 'f':
-                    return FLOAT32_FIELD;
+                case 0: //fieldType
+                    return STRING_OR_FLOAT32_OR_SINT32_FIELD;
+                case 2: //WhichType
+                    switch(DATA.format)
+                        {
+                        case 's':
+                            return STRING_FIELD;
+                        case 'i':
+                            return SINT32_FIELD;
+                        case 'f':
+                            return FLOAT32_FIELD;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
                 default:
                     return UNKNOWN_FIELD;
                 }

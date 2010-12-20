@@ -117,8 +117,13 @@ bool LVSPRecord::IsFlagMask(UINT8 Mask, bool Exact)
 
 void LVSPRecord::SetFlagMask(UINT8 Mask)
     {
-    LVLF.Load();
-    LVLF->flags = Mask;
+    if(Mask)
+        {
+        LVLF.Load();
+        LVLF->flags = Mask;
+        }
+    else
+        LVLF.Unload();
     }
 
 UINT32 LVSPRecord::GetSize(bool forceCalc)
