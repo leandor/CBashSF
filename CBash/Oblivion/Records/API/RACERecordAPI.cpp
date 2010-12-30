@@ -1097,7 +1097,7 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 107: //fgga_p
             if(ArraySize != 120)
                 break;
-            FGGS.Copy((UINT8ARRAY)FieldValue, ArraySize);
+            FGGA.Copy((UINT8ARRAY)FieldValue, ArraySize);
             break;
         case 108: //fgts_p
             if(ArraySize != 200)
