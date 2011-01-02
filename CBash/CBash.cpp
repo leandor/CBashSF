@@ -668,14 +668,14 @@ SINT32 GetModIDByName(const UINT32 CollectionID, STRING const ModName)
     catch(std::exception &ex)
         {
         printf("GetModIDByName: Error\n  %s\n", ex.what());
-        return 1;
+        return -1;
         }
     catch(...)
         {
         printf("GetModIDByName: Error\n  Unhandled Exception\n");
-        return 1;
+        return -1;
         }
-    return 1;
+    return -1;
     }
 
 SINT32 GetModIDByLoadOrder(const UINT32 CollectionID, const UINT32 ModIndex)
@@ -687,14 +687,14 @@ SINT32 GetModIDByLoadOrder(const UINT32 CollectionID, const UINT32 ModIndex)
     catch(std::exception &ex)
         {
         printf("GetModIDByLoadOrder: Error\n  %s\n", ex.what());
-        return 1;
+        return -1;
         }
     catch(...)
         {
         printf("GetModIDByLoadOrder: Error\n  Unhandled Exception\n");
-        return 1;
+        return -1;
         }
-    return 1;
+    return -1;
     }
 
 SINT32 GetModLoadOrderByName(const UINT32 CollectionID, STRING const ModName)
@@ -706,14 +706,14 @@ SINT32 GetModLoadOrderByName(const UINT32 CollectionID, STRING const ModName)
     catch(std::exception &ex)
         {
         printf("GetModLoadOrderByName: Error\n  %s\n", ex.what());
-        return 1;
+        return -1;
         }
     catch(...)
         {
         printf("GetModLoadOrderByName: Error\n  Unhandled Exception\n");
-        return 1;
+        return -1;
         }
-    return 1;
+    return -1;
     }
 
 SINT32 GetModLoadOrderByID(const UINT32 CollectionID, const UINT32 ModID)
@@ -725,15 +725,66 @@ SINT32 GetModLoadOrderByID(const UINT32 CollectionID, const UINT32 ModID)
     catch(std::exception &ex)
         {
         printf("GetModLoadOrderByID: Error\n  %s\n", ex.what());
-        return 1;
+        return -1;
         }
     catch(...)
         {
         printf("GetModLoadOrderByID: Error\n  Unhandled Exception\n");
-        return 1;
+        return -1;
         }
-    return 1;
+    return -1;
     }
+
+STRING GetLongIDName(const UINT32 CollectionID, const UINT32 ModID, const UINT32 ModIndex)
+    {
+    if(ModIndex == 0xFF)
+        return NULL;
+    try
+        {
+        ModFile *curModFile = ValidateModID(ValidateCollectionID(CollectionID), ModID);
+        UINT8 CollapsedIndex = curModFile->FormIDHandler.CollapseTable[ModIndex];
+        if(CollapsedIndex >= curModFile->TES4.MAST.size())
+            return curModFile->ReadHandler.getFileName();
+        return curModFile->TES4.MAST[CollapsedIndex].value;
+        }
+    catch(std::exception &ex)
+        {
+        printf("GetLongIDName: Error\n  %s\n", ex.what());
+        return NULL;
+        }
+    catch(...)
+        {
+        printf("GetLongIDName: Error\n  Unhandled Exception\n");
+        return NULL;
+        }
+    return NULL;
+    }
+
+//SINT32 GetShortIDIndex(const UINT32 CollectionID, const SINT32 ModID, STRING const ModName)
+//    {
+//    if(ModID == -1)
+//        return GetModLoadOrderByName(CollectionID, ModName);
+//    try
+//        {
+//        ModFile *curModFile = ValidateModID(ValidateCollectionID(CollectionID), ModID);
+//        for(UINT16 x = 0; x < curModFile->TES4.MAST.size(); ++x)
+//            if(_stricmp(curModFile->TES4.MAST[x].value, ModName) == 0)
+//                return curModFile->FormIDHandler.ExpandTable[(UINT8)x] << 24;
+//        printf("GetShortIDIndex: Error\n  %s not found in %s's master list!\n", ModName, curModFile->ReadHandler.getFileName());
+//        return -1;
+//        }
+//    catch(std::exception &ex)
+//        {
+//        printf("GetShortIDIndex: Error\n  %s\n", ex.what());
+//        return -1;
+//        }
+//    catch(...)
+//        {
+//        printf("GetShortIDIndex: Error\n  Unhandled Exception\n");
+//        return -1;
+//        }
+//    return -1;
+//    }
 
 UINT32 IsModEmpty(const UINT32 CollectionID, const UINT32 ModID)
     {
