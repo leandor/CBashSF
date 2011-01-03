@@ -24,10 +24,10 @@ GPL License and Copyright Notice ============================================
 #include "ModFile.h"
 #include "GenericRecord.h"
 
-ModFile::ModFile(STRING ModName, const UINT32 _flags):
+ModFile::ModFile(STRING FileName, STRING ModName, const UINT32 _flags):
     Flags(_flags), 
     TES4(),
-    ReadHandler(ModName),
+    ReadHandler(FileName, ModName),
     FormIDHandler(TES4.MAST, TES4.HEDR.value.nextObject),
     ModID(0)
     {
@@ -36,7 +36,8 @@ ModFile::ModFile(STRING ModName, const UINT32 _flags):
     if(Flags.IsIgnoreExisting || Flags.IsNoLoad || !ReadHandler.exists())
         {
         TES4.IsLoaded(true);
-        TES4.IsESM(_stricmp(".esm",ModName + strlen(ModName) - 4) == 0 || _stricmp(".esm.ghost",ModName + strlen(ModName) - 10) == 0);
+        STRING const _Name = ReadHandler.getModName();
+        TES4.IsESM(_stricmp(".esm",_Name + strlen(_Name) - 4) == 0);
         }
     }
 

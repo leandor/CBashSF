@@ -85,31 +85,40 @@ Collection::~Collection()
     //LoadOrder255 is shared with ModFiles, so no deleting
     }
 
-SINT32 Collection::AddMod(STRING const &ModName, ModFlags &flags)
+SINT32 Collection::AddMod(STRING const &_FileName, ModFlags &flags)
     {
     _chdir(ModsDir);
     //Mods may not be added after collection is loaded.
     //Prevent loading mods more than once
-    if(IsLoaded || IsModAdded(ModName))
-        return -1;
 
-    STRING FileName = new char[strlen(ModName)+1];
-    strcpy_s(FileName, strlen(ModName) + 1, ModName);
+    STRING ModName = DeGhostModName(_FileName);
+
+    if(IsLoaded || IsModAdded(ModName ? ModName : _FileName))
+        {
+        delete []ModName;
+        return -1;
+        }
+    STRING FileName = new char[strlen(_FileName) + 1];
+    strcpy_s(FileName, strlen(_FileName) + 1, _FileName);
+    ModName = ModName ? ModName : FileName;
 
     switch(CollectionType)
         {
         case eTES4:
-            ModFiles.push_back(new TES4File(FileName, flags.GetFlags())); //Sanitizes input by not returning any internal flags
+            ModFiles.push_back(new TES4File(FileName, ModName, flags.GetFlags()));
             break;
         case eFO3:
             printf("Unimplemented\n");
+            delete []ModName;
             throw 1;
             break;
         case eFNV:
             printf("Unimplemented\n");
+            delete []ModName;
             throw 1;
             break;
         default:
+            delete []ModName;
             break;
         }
     return 1;
@@ -118,7 +127,7 @@ SINT32 Collection::AddMod(STRING const &ModName, ModFlags &flags)
 bool Collection::IsModAdded(STRING const &ModName)
     {
     for(UINT32 p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModFiles[p]->ReadHandler.getFileName(), ModName) == 0)
+        if(_stricmp(ModName, ModFiles[p]->ReadHandler.getModName()) == 0)
             return true;
     return false;
     }
@@ -286,6 +295,7 @@ SINT32 Collection::Load()
         _chdir(ModsDir);
         //Brute force approach to loading all masters
         //Could be done more elegantly with recursion
+        //printf("Before Preloading\n");
         do {
             Preloading = false;
             for(UINT32 p = 0; p < (UINT32)ModFiles.size(); ++p)
@@ -323,7 +333,7 @@ SINT32 Collection::Load()
                 if(LoadOrder255.size() >= 255)
                     throw std::exception("Tried to load more than 255 mods.");
                 LoadOrder255.push_back(curModFile);
-                strLoadOrder255.push_back(curModFile->ReadHandler.getFileName());
+                strLoadOrder255.push_back(curModFile->ReadHandler.getModName());
                 //printf(" , OrderID %02X", LoadOrder255.size() - 1);
                 }
             else if(!curModFile->Flags.IsIgnoreAbsentMasters) //every mod not in the std load order exists as if it and its masters are the only ones loaded
@@ -335,7 +345,7 @@ SINT32 Collection::Load()
                 }
             //printf("\n");
             }
-
+        //printf("Load Set\n");
         UINT8 expandedIndex = 0;
         UINT32 x = 0;
         for(UINT32 p = 0; p < (UINT32)ModFiles.size(); ++p)
@@ -373,6 +383,7 @@ SINT32 Collection::Load()
                 curModFile->Load(indexer, Expanders);
                 }
             }
+        //printf("Loaded\n");
         strAllLoadOrder.clear();
         IsLoaded = true;
         }

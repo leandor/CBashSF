@@ -52,6 +52,21 @@ bool sameStr::operator()( const STRING s1, const STRING s2 ) const
     return _stricmp( s1, s2 ) < 0;
     }
 
+STRING DeGhostModName(STRING const ModName)
+    {
+    STRING NonGhostName = NULL;
+    UINT32 NameLength = strlen(ModName) + 1;
+    if(_stricmp(".ghost",ModName + NameLength - 7) == 0)
+        {
+        NonGhostName = new char[NameLength];
+        strcpy_s(NonGhostName, NameLength, ModName);
+        NonGhostName[NameLength - 7] = 0x00;
+        //printf("DeGhostModName: De-ghosted (%s)(%d) to (%s)(%d)\n", ModName, strlen(ModName), NonGhostName, strlen(NonGhostName));
+        return NonGhostName;
+        }
+    return NULL;
+    }
+
 bool FileExists(STRING const FileName)
     {
     struct stat statBuffer;
@@ -76,7 +91,8 @@ bool AlmostEqual(FLOAT32 A, FLOAT32 B, SINT32 maxUlps)
     return false;
     }
 
-_FileHandler::_FileHandler(STRING _FileName):
+_FileHandler::_FileHandler(STRING _FileName, STRING _ModName):
+    ModName(_ModName),
     FileName(_FileName),
     m_region(NULL), 
     f_map(NULL), 
@@ -91,6 +107,7 @@ _FileHandler::_FileHandler(STRING _FileName):
     }
 
 _FileHandler::_FileHandler(STRING _FileName, UINT32 nSize):
+    ModName(_FileName),
     FileName(_FileName),
     m_region(NULL),
     f_map(NULL), 
@@ -108,7 +125,9 @@ _FileHandler::_FileHandler(STRING _FileName, UINT32 nSize):
 
 _FileHandler::~_FileHandler()
     {
-    delete []FileName;
+    if(FileName != ModName)
+        delete []FileName;
+    delete []ModName;
     close();
     if(m_region == NULL && f_map == NULL && _Buffer != NULL)
         delete []_Buffer;
@@ -177,6 +196,16 @@ SINT32 _FileHandler::open_ReadWrite()
 STRING const _FileHandler::getFileName()
     {
     return FileName;
+    }
+
+STRING const _FileHandler::getModName()
+    {
+    return ModName;
+    }
+
+bool _FileHandler::IsGhosted()
+    {
+    return ModName != FileName;
     }
 
 UINT32 _FileHandler::tell()

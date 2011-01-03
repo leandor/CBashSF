@@ -24,8 +24,8 @@ GPL License and Copyright Notice ============================================
 #include "../GenericRecord.h"
 #include "TES4File.h"
 
-TES4File::TES4File(STRING ModName, const UINT32 _flags):
-    ModFile(ModName, _flags)
+TES4File::TES4File(STRING FileName, STRING ModName, const UINT32 _flags):
+    ModFile(FileName, ModName, _flags)
     {
     //
     }

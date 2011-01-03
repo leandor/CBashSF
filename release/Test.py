@@ -36,7 +36,7 @@ def regressionTests():
 
 def assertTES4(Current, newMod):
     record = Current[0].TES4
-    
+
     assert record.IsESM
     assert record.flags1 == 0x80000001
     assert record.flags2 == 0
@@ -134,7 +134,7 @@ def assertGMST(Current, newMod):
     srecord = newMod.create_GMST("sWarString")
     irecord = newMod.create_GMST("iWarString")
     frecord = newMod.create_GMST("fWarString")
-    
+
     srecord.flags1 = 10
     srecord.flags2 = 15
     srecord.value = "It works!"
@@ -148,7 +148,7 @@ def assertGMST(Current, newMod):
     assert srecord.eid != "sWaRString" #GMST edid are case sensitive since they're keyed by it
     assert srecord.value == "It works!"
     assert srecord.value != "IT works!"
-    
+
     irecord.flags1 = 11
     irecord.flags2 = 16
     irecord.value = 2
@@ -161,7 +161,7 @@ def assertGMST(Current, newMod):
     assert irecord.eid == "iWarString"
     assert irecord.eid != "IWarString"
     assert irecord.value == 2
-    
+
     frecord.flags1 = 12
     frecord.flags2 = 17
     frecord.value = 3.0
@@ -174,10 +174,10 @@ def assertGMST(Current, newMod):
     assert frecord.eid == "fWarString"
     assert frecord.eid != "fWarSTRing" #GMST edid are case sensitive since they're keyed by it
     assert frecord.value == 3.0
-    
+
     record = Current[0].GMST[0]
     newrecord = record.CopyAsOverride(newMod)
-    
+
     assert newrecord.fid == ('Oblivion.esm', 0x045D2F)
     assert newrecord.flags1 == 0x80000000
     assert newrecord.flags2 == 1583621
@@ -186,7 +186,7 @@ def assertGMST(Current, newMod):
     assert newrecord.value == "Shivering Isles Bounty:"
     assert newrecord.value != "ShiverinG Isles Bounty:"
 
-    newrecord.flags1 = 0    
+    newrecord.flags1 = 0
     newrecord.flags2 = 5
     newrecord.eid = "sTestWar"
     newrecord.eid = "" #Shouldn't work
@@ -199,7 +199,7 @@ def assertGMST(Current, newMod):
     assert newrecord.eid != "sTEstWar" #GMST edid are case sensitive since they're keyed by it
     assert newrecord.value == "Test:"
     assert newrecord.value != "TeSt:"
-    
+
     assert record.fid == ('Oblivion.esm', 0x045D2F)
     assert record.flags1 == 0x80000000
     assert record.flags2 == 1583621
@@ -207,7 +207,7 @@ def assertGMST(Current, newMod):
     assert record.eid != "sMiscSEBounTy" #GMST edid are case sensitive since they're keyed by it
     assert record.value == "Shivering Isles Bounty:"
     assert record.value != "Shivering Isles BounTy:"
-    
+
     print "GMST:Finished testing"
 
 def assertGLOB(Current, newMod):
@@ -238,9 +238,9 @@ def assertGLOB(Current, newMod):
     assert record.format != 'F'
     assert record.value == 12.2
 
-    record = Current[0].GLOB[0]    
+    record = Current[0].GLOB[0]
     newrecord = record.CopyAsOverride(newMod)
-    
+
     assert newrecord.fid == ('Oblivion.esm', 0x08D9DA)
     assert newrecord.flags1 == 0x80000000
     assert newrecord.flags2 == 1584398
@@ -263,7 +263,7 @@ def assertGLOB(Current, newMod):
     assert newrecord.format == 'f'
     assert newrecord.format != 'F'
     assert newrecord.value == 16.0
-    
+
     assert record.fid == ('Oblivion.esm', 0x08D9DA)
     assert record.flags1 == 0x80000000
     assert record.flags2 == 1584398
@@ -274,7 +274,7 @@ def assertGLOB(Current, newMod):
     assert record.value == 4.0
 
     newrecord = record.CopyAsNew(newMod)
-    
+
     assert newrecord.fid == ('RegressionTests.esp', 0x001005)
     assert newrecord.flags1 == 0x80000000
     assert newrecord.flags2 == 1584398
@@ -299,7 +299,7 @@ def assertGLOB(Current, newMod):
     assert newrecord.value == 9.0
 
     print "GLOB:Finished testing"
-    
+
 def assertCLAS(Current, newMod):
     record = Current[0].CLAS[0]
 
@@ -379,7 +379,7 @@ def assertCLAS(Current, newMod):
     assert record.trainLevel == 60
     assert record.unused1 == [0x01, 0xFF]
 
-    record = Current[0].CLAS[0]    
+    record = Current[0].CLAS[0]
     record = record.CopyAsOverride(newMod)
 
     assert record.fid == ('Oblivion.esm', 0x09712F)
@@ -455,8 +455,8 @@ def assertCLAS(Current, newMod):
     assert record.trainSkill == 20
     assert record.trainLevel == 30
     assert record.unused1 == [0x50, 0x0F]
-    
-    record = Current[0].CLAS[0]    
+
+    record = Current[0].CLAS[0]
     assert record.fid == ('Oblivion.esm', 0x09712F)
     assert record.flags1 == 0x80000000
     assert record.flags2 == 7024151
@@ -483,7 +483,7 @@ def assertCLAS(Current, newMod):
     assert record.unused1 == [0,0]
 
     record = record.CopyAsNew(newMod)
-    
+
     assert record.fid == ('RegressionTests.esp', 0x001007)
     assert record.flags1 == 0x80000000
     assert record.flags2 == 7024151
@@ -557,8 +557,8 @@ def assertCLAS(Current, newMod):
     assert record.trainSkill == -1
     assert record.trainLevel == 233
     assert record.unused1 == [0x80, 0x2F]
-    
-    record = Current[0].CLAS[0]    
+
+    record = Current[0].CLAS[0]
     assert record.fid == ('Oblivion.esm', 0x09712F)
     assert record.flags1 == 0x80000000
     assert record.flags2 == 7024151
@@ -607,10 +607,10 @@ def assertFACT(Current, newMod):
     assert rank.rank == 0
     assert rank.male == 'Fighter'
     assert rank.male != 'FiGhter'
-    assert rank.female == 'Fighter'    
-    assert rank.female != 'FigHter'   
+    assert rank.female == 'Fighter'
+    assert rank.female != 'FigHter'
     assert rank.insigniaPath == None
-    
+
     record = newMod.create_FACT()
 
     record.flags1 = 0x0106
@@ -619,21 +619,21 @@ def assertFACT(Current, newMod):
     record.full = "RARGH!111!1!"
     record.flags = 0x4
     record.crimeGoldMultiplier = 16.1
-    
+
     relation = record.create_relation()
     relation.faction = ('Oblivion.esm', 0x123456)
     relation.mod = 20
-    
+
     relation = record.create_relation()
     relation.faction = ('Oblivion.esm', 0x789123)
     relation.mod = 16
-    
+
     rank = record.create_rank()
     rank.rank = 0
     rank.male = "male_name0"
     rank.female = "female_name0"
     rank.insigniaPath = r"insignia\asdf.ico"
-    
+
     rank = record.create_rank()
     rank.rank = 1
     rank.male = "male_name1"
@@ -649,7 +649,7 @@ def assertFACT(Current, newMod):
     assert record.full != "RaRGH!111!1!"
     assert record.flags == 0x4
     assert record.crimeGoldMultiplier == 16.1
-    
+
     assert len(record.relations) == 2
     relation = record.relations[0]
     assert relation.faction == ('Oblivion.esm',0x123456)
@@ -657,22 +657,22 @@ def assertFACT(Current, newMod):
     relation = record.relations[1]
     assert relation.faction == ('Oblivion.esm',0x789123)
     assert relation.mod == 16
-    
+
     assert len(record.ranks) == 2
     rank = record.ranks[0]
     assert rank.rank == 0
     assert rank.male == 'male_name0'
     assert rank.male != 'male_nAme0'
-    assert rank.female == 'female_name0'    
-    assert rank.female != 'female_nAme0'   
+    assert rank.female == 'female_name0'
+    assert rank.female != 'female_nAme0'
     assert rank.insigniaPath == r"insignia\asdf.ico"
     assert rank.insigniaPath == r"insigniA\asdf.ico"
     rank = record.ranks[1]
     assert rank.rank == 1
     assert rank.male == 'male_name1'
     assert rank.male != 'mAle_name1'
-    assert rank.female == 'female_name1'    
-    assert rank.female != 'femAle_name1'   
+    assert rank.female == 'female_name1'
+    assert rank.female != 'femAle_name1'
     assert rank.insigniaPath == r"insignia1\asdf.ico"
     assert rank.insigniaPath == r"insIgnia1\asdf.ico"
 
@@ -697,8 +697,8 @@ def assertFACT(Current, newMod):
     assert rank.rank == 0
     assert rank.male == 'Fighter'
     assert rank.male != 'FiGhter'
-    assert rank.female == 'Fighter'    
-    assert rank.female != 'FigHter'   
+    assert rank.female == 'Fighter'
+    assert rank.female != 'FigHter'
     assert rank.insigniaPath == None
 
     record.flags1 = 0x0101
@@ -707,21 +707,21 @@ def assertFACT(Current, newMod):
     record.full = "RARGH!"
     record.flags = 0x6
     record.crimeGoldMultiplier = 13.1
-    
+
     relation = record.create_relation()
     relation.faction = ('Oblivion.esm', 0x133456)
     relation.mod = 20
-    
+
     relation = record.create_relation()
     relation.faction = ('Oblivion.esm', 0x799123)
     relation.mod = 16
-    
+
     rank = record.create_rank()
     rank.rank = 0
     rank.male = "male_name0"
     rank.female = "female_name0"
     rank.insigniaPath = r"insignia\asdf.ico"
-    
+
     rank = record.create_rank()
     rank.rank = 1
     rank.male = "male_name1"
@@ -752,23 +752,23 @@ def assertFACT(Current, newMod):
     assert rank.rank == 0
     assert rank.male == 'Fighter'
     assert rank.male != 'FiGhter'
-    assert rank.female == 'Fighter'    
-    assert rank.female != 'FigHter'   
+    assert rank.female == 'Fighter'
+    assert rank.female != 'FigHter'
     assert rank.insigniaPath == None
     rank = record.ranks[1]
     assert rank.rank == 0
     assert rank.male == 'male_name0'
     assert rank.male != 'male_nAme0'
-    assert rank.female == 'female_name0'    
-    assert rank.female != 'female_nAme0'   
+    assert rank.female == 'female_name0'
+    assert rank.female != 'female_nAme0'
     assert rank.insigniaPath == r"insignia\asdf.ico"
     assert rank.insigniaPath == r"insigniA\asdf.ico"
     rank = record.ranks[2]
     assert rank.rank == 1
     assert rank.male == 'male_name1'
     assert rank.male != 'mAle_name1'
-    assert rank.female == 'female_name1'    
-    assert rank.female != 'femAle_name1'   
+    assert rank.female == 'female_name1'
+    assert rank.female != 'femAle_name1'
     assert rank.insigniaPath == r"insignia1\asdf.ico"
     assert rank.insigniaPath == r"insIgnia1\asdf.ico"
 
@@ -791,12 +791,12 @@ def assertFACT(Current, newMod):
     assert rank.rank == 0
     assert rank.male == 'Fighter'
     assert rank.male != 'FiGhter'
-    assert rank.female == 'Fighter'    
-    assert rank.female != 'FigHter'   
+    assert rank.female == 'Fighter'
+    assert rank.female != 'FigHter'
     assert rank.insigniaPath == None
 
     record = record.CopyAsNew(newMod)
-    
+
     assert record.fid == ('RegressionTests.esp', 0x001009)
     assert record.flags1 == 0x80000000
     assert record.flags2 == 2829337
@@ -815,8 +815,8 @@ def assertFACT(Current, newMod):
     assert rank.rank == 0
     assert rank.male == 'Fighter'
     assert rank.male != 'FiGhter'
-    assert rank.female == 'Fighter'    
-    assert rank.female != 'FigHter'   
+    assert rank.female == 'Fighter'
+    assert rank.female != 'FigHter'
     assert rank.insigniaPath == None
 
     record.flags1 = 0x0101
@@ -825,21 +825,21 @@ def assertFACT(Current, newMod):
     record.full = "RARGH2!"
     record.flags = 0x6
     record.crimeGoldMultiplier = 13.1
-    
+
     relation = record.create_relation()
     relation.faction = ('Oblivion.esm', 0x133456)
     relation.mod = 20
-    
+
     relation = record.create_relation()
     relation.faction = ('Oblivion.esm', 0x799123)
     relation.mod = 16
-    
+
     rank = record.create_rank()
     rank.rank = 0
     rank.male = "male_name0"
     rank.female = "female_name0"
     rank.insigniaPath = r"insignia\asdf.ico"
-    
+
     rank = record.create_rank()
     rank.rank = 1
     rank.male = "male_name1"
@@ -870,27 +870,27 @@ def assertFACT(Current, newMod):
     assert rank.rank == 0
     assert rank.male == 'Fighter'
     assert rank.male != 'FiGhter'
-    assert rank.female == 'Fighter'    
-    assert rank.female != 'FigHter'   
+    assert rank.female == 'Fighter'
+    assert rank.female != 'FigHter'
     assert rank.insigniaPath == None
     rank = record.ranks[1]
     assert rank.rank == 0
     assert rank.male == 'male_name0'
     assert rank.male != 'male_nAme0'
-    assert rank.female == 'female_name0'    
-    assert rank.female != 'female_nAme0'   
+    assert rank.female == 'female_name0'
+    assert rank.female != 'female_nAme0'
     assert rank.insigniaPath == r"insignia\asdf.ico"
     assert rank.insigniaPath == r"insigniA\asdf.ico"
     rank = record.ranks[2]
     assert rank.rank == 1
     assert rank.male == 'male_name1'
     assert rank.male != 'mAle_name1'
-    assert rank.female == 'female_name1'    
-    assert rank.female != 'femAle_name1'   
+    assert rank.female == 'female_name1'
+    assert rank.female != 'femAle_name1'
     assert rank.insigniaPath == r"insignia1\asdf.ico"
     assert rank.insigniaPath == r"insIgnia1\asdf.ico"
-    
-    record = Current[0].FACT[9]    
+
+    record = Current[0].FACT[9]
     assert record.fid == ('Oblivion.esm', 0x080D18)
     assert record.flags1 == 0x80000000
     assert record.flags2 == 2829337
@@ -909,15 +909,15 @@ def assertFACT(Current, newMod):
     assert rank.rank == 0
     assert rank.male == 'Fighter'
     assert rank.male != 'FiGhter'
-    assert rank.female == 'Fighter'    
-    assert rank.female != 'FigHter'   
+    assert rank.female == 'Fighter'
+    assert rank.female != 'FigHter'
     assert rank.insigniaPath == None
-    
+
     print "FACT:Finished testing"
 
 def assertHAIR(Current, newMod):
     record = Current[0].HAIR[0]
-    
+
     assert record.fid == ('Oblivion.esm', 0x0C4821)
     assert record.flags1 == 0x80000000
     assert record.flags2 == 1712643
@@ -943,7 +943,7 @@ def assertHAIR(Current, newMod):
     record.modt_p = [0x00, 0xFF, 0xFF]
     record.iconPath = r"hair\path\test.dds"
     record.flags = 15
-    
+
     assert record.fid == ('RegressionTests.esp', 0x00100A)
     assert record.flags1 == 0x0102 | 0x80000000
     assert record.flags2 == 0x0201
@@ -959,9 +959,9 @@ def assertHAIR(Current, newMod):
     assert record.iconPath == r"hAiR\pATh\tEst.ddS" #Should be case insensitive
     assert record.flags == 15
 
-    record = Current[0].HAIR[0]    
+    record = Current[0].HAIR[0]
     record = record.CopyAsOverride(newMod)
-    
+
     assert record.fid == ('Oblivion.esm', 0x0C4821)
     assert record.flags1 == 0x80000000
     assert record.flags2 == 1712643
@@ -1001,9 +1001,9 @@ def assertHAIR(Current, newMod):
     assert record.iconPath == r"path\test2.dds"
     assert record.iconPath == r"paTH\teST2.dds" #Should be case insensitive
     assert record.flags == 17
-    
+
     record = Current[0].HAIR[0]
-    
+
     assert record.fid == ('Oblivion.esm', 0x0C4821)
     assert record.flags1 == 0x80000000
     assert record.flags2 == 1712643
@@ -1020,7 +1020,7 @@ def assertHAIR(Current, newMod):
     assert record.flags == 8
 
     record = record.CopyAsNew(newMod)
-    
+
     assert record.fid == ('RegressionTests.esp', 0x00100B)
     assert record.flags1 == 0x80000000
     assert record.flags2 == 1712643
@@ -1045,7 +1045,7 @@ def assertHAIR(Current, newMod):
     record.modt_p = [0x0F, 0x1F, 0xF4]
     record.iconPath = r"CopyNew\test2.dds"
     record.flags = 27
-    
+
     assert record.fid == ('RegressionTests.esp', 0x00100B)
     assert record.flags1 == 0x0303 | 0x80000000
     assert record.flags2 == 0x0102
@@ -1065,7 +1065,7 @@ def assertHAIR(Current, newMod):
 
 def assertEYES(Current, newMod):
     record = Current[0].EYES[0]
-    
+
     assert record.fid == ('Oblivion.esm', 0x05FA43)
     assert record.flags1 == 0x80000000
     assert record.flags2 == 1714717
@@ -1085,7 +1085,7 @@ def assertEYES(Current, newMod):
     record.full = "Fancy EYES"
     record.iconPath = r"EYES\p\nath\test.dds"
     record.flags = 15
-    
+
     assert record.fid == ('RegressionTests.esp', 0x00100C)
     assert record.flags1 == 0x0102 | 0x80000000
     assert record.flags2 == 0x0201
@@ -1097,9 +1097,9 @@ def assertEYES(Current, newMod):
     assert record.iconPath == r"EYES\p\nath\tEst.dds" #Should be case insensitive
     assert record.flags == 15
 
-    record = Current[0].EYES[0]    
+    record = Current[0].EYES[0]
     record = record.CopyAsOverride(newMod)
-    
+
     assert record.fid == ('Oblivion.esm', 0x05FA43)
     assert record.flags1 == 0x80000000
     assert record.flags2 == 1714717
@@ -1128,9 +1128,9 @@ def assertEYES(Current, newMod):
     assert record.iconPath == r"EYES2\p\nath\test.dds"
     assert record.iconPath == r"EYES2\p\nath\tEst.dds" #Should be case insensitive
     assert record.flags == 17
-    
+
     record = Current[0].EYES[0]
-    
+
     assert record.fid == ('Oblivion.esm', 0x05FA43)
     assert record.flags1 == 0x80000000
     assert record.flags2 == 1714717
@@ -1144,7 +1144,7 @@ def assertEYES(Current, newMod):
 
 
     record = record.CopyAsNew(newMod)
-    
+
     assert record.fid == ('RegressionTests.esp', 0x00100D)
     assert record.flags1 == 0x80000000
     assert record.flags2 == 1714717
@@ -1162,7 +1162,7 @@ def assertEYES(Current, newMod):
     record.full = "Fancy EYES3"
     record.iconPath = r"EYES3\p\nath\test.dds"
     record.flags = 19
-    
+
     assert record.fid == ('RegressionTests.esp', 0x00100D)
     assert record.flags1 == 0x0107 | 0x80000000
     assert record.flags2 == 0x0203
@@ -1173,7 +1173,7 @@ def assertEYES(Current, newMod):
     assert record.iconPath == r"EYES3\p\nath\test.dds"
     assert record.iconPath == r"EYES3\p\nath\tEst.dds" #Should be case insensitive
     assert record.flags == 19
-    
+
     print "EYES:Finished testing"
 
 def assertRACE(Current, newMod):
@@ -1234,59 +1234,59 @@ def assertRACE(Current, newMod):
     assert record.femaleSpeed == 40
     assert record.femaleEndurance == 50
     assert record.femalePersonality == 40
-    assert record.femaleLuck == 50    
+    assert record.femaleLuck == 50
     assert record.head.modPath == r'Characters\Imperial\HeadHuman.nif'
     assert record.head.modPath == r'CharactErs\Imperial\HeadHuman.nif'
     assert record.head.modb == 0.0
     assert record.head.iconPath == r'Characters\Imperial\HeadHuman.dds'
     assert record.head.iconPath == r'CharactErs\Imperial\HeadHuman.dds'
-    assert record.head.modt_p == []    
+    assert record.head.modt_p == []
     assert record.maleEars.modPath == r'Characters\Imperial\EarsHuman.nif'
     assert record.maleEars.modPath == r'CharactErs\Imperial\EarsHuman.nif'
     assert record.maleEars.modb == 0.0
     assert record.maleEars.iconPath == r'Characters\Imperial\EarsHuman.dds'
     assert record.maleEars.iconPath == r'CharactErs\Imperial\EarsHuman.dds'
-    assert record.maleEars.modt_p == []    
+    assert record.maleEars.modt_p == []
     assert record.femaleEars.modPath == r'Characters\Imperial\EarsHuman.nif'
     assert record.femaleEars.modPath == r'CharactErs\Imperial\EarsHuman.nif'
     assert record.femaleEars.modb == 0.0
     assert record.femaleEars.iconPath == r'Characters\Imperial\EarsHuman.dds'
     assert record.femaleEars.iconPath == r'CharactErs\Imperial\EarsHuman.dds'
-    assert record.femaleEars.modt_p == []    
+    assert record.femaleEars.modt_p == []
     assert record.mouth.modPath == r'Characters\Imperial\MouthHuman.nif'
     assert record.mouth.modPath == r'CharactErs\Imperial\MouthHuman.nif'
     assert record.mouth.modb == 0.0
     assert record.mouth.iconPath == r'Characters\Imperial\MouthHuman.dds'
     assert record.mouth.iconPath == r'CharactErs\Imperial\MouthHuman.dds'
-    assert record.mouth.modt_p == []    
+    assert record.mouth.modt_p == []
     assert record.teethLower.modPath == r'Characters\Imperial\TeethLowerHuman.nif'
     assert record.teethLower.modPath == r'CharactErs\Imperial\TeethLowerHuman.nif'
     assert record.teethLower.modb == 0.0
     assert record.teethLower.iconPath == r'Characters\Imperial\TeethLowerHuman.dds'
     assert record.teethLower.iconPath == r'CharactErs\Imperial\TeethLowerHuman.dds'
-    assert record.teethLower.modt_p == []    
+    assert record.teethLower.modt_p == []
     assert record.teethUpper.modPath == r'Characters\Imperial\TeethUpperHuman.nif'
     assert record.teethUpper.modPath == r'CharactErs\Imperial\TeethUpperHuman.nif'
     assert record.teethUpper.modb == 0.0
     assert record.teethUpper.iconPath == r'Characters\Imperial\TeethUpperHuman.dds'
     assert record.teethUpper.iconPath == r'CharactErs\Imperial\TeethUpperHuman.dds'
-    assert record.teethUpper.modt_p == []    
+    assert record.teethUpper.modt_p == []
     assert record.tongue.modPath == r'Characters\Imperial\TongueHuman.nif'
     assert record.tongue.modPath == r'CharactErs\Imperial\TongueHuman.nif'
     assert record.tongue.modb == 0.0
     assert record.tongue.iconPath == r'Characters\Imperial\TongueHuman.dds'
     assert record.tongue.iconPath == r'CharactErs\Imperial\TongueHuman.dds'
-    assert record.tongue.modt_p == []    
+    assert record.tongue.modt_p == []
     assert record.leftEye.modPath == r'Characters\Imperial\EyeLeftHuman.nif'
     assert record.leftEye.modPath == r'CharactErs\Imperial\EyeLeftHuman.nif'
     assert record.leftEye.modb == 0.0
     assert record.leftEye.iconPath == None
-    assert record.leftEye.modt_p == []    
+    assert record.leftEye.modt_p == []
     assert record.rightEye.modPath == r'Characters\Imperial\EyeRightHuman.nif'
     assert record.rightEye.modPath == r'CharactErs\Imperial\EyeRightHuman.nif'
     assert record.rightEye.modb == 0.0
     assert record.rightEye.iconPath == None
-    assert record.rightEye.modt_p == []    
+    assert record.rightEye.modt_p == []
     assert record.maleTail.modPath == None
     assert record.maleTail.modb == None
     assert record.maleTail.modt_p == []
@@ -1353,7 +1353,7 @@ def assertRACE(Current, newMod):
                              120, 54, 64, 183, 156, 50, 192, 105, 123, 23, 64, 20, 217, 52, 64, 223, 122, 162,
                              191, 101, 153, 48, 191]
     assert record.snam_p == [169, 97]
-    
+
     record = newMod.create_RACE()
     record.flags1 = 0x0102
     record.flags2 = 0x0201
@@ -1535,49 +1535,49 @@ def assertRACE(Current, newMod):
 ##    assert record.femaleSpeed == 40
 ##    assert record.femaleEndurance == 50
 ##    assert record.femalePersonality == 40
-##    assert record.femaleLuck == 50    
+##    assert record.femaleLuck == 50
 ##    assert record.head.modPath == r'Characters\Imperial\HeadHuman.nif'
 ##    assert record.head.modPath == r'CharactErs\Imperial\HeadHuman.nif'
 ##    assert record.head.modb == 0.0
 ##    assert record.head.iconPath == r'Characters\Imperial\HeadHuman.dds'
 ##    assert record.head.iconPath == r'CharactErs\Imperial\HeadHuman.dds'
-##    assert record.head.modt_p == []    
+##    assert record.head.modt_p == []
 ##    assert record.maleEars.modPath == r'Characters\Imperial\EarsHuman.nif'
 ##    assert record.maleEars.modPath == r'CharactErs\Imperial\EarsHuman.nif'
 ##    assert record.maleEars.modb == 0.0
 ##    assert record.maleEars.iconPath == r'Characters\Imperial\EarsHuman.dds'
 ##    assert record.maleEars.iconPath == r'CharactErs\Imperial\EarsHuman.dds'
-##    assert record.maleEars.modt_p == []    
+##    assert record.maleEars.modt_p == []
 ##    assert record.femaleEars.modPath == r'Characters\Imperial\EarsHuman.nif'
 ##    assert record.femaleEars.modPath == r'CharactErs\Imperial\EarsHuman.nif'
 ##    assert record.femaleEars.modb == 0.0
 ##    assert record.femaleEars.iconPath == r'Characters\Imperial\EarsHuman.dds'
 ##    assert record.femaleEars.iconPath == r'CharactErs\Imperial\EarsHuman.dds'
-##    assert record.femaleEars.modt_p == []    
+##    assert record.femaleEars.modt_p == []
 ##    assert record.mouth.modPath == r'Characters\Imperial\MouthHuman.nif'
 ##    assert record.mouth.modPath == r'CharactErs\Imperial\MouthHuman.nif'
 ##    assert record.mouth.modb == 0.0
 ##    assert record.mouth.iconPath == r'Characters\Imperial\MouthHuman.dds'
 ##    assert record.mouth.iconPath == r'CharactErs\Imperial\MouthHuman.dds'
-##    assert record.mouth.modt_p == []    
+##    assert record.mouth.modt_p == []
 ##    assert record.teethLower.modPath == r'Characters\Imperial\TeethLowerHuman.nif'
 ##    assert record.teethLower.modPath == r'CharactErs\Imperial\TeethLowerHuman.nif'
 ##    assert record.teethLower.modb == 0.0
 ##    assert record.teethLower.iconPath == r'Characters\Imperial\TeethLowerHuman.dds'
 ##    assert record.teethLower.iconPath == r'CharactErs\Imperial\TeethLowerHuman.dds'
-##    assert record.teethLower.modt_p == []    
+##    assert record.teethLower.modt_p == []
 ##    assert record.teethUpper.modPath == r'Characters\Imperial\TeethUpperHuman.nif'
 ##    assert record.teethUpper.modPath == r'CharactErs\Imperial\TeethUpperHuman.nif'
 ##    assert record.teethUpper.modb == 0.0
 ##    assert record.teethUpper.iconPath == r'Characters\Imperial\TeethUpperHuman.dds'
 ##    assert record.teethUpper.iconPath == r'CharactErs\Imperial\TeethUpperHuman.dds'
-##    assert record.teethUpper.modt_p == []    
+##    assert record.teethUpper.modt_p == []
 ##    assert record.tongue.modPath == r'Characters\Imperial\TongueHuman.nif'
 ##    assert record.tongue.modPath == r'CharactErs\Imperial\TongueHuman.nif'
 ##    assert record.tongue.modb == 0.0
 ##    assert record.tongue.iconPath == r'Characters\Imperial\TongueHuman.dds'
 ##    assert record.tongue.iconPath == r'CharactErs\Imperial\TongueHuman.dds'
-##    assert record.tongue.modt_p == []    
+##    assert record.tongue.modt_p == []
     assert record.leftEye.modPath == r'left\Eye'
     assert record.leftEye.modPath == r'lEft\Eye'
     assert record.leftEye.modb == 2.0
@@ -1942,7 +1942,7 @@ def TestAttrReport():
     print "Min reach:", min(reachs)
     print "Max reach:", max(reachs)
     print "Avg reach:", sum(reachs) / len(reachs)
-                
+
     print "Min Speed:", min(speeds)
     print "Max Speed:", max(speeds)
     print "Avg Speed:", sum(speeds) / len(speeds)
@@ -1956,13 +1956,13 @@ def TestAttrReport():
     print "Min Weight/Value:", min(wvratios)
     print "Max Weight/Value:", max(wvratios)
     print "Avg Weight/Value:", sum(wvratios) / len(wvratios)
-    
+
 def TestCopyAttrs():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
     Current.load()
     srcFile = Current.LookupModFile("Oblivion.esm")
-    
+
     for armor in srcFile.ARMO:
         clothing = srcFile.create_CLOT()
         for attr in clothing.copyattrs:
@@ -3485,7 +3485,7 @@ def TestMGEF():
     print
     print "eid     :", newRecord.eid
     printRecord(newRecord)
-    
+
     print "MGEF:CopyAsOverride Test"
     for record in Current[0].MGEF:
         record.CopyAsOverride(newMod)
@@ -8691,7 +8691,7 @@ def TestQUST():
     newEntry.scriptType = 1
     newEntry.compiled_p = []
     newEntry.scriptText = "10Another futile attempt at making this thing work"
-    
+
     newEntry.references = [('Oblivion.esm',0x000007), 8, ('Oblivion.esm',0x000009), 10]
     newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]
 
@@ -8744,7 +8744,7 @@ def TestQUST():
     newEntry.scriptType = 1
     newEntry.compiled_p = []
     newEntry.scriptText = "20Another futile attempt at making this thing work"
-    
+
     newEntry.references = [('Oblivion.esm',0x000007), 8, ('Oblivion.esm',0x000009), 10]
     newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]
 
@@ -8797,7 +8797,7 @@ def TestQUST():
     newEntry.scriptType = 1
     newEntry.compiled_p = []
     newEntry.scriptText = "30Another futile attempt at making this thing work"
-    
+
     newEntry.references = [('Oblivion.esm',0x000007), 8, ('Oblivion.esm',0x000009), 10]
     newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]
 
@@ -8854,7 +8854,7 @@ def TestQUST():
     newEntry.scriptType = 1
     newEntry.compiled_p = []
     newEntry.scriptText = "11Another futile attempt at making this thing work"
-    
+
     newEntry.references = [('Oblivion.esm',0x000007), 8, ('Oblivion.esm',0x000009), 10]
     newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]
 
@@ -8907,7 +8907,7 @@ def TestQUST():
     newEntry.scriptType = 1
     newEntry.compiled_p = []
     newEntry.scriptText = "21Another futile attempt at making this thing work"
-    
+
     newEntry.references = [('Oblivion.esm',0x000007), 8, ('Oblivion.esm',0x000009), 10]
     newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]
 
@@ -8960,7 +8960,7 @@ def TestQUST():
     newEntry.scriptType = 1
     newEntry.compiled_p = []
     newEntry.scriptText = "31Another futile attempt at making this thing work"
-    
+
     newEntry.references = [('Oblivion.esm',0x000007), 8, ('Oblivion.esm',0x000009), 10]
     newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]
 
@@ -9017,7 +9017,7 @@ def TestQUST():
     newEntry.scriptType = 1
     newEntry.compiled_p = []
     newEntry.scriptText = "12Another futile attempt at making this thing work"
-    
+
     newEntry.references = [('Oblivion.esm',0x000007), 8, ('Oblivion.esm',0x000009), 10]
     newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]
 
@@ -9070,7 +9070,7 @@ def TestQUST():
     newEntry.scriptType = 1
     newEntry.compiled_p = []
     newEntry.scriptText = "22Another futile attempt at making this thing work"
-    
+
     newEntry.references = [('Oblivion.esm',0x000007), 8, ('Oblivion.esm',0x000009), 10]
     newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]
 
@@ -9123,7 +9123,7 @@ def TestQUST():
     newEntry.scriptType = 1
     newEntry.compiled_p = []
     newEntry.scriptText = "32Another futile attempt at making this thing work"
-    
+
     newEntry.references = [('Oblivion.esm',0x000007), 8, ('Oblivion.esm',0x000009), 10]
     newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]
 

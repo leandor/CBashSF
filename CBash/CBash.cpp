@@ -98,10 +98,16 @@ ModFile * ValidateModID(Collection *curCollection, const UINT32 ModID)
 ModFile * ValidateModID(Collection *curCollection, STRING const ModName)
     {
     ValidatePointer(ModName);
+    STRING NonGhostName = DeGhostModName(ModName);
+    STRING const &CompName = NonGhostName ? NonGhostName : ModName;
     //ModFiles will never contain null pointers
     for(UINT32 x = 0; x < curCollection->ModFiles.size();++x)
-        if(_stricmp(ModName, curCollection->ModFiles[x]->ReadHandler.getFileName()) == 0)
+        if(_stricmp(CompName, curCollection->ModFiles[x]->ReadHandler.getModName()) == 0)
+            {
+            delete []NonGhostName;
             return curCollection->ModFiles[x];
+            }
+    delete []NonGhostName;
     throw Ex_INVALIDMODINDEX();
     return NULL;
     }
@@ -117,10 +123,16 @@ ModFile * ValidateLoadOrderIndex(Collection *curCollection, const UINT32 ModInde
 ModFile * ValidateLoadOrderIndex(Collection *curCollection, STRING const ModName)
     {
     ValidatePointer(ModName);
+    STRING NonGhostName = DeGhostModName(ModName);
+    STRING const &CompName = NonGhostName ? NonGhostName : ModName;
     //ModFiles will never contain null pointers
     for(UINT32 x = 0; x < curCollection->LoadOrder255.size();++x)
-        if(_stricmp(ModName, curCollection->LoadOrder255[x]->ReadHandler.getFileName()) == 0)
+        if(_stricmp(CompName, curCollection->LoadOrder255[x]->ReadHandler.getModName()) == 0)
+            {
+            delete []NonGhostName;
             return curCollection->LoadOrder255[x];
+            }
+    delete []NonGhostName;
     throw Ex_INVALIDMODINDEX();
     return NULL;
     }
@@ -625,7 +637,7 @@ STRING GetModNameByID(const UINT32 CollectionID, const UINT32 ModID)
     {
     try
         {
-        return ValidateModID(ValidateCollectionID(CollectionID), ModID)->ReadHandler.getFileName();
+        return ValidateModID(ValidateCollectionID(CollectionID), ModID)->ReadHandler.getModName();
         }
     catch(std::exception &ex)
         {
@@ -644,7 +656,7 @@ STRING GetModNameByLoadOrder(const UINT32 CollectionID, const UINT32 ModIndex)
     {
     try
         {
-        return ValidateLoadOrderIndex(ValidateCollectionID(CollectionID), ModIndex)->ReadHandler.getFileName();
+        return ValidateLoadOrderIndex(ValidateCollectionID(CollectionID), ModIndex)->ReadHandler.getModName();
         }
     catch(std::exception &ex)
         {
@@ -744,7 +756,7 @@ STRING GetLongIDName(const UINT32 CollectionID, const UINT32 ModID, const UINT32
         ModFile *curModFile = ValidateModID(ValidateCollectionID(CollectionID), ModID);
         UINT8 CollapsedIndex = curModFile->FormIDHandler.CollapseTable[ModIndex];
         if(CollapsedIndex >= curModFile->TES4.MAST.size())
-            return curModFile->ReadHandler.getFileName();
+            return curModFile->ReadHandler.getModName();
         return curModFile->TES4.MAST[CollapsedIndex].value;
         }
     catch(std::exception &ex)
@@ -770,7 +782,7 @@ STRING GetLongIDName(const UINT32 CollectionID, const UINT32 ModID, const UINT32
 //        for(UINT16 x = 0; x < curModFile->TES4.MAST.size(); ++x)
 //            if(_stricmp(curModFile->TES4.MAST[x].value, ModName) == 0)
 //                return curModFile->FormIDHandler.ExpandTable[(UINT8)x] << 24;
-//        printf("GetShortIDIndex: Error\n  %s not found in %s's master list!\n", ModName, curModFile->ReadHandler.getFileName());
+//        printf("GetShortIDIndex: Error\n  %s not found in %s's master list!\n", ModName, curModFile->ReadHandler.getModName());
 //        return -1;
 //        }
 //    catch(std::exception &ex)

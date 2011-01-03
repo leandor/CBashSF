@@ -37,7 +37,7 @@ class ModFile
 
         TES4Record TES4;
 
-        ModFile(STRING ModName, const UINT32 _flags);
+        ModFile(STRING FileName, STRING ModName, const UINT32 _flags);
         virtual ~ModFile();
 
         bool operator <(ModFile &other);

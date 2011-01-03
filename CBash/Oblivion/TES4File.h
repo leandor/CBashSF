@@ -144,7 +144,7 @@ class TES4File : public ModFile
         GRUPRecords<WATRRecord> WATR;
         GRUPRecords<EFSHRecord> EFSH;
 
-        TES4File(STRING ModName, const UINT32 _flags);
+        TES4File(STRING FileName, STRING ModName, const UINT32 _flags);
         ~TES4File();
 
         SINT32   LoadTES4();

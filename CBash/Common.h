@@ -221,6 +221,7 @@ inline void _readBuffer(void *_DstBuf, const unsigned char *_SrcBuf, const UINT3
     _BufPos += _MaxCharCount;
     }
 
+STRING DeGhostModName(STRING const ModName);
 bool FileExists(STRING const FileName);
 bool AlmostEqual(FLOAT32 A, FLOAT32 B, SINT32 maxUlps);
 
@@ -236,15 +237,18 @@ class _FileHandler
         UINT32 _TotalWritten;
         int fh;
         STRING FileName;
+        STRING ModName;
 
     public:
-        _FileHandler(STRING _FileName);
+        _FileHandler(STRING _FileName, STRING _ModName);
         _FileHandler(STRING _FileName, UINT32 nSize);
         ~_FileHandler();
 
         SINT32 open_ReadOnly();
         SINT32 open_ReadWrite();
         STRING const getFileName();
+        STRING const getModName();
+        bool   IsGhosted();
         bool   IsOpen();
         time_t mtime();
         bool   exists();
