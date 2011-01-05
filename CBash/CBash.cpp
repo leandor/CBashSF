@@ -591,7 +591,49 @@ SINT32 SaveMod(const UINT32 CollectionID, const UINT32 ModID, const bool CloseCo
     }
 ////////////////////////////////////////////////////////////////////////
 //Mod info functions
-SINT32 GetNumMods(const UINT32 CollectionID)
+SINT32 GetAllNumMods(const UINT32 CollectionID)
+    {
+    try
+        {
+        return ValidateCollectionID(CollectionID)->ModFiles.size();
+        }
+    catch(std::exception &ex)
+        {
+        printf("GetAllNumMods: Error\n  %s\n", ex.what());
+        return -1;
+        }
+    catch(...)
+        {
+        printf("GetAllNumMods: Error\n  Unhandled Exception\n");
+        return -1;
+        }
+    return 0;
+    }
+
+SINT32 GetAllModIDs(const UINT32 CollectionID, UINT32ARRAY ModIDs)
+    {
+    try
+        {
+        Collection *curCollection = ValidateCollectionID(CollectionID);
+        UINT32 numMods = curCollection->ModFiles.size();
+        for(UINT32 x = 0; x < numMods; ++x)
+            ModIDs[x] = curCollection->ModFiles[x]->ModID;
+        return 0;
+        }
+    catch(std::exception &ex)
+        {
+        printf("GetAllModIDs: Error\n  %s\n", ex.what());
+        return -1;
+        }
+    catch(...)
+        {
+        printf("GetAllModIDs: Error\n  Unhandled Exception\n");
+        return -1;
+        }
+    return 0;
+    }
+
+SINT32 GetLoadOrderNumMods(const UINT32 CollectionID)
     {
     try
         {
@@ -599,18 +641,18 @@ SINT32 GetNumMods(const UINT32 CollectionID)
         }
     catch(std::exception &ex)
         {
-        printf("GetNumMods: Error\n  %s\n", ex.what());
+        printf("GetLoadOrderNumMods: Error\n  %s\n", ex.what());
         return -1;
         }
     catch(...)
         {
-        printf("GetNumMods: Error\n  Unhandled Exception\n");
+        printf("GetLoadOrderNumMods: Error\n  Unhandled Exception\n");
         return -1;
         }
     return 0;
     }
 
-SINT32 GetModIDs(const UINT32 CollectionID, UINT32ARRAY ModIDs)
+SINT32 GetLoadOrderModIDs(const UINT32 CollectionID, UINT32ARRAY ModIDs)
     {
     try
         {
@@ -622,15 +664,53 @@ SINT32 GetModIDs(const UINT32 CollectionID, UINT32ARRAY ModIDs)
         }
     catch(std::exception &ex)
         {
-        printf("GetModIDs: Error\n  %s\n", ex.what());
+        printf("GetLoadOrderModIDs: Error\n  %s\n", ex.what());
         return -1;
         }
     catch(...)
         {
-        printf("GetModIDs: Error\n  Unhandled Exception\n");
+        printf("GetLoadOrderModIDs: Error\n  Unhandled Exception\n");
         return -1;
         }
     return 0;
+    }
+
+STRING GetFileNameByID(const UINT32 CollectionID, const UINT32 ModID)
+    {
+    try
+        {
+        return ValidateModID(ValidateCollectionID(CollectionID), ModID)->ReadHandler.getFileName();
+        }
+    catch(std::exception &ex)
+        {
+        printf("GetFileNameByID: Error\n  %s\n", ex.what());
+        return NULL;
+        }
+    catch(...)
+        {
+        printf("GetFileNameByID: Error\n  Unhandled Exception\n");
+        return NULL;
+        }
+    return NULL;
+    }
+
+STRING GetFileNameByLoadOrder(const UINT32 CollectionID, const UINT32 ModIndex)
+    {
+    try
+        {
+        return ValidateLoadOrderIndex(ValidateCollectionID(CollectionID), ModIndex)->ReadHandler.getFileName();
+        }
+    catch(std::exception &ex)
+        {
+        printf("GetFileNameByLoadOrder: Error\n  %s\n", ex.what());
+        return NULL;
+        }
+    catch(...)
+        {
+        printf("GetFileNameByLoadOrder: Error\n  Unhandled Exception\n");
+        return NULL;
+        }
+    return NULL;
     }
 
 STRING GetModNameByID(const UINT32 CollectionID, const UINT32 ModID)
@@ -732,7 +812,10 @@ SINT32 GetModLoadOrderByID(const UINT32 CollectionID, const UINT32 ModID)
     {
     try
         {
-        return ValidateModID(ValidateCollectionID(CollectionID), ModID)->FormIDHandler.ExpandedIndex;
+        ModFile *curModFile = ValidateModID(ValidateCollectionID(CollectionID), ModID);
+        if(curModFile->Flags.IsInLoadOrder)
+            return curModFile->FormIDHandler.ExpandedIndex;
+        return -1;
         }
     catch(std::exception &ex)
         {

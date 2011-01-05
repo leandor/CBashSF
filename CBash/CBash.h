@@ -54,8 +54,12 @@ EXPORT_FUNC SINT32 CleanModMasters(const UINT32 CollectionID, const UINT32 ModID
 EXPORT_FUNC SINT32 SaveMod(const UINT32 CollectionID, const UINT32 ModID, const bool CloseCollection);
 ////////////////////////////////////////////////////////////////////////
 //Mod info functions
-EXPORT_FUNC SINT32 GetNumMods(const UINT32 CollectionID);
-EXPORT_FUNC SINT32 GetModIDs(const UINT32 CollectionID, UINT32ARRAY ModIDs);
+EXPORT_FUNC SINT32 GetAllNumMods(const UINT32 CollectionID);
+EXPORT_FUNC SINT32 GetAllModIDs(const UINT32 CollectionID, UINT32ARRAY ModIDs);
+EXPORT_FUNC SINT32 GetLoadOrderNumMods(const UINT32 CollectionID);
+EXPORT_FUNC SINT32 GetLoadOrderModIDs(const UINT32 CollectionID, UINT32ARRAY ModIDs);
+EXPORT_FUNC STRING GetFileNameByID(const UINT32 CollectionID, const UINT32 ModID);
+EXPORT_FUNC STRING GetFileNameByLoadOrder(const UINT32 CollectionID, const UINT32 ModIndex);
 EXPORT_FUNC STRING GetModNameByID(const UINT32 CollectionID, const UINT32 ModID);
 EXPORT_FUNC STRING GetModNameByLoadOrder(const UINT32 CollectionID, const UINT32 ModIndex);
 EXPORT_FUNC SINT32 GetModIDByName(const UINT32 CollectionID, STRING const ModName);

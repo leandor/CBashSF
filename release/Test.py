@@ -35,7 +35,7 @@ def regressionTests():
 ##    assertSKIL(Current, newMod)
 
 def assertTES4(Current, newMod):
-    record = Current[0].TES4
+    record = Current.LoadOrderMods[0].TES4
 
     assert record.IsESM
     assert record.flags1 == 0x80000001
@@ -121,7 +121,7 @@ def assertTES4(Current, newMod):
     print "TES4:Finished testing"
 
 def assertGMST(Current, newMod):
-    record = Current[0].GMST[0]
+    record = Current.LoadOrderMods[0].GMST[0]
 
     assert record.fid == ('Oblivion.esm', 0x045D2F)
     assert record.flags1 == 0x80000000 #CBash sets 0x80000000 for internal use
@@ -175,7 +175,7 @@ def assertGMST(Current, newMod):
     assert frecord.eid != "fWarSTRing" #GMST edid are case sensitive since they're keyed by it
     assert frecord.value == 3.0
 
-    record = Current[0].GMST[0]
+    record = Current.LoadOrderMods[0].GMST[0]
     newrecord = record.CopyAsOverride(newMod)
 
     assert newrecord.fid == ('Oblivion.esm', 0x045D2F)
@@ -211,7 +211,7 @@ def assertGMST(Current, newMod):
     print "GMST:Finished testing"
 
 def assertGLOB(Current, newMod):
-    record = Current[0].GLOB[0]
+    record = Current.LoadOrderMods[0].GLOB[0]
 
     assert record.fid == ('Oblivion.esm', 0x08D9DA)
     assert record.flags1 == 0x80000000
@@ -238,7 +238,7 @@ def assertGLOB(Current, newMod):
     assert record.format != 'F'
     assert record.value == 12.2
 
-    record = Current[0].GLOB[0]
+    record = Current.LoadOrderMods[0].GLOB[0]
     newrecord = record.CopyAsOverride(newMod)
 
     assert newrecord.fid == ('Oblivion.esm', 0x08D9DA)
@@ -301,7 +301,7 @@ def assertGLOB(Current, newMod):
     print "GLOB:Finished testing"
 
 def assertCLAS(Current, newMod):
-    record = Current[0].CLAS[0]
+    record = Current.LoadOrderMods[0].CLAS[0]
 
     assert record.fid == ('Oblivion.esm', 0x09712F)
     assert record.flags1 == 0x80000000
@@ -379,7 +379,7 @@ def assertCLAS(Current, newMod):
     assert record.trainLevel == 60
     assert record.unused1 == [0x01, 0xFF]
 
-    record = Current[0].CLAS[0]
+    record = Current.LoadOrderMods[0].CLAS[0]
     record = record.CopyAsOverride(newMod)
 
     assert record.fid == ('Oblivion.esm', 0x09712F)
@@ -456,7 +456,7 @@ def assertCLAS(Current, newMod):
     assert record.trainLevel == 30
     assert record.unused1 == [0x50, 0x0F]
 
-    record = Current[0].CLAS[0]
+    record = Current.LoadOrderMods[0].CLAS[0]
     assert record.fid == ('Oblivion.esm', 0x09712F)
     assert record.flags1 == 0x80000000
     assert record.flags2 == 7024151
@@ -558,7 +558,7 @@ def assertCLAS(Current, newMod):
     assert record.trainLevel == 233
     assert record.unused1 == [0x80, 0x2F]
 
-    record = Current[0].CLAS[0]
+    record = Current.LoadOrderMods[0].CLAS[0]
     assert record.fid == ('Oblivion.esm', 0x09712F)
     assert record.flags1 == 0x80000000
     assert record.flags2 == 7024151
@@ -587,7 +587,7 @@ def assertCLAS(Current, newMod):
     print "CLAS:Finished testing"
 
 def assertFACT(Current, newMod):
-    record = Current[0].FACT[9]
+    record = Current.LoadOrderMods[0].FACT[9]
 
     assert record.fid == ('Oblivion.esm', 0x080D18)
     assert record.flags1 == 0x80000000
@@ -676,7 +676,7 @@ def assertFACT(Current, newMod):
     assert rank.insigniaPath == r"insignia1\asdf.ico"
     assert rank.insigniaPath == r"insIgnia1\asdf.ico"
 
-    record = Current[0].FACT[9]
+    record = Current.LoadOrderMods[0].FACT[9]
     record = record.CopyAsOverride(newMod)
 
     assert record.fid == ('Oblivion.esm', 0x080D18)
@@ -772,7 +772,7 @@ def assertFACT(Current, newMod):
     assert rank.insigniaPath == r"insignia1\asdf.ico"
     assert rank.insigniaPath == r"insIgnia1\asdf.ico"
 
-    record = Current[0].FACT[9]
+    record = Current.LoadOrderMods[0].FACT[9]
     assert record.fid == ('Oblivion.esm', 0x080D18)
     assert record.flags1 == 0x80000000
     assert record.flags2 == 2829337
@@ -890,7 +890,7 @@ def assertFACT(Current, newMod):
     assert rank.insigniaPath == r"insignia1\asdf.ico"
     assert rank.insigniaPath == r"insIgnia1\asdf.ico"
 
-    record = Current[0].FACT[9]
+    record = Current.LoadOrderMods[0].FACT[9]
     assert record.fid == ('Oblivion.esm', 0x080D18)
     assert record.flags1 == 0x80000000
     assert record.flags2 == 2829337
@@ -916,7 +916,7 @@ def assertFACT(Current, newMod):
     print "FACT:Finished testing"
 
 def assertHAIR(Current, newMod):
-    record = Current[0].HAIR[0]
+    record = Current.LoadOrderMods[0].HAIR[0]
 
     assert record.fid == ('Oblivion.esm', 0x0C4821)
     assert record.flags1 == 0x80000000
@@ -959,7 +959,7 @@ def assertHAIR(Current, newMod):
     assert record.iconPath == r"hAiR\pATh\tEst.ddS" #Should be case insensitive
     assert record.flags == 15
 
-    record = Current[0].HAIR[0]
+    record = Current.LoadOrderMods[0].HAIR[0]
     record = record.CopyAsOverride(newMod)
 
     assert record.fid == ('Oblivion.esm', 0x0C4821)
@@ -1002,7 +1002,7 @@ def assertHAIR(Current, newMod):
     assert record.iconPath == r"paTH\teST2.dds" #Should be case insensitive
     assert record.flags == 17
 
-    record = Current[0].HAIR[0]
+    record = Current.LoadOrderMods[0].HAIR[0]
 
     assert record.fid == ('Oblivion.esm', 0x0C4821)
     assert record.flags1 == 0x80000000
@@ -1064,7 +1064,7 @@ def assertHAIR(Current, newMod):
     print "HAIR:Finished testing"
 
 def assertEYES(Current, newMod):
-    record = Current[0].EYES[0]
+    record = Current.LoadOrderMods[0].EYES[0]
 
     assert record.fid == ('Oblivion.esm', 0x05FA43)
     assert record.flags1 == 0x80000000
@@ -1097,7 +1097,7 @@ def assertEYES(Current, newMod):
     assert record.iconPath == r"EYES\p\nath\tEst.dds" #Should be case insensitive
     assert record.flags == 15
 
-    record = Current[0].EYES[0]
+    record = Current.LoadOrderMods[0].EYES[0]
     record = record.CopyAsOverride(newMod)
 
     assert record.fid == ('Oblivion.esm', 0x05FA43)
@@ -1129,7 +1129,7 @@ def assertEYES(Current, newMod):
     assert record.iconPath == r"EYES2\p\nath\tEst.dds" #Should be case insensitive
     assert record.flags == 17
 
-    record = Current[0].EYES[0]
+    record = Current.LoadOrderMods[0].EYES[0]
 
     assert record.fid == ('Oblivion.esm', 0x05FA43)
     assert record.flags1 == 0x80000000
@@ -1177,7 +1177,7 @@ def assertEYES(Current, newMod):
     print "EYES:Finished testing"
 
 def assertRACE(Current, newMod):
-    record = Current[0].RACE[13]
+    record = Current.LoadOrderMods[0].RACE[13]
 
     assert record.fid == ('Oblivion.esm', 0x000D43)
     assert record.flags1 == 0x80000000
@@ -1631,9 +1631,9 @@ def assertRACE(Current, newMod):
 
 
 def assertSOUN(Current, newMod):
-    record = Current[0].SOUN[0]
+    record = Current.LoadOrderMods[0].SOUN[0]
 
-    for record in Current[0].SOUN:
+    for record in Current.LoadOrderMods[0].SOUN:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -1693,11 +1693,11 @@ def assertSOUN(Current, newMod):
     print "startTime      :", newRecord.startTime
 
     print "SOUN:CopyAsOverride Test"
-    for record in Current[0].SOUN:
+    for record in Current.LoadOrderMods[0].SOUN:
         record.CopyAsOverride(newMod)
 
     print "SOUN:CopyAsNew Test"
-    for record in Current[0].SOUN:
+    for record in Current.LoadOrderMods[0].SOUN:
         record.CopyAsNew(newMod)
 
     print "SOUN:Save Test - TestSOUN.esp"
@@ -1705,9 +1705,9 @@ def assertSOUN(Current, newMod):
     print "SOUN:Finished testing"
 
 def assertSKIL(Current, newMod):
-    record = Current[0].SKIL[0]
+    record = Current.LoadOrderMods[0].SKIL[0]
 
-    for record in Current[0].SKIL:
+    for record in Current.LoadOrderMods[0].SKIL:
         print
         print "fid     :", PrintFormID(record.fid)
         print "flags1  :", record.flags1
@@ -1772,11 +1772,11 @@ def assertSKIL(Current, newMod):
     print "master         :", newRecord.master
 
     print "SKIL:CopyAsOverride Test"
-    for record in Current[0].SKIL:
+    for record in Current.LoadOrderMods[0].SKIL:
         record.CopyAsOverride(newMod)
 
     print "SKIL:CopyAsNew Test"
-    for record in Current[0].SKIL:
+    for record in Current.LoadOrderMods[0].SKIL:
         record.CopyAsNew(newMod)
 
     print "SKIL:Save Test - TestSKIL.esp"
@@ -1802,7 +1802,7 @@ def TestAttrReport():
     wvratios = []
     infwvratios = []
     mgef_fid = {}
-    for modFile in Current:
+    for modFile in Current.LoadOrderMods:
         for record in modFile.MGEF:
             mgef_fid[record.eid] = (modFile._ModName,record.fid)
     try:
@@ -1994,139 +1994,139 @@ def TestDeleteRecord():
     Current.load()
     newMod = Current.LookupModFile("TestDelete.esp")
     print "Delete Test"
-    for record in Current[0].GMST:
+    for record in Current.LoadOrderMods[0].GMST:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].GLOB:
+    for record in Current.LoadOrderMods[0].GLOB:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].CLAS:
+    for record in Current.LoadOrderMods[0].CLAS:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].FACT:
+    for record in Current.LoadOrderMods[0].FACT:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].HAIR:
+    for record in Current.LoadOrderMods[0].HAIR:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].EYES:
+    for record in Current.LoadOrderMods[0].EYES:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].RACE:
+    for record in Current.LoadOrderMods[0].RACE:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].SOUN:
+    for record in Current.LoadOrderMods[0].SOUN:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].SKIL:
+    for record in Current.LoadOrderMods[0].SKIL:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].MGEF:
+    for record in Current.LoadOrderMods[0].MGEF:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].SCPT:
+    for record in Current.LoadOrderMods[0].SCPT:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].LTEX:
+    for record in Current.LoadOrderMods[0].LTEX:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].ENCH:
+    for record in Current.LoadOrderMods[0].ENCH:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].SPEL:
+    for record in Current.LoadOrderMods[0].SPEL:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].BSGN:
+    for record in Current.LoadOrderMods[0].BSGN:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].ACTI:
+    for record in Current.LoadOrderMods[0].ACTI:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].APPA:
+    for record in Current.LoadOrderMods[0].APPA:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].ARMO:
+    for record in Current.LoadOrderMods[0].ARMO:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].BOOK:
+    for record in Current.LoadOrderMods[0].BOOK:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].CLOT:
+    for record in Current.LoadOrderMods[0].CLOT:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].CONT:
+    for record in Current.LoadOrderMods[0].CONT:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].DOOR:
+    for record in Current.LoadOrderMods[0].DOOR:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].INGR:
+    for record in Current.LoadOrderMods[0].INGR:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].LIGH:
+    for record in Current.LoadOrderMods[0].LIGH:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].MISC:
+    for record in Current.LoadOrderMods[0].MISC:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].STAT:
+    for record in Current.LoadOrderMods[0].STAT:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].GRAS:
+    for record in Current.LoadOrderMods[0].GRAS:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].TREE:
+    for record in Current.LoadOrderMods[0].TREE:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].FLOR:
+    for record in Current.LoadOrderMods[0].FLOR:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].FURN:
+    for record in Current.LoadOrderMods[0].FURN:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].WEAP:
+    for record in Current.LoadOrderMods[0].WEAP:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].AMMO:
+    for record in Current.LoadOrderMods[0].AMMO:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].NPC_:
+    for record in Current.LoadOrderMods[0].NPC_:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].CREA:
+    for record in Current.LoadOrderMods[0].CREA:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].LVLC:
+    for record in Current.LoadOrderMods[0].LVLC:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].SLGM:
+    for record in Current.LoadOrderMods[0].SLGM:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].KEYM:
+    for record in Current.LoadOrderMods[0].KEYM:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].ALCH:
+    for record in Current.LoadOrderMods[0].ALCH:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].SBSP:
+    for record in Current.LoadOrderMods[0].SBSP:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].SGST:
+    for record in Current.LoadOrderMods[0].SGST:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].LVLI:
+    for record in Current.LoadOrderMods[0].LVLI:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].WTHR:
+    for record in Current.LoadOrderMods[0].WTHR:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].CLMT:
+    for record in Current.LoadOrderMods[0].CLMT:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].REGN:
+    for record in Current.LoadOrderMods[0].REGN:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].CELL:
+    for record in Current.LoadOrderMods[0].CELL:
         trgCellOver = record.CopyAsOverride(newMod)
         for npcRef in record.ACHR:
             newRecord = npcRef.CopyAsOverride(trgCellOver)
@@ -2143,7 +2143,7 @@ def TestDeleteRecord():
             newRecord.DeleteRecord()
         trgCellOver.DeleteRecord()
 
-    for record in Current[0].WRLD:
+    for record in Current.LoadOrderMods[0].WRLD:
         trgWrldOver = record.CopyAsOverride(newMod)
         road = record.ROAD
         if(road != None):
@@ -2192,37 +2192,37 @@ def TestDeleteRecord():
             trgCellOver.DeleteRecord()
         trgWrldOver.DeleteRecord()
 
-    for record in Current[0].DIAL:
+    for record in Current.LoadOrderMods[0].DIAL:
         newOver = record.CopyAsOverride(newMod)
         for info in record.INFO:
             newRecord = info.CopyAsOverride(newOver)
             newRecord.DeleteRecord()
         newOver.DeleteRecord()
-    for record in Current[0].QUST:
+    for record in Current.LoadOrderMods[0].QUST:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].IDLE:
+    for record in Current.LoadOrderMods[0].IDLE:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].PACK:
+    for record in Current.LoadOrderMods[0].PACK:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].CSTY:
+    for record in Current.LoadOrderMods[0].CSTY:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].LSCR:
+    for record in Current.LoadOrderMods[0].LSCR:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].LVSP:
+    for record in Current.LoadOrderMods[0].LVSP:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].ANIO:
+    for record in Current.LoadOrderMods[0].ANIO:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].WATR:
+    for record in Current.LoadOrderMods[0].WATR:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
-    for record in Current[0].EFSH:
+    for record in Current.LoadOrderMods[0].EFSH:
         newRecord = record.CopyAsOverride(newMod)
         newRecord.DeleteRecord()
 
@@ -2253,183 +2253,183 @@ def TestReadWriteAll():
     Current.load()
     newMod = Current.LookupModFile("TestAll.esp")
 
-    for record in Current[0].GMST:
+    for record in Current.LoadOrderMods[0].GMST:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod, record.eid + "WarCopy")
         record.DeleteRecord()
-    for record in Current[0].GLOB:
+    for record in Current.LoadOrderMods[0].GLOB:
         record.CopyAsNew(newMod)
         record.CopyAsOverride(newMod)
         record.DeleteRecord()
-    for record in Current[0].CLAS:
+    for record in Current.LoadOrderMods[0].CLAS:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].FACT:
+    for record in Current.LoadOrderMods[0].FACT:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].HAIR:
+    for record in Current.LoadOrderMods[0].HAIR:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].EYES:
+    for record in Current.LoadOrderMods[0].EYES:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].RACE:
+    for record in Current.LoadOrderMods[0].RACE:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].SOUN:
+    for record in Current.LoadOrderMods[0].SOUN:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].SKIL:
+    for record in Current.LoadOrderMods[0].SKIL:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].MGEF:
+    for record in Current.LoadOrderMods[0].MGEF:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod, record.eid + "WarCopy")
         record.DeleteRecord()
-    for record in Current[0].SCPT:
+    for record in Current.LoadOrderMods[0].SCPT:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].LTEX:
+    for record in Current.LoadOrderMods[0].LTEX:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].ENCH:
+    for record in Current.LoadOrderMods[0].ENCH:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].SPEL:
+    for record in Current.LoadOrderMods[0].SPEL:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].BSGN:
+    for record in Current.LoadOrderMods[0].BSGN:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].ACTI:
+    for record in Current.LoadOrderMods[0].ACTI:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].APPA:
+    for record in Current.LoadOrderMods[0].APPA:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].ARMO:
+    for record in Current.LoadOrderMods[0].ARMO:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].BOOK:
+    for record in Current.LoadOrderMods[0].BOOK:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].CLOT:
+    for record in Current.LoadOrderMods[0].CLOT:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].CONT:
+    for record in Current.LoadOrderMods[0].CONT:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].DOOR:
+    for record in Current.LoadOrderMods[0].DOOR:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].INGR:
+    for record in Current.LoadOrderMods[0].INGR:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].LIGH:
+    for record in Current.LoadOrderMods[0].LIGH:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].MISC:
+    for record in Current.LoadOrderMods[0].MISC:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].STAT:
+    for record in Current.LoadOrderMods[0].STAT:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].GRAS:
+    for record in Current.LoadOrderMods[0].GRAS:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].TREE:
+    for record in Current.LoadOrderMods[0].TREE:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].FLOR:
+    for record in Current.LoadOrderMods[0].FLOR:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].FURN:
+    for record in Current.LoadOrderMods[0].FURN:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].WEAP:
+    for record in Current.LoadOrderMods[0].WEAP:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].AMMO:
+    for record in Current.LoadOrderMods[0].AMMO:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].NPC_:
+    for record in Current.LoadOrderMods[0].NPC_:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].CREA:
+    for record in Current.LoadOrderMods[0].CREA:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].LVLC:
+    for record in Current.LoadOrderMods[0].LVLC:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].SLGM:
+    for record in Current.LoadOrderMods[0].SLGM:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].KEYM:
+    for record in Current.LoadOrderMods[0].KEYM:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].ALCH:
+    for record in Current.LoadOrderMods[0].ALCH:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].SBSP:
+    for record in Current.LoadOrderMods[0].SBSP:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].SGST:
+    for record in Current.LoadOrderMods[0].SGST:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].LVLI:
+    for record in Current.LoadOrderMods[0].LVLI:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].WTHR:
+    for record in Current.LoadOrderMods[0].WTHR:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].CLMT:
+    for record in Current.LoadOrderMods[0].CLMT:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].REGN:
+    for record in Current.LoadOrderMods[0].REGN:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].CELL:
+    for record in Current.LoadOrderMods[0].CELL:
         trgCellOver = record.CopyAsOverride(newMod)
         trgCellNew = record.CopyAsNew(newMod)
         for npcRef in record.ACHR:
@@ -2451,7 +2451,7 @@ def TestReadWriteAll():
             Pgrd.DeleteRecord()
         record.DeleteRecord()
 
-    for record in Current[0].WRLD:
+    for record in Current.LoadOrderMods[0].WRLD:
         trgWrldOver = record.CopyAsOverride(newMod)
         trgWrldNew = record.CopyAsNew(newMod)
         road = record.ROAD
@@ -2514,7 +2514,7 @@ def TestReadWriteAll():
             wrldCell.DeleteRecord()
         record.DeleteRecord()
 
-    for record in Current[0].DIAL:
+    for record in Current.LoadOrderMods[0].DIAL:
         newOver = record.CopyAsOverride(newMod)
         newNew = record.CopyAsNew(newMod)
         for info in record.INFO:
@@ -2522,39 +2522,39 @@ def TestReadWriteAll():
             info.CopyAsNew(newNew)
             info.DeleteRecord()
         record.DeleteRecord()
-    for record in Current[0].QUST:
+    for record in Current.LoadOrderMods[0].QUST:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].IDLE:
+    for record in Current.LoadOrderMods[0].IDLE:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].PACK:
+    for record in Current.LoadOrderMods[0].PACK:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].CSTY:
+    for record in Current.LoadOrderMods[0].CSTY:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].LSCR:
+    for record in Current.LoadOrderMods[0].LSCR:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].LVSP:
+    for record in Current.LoadOrderMods[0].LVSP:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].ANIO:
+    for record in Current.LoadOrderMods[0].ANIO:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].WATR:
+    for record in Current.LoadOrderMods[0].WATR:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
-    for record in Current[0].EFSH:
+    for record in Current.LoadOrderMods[0].EFSH:
         record.CopyAsOverride(newMod)
         record.CopyAsNew(newMod)
         record.DeleteRecord()
@@ -2582,21 +2582,21 @@ def TestTES4():
         break
     print "TES4:Set Test"
     print "version..."
-    newMod.TES4.version = Current[0].TES4.version
+    newMod.TES4.version = Current.LoadOrderMods[0].TES4.version
     print "numRecords..."
-    newMod.TES4.numRecords = Current[0].TES4.numRecords
+    newMod.TES4.numRecords = Current.LoadOrderMods[0].TES4.numRecords
     print "nextObject..."
-    newMod.TES4.nextObject = Current[0].TES4.nextObject
+    newMod.TES4.nextObject = Current.LoadOrderMods[0].TES4.nextObject
     print "ofst_p..."
-    newMod.TES4.ofst_p = Current[0].TES4.ofst_p
+    newMod.TES4.ofst_p = Current.LoadOrderMods[0].TES4.ofst_p
     print "dele_p..."
-    newMod.TES4.dele_p = Current[0].TES4.dele_p
+    newMod.TES4.dele_p = Current.LoadOrderMods[0].TES4.dele_p
     print "author..."
-    newMod.TES4.author = Current[0].TES4.author
+    newMod.TES4.author = Current.LoadOrderMods[0].TES4.author
     print "description..."
-    newMod.TES4.description = Current[0].TES4.description
+    newMod.TES4.description = Current.LoadOrderMods[0].TES4.description
     print "masters..."
-##    newMod.TES4.masters = Current[0].TES4.masters
+##    newMod.TES4.masters = Current.LoadOrderMods[0].TES4.masters
     newMod.TES4.masters = ["Oblivion.esm"]
     print "TES4:Set Test Results"
     print "ModName   :", newMod.ModName
@@ -2613,7 +2613,7 @@ def TestGMST():
     Current.load()
     newMod = Current.LookupModFile("TestGMST.esp")
     print "GMST:Read Test"
-    for record in Current[0].GMST:
+    for record in Current.LoadOrderMods[0].GMST:
         print
         print "eid     :", record.eid
         printRecord(record)
@@ -2634,10 +2634,10 @@ def TestGMST():
     printRecord(newRecord)
 
     print "GMST:CopyAsOverride Test"
-    for record in Current[0].GMST:
+    for record in Current.LoadOrderMods[0].GMST:
         record.CopyAsOverride(newMod)
     print "GMST:CopyAsNew Test"
-    for record in Current[0].GMST:
+    for record in Current.LoadOrderMods[0].GMST:
         rec = record.CopyAsNew(newMod, record.eid + 'WarCopy')
 
     print "GMST:Save Test - TestGMST.esp"
@@ -2651,7 +2651,7 @@ def TestGLOB():
     Current.load()
     newMod = Current.LookupModFile("TestGLOB.esp")
     print "GLOB:Read Test"
-    for record in Current[0].GLOB:
+    for record in Current.LoadOrderMods[0].GLOB:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -2678,10 +2678,10 @@ def TestGLOB():
     print "format :", newRecord.format
     print "value  :", newRecord.value
     print "GLOB:CopyAsOverride Test"
-    for record in Current[0].GLOB:
+    for record in Current.LoadOrderMods[0].GLOB:
         record.CopyAsOverride(newMod)
     print "GLOB:CopyAsNew Test"
-    for record in Current[0].GLOB:
+    for record in Current.LoadOrderMods[0].GLOB:
         record.CopyAsNew(newMod)
     print "GLOB:Save Test - TestGLOB.esp"
     newMod.save()
@@ -2694,7 +2694,7 @@ def TestCLAS():
     Current.load()
     newMod = Current.LookupModFile("TestCLAS.esp")
     print "CLAS:Read Test"
-    for record in Current[0].CLAS:
+    for record in Current.LoadOrderMods[0].CLAS:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -2773,10 +2773,10 @@ def TestCLAS():
     print "trainLevel    :", newRecord.trainLevel
     print "unused1       :", newRecord.unused1
     print "CLAS:CopyAsOverride Test"
-    for record in Current[0].CLAS:
+    for record in Current.LoadOrderMods[0].CLAS:
         record.CopyAsOverride(newMod)
     print "CLAS:CopyAsNew Test"
-    for record in Current[0].CLAS:
+    for record in Current.LoadOrderMods[0].CLAS:
         record.CopyAsNew(newMod)
     print "CLAS:Save Test - TestCLAS.esp"
     newMod.save()
@@ -2790,7 +2790,7 @@ def TestFACT():
     Current.load()
     newMod = Current.LookupModFile("TestFACT.esp")
 
-    for record in Current[0].FACT:
+    for record in Current.LoadOrderMods[0].FACT:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -2855,11 +2855,11 @@ def TestFACT():
         print "  rank: %i\n    male:%s\n    female:%s\n    insigniaPath:%s" % (rank.rank, rank.male, rank.female, rank.insigniaPath)
 
     print "FACT:CopyAsOverride Test"
-    for record in Current[0].FACT:
+    for record in Current.LoadOrderMods[0].FACT:
         record.CopyAsOverride(newMod)
 
     print "FACT:CopyAsNew Test"
-    for record in Current[0].FACT:
+    for record in Current.LoadOrderMods[0].FACT:
         record.CopyAsNew(newMod)
 
     print "FACT:Save Test - TestFACT.esp"
@@ -2873,7 +2873,7 @@ def TestHAIR():
     Current.load()
     newMod = Current.LookupModFile("TestHAIR.esp")
 
-    for record in Current[0].HAIR:
+    for record in Current.LoadOrderMods[0].HAIR:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -2922,11 +2922,11 @@ def TestHAIR():
     print "flags   :", newRecord.flags
 
     print "HAIR:CopyAsOverride Test"
-    for record in Current[0].HAIR:
+    for record in Current.LoadOrderMods[0].HAIR:
         record.CopyAsOverride(newMod)
 
     print "HAIR:CopyAsNew Test"
-    for record in Current[0].HAIR:
+    for record in Current.LoadOrderMods[0].HAIR:
         record.CopyAsNew(newMod)
 
     print "HAIR:Save Test - TestHAIR.esp"
@@ -2940,7 +2940,7 @@ def TestEYES():
     Current.load()
     newMod = Current.LookupModFile("TestEYES.esp")
 
-    for record in Current[0].EYES:
+    for record in Current.LoadOrderMods[0].EYES:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -2975,11 +2975,11 @@ def TestEYES():
     print "flags   :", newRecord.flags
 
     print "EYES:CopyAsOverride Test"
-    for record in Current[0].EYES:
+    for record in Current.LoadOrderMods[0].EYES:
         record.CopyAsOverride(newMod)
 
     print "EYES:CopyAsNew Test"
-    for record in Current[0].EYES:
+    for record in Current.LoadOrderMods[0].EYES:
         record.CopyAsNew(newMod)
 
     print "EYES:Save Test - TestEYES.esp"
@@ -2992,7 +2992,7 @@ def TestRACE():
     Current.addMod("TestRACE.esp")
     Current.load()
     newMod = Current.LookupModFile("TestRACE.esp")
-    for record in Current[0].RACE:
+    for record in Current.LoadOrderMods[0].RACE:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -3294,11 +3294,11 @@ def TestRACE():
     print "snam_p:", newRecord.snam_p
 
     print "RACE:CopyAsOverride Test"
-    for record in Current[0].RACE:
+    for record in Current.LoadOrderMods[0].RACE:
         record.CopyAsOverride(newMod)
 
     print "RACE:CopyAsNew Test"
-    for record in Current[0].RACE:
+    for record in Current.LoadOrderMods[0].RACE:
         record.CopyAsNew(newMod)
 
     print "RACE:Save Test - TestRACE.esp"
@@ -3313,7 +3313,7 @@ def TestSOUN():
     Current.load()
     newMod = Current.LookupModFile("TestSOUN.esp")
 
-    for record in Current[0].SOUN:
+    for record in Current.LoadOrderMods[0].SOUN:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -3359,11 +3359,11 @@ def TestSOUN():
     print "startTime      :", newRecord.startTime
 
     print "SOUN:CopyAsOverride Test"
-    for record in Current[0].SOUN:
+    for record in Current.LoadOrderMods[0].SOUN:
         record.CopyAsOverride(newMod)
 
     print "SOUN:CopyAsNew Test"
-    for record in Current[0].SOUN:
+    for record in Current.LoadOrderMods[0].SOUN:
         record.CopyAsNew(newMod)
 
     print "SOUN:Save Test - TestSOUN.esp"
@@ -3377,7 +3377,7 @@ def TestSKIL():
     Current.load()
     newMod = Current.LookupModFile("TestSKIL.esp")
 
-    for record in Current[0].SKIL:
+    for record in Current.LoadOrderMods[0].SKIL:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -3427,11 +3427,11 @@ def TestSKIL():
     print "master         :", newRecord.master
 
     print "SKIL:CopyAsOverride Test"
-    for record in Current[0].SKIL:
+    for record in Current.LoadOrderMods[0].SKIL:
         record.CopyAsOverride(newMod)
 
     print "SKIL:CopyAsNew Test"
-    for record in Current[0].SKIL:
+    for record in Current.LoadOrderMods[0].SKIL:
         record.CopyAsNew(newMod)
 
     print "SKIL:Save Test - TestSKIL.esp"
@@ -3444,7 +3444,7 @@ def TestMGEF():
     Current.load()
     newMod = Current.LookupModFile("TestMGEF.esp")
 
-    for record in Current[0].MGEF:
+    for record in Current.LoadOrderMods[0].MGEF:
         print
         print "eid     :", record.eid
         printRecord(record)
@@ -3487,11 +3487,11 @@ def TestMGEF():
     printRecord(newRecord)
 
     print "MGEF:CopyAsOverride Test"
-    for record in Current[0].MGEF:
+    for record in Current.LoadOrderMods[0].MGEF:
         record.CopyAsOverride(newMod)
 
     print "MGEF:CopyAsNew Test"
-    for record in Current[0].MGEF:
+    for record in Current.LoadOrderMods[0].MGEF:
         record.CopyAsNew(newMod, record.eid + 'WarCopy')
 
     print "MGEF:Save Test - TestMGEF.esp"
@@ -3504,7 +3504,7 @@ def TestSCPT():
     Current.load()
     newMod = Current.LookupModFile("TestSCPT.esp")
     x = 0
-    for record in Current[0].SCPT:
+    for record in Current.LoadOrderMods[0].SCPT:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -3581,11 +3581,11 @@ def TestSCPT():
             print "  SCRV:", reference
 
     print "SCPT:CopyAsOverride Test"
-    for record in Current[0].SCPT:
+    for record in Current.LoadOrderMods[0].SCPT:
         record.CopyAsOverride(newMod)
 
     print "SCPT:CopyAsNew Test"
-    for record in Current[0].SCPT:
+    for record in Current.LoadOrderMods[0].SCPT:
         record.CopyAsNew(newMod)
 
     print "SCPT:Save Test - TestSCPT.esp"
@@ -3599,7 +3599,7 @@ def TestLTEX():
     Current.load()
     newMod = Current.LookupModFile("TestLTEX.esp")
 
-    for record in Current[0].LTEX:
+    for record in Current.LoadOrderMods[0].LTEX:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -3640,11 +3640,11 @@ def TestLTEX():
         print "  ", PrintFormID(grass)
 
     print "LTEX:CopyAsOverride Test"
-    for record in Current[0].LTEX:
+    for record in Current.LoadOrderMods[0].LTEX:
         record.CopyAsOverride(newMod)
 
     print "LTEX:CopyAsNew Test"
-    for record in Current[0].LTEX:
+    for record in Current.LoadOrderMods[0].LTEX:
         record.CopyAsNew(newMod)
 
     print "LTEX:Save Test - TestLTEX.esp"
@@ -3659,7 +3659,7 @@ def TestENCH():
     Current.load()
     newMod = Current.LookupModFile("TestENCH.esp")
 
-    for record in Current[0].ENCH:
+    for record in Current.LoadOrderMods[0].ENCH:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -3741,11 +3741,11 @@ def TestENCH():
         print "  full       :", effect.full
         print
     print "ENCH:CopyAsOverride Test"
-    for record in Current[0].ENCH:
+    for record in Current.LoadOrderMods[0].ENCH:
         record.CopyAsOverride(newMod)
 
     print "ENCH:CopyAsNew Test"
-    for record in Current[0].ENCH:
+    for record in Current.LoadOrderMods[0].ENCH:
         record.CopyAsNew(newMod)
 
     print "ENCH:Save Test - TestENCH.esp"
@@ -3760,7 +3760,7 @@ def TestSPEL():
     Current.load()
     newMod = Current.LookupModFile("TestSPEL.esp")
 
-    for record in Current[0].SPEL:
+    for record in Current.LoadOrderMods[0].SPEL:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -3841,11 +3841,11 @@ def TestSPEL():
         print "  full       :", effect.full
         print
     print "SPEL:CopyAsOverride Test"
-    for record in Current[0].SPEL:
+    for record in Current.LoadOrderMods[0].SPEL:
         record.CopyAsOverride(newMod)
 
     print "SPEL:CopyAsNew Test"
-    for record in Current[0].SPEL:
+    for record in Current.LoadOrderMods[0].SPEL:
         record.CopyAsNew(newMod)
 
     print "SPEL:Save Test - TestSPEL.esp"
@@ -3859,7 +3859,7 @@ def TestBSGN():
     Current.load()
     newMod = Current.LookupModFile("TestBSGN.esp")
 
-    for record in Current[0].BSGN:
+    for record in Current.LoadOrderMods[0].BSGN:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -3893,11 +3893,11 @@ def TestBSGN():
     for spell in newRecord.spells:
         print "  ", PrintFormID(spell)
     print "BSGN:CopyAsOverride Test"
-    for record in Current[0].BSGN:
+    for record in Current.LoadOrderMods[0].BSGN:
         record.CopyAsOverride(newMod)
 
     print "BSGN:CopyAsNew Test"
-    for record in Current[0].BSGN:
+    for record in Current.LoadOrderMods[0].BSGN:
         record.CopyAsNew(newMod)
 
     print "BSGN:Save Test - TestBSGN.esp"
@@ -3913,7 +3913,7 @@ def TestACTI():
     Current.load()
     newMod = Current.LookupModFile("TestACTI.esp")
 
-    for record in Current[0].ACTI:
+    for record in Current.LoadOrderMods[0].ACTI:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -3955,11 +3955,11 @@ def TestACTI():
     print "sound   :", newRecord.sound
 
     print "ACTI:CopyAsOverride Test"
-    for record in Current[0].ACTI:
+    for record in Current.LoadOrderMods[0].ACTI:
         record.CopyAsOverride(newMod)
 
     print "ACTI:CopyAsNew Test"
-    for record in Current[0].ACTI:
+    for record in Current.LoadOrderMods[0].ACTI:
         record.CopyAsNew(newMod)
 
     print "ACTI:Save Test - TestACTI.esp"
@@ -3974,7 +3974,7 @@ def TestAPPA():
     Current.load()
     newMod = Current.LookupModFile("TestAPPA.esp")
 
-    for record in Current[0].APPA:
+    for record in Current.LoadOrderMods[0].APPA:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -4025,11 +4025,11 @@ def TestAPPA():
     print "quality   :", newRecord.quality
 
     print "APPA:CopyAsOverride Test"
-    for record in Current[0].APPA:
+    for record in Current.LoadOrderMods[0].APPA:
         record.CopyAsOverride(newMod)
 
     print "APPA:CopyAsNew Test"
-    for record in Current[0].APPA:
+    for record in Current.LoadOrderMods[0].APPA:
         record.CopyAsNew(newMod)
 
     print "APPA:Save Test - TestAPPA.esp"
@@ -4044,7 +4044,7 @@ def TestARMO():
     Current.load()
     newMod = Current.LookupModFile("TestARMO.esp")
 
-    for record in Current[0].ARMO:
+    for record in Current.LoadOrderMods[0].ARMO:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -4115,11 +4115,11 @@ def TestARMO():
     print "health         :", newRecord.health
     print "weight         :", newRecord.weight
     print "ARMO:CopyAsOverride Test"
-    for record in Current[0].ARMO:
+    for record in Current.LoadOrderMods[0].ARMO:
         record.CopyAsOverride(newMod)
 
     print "ARMO:CopyAsNew Test"
-    for record in Current[0].ARMO:
+    for record in Current.LoadOrderMods[0].ARMO:
         record.CopyAsNew(newMod)
 
     print "ARMO:Save Test - TestARMO.esp"
@@ -4134,7 +4134,7 @@ def TestBOOK():
     Current.load()
     newMod = Current.LookupModFile("TestBOOK.esp")
 
-    for record in Current[0].BOOK:
+    for record in Current.LoadOrderMods[0].BOOK:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -4193,11 +4193,11 @@ def TestBOOK():
     print "value         :", newRecord.value
     print "weight        :", newRecord.weight
     print "BOOK:CopyAsOverride Test"
-    for record in Current[0].BOOK:
+    for record in Current.LoadOrderMods[0].BOOK:
         record.CopyAsOverride(newMod)
 
     print "BOOK:CopyAsNew Test"
-    for record in Current[0].BOOK:
+    for record in Current.LoadOrderMods[0].BOOK:
         record.CopyAsNew(newMod)
 
     print "BOOK:Save Test - TestBOOK.esp"
@@ -4212,7 +4212,7 @@ def TestCLOT():
     Current.load()
     newMod = Current.LookupModFile("TestCLOT.esp")
 
-    for record in Current[0].CLOT:
+    for record in Current.LoadOrderMods[0].CLOT:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -4277,11 +4277,11 @@ def TestCLOT():
     print "value          :", newRecord.value
     print "weight         :", newRecord.weight
     print "CLOT:CopyAsOverride Test"
-    for record in Current[0].CLOT:
+    for record in Current.LoadOrderMods[0].CLOT:
         record.CopyAsOverride(newMod)
 
     print "CLOT:CopyAsNew Test"
-    for record in Current[0].CLOT:
+    for record in Current.LoadOrderMods[0].CLOT:
         record.CopyAsNew(newMod)
 
     print "CLOT:Save Test - TestCLOT.esp"
@@ -4296,7 +4296,7 @@ def TestCONT():
     Current.load()
     newMod = Current.LookupModFile("TestCONT.esp")
 
-    for record in Current[0].CONT:
+    for record in Current.LoadOrderMods[0].CONT:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -4369,11 +4369,11 @@ def TestCONT():
     print "soundClose :", PrintFormID(newRecord.soundClose)
 
     print "CONT:CopyAsOverride Test"
-    for record in Current[0].CONT:
+    for record in Current.LoadOrderMods[0].CONT:
         record.CopyAsOverride(newMod)
 
     print "CONT:CopyAsNew Test"
-    for record in Current[0].CONT:
+    for record in Current.LoadOrderMods[0].CONT:
         record.CopyAsNew(newMod)
 
     print "CONT:Save Test - TestCONT.esp"
@@ -4388,7 +4388,7 @@ def TestDOOR():
     Current.load()
     newMod = Current.LookupModFile("TestDOOR.esp")
 
-    for record in Current[0].DOOR:
+    for record in Current.LoadOrderMods[0].DOOR:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -4443,11 +4443,11 @@ def TestDOOR():
         print "  ", PrintFormID(destination)
 
     print "DOOR:CopyAsOverride Test"
-    for record in Current[0].DOOR:
+    for record in Current.LoadOrderMods[0].DOOR:
         record.CopyAsOverride(newMod)
 
     print "DOOR:CopyAsNew Test"
-    for record in Current[0].DOOR:
+    for record in Current.LoadOrderMods[0].DOOR:
         record.CopyAsNew(newMod)
 
     print "DOOR:Save Test - TestDOOR.esp"
@@ -4462,7 +4462,7 @@ def TestINGR():
     Current.load()
     newMod = Current.LookupModFile("TestINGR.esp")
 
-    for record in Current[0].INGR:
+    for record in Current.LoadOrderMods[0].INGR:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -4564,11 +4564,11 @@ def TestINGR():
         print "  full       :", effect.full
         print
     print "INGR:CopyAsOverride Test"
-    for record in Current[0].INGR:
+    for record in Current.LoadOrderMods[0].INGR:
         record.CopyAsOverride(newMod)
 
     print "INGR:CopyAsNew Test"
-    for record in Current[0].INGR:
+    for record in Current.LoadOrderMods[0].INGR:
         record.CopyAsNew(newMod)
 
     print "INGR:Save Test - TestINGR.esp"
@@ -4583,7 +4583,7 @@ def TestLIGH():
     Current.load()
     newMod = Current.LookupModFile("TestLIGH.esp")
 
-    for record in Current[0].LIGH:
+    for record in Current.LoadOrderMods[0].LIGH:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -4659,11 +4659,11 @@ def TestLIGH():
     print "sound   :", PrintFormID(newRecord.sound)
 
     print "LIGH:CopyAsOverride Test"
-    for record in Current[0].LIGH:
+    for record in Current.LoadOrderMods[0].LIGH:
         record.CopyAsOverride(newMod)
 
     print "LIGH:CopyAsNew Test"
-    for record in Current[0].LIGH:
+    for record in Current.LoadOrderMods[0].LIGH:
         record.CopyAsNew(newMod)
 
     print "LIGH:Save Test - TestLIGH.esp"
@@ -4678,7 +4678,7 @@ def TestMISC():
     Current.load()
     newMod = Current.LookupModFile("TestMISC.esp")
 
-    for record in Current[0].MISC:
+    for record in Current.LoadOrderMods[0].MISC:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -4726,11 +4726,11 @@ def TestMISC():
     print "weight  :", newRecord.weight
 
     print "MISC:CopyAsOverride Test"
-    for record in Current[0].MISC:
+    for record in Current.LoadOrderMods[0].MISC:
         record.CopyAsOverride(newMod)
 
     print "MISC:CopyAsNew Test"
-    for record in Current[0].MISC:
+    for record in Current.LoadOrderMods[0].MISC:
         record.CopyAsNew(newMod)
 
     print "MISC:Save Test - TestMISC.esp"
@@ -4744,7 +4744,7 @@ def TestSTAT():
     Current.load()
     newMod = Current.LookupModFile("TestSTAT.esp")
 
-    for record in Current[0].STAT:
+    for record in Current.LoadOrderMods[0].STAT:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -4779,11 +4779,11 @@ def TestSTAT():
     print "modt_p  :", newRecord.modt_p
 
     print "STAT:CopyAsOverride Test"
-    for record in Current[0].STAT:
+    for record in Current.LoadOrderMods[0].STAT:
         record.CopyAsOverride(newMod)
 
     print "STAT:CopyAsNew Test"
-    for record in Current[0].STAT:
+    for record in Current.LoadOrderMods[0].STAT:
         record.CopyAsNew(newMod)
 
     print "STAT:Save Test - TestSTAT.esp"
@@ -4797,7 +4797,7 @@ def TestGRAS():
     Current.load()
     newMod = Current.LookupModFile("TestGRAS.esp")
 
-    for record in Current[0].GRAS:
+    for record in Current.LoadOrderMods[0].GRAS:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -4856,11 +4856,11 @@ def TestGRAS():
     print "unused3       :", newRecord.unused3
 
     print "GRAS:CopyAsOverride Test"
-    for record in Current[0].GRAS:
+    for record in Current.LoadOrderMods[0].GRAS:
         record.CopyAsOverride(newMod)
 
     print "GRAS:CopyAsNew Test"
-    for record in Current[0].GRAS:
+    for record in Current.LoadOrderMods[0].GRAS:
         record.CopyAsNew(newMod)
 
     print "GRAS:Save Test - TestGRAS.esp"
@@ -4875,7 +4875,7 @@ def TestTREE():
     Current.load()
     newMod = Current.LookupModFile("TestTREE.esp")
 
-    for record in Current[0].TREE:
+    for record in Current.LoadOrderMods[0].TREE:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -4931,11 +4931,11 @@ def TestTREE():
     print "heightBill   :", newRecord.heightBill
 
     print "TREE:CopyAsOverride Test"
-    for record in Current[0].TREE:
+    for record in Current.LoadOrderMods[0].TREE:
         record.CopyAsOverride(newMod)
 
     print "TREE:CopyAsNew Test"
-    for record in Current[0].TREE:
+    for record in Current.LoadOrderMods[0].TREE:
         record.CopyAsNew(newMod)
 
     print "TREE:Save Test - TestTREE.esp"
@@ -4950,7 +4950,7 @@ def TestFLOR():
     Current.load()
     newMod = Current.LookupModFile("TestFLOR.esp")
 
-    for record in Current[0].FLOR:
+    for record in Current.LoadOrderMods[0].FLOR:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -4995,11 +4995,11 @@ def TestFLOR():
     print "fall       :", newRecord.fall
     print "winter     :", newRecord.winter
     print "FLOR:CopyAsOverride Test"
-    for record in Current[0].FLOR:
+    for record in Current.LoadOrderMods[0].FLOR:
         record.CopyAsOverride(newMod)
 
     print "FLOR:CopyAsNew Test"
-    for record in Current[0].FLOR:
+    for record in Current.LoadOrderMods[0].FLOR:
         record.CopyAsNew(newMod)
 
     print "FLOR:Save Test - TestFLOR.esp"
@@ -5014,7 +5014,7 @@ def TestFURN():
     Current.load()
     newMod = Current.LookupModFile("TestFURN.esp")
 
-    for record in Current[0].FURN:
+    for record in Current.LoadOrderMods[0].FURN:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -5058,11 +5058,11 @@ def TestFURN():
     print "flags   :", newRecord.flags
 
     print "FURN:CopyAsOverride Test"
-    for record in Current[0].FURN:
+    for record in Current.LoadOrderMods[0].FURN:
         record.CopyAsOverride(newMod)
 
     print "FURN:CopyAsNew Test"
-    for record in Current[0].FURN:
+    for record in Current.LoadOrderMods[0].FURN:
         record.CopyAsNew(newMod)
 
     print "FURN:Save Test - TestFURN.esp"
@@ -5077,7 +5077,7 @@ def TestWEAP():
     Current.load()
     newMod = Current.LookupModFile("TestWEAP.esp")
 
-    for record in Current[0].WEAP:
+    for record in Current.LoadOrderMods[0].WEAP:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -5142,11 +5142,11 @@ def TestWEAP():
     print "damage        :", newRecord.damage
 
     print "WEAP:CopyAsOverride Test"
-    for record in Current[0].WEAP:
+    for record in Current.LoadOrderMods[0].WEAP:
         record.CopyAsOverride(newMod)
 
     print "WEAP:CopyAsNew Test"
-    for record in Current[0].WEAP:
+    for record in Current.LoadOrderMods[0].WEAP:
         record.CopyAsNew(newMod)
 
     print "WEAP:Save Test - TestWEAP.esp"
@@ -5161,7 +5161,7 @@ def TestAMMO():
     Current.load()
     newMod = Current.LookupModFile("TestAMMO.esp")
 
-    for record in Current[0].AMMO:
+    for record in Current.LoadOrderMods[0].AMMO:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -5220,11 +5220,11 @@ def TestAMMO():
     print "damage        :", newRecord.damage
 
     print "AMMO:CopyAsOverride Test"
-    for record in Current[0].AMMO:
+    for record in Current.LoadOrderMods[0].AMMO:
         record.CopyAsOverride(newMod)
 
     print "AMMO:CopyAsNew Test"
-    for record in Current[0].AMMO:
+    for record in Current.LoadOrderMods[0].AMMO:
         record.CopyAsNew(newMod)
 
     print "AMMO:Save Test - TestAMMO.esp"
@@ -5239,7 +5239,7 @@ def TestNPC_():
     Current.load()
     newMod = Current.LookupModFile("TestNPC_.esp")
 
-    for record in Current[0].NPC_:
+    for record in Current.LoadOrderMods[0].NPC_:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -5465,11 +5465,11 @@ def TestNPC_():
     print "fgts_p :", newRecord.fgts_p
     print "fnam :", newRecord.fnam
     print "NPC_:CopyAsOverride Test"
-    for record in Current[0].NPC_:
+    for record in Current.LoadOrderMods[0].NPC_:
         record.CopyAsOverride(newMod)
 
     print "NPC_:CopyAsNew Test"
-    for record in Current[0].NPC_:
+    for record in Current.LoadOrderMods[0].NPC_:
         record.CopyAsNew(newMod)
 
     print "NPC_:Save Test - TestNPC_.esp"
@@ -5484,7 +5484,7 @@ def TestCREA():
     Current.load()
     newMod = Current.LookupModFile("TestCREA.esp")
 
-    for record in Current[0].CREA:
+    for record in Current.LoadOrderMods[0].CREA:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -5707,11 +5707,11 @@ def TestCREA():
     for sound in newRecord.sounds:
         print "  %i: type: %u, sound: %s, chance:%i" % (sound._ListIndex, sound.type, PrintFormID(sound.sound), sound.chance)
     print "CREA:CopyAsOverride Test"
-    for record in Current[0].CREA:
+    for record in Current.LoadOrderMods[0].CREA:
         record.CopyAsOverride(newMod)
 
     print "CREA:CopyAsNew Test"
-    for record in Current[0].CREA:
+    for record in Current.LoadOrderMods[0].CREA:
         record.CopyAsNew(newMod)
 
     print "CREA:Save Test - TestCREA.esp"
@@ -5726,7 +5726,7 @@ def TestLVLC():
     Current.load()
     newMod = Current.LookupModFile("TestLVLC.esp")
 
-    for record in Current[0].LVLC:
+    for record in Current.LoadOrderMods[0].LVLC:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -5795,11 +5795,11 @@ def TestLVLC():
         print "  unused2 :", entry.unused2
 
     print "LVLC:CopyAsOverride Test"
-    for record in Current[0].LVLC:
+    for record in Current.LoadOrderMods[0].LVLC:
         record.CopyAsOverride(newMod)
 
     print "LVLC:CopyAsNew Test"
-    for record in Current[0].LVLC:
+    for record in Current.LoadOrderMods[0].LVLC:
         record.CopyAsNew(newMod)
 
     print "LVLC:Save Test - TestLVLC.esp"
@@ -5814,7 +5814,7 @@ def TestSLGM():
     Current.load()
     newMod = Current.LookupModFile("TestSLGM.esp")
 
-    for record in Current[0].SLGM:
+    for record in Current.LoadOrderMods[0].SLGM:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -5869,11 +5869,11 @@ def TestSLGM():
     print "capacity :", newRecord.capacity
 
     print "SLGM:CopyAsOverride Test"
-    for record in Current[0].SLGM:
+    for record in Current.LoadOrderMods[0].SLGM:
         record.CopyAsOverride(newMod)
 
     print "SLGM:CopyAsNew Test"
-    for record in Current[0].SLGM:
+    for record in Current.LoadOrderMods[0].SLGM:
         record.CopyAsNew(newMod)
 
     print "SLGM:Save Test - TestSLGM.esp"
@@ -5888,7 +5888,7 @@ def TestKEYM():
     Current.load()
     newMod = Current.LookupModFile("TestKEYM.esp")
 
-    for record in Current[0].KEYM:
+    for record in Current.LoadOrderMods[0].KEYM:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -5936,11 +5936,11 @@ def TestKEYM():
     print "weight  :", newRecord.weight
 
     print "KEYM:CopyAsOverride Test"
-    for record in Current[0].KEYM:
+    for record in Current.LoadOrderMods[0].KEYM:
         record.CopyAsOverride(newMod)
 
     print "KEYM:CopyAsNew Test"
-    for record in Current[0].KEYM:
+    for record in Current.LoadOrderMods[0].KEYM:
         record.CopyAsNew(newMod)
 
     print "KEYM:Save Test - TestKEYM.esp"
@@ -5954,7 +5954,7 @@ def TestALCH():
     Current.load()
     newMod = Current.LookupModFile("TestALCH.esp")
 
-    for record in Current[0].ALCH:
+    for record in Current.LoadOrderMods[0].ALCH:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -6056,11 +6056,11 @@ def TestALCH():
         print "  full       :", effect.full
         print
     print "ALCH:CopyAsOverride Test"
-    for record in Current[0].ALCH:
+    for record in Current.LoadOrderMods[0].ALCH:
         record.CopyAsOverride(newMod)
 
     print "ALCH:CopyAsNew Test"
-    for record in Current[0].ALCH:
+    for record in Current.LoadOrderMods[0].ALCH:
         record.CopyAsNew(newMod)
 
     print "ALCH:Save Test - TestALCH.esp"
@@ -6074,7 +6074,7 @@ def TestSBSP():
     Current.load()
     newMod = Current.LookupModFile("TestSBSP.esp")
 
-    for record in Current[0].SBSP:
+    for record in Current.LoadOrderMods[0].SBSP:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -6100,11 +6100,11 @@ def TestSBSP():
 
 
     print "SBSP:CopyAsOverride Test"
-    for record in Current[0].SBSP:
+    for record in Current.LoadOrderMods[0].SBSP:
         record.CopyAsOverride(newMod)
 
     print "SBSP:CopyAsNew Test"
-    for record in Current[0].SBSP:
+    for record in Current.LoadOrderMods[0].SBSP:
         record.CopyAsNew(newMod)
 
     print "SBSP:Save Test - TestSBSP.esp"
@@ -6119,7 +6119,7 @@ def TestSGST():
     Current.load()
     newMod = Current.LookupModFile("TestSGST.esp")
 
-    for record in Current[0].SGST:
+    for record in Current.LoadOrderMods[0].SGST:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -6237,11 +6237,11 @@ def TestSGST():
     print "weight  :", newRecord.weight
 
     print "SGST:CopyAsOverride Test"
-    for record in Current[0].SGST:
+    for record in Current.LoadOrderMods[0].SGST:
         record.CopyAsOverride(newMod)
 
     print "SGST:CopyAsNew Test"
-    for record in Current[0].SGST:
+    for record in Current.LoadOrderMods[0].SGST:
         record.CopyAsNew(newMod)
 
     print "SGST:Save Test - TestSGST.esp"
@@ -6256,7 +6256,7 @@ def TestLVLI():
     Current.load()
     newMod = Current.LookupModFile("TestLVLI.esp")
 
-    for record in Current[0].LVLI:
+    for record in Current.LoadOrderMods[0].LVLI:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -6319,11 +6319,11 @@ def TestLVLI():
         print "  count   :", entry.count
         print "  unused2 :", entry.unused2
     print "LVLI:CopyAsOverride Test"
-    for record in Current[0].LVLI:
+    for record in Current.LoadOrderMods[0].LVLI:
         record.CopyAsOverride(newMod)
 
     print "LVLI:CopyAsNew Test"
-    for record in Current[0].LVLI:
+    for record in Current.LoadOrderMods[0].LVLI:
         record.CopyAsNew(newMod)
 
     print "LVLI:Save Test - TestLVLI.esp"
@@ -6338,7 +6338,7 @@ def TestWTHR():
     Current.load()
     newMod = Current.LookupModFile("TestWTHR.esp")
 
-    for record in Current[0].WTHR:
+    for record in Current.LoadOrderMods[0].WTHR:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -6800,11 +6800,11 @@ def TestWTHR():
         print "  sound: %s, type: %u" % (PrintFormID(sound.sound), sound.type)
 
     print "WTHR:CopyAsOverride Test"
-    for record in Current[0].WTHR:
+    for record in Current.LoadOrderMods[0].WTHR:
         record.CopyAsOverride(newMod)
 
     print "WTHR:CopyAsNew Test"
-    for record in Current[0].WTHR:
+    for record in Current.LoadOrderMods[0].WTHR:
         record.CopyAsNew(newMod)
 
     print "WTHR:Save Test - TestWTHR.esp"
@@ -6819,7 +6819,7 @@ def TestCLMT():
     Current.load()
     newMod = Current.LookupModFile("TestCLMT.esp")
 
-    for record in Current[0].CLMT:
+    for record in Current.LoadOrderMods[0].CLMT:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -6889,11 +6889,11 @@ def TestCLMT():
     print "volatility  :", newRecord.volatility
     print "phaseLength :", newRecord.phaseLength
     print "CLMT:CopyAsOverride Test"
-    for record in Current[0].CLMT:
+    for record in Current.LoadOrderMods[0].CLMT:
         record.CopyAsOverride(newMod)
 
     print "CLMT:CopyAsNew Test"
-    for record in Current[0].CLMT:
+    for record in Current.LoadOrderMods[0].CLMT:
         record.CopyAsNew(newMod)
 
     print "CLMT:Save Test - TestCLMT.esp"
@@ -6908,7 +6908,7 @@ def TestREGN():
     Current.load()
     newMod = Current.LookupModFile("TestREGN.esp")
 
-    for record in Current[0].REGN:
+    for record in Current.LoadOrderMods[0].REGN:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -7217,11 +7217,11 @@ def TestREGN():
             print "    chance  :", weather.chance
         print
     print "REGN:CopyAsOverride Test"
-    for record in Current[0].REGN:
+    for record in Current.LoadOrderMods[0].REGN:
         record.CopyAsOverride(newMod)
 
     print "REGN:CopyAsNew Test"
-    for record in Current[0].REGN:
+    for record in Current.LoadOrderMods[0].REGN:
         record.CopyAsNew(newMod)
 
     print "REGN:Save Test - TestREGN.esp"
@@ -7237,7 +7237,7 @@ def TestCELL():
     Current.load()
     newMod = Current.LookupModFile("TestCELL.esp")
 
-    for record in Current[0].CELL:
+    for record in Current.LoadOrderMods[0].CELL:
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
 
@@ -7695,7 +7695,7 @@ def TestCELL():
                 print "      ", point
             break
     print "CELL:CopyAsOverride Test"
-    for record in Current[0].CELL:
+    for record in Current.LoadOrderMods[0].CELL:
         trgCell = record.CopyAsOverride(newMod)
         for npcRef in record.ACHR:
             npcRef.CopyAsOverride(trgCell)
@@ -7707,7 +7707,7 @@ def TestCELL():
         if(Pgrd): Pgrd.CopyAsOverride(trgCell)
 
     print "CELL:CopyAsNew Test"
-    for record in Current[0].CELL:
+    for record in Current.LoadOrderMods[0].CELL:
         trgCell = record.CopyAsNew(newMod)
         for npcRef in record.ACHR:
             npcRef.CopyAsNew(trgCell)
@@ -7729,7 +7729,7 @@ def TestWRLD():
     Current.load()
     newMod = Current.LookupModFile("TestWRLD.esp")
 
-    for record in Current[0].WRLD:
+    for record in Current.LoadOrderMods[0].WRLD:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -8070,7 +8070,7 @@ def TestWRLD():
     print "ofst_p    :", newRecord.ofst_p
 
     print "WRLD:CopyAsOverride Test"
-    for record in Current[0].WRLD:
+    for record in Current.LoadOrderMods[0].WRLD:
         trgWrld = record.CopyAsOverride(newMod)
         road = record.ROAD
         if(road != None):
@@ -8120,7 +8120,7 @@ def TestWRLD():
         record.UnloadRecord()
 
 ##    print "WRLD:CopyAsNew Test"
-##    for record in Current[0].WRLD:
+##    for record in Current.LoadOrderMods[0].WRLD:
 ##        trgWrld = record.CopyAsNew(newMod)
 ##        road = record.ROAD
 ##        if(road != None):
@@ -8180,7 +8180,7 @@ def TestDIAL():
     Current.load()
     newMod = Current.LookupModFile("TestDIAL.esp")
 
-    for record in Current[0].DIAL:
+    for record in Current.LoadOrderMods[0].DIAL:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -8556,14 +8556,14 @@ def TestDIAL():
                 print "    SCRV:", reference
 
     print "DIAL:CopyAsOverride Test"
-    for record in Current[0].DIAL:
+    for record in Current.LoadOrderMods[0].DIAL:
         newRecord = record.CopyAsOverride(newMod)
         for info in record.INFO:
             info.CopyAsOverride(newRecord)
 
 
     print "DIAL:CopyAsNew Test"
-    for record in Current[0].DIAL:
+    for record in Current.LoadOrderMods[0].DIAL:
         newRecord = record.CopyAsNew(newMod)
         for info in record.INFO:
             info.CopyAsNew(newRecord)
@@ -8579,7 +8579,7 @@ def TestQUST():
     Current.load()
     newMod = Current.LookupModFile("TestQUST.esp")
 
-    for record in Current[0].QUST:
+    for record in Current.LoadOrderMods[0].QUST:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -9334,11 +9334,11 @@ def TestQUST():
             print
 
     print "QUST:CopyAsOverride Test"
-    for record in Current[0].QUST:
+    for record in Current.LoadOrderMods[0].QUST:
         record.CopyAsOverride(newMod)
 
     print "QUST:CopyAsNew Test"
-    for record in Current[0].QUST:
+    for record in Current.LoadOrderMods[0].QUST:
         record.CopyAsNew(newMod)
 
     print "QUST:Save Test - TestQUST.esp"
@@ -9353,7 +9353,7 @@ def TestIDLE():
     Current.load()
     newMod = Current.LookupModFile("TestIDLE.esp")
 
-    for record in Current[0].IDLE:
+    for record in Current.LoadOrderMods[0].IDLE:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -9445,11 +9445,11 @@ def TestIDLE():
     print "prevId :", PrintFormID(newRecord.prevId)
 
     print "IDLE:CopyAsOverride Test"
-    for record in Current[0].IDLE:
+    for record in Current.LoadOrderMods[0].IDLE:
         record.CopyAsOverride(newMod)
 
     print "IDLE:CopyAsNew Test"
-    for record in Current[0].IDLE:
+    for record in Current.LoadOrderMods[0].IDLE:
         record.CopyAsNew(newMod)
 
     print "IDLE:Save Test - TestIDLE.esp"
@@ -9464,7 +9464,7 @@ def TestPACK():
     Current.load()
     newMod = Current.LookupModFile("TestPACK.esp")
 
-    for record in Current[0].PACK:
+    for record in Current.LoadOrderMods[0].PACK:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -9576,11 +9576,11 @@ def TestPACK():
         print
 
     print "PACK:CopyAsOverride Test"
-    for record in Current[0].PACK:
+    for record in Current.LoadOrderMods[0].PACK:
         record.CopyAsOverride(newMod)
 
     print "PACK:CopyAsNew Test"
-    for record in Current[0].PACK:
+    for record in Current.LoadOrderMods[0].PACK:
         record.CopyAsNew(newMod)
 
     print "PACK:Save Test - TestPACK.esp"
@@ -9595,7 +9595,7 @@ def TestCSTY():
     Current.load()
     newMod = Current.LookupModFile("TestCSTY.esp")
 
-    for record in Current[0].CSTY:
+    for record in Current.LoadOrderMods[0].CSTY:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -9749,11 +9749,11 @@ def TestCSTY():
     print "pAtkFMult      :", newRecord.pAtkFMult
 
     print "CSTY:CopyAsOverride Test"
-    for record in Current[0].CSTY:
+    for record in Current.LoadOrderMods[0].CSTY:
         record.CopyAsOverride(newMod)
 
     print "CSTY:CopyAsNew Test"
-    for record in Current[0].CSTY:
+    for record in Current.LoadOrderMods[0].CSTY:
         record.CopyAsNew(newMod)
 
     print "CSTY:Save Test - TestCSTY.esp"
@@ -9768,7 +9768,7 @@ def TestLSCR():
     Current.load()
     newMod = Current.LookupModFile("TestLSCR.esp")
 
-    for record in Current[0].LSCR:
+    for record in Current.LoadOrderMods[0].LSCR:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -9830,11 +9830,11 @@ def TestLSCR():
         print "  gridX    :", location.gridX
 
     print "LSCR:CopyAsOverride Test"
-    for record in Current[0].LSCR:
+    for record in Current.LoadOrderMods[0].LSCR:
         record.CopyAsOverride(newMod)
 
     print "LSCR:CopyAsNew Test"
-    for record in Current[0].LSCR:
+    for record in Current.LoadOrderMods[0].LSCR:
         record.CopyAsNew(newMod)
 
     print "LSCR:Save Test - TestLSCR.esp"
@@ -9849,7 +9849,7 @@ def TestLVSP():
     Current.load()
     newMod = Current.LookupModFile("TestLVSP.esp")
 
-    for record in Current[0].LVSP:
+    for record in Current.LoadOrderMods[0].LVSP:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -9913,11 +9913,11 @@ def TestLVSP():
         print "  unused2 :", entry.unused2
 
     print "LVSP:CopyAsOverride Test"
-    for record in Current[0].LVSP:
+    for record in Current.LoadOrderMods[0].LVSP:
         record.CopyAsOverride(newMod)
 
     print "LVSP:CopyAsNew Test"
-    for record in Current[0].LVSP:
+    for record in Current.LoadOrderMods[0].LVSP:
         record.CopyAsNew(newMod)
 
     print "LVSP:Save Test - TestLVSP.esp"
@@ -9932,7 +9932,7 @@ def TestANIO():
     Current.load()
     newMod = Current.LookupModFile("TestANIO.esp")
 
-    for record in Current[0].ANIO:
+    for record in Current.LoadOrderMods[0].ANIO:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -9970,11 +9970,11 @@ def TestANIO():
     print "animationId :", PrintFormID(newRecord.animationId     )
 
     print "ANIO:CopyAsOverride Test"
-    for record in Current[0].ANIO:
+    for record in Current.LoadOrderMods[0].ANIO:
         record.CopyAsOverride(newMod)
 
     print "ANIO:CopyAsNew Test"
-    for record in Current[0].ANIO:
+    for record in Current.LoadOrderMods[0].ANIO:
         record.CopyAsNew(newMod)
 
     print "ANIO:Save Test - TestANIO.esp"
@@ -9989,7 +9989,7 @@ def TestWATR():
     Current.load()
     newMod = Current.LookupModFile("TestWATR.esp")
 
-    for record in Current[0].WATR:
+    for record in Current.LoadOrderMods[0].WATR:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -10103,11 +10103,11 @@ def TestWATR():
     print "underWater    :", PrintFormID(newRecord.underWater    )
 
     print "WATR:CopyAsOverride Test"
-    for record in Current[0].WATR:
+    for record in Current.LoadOrderMods[0].WATR:
         record.CopyAsOverride(newMod)
 
     print "WATR:CopyAsNew Test"
-    for record in Current[0].WATR:
+    for record in Current.LoadOrderMods[0].WATR:
         record.CopyAsNew(newMod)
 
     print "WATR:Save Test - TestWATR.esp"
@@ -10122,7 +10122,7 @@ def TestEFSH():
     Current.load()
     newMod = Current.LookupModFile("TestEFSH.esp")
 
-    for record in Current[0].EFSH:
+    for record in Current.LoadOrderMods[0].EFSH:
         print
         print "fid     :", PrintFormID(record.fid)
         printRecord(record)
@@ -10296,11 +10296,11 @@ def TestEFSH():
     print "key3Time        :", newRecord.key3Time
 
     print "EFSH:CopyAsOverride Test"
-    for record in Current[0].EFSH:
+    for record in Current.LoadOrderMods[0].EFSH:
         record.CopyAsOverride(newMod)
 
     print "EFSH:CopyAsNew Test"
-    for record in Current[0].EFSH:
+    for record in Current.LoadOrderMods[0].EFSH:
         record.CopyAsNew(newMod)
 
     print "EFSH:Save Test - TestEFSH.esp"
