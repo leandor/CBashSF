@@ -932,175 +932,165 @@ bool RawRecord::operator !=(const RawRecord &other) const
 
 Function_ArgumentsType Function_ArgumentsInit[] =
     {
-    Function_ArgumentsType(153,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(127,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(14,std::make_pair(eUINT32,eNONE)),
-    Function_ArgumentsType(61,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(190,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(8,std::make_pair(eUINT32,eNONE)),
-    Function_ArgumentsType(81,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(274,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(63,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(264,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(277,std::make_pair(eUINT32,eNONE)),
-    Function_ArgumentsType(229,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(41,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(122,std::make_pair(eFORMID,eUINT32)),
-    Function_ArgumentsType(116,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(110,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(143,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(18,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(148,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(170,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(46,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(84,std::make_pair(eFORMID,eNONE)),
-    Function_ArgumentsType(203,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(45,std::make_pair(eFORMID,eNONE)),
-    Function_ArgumentsType(180,std::make_pair(eFORMID,eNONE)),
-    Function_ArgumentsType(35,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(39,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(76,std::make_pair(eFORMID,eNONE)),
-    Function_ArgumentsType(1,std::make_pair(eFORMID,eNONE)),
-    Function_ArgumentsType(215,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(182,std::make_pair(eFORMID,eNONE)),
-    Function_ArgumentsType(73,std::make_pair(eFORMID,eNONE)),
-    Function_ArgumentsType(60,std::make_pair(eFORMID,eFORMID)),
-    Function_ArgumentsType(128,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(288,std::make_pair(eFORMID,eNONE)),
-    Function_ArgumentsType(160,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(74,std::make_pair(eFORMID,eNONE)),
-    Function_ArgumentsType(48,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(99,std::make_pair(eFORMID,eNONE)),
-    Function_ArgumentsType(318,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(338,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(67,std::make_pair(eFORMID,eNONE)),
-    Function_ArgumentsType(230,std::make_pair(eFORMID,eFORMID)),
-    Function_ArgumentsType(71,std::make_pair(eFORMID,eNONE)),
-    Function_ArgumentsType(32,std::make_pair(eFORMID,eNONE)),
-    Function_ArgumentsType(305,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(310,std::make_pair(eFORMID,eNONE)),
-    Function_ArgumentsType(91,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(68,std::make_pair(eFORMID,eNONE)),
-    Function_ArgumentsType(228,std::make_pair(eFORMID,eNONE)),
-    Function_ArgumentsType(64,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(161,std::make_pair(eFORMID,eNONE)),
-    Function_ArgumentsType(149,std::make_pair(eFORMID,eNONE)),
-    Function_ArgumentsType(237,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(72,std::make_pair(eFORMID,eNONE)),
-    Function_ArgumentsType(254,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(224,std::make_pair(eFORMID,eNONE)),
-    Function_ArgumentsType(69,std::make_pair(eFORMID,eNONE)),
-    Function_ArgumentsType(136,std::make_pair(eFORMID,eNONE)),
-    Function_ArgumentsType(70,std::make_pair(eUINT32,eNONE)),
-    Function_ArgumentsType(246,std::make_pair(eFORMID,eNONE)),
-    Function_ArgumentsType(247,std::make_pair(eUINT32,eNONE)),
-    Function_ArgumentsType(47,std::make_pair(eFORMID,eNONE)),
-    Function_ArgumentsType(107,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(80,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(27,std::make_pair(eFORMID,eNONE)),
-    Function_ArgumentsType(5,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(65,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(320,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(255,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(157,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(193,std::make_pair(eFORMID,eNONE)),
-    Function_ArgumentsType(199,std::make_pair(eFORMID,eNONE)),
-    Function_ArgumentsType(195,std::make_pair(eFORMID,eNONE)),
-    Function_ArgumentsType(197,std::make_pair(eFORMID,eNONE)),
-    Function_ArgumentsType(201,std::make_pair(eFORMID,eNONE)),
-    Function_ArgumentsType(249,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(132,std::make_pair(eFORMID,eNONE)),
-    Function_ArgumentsType(251,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(129,std::make_pair(eFORMID,eNONE)),
-    Function_ArgumentsType(130,std::make_pair(eFORMID,eNONE)),
-    Function_ArgumentsType(131,std::make_pair(eUINT32,eNONE)),
-    Function_ArgumentsType(312,std::make_pair(eUINT32,eNONE)),
-    Function_ArgumentsType(225,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(98,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(365,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(362,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(6,std::make_pair(eUINT32,eNONE)),
-    Function_ArgumentsType(56,std::make_pair(eFORMID,eNONE)),
-    Function_ArgumentsType(79,std::make_pair(eFORMID,eUINT32)),
-    Function_ArgumentsType(77,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(244,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(24,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(53,std::make_pair(eFORMID,eUINT32)),
-    Function_ArgumentsType(12,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(66,std::make_pair(eFORMID,eNONE)),
-    Function_ArgumentsType(159,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(49,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(58,std::make_pair(eFORMID,eNONE)),
-    Function_ArgumentsType(59,std::make_pair(eFORMID,eUINT32)),
-    Function_ArgumentsType(11,std::make_pair(eUINT32,eNONE)),
-    Function_ArgumentsType(10,std::make_pair(eUINT32,eNONE)),
-    Function_ArgumentsType(50,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(172,std::make_pair(eFORMID,eNONE)),
-    Function_ArgumentsType(361,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(315,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(144,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(242,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(259,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(258,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(40,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(142,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(108,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(109,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(147,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(154,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(214,std::make_pair(eFORMID,eNONE)),
-    Function_ArgumentsType(227,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(353,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(314,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(313,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(306,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(280,std::make_pair(eFORMID,eFORMID)),
-    Function_ArgumentsType(267,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(150,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(163,std::make_pair(eFORMID,eNONE)),
-    Function_ArgumentsType(162,std::make_pair(eFORMID,eNONE)),
-    Function_ArgumentsType(354,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(106,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(125,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(282,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(112,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(289,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(332,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(300,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(146,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(285,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(278,std::make_pair(eFORMID,eNONE)),
-    Function_ArgumentsType(176,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(175,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(171,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(358,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(339,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(266,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(62,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(327,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(287,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(103,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(286,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(75,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(223,std::make_pair(eFORMID,eNONE)),
-    Function_ArgumentsType(185,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(141,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(265,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(102,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(145,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(329,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(111,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(101,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(309,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(104,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(36,std::make_pair(eUINT32,eNONE)),
-    Function_ArgumentsType(42,std::make_pair(eFORMID,eNONE)),
-    Function_ArgumentsType(133,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(43,std::make_pair(eFORMID,eNONE)),
-    Function_ArgumentsType(134,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(44,std::make_pair(eFORMID,eNONE)),
-    Function_ArgumentsType(135,std::make_pair(eNONE,eNONE)),
-    Function_ArgumentsType(323,std::make_pair(eNONE,eNONE))
+    Function_ArgumentsType(27,std::make_pair(eFORMID,eNONE)),    //GetLineOfSight
+    Function_ArgumentsType(32,std::make_pair(eFORMID,eNONE)),    //GetInSameCell
+    Function_ArgumentsType(35,std::make_pair(eNONE,eNONE)),      //GetDisabled
+    Function_ArgumentsType(36,std::make_pair(eUINT32,eNONE)),    //MenuMode
+    Function_ArgumentsType(39,std::make_pair(eNONE,eNONE)),      //GetDisease
+    Function_ArgumentsType(40,std::make_pair(eNONE,eNONE)),      //GetVampire
+    Function_ArgumentsType(41,std::make_pair(eNONE,eNONE)),      //GetClothingValue
+    Function_ArgumentsType(42,std::make_pair(eFORMID,eNONE)),    //SameFaction
+    Function_ArgumentsType(43,std::make_pair(eFORMID,eNONE)),    //SameRace
+    Function_ArgumentsType(44,std::make_pair(eFORMID,eNONE)),    //SameSex
+    Function_ArgumentsType(45,std::make_pair(eFORMID,eNONE)),    //GetDetected
+    Function_ArgumentsType(46,std::make_pair(eNONE,eNONE)),      //GetDead
+    Function_ArgumentsType(47,std::make_pair(eFORMID,eNONE)),    //GetItemCount
+    Function_ArgumentsType(48,std::make_pair(eNONE,eNONE)),      //GetGold
+    Function_ArgumentsType(49,std::make_pair(eNONE,eNONE)),      //GetSleeping
+    Function_ArgumentsType(50,std::make_pair(eNONE,eNONE)),      //GetTalkedToPC
+    Function_ArgumentsType(53,std::make_pair(eFORMID,eUINT32)),  //GetScriptVariable
+    Function_ArgumentsType(56,std::make_pair(eFORMID,eNONE)),    //GetQuestRunning
+    Function_ArgumentsType(58,std::make_pair(eFORMID,eNONE)),    //GetStage
+    Function_ArgumentsType(59,std::make_pair(eFORMID,eUINT32)),  //GetStageDone
+    Function_ArgumentsType(60,std::make_pair(eFORMID,eFORMID)),  //GetFactionRankDifference
+    Function_ArgumentsType(61,std::make_pair(eNONE,eNONE)),      //GetAlarmed
+    Function_ArgumentsType(62,std::make_pair(eNONE,eNONE)),      //IsRaining
+    Function_ArgumentsType(63,std::make_pair(eNONE,eNONE)),      //GetAttacked
+    Function_ArgumentsType(64,std::make_pair(eNONE,eNONE)),      //GetIsCreature
+    Function_ArgumentsType(65,std::make_pair(eNONE,eNONE)),      //GetLockLevel
+    Function_ArgumentsType(66,std::make_pair(eFORMID,eNONE)),    //GetShouldAttack
+    Function_ArgumentsType(67,std::make_pair(eFORMID,eNONE)),    //GetInCell
+    Function_ArgumentsType(68,std::make_pair(eFORMID,eNONE)),    //GetIsClass
+    Function_ArgumentsType(69,std::make_pair(eFORMID,eNONE)),    //GetIsRace
+    Function_ArgumentsType(70,std::make_pair(eUINT32,eNONE)),    //GetIsSex
+    Function_ArgumentsType(71,std::make_pair(eFORMID,eNONE)),    //GetInFaction
+    Function_ArgumentsType(72,std::make_pair(eFORMID,eNONE)),    //GetIsID
+    Function_ArgumentsType(73,std::make_pair(eFORMID,eNONE)),    //GetFactionRank
+    Function_ArgumentsType(74,std::make_pair(eFORMID,eNONE)),    //GetGlobalValue
+    Function_ArgumentsType(75,std::make_pair(eNONE,eNONE)),      //IsSnowing
+    Function_ArgumentsType(76,std::make_pair(eFORMID,eNONE)),    //GetDisposition
+    Function_ArgumentsType(77,std::make_pair(eNONE,eNONE)),      //GetRandomPercent
+    Function_ArgumentsType(79,std::make_pair(eFORMID,eUINT32)),  //GetQuestVariable
+    Function_ArgumentsType(80,std::make_pair(eNONE,eNONE)),      //GetLevel
+    Function_ArgumentsType(81,std::make_pair(eNONE,eNONE)),      //GetArmorRating
+    Function_ArgumentsType(84,std::make_pair(eFORMID,eNONE)),    //GetDeadCount
+    Function_ArgumentsType(91,std::make_pair(eNONE,eNONE)),      //GetIsAlerted
+    Function_ArgumentsType(98,std::make_pair(eNONE,eNONE)),      //GetPlayerControlsDisabled
+    Function_ArgumentsType(99,std::make_pair(eFORMID,eNONE)),    //GetHeadingAngle
+    Function_ArgumentsType(101,std::make_pair(eNONE,eNONE)),     //IsWeaponOut
+    Function_ArgumentsType(102,std::make_pair(eNONE,eNONE)),     //IsTorchOut
+    Function_ArgumentsType(103,std::make_pair(eNONE,eNONE)),     //IsShieldOut
+    Function_ArgumentsType(104,std::make_pair(eNONE,eNONE)),     //IsYielding
+    Function_ArgumentsType(106,std::make_pair(eNONE,eNONE)),     //IsFacingUp
+    Function_ArgumentsType(107,std::make_pair(eNONE,eNONE)),     //GetKnockedState
+    Function_ArgumentsType(108,std::make_pair(eNONE,eNONE)),     //GetWeaponAnimType
+    Function_ArgumentsType(109,std::make_pair(eNONE,eNONE)),     //GetWeaponSkillType
+    Function_ArgumentsType(110,std::make_pair(eNONE,eNONE)),     //GetCurrentAIPackage
+    Function_ArgumentsType(111,std::make_pair(eNONE,eNONE)),     //IsWaiting
+    Function_ArgumentsType(112,std::make_pair(eNONE,eNONE)),     //IsIdlePlaying
+    Function_ArgumentsType(116,std::make_pair(eNONE,eNONE)),     //GetCrimeGold
+    Function_ArgumentsType(122,std::make_pair(eFORMID,eUINT32)), //GetCrime
+    Function_ArgumentsType(125,std::make_pair(eNONE,eNONE)),     //IsGuard
+    Function_ArgumentsType(127,std::make_pair(eNONE,eNONE)),     //CanPayCrimeGold
+    Function_ArgumentsType(128,std::make_pair(eNONE,eNONE)),     //GetFatiguePercentage
+    Function_ArgumentsType(129,std::make_pair(eFORMID,eNONE)),   //GetPCIsClass
+    Function_ArgumentsType(130,std::make_pair(eFORMID,eNONE)),   //GetPCIsRace
+    Function_ArgumentsType(131,std::make_pair(eUINT32,eNONE)),   //GetPCIsSex
+    Function_ArgumentsType(132,std::make_pair(eFORMID,eNONE)),   //GetPCInFaction
+    Function_ArgumentsType(133,std::make_pair(eNONE,eNONE)),     //SameFactionAsPC
+    Function_ArgumentsType(134,std::make_pair(eNONE,eNONE)),     //SameRaceAsPC
+    Function_ArgumentsType(135,std::make_pair(eNONE,eNONE)),     //SameSexAsPC
+    Function_ArgumentsType(136,std::make_pair(eFORMID,eNONE)),   //GetIsReference
+    Function_ArgumentsType(141,std::make_pair(eNONE,eNONE)),     //IsTalking
+    Function_ArgumentsType(142,std::make_pair(eNONE,eNONE)),     //GetWalkSpeed
+    Function_ArgumentsType(143,std::make_pair(eNONE,eNONE)),     //GetCurrentAIProcedure
+    Function_ArgumentsType(144,std::make_pair(eNONE,eNONE)),     //GetTrespassWarningLevel
+    Function_ArgumentsType(145,std::make_pair(eNONE,eNONE)),     //IsTrespassing
+    Function_ArgumentsType(146,std::make_pair(eNONE,eNONE)),     //IsInMyOwnedCell
+    Function_ArgumentsType(147,std::make_pair(eNONE,eNONE)),     //GetWindSpeed
+    Function_ArgumentsType(148,std::make_pair(eNONE,eNONE)),     //GetCurrentWeatherPercent
+    Function_ArgumentsType(149,std::make_pair(eFORMID,eNONE)),   //GetIsCurrentWeather
+    Function_ArgumentsType(150,std::make_pair(eNONE,eNONE)),     //IsContinuingPackagePCNear
+    Function_ArgumentsType(153,std::make_pair(eNONE,eNONE)),     //CanHaveFlames
+    Function_ArgumentsType(154,std::make_pair(eNONE,eNONE)),     //HasFlames
+    Function_ArgumentsType(157,std::make_pair(eNONE,eNONE)),     //GetOpenState
+    Function_ArgumentsType(159,std::make_pair(eNONE,eNONE)),     //GetSitting
+    Function_ArgumentsType(160,std::make_pair(eNONE,eNONE)),     //GetFurnitureMarkerID
+    Function_ArgumentsType(161,std::make_pair(eFORMID,eNONE)),   //GetIsCurrentPackage
+    Function_ArgumentsType(162,std::make_pair(eFORMID,eNONE)),   //IsCurrentFurnitureRef
+    Function_ArgumentsType(163,std::make_pair(eFORMID,eNONE)),   //IsCurrentFurnitureObj
+    Function_ArgumentsType(170,std::make_pair(eNONE,eNONE)),     //GetDayOfWeek
+    Function_ArgumentsType(171,std::make_pair(eNONE,eNONE)),     //IsPlayerInJail
+    Function_ArgumentsType(172,std::make_pair(eFORMID,eNONE)),   //GetTalkedToPCParam
+    Function_ArgumentsType(175,std::make_pair(eNONE,eNONE)),     //IsPCSleeping
+    Function_ArgumentsType(176,std::make_pair(eNONE,eNONE)),     //IsPCAMurderer
+    Function_ArgumentsType(180,std::make_pair(eFORMID,eNONE)),   //GetDetectionLevel
+    Function_ArgumentsType(182,std::make_pair(eFORMID,eNONE)),   //GetEquipped
+    Function_ArgumentsType(185,std::make_pair(eNONE,eNONE)),     //IsSwimming
+    Function_ArgumentsType(190,std::make_pair(eNONE,eNONE)),     //GetAmountSoldStolen
+    Function_ArgumentsType(193,std::make_pair(eFORMID,eNONE)),   //GetPCExpelled
+    Function_ArgumentsType(195,std::make_pair(eFORMID,eNONE)),   //GetPCFactionMurder
+    Function_ArgumentsType(197,std::make_pair(eFORMID,eNONE)),   //GetPCFactionSteal
+    Function_ArgumentsType(199,std::make_pair(eFORMID,eNONE)),   //GetPCFactionAttack
+    Function_ArgumentsType(201,std::make_pair(eFORMID,eNONE)),   //GetPCFactionSubmitAuthority
+    Function_ArgumentsType(203,std::make_pair(eNONE,eNONE)),     //GetDestroyed
+    Function_ArgumentsType(214,std::make_pair(eFORMID,eNONE)),   //HasMagicEffect
+    Function_ArgumentsType(215,std::make_pair(eNONE,eNONE)),     //GetDoorDefaultOpen
+    Function_ArgumentsType(223,std::make_pair(eFORMID,eNONE)),   //IsSpellTarget
+    Function_ArgumentsType(224,std::make_pair(eFORMID,eNONE)),   //GetIsPlayerBirthsign
+    Function_ArgumentsType(225,std::make_pair(eNONE,eNONE)),     //GetPersuasionNumber
+    Function_ArgumentsType(227,std::make_pair(eNONE,eNONE)),     //HasVampireFed
+    Function_ArgumentsType(228,std::make_pair(eFORMID,eNONE)),   //GetIsClassDefault
+    Function_ArgumentsType(229,std::make_pair(eNONE,eNONE)),     //GetClassDefaultMatch
+    Function_ArgumentsType(230,std::make_pair(eFORMID,eFORMID)), //GetInCellParam
+    Function_ArgumentsType(237,std::make_pair(eNONE,eNONE)),     //GetIsGhost
+    Function_ArgumentsType(242,std::make_pair(eNONE,eNONE)),     //GetUnconscious
+    Function_ArgumentsType(244,std::make_pair(eNONE,eNONE)),     //GetRestrained
+    Function_ArgumentsType(246,std::make_pair(eFORMID,eNONE)),   //GetIsUsedItem
+    Function_ArgumentsType(247,std::make_pair(eUINT32,eNONE)),   //GetIsUsedItemType
+    Function_ArgumentsType(249,std::make_pair(eNONE,eNONE)),     //GetPCFame
+    Function_ArgumentsType(251,std::make_pair(eNONE,eNONE)),     //GetPCInfamy
+    Function_ArgumentsType(254,std::make_pair(eNONE,eNONE)),     //GetIsPlayableRace
+    Function_ArgumentsType(255,std::make_pair(eNONE,eNONE)),     //GetOffersServicesNow
+    Function_ArgumentsType(258,std::make_pair(eNONE,eNONE)),     //GetUsedItemLevel
+    Function_ArgumentsType(259,std::make_pair(eNONE,eNONE)),     //GetUsedItemActivate
+    Function_ArgumentsType(264,std::make_pair(eNONE,eNONE)),     //GetBarterGold
+    Function_ArgumentsType(265,std::make_pair(eNONE,eNONE)),     //IsTimePassing
+    Function_ArgumentsType(266,std::make_pair(eNONE,eNONE)),     //IsPleasant
+    Function_ArgumentsType(267,std::make_pair(eNONE,eNONE)),     //IsCloudy
+    Function_ArgumentsType(274,std::make_pair(eNONE,eNONE)),     //GetArmorRatingUpperBody
+    Function_ArgumentsType(277,std::make_pair(eUINT32,eNONE)),   //GetBaseActorValue
+    Function_ArgumentsType(278,std::make_pair(eFORMID,eNONE)),   //IsOwner
+    Function_ArgumentsType(280,std::make_pair(eFORMID,eFORMID)), //IsCellOwner
+    Function_ArgumentsType(282,std::make_pair(eNONE,eNONE)),     //IsHorseStolen
+    Function_ArgumentsType(285,std::make_pair(eNONE,eNONE)),     //IsLeftUp
+    Function_ArgumentsType(286,std::make_pair(eNONE,eNONE)),     //IsSneaking
+    Function_ArgumentsType(287,std::make_pair(eNONE,eNONE)),     //IsRunning
+    Function_ArgumentsType(288,std::make_pair(eFORMID,eNONE)),   //GetFriendHit
+    Function_ArgumentsType(289,std::make_pair(eNONE,eNONE)),     //IsInCombat
+    Function_ArgumentsType(300,std::make_pair(eNONE,eNONE)),     //IsInInterior
+    Function_ArgumentsType(305,std::make_pair(eNONE,eNONE)),     //GetInvestmentGold
+    Function_ArgumentsType(306,std::make_pair(eNONE,eNONE)),     //IsActorUsingATorch
+    Function_ArgumentsType(309,std::make_pair(eNONE,eNONE)),     //IsXBox
+    Function_ArgumentsType(310,std::make_pair(eFORMID,eNONE)),   //GetInWorldspace
+    Function_ArgumentsType(312,std::make_pair(eUINT32,eNONE)),   //GetPCMiscStat
+    Function_ArgumentsType(313,std::make_pair(eNONE,eNONE)),     //IsActorEvil
+    Function_ArgumentsType(314,std::make_pair(eNONE,eNONE)),     //IsActorAVictim
+    Function_ArgumentsType(315,std::make_pair(eNONE,eNONE)),     //GetTotalPersuasionNumber
+    Function_ArgumentsType(318,std::make_pair(eNONE,eNONE)),     //GetIdleDoneOnce
+    Function_ArgumentsType(320,std::make_pair(eNONE,eNONE)),     //GetNoRumors
+    Function_ArgumentsType(323,std::make_pair(eNONE,eNONE)),     //WhichServiceMenu
+    Function_ArgumentsType(327,std::make_pair(eNONE,eNONE)),     //IsRidingHorse
+    Function_ArgumentsType(329,std::make_pair(eNONE,eNONE)),     //IsTurnArrest
+    Function_ArgumentsType(332,std::make_pair(eNONE,eNONE)),     //IsInDangerousWater
+    Function_ArgumentsType(338,std::make_pair(eNONE,eNONE)),     //GetIgnoreFriendlyHits
+    Function_ArgumentsType(339,std::make_pair(eNONE,eNONE)),     //IsPlayersLastRiddenHorse
+    Function_ArgumentsType(353,std::make_pair(eNONE,eNONE)),     //IsActor
+    Function_ArgumentsType(354,std::make_pair(eNONE,eNONE)),     //IsEssential
+    Function_ArgumentsType(358,std::make_pair(eNONE,eNONE)),     //IsPlayerMovingIntoNewSpace
+    Function_ArgumentsType(361,std::make_pair(eNONE,eNONE)),     //GetTimeDead
+    Function_ArgumentsType(362,std::make_pair(eNONE,eNONE)),     //GetPlayerHasLastRiddenHorse
+    Function_ArgumentsType(365,std::make_pair(eNONE,eNONE))      //GetPlayerInSEWorld
     };
 
 Function_NameType Function_NameInit[] =

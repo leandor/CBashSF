@@ -338,6 +338,8 @@ bool QUSTRecord::VisitFormIDs(FormIDOp &op)
         op.Accept(SCRI->fid);
     for(UINT32 x = 0; x < CTDA.size(); x++)
         {
+        //if(CTDA[x]->value.ifunc == 214)
+        //    printf("%08X uses HasMagicEffect\n", formID);
         curCTDAFunction = Function_Arguments.find(CTDA[x]->value.ifunc);
         if(curCTDAFunction != Function_Arguments.end())
             {
@@ -347,6 +349,8 @@ bool QUSTRecord::VisitFormIDs(FormIDOp &op)
             if(CTDAFunction.second == eFORMID)
                 op.Accept(CTDA[x]->value.param2);
             }
+        else
+            printf("Warning: %08X uses an unknown function (%d)!\n", formID, CTDA[x]->value.ifunc);
         }
     for(UINT32 x = 0; x < Stages.size(); x++)
         {
@@ -354,11 +358,19 @@ bool QUSTRecord::VisitFormIDs(FormIDOp &op)
             {
             for(UINT32 p = 0; p < Stages[x]->Entries[y]->CTDA.size(); p++)
                 {
+                //if(Stages[x]->Entries[y]->CTDA[p]->value.ifunc == 214)
+                //    printf("%08X uses HasMagicEffect\n", formID);
                 curCTDAFunction = Function_Arguments.find(Stages[x]->Entries[y]->CTDA[p]->value.ifunc);
-                if(CTDAFunction.first == eFORMID)
-                    op.Accept(Stages[x]->Entries[y]->CTDA[p]->value.param1);
-                if(CTDAFunction.second == eFORMID)
-                    op.Accept(Stages[x]->Entries[y]->CTDA[p]->value.param2);
+                if(curCTDAFunction != Function_Arguments.end())
+                    {
+                    CTDAFunction = curCTDAFunction->second;
+                    if(CTDAFunction.first == eFORMID)
+                        op.Accept(Stages[x]->Entries[y]->CTDA[p]->value.param1);
+                    if(CTDAFunction.second == eFORMID)
+                        op.Accept(Stages[x]->Entries[y]->CTDA[p]->value.param2);
+                    }
+                else
+                    printf("Warning: %08X uses an unknown function (%d)!\n", formID, Stages[x]->Entries[y]->CTDA[p]->value.ifunc);
                 }
             for(UINT32 p = 0; p < Stages[x]->Entries[y]->SCR_.size(); p++)
                 if(Stages[x]->Entries[y]->SCR_[p]->value.isSCRO)
@@ -371,6 +383,8 @@ bool QUSTRecord::VisitFormIDs(FormIDOp &op)
         op.Accept(Targets[x]->QSTA.value.targetId);
         for(UINT32 y = 0; y < Targets[x]->CTDA.size(); y++)
             {
+            //if(Targets[x]->CTDA[y]->value.ifunc == 214)
+            //    printf("%08X uses HasMagicEffect\n", formID);
             curCTDAFunction = Function_Arguments.find(Targets[x]->CTDA[y]->value.ifunc);
             if(curCTDAFunction != Function_Arguments.end())
                 {
@@ -380,6 +394,8 @@ bool QUSTRecord::VisitFormIDs(FormIDOp &op)
                 if(CTDAFunction.second == eFORMID)
                     op.Accept(Targets[x]->CTDA[y]->value.param2);
                 }
+            else
+                printf("Warning: %08X uses an unknown function (%d)!\n", formID, Targets[x]->CTDA[y]->value.ifunc);
             }
         }
 

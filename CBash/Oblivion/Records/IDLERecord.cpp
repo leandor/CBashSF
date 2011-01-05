@@ -124,6 +124,8 @@ bool IDLERecord::VisitFormIDs(FormIDOp &op)
     Function_Arguments_Iterator curCTDAFunction;
     for(UINT32 x = 0; x < CTDA.size(); x++)
         {
+        //if(CTDA[x]->value.ifunc == 214)
+        //    printf("%08X uses HasMagicEffect\n", formID);
         curCTDAFunction = Function_Arguments.find(CTDA[x]->value.ifunc);
         if(curCTDAFunction != Function_Arguments.end())
             {
@@ -133,6 +135,8 @@ bool IDLERecord::VisitFormIDs(FormIDOp &op)
             if(CTDAFunction.second == eFORMID)
                 op.Accept(CTDA[x]->value.param2);
             }
+        else
+            printf("Warning: %08X uses an unknown function (%d)!\n", formID, CTDA[x]->value.ifunc);
         }
 
     if(DATA.IsLoaded())

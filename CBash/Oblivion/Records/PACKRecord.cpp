@@ -146,17 +146,19 @@ bool PACKRecord::VisitFormIDs(FormIDOp &op)
 
     for(UINT32 x = 0; x < CTDA.size(); x++)
         {
+        //if(CTDA[x]->value.ifunc == 214)
+        //    printf("%08X uses HasMagicEffect\n", formID);
         curCTDAFunction = Function_Arguments.find(CTDA[x]->value.ifunc);
         if(curCTDAFunction != Function_Arguments.end())
             {
             CTDAFunction = curCTDAFunction->second;
-
             if(CTDAFunction.first == eFORMID)
                 op.Accept(CTDA[x]->value.param1);
-
             if(CTDAFunction.second == eFORMID)
                 op.Accept(CTDA[x]->value.param2);
             }
+        else
+            printf("Warning: %08X uses an unknown function (%d)!\n", formID, CTDA[x]->value.ifunc);
         }
 
     return op.Stop();

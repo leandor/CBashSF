@@ -56,6 +56,7 @@ class WATRRecord : public Record
             bool operator ==(const WATRDATA &other) const;
             bool operator !=(const WATRDATA &other) const;
             };
+
         struct WATRGNAM
             {
             FORMID  dayWater, nightWater, underWater;
@@ -70,7 +71,7 @@ class WATRRecord : public Record
         enum flagsFlags
             {
             fIsCausesDamage  = 0x00000001,
-            fIsReflective = 0x00000002
+            fIsReflective    = 0x00000002
             };
 
     public:
