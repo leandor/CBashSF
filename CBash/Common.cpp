@@ -932,6 +932,16 @@ bool RawRecord::operator !=(const RawRecord &other) const
 
 Function_ArgumentsType Function_ArgumentsInit[] =
     {
+    Function_ArgumentsType(1,std::make_pair(eFORMID,eNONE)),     //GetDistance
+    Function_ArgumentsType(5,std::make_pair(eNONE,eNONE)),       //GetLocked
+    Function_ArgumentsType(6,std::make_pair(eUINT32,eNONE)),     //GetPos
+    Function_ArgumentsType(8,std::make_pair(eUINT32,eNONE)),     //GetAngle
+    Function_ArgumentsType(10,std::make_pair(eUINT32,eNONE)),    //GetStartingPos
+    Function_ArgumentsType(11,std::make_pair(eUINT32,eNONE)),    //GetStartingAngle
+    Function_ArgumentsType(12,std::make_pair(eNONE,eNONE)),      //GetSecondsPassed
+    Function_ArgumentsType(14,std::make_pair(eUINT32,eNONE)),    //GetActorValue
+    Function_ArgumentsType(18,std::make_pair(eNONE,eNONE)),      //GetCurrentTime
+    Function_ArgumentsType(24,std::make_pair(eNONE,eNONE)),      //GetScale
     Function_ArgumentsType(27,std::make_pair(eFORMID,eNONE)),    //GetLineOfSight
     Function_ArgumentsType(32,std::make_pair(eFORMID,eNONE)),    //GetInSameCell
     Function_ArgumentsType(35,std::make_pair(eNONE,eNONE)),      //GetDisabled

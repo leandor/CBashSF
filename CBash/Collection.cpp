@@ -757,7 +757,7 @@ UINT32 Collection::CopyRecord(ModFile *curModFile, const FORMID &RecordFormID, S
     RecordCopy->VisitFormIDs(checker);
 
     //Index the record
-    RecordIndexer indexer(DestModFile, curModFile->Flags.IsExtendedConflicts ? ExtendedEditorID_ModFile_Record: EditorID_ModFile_Record, curModFile->Flags.IsExtendedConflicts ? ExtendedFormID_ModFile_Record: FormID_ModFile_Record);
+    RecordIndexer indexer(DestModFile, DestModFile->Flags.IsExtendedConflicts ? ExtendedEditorID_ModFile_Record: EditorID_ModFile_Record, DestModFile->Flags.IsExtendedConflicts ? ExtendedFormID_ModFile_Record: FormID_ModFile_Record);
     indexer.Accept(&RecordCopy);
 
     if(reader.GetResult()) //If the record was read, go ahead and unload it
