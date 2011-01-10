@@ -55,7 +55,7 @@ class Collection
 
         SINT32 AddMod(STRING const &_FileName, ModFlags &flags);
         bool IsModAdded(STRING const &ModName);
-        SINT32 SaveMod(ModFile *curModFile, bool CloseCollection=false);
+        SINT32 SaveMod(ModFile *&curModFile, bool CloseCollection=false);
 
         SINT32 Load();
         SINT32 Unload();
@@ -63,15 +63,15 @@ class Collection
         FormID_Iterator LookupRecord(ModFile *&curModFile, const FORMID &RecordFormID, Record *&curRecord);
         EditorID_Iterator LookupRecord(ModFile *&curModFile, STRING const &RecordEditorID, Record *&curRecord);
 
-        UINT32 IsRecordWinning(ModFile *curModFile, const FORMID &RecordFormID, STRING const &RecordEditorID, const bool GetExtendedConflicts);
-        UINT32 GetNumRecordConflicts(const FORMID &RecordFormID, STRING const &RecordEditorID, const bool GetExtendedConflicts);
-        void   GetRecordConflicts(const FORMID &RecordFormID, STRING const &RecordEditorID, UINT32ARRAY ModIDs, const bool GetExtendedConflicts);
-        void   GetRecordHistory(ModFile *curModFile, const FORMID &RecordFormID, STRING const &RecordEditorID, UINT32ARRAY ModIDs);
+        UINT32 IsRecordWinning(ModFile *&curModFile, Record *&curRecord, const bool GetExtendedConflicts);
+        UINT32 GetNumRecordConflicts(Record *&curRecord, const bool GetExtendedConflicts);
+        SINT32 GetRecordConflicts(Record *&curRecord, MODIDARRAY ModIDs, RECORDIDARRAY RecordIDs, const bool GetExtendedConflicts);
+        SINT32 GetRecordHistory(ModFile *&curModFile, Record *&curRecord, MODIDARRAY ModIDs, RECORDIDARRAY RecordIDs);
 
         UINT32 NextFreeExpandedFormID(ModFile *&curModFile, UINT32 depth = 0);
-        UINT32 CreateRecord(ModFile *curModFile, const UINT32 &RecordType, FORMID RecordFormID, STRING const &RecordEditorID, const FORMID &ParentFormID, UINT32 CreateFlags);
-        UINT32 CopyRecord(ModFile *curModFile, const FORMID &RecordFormID, STRING const &RecordEditorID, ModFile *DestModFile, FORMID DestParentFormID, const FORMID DestRecordFormID, STRING const DestRecordEditorID, UINT32 CreateFlags);
-        SINT32 DeleteRecord(ModFile *curModFile, const FORMID &RecordFormID, STRING const &RecordEditorID, const FORMID &ParentFormID);
+        Record * CreateRecord(ModFile *&curModFile, const UINT32 &RecordType, FORMID RecordFormID, STRING const &RecordEditorID, const FORMID &ParentFormID, UINT32 CreateFlags);
+        Record * CopyRecord(ModFile *&curModFile, Record *&curRecord, ModFile *&DestModFile, const FORMID &DestParentFormID, const FORMID &DestRecordFormID, STRING const &DestRecordEditorID, UINT32 CreateFlags);
+        SINT32 DeleteRecord(ModFile *&curModFile, Record *&curRecord, Record *&ParentRecord);
 
-        SINT32 SetRecordIDs(ModFile *curModFile, const FORMID &RecordFormID, STRING const &RecordEditorID, const FORMID &FormIDValue, STRING const &EditorIDValue);
+        SINT32 SetRecordIDs(ModFile *&curModFile, Record *&RecordID, const FORMID &FormID, STRING const &EditorID);
     };

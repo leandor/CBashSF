@@ -360,8 +360,11 @@ UINT32 Record::Write(_FileHandler &SaveHandler, const bool &bMastersChanged, For
                         if(index != -1)
                             {
                             printf("Multiple 'Correct' expanders found (%08X)! Using last one found (likely incorrect unless lucky)\n", formID);
-                            printf("  %i:,  %08X, %08X, %08X\n", index, Expanders[x]->FileStart, recData, Expanders[x]->FileEnd);
+                            printf("  %i:   %08X, %08X, %08X\n", index, Expanders[index]->FileStart, recData, Expanders[index]->FileEnd);
                             printf("  %i:   %08X, %08X, %08X\n", x, Expanders[x]->FileStart, recData, Expanders[x]->FileEnd);
+                            printf("Expanders:\n");
+                            for(UINT32 z = 0; z < Expanders.size(); ++z)
+                                printf("  %i of %i:   %08X, %08X\n", z, Expanders.size(), Expanders[z]->FileStart, Expanders[z]->FileEnd);
                             }
                         index = x;
                         }

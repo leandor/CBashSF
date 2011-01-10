@@ -20,7 +20,6 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 // CBash.cpp
-
 #ifndef CBASH_CALLTIMING
     #define CBASH_CALLTIMING
 #endif
@@ -64,7 +63,6 @@ GPL License and Copyright Notice ============================================
 #endif
 
 #include "CBash.h"
-#include "Collection.h"
 #include <vector>
 //#include "mmgr.h"
 
@@ -130,33 +128,16 @@ static std::vector<Collection *> Collections;
                 }
         };
 #endif
-
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 //Internal Functions
-void ValidatePointer(const void *testPointer)
+inline void ValidatePointer(const void *testPointer)
     {
     if(testPointer == NULL)
         throw Ex_NULL();
     }
 
-Collection * ValidateCollectionID(const UINT32 CollectionID)
-    {
-    //Collections can contain null pointers
-    if(CollectionID >= Collections.size() || Collections[CollectionID] == NULL)
-        throw Ex_INVALIDCOLLECTIONINDEX();
-    return Collections[CollectionID];
-    }
-
-ModFile * ValidateModID(Collection *curCollection, const UINT32 ModID)
-    {
-    //ModFiles will never contain null pointers
-    if(ModID >= curCollection->ModFiles.size())
-        throw Ex_INVALIDMODINDEX();
-    return curCollection->ModFiles[ModID];
-    }
-
-ModFile * ValidateModID(Collection *curCollection, STRING const ModName)
+ModFile *ValidateModName(Collection *curCollection, STRING const ModName)
     {
     ValidatePointer(ModName);
     STRING NonGhostName = DeGhostModName(ModName);
@@ -173,7 +154,7 @@ ModFile * ValidateModID(Collection *curCollection, STRING const ModName)
     return NULL;
     }
 
-ModFile * ValidateLoadOrderIndex(Collection *curCollection, const UINT32 ModIndex)
+ModFile *ValidateLoadOrderIndex(Collection *curCollection, const UINT32 ModIndex)
     {
     //ModFiles will never contain null pointers
     if(ModIndex >= curCollection->LoadOrder255.size())
@@ -181,7 +162,7 @@ ModFile * ValidateLoadOrderIndex(Collection *curCollection, const UINT32 ModInde
     return curCollection->LoadOrder255[ModIndex];
     }
 
-ModFile * ValidateLoadOrderIndex(Collection *curCollection, STRING const ModName)
+ModFile *ValidateLoadOrderIndex(Collection *curCollection, STRING const ModName)
     {
     ValidatePointer(ModName);
     STRING NonGhostName = DeGhostModName(ModName);
@@ -197,85 +178,6 @@ ModFile * ValidateLoadOrderIndex(Collection *curCollection, STRING const ModName
     throw Ex_INVALIDMODINDEX();
     return NULL;
     }
-
-void LookupRecord(const UINT32 &CollectionID, const UINT32 &ModID, const FORMID &RecordFormID, STRING const RecordEditorID, Record *&curRecord)
-    {
-    Collection *curCollection = ValidateCollectionID(CollectionID);
-    ModFile *curModFile = ValidateModID(curCollection, ModID);
-    if(RecordFormID != 0)
-        curCollection->LookupRecord(curModFile, RecordFormID, curRecord);
-    else if(RecordEditorID != NULL)
-        curCollection->LookupRecord(curModFile, RecordEditorID, curRecord);
-    else //If neither is set, lookup the root record
-        curRecord = (Record *)&curModFile->TES4;
-    if(curRecord == NULL)
-        throw Ex_INVALIDRECORDINDEX();
-    }
-
-void LookupRecord(const UINT32 &CollectionID, const UINT32 &ModID, const FORMID &RecordFormID, STRING const RecordEditorID, ModFile *&curModFile, Record *&curRecord)
-    {
-    Collection *curCollection = ValidateCollectionID(CollectionID);
-    curModFile = ValidateModID(curCollection, ModID);
-    if(RecordFormID != 0)
-        curCollection->LookupRecord(curModFile, RecordFormID, curRecord);
-    else if(RecordEditorID != NULL)
-        curCollection->LookupRecord(curModFile, RecordEditorID, curRecord);
-    else //If neither is set, lookup the root record
-        curRecord = (Record *)&curModFile->TES4;
-
-    if(curRecord == NULL)
-        throw Ex_INVALIDRECORDINDEX();
-    }
-
-void LookupRecord(const UINT32 &CollectionID, const UINT32 &ModID, const FORMID &RecordFormID, Record *&curRecord)
-    {
-    Collection *curCollection = ValidateCollectionID(CollectionID);
-    ModFile *curModFile = ValidateModID(curCollection, ModID);
-    if(RecordFormID != 0)
-        curCollection->LookupRecord(curModFile, RecordFormID, curRecord);
-    else //If neither is set, lookup the root record
-        curRecord = (Record *)&curModFile->TES4;
-
-    if(curRecord == NULL)
-        throw Ex_INVALIDRECORDINDEX();
-    }
-
-void LookupRecord(const UINT32 &CollectionID, const UINT32 &ModID, const FORMID &RecordFormID, ModFile *&curModFile, Record *&curRecord)
-    {
-    Collection *curCollection = ValidateCollectionID(CollectionID);
-    curModFile = ValidateModID(curCollection, ModID);
-    if(RecordFormID != 0)
-        curCollection->LookupRecord(curModFile, RecordFormID, curRecord);
-    else //If neither is set, lookup the root record
-        curRecord = (Record *)&curModFile->TES4;
-    if(curRecord == NULL)
-        throw Ex_INVALIDRECORDINDEX();
-    }
-
-void LookupRecord(const UINT32 &CollectionID, const UINT32 &ModID, STRING const RecordEditorID, Record *&curRecord)
-    {
-    Collection *curCollection = ValidateCollectionID(CollectionID);
-    ModFile *curModFile = ValidateModID(curCollection, ModID);
-    if(RecordEditorID != NULL)
-        curCollection->LookupRecord(curModFile, RecordEditorID, curRecord);
-    else //If neither is set, lookup the root record
-        curRecord = (Record *)&curModFile->TES4;
-    if(curRecord == NULL)
-        throw Ex_INVALIDRECORDINDEX();
-    }
-
-void LookupRecord(const UINT32 &CollectionID, const UINT32 &ModID, STRING const RecordEditorID, ModFile *&curModFile, Record *&curRecord)
-    {
-    Collection *curCollection = ValidateCollectionID(CollectionID);
-    curModFile = ValidateModID(curCollection, ModID);
-    if(RecordEditorID != NULL)
-        curCollection->LookupRecord(curModFile, RecordEditorID, curRecord);
-    else //If neither is set, lookup the root record
-        curRecord = (Record *)&curModFile->TES4;
-    if(curRecord == NULL)
-        throw Ex_INVALIDRECORDINDEX();
-    }
-
 
 //Exported Functions
 ////////////////////////////////////////////////////////////////////////
@@ -353,7 +255,7 @@ UINT32 GetVersionRevision()
             );
     }
 
-    SINT32 SetLogging(const UINT32 CollectionID, SINT32 (*_LoggingCallback)(const STRING), UINT32 LoggingLevel, UINT32 LoggingFlags)
+    SINT32 SetLogging(Collection *CollectionID, SINT32 (*_LoggingCallback)(const STRING), UINT32 LoggingLevel, UINT32 LoggingFlags)
         {
         try
             {
@@ -416,7 +318,7 @@ UINT32 GetVersionRevision()
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 //Collection action functions
-SINT32 CreateCollection(STRING const ModsPath, const UINT32 CollectionType)
+Collection * CreateCollection(STRING const ModsPath, const UINT32 CollectionType)
     {
     #ifdef CBASH_CALLCOUNT
         CCounter cbcounter("CreateCollection");
@@ -424,6 +326,7 @@ SINT32 CreateCollection(STRING const ModsPath, const UINT32 CollectionType)
     #ifdef CBASH_CALLTIMING
         CStopWatch cbtimer("CreateCollection");
     #endif
+    //printf("CreateCollection\n");
     try
         {
         ValidatePointer(ModsPath);
@@ -432,27 +335,26 @@ SINT32 CreateCollection(STRING const ModsPath, const UINT32 CollectionType)
             if(Collections[p] == NULL)
                 {
                 Collections[p] = new Collection(ModsPath, CollectionType);
-                return p;
+                return Collections[p];
                 }
             }
         Collections.push_back(new Collection(ModsPath, CollectionType));
+        return Collections.back();
         }
     catch(std::exception &ex)
         {
         printf("Error creating collection\n  %s\n", ex.what());
-        return -1;
+        return NULL;
         }
     catch(...)
         {
         printf("Error creating collection\n  Unhandled Exception\n");
-        return -1;
+        return NULL;
         }
-    return (int)Collections.size() - 1;
+    return NULL;
     }
 
-#pragma warning( push )
-#pragma warning( disable : 4101 ) //Disable warning about deliberately unused variable (Ex_INVALIDCOLLECTIONINDEX &ex)
-SINT32 DeleteCollection(const UINT32 CollectionID)
+SINT32 DeleteCollection(Collection *CollectionID)
     {
     #ifdef CBASH_CALLCOUNT
         CCounter cbcounter("DeleteCollection");
@@ -460,11 +362,18 @@ SINT32 DeleteCollection(const UINT32 CollectionID)
     #ifdef CBASH_CALLTIMING
         CStopWatch cbtimer("DeleteCollection");
     #endif
+    //printf("DeleteCollection\n");
     try
         {
-        ValidateCollectionID(CollectionID);
-        delete Collections[CollectionID];
-        Collections[CollectionID] = NULL;
+        ValidatePointer(CollectionID);
+        for(UINT32 p = 0; p < Collections.size(); ++p)
+            {
+            if(Collections[p] == CollectionID)
+                {
+                delete Collections[p];
+                Collections[p] = NULL;
+                }
+            }
         for(UINT32 p = 0; p < Collections.size(); ++p)
             {
             if(Collections[p] != NULL)
@@ -487,22 +396,20 @@ SINT32 DeleteCollection(const UINT32 CollectionID)
             CallTime.clear();
         #endif
         }
-    catch(Ex_INVALIDCOLLECTIONINDEX &ex) {} //Silently fail if deleting an already deleted collection
     catch(std::exception &ex)
         {
-        printf("Error erasing collection at pos %i\n  %s\n", CollectionID, ex.what());
+        printf("Error erasing collection %08X\n  %s\n", CollectionID, ex.what());
         return -1;
         }
     catch(...)
         {
-        printf("Error erasing collection at pos %i\n  Unhandled Exception\n", CollectionID);
+        printf("Error erasing collection %08X\n  Unhandled Exception\n", CollectionID);
         return -1;
         }
     return 0;
     }
-#pragma warning( pop )
 
-SINT32 LoadCollection(const UINT32 CollectionID)
+SINT32 LoadCollection(Collection *CollectionID)
     {
     #ifdef CBASH_CALLCOUNT
         CCounter cbcounter("LoadCollection");
@@ -510,6 +417,7 @@ SINT32 LoadCollection(const UINT32 CollectionID)
     #ifdef CBASH_CALLTIMING
         CStopWatch cbtimer("LoadCollection");
     #endif
+    //printf("LoadCollection\n");
     #ifdef CBASH_USE_LOGGING
         CLOGGER;
         BOOST_LOG_FUNCTION();
@@ -517,7 +425,8 @@ SINT32 LoadCollection(const UINT32 CollectionID)
     #endif
     try
         {
-        ValidateCollectionID(CollectionID)->Load();
+        ValidatePointer(CollectionID);
+        CollectionID->Load();
         }
     catch(std::exception &ex)
         {
@@ -532,7 +441,7 @@ SINT32 LoadCollection(const UINT32 CollectionID)
     return 0;
     }
 
-SINT32 UnloadCollection(const UINT32 CollectionID)
+SINT32 UnloadCollection(Collection *CollectionID)
     {
     #ifdef CBASH_CALLCOUNT
         CCounter cbcounter("UnloadCollection");
@@ -540,18 +449,20 @@ SINT32 UnloadCollection(const UINT32 CollectionID)
     #ifdef CBASH_CALLTIMING
         CStopWatch cbtimer("UnloadCollection");
     #endif
+    //printf("UnloadCollection\n");
     try
         {
-        ValidateCollectionID(CollectionID)->Unload();
+        ValidatePointer(CollectionID);
+        CollectionID->Unload();
         }
     catch(std::exception &ex)
         {
-        printf("Error unloading all records from collection: %i\n  %s\n", CollectionID, ex.what());
+        printf("Error unloading all records from collection: %08X\n  %s\n", CollectionID, ex.what());
         return -1;
         }
     catch(...)
         {
-        printf("Error unloading all records from collection: %i\n  Unhandled Exception\n", CollectionID);
+        printf("Error unloading all records from collection: %08X\n  Unhandled Exception\n", CollectionID);
         return -1;
         }
     return 0;
@@ -565,6 +476,7 @@ SINT32 DeleteAllCollections()
     #ifdef CBASH_CALLTIMING
         CStopWatch cbtimer("DeleteAllCollections");
     #endif
+    //printf("DeleteAllCollections\n");
     try
         {
         for(UINT32 p = 0; p < Collections.size(); ++p)
@@ -586,7 +498,7 @@ SINT32 DeleteAllCollections()
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 //Mod action functions
-SINT32 AddMod(const UINT32 CollectionID, STRING const ModName, const UINT32 ModFlagsField)
+SINT32 AddMod(Collection *CollectionID, STRING const ModName, const UINT32 ModFlagsField)
     {
     #ifdef CBASH_CALLCOUNT
         CCounter cbcounter("AddMod");
@@ -594,6 +506,7 @@ SINT32 AddMod(const UINT32 CollectionID, STRING const ModName, const UINT32 ModF
     #ifdef CBASH_CALLTIMING
         CStopWatch cbtimer("AddMod");
     #endif
+    //printf("AddMod\n");
     #ifdef CBASH_USE_LOGGING
         CLOGGER;
         BOOST_LOG_FUNCTION();
@@ -603,8 +516,9 @@ SINT32 AddMod(const UINT32 CollectionID, STRING const ModName, const UINT32 ModF
 
     try
         {
+        ValidatePointer(CollectionID);
         ValidatePointer(ModName);
-        return ValidateCollectionID(CollectionID)->AddMod(ModName, flags);
+        return CollectionID->AddMod(ModName, flags);
         }
     catch(std::exception &ex)
         {
@@ -617,7 +531,7 @@ SINT32 AddMod(const UINT32 CollectionID, STRING const ModName, const UINT32 ModF
     return -1;
     }
 
-SINT32 LoadMod(const UINT32 CollectionID, const UINT32 ModID)
+SINT32 LoadMod(Collection *CollectionID, ModFile *ModID)
     {
     #ifdef CBASH_CALLCOUNT
         CCounter cbcounter("LoadMod");
@@ -625,27 +539,28 @@ SINT32 LoadMod(const UINT32 CollectionID, const UINT32 ModID)
     #ifdef CBASH_CALLTIMING
         CStopWatch cbtimer("LoadMod");
     #endif
+    //printf("LoadMod\n");
     try
         {
-        Collection *curCollection = ValidateCollectionID(CollectionID);
-        ModFile *curModFile = ValidateModID(curCollection, ModID);
-        RecordReader reader(curModFile->FormIDHandler, curCollection->Expanders);
-        curModFile->VisitAllRecords(reader);
+        ValidatePointer(CollectionID);
+        ValidatePointer(ModID);
+        RecordReader reader(ModID->FormIDHandler, CollectionID->Expanders);
+        ModID->VisitAllRecords(reader);
         }
     catch(std::exception &ex)
         {
-        printf("Error unloading records from modID: %i in collection: %i\n  %s\n", ModID, CollectionID, ex.what());
+        printf("Error unloading records from modID: %08X in collection: %08X\n  %s\n", ModID, CollectionID, ex.what());
         return -1;
         }
     catch(...)
         {
-        printf("Error unloading records from modID: %i in collection: %i\n  Unhandled Exception\n", ModID, CollectionID);
+        printf("Error unloading records from modID: %08X in collection: %08X\n  Unhandled Exception\n", ModID, CollectionID);
         return -1;
         }
     return 0;
     }
 
-SINT32 UnloadMod(const UINT32 CollectionID, const UINT32 ModID)
+SINT32 UnloadMod(Collection *CollectionID, ModFile *ModID)
     {
     #ifdef CBASH_CALLCOUNT
         CCounter cbcounter("UnloadMod");
@@ -653,25 +568,27 @@ SINT32 UnloadMod(const UINT32 CollectionID, const UINT32 ModID)
     #ifdef CBASH_CALLTIMING
         CStopWatch cbtimer("UnloadMod");
     #endif
+    //printf("UnloadMod\n");
     try
         {
+        ValidatePointer(ModID);
         RecordUnloader unloader;
-        ValidateModID(ValidateCollectionID(CollectionID), ModID)->VisitAllRecords(unloader);
+        ModID->VisitAllRecords(unloader);
         }
     catch(std::exception &ex)
         {
-        printf("Error unloading records from modID: %i in collection: %i\n  %s\n", ModID, CollectionID, ex.what());
+        printf("Error unloading records from modID: %08X in collection: %08X\n  %s\n", ModID, CollectionID, ex.what());
         return -1;
         }
     catch(...)
         {
-        printf("Error unloading records from modID: %i in collection: %i\n  Unhandled Exception\n", ModID, CollectionID);
+        printf("Error unloading records from modID: %08X in collection: %08X\n  Unhandled Exception\n", ModID, CollectionID);
         return -1;
         }
     return 0;
     }
 
-SINT32 CleanModMasters(const UINT32 CollectionID, const UINT32 ModID)
+SINT32 CleanModMasters(Collection *CollectionID, ModFile *ModID)
     {
     #ifdef CBASH_CALLCOUNT
         CCounter cbcounter("CleanModMasters");
@@ -679,25 +596,27 @@ SINT32 CleanModMasters(const UINT32 CollectionID, const UINT32 ModID)
     #ifdef CBASH_CALLTIMING
         CStopWatch cbtimer("CleanModMasters");
     #endif
+    //printf("CleanModMasters\n");
     try
         {
-        Collection *curCollection = ValidateCollectionID(CollectionID);
-        return ValidateModID(curCollection, ModID)->CleanMasters(curCollection->Expanders);
+        ValidatePointer(CollectionID);
+        ValidatePointer(ModID);
+        return ModID->CleanMasters(CollectionID->Expanders);
         }
     catch(std::exception &ex)
         {
-        printf("CleanModMasters: Error loading records\n  %s\n", ex.what());
+        printf("CleanModMasters: Error\n  %s\n", ex.what());
         return 0;
         }
     catch(...)
         {
-        printf("CleanModMasters: Error loading records\n  Unhandled Exception\n");
+        printf("CleanModMasters: Error\n  Unhandled Exception\n");
         return 0;
         }
     return 0;
     }
 
-SINT32 SaveMod(const UINT32 CollectionID, const UINT32 ModID, const bool CloseCollection)
+SINT32 SaveMod(Collection *CollectionID, ModFile *ModID, const bool CloseCollection)
     {
     #ifdef CBASH_CALLCOUNT
         CCounter cbcounter("SaveMod");
@@ -705,29 +624,31 @@ SINT32 SaveMod(const UINT32 CollectionID, const UINT32 ModID, const bool CloseCo
     #ifdef CBASH_CALLTIMING
         CStopWatch cbtimer("SaveMod");
     #endif
+    //printf("SaveMod\n");
     try
         {
-        Collection *curCollection = ValidateCollectionID(CollectionID);
-        curCollection->SaveMod(ValidateModID(curCollection, ModID), CloseCollection);
+        ValidatePointer(CollectionID);
+        ValidatePointer(ModID);
+        CollectionID->SaveMod(ModID, CloseCollection);
 
         if(CloseCollection)
             DeleteCollection(CollectionID);
         }
     catch(std::exception &ex)
         {
-        printf("Error saving mod:%i\n  %s\n", ModID, ex.what());
+        printf("Error saving mod:%08X\n  %s\n", ModID, ex.what());
         return -1;
         }
     catch(...)
         {
-        printf("Error saving mod:%i\n  Unhandled Exception\n", ModID);
+        printf("Error saving mod:%08X\n  Unhandled Exception\n", ModID);
         return -1;
         }
     return 0;
     }
 ////////////////////////////////////////////////////////////////////////
 //Mod info functions
-SINT32 GetAllNumMods(const UINT32 CollectionID)
+SINT32 GetAllNumMods(Collection *CollectionID)
     {
     #ifdef CBASH_CALLCOUNT
         CCounter cbcounter("GetAllNumMods");
@@ -735,9 +656,11 @@ SINT32 GetAllNumMods(const UINT32 CollectionID)
     #ifdef CBASH_CALLTIMING
         CStopWatch cbtimer("GetAllNumMods");
     #endif
+    //printf("GetAllNumMods\n");
     try
         {
-        return ValidateCollectionID(CollectionID)->ModFiles.size();
+        ValidatePointer(CollectionID);
+        return CollectionID->ModFiles.size();
         }
     catch(std::exception &ex)
         {
@@ -752,7 +675,7 @@ SINT32 GetAllNumMods(const UINT32 CollectionID)
     return 0;
     }
 
-SINT32 GetAllModIDs(const UINT32 CollectionID, UINT32ARRAY ModIDs)
+SINT32 GetAllModIDs(Collection *CollectionID, MODIDARRAY ModIDs)
     {
     #ifdef CBASH_CALLCOUNT
         CCounter cbcounter("GetAllModIDs");
@@ -760,12 +683,13 @@ SINT32 GetAllModIDs(const UINT32 CollectionID, UINT32ARRAY ModIDs)
     #ifdef CBASH_CALLTIMING
         CStopWatch cbtimer("GetAllModIDs");
     #endif
+    //printf("GetAllModIDs\n");
     try
         {
-        Collection *curCollection = ValidateCollectionID(CollectionID);
-        UINT32 numMods = curCollection->ModFiles.size();
+        ValidatePointer(CollectionID);
+        UINT32 numMods = CollectionID->ModFiles.size();
         for(UINT32 x = 0; x < numMods; ++x)
-            ModIDs[x] = curCollection->ModFiles[x]->ModID;
+            ModIDs[x] = CollectionID->ModFiles[x];
         return 0;
         }
     catch(std::exception &ex)
@@ -781,7 +705,7 @@ SINT32 GetAllModIDs(const UINT32 CollectionID, UINT32ARRAY ModIDs)
     return 0;
     }
 
-SINT32 GetLoadOrderNumMods(const UINT32 CollectionID)
+SINT32 GetLoadOrderNumMods(Collection *CollectionID)
     {
     #ifdef CBASH_CALLCOUNT
         CCounter cbcounter("GetLoadOrderNumMods");
@@ -789,9 +713,11 @@ SINT32 GetLoadOrderNumMods(const UINT32 CollectionID)
     #ifdef CBASH_CALLTIMING
         CStopWatch cbtimer("GetLoadOrderNumMods");
     #endif
+    //printf("GetLoadOrderNumMods\n");
     try
         {
-        return ValidateCollectionID(CollectionID)->LoadOrder255.size();
+        ValidatePointer(CollectionID);
+        return CollectionID->LoadOrder255.size();
         }
     catch(std::exception &ex)
         {
@@ -806,7 +732,7 @@ SINT32 GetLoadOrderNumMods(const UINT32 CollectionID)
     return 0;
     }
 
-SINT32 GetLoadOrderModIDs(const UINT32 CollectionID, UINT32ARRAY ModIDs)
+SINT32 GetLoadOrderModIDs(Collection *CollectionID, MODIDARRAY ModIDs)
     {
     #ifdef CBASH_CALLCOUNT
         CCounter cbcounter("GetLoadOrderModIDs");
@@ -814,12 +740,13 @@ SINT32 GetLoadOrderModIDs(const UINT32 CollectionID, UINT32ARRAY ModIDs)
     #ifdef CBASH_CALLTIMING
         CStopWatch cbtimer("GetLoadOrderModIDs");
     #endif
+    //printf("GetLoadOrderModIDs\n");
     try
         {
-        Collection *curCollection = ValidateCollectionID(CollectionID);
-        UINT32 numMods = curCollection->LoadOrder255.size();
+        ValidatePointer(CollectionID);
+        UINT32 numMods = CollectionID->LoadOrder255.size();
         for(UINT32 x = 0; x < numMods; ++x)
-            ModIDs[x] = curCollection->LoadOrder255[x]->ModID;
+            ModIDs[x] = CollectionID->LoadOrder255[x];
         return 0;
         }
     catch(std::exception &ex)
@@ -835,7 +762,7 @@ SINT32 GetLoadOrderModIDs(const UINT32 CollectionID, UINT32ARRAY ModIDs)
     return 0;
     }
 
-STRING GetFileNameByID(const UINT32 CollectionID, const UINT32 ModID)
+STRING GetFileNameByID(Collection *CollectionID, ModFile *ModID)
     {
     #ifdef CBASH_CALLCOUNT
         CCounter cbcounter("GetFileNameByID");
@@ -843,9 +770,11 @@ STRING GetFileNameByID(const UINT32 CollectionID, const UINT32 ModID)
     #ifdef CBASH_CALLTIMING
         CStopWatch cbtimer("GetFileNameByID");
     #endif
+    //printf("GetFileNameByID\n");
     try
         {
-        return ValidateModID(ValidateCollectionID(CollectionID), ModID)->ReadHandler.getFileName();
+        ValidatePointer(ModID);
+        return ModID->ReadHandler.getFileName();
         }
     catch(std::exception &ex)
         {
@@ -860,7 +789,7 @@ STRING GetFileNameByID(const UINT32 CollectionID, const UINT32 ModID)
     return NULL;
     }
 
-STRING GetFileNameByLoadOrder(const UINT32 CollectionID, const UINT32 ModIndex)
+STRING GetFileNameByLoadOrder(Collection *CollectionID, const UINT32 ModIndex)
     {
     #ifdef CBASH_CALLCOUNT
         CCounter cbcounter("GetFileNameByLoadOrder");
@@ -868,9 +797,11 @@ STRING GetFileNameByLoadOrder(const UINT32 CollectionID, const UINT32 ModIndex)
     #ifdef CBASH_CALLTIMING
         CStopWatch cbtimer("GetFileNameByLoadOrder");
     #endif
+    //printf("GetFileNameByLoadOrder\n");
     try
         {
-        return ValidateLoadOrderIndex(ValidateCollectionID(CollectionID), ModIndex)->ReadHandler.getFileName();
+        ValidatePointer(CollectionID);
+        return ValidateLoadOrderIndex(CollectionID, ModIndex)->ReadHandler.getFileName();
         }
     catch(std::exception &ex)
         {
@@ -885,7 +816,7 @@ STRING GetFileNameByLoadOrder(const UINT32 CollectionID, const UINT32 ModIndex)
     return NULL;
     }
 
-STRING GetModNameByID(const UINT32 CollectionID, const UINT32 ModID)
+STRING GetModNameByID(Collection *CollectionID, ModFile *ModID)
     {
     #ifdef CBASH_CALLCOUNT
         CCounter cbcounter("GetModNameByID");
@@ -893,9 +824,11 @@ STRING GetModNameByID(const UINT32 CollectionID, const UINT32 ModID)
     #ifdef CBASH_CALLTIMING
         CStopWatch cbtimer("GetModNameByID");
     #endif
+    //printf("GetModNameByID\n");
     try
         {
-        return ValidateModID(ValidateCollectionID(CollectionID), ModID)->ReadHandler.getModName();
+        ValidatePointer(ModID);
+        return ModID->ReadHandler.getModName();
         }
     catch(std::exception &ex)
         {
@@ -910,7 +843,7 @@ STRING GetModNameByID(const UINT32 CollectionID, const UINT32 ModID)
     return NULL;
     }
 
-STRING GetModNameByLoadOrder(const UINT32 CollectionID, const UINT32 ModIndex)
+STRING GetModNameByLoadOrder(Collection *CollectionID, const UINT32 ModIndex)
     {
     #ifdef CBASH_CALLCOUNT
         CCounter cbcounter("GetModNameByLoadOrder");
@@ -918,9 +851,11 @@ STRING GetModNameByLoadOrder(const UINT32 CollectionID, const UINT32 ModIndex)
     #ifdef CBASH_CALLTIMING
         CStopWatch cbtimer("GetModNameByLoadOrder");
     #endif
+    //printf("GetModNameByLoadOrder\n");
     try
         {
-        return ValidateLoadOrderIndex(ValidateCollectionID(CollectionID), ModIndex)->ReadHandler.getModName();
+        ValidatePointer(CollectionID);
+        return ValidateLoadOrderIndex(CollectionID, ModIndex)->ReadHandler.getModName();
         }
     catch(std::exception &ex)
         {
@@ -935,7 +870,7 @@ STRING GetModNameByLoadOrder(const UINT32 CollectionID, const UINT32 ModIndex)
     return NULL;
     }
 
-SINT32 GetModIDByName(const UINT32 CollectionID, STRING const ModName)
+ModFile * GetModIDByName(Collection *CollectionID, STRING const ModName)
     {
     #ifdef CBASH_CALLCOUNT
         CCounter cbcounter("GetModIDByName");
@@ -943,24 +878,26 @@ SINT32 GetModIDByName(const UINT32 CollectionID, STRING const ModName)
     #ifdef CBASH_CALLTIMING
         CStopWatch cbtimer("GetModIDByName");
     #endif
+    //printf("GetModIDByName\n");
     try
         {
-        return ValidateModID(ValidateCollectionID(CollectionID), ModName)->ModID;
+        ValidatePointer(CollectionID);
+        return ValidateModName(CollectionID, ModName);
         }
     catch(std::exception &ex)
         {
         printf("GetModIDByName: Error\n  %s\n", ex.what());
-        return -1;
+        return NULL;
         }
     catch(...)
         {
         printf("GetModIDByName: Error\n  Unhandled Exception\n");
-        return -1;
+        return NULL;
         }
-    return -1;
+    return NULL;
     }
 
-SINT32 GetModIDByLoadOrder(const UINT32 CollectionID, const UINT32 ModIndex)
+ModFile * GetModIDByLoadOrder(Collection *CollectionID, const UINT32 ModIndex)
     {
     #ifdef CBASH_CALLCOUNT
         CCounter cbcounter("GetModIDByLoadOrder");
@@ -968,24 +905,26 @@ SINT32 GetModIDByLoadOrder(const UINT32 CollectionID, const UINT32 ModIndex)
     #ifdef CBASH_CALLTIMING
         CStopWatch cbtimer("GetModIDByLoadOrder");
     #endif
+    //printf("GetModIDByLoadOrder\n");
     try
         {
-        return ValidateLoadOrderIndex(ValidateCollectionID(CollectionID), ModIndex)->ModID;
+        ValidatePointer(CollectionID);
+        return ValidateLoadOrderIndex(CollectionID, ModIndex);
         }
     catch(std::exception &ex)
         {
         printf("GetModIDByLoadOrder: Error\n  %s\n", ex.what());
-        return -1;
+        return NULL;
         }
     catch(...)
         {
         printf("GetModIDByLoadOrder: Error\n  Unhandled Exception\n");
-        return -1;
+        return NULL;
         }
-    return -1;
+    return NULL;
     }
 
-SINT32 GetModLoadOrderByName(const UINT32 CollectionID, STRING const ModName)
+SINT32 GetModLoadOrderByName(Collection *CollectionID, STRING const ModName)
     {
     #ifdef CBASH_CALLCOUNT
         CCounter cbcounter("GetModLoadOrderByName");
@@ -993,9 +932,11 @@ SINT32 GetModLoadOrderByName(const UINT32 CollectionID, STRING const ModName)
     #ifdef CBASH_CALLTIMING
         CStopWatch cbtimer("GetModLoadOrderByName");
     #endif
+    //printf("GetModLoadOrderByName\n");
     try
         {
-        return ValidateLoadOrderIndex(ValidateCollectionID(CollectionID), ModName)->FormIDHandler.ExpandedIndex;
+        ValidatePointer(CollectionID);
+        return ValidateLoadOrderIndex(CollectionID, ModName)->FormIDHandler.ExpandedIndex;
         }
     catch(std::exception &ex)
         {
@@ -1010,7 +951,7 @@ SINT32 GetModLoadOrderByName(const UINT32 CollectionID, STRING const ModName)
     return -1;
     }
 
-SINT32 GetModLoadOrderByID(const UINT32 CollectionID, const UINT32 ModID)
+SINT32 GetModLoadOrderByID(Collection *CollectionID, ModFile *ModID)
     {
     #ifdef CBASH_CALLCOUNT
         CCounter cbcounter("GetModLoadOrderByID");
@@ -1018,11 +959,12 @@ SINT32 GetModLoadOrderByID(const UINT32 CollectionID, const UINT32 ModID)
     #ifdef CBASH_CALLTIMING
         CStopWatch cbtimer("GetModLoadOrderByID");
     #endif
+    //printf("GetModLoadOrderByID\n");
     try
         {
-        ModFile *curModFile = ValidateModID(ValidateCollectionID(CollectionID), ModID);
-        if(curModFile->Flags.IsInLoadOrder)
-            return curModFile->FormIDHandler.ExpandedIndex;
+        ValidatePointer(ModID);
+        if(ModID->Flags.IsInLoadOrder)
+            return ModID->FormIDHandler.ExpandedIndex;
         return -1;
         }
     catch(std::exception &ex)
@@ -1038,7 +980,7 @@ SINT32 GetModLoadOrderByID(const UINT32 CollectionID, const UINT32 ModID)
     return -1;
     }
 
-STRING GetLongIDName(const UINT32 CollectionID, const UINT32 ModID, const UINT32 ModIndex)
+STRING GetLongIDName(Collection *CollectionID, ModFile *ModID, const UINT8 ModIndex)
     {
     #ifdef CBASH_CALLCOUNT
         CCounter cbcounter("GetLongIDName");
@@ -1046,15 +988,16 @@ STRING GetLongIDName(const UINT32 CollectionID, const UINT32 ModID, const UINT32
     #ifdef CBASH_CALLTIMING
         CStopWatch cbtimer("GetLongIDName");
     #endif
+    //printf("GetLongIDName\n");
     if(ModIndex == 0xFF)
         return NULL;
     try
         {
-        ModFile *curModFile = ValidateModID(ValidateCollectionID(CollectionID), ModID);
-        UINT8 CollapsedIndex = curModFile->FormIDHandler.CollapseTable[ModIndex];
-        if(CollapsedIndex >= curModFile->TES4.MAST.size())
-            return curModFile->ReadHandler.getModName();
-        return curModFile->TES4.MAST[CollapsedIndex].value;
+        ValidatePointer(ModID);
+        UINT8 CollapsedIndex = ModID->FormIDHandler.CollapseTable[ModIndex];
+        if(CollapsedIndex >= ModID->TES4.MAST.size())
+            return ModID->ReadHandler.getModName();
+        return ModID->TES4.MAST[CollapsedIndex].value;
         }
     catch(std::exception &ex)
         {
@@ -1069,7 +1012,7 @@ STRING GetLongIDName(const UINT32 CollectionID, const UINT32 ModID, const UINT32
     return NULL;
     }
 
-//SINT32 GetShortIDIndex(const UINT32 CollectionID, const SINT32 ModID, STRING const ModName)
+//SINT32 GetShortIDIndex(Collection *CollectionID, const SINT32 ModID, STRING const ModName)
 //    {
 //    if(ModID == -1)
 //        return GetModLoadOrderByName(CollectionID, ModName);
@@ -1095,7 +1038,7 @@ STRING GetLongIDName(const UINT32 CollectionID, const UINT32 ModID, const UINT32
 //    return -1;
 //    }
 
-UINT32 IsModEmpty(const UINT32 CollectionID, const UINT32 ModID)
+UINT32 IsModEmpty(Collection *CollectionID, ModFile *ModID)
     {
     #ifdef CBASH_CALLCOUNT
         CCounter cbcounter("IsModEmpty");
@@ -1103,9 +1046,11 @@ UINT32 IsModEmpty(const UINT32 CollectionID, const UINT32 ModID)
     #ifdef CBASH_CALLTIMING
         CStopWatch cbtimer("IsModEmpty");
     #endif
+    //printf("IsModEmpty\n");
     try
         {
-        return ValidateModID(ValidateCollectionID(CollectionID), ModID)->FormIDHandler.IsEmpty;
+        ValidatePointer(ModID);
+        return ModID->FormIDHandler.IsEmpty;
         }
     catch(std::exception &ex)
         {
@@ -1120,7 +1065,7 @@ UINT32 IsModEmpty(const UINT32 CollectionID, const UINT32 ModID)
     return 0;
     }
 
-SINT32 GetModNumTypes(const UINT32 CollectionID, const UINT32 ModID)
+SINT32 GetModNumTypes(Collection *CollectionID, ModFile *ModID)
     {
     #ifdef CBASH_CALLCOUNT
         CCounter cbcounter("GetModNumTypes");
@@ -1128,13 +1073,14 @@ SINT32 GetModNumTypes(const UINT32 CollectionID, const UINT32 ModID)
     #ifdef CBASH_CALLTIMING
         CStopWatch cbtimer("GetModNumTypes");
     #endif
+    //printf("GetModNumTypes\n");
     try
         {
-        ModFile *curModFile = ValidateModID(ValidateCollectionID(CollectionID), ModID);
-        if(!curModFile->Flags.IsTrackNewTypes)
+        ValidatePointer(ModID);
+        if(!ModID->Flags.IsTrackNewTypes)
             return -1;
 
-        return curModFile->FormIDHandler.NewTypes.size();
+        return ModID->FormIDHandler.NewTypes.size();
         }
     catch(std::exception &ex)
         {
@@ -1149,7 +1095,7 @@ SINT32 GetModNumTypes(const UINT32 CollectionID, const UINT32 ModID)
     return -1;
     }
 
-void GetModTypes(const UINT32 CollectionID, const UINT32 ModID, UINT32ARRAY RecordTypes)
+void GetModTypes(Collection *CollectionID, ModFile *ModID, UINT32ARRAY RecordTypes)
     {
     #ifdef CBASH_CALLCOUNT
         CCounter cbcounter("GetModTypes");
@@ -1157,14 +1103,15 @@ void GetModTypes(const UINT32 CollectionID, const UINT32 ModID, UINT32ARRAY Reco
     #ifdef CBASH_CALLTIMING
         CStopWatch cbtimer("GetModTypes");
     #endif
+    //printf("GetModTypes\n");
     try
         {
-        ModFile *curModFile = ValidateModID(ValidateCollectionID(CollectionID), ModID);
-        if(!curModFile->Flags.IsTrackNewTypes)
+        ValidatePointer(ModID);
+        if(!ModID->Flags.IsTrackNewTypes)
             return;
 
         UINT32 x = 0;
-        for(boost::unordered_set<UINT32>::iterator it = curModFile->FormIDHandler.NewTypes.begin(); it != curModFile->FormIDHandler.NewTypes.end(); ++it, ++x)
+        for(boost::unordered_set<UINT32>::iterator it = ModID->FormIDHandler.NewTypes.begin(); it != ModID->FormIDHandler.NewTypes.end(); ++it, ++x)
             RecordTypes[x] = *it;
         }
     catch(std::exception &ex)
@@ -1180,7 +1127,7 @@ void GetModTypes(const UINT32 CollectionID, const UINT32 ModID, UINT32ARRAY Reco
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 //Record action functions
-UINT32 CreateRecord(const UINT32 CollectionID, const UINT32 ModID, const UINT32 RecordType, const FORMID RecordFormID, STRING const RecordEditorID, const FORMID ParentFormID, const UINT32 CreateFlags)
+Record * CreateRecord(Collection *CollectionID, ModFile *ModID, const UINT32 RecordType, const FORMID RecordFormID, STRING const RecordEditorID, Record *ParentID, const UINT32 CreateFlags)
     {
     #ifdef CBASH_CALLCOUNT
         CCounter cbcounter("CreateRecord");
@@ -1188,10 +1135,13 @@ UINT32 CreateRecord(const UINT32 CollectionID, const UINT32 ModID, const UINT32 
     #ifdef CBASH_CALLTIMING
         CStopWatch cbtimer("CreateRecord");
     #endif
+    //printf("CreateRecord\n");
     try
         {
-        Collection *curCollection = ValidateCollectionID(CollectionID);
-        return curCollection->CreateRecord(ValidateModID(curCollection, ModID), RecordType, RecordFormID, RecordEditorID, ParentFormID, CreateFlags);
+        ValidatePointer(CollectionID);
+        ValidatePointer(ModID);
+
+        return CollectionID->CreateRecord(ModID, RecordType, RecordFormID, RecordEditorID, (ParentID != NULL ? ParentID->formID: NULL), CreateFlags);
         }
     catch(std::exception &ex)
         {
@@ -1206,7 +1156,7 @@ UINT32 CreateRecord(const UINT32 CollectionID, const UINT32 ModID, const UINT32 
     return 0;
     }
 
-SINT32 DeleteRecord(const UINT32 CollectionID, const UINT32 ModID, const FORMID RecordFormID, STRING const RecordEditorID, const FORMID ParentFormID)
+SINT32 DeleteRecord(Collection *CollectionID, ModFile *ModID, Record *RecordID, Record *ParentID)
     {
     #ifdef CBASH_CALLCOUNT
         CCounter cbcounter("DeleteRecord");
@@ -1214,25 +1164,27 @@ SINT32 DeleteRecord(const UINT32 CollectionID, const UINT32 ModID, const FORMID 
     #ifdef CBASH_CALLTIMING
         CStopWatch cbtimer("DeleteRecord");
     #endif
+    //printf("DeleteRecord\n");
     try
         {
-        Collection *curCollection = ValidateCollectionID(CollectionID);
-        return curCollection->DeleteRecord(ValidateModID(curCollection, ModID), RecordFormID, RecordEditorID, ParentFormID);
+        ValidatePointer(CollectionID);
+        ValidatePointer(ModID);
+        return CollectionID->DeleteRecord(ModID, RecordID, ParentID);
         }
     catch(std::exception &ex)
         {
-        printf("Error deleting record: %08X from mod:%i in collection: %i\n  %s\n", RecordFormID, ModID, CollectionID, ex.what());
+        printf("Error deleting record: %08X from mod:%08X in collection: %08X\n  %s\n", RecordID, ModID, CollectionID, ex.what());
         return -1;
         }
     catch(...)
         {
-        printf("Error deleting record: %08X from mod:%i in collection: %i\n  Unhandled Exception\n", RecordFormID, ModID, CollectionID);
+        printf("Error deleting record: %08X from mod:%08X in collection: %08X\n  Unhandled Exception\n", RecordID, ModID, CollectionID);
         return -1;
         }
     return 0;
     }
 
-UINT32 CopyRecord(const UINT32 CollectionID, const UINT32 ModID, const FORMID RecordFormID, STRING const RecordEditorID, const UINT32 DestModID, const UINT32 DestParentFormID, const FORMID DestRecordFormID, STRING const DestRecordEditorID, const UINT32 CreateFlags)
+Record * CopyRecord(Collection *CollectionID, ModFile *ModID, Record *RecordID, ModFile *DestModID, Record *DestParentID, const FORMID DestRecordFormID, STRING const DestRecordEditorID, const UINT32 CreateFlags)
     {
     #ifdef CBASH_CALLCOUNT
         CCounter cbcounter("CopyRecord");
@@ -1240,16 +1192,20 @@ UINT32 CopyRecord(const UINT32 CollectionID, const UINT32 ModID, const FORMID Re
     #ifdef CBASH_CALLTIMING
         CStopWatch cbtimer("CopyRecord");
     #endif
+    //printf("CopyRecord\n");
     try
         {
-        Collection *curCollection = ValidateCollectionID(CollectionID);
-        return curCollection->CopyRecord(ValidateModID(curCollection, ModID), RecordFormID, RecordEditorID, ValidateModID(curCollection, DestModID), DestParentFormID, DestRecordFormID, DestRecordEditorID, CreateFlags);
+        ValidatePointer(CollectionID);
+        ValidatePointer(ModID);
+        ValidatePointer(RecordID);
+        ValidatePointer(DestModID);
+        return CollectionID->CopyRecord(ModID, RecordID, DestModID, (DestParentID != NULL) ? DestParentID->formID : NULL, DestRecordFormID, DestRecordEditorID, CreateFlags);
         }
     catch(std::exception &ex)
         {
         printf("CopyRecord: Error\n  %s\n", ex.what());
         PRINT_RECORD_IDENTIFIERS;
-        printf("DestModID: %i, DestParentFormID: %08X, DestRecordFormID: %08X, DestRecordEditorID: %s, CreateFlags:%08X\n", DestModID, DestParentFormID, DestRecordFormID, DestRecordEditorID, CreateFlags);
+        printf("DestModID: %08X, DestParentID: %08X, DestRecordFormID: %08X, DestRecordEditorID: %s, CreateFlags:%08X\n", DestModID, DestParentID, DestRecordFormID, DestRecordEditorID, CreateFlags);
         printf("\n\n");
         return 0;
         }
@@ -1257,14 +1213,14 @@ UINT32 CopyRecord(const UINT32 CollectionID, const UINT32 ModID, const FORMID Re
         {
         printf("CopyRecord: Error\n  Unhandled Exception\n");
         PRINT_RECORD_IDENTIFIERS;
-        printf("DestModID: %i, DestParentFormID: %08X, DestRecordFormID: %08X, DestRecordEditorID: %s, CreateFlags:%08X\n", DestModID, DestParentFormID, DestRecordFormID, DestRecordEditorID, CreateFlags);
+        printf("DestModID: %08X, DestParentID: %08X, DestRecordFormID: %08X, DestRecordEditorID: %s, CreateFlags:%08X\n", DestModID, DestParentID, DestRecordFormID, DestRecordEditorID, CreateFlags);
         printf("\n\n");
         return 0;
         }
     return 0;
     }
 
-SINT32 UnloadRecord(const UINT32 CollectionID, const UINT32 ModID, const FORMID RecordFormID, STRING const RecordEditorID)
+SINT32 UnloadRecord(Collection *CollectionID, ModFile *ModID, Record *RecordID)
     {
     #ifdef CBASH_CALLCOUNT
         CCounter cbcounter("UnloadRecord");
@@ -1272,37 +1228,40 @@ SINT32 UnloadRecord(const UINT32 CollectionID, const UINT32 ModID, const FORMID 
     #ifdef CBASH_CALLTIMING
         CStopWatch cbtimer("UnloadRecord");
     #endif
+    //printf("UnloadRecord\n");
     try
         {
-        Record *curRecord = NULL;
-        LookupRecord(CollectionID, ModID, RecordFormID, RecordEditorID, curRecord);
-        return curRecord->IsChanged() ? false : curRecord->Unload();
+        ValidatePointer(RecordID);
+        return RecordID->IsChanged() ? 0 : RecordID->Unload();
         }
     catch(std::exception &ex)
         {
-        printf("Error unloading record: %08X from mod:%i in collection: %i\n  %s\n", RecordFormID, ModID, CollectionID, ex.what());
+        printf("Error unloading record: %08X from mod:%08X in collection: %08X\n  %s\n", RecordID, ModID, CollectionID, ex.what());
         return -1;
         }
     catch(...)
         {
-        printf("Error unloading record: %08X from mod:%i in collection: %i\n  Unhandled Exception\n", RecordFormID, ModID, CollectionID);
+        printf("Error unloading record: %08X from mod:%08X in collection: %08X\n  Unhandled Exception\n", RecordID, ModID, CollectionID);
         return -1;
         }
     return 0;
     }
 
-SINT32 SetRecordIDs(const UINT32 CollectionID, const UINT32 ModID, const FORMID RecordFormID, STRING const RecordEditorID, const FORMID FormIDValue, STRING const EditorIDValue)
+SINT32 SetRecordIdentifiers(Collection *CollectionID, ModFile *ModID, Record *RecordID, const FORMID FormID, STRING const EditorID)
     {
     #ifdef CBASH_CALLCOUNT
-        CCounter cbcounter("SetRecordIDs");
+        CCounter cbcounter("SetRecordIdentifiers");
     #endif
     #ifdef CBASH_CALLTIMING
-        CStopWatch cbtimer("SetRecordIDs");
+        CStopWatch cbtimer("SetRecordIdentifiers");
     #endif
+    //printf("SetRecordIdentifiers\n");
     try
         {
-        Collection *curCollection = ValidateCollectionID(CollectionID);
-        return curCollection->SetRecordIDs(ValidateModID(curCollection, ModID), RecordFormID, RecordEditorID, FormIDValue, EditorIDValue);
+        ValidatePointer(CollectionID);
+        ValidatePointer(ModID);
+        ValidatePointer(RecordID);
+        return CollectionID->SetRecordIDs(ModID, RecordID, FormID, EditorID);
         }
     catch(std::exception &ex)
         {
@@ -1318,7 +1277,44 @@ SINT32 SetRecordIDs(const UINT32 CollectionID, const UINT32 ModID, const FORMID 
     }
 ////////////////////////////////////////////////////////////////////////
 //Record info functions
-SINT32 GetNumRecords(const UINT32 CollectionID, const UINT32 ModID, const UINT32 RecordType)
+Record * GetRecordID(Collection *CollectionID, ModFile *ModID, const FORMID RecordFormID, STRING const RecordEditorID)
+    {
+    #ifdef CBASH_CALLCOUNT
+        CCounter cbcounter("GetRecordID");
+    #endif
+    #ifdef CBASH_CALLTIMING
+        CStopWatch cbtimer("GetRecordID");
+    #endif
+    //printf("GetRecordID\n");
+    try
+        {
+        ValidatePointer(CollectionID);
+        ValidatePointer(ModID);
+        Record * curRecord = NULL;
+        if(RecordFormID == 0 && RecordEditorID == 0)
+            return &ModID->TES4;
+        if(RecordFormID != 0)
+            CollectionID->LookupRecord(ModID, RecordFormID, curRecord);
+        if(curRecord != NULL)
+            return curRecord;
+        if(RecordEditorID != 0)
+            CollectionID->LookupRecord(ModID, RecordEditorID, curRecord);
+        return curRecord;
+        }
+    catch(std::exception &ex)
+        {
+        printf("GetRecordID: Error\n  %s\n", ex.what());
+        return NULL;
+        }
+    catch(...)
+        {
+        printf("GetRecordID: Error\n  Unhandled Exception\n");
+        return NULL;
+        }
+    return NULL;
+    }
+
+SINT32 GetNumRecords(Collection *CollectionID, ModFile *ModID, const UINT32 RecordType)
     {
     #ifdef CBASH_CALLCOUNT
         CCounter cbcounter("GetNumRecords");
@@ -1326,9 +1322,11 @@ SINT32 GetNumRecords(const UINT32 CollectionID, const UINT32 ModID, const UINT32
     #ifdef CBASH_CALLTIMING
         CStopWatch cbtimer("GetNumRecords");
     #endif
+    //printf("GetNumRecords\n");
     try
         {
-        return ValidateModID(ValidateCollectionID(CollectionID), ModID)->GetNumRecords(RecordType);
+        ValidatePointer(ModID);
+        return ModID->GetNumRecords(RecordType);
         }
     catch(std::exception &ex)
         {
@@ -1343,59 +1341,36 @@ SINT32 GetNumRecords(const UINT32 CollectionID, const UINT32 ModID, const UINT32
     return -1;
     }
 
-void GetRecordFormIDs(const UINT32 CollectionID, const UINT32 ModID, const UINT32 RecordType, FORMIDARRAY RecordFormIDs)
+SINT32 GetRecordIDs(Collection *CollectionID, ModFile *ModID, const UINT32 RecordType, RECORDIDARRAY RecordIDs)
     {
     #ifdef CBASH_CALLCOUNT
-        CCounter cbcounter("GetRecordFormIDs");
+        CCounter cbcounter("GetRecordIDs");
     #endif
     #ifdef CBASH_CALLTIMING
-        CStopWatch cbtimer("GetRecordFormIDs");
+        CStopWatch cbtimer("GetRecordIDs");
     #endif
+    //printf("GetRecordIDs\n");
     try
         {
-        FormIDRecordRetriever retriever(RecordFormIDs);
-        ValidateModID(ValidateCollectionID(CollectionID), ModID)->VisitRecords(RecordType, NULL, retriever, false);
+        ValidatePointer(ModID);
+        RecordIDRetriever retriever(RecordIDs);
+        ModID->VisitRecords(RecordType, NULL, retriever, false);
+        return retriever.GetCount();
         }
     catch(std::exception &ex)
         {
-        printf("GetRecordFormIDs: Error\n  %s\n", ex.what());
-        return;
+        printf("GetRecordIDs: Error\n  %s\n", ex.what());
+        return -1;
         }
     catch(...)
         {
-        printf("GetRecordFormIDs: Error\n  Unhandled Exception\n");
-        return;
+        printf("GetRecordIDs: Error\n  Unhandled Exception\n");
+        return -1;
         }
-    return;
+    return -1;
     }
 
-void GetRecordEditorIDs(const UINT32 CollectionID, const UINT32 ModID, const UINT32 RecordType, STRINGARRAY RecordEditorIDs)
-    {
-    #ifdef CBASH_CALLCOUNT
-        CCounter cbcounter("GetRecordEditorIDs");
-    #endif
-    #ifdef CBASH_CALLTIMING
-        CStopWatch cbtimer("GetRecordEditorIDs");
-    #endif
-    try
-        {
-        EditorIDRecordRetriever retriever(RecordEditorIDs);
-        ValidateModID(ValidateCollectionID(CollectionID), ModID)->VisitRecords(RecordType, NULL, retriever, false);
-        }
-    catch(std::exception &ex)
-        {
-        printf("GetRecordEditorIDs: Error\n  %s\n", ex.what());
-        return;
-        }
-    catch(...)
-        {
-        printf("GetRecordEditorIDs: Error\n  Unhandled Exception\n");
-        return;
-        }
-    return;
-    }
-
-SINT32 IsRecordWinning(const UINT32 CollectionID, const UINT32 ModID, const FORMID RecordFormID, STRING const RecordEditorID, const bool GetExtendedConflicts)
+SINT32 IsRecordWinning(Collection *CollectionID, ModFile *ModID, Record *RecordID, const bool GetExtendedConflicts)
     {
     #ifdef CBASH_CALLCOUNT
         CCounter cbcounter("IsRecordWinning");
@@ -1403,10 +1378,12 @@ SINT32 IsRecordWinning(const UINT32 CollectionID, const UINT32 ModID, const FORM
     #ifdef CBASH_CALLTIMING
         CStopWatch cbtimer("IsRecordWinning");
     #endif
+    //printf("IsRecordWinning\n");
     try
         {
-        Collection *curCollection = ValidateCollectionID(CollectionID);
-        return curCollection->IsRecordWinning(ValidateModID(curCollection, ModID), RecordFormID, RecordEditorID, GetExtendedConflicts);
+        ValidatePointer(CollectionID);
+        ValidatePointer(ModID);
+        return CollectionID->IsRecordWinning(ModID, RecordID, GetExtendedConflicts);
         }
     catch(std::exception &ex)
         {
@@ -1421,7 +1398,7 @@ SINT32 IsRecordWinning(const UINT32 CollectionID, const UINT32 ModID, const FORM
     return -1;
     }
 
-SINT32 GetNumRecordConflicts(const UINT32 CollectionID, const FORMID RecordFormID, STRING const RecordEditorID, const bool GetExtendedConflicts)
+SINT32 GetNumRecordConflicts(Collection *CollectionID, Record *RecordID, const bool GetExtendedConflicts)
     {
     #ifdef CBASH_CALLCOUNT
         CCounter cbcounter("GetNumRecordConflicts");
@@ -1429,9 +1406,11 @@ SINT32 GetNumRecordConflicts(const UINT32 CollectionID, const FORMID RecordFormI
     #ifdef CBASH_CALLTIMING
         CStopWatch cbtimer("GetNumRecordConflicts");
     #endif
+    //printf("GetNumRecordConflicts\n");
     try
         {
-        return ValidateCollectionID(CollectionID)->GetNumRecordConflicts(RecordFormID, RecordEditorID, GetExtendedConflicts);
+        ValidatePointer(CollectionID);
+        return CollectionID->GetNumRecordConflicts(RecordID, GetExtendedConflicts);
         }
     catch(std::exception &ex)
         {
@@ -1446,7 +1425,7 @@ SINT32 GetNumRecordConflicts(const UINT32 CollectionID, const FORMID RecordFormI
     return -1;
     }
 
-void GetRecordConflicts(const UINT32 CollectionID, const FORMID RecordFormID, STRING const RecordEditorID, UINT32ARRAY ModIDs, const bool GetExtendedConflicts)
+SINT32 GetRecordConflicts(Collection *CollectionID, Record *RecordID, MODIDARRAY ModIDs, RECORDIDARRAY RecordIDs, const bool GetExtendedConflicts)
     {
     #ifdef CBASH_CALLCOUNT
         CCounter cbcounter("GetRecordConflicts");
@@ -1454,25 +1433,26 @@ void GetRecordConflicts(const UINT32 CollectionID, const FORMID RecordFormID, ST
     #ifdef CBASH_CALLTIMING
         CStopWatch cbtimer("GetRecordConflicts");
     #endif
+    //printf("GetRecordConflicts\n");
     try
         {
-        ValidateCollectionID(CollectionID)->GetRecordConflicts(RecordFormID, RecordEditorID, ModIDs, GetExtendedConflicts);
-        return;
+        ValidatePointer(CollectionID);
+        return CollectionID->GetRecordConflicts(RecordID, ModIDs, RecordIDs, GetExtendedConflicts);
         }
     catch(std::exception &ex)
         {
         printf("GetRecordConflicts: Error\n  %s\n", ex.what());
-        return;
+        return -1;
         }
     catch(...)
         {
         printf("GetRecordConflicts: Error\n  Unhandled Exception\n");
-        return;
+        return -1;
         }
-    return;
+    return -1;
     }
 
-void GetRecordHistory(const UINT32 CollectionID, const UINT32 ModID, const FORMID RecordFormID, STRING const RecordEditorID, UINT32ARRAY ModIDs)
+SINT32 GetRecordHistory(Collection *CollectionID, ModFile *ModID, Record *RecordID, MODIDARRAY ModIDs, RECORDIDARRAY RecordIDs)
     {
     #ifdef CBASH_CALLCOUNT
         CCounter cbcounter("GetRecordHistory");
@@ -1480,27 +1460,28 @@ void GetRecordHistory(const UINT32 CollectionID, const UINT32 ModID, const FORMI
     #ifdef CBASH_CALLTIMING
         CStopWatch cbtimer("GetRecordHistory");
     #endif
+    //printf("GetRecordHistory\n");
     try
         {
-        Collection *curCollection = ValidateCollectionID(CollectionID);
-        curCollection->GetRecordHistory(ValidateModID(curCollection, ModID), RecordFormID, RecordEditorID, ModIDs);
-        return;
+        ValidatePointer(CollectionID);
+        ValidatePointer(ModID);
+        return CollectionID->GetRecordHistory(ModID, RecordID, ModIDs, RecordIDs);
         }
     catch(std::exception &ex)
         {
         printf("GetRecordHistory: Error\n  %s\n", ex.what());
-        return;
+        return -1;
         }
     catch(...)
         {
         printf("GetRecordHistory: Error\n  Unhandled Exception\n");
-        return;
+        return -1;
         }
-    return;
+    return -1;
     }
 ////////////////////////////////////////////////////////////////////////
 //Mod or Record action functions
-SINT32 UpdateReferences(const UINT32 CollectionID, const UINT32 ModID, const FORMID RecordFormID, const FORMID FormIDToReplace, const FORMID ReplacementFormID)
+SINT32 UpdateReferences(Collection *CollectionID, ModFile *ModID, Record *RecordID, const FORMID FormIDToReplace, const FORMID ReplacementFormID)
     {
     #ifdef CBASH_CALLCOUNT
         CCounter cbcounter("UpdateReferences");
@@ -1508,34 +1489,28 @@ SINT32 UpdateReferences(const UINT32 CollectionID, const UINT32 ModID, const FOR
     #ifdef CBASH_CALLTIMING
         CStopWatch cbtimer("UpdateReferences");
     #endif
+    //printf("UpdateReferences\n");
     //Sanity check.
     if(FormIDToReplace == ReplacementFormID)
         return -1;
 
     try
         {
-        Collection *curCollection = ValidateCollectionID(CollectionID);
-        ModFile *curModFile = ValidateModID(curCollection, ModID);
-        Record *curRecord = NULL;
-        RecordFormIDSwapper swapper(FormIDToReplace, ReplacementFormID, curModFile->FormIDHandler, curCollection->Expanders);
+        ValidatePointer(CollectionID);
+        ValidatePointer(ModID);
+        RecordFormIDSwapper swapper(FormIDToReplace, ReplacementFormID, ModID->FormIDHandler, CollectionID->Expanders);
 
-        if(RecordFormID != 0) //Swap possible uses of FormIDToReplace in a specific record only
+        if(RecordID != NULL) //Swap possible uses of FormIDToReplace in a specific record only
             {
-            LookupRecord(CollectionID, ModID, RecordFormID, curRecord);
-            swapper.Accept(&curRecord);
+            swapper.Accept(&RecordID);
             }
         else //Swap all possible uses of FormIDToReplace
             {
-            UINT32 SourceModLoadOrderID = FormIDToReplace >> 24;
-            if(SourceModLoadOrderID >= curCollection->LoadOrder255.size())
-                throw Ex_INVALIDINDEX();
-            UINT32 SourceModID = curCollection->LoadOrder255[SourceModLoadOrderID]->ModID;
-            LookupRecord(CollectionID, SourceModID, FormIDToReplace, curRecord); //Lookup the original definition of the record
-            RecordType_PossibleGroups_Iterator curTypes = RecordType_PossibleGroups.find(curRecord->GetType());
+            RecordType_PossibleGroups_Iterator curTypes = RecordType_PossibleGroups.find(RecordID->GetType());
             if(curTypes != RecordType_PossibleGroups.end())
                 {
                 for(std::vector<UINT32>::const_iterator x = curTypes->second.begin(); x != curTypes->second.end(); ++x)
-                    curModFile->VisitRecords(*x, NULL, swapper, true);
+                    ModID->VisitRecords(*x, NULL, swapper, true);
                 }
             }
         return swapper.GetCount();
@@ -1554,7 +1529,7 @@ SINT32 UpdateReferences(const UINT32 CollectionID, const UINT32 ModID, const FOR
     }
 ////////////////////////////////////////////////////////////////////////
 //Mod or Record info functions
-SINT32 GetNumReferences(const UINT32 CollectionID, const UINT32 ModID, const FORMID RecordFormID, const FORMID FormIDToMatch)
+SINT32 GetNumReferences(Collection *CollectionID, ModFile *ModID, Record *RecordID, const FORMID FormIDToMatch)
     {
     #ifdef CBASH_CALLCOUNT
         CCounter cbcounter("GetNumReferences");
@@ -1562,19 +1537,19 @@ SINT32 GetNumReferences(const UINT32 CollectionID, const UINT32 ModID, const FOR
     #ifdef CBASH_CALLTIMING
         CStopWatch cbtimer("GetNumReferences");
     #endif
+    //printf("GetNumReferences\n");
     try
         {
-        ModFile *curModFile = NULL;
-        Record *curRecord = NULL;
-        Collection *curCollection = ValidateCollectionID(CollectionID);
-        LookupRecord(CollectionID, ModID, RecordFormID, curModFile, curRecord);
+        ValidatePointer(CollectionID);
+        ValidatePointer(ModID);
+        ValidatePointer(RecordID);
         
         //Ensure the record is fully loaded
-        RecordReader reader(curModFile->FormIDHandler, curCollection->Expanders);
-        reader.Accept(&curRecord);
+        RecordReader reader(ModID->FormIDHandler, CollectionID->Expanders);
+        reader.Accept(&RecordID);
 
         FormIDMatchCounter counter(FormIDToMatch);
-        curRecord->VisitFormIDs(counter);
+        RecordID->VisitFormIDs(counter);
         return counter.GetCount();
         }
     catch(std::exception &ex)
@@ -1592,7 +1567,7 @@ SINT32 GetNumReferences(const UINT32 CollectionID, const UINT32 ModID, const FOR
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 //Field action functions
-void SetField(const UINT32 CollectionID, const UINT32 ModID, const FORMID RecordFormID, STRING const RecordEditorID, FIELD_IDENTIFIERS, void *FieldValue, const UINT32 ArraySize)
+void SetField(Collection *CollectionID, ModFile *ModID, Record *RecordID, FIELD_IDENTIFIERS, void *FieldValue, const UINT32 ArraySize)
     {
     #ifdef CBASH_CALLCOUNT
         CCounter cbcounter("SetField");
@@ -1600,27 +1575,27 @@ void SetField(const UINT32 CollectionID, const UINT32 ModID, const FORMID Record
     #ifdef CBASH_CALLTIMING
         CStopWatch cbtimer("SetField");
     #endif
+    //printf("SetField\n");
     try
         {
-        ModFile *curModFile = NULL;
-        Record *curRecord = NULL;
-        Collection *curCollection = ValidateCollectionID(CollectionID);
-        LookupRecord(CollectionID, ModID, RecordFormID, RecordEditorID, curModFile, curRecord);
+        ValidatePointer(CollectionID);
+        ValidatePointer(ModID);
+        ValidatePointer(RecordID);
         
         //Ensure the record is fully loaded
-        RecordReader reader(curModFile->FormIDHandler, curCollection->Expanders);
-        reader.Accept(&curRecord);
+        RecordReader reader(ModID->FormIDHandler, CollectionID->Expanders);
+        reader.Accept(&RecordID);
 
-        if(curRecord->SetField(FieldID, ListIndex, ListFieldID, ListX2Index, ListX2FieldID, ListX3Index, ListX3FieldID, FieldValue, ArraySize))
+        if(RecordID->SetField(FieldID, ListIndex, ListFieldID, ListX2Index, ListX2FieldID, ListX3Index, ListX3FieldID, FieldValue, ArraySize))
             {
             //returns true if formIDs need to be checked
             //Update the master list if needed
-            FormIDMasterUpdater checker(curModFile->FormIDHandler);
+            FormIDMasterUpdater checker(ModID->FormIDHandler);
             //checker.Accept(curRecord->formID); //FormID can only be changed through SetRecordIDs, so no need to check
-            curRecord->VisitFormIDs(checker);
+            RecordID->VisitFormIDs(checker);
             }
 
-        curRecord->IsChanged(true);
+        RecordID->IsChanged(true);
         return;
         }
     catch(std::exception &ex)
@@ -1639,7 +1614,7 @@ void SetField(const UINT32 CollectionID, const UINT32 ModID, const FORMID Record
         }
     }
 
-void DeleteField(const UINT32 CollectionID, const UINT32 ModID, const FORMID RecordFormID, STRING const RecordEditorID, FIELD_IDENTIFIERS)
+void DeleteField(Collection *CollectionID, ModFile *ModID, Record *RecordID, FIELD_IDENTIFIERS)
     {
     #ifdef CBASH_CALLCOUNT
         CCounter cbcounter("DeleteField");
@@ -1647,20 +1622,20 @@ void DeleteField(const UINT32 CollectionID, const UINT32 ModID, const FORMID Rec
     #ifdef CBASH_CALLTIMING
         CStopWatch cbtimer("DeleteField");
     #endif
+    //printf("DeleteField\n");
     try
         {
-        ModFile *curModFile = NULL;
-        Record *curRecord = NULL;
-        Collection *curCollection = ValidateCollectionID(CollectionID);
-        LookupRecord(CollectionID, ModID, RecordFormID, RecordEditorID, curModFile, curRecord);
+        ValidatePointer(CollectionID);
+        ValidatePointer(ModID);
+        ValidatePointer(RecordID);
         
         //Ensure the record is fully loaded
-        RecordReader reader(curModFile->FormIDHandler, curCollection->Expanders);
-        reader.Accept(&curRecord);
+        RecordReader reader(ModID->FormIDHandler, CollectionID->Expanders);
+        reader.Accept(&RecordID);
 
-        curRecord->DeleteField(FieldID, ListIndex, ListFieldID, ListX2Index, ListX2FieldID, ListX3Index, ListX3FieldID);
+        RecordID->DeleteField(FieldID, ListIndex, ListFieldID, ListX2Index, ListX2FieldID, ListX3Index, ListX3FieldID);
 
-        curRecord->IsChanged(true);
+        RecordID->IsChanged(true);
         return;
         }
     catch(std::exception &ex)
@@ -1680,7 +1655,7 @@ void DeleteField(const UINT32 CollectionID, const UINT32 ModID, const FORMID Rec
     }
 ////////////////////////////////////////////////////////////////////////
 //Field info functions
-UINT32 GetFieldAttribute(const UINT32 CollectionID, const UINT32 ModID, const FORMID RecordFormID, STRING const RecordEditorID, FIELD_IDENTIFIERS, const UINT32 WhichAttribute)
+UINT32 GetFieldAttribute(Collection *CollectionID, ModFile *ModID, Record *RecordID, FIELD_IDENTIFIERS, const UINT32 WhichAttribute)
     {
     #ifdef CBASH_CALLCOUNT
         CCounter cbcounter("GetFieldAttribute");
@@ -1688,27 +1663,25 @@ UINT32 GetFieldAttribute(const UINT32 CollectionID, const UINT32 ModID, const FO
     #ifdef CBASH_CALLTIMING
         CStopWatch cbtimer("GetFieldAttribute");
     #endif
+    //printf("GetFieldAttribute\n");
     try
         {
-        ModFile *curModFile = NULL;
-        Record *curRecord = NULL;
-        Collection *curCollection = ValidateCollectionID(CollectionID);
-        LookupRecord(CollectionID, ModID, RecordFormID, RecordEditorID, curModFile, curRecord);
+        ValidatePointer(CollectionID);
+        ValidatePointer(ModID);
+        ValidatePointer(RecordID);
         
         if(WhichAttribute > 0)
             {
             //Any attribute other than type requires the record to be read
             //Ensure the record is fully loaded
-            RecordReader reader(curModFile->FormIDHandler, curCollection->Expanders);
-            reader.Accept(&curRecord);
+            RecordReader reader(ModID->FormIDHandler, CollectionID->Expanders);
+            reader.Accept(&RecordID);
             }
 
-        return curRecord->GetFieldAttribute(FieldID, ListIndex, ListFieldID, ListX2Index, ListX2FieldID, ListX3Index, ListX3FieldID, WhichAttribute);
+        return RecordID->GetFieldAttribute(FieldID, ListIndex, ListFieldID, ListX2Index, ListX2FieldID, ListX3Index, ListX3FieldID, WhichAttribute);
         }
     catch(Ex_INVALIDRECORDINDEX &ex)
         {
-        if(FieldID == 0) //Was testing if the record exists by check recType (only field with id of 0)
-            return UNKNOWN_FIELD;
         printf("GetFieldAttribute: Error\n  %s\n", ex.what());
         PRINT_RECORD_IDENTIFIERS;
         PRINT_FIELD_IDENTIFIERS;
@@ -1734,26 +1707,26 @@ UINT32 GetFieldAttribute(const UINT32 CollectionID, const UINT32 ModID, const FO
     return UNKNOWN_FIELD;
     }
 
-void * GetField(const UINT32 CollectionID, const UINT32 ModID, const FORMID RecordFormID, STRING const RecordEditorID, FIELD_IDENTIFIERS, void **FieldValues)
-    {
+void * GetField(Collection *CollectionID, ModFile *ModID, Record *RecordID, FIELD_IDENTIFIERS, void **FieldValues)
+    {                                   
     #ifdef CBASH_CALLCOUNT
         CCounter cbcounter("GetField");
     #endif
     #ifdef CBASH_CALLTIMING
         CStopWatch cbtimer("GetField");
     #endif
+    //printf("GetField\n");
     try
         {
-        ModFile *curModFile = NULL;
-        Record *curRecord = NULL;
-        Collection *curCollection = ValidateCollectionID(CollectionID);
-        LookupRecord(CollectionID, ModID, RecordFormID, RecordEditorID, curModFile, curRecord);
+        ValidatePointer(CollectionID);
+        ValidatePointer(ModID);
+        ValidatePointer(RecordID);
         
         //Ensure the record is fully loaded
-        RecordReader reader(curModFile->FormIDHandler, curCollection->Expanders);
-        reader.Accept(&curRecord);
+        RecordReader reader(ModID->FormIDHandler, CollectionID->Expanders);
+        reader.Accept(&RecordID);
 
-        return curRecord->GetField(FieldID, ListIndex, ListFieldID, ListX2Index, ListX2FieldID, ListX3Index, ListX3FieldID, FieldValues);
+        return RecordID->GetField(FieldID, ListIndex, ListFieldID, ListX2Index, ListX2FieldID, ListX3Index, ListX3FieldID, FieldValues);
         }
     catch(std::exception &ex)
         {
@@ -1774,4 +1747,4 @@ void * GetField(const UINT32 CollectionID, const UINT32 ModID, const FORMID Reco
     return NULL;
     }
 //////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////

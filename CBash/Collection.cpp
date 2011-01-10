@@ -25,9 +25,9 @@ GPL License and Copyright Notice ============================================
 #include <sys/utime.h>
 #include <boost/threadpool.hpp>
 
-bool compMod(ModFile *lhs, ModFile *rhs)
+bool compModRecordPair(std::pair<ModFile *, Record *> *&lhs, std::pair<ModFile *, Record *> *&rhs)
     {
-    return *lhs > *rhs;
+    return lhs->first->ModID < rhs->first->ModID;
     }
 
 bool sortMod(ModFile *lhs, ModFile *rhs)
@@ -132,7 +132,7 @@ bool Collection::IsModAdded(STRING const &ModName)
     return false;
     }
 
-SINT32 Collection::SaveMod(ModFile *curModFile, bool CloseCollection)
+SINT32 Collection::SaveMod(ModFile *&curModFile, bool CloseCollection)
     {
     if(!curModFile->Flags.IsSaveable)
         return -1;
@@ -460,7 +460,7 @@ EditorID_Iterator Collection::LookupRecord(ModFile *&curModFile, STRING const &R
     return curModFile->Flags.IsExtendedConflicts ? ExtendedEditorID_ModFile_Record.end() : EditorID_ModFile_Record.end();
     }
 
-UINT32 Collection::IsRecordWinning(ModFile *curModFile, const FORMID &RecordFormID, STRING const &RecordEditorID, const bool GetExtendedConflicts)
+UINT32 Collection::IsRecordWinning(ModFile *&curModFile, Record *&curRecord, const bool GetExtendedConflicts)
     {
     bool bIsWinning = false;
     if(curModFile->Flags.IsExtendedConflicts && !GetExtendedConflicts)
@@ -469,26 +469,30 @@ UINT32 Collection::IsRecordWinning(ModFile *curModFile, const FORMID &RecordForm
     std::vector<UINT32> sortedConflicts;
     sortedConflicts.reserve(300);  //Enough for the worst case of all 255 loaded mods having conflicts, plus some for extended conflict mods
 
-    if(RecordFormID != 0)
+    if(curRecord->IsKeyedByEditorID())
         {
-        for(FormID_Range range = FormID_ModFile_Record.equal_range(RecordFormID); range.first != range.second; ++range.first)
-            if(range.first->second.first->Flags.IsInLoadOrder || range.first->second.first->Flags.IsIgnoreAbsentMasters)
-                sortedConflicts.push_back(range.first->second.first->ModID);
-        if(GetExtendedConflicts)
+        STRING RecordEditorID = (STRING)curRecord->GetField(4);
+        if(RecordEditorID != NULL)
             {
-            for(FormID_Range range = ExtendedFormID_ModFile_Record.equal_range(RecordFormID); range.first != range.second; ++range.first)
+            for(EditorID_Range range = EditorID_ModFile_Record.equal_range(RecordEditorID); range.first != range.second; ++range.first)
                 if(range.first->second.first->Flags.IsInLoadOrder || range.first->second.first->Flags.IsIgnoreAbsentMasters)
                     sortedConflicts.push_back(range.first->second.first->ModID);
+            if(GetExtendedConflicts)
+                {
+                for(EditorID_Range range = ExtendedEditorID_ModFile_Record.equal_range(RecordEditorID); range.first != range.second; ++range.first)
+                    if(range.first->second.first->Flags.IsInLoadOrder || range.first->second.first->Flags.IsIgnoreAbsentMasters)
+                        sortedConflicts.push_back(range.first->second.first->ModID);
+                }
             }
         }
-    else if(RecordEditorID != NULL)
+    else
         {
-        for(EditorID_Range range = EditorID_ModFile_Record.equal_range(RecordEditorID); range.first != range.second; ++range.first)
+        for(FormID_Range range = FormID_ModFile_Record.equal_range(curRecord->formID); range.first != range.second; ++range.first)
             if(range.first->second.first->Flags.IsInLoadOrder || range.first->second.first->Flags.IsIgnoreAbsentMasters)
                 sortedConflicts.push_back(range.first->second.first->ModID);
         if(GetExtendedConflicts)
             {
-            for(EditorID_Range range = ExtendedEditorID_ModFile_Record.equal_range(RecordEditorID); range.first != range.second; ++range.first)
+            for(FormID_Range range = ExtendedFormID_ModFile_Record.equal_range(curRecord->formID); range.first != range.second; ++range.first)
                 if(range.first->second.first->Flags.IsInLoadOrder || range.first->second.first->Flags.IsIgnoreAbsentMasters)
                     sortedConflicts.push_back(range.first->second.first->ModID);
             }
@@ -503,100 +507,131 @@ UINT32 Collection::IsRecordWinning(ModFile *curModFile, const FORMID &RecordForm
     return bIsWinning;
     }
 
-UINT32 Collection::GetNumRecordConflicts(const FORMID &RecordFormID, STRING const &RecordEditorID, const bool GetExtendedConflicts)
+UINT32 Collection::GetNumRecordConflicts(Record *&curRecord, const bool GetExtendedConflicts)
     {
     UINT32 count = 0;
-    if(RecordFormID != 0)
+    if(curRecord->IsKeyedByEditorID())
         {
-        count = FormID_ModFile_Record.count(RecordFormID);
-        if(GetExtendedConflicts)
-            count += ExtendedFormID_ModFile_Record.count(RecordFormID);
-        }            
-    else if(RecordEditorID != NULL)
+        STRING RecordEditorID = (STRING)curRecord->GetField(4);
+        if(RecordEditorID != NULL)
+            {
+            count = EditorID_ModFile_Record.count(RecordEditorID);
+            if(GetExtendedConflicts)
+                count += ExtendedEditorID_ModFile_Record.count(RecordEditorID);
+            }
+        }
+    else
         {
-        count = EditorID_ModFile_Record.count(RecordEditorID);
+        count = FormID_ModFile_Record.count(curRecord->formID);
         if(GetExtendedConflicts)
-            count += ExtendedEditorID_ModFile_Record.count(RecordEditorID);
+            count += ExtendedFormID_ModFile_Record.count(curRecord->formID);
         }
     return count;
     }
 
-void Collection::GetRecordConflicts(const FORMID &RecordFormID, STRING const &RecordEditorID, UINT32ARRAY ModIDs, const bool GetExtendedConflicts)
+SINT32 Collection::GetRecordConflicts(Record *&curRecord, MODIDARRAY ModIDs, RECORDIDARRAY RecordIDs, const bool GetExtendedConflicts)
     {
-    std::vector<UINT32> sortedConflicts;
+    std::vector<std::pair<ModFile *, Record *> *> sortedConflicts;
     sortedConflicts.reserve(300);  //Enough for the worst case of all 255 loaded mods having conflicts, plus some for extended conflict mods
     //std::set<UINT32> conflicts;
-    if(RecordFormID != 0)
+    if(curRecord->IsKeyedByEditorID())
         {
-        for(FormID_Range range = FormID_ModFile_Record.equal_range(RecordFormID); range.first != range.second; ++range.first)
-            if(range.first->second.first->Flags.IsInLoadOrder || range.first->second.first->Flags.IsIgnoreAbsentMasters)
-                sortedConflicts.push_back(range.first->second.first->ModID);
-        if(GetExtendedConflicts)
+        STRING RecordEditorID = (STRING)curRecord->GetField(4);
+        if(RecordEditorID != NULL)
             {
-            for(FormID_Range range = ExtendedFormID_ModFile_Record.equal_range(RecordFormID); range.first != range.second; ++range.first)
+            for(EditorID_Range range = EditorID_ModFile_Record.equal_range(RecordEditorID); range.first != range.second; ++range.first)
                 if(range.first->second.first->Flags.IsInLoadOrder || range.first->second.first->Flags.IsIgnoreAbsentMasters)
-                    sortedConflicts.push_back(range.first->second.first->ModID);
+                    sortedConflicts.push_back(&range.first->second);
+            if(GetExtendedConflicts)
+                {
+                for(EditorID_Range range = ExtendedEditorID_ModFile_Record.equal_range(RecordEditorID); range.first != range.second; ++range.first)
+                    if(range.first->second.first->Flags.IsInLoadOrder || range.first->second.first->Flags.IsIgnoreAbsentMasters)
+                        sortedConflicts.push_back(&range.first->second);
+                }
             }
         }
-    else if(RecordEditorID != NULL)
+    else
         {
-        for(EditorID_Range range = EditorID_ModFile_Record.equal_range(RecordEditorID); range.first != range.second; ++range.first)
+        for(FormID_Range range = FormID_ModFile_Record.equal_range(curRecord->formID); range.first != range.second; ++range.first)
             if(range.first->second.first->Flags.IsInLoadOrder || range.first->second.first->Flags.IsIgnoreAbsentMasters)
-                sortedConflicts.push_back(range.first->second.first->ModID);
+                sortedConflicts.push_back(&range.first->second);
         if(GetExtendedConflicts)
             {
-            for(EditorID_Range range = ExtendedEditorID_ModFile_Record.equal_range(RecordEditorID); range.first != range.second; ++range.first)
+            for(FormID_Range range = ExtendedFormID_ModFile_Record.equal_range(curRecord->formID); range.first != range.second; ++range.first)
                 if(range.first->second.first->Flags.IsInLoadOrder || range.first->second.first->Flags.IsIgnoreAbsentMasters)
-                    sortedConflicts.push_back(range.first->second.first->ModID);
+                    sortedConflicts.push_back(&range.first->second);
             }
         }
 
-    if(sortedConflicts.size())
+    UINT32 y = sortedConflicts.size();
+    if(y)
         {
-        std::sort(sortedConflicts.begin(), sortedConflicts.end());
-        UINT32 y = ModIDs[0] = sortedConflicts.size();
+        std::sort(sortedConflicts.begin(), sortedConflicts.end(), compModRecordPair);
         for(UINT32 x = 0; x < y; ++x)
-            ModIDs[x + 1] = sortedConflicts[y - (x + 1)];
+            {
+            //if(y > 1) printf("sortedConflicts[%d] = %d\n", x, sortedConflicts[x]->ModID);
+            ModIDs[x] = sortedConflicts[y - (x + 1)]->first;
+            RecordIDs[x] = sortedConflicts[y - (x + 1)]->second;
+            }
+        //if(y > 1) 
+        //    for(UINT32 x = 0; x < y; ++x)
+        //        {
+        //        printf("ModIDs[%d] = %d\n", x, ModIDs[x]->ModID);
+        //        }
         sortedConflicts.clear();
         }
+    return y;
     }
 
-void Collection::GetRecordHistory(ModFile *curModFile, const FORMID &RecordFormID, STRING const &RecordEditorID, UINT32ARRAY ModIDs)
+SINT32 Collection::GetRecordHistory(ModFile *&curModFile, Record *&curRecord, MODIDARRAY ModIDs, RECORDIDARRAY RecordIDs)
     {
     if(curModFile->Flags.IsExtendedConflicts)
-        return;
-    std::vector<UINT32> sortedHistory;
+        return -1;
+    std::vector<std::pair<ModFile *, Record *> *> sortedHistory;
     sortedHistory.reserve(10);
     UINT8 curCollapsedIndex = curModFile->FormIDHandler.CollapsedIndex;
     const UINT8 (&CollapseTable)[256] = curModFile->FormIDHandler.CollapseTable;
 
-    if(RecordFormID != 0)
+    if(curRecord->IsKeyedByEditorID())
         {
-        for(FormID_Range range = FormID_ModFile_Record.equal_range(RecordFormID); range.first != range.second; ++range.first)
+        STRING RecordEditorID = (STRING)curRecord->GetField(4);
+        if(RecordEditorID != NULL)
+            {
+            for(EditorID_Range range = EditorID_ModFile_Record.equal_range(RecordEditorID); range.first != range.second; ++range.first)
+                if(range.first->second.first->Flags.IsInLoadOrder || range.first->second.first->Flags.IsIgnoreAbsentMasters)
+                    if(CollapseTable[range.first->second.first->FormIDHandler.ExpandedIndex] != curCollapsedIndex)
+                        sortedHistory.push_back(&range.first->second);
+            }
+        }
+    else
+        {
+        for(FormID_Range range = FormID_ModFile_Record.equal_range(curRecord->formID); range.first != range.second; ++range.first)
             {
             if(range.first->second.first->Flags.IsInLoadOrder || range.first->second.first->Flags.IsIgnoreAbsentMasters)
                 if(CollapseTable[range.first->second.first->FormIDHandler.ExpandedIndex] != curCollapsedIndex)
-                    sortedHistory.push_back(range.first->second.first->ModID);
+                    sortedHistory.push_back(&range.first->second);
             }
         }
-    else if(RecordEditorID != NULL)
-        {
-        for(EditorID_Range range = EditorID_ModFile_Record.equal_range(RecordEditorID); range.first != range.second; ++range.first)
-            if(range.first->second.first->Flags.IsInLoadOrder || range.first->second.first->Flags.IsIgnoreAbsentMasters)
-                if(CollapseTable[range.first->second.first->FormIDHandler.ExpandedIndex] != curCollapsedIndex)
-                    sortedHistory.push_back(range.first->second.first->ModID);
-        }
 
-    if(sortedHistory.size())
+    UINT32 y = sortedHistory.size();
+    if(y)
         {
-        std::sort(sortedHistory.begin(), sortedHistory.end());
-        ModIDs[0] = sortedHistory.size();
-        for(UINT32 x = 0; x < sortedHistory.size(); ++x)
-            ModIDs[x + 1] = sortedHistory[x];
+        std::sort(sortedHistory.begin(), sortedHistory.end(), compModRecordPair);
+        for(UINT32 x = 0; x < y; ++x)
+            {
+            //if(y > 1) printf("sortedHistory[%d] = %d\n", x, sortedHistory[x].first->ModID);
+            ModIDs[x] = sortedHistory[x]->first;
+            RecordIDs[x] = sortedHistory[x]->second;
+            }
+        //if(y > 1) 
+        //    for(UINT32 x = 0; x < y; ++x)
+        //        {
+        //        printf("ModIDs[%d] = %d\n", x, ModIDs[x]->ModID);
+        //        }
         sortedHistory.clear();
         }
+    return y;
     }
-
 
 UINT32 Collection::NextFreeExpandedFormID(ModFile *&curModFile, UINT32 depth)
     {
@@ -613,10 +648,10 @@ UINT32 Collection::NextFreeExpandedFormID(ModFile *&curModFile, UINT32 depth)
     return 0;
     }
 
-UINT32 Collection::CreateRecord(ModFile *curModFile, const UINT32 &RecordType, FORMID RecordFormID, STRING const &RecordEditorID, const FORMID &ParentFormID, UINT32 CreateFlags)
+Record * Collection::CreateRecord(ModFile *&curModFile, const UINT32 &RecordType, FORMID RecordFormID, STRING const &RecordEditorID, const FORMID &ParentFormID, UINT32 CreateFlags)
     {
     if(!curModFile->Flags.IsInLoadOrder)
-        return 0;
+        return NULL;
 
     CreateRecordOptions options(CreateFlags);
     Record *DummyRecord = NULL;
@@ -628,59 +663,45 @@ UINT32 Collection::CreateRecord(ModFile *curModFile, const UINT32 &RecordType, F
     else if(RecordEditorID != NULL)
         LookupRecord(curModFile, RecordEditorID, DummyRecord);
     if(DummyRecord != NULL)
-        return DummyRecord->formID;
+        return DummyRecord;
 
     //Lookup the required data, and ensure it exists
     if(ParentFormID)
         {
         LookupRecord(curModFile, ParentFormID, ParentRecord);
         if(ParentRecord == NULL)
-            return 0;
+            return NULL;
         }
 
     //Create the new record
     Record *curRecord = curModFile->CreateRecord(RecordType, RecordEditorID, DummyRecord, ParentRecord, options);
     if(curRecord == NULL)
-        return 0;
+        return NULL;
 
     //See if an existing record was returned instead of a new record
     if(curRecord->formID != 0)
-        return curRecord->formID;
+        return curRecord;
 
-    //Assign the new record an unused formID
-    if(RecordFormID == 0 || curRecord->IsKeyedByEditorID()) //Assign the formID to the mod so that FormIDMasterUpdater doesn't add unneeded masters
-        RecordFormID = curRecord->formID = NextFreeExpandedFormID(curModFile);
-    else
-        curRecord->formID = RecordFormID;
+    //Assign the new record a formID
+    //If keyed by editor id, assign a new formID so that FormIDMasterUpdater doesn't add unneeded masters
+    curRecord->formID = (RecordFormID == 0 || curRecord->IsKeyedByEditorID()) ? NextFreeExpandedFormID(curModFile) : RecordFormID;
 
     //Index the new record
     RecordIndexer indexer(curModFile, curModFile->Flags.IsExtendedConflicts ? ExtendedEditorID_ModFile_Record: EditorID_ModFile_Record, curModFile->Flags.IsExtendedConflicts ? ExtendedFormID_ModFile_Record: FormID_ModFile_Record);
     indexer.Accept(&curRecord);
 
-    return RecordFormID;
+    return curRecord;
     }
 
-UINT32 Collection::CopyRecord(ModFile *curModFile, const FORMID &RecordFormID, STRING const &RecordEditorID, ModFile *DestModFile, FORMID DestParentFormID, const FORMID DestRecordFormID, STRING const DestRecordEditorID, UINT32 CreateFlags)
+Record * Collection::CopyRecord(ModFile *&curModFile, Record *&curRecord, ModFile *&DestModFile, const FORMID &DestParentFormID, const FORMID &DestRecordFormID, STRING const &DestRecordEditorID, UINT32 CreateFlags)
     {
     if(!curModFile->Flags.IsInLoadOrder && !curModFile->Flags.IsIgnoreAbsentMasters)
         {
         printf("Source mod is not in the load order and is not ignoring absent masters\n");
-        return 0;
+        return NULL;
         }
 
     CreateRecordOptions options(CreateFlags);
-    Record *curRecord = NULL;
-
-    //Lookup the required data, and ensure it exists
-    if(RecordFormID != 0)
-        LookupRecord(curModFile, RecordFormID, curRecord);
-    else if(RecordEditorID != NULL)
-        LookupRecord(curModFile, RecordEditorID, curRecord);
-    if(curRecord == NULL)
-        {
-        printf("Unable to find source record\n");
-        return 0;
-        }
 
     Record *ParentRecord = NULL;
     Record *RecordCopy = NULL;
@@ -688,12 +709,13 @@ UINT32 Collection::CopyRecord(ModFile *curModFile, const FORMID &RecordFormID, S
     if(options.SetAsOverride)
         {
         //See if its trying to copy a record that already exists in the destination mod
-        if(RecordFormID != 0)
-            LookupRecord(DestModFile, RecordFormID, RecordCopy);
-        else if(RecordEditorID != NULL)
-            LookupRecord(DestModFile, RecordEditorID, RecordCopy);
+        if(curRecord->IsKeyedByEditorID())
+            LookupRecord(DestModFile, (STRING)curRecord->GetField(4), RecordCopy);
+        else
+            LookupRecord(DestModFile, curRecord->formID, RecordCopy);
+
         if(RecordCopy != NULL)
-            return RecordFormID;
+            return RecordCopy;
         }
 
     if(DestParentFormID)
@@ -705,12 +727,17 @@ UINT32 Collection::CopyRecord(ModFile *curModFile, const FORMID &RecordFormID, S
             //If it doesn't, try and create it.
             CreateRecordOptions parentOptions;
             parentOptions.SetAsOverride = options.SetAsOverride;
-            DestParentFormID = CopyRecord(curModFile, DestParentFormID, 0, DestModFile, 0, 0, 0, parentOptions.GetFlags());
-            LookupRecord(DestModFile, DestParentFormID, ParentRecord);
+            LookupRecord(curModFile, DestParentFormID, ParentRecord);
             if(ParentRecord == NULL)
                 {
                 printf("Unable to find destination parent record\n");
-                return 0;
+                return NULL;
+                }
+            ParentRecord = CopyRecord(curModFile, ParentRecord, DestModFile, 0, 0, 0, parentOptions.GetFlags());
+            if(ParentRecord == NULL)
+                {
+                printf("Unable to find destination parent record\n");
+                return NULL;
                 }
             }
         }
@@ -718,26 +745,26 @@ UINT32 Collection::CopyRecord(ModFile *curModFile, const FORMID &RecordFormID, S
     if(curModFile == DestModFile && options.SetAsOverride)
         {
         printf("Source and Destination mods are the same (so can't copy override records to).\n");
-        return 0;
+        return NULL;
         }
 
     if(!DestModFile->Flags.IsInLoadOrder && !options.SetAsOverride)
         {
         printf("Destination mod not in load order (so can't copy new records to)\n");
-        return 0;
+        return NULL;
         }
 
     //Create the record copy
-    RecordCopy = DestModFile->CreateRecord(curRecord->GetType(), DestRecordEditorID ? DestRecordEditorID : RecordEditorID, curRecord, ParentRecord, options);
+    RecordCopy = DestModFile->CreateRecord(curRecord->GetType(), DestRecordEditorID ? DestRecordEditorID : (STRING)curRecord->GetField(4), curRecord, ParentRecord, options);
     if(RecordCopy == NULL)
         {
         printf("Unable to copy record\n");
-        return 0;
+        return NULL;
         }
 
     //See if an existing record was returned instead of the requested copy
     if(RecordCopy->formID != curRecord->formID)
-        return RecordCopy->formID;
+        return RecordCopy;
 
     //Give the record a new formID if it isn't an override record
     if(!options.SetAsOverride)
@@ -762,30 +789,11 @@ UINT32 Collection::CopyRecord(ModFile *curModFile, const FORMID &RecordFormID, S
 
     if(reader.GetResult()) //If the record was read, go ahead and unload it
         RecordCopy->Unload();
-    return RecordCopy->formID;
+    return RecordCopy;
     }
 
-SINT32 Collection::DeleteRecord(ModFile *curModFile, const FORMID &RecordFormID, STRING const &RecordEditorID, const FORMID &ParentFormID)
+SINT32 Collection::DeleteRecord(ModFile *&curModFile, Record *&curRecord, Record *&ParentRecord)
     {
-    Record *curRecord = NULL;
-    Record *ParentRecord = NULL;
-
-    //Ensure requested record exists
-    if(RecordFormID != 0)
-        LookupRecord(curModFile, RecordFormID, curRecord);
-    else if(RecordEditorID != NULL)
-        LookupRecord(curModFile, RecordEditorID, curRecord);
-    if(curRecord == NULL)
-        throw Ex_INVALIDRECORDINDEX();
-
-    //Lookup the required data, and ensure it exists
-    if(ParentFormID)
-        {
-        LookupRecord(curModFile, ParentFormID, ParentRecord);
-        if(ParentRecord == NULL)
-            throw Ex_INVALIDRECORDINDEX();
-        }
-
     RecordDeleter deleter(curRecord, curModFile->Flags.IsExtendedConflicts ? ExtendedEditorID_ModFile_Record: EditorID_ModFile_Record, curModFile->Flags.IsExtendedConflicts ? ExtendedFormID_ModFile_Record: FormID_ModFile_Record);
 
     UINT32 RecordType = curRecord->GetType();
@@ -795,52 +803,53 @@ SINT32 Collection::DeleteRecord(ModFile *curModFile, const FORMID &RecordFormID,
     return deleter.GetCount();
     }
 
-SINT32 Collection::SetRecordIDs(ModFile *curModFile, const FORMID &RecordFormID, STRING const &RecordEditorID, const FORMID &FormIDValue, STRING const &EditorIDValue)
+SINT32 Collection::SetRecordIDs(ModFile *&curModFile, Record *&RecordID, const FORMID &FormID, STRING const &EditorID)
     {
-    bool bChangingFormID = RecordFormID != FormIDValue;
+    bool bChangingFormID = RecordID->formID != FormID;
     bool bChangingEditorID = false;
-
+    STRING RecordEditorID = (STRING)RecordID->GetField(4);
     if(RecordEditorID == NULL)
         {
-        if(EditorIDValue != NULL)
+        if(EditorID != NULL)
             bChangingEditorID = true;
         }
     else
         {
-        if(EditorIDValue == NULL)
+        if(EditorID == NULL)
             bChangingEditorID = true;
-        else if(strcmpi(RecordEditorID, EditorIDValue) != 0)
+        else if(_stricmp(RecordEditorID, EditorID) != 0)
             bChangingEditorID = true;
         }
     
     if(!(bChangingFormID || bChangingEditorID))
         return -1;
 
-    Record *curRecord = NULL;
     FormID_Map &curFormID_Map = curModFile->Flags.IsExtendedConflicts ? ExtendedFormID_ModFile_Record: FormID_ModFile_Record;
     EditorID_Map &curEditorID_Map = curModFile->Flags.IsExtendedConflicts ? ExtendedEditorID_ModFile_Record: EditorID_ModFile_Record;
 
     bool bDeIndexed = false;
 
-    //If the FormIDValue is already in use by the mod, do nothing.
-    if(bChangingFormID && FormIDValue != 0)
-        LookupRecord(curModFile, FormIDValue, curRecord);
+    Record *curRecord = NULL;
 
-    //If the EditorIDValue is already in use by the mod, do nothing.
+    //If the FormID is already in use by the mod, do nothing.
+    if(bChangingFormID && FormID != 0)
+        LookupRecord(curModFile, FormID, curRecord);
+
+    //If the EditorID is already in use by the mod, do nothing.
     //This only cares about records keyed by editorID since they'd get the most confused
-    if(bChangingEditorID && EditorIDValue != NULL)
-        LookupRecord(curModFile, EditorIDValue, curRecord);
+    if(bChangingEditorID && EditorID != NULL)
+        LookupRecord(curModFile, EditorID, curRecord);
 
     if(curRecord != NULL)
         return -1;
 
     //Lookup the required data, and ensure it exists
     //De-index the record
-    FormID_Iterator formID_it = LookupRecord(curModFile, RecordFormID, curRecord);
+    FormID_Iterator formID_it = LookupRecord(curModFile, RecordID->formID, curRecord);
     if(curRecord != NULL || formID_it != curFormID_Map.end())
         {
-        //Not allowed to set the formID to 0 if the record is keyed by it
-        bChangingFormID = bChangingFormID && FormIDValue != 0;
+        //Not allowed to set the FormID to 0 if the record is keyed by it
+        bChangingFormID = bChangingFormID && FormID != 0;
         if(bChangingFormID)
             {
             curFormID_Map.erase(formID_it);
@@ -852,8 +861,8 @@ SINT32 Collection::SetRecordIDs(ModFile *curModFile, const FORMID &RecordFormID,
         EditorID_Iterator editorID_it = LookupRecord(curModFile, RecordEditorID, curRecord);
         if(curRecord != NULL || editorID_it != curEditorID_Map.end())
             {
-            //Not allowed to delete the editorID if the record is keyed by it
-            bChangingEditorID = bChangingEditorID && EditorIDValue != NULL;
+            //Not allowed to delete the EditorID if the record is keyed by it
+            bChangingEditorID = bChangingEditorID && EditorID != NULL;
             if(bChangingEditorID)
                 {
                 curEditorID_Map.erase(editorID_it);
@@ -867,7 +876,7 @@ SINT32 Collection::SetRecordIDs(ModFile *curModFile, const FORMID &RecordFormID,
     //Update the formID
     if(bChangingFormID)
         {
-        curRecord->formID = FormIDValue;
+        curRecord->formID = FormID;
         FormIDMasterUpdater checker(curModFile->FormIDHandler);
         checker.Accept(curRecord->formID);
         }
@@ -878,7 +887,7 @@ SINT32 Collection::SetRecordIDs(ModFile *curModFile, const FORMID &RecordFormID,
         //Ensure the record is fully loaded, otherwise any changes could be lost when the record is later loaded
         RecordReader reader(curModFile->FormIDHandler, Expanders);
         reader.Accept(&curRecord);
-        curRecord->SetField(4, 0, 0, 0, 0, 0, 0, (void *)EditorIDValue, 0);
+        curRecord->SetField(4, 0, 0, 0, 0, 0, 0, (void *)EditorID, 0);
         curRecord->IsChanged(true);
         }
 

@@ -22,6 +22,7 @@ GPL License and Copyright Notice ============================================
 // CBash.h
 //#define _UNICODE
 #include "MacroDefinitions.h"
+#include "Collection.h"
 
 //Exported Functions
 ////////////////////////////////////////////////////////////////////////
@@ -34,74 +35,74 @@ EXPORT_FUNC UINT32 GetVersionRevision();
 ////////////////////////////////////////////////////////////////////////
 //Logging action functions
 #ifdef CBASH_USE_LOGGING
-    EXPORT_FUNC SINT32 SetLogging(const UINT32 CollectionID, SINT32 (*_LoggingCallback)(const STRING), UINT32 LoggingLevel, UINT32 LoggingFlags);
+    EXPORT_FUNC SINT32 SetLogging(Collection *CollectionID, SINT32 (*_LoggingCallback)(const STRING), UINT32 LoggingLevel, UINT32 LoggingFlags);
 #endif
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 //Collection action functions
-EXPORT_FUNC SINT32 CreateCollection(STRING const ModsPath, const UINT32 CollectionType);
-EXPORT_FUNC SINT32 DeleteCollection(const UINT32 CollectionID);
-EXPORT_FUNC SINT32 LoadCollection(const UINT32 CollectionID);
-EXPORT_FUNC SINT32 UnloadCollection(const UINT32 CollectionID);
+EXPORT_FUNC Collection * CreateCollection(STRING const ModsPath, const UINT32 CollectionType);
+EXPORT_FUNC SINT32 DeleteCollection(Collection *CollectionID);
+EXPORT_FUNC SINT32 LoadCollection(Collection *CollectionID);
+EXPORT_FUNC SINT32 UnloadCollection(Collection *CollectionID);
 EXPORT_FUNC SINT32 DeleteAllCollections();
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 //Mod action functions
-EXPORT_FUNC SINT32 AddMod(const UINT32 CollectionID, STRING const ModName, const UINT32 ModFlagsField);
-EXPORT_FUNC SINT32 LoadMod(const UINT32 CollectionID, const UINT32 ModID);
-EXPORT_FUNC SINT32 UnloadMod(const UINT32 CollectionID, const UINT32 ModID);
-EXPORT_FUNC SINT32 CleanModMasters(const UINT32 CollectionID, const UINT32 ModID);
-EXPORT_FUNC SINT32 SaveMod(const UINT32 CollectionID, const UINT32 ModID, const bool CloseCollection);
+EXPORT_FUNC SINT32 AddMod(Collection *CollectionID, STRING const ModName, const UINT32 ModFlagsField);
+EXPORT_FUNC SINT32 LoadMod(Collection *CollectionID, ModFile *ModID);
+EXPORT_FUNC SINT32 UnloadMod(Collection *CollectionID, ModFile *ModID);
+EXPORT_FUNC SINT32 CleanModMasters(Collection *CollectionID, ModFile *ModID);
+EXPORT_FUNC SINT32 SaveMod(Collection *CollectionID, ModFile *ModID, const bool CloseCollection);
 ////////////////////////////////////////////////////////////////////////
 //Mod info functions
-EXPORT_FUNC SINT32 GetAllNumMods(const UINT32 CollectionID);
-EXPORT_FUNC SINT32 GetAllModIDs(const UINT32 CollectionID, UINT32ARRAY ModIDs);
-EXPORT_FUNC SINT32 GetLoadOrderNumMods(const UINT32 CollectionID);
-EXPORT_FUNC SINT32 GetLoadOrderModIDs(const UINT32 CollectionID, UINT32ARRAY ModIDs);
-EXPORT_FUNC STRING GetFileNameByID(const UINT32 CollectionID, const UINT32 ModID);
-EXPORT_FUNC STRING GetFileNameByLoadOrder(const UINT32 CollectionID, const UINT32 ModIndex);
-EXPORT_FUNC STRING GetModNameByID(const UINT32 CollectionID, const UINT32 ModID);
-EXPORT_FUNC STRING GetModNameByLoadOrder(const UINT32 CollectionID, const UINT32 ModIndex);
-EXPORT_FUNC SINT32 GetModIDByName(const UINT32 CollectionID, STRING const ModName);
-EXPORT_FUNC SINT32 GetModIDByLoadOrder(const UINT32 CollectionID, const UINT32 ModIndex);
-EXPORT_FUNC SINT32 GetModLoadOrderByName(const UINT32 CollectionID, STRING const ModName);
-EXPORT_FUNC SINT32 GetModLoadOrderByID(const UINT32 CollectionID, const UINT32 ModID);
-EXPORT_FUNC STRING GetLongIDName(const UINT32 CollectionID, const UINT32 ModID, const UINT32 ModIndex);
-//EXPORT_FUNC SINT32 GetShortIDIndex(const UINT32 CollectionID, const SINT32 ModID, STRING const ModName);
-EXPORT_FUNC UINT32 IsModEmpty(const UINT32 CollectionID, const UINT32 ModID);
-EXPORT_FUNC SINT32 GetModNumTypes(const UINT32 CollectionID, const UINT32 ModID);
-EXPORT_FUNC void   GetModTypes(const UINT32 CollectionID, const UINT32 ModID, UINT32ARRAY RecordTypes);
+EXPORT_FUNC SINT32 GetAllNumMods(Collection *CollectionID);
+EXPORT_FUNC SINT32 GetAllModIDs(Collection *CollectionID, MODIDARRAY ModIDs);
+EXPORT_FUNC SINT32 GetLoadOrderNumMods(Collection *CollectionID);
+EXPORT_FUNC SINT32 GetLoadOrderModIDs(Collection *CollectionID, MODIDARRAY ModIDs);
+EXPORT_FUNC STRING GetFileNameByID(Collection *CollectionID, ModFile *ModID);
+EXPORT_FUNC STRING GetFileNameByLoadOrder(Collection *CollectionID, const UINT32 ModIndex);
+EXPORT_FUNC STRING GetModNameByID(Collection *CollectionID, ModFile *ModID);
+EXPORT_FUNC STRING GetModNameByLoadOrder(Collection *CollectionID, const UINT32 ModIndex);
+EXPORT_FUNC ModFile * GetModIDByName(Collection *CollectionID, STRING const ModName);
+EXPORT_FUNC ModFile * GetModIDByLoadOrder(Collection *CollectionID, const UINT32 ModIndex);
+EXPORT_FUNC SINT32 GetModLoadOrderByName(Collection *CollectionID, STRING const ModName);
+EXPORT_FUNC SINT32 GetModLoadOrderByID(Collection *CollectionID, ModFile *ModID);
+EXPORT_FUNC STRING GetLongIDName(Collection *CollectionID, ModFile *ModID, const UINT8 ModIndex);
+//EXPORT_FUNC SINT32 GetShortIDIndex(Collection *CollectionID, const SINT32 ModID, STRING const ModName);
+EXPORT_FUNC UINT32 IsModEmpty(Collection *CollectionID, ModFile *ModID);
+EXPORT_FUNC SINT32 GetModNumTypes(Collection *CollectionID, ModFile *ModID);
+EXPORT_FUNC void   GetModTypes(Collection *CollectionID, ModFile *ModID, UINT32ARRAY RecordTypes);
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 //Record action functions
-EXPORT_FUNC UINT32 CreateRecord(const UINT32 CollectionID, const UINT32 ModID, const UINT32 RecordType, const FORMID RecordFormID, STRING const RecordEditorID, const FORMID ParentFormID, const UINT32 CreateFlags);
-EXPORT_FUNC SINT32 DeleteRecord(const UINT32 CollectionID, const UINT32 ModID, const FORMID RecordFormID, STRING const RecordEditorID, const FORMID ParentFormID);
-EXPORT_FUNC UINT32 CopyRecord(const UINT32 CollectionID, const UINT32 ModID, const FORMID RecordFormID, STRING const RecordEditorID, const UINT32 DestModID, const UINT32 DestParentFormID, const FORMID DestRecordFormID, STRING const DestRecordEditorID, const UINT32 CreateFlags);
-EXPORT_FUNC SINT32 UnloadRecord(const UINT32 CollectionID, const UINT32 ModID, const FORMID RecordFormID, STRING const RecordEditorID);
-EXPORT_FUNC SINT32 SetRecordIDs(const UINT32 CollectionID, const UINT32 ModID, const FORMID RecordFormID, STRING const RecordEditorID, const FORMID FormIDValue, STRING const EditorIDValue);
+EXPORT_FUNC Record * CreateRecord(Collection *CollectionID, ModFile *ModID, const UINT32 RecordType, const FORMID RecordFormID, STRING const RecordEditorID, Record *ParentID, const UINT32 CreateFlags);
+EXPORT_FUNC SINT32 DeleteRecord(Collection *CollectionID, ModFile *ModID, Record *RecordID, Record *ParentID);
+EXPORT_FUNC Record * CopyRecord(Collection *CollectionID, ModFile *ModID, Record *RecordID, ModFile *DestModID, Record *DestParentID, const FORMID DestRecordFormID, STRING const DestRecordEditorID, const UINT32 CreateFlags);
+EXPORT_FUNC SINT32 UnloadRecord(Collection *CollectionID, ModFile *ModID, Record *RecordID);
+EXPORT_FUNC SINT32 SetRecordIdentifiers(Collection *CollectionID, ModFile *ModID, Record *RecordID, const FORMID FormID, STRING const EditorID);
 ////////////////////////////////////////////////////////////////////////
 //Record info functions
-EXPORT_FUNC SINT32 GetNumRecords(const UINT32 CollectionID, const UINT32 ModID, const UINT32 RecordType);
-EXPORT_FUNC void   GetRecordFormIDs(const UINT32 CollectionID, const UINT32 ModID, const UINT32 RecordType, FORMIDARRAY RecordFormIDs);
-EXPORT_FUNC void   GetRecordEditorIDs(const UINT32 CollectionID, const UINT32 ModID, const UINT32 RecordType, STRINGARRAY RecordEditorIDs);
-EXPORT_FUNC SINT32 IsRecordWinning(const UINT32 CollectionID, const UINT32 ModID, const FORMID RecordFormID, STRING const RecordEditorID, const bool GetExtendedConflicts);
-EXPORT_FUNC SINT32 GetNumRecordConflicts(const UINT32 CollectionID, const FORMID RecordFormID, STRING const RecordEditorID, const bool GetExtendedConflicts);
-EXPORT_FUNC void   GetRecordConflicts(const UINT32 CollectionID, const FORMID RecordFormID, STRING const RecordEditorID, UINT32ARRAY ModIDs, const bool GetExtendedConflicts);
-EXPORT_FUNC void   GetRecordHistory(const UINT32 CollectionID, const UINT32 ModID, const FORMID RecordFormID, STRING const RecordEditorID, UINT32ARRAY ModIDs);
+EXPORT_FUNC Record * GetRecordID(Collection *CollectionID, ModFile *ModID, const FORMID RecordFormID, STRING const RecordEditorID);
+EXPORT_FUNC SINT32 GetNumRecords(Collection *CollectionID, ModFile *ModID, const UINT32 RecordType);
+EXPORT_FUNC SINT32 GetRecordIDs(Collection *CollectionID, ModFile *ModID, const UINT32 RecordType, RECORDIDARRAY RecordIDs);
+EXPORT_FUNC SINT32 IsRecordWinning(Collection *CollectionID, ModFile *ModID, Record *RecordID, const bool GetExtendedConflicts);
+EXPORT_FUNC SINT32 GetNumRecordConflicts(Collection *CollectionID, Record *RecordID, const bool GetExtendedConflicts);
+EXPORT_FUNC SINT32 GetRecordConflicts(Collection *CollectionID, Record *RecordID, MODIDARRAY ModIDs, RECORDIDARRAY RecordIDs, const bool GetExtendedConflicts);
+EXPORT_FUNC SINT32 GetRecordHistory(Collection *CollectionID, ModFile *ModID, Record *RecordID, MODIDARRAY ModIDs, RECORDIDARRAY RecordIDs);
 ////////////////////////////////////////////////////////////////////////
 //Mod or Record action functions
-EXPORT_FUNC SINT32 UpdateReferences(const UINT32 CollectionID, const UINT32 ModID, const FORMID RecordFormID, const FORMID FormIDToReplace, const FORMID ReplacementFormID);
+EXPORT_FUNC SINT32 UpdateReferences(Collection *CollectionID, ModFile *ModID, Record *RecordID, const FORMID FormIDToReplace, const FORMID ReplacementFormID);
 ////////////////////////////////////////////////////////////////////////
 //Mod or Record info functions
-EXPORT_FUNC SINT32 GetNumReferences(const UINT32 CollectionID, const UINT32 ModID, const FORMID RecordFormID, const FORMID FormIDToMatch);
+EXPORT_FUNC SINT32 GetNumReferences(Collection *CollectionID, ModFile *ModID, Record *RecordID, const FORMID FormIDToMatch);
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 //Field action functions
-EXPORT_FUNC void   SetField(const UINT32 CollectionID, const UINT32 ModID, FORMID RecordFormID, STRING RecordEditorID, FIELD_IDENTIFIERS, void *FieldValue, const UINT32 ArraySize);
-EXPORT_FUNC void   DeleteField(const UINT32 CollectionID, const UINT32 ModID, FORMID RecordFormID, STRING RecordEditorID, FIELD_IDENTIFIERS);
+EXPORT_FUNC void   SetField(Collection *CollectionID, ModFile *ModID, Record *RecordID, FIELD_IDENTIFIERS, void *FieldValue, const UINT32 ArraySize);
+EXPORT_FUNC void   DeleteField(Collection *CollectionID, ModFile *ModID, Record *RecordID, FIELD_IDENTIFIERS);
 ////////////////////////////////////////////////////////////////////////
 //Field info functions
-EXPORT_FUNC UINT32 GetFieldAttribute(const UINT32 CollectionID, const UINT32 ModID, FORMID RecordFormID, STRING RecordEditorID, FIELD_IDENTIFIERS, const UINT32 WhichAttribute);
-EXPORT_FUNC void * GetField(const UINT32 CollectionID, const UINT32 ModID, FORMID RecordFormID, STRING RecordEditorID, FIELD_IDENTIFIERS, void **FieldValues);
+EXPORT_FUNC UINT32 GetFieldAttribute(Collection *CollectionID, ModFile *ModID, Record *RecordID, FIELD_IDENTIFIERS, const UINT32 WhichAttribute);
+EXPORT_FUNC void * GetField(Collection *CollectionID, ModFile *ModID, Record *RecordID, FIELD_IDENTIFIERS, void **FieldValues);
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////

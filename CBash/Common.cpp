@@ -411,8 +411,10 @@ FormIDHandlerClass::FormIDHandlerClass(std::vector<StringRecord> &_MAST, UINT32 
     nextObject(_NextObject),
     ExpandedIndex(0),
     CollapsedIndex(0),
+    IsEmpty(true),
     bMastersChanged(false),
-    IsEmpty(true)
+    FileStart(0),
+    FileEnd(0)
     {
     //
     }

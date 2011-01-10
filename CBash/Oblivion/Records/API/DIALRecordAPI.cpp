@@ -99,7 +99,7 @@ void * DIALRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return &DATA.value.flags;
         case 9: //INFO
             for(UINT32 p = 0;p < (UINT32)INFO.size();++p)
-                ((FORMIDARRAY)FieldValues)[p] = INFO[p]->formID;
+                ((RECORDIDARRAY)FieldValues)[p] = INFO[p];
             return NULL;
         default:
             return NULL;

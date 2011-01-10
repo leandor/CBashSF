@@ -37,7 +37,7 @@
 #endif
 
 #ifndef PRINT_RECORD_IDENTIFIERS
-    #define PRINT_RECORD_IDENTIFIERS printf("CollectionID: %i, ModID: %i, RecordID: %08X, RecordEditorID: %s\n", CollectionID, ModID, RecordFormID, RecordEditorID)
+    #define PRINT_RECORD_IDENTIFIERS printf("CollectionID: %08X, ModID: %08X, RecordID: %08X\n", CollectionID, ModID, RecordID)
 #endif
 
 #ifndef PRINT_FIELD_IDENTIFIERS
@@ -106,6 +106,14 @@
 
 #ifndef STRINGARRAY
     #define STRINGARRAY char **
+#endif
+
+#ifndef MODIDARRAY
+    #define MODIDARRAY ModFile **
+#endif
+
+#ifndef RECORDIDARRAY
+    #define RECORDIDARRAY Record **
 #endif
 
 #ifndef FORMID

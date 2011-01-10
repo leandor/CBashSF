@@ -289,7 +289,7 @@ bool INFORecord::VisitFormIDs(FormIDOp &op)
                 op.Accept(CTDA[x]->value.param2);
             }
         else
-            printf("Warning: %08X uses an unknown function (%d)!\n", formID, CTDA[x]->value.ifunc);
+            printf("Warning: INFORecord %08X uses an unknown function (%d)!\n", formID, CTDA[x]->value.ifunc);
         }
     for(UINT32 x = 0; x < TCLT.size(); x++)
         op.Accept(TCLT[x]);

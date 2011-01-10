@@ -267,22 +267,22 @@ void * CELLRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return &XCWT.value.fid;
         case 35: //ACHR
             for(UINT32 p = 0;p < (UINT32)ACHR.size();++p)
-                ((FORMIDARRAY)FieldValues)[p] = ACHR[p]->formID;
+                ((RECORDIDARRAY)FieldValues)[p] = ACHR[p];
             return NULL;
         case 36: //ACRE
             for(UINT32 p = 0;p < (UINT32)ACRE.size();++p)
-                ((FORMIDARRAY)FieldValues)[p] = ACRE[p]->formID;
+                ((RECORDIDARRAY)FieldValues)[p] = ACRE[p];
             return NULL;
         case 37: //REFR
             for(UINT32 p = 0;p < (UINT32)REFR.size();++p)
-                ((FORMIDARRAY)FieldValues)[p] = REFR[p]->formID;
+                ((RECORDIDARRAY)FieldValues)[p] = REFR[p];
             return NULL;
         case 38: //PGRD
-            return PGRD != NULL ? &PGRD->formID : NULL;
+            return PGRD;
         case 39: //LAND
-            return LAND != NULL ? &LAND->formID : NULL;
+            return LAND;
         case 40: //Parent
-            return Parent != NULL ? &Parent->formID : NULL;
+            return Parent;
         default:
             return NULL;
         }

@@ -149,12 +149,12 @@ void * WRLDRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             *FieldValues = OFST.value;
             return NULL;
         case 23: //ROAD
-            return ROAD != NULL ? &ROAD->formID : NULL;
+            return ROAD;
         case 24: //CELL
-            return CELL != NULL ? &CELL->formID : NULL;
+            return CELL;
         case 25: //CELLS
             for(UINT32 p = 0;p < (UINT32)CELLS.size();++p)
-                ((FORMIDARRAY)FieldValues)[p] = CELLS[p]->formID;
+                ((RECORDIDARRAY)FieldValues)[p] = CELLS[p];
             return NULL;
         default:
             return NULL;

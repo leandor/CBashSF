@@ -2574,7 +2574,7 @@ def TestTES4():
     Current.load()
     newMod = Current.LookupModFile("TestTES4.esp")
     print "TES4:Read Test"
-    for modFile in Current:
+    for modFile in Current.LoadOrderMods:
         record = modFile.TES4
         print
         print "ModName    :", modFile.ModName
@@ -5601,19 +5601,19 @@ def TestCREA():
     newRecord.bloodDecalPath = r"CREA\bloodDecalPath\anim1.dds"
 
     sound = newRecord.create_sound()
-    sound.type = 0
+    sound.soundType = 0
     sound.sound = 0x0100000A
     sound.chance = 0
     sound = newRecord.create_sound()
-    sound.type = 1
+    sound.soundType = 1
     sound.sound = 0x0000000B
     sound.chance = 1
     sound = newRecord.create_sound()
-    sound.type = 2
+    sound.soundType = 2
     sound.sound = 0x0000000C
     sound.chance = 2
     sound = newRecord.create_sound()
-    sound.type = 3
+    sound.soundType = 3
     sound.sound = 0x0000000D
     sound.chance = 3
     newRecord.sounds = [newRecord.sounds[3], newRecord.sounds[2], newRecord.sounds[0]]
@@ -5705,7 +5705,7 @@ def TestCREA():
 
     print "sounds"
     for sound in newRecord.sounds:
-        print "  %i: type: %u, sound: %s, chance:%i" % (sound._ListIndex, sound.type, PrintFormID(sound.sound), sound.chance)
+        print "  %i: type: %u, sound: %s, chance:%i" % (sound._ListIndex, sound.soundType, PrintFormID(sound.sound), sound.chance)
     print "CREA:CopyAsOverride Test"
     for record in Current.LoadOrderMods[0].CREA:
         record.CopyAsOverride(newMod)
@@ -10365,7 +10365,7 @@ from timeit import Timer
 ##TestAttrReport()
 ##TestCopyAttrs()
 ##TestCleanMasters()
-TestFullLoad()
+##TestFullLoad()
 ##TestMinimalLoad()
 ##TestLoadMasters()
 ##TestDeleteRecord()
@@ -10419,14 +10419,14 @@ TestFullLoad()
 ##TestWRLD()
 ##TestDIAL()
 ##TestQUST()
-##TestIDLE()
-##TestPACK()
-##TestCSTY()
-##TestLSCR()
-##TestLVSP()
-##TestANIO()
-##TestWATR()
-##TestEFSH()
+TestIDLE()
+TestPACK()
+TestCSTY()
+TestLSCR()
+TestLVSP()
+TestANIO()
+TestWATR()
+TestEFSH()
 ####Current.debug(6, True)
 ##print "Entirely Finished\n"
 

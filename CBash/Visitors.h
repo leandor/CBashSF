@@ -62,26 +62,14 @@ class RecordUnloader : public RecordOp
         bool Accept(Record **curRecord);
     };
 
-class FormIDRecordRetriever : public RecordOp
+class RecordIDRetriever : public RecordOp
     {
     private:
-        FORMIDARRAY RecordFIDs;
+        RECORDIDARRAY RecordIDs;
 
     public:
-        FormIDRecordRetriever(FORMIDARRAY _RecordFIDs);
-        ~FormIDRecordRetriever();
-
-        bool Accept(Record **curRecord);
-    };
-
-class EditorIDRecordRetriever : public RecordOp
-    {
-    private:
-        STRINGARRAY RecordEditorIDs;
-
-    public:
-        EditorIDRecordRetriever(STRINGARRAY _RecordEditorIDs);
-        ~EditorIDRecordRetriever();
+        RecordIDRetriever(RECORDIDARRAY _RecordIDs);
+        ~RecordIDRetriever();
 
         bool Accept(Record **curRecord);
     };

@@ -53,7 +53,7 @@ bool ModFile::operator <(ModFile &other)
 
 bool ModFile::operator >(ModFile &other)
     {
-    return !(*this < other);
+    return ModID > other.ModID;
     }
 
 bool ModFile::Open()

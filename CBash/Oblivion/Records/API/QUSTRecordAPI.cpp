@@ -791,7 +791,7 @@ bool QUSTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                                 return false;
                                 }
 
-                            if(ListX3Index >= CTDA.size())
+                            if(ListX3Index >= (UINT32)Stages[ListIndex]->Entries[ListX2Index]->CTDA.size())
                                 break;
 
                             switch(ListX3FieldID)
@@ -953,7 +953,7 @@ bool QUSTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                         return false;
                         }
 
-                    if(ListX2Index >= CTDA.size())
+                    if(ListX2Index >= (UINT32)Targets[ListIndex]->CTDA.size())
                         break;
 
                     switch(ListX2FieldID)

@@ -350,7 +350,7 @@ bool QUSTRecord::VisitFormIDs(FormIDOp &op)
                 op.Accept(CTDA[x]->value.param2);
             }
         else
-            printf("Warning: %08X uses an unknown function (%d)!\n", formID, CTDA[x]->value.ifunc);
+            printf("Warning: QUSTRecord %08X uses an unknown function (%d)!\n", formID, CTDA[x]->value.ifunc);
         }
     for(UINT32 x = 0; x < Stages.size(); x++)
         {
@@ -370,7 +370,7 @@ bool QUSTRecord::VisitFormIDs(FormIDOp &op)
                         op.Accept(Stages[x]->Entries[y]->CTDA[p]->value.param2);
                     }
                 else
-                    printf("Warning: %08X uses an unknown function (%d)!\n", formID, Stages[x]->Entries[y]->CTDA[p]->value.ifunc);
+                    printf("Warning: QUSTRecord Stage %08X uses an unknown function (%d)!\n", formID, Stages[x]->Entries[y]->CTDA[p]->value.ifunc);
                 }
             for(UINT32 p = 0; p < Stages[x]->Entries[y]->SCR_.size(); p++)
                 if(Stages[x]->Entries[y]->SCR_[p]->value.isSCRO)
@@ -395,7 +395,7 @@ bool QUSTRecord::VisitFormIDs(FormIDOp &op)
                     op.Accept(Targets[x]->CTDA[y]->value.param2);
                 }
             else
-                printf("Warning: %08X uses an unknown function (%d)!\n", formID, Targets[x]->CTDA[y]->value.ifunc);
+                printf("Warning: QUSTRecord Target %08X uses an unknown function (%d)!\n", formID, Targets[x]->CTDA[y]->value.ifunc);
             }
         }
 

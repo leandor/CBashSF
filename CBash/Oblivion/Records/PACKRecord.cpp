@@ -158,7 +158,7 @@ bool PACKRecord::VisitFormIDs(FormIDOp &op)
                 op.Accept(CTDA[x]->value.param2);
             }
         else
-            printf("Warning: %08X uses an unknown function (%d)!\n", formID, CTDA[x]->value.ifunc);
+            printf("Warning: PACKRecord %08X uses an unknown function (%d)!\n", formID, CTDA[x]->value.ifunc);
         }
 
     return op.Stop();

@@ -130,45 +130,22 @@ bool RecordUnloader::Accept(Record **curRecord)
     return stop;
     }
 
-FormIDRecordRetriever::FormIDRecordRetriever(FORMIDARRAY _RecordFIDs):
+RecordIDRetriever::RecordIDRetriever(RECORDIDARRAY _RecordIDs):
     RecordOp(),
-    RecordFIDs(_RecordFIDs)
+    RecordIDs(_RecordIDs)
     {
     //
     }
 
-FormIDRecordRetriever::~FormIDRecordRetriever()
+RecordIDRetriever::~RecordIDRetriever()
     {
     //
     }
 
-bool FormIDRecordRetriever::Accept(Record **curRecord)
+bool RecordIDRetriever::Accept(Record **curRecord)
     {
-    RecordFIDs[count] = (*curRecord)->formID;
+    RecordIDs[count] = (*curRecord);
     ++count;
-    return stop;
-    }
-
-EditorIDRecordRetriever::EditorIDRecordRetriever(STRINGARRAY _RecordEditorIDs):
-    RecordOp(),
-    RecordEditorIDs(_RecordEditorIDs)
-    {
-    //
-    }
-
-EditorIDRecordRetriever::~EditorIDRecordRetriever()
-    {
-    //
-    }
-
-bool EditorIDRecordRetriever::Accept(Record **curRecord)
-    {
-    STRING editorID = (STRING )(*curRecord)->GetField(4);
-    if(editorID != NULL)
-        {
-        RecordEditorIDs[count] = editorID;
-        ++count;
-        }
     return stop;
     }
 
