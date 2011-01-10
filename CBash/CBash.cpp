@@ -20,6 +20,49 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 // CBash.cpp
+
+#ifndef CBASH_CALLTIMING
+    #define CBASH_CALLTIMING
+#endif
+#ifdef CBASH_CALLTIMING
+    #include <windows.h>
+    #include <map>
+
+    static std::map<char *, double> CallTime;
+
+    typedef struct
+        {
+        LARGE_INTEGER start;
+        LARGE_INTEGER stop;
+        } stopWatch;
+
+    class CStopWatch
+        {
+        private:
+            stopWatch timer;
+            LARGE_INTEGER frequency;
+            char *FunctionName;
+
+        public:
+            CStopWatch(char *FName):FunctionName(FName)
+                {
+                timer.start.QuadPart=0;
+                timer.stop.QuadPart=0; 
+                QueryPerformanceFrequency(&frequency);
+                QueryPerformanceCounter(&timer.start);
+                }
+
+            ~CStopWatch()
+                {
+                QueryPerformanceCounter(&timer.stop);
+                LARGE_INTEGER time;
+                time.QuadPart = timer.stop.QuadPart - timer.start.QuadPart;
+                CallTime[FunctionName] = CallTime[FunctionName] + ((double)time.QuadPart / (double)frequency.QuadPart);
+                }
+        };
+
+#endif
+
 #include "CBash.h"
 #include "Collection.h"
 #include <vector>
@@ -69,6 +112,24 @@ GPL License and Copyright Notice ============================================
 #endif
 
 static std::vector<Collection *> Collections;
+
+#ifdef CBASH_CALLCOUNT
+    static std::map<STRING, UINT32> CallCount;
+
+    class CCounter
+        {
+        private:
+            unsigned long total;
+            char *FunctionName;
+
+        public:
+            CCounter(char *FName):FunctionName(FName),total(CallCount[FName])
+                {
+                total++;
+                CallCount[FName] = total;
+                }
+        };
+#endif
 
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
@@ -357,6 +418,12 @@ UINT32 GetVersionRevision()
 //Collection action functions
 SINT32 CreateCollection(STRING const ModsPath, const UINT32 CollectionType)
     {
+    #ifdef CBASH_CALLCOUNT
+        CCounter cbcounter("CreateCollection");
+    #endif
+    #ifdef CBASH_CALLTIMING
+        CStopWatch cbtimer("CreateCollection");
+    #endif
     try
         {
         ValidatePointer(ModsPath);
@@ -387,6 +454,12 @@ SINT32 CreateCollection(STRING const ModsPath, const UINT32 CollectionType)
 #pragma warning( disable : 4101 ) //Disable warning about deliberately unused variable (Ex_INVALIDCOLLECTIONINDEX &ex)
 SINT32 DeleteCollection(const UINT32 CollectionID)
     {
+    #ifdef CBASH_CALLCOUNT
+        CCounter cbcounter("DeleteCollection");
+    #endif
+    #ifdef CBASH_CALLTIMING
+        CStopWatch cbtimer("DeleteCollection");
+    #endif
     try
         {
         ValidateCollectionID(CollectionID);
@@ -398,6 +471,21 @@ SINT32 DeleteCollection(const UINT32 CollectionID)
                 return 0;
             }
         Collections.clear();
+
+        #ifdef CBASH_CALLCOUNT
+            printf("counts = [");
+            for(std::map<STRING, UINT32>::iterator it = CallCount.begin(); it != CallCount.end(); ++it)
+                printf("(%d, '%s'),", it->second, it->first);
+            printf("]\n");
+            CallCount.clear();
+        #endif
+        #ifdef CBASH_CALLTIMING
+            printf("times = [");
+            for(std::map<char *, double>::iterator it = CallTime.begin(); it != CallTime.end(); ++it)
+                printf("(%.10f, '%s'),", it->second, it->first);
+            printf("]\n");
+            CallTime.clear();
+        #endif
         }
     catch(Ex_INVALIDCOLLECTIONINDEX &ex) {} //Silently fail if deleting an already deleted collection
     catch(std::exception &ex)
@@ -416,6 +504,12 @@ SINT32 DeleteCollection(const UINT32 CollectionID)
 
 SINT32 LoadCollection(const UINT32 CollectionID)
     {
+    #ifdef CBASH_CALLCOUNT
+        CCounter cbcounter("LoadCollection");
+    #endif
+    #ifdef CBASH_CALLTIMING
+        CStopWatch cbtimer("LoadCollection");
+    #endif
     #ifdef CBASH_USE_LOGGING
         CLOGGER;
         BOOST_LOG_FUNCTION();
@@ -440,6 +534,12 @@ SINT32 LoadCollection(const UINT32 CollectionID)
 
 SINT32 UnloadCollection(const UINT32 CollectionID)
     {
+    #ifdef CBASH_CALLCOUNT
+        CCounter cbcounter("UnloadCollection");
+    #endif
+    #ifdef CBASH_CALLTIMING
+        CStopWatch cbtimer("UnloadCollection");
+    #endif
     try
         {
         ValidateCollectionID(CollectionID)->Unload();
@@ -459,6 +559,12 @@ SINT32 UnloadCollection(const UINT32 CollectionID)
 
 SINT32 DeleteAllCollections()
     {
+    #ifdef CBASH_CALLCOUNT
+        CCounter cbcounter("DeleteAllCollections");
+    #endif
+    #ifdef CBASH_CALLTIMING
+        CStopWatch cbtimer("DeleteAllCollections");
+    #endif
     try
         {
         for(UINT32 p = 0; p < Collections.size(); ++p)
@@ -482,6 +588,12 @@ SINT32 DeleteAllCollections()
 //Mod action functions
 SINT32 AddMod(const UINT32 CollectionID, STRING const ModName, const UINT32 ModFlagsField)
     {
+    #ifdef CBASH_CALLCOUNT
+        CCounter cbcounter("AddMod");
+    #endif
+    #ifdef CBASH_CALLTIMING
+        CStopWatch cbtimer("AddMod");
+    #endif
     #ifdef CBASH_USE_LOGGING
         CLOGGER;
         BOOST_LOG_FUNCTION();
@@ -507,6 +619,12 @@ SINT32 AddMod(const UINT32 CollectionID, STRING const ModName, const UINT32 ModF
 
 SINT32 LoadMod(const UINT32 CollectionID, const UINT32 ModID)
     {
+    #ifdef CBASH_CALLCOUNT
+        CCounter cbcounter("LoadMod");
+    #endif
+    #ifdef CBASH_CALLTIMING
+        CStopWatch cbtimer("LoadMod");
+    #endif
     try
         {
         Collection *curCollection = ValidateCollectionID(CollectionID);
@@ -529,6 +647,12 @@ SINT32 LoadMod(const UINT32 CollectionID, const UINT32 ModID)
 
 SINT32 UnloadMod(const UINT32 CollectionID, const UINT32 ModID)
     {
+    #ifdef CBASH_CALLCOUNT
+        CCounter cbcounter("UnloadMod");
+    #endif
+    #ifdef CBASH_CALLTIMING
+        CStopWatch cbtimer("UnloadMod");
+    #endif
     try
         {
         RecordUnloader unloader;
@@ -549,6 +673,12 @@ SINT32 UnloadMod(const UINT32 CollectionID, const UINT32 ModID)
 
 SINT32 CleanModMasters(const UINT32 CollectionID, const UINT32 ModID)
     {
+    #ifdef CBASH_CALLCOUNT
+        CCounter cbcounter("CleanModMasters");
+    #endif
+    #ifdef CBASH_CALLTIMING
+        CStopWatch cbtimer("CleanModMasters");
+    #endif
     try
         {
         Collection *curCollection = ValidateCollectionID(CollectionID);
@@ -569,6 +699,12 @@ SINT32 CleanModMasters(const UINT32 CollectionID, const UINT32 ModID)
 
 SINT32 SaveMod(const UINT32 CollectionID, const UINT32 ModID, const bool CloseCollection)
     {
+    #ifdef CBASH_CALLCOUNT
+        CCounter cbcounter("SaveMod");
+    #endif
+    #ifdef CBASH_CALLTIMING
+        CStopWatch cbtimer("SaveMod");
+    #endif
     try
         {
         Collection *curCollection = ValidateCollectionID(CollectionID);
@@ -593,6 +729,12 @@ SINT32 SaveMod(const UINT32 CollectionID, const UINT32 ModID, const bool CloseCo
 //Mod info functions
 SINT32 GetAllNumMods(const UINT32 CollectionID)
     {
+    #ifdef CBASH_CALLCOUNT
+        CCounter cbcounter("GetAllNumMods");
+    #endif
+    #ifdef CBASH_CALLTIMING
+        CStopWatch cbtimer("GetAllNumMods");
+    #endif
     try
         {
         return ValidateCollectionID(CollectionID)->ModFiles.size();
@@ -612,6 +754,12 @@ SINT32 GetAllNumMods(const UINT32 CollectionID)
 
 SINT32 GetAllModIDs(const UINT32 CollectionID, UINT32ARRAY ModIDs)
     {
+    #ifdef CBASH_CALLCOUNT
+        CCounter cbcounter("GetAllModIDs");
+    #endif
+    #ifdef CBASH_CALLTIMING
+        CStopWatch cbtimer("GetAllModIDs");
+    #endif
     try
         {
         Collection *curCollection = ValidateCollectionID(CollectionID);
@@ -635,6 +783,12 @@ SINT32 GetAllModIDs(const UINT32 CollectionID, UINT32ARRAY ModIDs)
 
 SINT32 GetLoadOrderNumMods(const UINT32 CollectionID)
     {
+    #ifdef CBASH_CALLCOUNT
+        CCounter cbcounter("GetLoadOrderNumMods");
+    #endif
+    #ifdef CBASH_CALLTIMING
+        CStopWatch cbtimer("GetLoadOrderNumMods");
+    #endif
     try
         {
         return ValidateCollectionID(CollectionID)->LoadOrder255.size();
@@ -654,6 +808,12 @@ SINT32 GetLoadOrderNumMods(const UINT32 CollectionID)
 
 SINT32 GetLoadOrderModIDs(const UINT32 CollectionID, UINT32ARRAY ModIDs)
     {
+    #ifdef CBASH_CALLCOUNT
+        CCounter cbcounter("GetLoadOrderModIDs");
+    #endif
+    #ifdef CBASH_CALLTIMING
+        CStopWatch cbtimer("GetLoadOrderModIDs");
+    #endif
     try
         {
         Collection *curCollection = ValidateCollectionID(CollectionID);
@@ -677,6 +837,12 @@ SINT32 GetLoadOrderModIDs(const UINT32 CollectionID, UINT32ARRAY ModIDs)
 
 STRING GetFileNameByID(const UINT32 CollectionID, const UINT32 ModID)
     {
+    #ifdef CBASH_CALLCOUNT
+        CCounter cbcounter("GetFileNameByID");
+    #endif
+    #ifdef CBASH_CALLTIMING
+        CStopWatch cbtimer("GetFileNameByID");
+    #endif
     try
         {
         return ValidateModID(ValidateCollectionID(CollectionID), ModID)->ReadHandler.getFileName();
@@ -696,6 +862,12 @@ STRING GetFileNameByID(const UINT32 CollectionID, const UINT32 ModID)
 
 STRING GetFileNameByLoadOrder(const UINT32 CollectionID, const UINT32 ModIndex)
     {
+    #ifdef CBASH_CALLCOUNT
+        CCounter cbcounter("GetFileNameByLoadOrder");
+    #endif
+    #ifdef CBASH_CALLTIMING
+        CStopWatch cbtimer("GetFileNameByLoadOrder");
+    #endif
     try
         {
         return ValidateLoadOrderIndex(ValidateCollectionID(CollectionID), ModIndex)->ReadHandler.getFileName();
@@ -715,6 +887,12 @@ STRING GetFileNameByLoadOrder(const UINT32 CollectionID, const UINT32 ModIndex)
 
 STRING GetModNameByID(const UINT32 CollectionID, const UINT32 ModID)
     {
+    #ifdef CBASH_CALLCOUNT
+        CCounter cbcounter("GetModNameByID");
+    #endif
+    #ifdef CBASH_CALLTIMING
+        CStopWatch cbtimer("GetModNameByID");
+    #endif
     try
         {
         return ValidateModID(ValidateCollectionID(CollectionID), ModID)->ReadHandler.getModName();
@@ -734,6 +912,12 @@ STRING GetModNameByID(const UINT32 CollectionID, const UINT32 ModID)
 
 STRING GetModNameByLoadOrder(const UINT32 CollectionID, const UINT32 ModIndex)
     {
+    #ifdef CBASH_CALLCOUNT
+        CCounter cbcounter("GetModNameByLoadOrder");
+    #endif
+    #ifdef CBASH_CALLTIMING
+        CStopWatch cbtimer("GetModNameByLoadOrder");
+    #endif
     try
         {
         return ValidateLoadOrderIndex(ValidateCollectionID(CollectionID), ModIndex)->ReadHandler.getModName();
@@ -753,6 +937,12 @@ STRING GetModNameByLoadOrder(const UINT32 CollectionID, const UINT32 ModIndex)
 
 SINT32 GetModIDByName(const UINT32 CollectionID, STRING const ModName)
     {
+    #ifdef CBASH_CALLCOUNT
+        CCounter cbcounter("GetModIDByName");
+    #endif
+    #ifdef CBASH_CALLTIMING
+        CStopWatch cbtimer("GetModIDByName");
+    #endif
     try
         {
         return ValidateModID(ValidateCollectionID(CollectionID), ModName)->ModID;
@@ -772,6 +962,12 @@ SINT32 GetModIDByName(const UINT32 CollectionID, STRING const ModName)
 
 SINT32 GetModIDByLoadOrder(const UINT32 CollectionID, const UINT32 ModIndex)
     {
+    #ifdef CBASH_CALLCOUNT
+        CCounter cbcounter("GetModIDByLoadOrder");
+    #endif
+    #ifdef CBASH_CALLTIMING
+        CStopWatch cbtimer("GetModIDByLoadOrder");
+    #endif
     try
         {
         return ValidateLoadOrderIndex(ValidateCollectionID(CollectionID), ModIndex)->ModID;
@@ -791,6 +987,12 @@ SINT32 GetModIDByLoadOrder(const UINT32 CollectionID, const UINT32 ModIndex)
 
 SINT32 GetModLoadOrderByName(const UINT32 CollectionID, STRING const ModName)
     {
+    #ifdef CBASH_CALLCOUNT
+        CCounter cbcounter("GetModLoadOrderByName");
+    #endif
+    #ifdef CBASH_CALLTIMING
+        CStopWatch cbtimer("GetModLoadOrderByName");
+    #endif
     try
         {
         return ValidateLoadOrderIndex(ValidateCollectionID(CollectionID), ModName)->FormIDHandler.ExpandedIndex;
@@ -810,6 +1012,12 @@ SINT32 GetModLoadOrderByName(const UINT32 CollectionID, STRING const ModName)
 
 SINT32 GetModLoadOrderByID(const UINT32 CollectionID, const UINT32 ModID)
     {
+    #ifdef CBASH_CALLCOUNT
+        CCounter cbcounter("GetModLoadOrderByID");
+    #endif
+    #ifdef CBASH_CALLTIMING
+        CStopWatch cbtimer("GetModLoadOrderByID");
+    #endif
     try
         {
         ModFile *curModFile = ValidateModID(ValidateCollectionID(CollectionID), ModID);
@@ -832,6 +1040,12 @@ SINT32 GetModLoadOrderByID(const UINT32 CollectionID, const UINT32 ModID)
 
 STRING GetLongIDName(const UINT32 CollectionID, const UINT32 ModID, const UINT32 ModIndex)
     {
+    #ifdef CBASH_CALLCOUNT
+        CCounter cbcounter("GetLongIDName");
+    #endif
+    #ifdef CBASH_CALLTIMING
+        CStopWatch cbtimer("GetLongIDName");
+    #endif
     if(ModIndex == 0xFF)
         return NULL;
     try
@@ -883,6 +1097,12 @@ STRING GetLongIDName(const UINT32 CollectionID, const UINT32 ModID, const UINT32
 
 UINT32 IsModEmpty(const UINT32 CollectionID, const UINT32 ModID)
     {
+    #ifdef CBASH_CALLCOUNT
+        CCounter cbcounter("IsModEmpty");
+    #endif
+    #ifdef CBASH_CALLTIMING
+        CStopWatch cbtimer("IsModEmpty");
+    #endif
     try
         {
         return ValidateModID(ValidateCollectionID(CollectionID), ModID)->FormIDHandler.IsEmpty;
@@ -902,6 +1122,12 @@ UINT32 IsModEmpty(const UINT32 CollectionID, const UINT32 ModID)
 
 SINT32 GetModNumTypes(const UINT32 CollectionID, const UINT32 ModID)
     {
+    #ifdef CBASH_CALLCOUNT
+        CCounter cbcounter("GetModNumTypes");
+    #endif
+    #ifdef CBASH_CALLTIMING
+        CStopWatch cbtimer("GetModNumTypes");
+    #endif
     try
         {
         ModFile *curModFile = ValidateModID(ValidateCollectionID(CollectionID), ModID);
@@ -925,6 +1151,12 @@ SINT32 GetModNumTypes(const UINT32 CollectionID, const UINT32 ModID)
 
 void GetModTypes(const UINT32 CollectionID, const UINT32 ModID, UINT32ARRAY RecordTypes)
     {
+    #ifdef CBASH_CALLCOUNT
+        CCounter cbcounter("GetModTypes");
+    #endif
+    #ifdef CBASH_CALLTIMING
+        CStopWatch cbtimer("GetModTypes");
+    #endif
     try
         {
         ModFile *curModFile = ValidateModID(ValidateCollectionID(CollectionID), ModID);
@@ -950,6 +1182,12 @@ void GetModTypes(const UINT32 CollectionID, const UINT32 ModID, UINT32ARRAY Reco
 //Record action functions
 UINT32 CreateRecord(const UINT32 CollectionID, const UINT32 ModID, const UINT32 RecordType, const FORMID RecordFormID, STRING const RecordEditorID, const FORMID ParentFormID, const UINT32 CreateFlags)
     {
+    #ifdef CBASH_CALLCOUNT
+        CCounter cbcounter("CreateRecord");
+    #endif
+    #ifdef CBASH_CALLTIMING
+        CStopWatch cbtimer("CreateRecord");
+    #endif
     try
         {
         Collection *curCollection = ValidateCollectionID(CollectionID);
@@ -970,6 +1208,12 @@ UINT32 CreateRecord(const UINT32 CollectionID, const UINT32 ModID, const UINT32 
 
 SINT32 DeleteRecord(const UINT32 CollectionID, const UINT32 ModID, const FORMID RecordFormID, STRING const RecordEditorID, const FORMID ParentFormID)
     {
+    #ifdef CBASH_CALLCOUNT
+        CCounter cbcounter("DeleteRecord");
+    #endif
+    #ifdef CBASH_CALLTIMING
+        CStopWatch cbtimer("DeleteRecord");
+    #endif
     try
         {
         Collection *curCollection = ValidateCollectionID(CollectionID);
@@ -990,6 +1234,12 @@ SINT32 DeleteRecord(const UINT32 CollectionID, const UINT32 ModID, const FORMID 
 
 UINT32 CopyRecord(const UINT32 CollectionID, const UINT32 ModID, const FORMID RecordFormID, STRING const RecordEditorID, const UINT32 DestModID, const UINT32 DestParentFormID, const FORMID DestRecordFormID, STRING const DestRecordEditorID, const UINT32 CreateFlags)
     {
+    #ifdef CBASH_CALLCOUNT
+        CCounter cbcounter("CopyRecord");
+    #endif
+    #ifdef CBASH_CALLTIMING
+        CStopWatch cbtimer("CopyRecord");
+    #endif
     try
         {
         Collection *curCollection = ValidateCollectionID(CollectionID);
@@ -1016,6 +1266,12 @@ UINT32 CopyRecord(const UINT32 CollectionID, const UINT32 ModID, const FORMID Re
 
 SINT32 UnloadRecord(const UINT32 CollectionID, const UINT32 ModID, const FORMID RecordFormID, STRING const RecordEditorID)
     {
+    #ifdef CBASH_CALLCOUNT
+        CCounter cbcounter("UnloadRecord");
+    #endif
+    #ifdef CBASH_CALLTIMING
+        CStopWatch cbtimer("UnloadRecord");
+    #endif
     try
         {
         Record *curRecord = NULL;
@@ -1037,6 +1293,12 @@ SINT32 UnloadRecord(const UINT32 CollectionID, const UINT32 ModID, const FORMID 
 
 SINT32 SetRecordIDs(const UINT32 CollectionID, const UINT32 ModID, const FORMID RecordFormID, STRING const RecordEditorID, const FORMID FormIDValue, STRING const EditorIDValue)
     {
+    #ifdef CBASH_CALLCOUNT
+        CCounter cbcounter("SetRecordIDs");
+    #endif
+    #ifdef CBASH_CALLTIMING
+        CStopWatch cbtimer("SetRecordIDs");
+    #endif
     try
         {
         Collection *curCollection = ValidateCollectionID(CollectionID);
@@ -1058,6 +1320,12 @@ SINT32 SetRecordIDs(const UINT32 CollectionID, const UINT32 ModID, const FORMID 
 //Record info functions
 SINT32 GetNumRecords(const UINT32 CollectionID, const UINT32 ModID, const UINT32 RecordType)
     {
+    #ifdef CBASH_CALLCOUNT
+        CCounter cbcounter("GetNumRecords");
+    #endif
+    #ifdef CBASH_CALLTIMING
+        CStopWatch cbtimer("GetNumRecords");
+    #endif
     try
         {
         return ValidateModID(ValidateCollectionID(CollectionID), ModID)->GetNumRecords(RecordType);
@@ -1077,6 +1345,12 @@ SINT32 GetNumRecords(const UINT32 CollectionID, const UINT32 ModID, const UINT32
 
 void GetRecordFormIDs(const UINT32 CollectionID, const UINT32 ModID, const UINT32 RecordType, FORMIDARRAY RecordFormIDs)
     {
+    #ifdef CBASH_CALLCOUNT
+        CCounter cbcounter("GetRecordFormIDs");
+    #endif
+    #ifdef CBASH_CALLTIMING
+        CStopWatch cbtimer("GetRecordFormIDs");
+    #endif
     try
         {
         FormIDRecordRetriever retriever(RecordFormIDs);
@@ -1097,6 +1371,12 @@ void GetRecordFormIDs(const UINT32 CollectionID, const UINT32 ModID, const UINT3
 
 void GetRecordEditorIDs(const UINT32 CollectionID, const UINT32 ModID, const UINT32 RecordType, STRINGARRAY RecordEditorIDs)
     {
+    #ifdef CBASH_CALLCOUNT
+        CCounter cbcounter("GetRecordEditorIDs");
+    #endif
+    #ifdef CBASH_CALLTIMING
+        CStopWatch cbtimer("GetRecordEditorIDs");
+    #endif
     try
         {
         EditorIDRecordRetriever retriever(RecordEditorIDs);
@@ -1117,6 +1397,12 @@ void GetRecordEditorIDs(const UINT32 CollectionID, const UINT32 ModID, const UIN
 
 SINT32 IsRecordWinning(const UINT32 CollectionID, const UINT32 ModID, const FORMID RecordFormID, STRING const RecordEditorID, const bool GetExtendedConflicts)
     {
+    #ifdef CBASH_CALLCOUNT
+        CCounter cbcounter("IsRecordWinning");
+    #endif
+    #ifdef CBASH_CALLTIMING
+        CStopWatch cbtimer("IsRecordWinning");
+    #endif
     try
         {
         Collection *curCollection = ValidateCollectionID(CollectionID);
@@ -1137,6 +1423,12 @@ SINT32 IsRecordWinning(const UINT32 CollectionID, const UINT32 ModID, const FORM
 
 SINT32 GetNumRecordConflicts(const UINT32 CollectionID, const FORMID RecordFormID, STRING const RecordEditorID, const bool GetExtendedConflicts)
     {
+    #ifdef CBASH_CALLCOUNT
+        CCounter cbcounter("GetNumRecordConflicts");
+    #endif
+    #ifdef CBASH_CALLTIMING
+        CStopWatch cbtimer("GetNumRecordConflicts");
+    #endif
     try
         {
         return ValidateCollectionID(CollectionID)->GetNumRecordConflicts(RecordFormID, RecordEditorID, GetExtendedConflicts);
@@ -1156,6 +1448,12 @@ SINT32 GetNumRecordConflicts(const UINT32 CollectionID, const FORMID RecordFormI
 
 void GetRecordConflicts(const UINT32 CollectionID, const FORMID RecordFormID, STRING const RecordEditorID, UINT32ARRAY ModIDs, const bool GetExtendedConflicts)
     {
+    #ifdef CBASH_CALLCOUNT
+        CCounter cbcounter("GetRecordConflicts");
+    #endif
+    #ifdef CBASH_CALLTIMING
+        CStopWatch cbtimer("GetRecordConflicts");
+    #endif
     try
         {
         ValidateCollectionID(CollectionID)->GetRecordConflicts(RecordFormID, RecordEditorID, ModIDs, GetExtendedConflicts);
@@ -1176,6 +1474,12 @@ void GetRecordConflicts(const UINT32 CollectionID, const FORMID RecordFormID, ST
 
 void GetRecordHistory(const UINT32 CollectionID, const UINT32 ModID, const FORMID RecordFormID, STRING const RecordEditorID, UINT32ARRAY ModIDs)
     {
+    #ifdef CBASH_CALLCOUNT
+        CCounter cbcounter("GetRecordHistory");
+    #endif
+    #ifdef CBASH_CALLTIMING
+        CStopWatch cbtimer("GetRecordHistory");
+    #endif
     try
         {
         Collection *curCollection = ValidateCollectionID(CollectionID);
@@ -1198,6 +1502,12 @@ void GetRecordHistory(const UINT32 CollectionID, const UINT32 ModID, const FORMI
 //Mod or Record action functions
 SINT32 UpdateReferences(const UINT32 CollectionID, const UINT32 ModID, const FORMID RecordFormID, const FORMID FormIDToReplace, const FORMID ReplacementFormID)
     {
+    #ifdef CBASH_CALLCOUNT
+        CCounter cbcounter("UpdateReferences");
+    #endif
+    #ifdef CBASH_CALLTIMING
+        CStopWatch cbtimer("UpdateReferences");
+    #endif
     //Sanity check.
     if(FormIDToReplace == ReplacementFormID)
         return -1;
@@ -1246,6 +1556,12 @@ SINT32 UpdateReferences(const UINT32 CollectionID, const UINT32 ModID, const FOR
 //Mod or Record info functions
 SINT32 GetNumReferences(const UINT32 CollectionID, const UINT32 ModID, const FORMID RecordFormID, const FORMID FormIDToMatch)
     {
+    #ifdef CBASH_CALLCOUNT
+        CCounter cbcounter("GetNumReferences");
+    #endif
+    #ifdef CBASH_CALLTIMING
+        CStopWatch cbtimer("GetNumReferences");
+    #endif
     try
         {
         ModFile *curModFile = NULL;
@@ -1278,6 +1594,12 @@ SINT32 GetNumReferences(const UINT32 CollectionID, const UINT32 ModID, const FOR
 //Field action functions
 void SetField(const UINT32 CollectionID, const UINT32 ModID, const FORMID RecordFormID, STRING const RecordEditorID, FIELD_IDENTIFIERS, void *FieldValue, const UINT32 ArraySize)
     {
+    #ifdef CBASH_CALLCOUNT
+        CCounter cbcounter("SetField");
+    #endif
+    #ifdef CBASH_CALLTIMING
+        CStopWatch cbtimer("SetField");
+    #endif
     try
         {
         ModFile *curModFile = NULL;
@@ -1319,6 +1641,12 @@ void SetField(const UINT32 CollectionID, const UINT32 ModID, const FORMID Record
 
 void DeleteField(const UINT32 CollectionID, const UINT32 ModID, const FORMID RecordFormID, STRING const RecordEditorID, FIELD_IDENTIFIERS)
     {
+    #ifdef CBASH_CALLCOUNT
+        CCounter cbcounter("DeleteField");
+    #endif
+    #ifdef CBASH_CALLTIMING
+        CStopWatch cbtimer("DeleteField");
+    #endif
     try
         {
         ModFile *curModFile = NULL;
@@ -1354,6 +1682,12 @@ void DeleteField(const UINT32 CollectionID, const UINT32 ModID, const FORMID Rec
 //Field info functions
 UINT32 GetFieldAttribute(const UINT32 CollectionID, const UINT32 ModID, const FORMID RecordFormID, STRING const RecordEditorID, FIELD_IDENTIFIERS, const UINT32 WhichAttribute)
     {
+    #ifdef CBASH_CALLCOUNT
+        CCounter cbcounter("GetFieldAttribute");
+    #endif
+    #ifdef CBASH_CALLTIMING
+        CStopWatch cbtimer("GetFieldAttribute");
+    #endif
     try
         {
         ModFile *curModFile = NULL;
@@ -1402,6 +1736,12 @@ UINT32 GetFieldAttribute(const UINT32 CollectionID, const UINT32 ModID, const FO
 
 void * GetField(const UINT32 CollectionID, const UINT32 ModID, const FORMID RecordFormID, STRING const RecordEditorID, FIELD_IDENTIFIERS, void **FieldValues)
     {
+    #ifdef CBASH_CALLCOUNT
+        CCounter cbcounter("GetField");
+    #endif
+    #ifdef CBASH_CALLTIMING
+        CStopWatch cbtimer("GetField");
+    #endif
     try
         {
         ModFile *curModFile = NULL;

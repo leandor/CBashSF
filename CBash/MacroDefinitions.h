@@ -2,6 +2,14 @@
 
 #undef CBASH_USE_LOGGING
 
+#ifndef CBASH_CALLTIMING
+    #define CBASH_CALLTIMING
+#endif
+
+#ifndef CBASH_CALLCOUNT
+    #define CBASH_CALLCOUNT
+#endif
+
 #ifdef CBASH_USE_LOGGING
     #ifndef CLOGGER
         #define CLOGGER    boost::log::sources::severity_logger< severity_level > lg
