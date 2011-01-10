@@ -20,9 +20,11 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 // CBash.cpp
-#ifndef CBASH_CALLTIMING
-    #define CBASH_CALLTIMING
-#endif
+//#ifndef CBASH_CALLTIMING
+//    #define CBASH_CALLTIMING
+//#endif
+#undef CBASH_CALLTIMING
+#undef CBASH_CALLCOUNT
 #ifdef CBASH_CALLTIMING
     #include <windows.h>
     #include <map>

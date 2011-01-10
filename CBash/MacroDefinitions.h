@@ -2,13 +2,16 @@
 
 #undef CBASH_USE_LOGGING
 
-#ifndef CBASH_CALLTIMING
-    #define CBASH_CALLTIMING
-#endif
+//#ifndef CBASH_CALLTIMING
+//    #define CBASH_CALLTIMING
+//#endif
 
-#ifndef CBASH_CALLCOUNT
-    #define CBASH_CALLCOUNT
-#endif
+//#ifndef CBASH_CALLCOUNT
+//    #define CBASH_CALLCOUNT
+//#endif
+
+#undef CBASH_CALLTIMING
+#undef CBASH_CALLCOUNT
 
 #ifdef CBASH_USE_LOGGING
     #ifndef CLOGGER
