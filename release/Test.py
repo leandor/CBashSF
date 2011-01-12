@@ -127,7 +127,7 @@ def assertGMST(Current, newMod):
     assert record.flags1 == 0x80000000 #CBash sets 0x80000000 for internal use
     assert record.flags2 == 1583621
     assert record.eid == "sMiscSEBounty"
-    assert record.eid != "sMiscSEbounty" #GMST edid are case sensitive since they're keyed by it
+    assert record.eid == "sMiscSEbounty"
     assert record.value == "Shivering Isles Bounty:"
     assert record.value != "ShiVering Isles Bounty:"
 
@@ -145,7 +145,7 @@ def assertGMST(Current, newMod):
     assert srecord.flags1 == 10 | 0x80000000
     assert srecord.flags2 == 15
     assert srecord.eid == "sWarString"
-    assert srecord.eid != "sWaRString" #GMST edid are case sensitive since they're keyed by it
+    assert srecord.eid == "sWaRString"
     assert srecord.value == "It works!"
     assert srecord.value != "IT works!"
 
@@ -159,7 +159,7 @@ def assertGMST(Current, newMod):
     assert irecord.flags1 == 11 | 0x80000000
     assert irecord.flags2 == 16
     assert irecord.eid == "iWarString"
-    assert irecord.eid != "IWarString"
+    assert irecord.eid == "IWarString"
     assert irecord.value == 2
 
     frecord.flags1 = 12
@@ -172,17 +172,17 @@ def assertGMST(Current, newMod):
     assert frecord.flags1 == 12 | 0x80000000
     assert frecord.flags2 == 17
     assert frecord.eid == "fWarString"
-    assert frecord.eid != "fWarSTRing" #GMST edid are case sensitive since they're keyed by it
+    assert frecord.eid == "fWarSTRing"
     assert frecord.value == 3.0
 
     record = Current.LoadOrderMods[0].GMST[0]
     newrecord = record.CopyAsOverride(newMod)
 
-    assert newrecord.fid == ('Oblivion.esm', 0x045D2F)
+    assert newrecord.fid == ('RegressionTests.esp', 0x001004) #GMSTs are keyed by editorID, so the formID will change on CopyAsOverride
     assert newrecord.flags1 == 0x80000000
     assert newrecord.flags2 == 1583621
     assert newrecord.eid == "sMiscSEBounty"
-    assert newrecord.eid != "SMiscSEBounty" #GMST edid are case sensitive since they're keyed by it
+    assert newrecord.eid == "SMiscSEBounty"
     assert newrecord.value == "Shivering Isles Bounty:"
     assert newrecord.value != "ShiverinG Isles Bounty:"
 
@@ -192,11 +192,11 @@ def assertGMST(Current, newMod):
     newrecord.eid = "" #Shouldn't work
     newrecord.value = "Test:"
 
-    assert newrecord.fid == ('Oblivion.esm', 0x045D2F)
+    assert newrecord.fid == ('RegressionTests.esp', 0x001004)
     assert newrecord.flags1 == 0x80000000
     assert newrecord.flags2 == 5
     assert newrecord.eid == "sTestWar"
-    assert newrecord.eid != "sTEstWar" #GMST edid are case sensitive since they're keyed by it
+    assert newrecord.eid == "sTEstWar"
     assert newrecord.value == "Test:"
     assert newrecord.value != "TeSt:"
 
@@ -204,7 +204,7 @@ def assertGMST(Current, newMod):
     assert record.flags1 == 0x80000000
     assert record.flags2 == 1583621
     assert record.eid == "sMiscSEBounty"
-    assert record.eid != "sMiscSEBounTy" #GMST edid are case sensitive since they're keyed by it
+    assert record.eid == "sMiscSEBounTy"
     assert record.value == "Shivering Isles Bounty:"
     assert record.value != "Shivering Isles BounTy:"
 
@@ -229,7 +229,7 @@ def assertGLOB(Current, newMod):
     record.format = 'f'
     record.value = 12.2
 
-    assert record.fid == ('RegressionTests.esp', 0x001004)
+    assert record.fid == ('RegressionTests.esp', 0x001005)
     assert record.flags1 == 0x0102 | 0x80000000
     assert record.flags2 == 0x0201
     assert record.eid == "WarGlobalTest"
@@ -275,7 +275,7 @@ def assertGLOB(Current, newMod):
 
     newrecord = record.CopyAsNew(newMod)
 
-    assert newrecord.fid == ('RegressionTests.esp', 0x001005)
+    assert newrecord.fid == ('RegressionTests.esp', 0x001006)
     assert newrecord.flags1 == 0x80000000
     assert newrecord.flags2 == 1584398
     assert newrecord.eid == "SEKnightSpawnTime"
@@ -352,7 +352,7 @@ def assertCLAS(Current, newMod):
     record.trainLevel = 60
     record.unused1 = [0x01, 0xFF]
 
-    assert record.fid == ('RegressionTests.esp', 0x001006)
+    assert record.fid == ('RegressionTests.esp', 0x001007)
     assert record.flags1 == 0x0102 | 0x80000000
     assert record.flags2 == 0x0201
     assert record.eid == "WarCLASTest"
@@ -484,7 +484,7 @@ def assertCLAS(Current, newMod):
 
     record = record.CopyAsNew(newMod)
 
-    assert record.fid == ('RegressionTests.esp', 0x001007)
+    assert record.fid == ('RegressionTests.esp', 0x001008)
     assert record.flags1 == 0x80000000
     assert record.flags2 == 7024151
     assert record.eid == "SE32Smith"
@@ -531,7 +531,7 @@ def assertCLAS(Current, newMod):
     record.trainLevel = 233
     record.unused1 = [0x80, 0x2F]
 
-    assert record.fid == ('RegressionTests.esp', 0x001007)
+    assert record.fid == ('RegressionTests.esp', 0x001008)
     assert record.flags1 == 0x0103 | 0x80000000
     assert record.flags2 == 0x0202
     assert record.eid == "WarCLASAsNew"
@@ -640,7 +640,7 @@ def assertFACT(Current, newMod):
     rank.female = "female_name1"
     rank.insigniaPath = r"insignia1\asdf.ico"
 
-    assert record.fid == ('RegressionTests.esp', 0x001008)
+    assert record.fid == ('RegressionTests.esp', 0x001009)
     assert record.flags1 == 0x0106 | 0x80000000
     assert record.flags2 == 0x0207
     assert record.eid == "WarFACTTest"
@@ -797,7 +797,7 @@ def assertFACT(Current, newMod):
 
     record = record.CopyAsNew(newMod)
 
-    assert record.fid == ('RegressionTests.esp', 0x001009)
+    assert record.fid == ('RegressionTests.esp', 0x00100A)
     assert record.flags1 == 0x80000000
     assert record.flags2 == 2829337
     assert record.eid == "SERooftopClubFaction"
@@ -846,7 +846,7 @@ def assertFACT(Current, newMod):
     rank.female = "female_name1"
     rank.insigniaPath = r"insignia1\asdf.ico"
 
-    assert record.fid == ('RegressionTests.esp', 0x001009)
+    assert record.fid == ('RegressionTests.esp', 0x00100A)
     assert record.flags1 == 0x0101 | 0x80000000
     assert record.flags2 == 0x0201
     assert record.eid == "WarFACTCopy2"
@@ -944,7 +944,7 @@ def assertHAIR(Current, newMod):
     record.iconPath = r"hair\path\test.dds"
     record.flags = 15
 
-    assert record.fid == ('RegressionTests.esp', 0x00100A)
+    assert record.fid == ('RegressionTests.esp', 0x00100B)
     assert record.flags1 == 0x0102 | 0x80000000
     assert record.flags2 == 0x0201
     assert record.eid == "HAIRWarTest"
@@ -1021,7 +1021,7 @@ def assertHAIR(Current, newMod):
 
     record = record.CopyAsNew(newMod)
 
-    assert record.fid == ('RegressionTests.esp', 0x00100B)
+    assert record.fid == ('RegressionTests.esp', 0x00100C)
     assert record.flags1 == 0x80000000
     assert record.flags2 == 1712643
     assert record.eid == "KhajiitWisps"
@@ -1046,7 +1046,7 @@ def assertHAIR(Current, newMod):
     record.iconPath = r"CopyNew\test2.dds"
     record.flags = 27
 
-    assert record.fid == ('RegressionTests.esp', 0x00100B)
+    assert record.fid == ('RegressionTests.esp', 0x00100C)
     assert record.flags1 == 0x0303 | 0x80000000
     assert record.flags2 == 0x0102
     assert record.eid == "HAIRWarTest2CopyNew"
@@ -1086,7 +1086,7 @@ def assertEYES(Current, newMod):
     record.iconPath = r"EYES\p\nath\test.dds"
     record.flags = 15
 
-    assert record.fid == ('RegressionTests.esp', 0x00100C)
+    assert record.fid == ('RegressionTests.esp', 0x00100D)
     assert record.flags1 == 0x0102 | 0x80000000
     assert record.flags2 == 0x0201
     assert record.eid == "EYESWarTest"
@@ -1145,7 +1145,7 @@ def assertEYES(Current, newMod):
 
     record = record.CopyAsNew(newMod)
 
-    assert record.fid == ('RegressionTests.esp', 0x00100D)
+    assert record.fid == ('RegressionTests.esp', 0x00100E)
     assert record.flags1 == 0x80000000
     assert record.flags2 == 1714717
     assert record.eid == "eyeOrdered"
@@ -1163,7 +1163,7 @@ def assertEYES(Current, newMod):
     record.iconPath = r"EYES3\p\nath\test.dds"
     record.flags = 19
 
-    assert record.fid == ('RegressionTests.esp', 0x00100D)
+    assert record.fid == ('RegressionTests.esp', 0x00100E)
     assert record.flags1 == 0x0107 | 0x80000000
     assert record.flags2 == 0x0203
     assert record.eid == "EYESWarTest3"
@@ -10359,7 +10359,7 @@ from timeit import Timer
 ##del Current
 ##phonenumber = raw_input("!")
 
-##regressionTests()
+regressionTests()
 
 ##TestTemp()
 ##TestAttrReport()
@@ -10419,14 +10419,14 @@ from timeit import Timer
 ##TestWRLD()
 ##TestDIAL()
 ##TestQUST()
-TestIDLE()
-TestPACK()
-TestCSTY()
-TestLSCR()
-TestLVSP()
-TestANIO()
-TestWATR()
-TestEFSH()
+##TestIDLE()
+##TestPACK()
+##TestCSTY()
+##TestLSCR()
+##TestLVSP()
+##TestANIO()
+##TestWATR()
+##TestEFSH()
 ####Current.debug(6, True)
 ##print "Entirely Finished\n"
 

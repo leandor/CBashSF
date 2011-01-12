@@ -1,17 +1,97 @@
 #pragma once
 
+//define or undef as desired
+#undef CBASH_PROFILING
 #undef CBASH_USE_LOGGING
 
-//#ifndef CBASH_CALLTIMING
-//    #define CBASH_CALLTIMING
-//#endif
+//These require CBASH_PROFILING to be defined
+#ifdef CBASH_PROFILING
+    //define or undef as desired
+    #define CBASH_CALLTIMING
+    #define CBASH_CALLCOUNT
+    #undef CBASH_TRACE
+#else
+    //don't touch
+    #undef CBASH_CALLTIMING
+    #undef CBASH_CALLCOUNT
+    #undef CBASH_TRACE
+#endif
 
-//#ifndef CBASH_CALLCOUNT
-//    #define CBASH_CALLCOUNT
-//#endif
+#ifdef CBASH_TRACE
+    #define TRACE_FUNC printf("%s\n", __FUNCTION__)
+#else
+    #define TRACE_FUNC
+#endif
 
-#undef CBASH_CALLTIMING
-#undef CBASH_CALLCOUNT
+#ifdef CBASH_PROFILING
+    #define PROFILE_FUNC TRACE_FUNC;COUNT_FUNC;TIME_FUNC;
+#else
+    #define PROFILE_FUNC
+#endif
+
+#ifdef CBASH_CALLTIMING
+    #include <windows.h>
+    #include <map>
+
+    static std::map<char *, double> CallTime;
+
+    typedef struct
+        {
+        LARGE_INTEGER start;
+        LARGE_INTEGER stop;
+        } stopWatch;
+
+    class CStopWatch
+        {
+        private:
+            stopWatch timer;
+            LARGE_INTEGER frequency;
+            char *FunctionName;
+
+        public:
+            CStopWatch(char *FName):FunctionName(FName)
+                {
+                timer.start.QuadPart=0;
+                timer.stop.QuadPart=0; 
+                QueryPerformanceFrequency(&frequency);
+                QueryPerformanceCounter(&timer.start);
+                }
+
+            ~CStopWatch()
+                {
+                QueryPerformanceCounter(&timer.stop);
+                LARGE_INTEGER time;
+                time.QuadPart = timer.stop.QuadPart - timer.start.QuadPart;
+                CallTime[FunctionName] = CallTime[FunctionName] + ((double)time.QuadPart / (double)frequency.QuadPart);
+                }
+        };
+    #define TIME_FUNC CStopWatch cbtimer(__FUNCTION__)
+#else
+    #define TIME_FUNC
+#endif
+
+#ifdef CBASH_CALLCOUNT
+    #include <map>
+    static std::map<char *, unsigned long> CallCount;
+
+    class CCounter
+        {
+        private:
+            unsigned long total;
+            char *FunctionName;
+
+        public:
+            CCounter(char *FName):FunctionName(FName),total(CallCount[FName])
+                {
+                total++;
+                CallCount[FName] = total;
+                }
+        };
+
+    #define COUNT_FUNC CCounter cbcounter(__FUNCTION__)
+#else
+    #define COUNT_FUNC
+#endif
 
 #ifdef CBASH_USE_LOGGING
     #ifndef CLOGGER
@@ -45,6 +125,14 @@
 
 #ifndef PRINT_FIELD_IDENTIFIERS
     #define PRINT_FIELD_IDENTIFIERS printf("FieldID: %i, ListIndex: %i, ListFieldID: %i, ListX2Index: %i, ListX2FieldID: %i, ListX3Index: %i, ListX3FieldID: %i \n", FieldID, ListIndex, ListFieldID, ListX2Index, ListX2FieldID, ListX3Index, ListX3FieldID)
+#endif
+
+#ifndef PRINT_EXCEPTION
+    #define PRINT_EXCEPTION(ex) printf("%s error\n  %s\n", __FUNCTION__, ex.what())
+#endif
+
+#ifndef PRINT_ERROR
+    #define PRINT_ERROR printf("%s error\n  Unhandled Exception\n", __FUNCTION__)
 #endif
 
 #ifndef NUMTHREADS

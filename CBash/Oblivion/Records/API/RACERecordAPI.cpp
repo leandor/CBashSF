@@ -501,13 +501,13 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 28: //flags
             return &DATA.value.flags;
         case 29: //maleVoice
-            return &VNAM.value.maleVoice;
+            return VNAM.IsLoaded() ? &VNAM.value.maleVoice : NULL;
         case 30: //femaleVoice
-            return &VNAM.value.femaleVoice;
+            return VNAM.IsLoaded() ? &VNAM.value.femaleVoice : NULL;
         case 31: //defaultHairMale
-            return &DNAM.value.defaultHairMale;
+            return DNAM.IsLoaded() ? &DNAM.value.defaultHairMale : NULL;
         case 32: //defaultHairFemale
-            return &DNAM.value.defaultHairFemale;
+            return DNAM.IsLoaded() ? &DNAM.value.defaultHairFemale : NULL;
         case 33: //defaultHairColor
             return &CNAM.value.defaultHairColor;
         case 34: //mainClamp
