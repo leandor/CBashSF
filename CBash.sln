@@ -8,6 +8,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CBash", "CBash\CBash.vcproj
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlib", "CBash\zlib\projects\visualc6\zlib.vcproj", "{DEBD72E4-1FCA-4302-977A-05C8D823D22D}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cint", "cint\cint.vcproj", "{04048E62-BCA8-4E53-B2B4-DC5F64D2DAC6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -67,6 +69,28 @@ Global
 		{DEBD72E4-1FCA-4302-977A-05C8D823D22D}.LIB Release|Win32.Build.0 = LIB Release|Win32
 		{DEBD72E4-1FCA-4302-977A-05C8D823D22D}.Release|Win32.ActiveCfg = LIB Release|Win32
 		{DEBD72E4-1FCA-4302-977A-05C8D823D22D}.Release|Win32.Build.0 = LIB Release|Win32
+		{04048E62-BCA8-4E53-B2B4-DC5F64D2DAC6}.Debug|Win32.ActiveCfg = Debug|Win32
+		{04048E62-BCA8-4E53-B2B4-DC5F64D2DAC6}.Debug|Win32.Build.0 = Debug|Win32
+		{04048E62-BCA8-4E53-B2B4-DC5F64D2DAC6}.DLL ASM Debug|Win32.ActiveCfg = Debug|Win32
+		{04048E62-BCA8-4E53-B2B4-DC5F64D2DAC6}.DLL ASM Debug|Win32.Build.0 = Debug|Win32
+		{04048E62-BCA8-4E53-B2B4-DC5F64D2DAC6}.DLL ASM Release|Win32.ActiveCfg = Release|Win32
+		{04048E62-BCA8-4E53-B2B4-DC5F64D2DAC6}.DLL ASM Release|Win32.Build.0 = Release|Win32
+		{04048E62-BCA8-4E53-B2B4-DC5F64D2DAC6}.DLL Debug|Win32.ActiveCfg = Debug|Win32
+		{04048E62-BCA8-4E53-B2B4-DC5F64D2DAC6}.DLL Debug|Win32.Build.0 = Debug|Win32
+		{04048E62-BCA8-4E53-B2B4-DC5F64D2DAC6}.DLL Release|Win32.ActiveCfg = Release|Win32
+		{04048E62-BCA8-4E53-B2B4-DC5F64D2DAC6}.DLL Release|Win32.Build.0 = Release|Win32
+		{04048E62-BCA8-4E53-B2B4-DC5F64D2DAC6}.FullDebug|Win32.ActiveCfg = Debug|Win32
+		{04048E62-BCA8-4E53-B2B4-DC5F64D2DAC6}.FullDebug|Win32.Build.0 = Debug|Win32
+		{04048E62-BCA8-4E53-B2B4-DC5F64D2DAC6}.LIB ASM Debug|Win32.ActiveCfg = Debug|Win32
+		{04048E62-BCA8-4E53-B2B4-DC5F64D2DAC6}.LIB ASM Debug|Win32.Build.0 = Debug|Win32
+		{04048E62-BCA8-4E53-B2B4-DC5F64D2DAC6}.LIB ASM Release|Win32.ActiveCfg = Release|Win32
+		{04048E62-BCA8-4E53-B2B4-DC5F64D2DAC6}.LIB ASM Release|Win32.Build.0 = Release|Win32
+		{04048E62-BCA8-4E53-B2B4-DC5F64D2DAC6}.LIB Debug|Win32.ActiveCfg = Debug|Win32
+		{04048E62-BCA8-4E53-B2B4-DC5F64D2DAC6}.LIB Debug|Win32.Build.0 = Debug|Win32
+		{04048E62-BCA8-4E53-B2B4-DC5F64D2DAC6}.LIB Release|Win32.ActiveCfg = Release|Win32
+		{04048E62-BCA8-4E53-B2B4-DC5F64D2DAC6}.LIB Release|Win32.Build.0 = Release|Win32
+		{04048E62-BCA8-4E53-B2B4-DC5F64D2DAC6}.Release|Win32.ActiveCfg = Release|Win32
+		{04048E62-BCA8-4E53-B2B4-DC5F64D2DAC6}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

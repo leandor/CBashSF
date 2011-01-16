@@ -2238,7 +2238,7 @@ def TestMinimalLoad():
 
 def TestFullLoad():
     Current = ObCollection()
-    Current.addMod("Oblivion.esm", MinLoad=False)
+    Current.addMod("Pulse.esp", MinLoad=False)
     Current.load()
 ##    newMod = Current.LookupModFile("Oblivion.esm")
 ##    newMod.save()
@@ -10359,13 +10359,13 @@ from timeit import Timer
 ##del Current
 ##phonenumber = raw_input("!")
 
-regressionTests()
+##regressionTests()
 
 ##TestTemp()
 ##TestAttrReport()
 ##TestCopyAttrs()
 ##TestCleanMasters()
-##TestFullLoad()
+TestFullLoad()
 ##TestMinimalLoad()
 ##TestLoadMasters()
 ##TestDeleteRecord()

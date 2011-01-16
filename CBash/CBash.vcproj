@@ -144,6 +144,7 @@
 				DelayLoadDLLs="$(NOINHERIT)"
 				LargeAddressAware="2"
 				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
 			/>
 			<Tool
 				Name="VCALinkTool"

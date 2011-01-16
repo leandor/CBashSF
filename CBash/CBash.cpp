@@ -20,6 +20,12 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 // CBash.cpp
+//#define CBASH_PYTHON
+//#ifdef CBASH_PYTHON
+//   #include "Python.h"
+//    //#define BOOST_PYTHON_STATIC_LIB
+//    //#include <boost/python.hpp>
+//#endif
 
 #include "CBash.h"
 #include <vector>
@@ -123,6 +129,41 @@ ModFile *ValidateLoadOrderIndex(Collection *curCollection, STRING const ModName)
 //Exported Functions
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
+//Exported Python
+//#ifdef CBASH_PYTHON
+
+//PyMODINIT_FUNC
+//init_CBashTest(void)
+
+//class CBashUINT32
+//    {
+//    private:
+//        UINT32 _FieldID;
+//    public:
+//        CBashUINT32(UINT32 FieldID):_FieldID(FieldID) {}
+//        UINT32 get()
+//            {
+//            return 0;
+//            }
+//        UINT32 set()
+//            {
+//            return 0;
+//            }
+//    };
+
+//BOOST_PYTHON_MODULE(CBashTest)
+//    {
+//    using namespace boost::python;
+//
+//    class_<CBashUINT32>("CBashUINT32", init<UINT32>())
+//        .def("__get__", &CBashUINT32::get)
+//        .def("__set__", &CBashUINT32::set);
+//    }
+
+//#endif
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+//Exported DLL
 //Version info functions
 UINT32 GetVersionMajor()
     {
@@ -1474,7 +1515,7 @@ UINT32 GetFieldAttribute(Collection *CollectionID, ModFile *ModID, Record *Recor
         ValidatePointer(CollectionID);
         ValidatePointer(ModID);
         ValidatePointer(RecordID);
-        
+
         if(WhichAttribute > 0)
             {
             //Any attribute other than type requires the record to be read
