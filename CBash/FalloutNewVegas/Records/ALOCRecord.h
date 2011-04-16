@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class ALOCRecord  : public Record
+namespace FNV
+{
+class ALOCRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        ALOCRecord (unsigned char *_recData=NULL);
-        ALOCRecord (ALOCRecord  *srcRecord);
-        ~ALOCRecord ();
+        ALOCRecord(unsigned char *_recData=NULL);
+        ALOCRecord(ALOCRecord *srcRecord);
+        ~ALOCRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class ALOCRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const ALOCRecord  &other) const;
-        bool operator !=(const ALOCRecord  &other) const;
+        bool operator ==(const ALOCRecord &other) const;
+        bool operator !=(const ALOCRecord &other) const;
     };
+}

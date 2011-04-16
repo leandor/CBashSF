@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\ALOCRecord .h"
+#include "..\ALOCRecord.h"
 
+namespace FNV
+{
 UINT32 ALOCRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void ALOCRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

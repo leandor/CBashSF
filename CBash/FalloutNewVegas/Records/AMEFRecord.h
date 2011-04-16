@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class AMEFRecord  : public Record
+namespace FNV
+{
+class AMEFRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        AMEFRecord (unsigned char *_recData=NULL);
-        AMEFRecord (AMEFRecord  *srcRecord);
-        ~AMEFRecord ();
+        AMEFRecord(unsigned char *_recData=NULL);
+        AMEFRecord(AMEFRecord *srcRecord);
+        ~AMEFRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class AMEFRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const AMEFRecord  &other) const;
-        bool operator !=(const AMEFRecord  &other) const;
+        bool operator ==(const AMEFRecord &other) const;
+        bool operator !=(const AMEFRecord &other) const;
     };
+}

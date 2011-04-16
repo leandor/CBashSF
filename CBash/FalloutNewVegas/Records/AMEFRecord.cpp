@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "AMEFRecord .h"
+#include "AMEFRecord.h"
 
-AMEFRecord ::AMEFRecord (unsigned char *_recData):
+namespace FNV
+{
+AMEFRecord::AMEFRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-AMEFRecord ::AMEFRecord (AMEFRecord  *srcRecord):
+AMEFRecord::AMEFRecord(AMEFRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ AMEFRecord ::AMEFRecord (AMEFRecord  *srcRecord):
     return;
     }
 
-AMEFRecord ::~AMEFRecord ()
+AMEFRecord::~AMEFRecord()
     {
     //
     }
 
-bool AMEFRecord ::VisitFormIDs(FormIDOp &op)
+bool AMEFRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool AMEFRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 AMEFRecord ::GetSize(bool forceCalc)
+UINT32 AMEFRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 AMEFRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 AMEFRecord ::GetType()
+UINT32 AMEFRecord::GetType()
     {
     return 'FEMA';
     }
 
-STRING AMEFRecord ::GetStrType()
+STRING AMEFRecord::GetStrType()
     {
     return "AMEF";
     }
 
-SINT32 AMEFRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 AMEFRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 AMEFRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 AMEFRecord ::Unload()
+SINT32 AMEFRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 AMEFRecord ::Unload()
     return 1;
     }
 
-SINT32 AMEFRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 AMEFRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool AMEFRecord ::operator ==(const AMEFRecord  &other) const
+bool AMEFRecord::operator ==(const AMEFRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool AMEFRecord ::operator !=(const AMEFRecord  &other) const
+bool AMEFRecord::operator !=(const AMEFRecord &other) const
     {
     return !(*this == other);
     }
+}

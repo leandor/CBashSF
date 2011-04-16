@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "ACRERecord .h"
+#include "ACRERecord.h"
 
-ACRERecord ::ACRERecord (unsigned char *_recData):
+namespace FNV
+{
+ACRERecord::ACRERecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-ACRERecord ::ACRERecord (ACRERecord  *srcRecord):
+ACRERecord::ACRERecord(ACRERecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ ACRERecord ::ACRERecord (ACRERecord  *srcRecord):
     return;
     }
 
-ACRERecord ::~ACRERecord ()
+ACRERecord::~ACRERecord()
     {
     //
     }
 
-bool ACRERecord ::VisitFormIDs(FormIDOp &op)
+bool ACRERecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool ACRERecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 ACRERecord ::GetSize(bool forceCalc)
+UINT32 ACRERecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 ACRERecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 ACRERecord ::GetType()
+UINT32 ACRERecord::GetType()
     {
     return 'ERCA';
     }
 
-STRING ACRERecord ::GetStrType()
+STRING ACRERecord::GetStrType()
     {
     return "ACRE";
     }
 
-SINT32 ACRERecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 ACRERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 ACRERecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 ACRERecord ::Unload()
+SINT32 ACRERecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 ACRERecord ::Unload()
     return 1;
     }
 
-SINT32 ACRERecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 ACRERecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool ACRERecord ::operator ==(const ACRERecord  &other) const
+bool ACRERecord::operator ==(const ACRERecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool ACRERecord ::operator !=(const ACRERecord  &other) const
+bool ACRERecord::operator !=(const ACRERecord &other) const
     {
     return !(*this == other);
     }
+}

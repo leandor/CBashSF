@@ -149,10 +149,10 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
 
     switch(RecordType)
         {
-        case 'BOLG':
-            GLOB.Records.push_back(new GLOBRecord((GLOBRecord *)SourceRecord));
-            newRecord = GLOB.Records.back();
-            break;
+        //case 'BOLG':
+        //    GLOB.Records.push_back(new GLOBRecord((GLOBRecord *)SourceRecord));
+        //    newRecord = GLOB.Records.back();
+        //    break;
 
         default:
             printf("Error creating record: %c%c%c%c\n", ((char *)&RecordType)[0], ((char *)&RecordType)[1], ((char *)&RecordType)[2], ((char *)&RecordType)[3]);

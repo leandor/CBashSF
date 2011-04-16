@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\AMMORecord .h"
+#include "..\AMMORecord.h"
 
+namespace FNV
+{
 UINT32 AMMORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void AMMORecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

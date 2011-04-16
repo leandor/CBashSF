@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class AMMORecord  : public Record
+namespace FNV
+{
+class AMMORecord : public Record
     {
     public:
         StringRecord EDID;
 
-        AMMORecord (unsigned char *_recData=NULL);
-        AMMORecord (AMMORecord  *srcRecord);
-        ~AMMORecord ();
+        AMMORecord(unsigned char *_recData=NULL);
+        AMMORecord(AMMORecord *srcRecord);
+        ~AMMORecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class AMMORecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const AMMORecord  &other) const;
-        bool operator !=(const AMMORecord  &other) const;
+        bool operator ==(const AMMORecord &other) const;
+        bool operator !=(const AMMORecord &other) const;
     };
+}

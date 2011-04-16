@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "ACTIRecord .h"
+#include "ACTIRecord.h"
 
-ACTIRecord ::ACTIRecord (unsigned char *_recData):
+namespace FNV
+{
+ACTIRecord::ACTIRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-ACTIRecord ::ACTIRecord (ACTIRecord  *srcRecord):
+ACTIRecord::ACTIRecord(ACTIRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ ACTIRecord ::ACTIRecord (ACTIRecord  *srcRecord):
     return;
     }
 
-ACTIRecord ::~ACTIRecord ()
+ACTIRecord::~ACTIRecord()
     {
     //
     }
 
-bool ACTIRecord ::VisitFormIDs(FormIDOp &op)
+bool ACTIRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool ACTIRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 ACTIRecord ::GetSize(bool forceCalc)
+UINT32 ACTIRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 ACTIRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 ACTIRecord ::GetType()
+UINT32 ACTIRecord::GetType()
     {
     return 'ITCA';
     }
 
-STRING ACTIRecord ::GetStrType()
+STRING ACTIRecord::GetStrType()
     {
     return "ACTI";
     }
 
-SINT32 ACTIRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 ACTIRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 ACTIRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 ACTIRecord ::Unload()
+SINT32 ACTIRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 ACTIRecord ::Unload()
     return 1;
     }
 
-SINT32 ACTIRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 ACTIRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool ACTIRecord ::operator ==(const ACTIRecord  &other) const
+bool ACTIRecord::operator ==(const ACTIRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool ACTIRecord ::operator !=(const ACTIRecord  &other) const
+bool ACTIRecord::operator !=(const ACTIRecord &other) const
     {
     return !(*this == other);
     }
+}

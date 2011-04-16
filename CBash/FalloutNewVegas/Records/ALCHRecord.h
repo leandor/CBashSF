@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class ALCHRecord  : public Record
+namespace FNV
+{
+class ALCHRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        ALCHRecord (unsigned char *_recData=NULL);
-        ALCHRecord (ALCHRecord  *srcRecord);
-        ~ALCHRecord ();
+        ALCHRecord(unsigned char *_recData=NULL);
+        ALCHRecord(ALCHRecord *srcRecord);
+        ~ALCHRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class ALCHRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const ALCHRecord  &other) const;
-        bool operator !=(const ALCHRecord  &other) const;
+        bool operator ==(const ALCHRecord &other) const;
+        bool operator !=(const ALCHRecord &other) const;
     };
+}

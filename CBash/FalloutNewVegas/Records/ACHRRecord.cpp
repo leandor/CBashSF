@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "ACHRRecord .h"
+#include "ACHRRecord.h"
 
-ACHRRecord ::ACHRRecord (unsigned char *_recData):
+namespace FNV
+{
+ACHRRecord::ACHRRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-ACHRRecord ::ACHRRecord (ACHRRecord  *srcRecord):
+ACHRRecord::ACHRRecord(ACHRRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ ACHRRecord ::ACHRRecord (ACHRRecord  *srcRecord):
     return;
     }
 
-ACHRRecord ::~ACHRRecord ()
+ACHRRecord::~ACHRRecord()
     {
     //
     }
 
-bool ACHRRecord ::VisitFormIDs(FormIDOp &op)
+bool ACHRRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool ACHRRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 ACHRRecord ::GetSize(bool forceCalc)
+UINT32 ACHRRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 ACHRRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 ACHRRecord ::GetType()
+UINT32 ACHRRecord::GetType()
     {
     return 'RHCA';
     }
 
-STRING ACHRRecord ::GetStrType()
+STRING ACHRRecord::GetStrType()
     {
     return "ACHR";
     }
 
-SINT32 ACHRRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 ACHRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 ACHRRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 ACHRRecord ::Unload()
+SINT32 ACHRRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 ACHRRecord ::Unload()
     return 1;
     }
 
-SINT32 ACHRRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 ACHRRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool ACHRRecord ::operator ==(const ACHRRecord  &other) const
+bool ACHRRecord::operator ==(const ACHRRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool ACHRRecord ::operator !=(const ACHRRecord  &other) const
+bool ACHRRecord::operator !=(const ACHRRecord &other) const
     {
     return !(*this == other);
     }
+}

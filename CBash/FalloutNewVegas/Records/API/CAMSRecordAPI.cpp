@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\CAMSRecord .h"
+#include "..\CAMSRecord.h"
 
+namespace FNV
+{
 UINT32 CAMSRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void CAMSRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

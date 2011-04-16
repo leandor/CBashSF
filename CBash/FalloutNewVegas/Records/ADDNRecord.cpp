@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "ADDNRecord .h"
+#include "ADDNRecord.h"
 
-ADDNRecord ::ADDNRecord (unsigned char *_recData):
+namespace FNV
+{
+ADDNRecord::ADDNRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-ADDNRecord ::ADDNRecord (ADDNRecord  *srcRecord):
+ADDNRecord::ADDNRecord(ADDNRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ ADDNRecord ::ADDNRecord (ADDNRecord  *srcRecord):
     return;
     }
 
-ADDNRecord ::~ADDNRecord ()
+ADDNRecord::~ADDNRecord()
     {
     //
     }
 
-bool ADDNRecord ::VisitFormIDs(FormIDOp &op)
+bool ADDNRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool ADDNRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 ADDNRecord ::GetSize(bool forceCalc)
+UINT32 ADDNRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 ADDNRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 ADDNRecord ::GetType()
+UINT32 ADDNRecord::GetType()
     {
     return 'NDDA';
     }
 
-STRING ADDNRecord ::GetStrType()
+STRING ADDNRecord::GetStrType()
     {
     return "ADDN";
     }
 
-SINT32 ADDNRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 ADDNRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 ADDNRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 ADDNRecord ::Unload()
+SINT32 ADDNRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 ADDNRecord ::Unload()
     return 1;
     }
 
-SINT32 ADDNRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 ADDNRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool ADDNRecord ::operator ==(const ADDNRecord  &other) const
+bool ADDNRecord::operator ==(const ADDNRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool ADDNRecord ::operator !=(const ADDNRecord  &other) const
+bool ADDNRecord::operator !=(const ADDNRecord &other) const
     {
     return !(*this == other);
     }
+}

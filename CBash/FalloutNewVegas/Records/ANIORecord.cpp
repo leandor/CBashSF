@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "ANIORecord .h"
+#include "ANIORecord.h"
 
-ANIORecord ::ANIORecord (unsigned char *_recData):
+namespace FNV
+{
+ANIORecord::ANIORecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-ANIORecord ::ANIORecord (ANIORecord  *srcRecord):
+ANIORecord::ANIORecord(ANIORecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ ANIORecord ::ANIORecord (ANIORecord  *srcRecord):
     return;
     }
 
-ANIORecord ::~ANIORecord ()
+ANIORecord::~ANIORecord()
     {
     //
     }
 
-bool ANIORecord ::VisitFormIDs(FormIDOp &op)
+bool ANIORecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool ANIORecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 ANIORecord ::GetSize(bool forceCalc)
+UINT32 ANIORecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 ANIORecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 ANIORecord ::GetType()
+UINT32 ANIORecord::GetType()
     {
     return 'OINA';
     }
 
-STRING ANIORecord ::GetStrType()
+STRING ANIORecord::GetStrType()
     {
     return "ANIO";
     }
 
-SINT32 ANIORecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 ANIORecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 ANIORecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 ANIORecord ::Unload()
+SINT32 ANIORecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 ANIORecord ::Unload()
     return 1;
     }
 
-SINT32 ANIORecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 ANIORecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool ANIORecord ::operator ==(const ANIORecord  &other) const
+bool ANIORecord::operator ==(const ANIORecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool ANIORecord ::operator !=(const ANIORecord  &other) const
+bool ANIORecord::operator !=(const ANIORecord &other) const
     {
     return !(*this == other);
     }
+}

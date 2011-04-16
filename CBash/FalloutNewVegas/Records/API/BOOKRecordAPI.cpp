@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\BOOKRecord .h"
+#include "..\BOOKRecord.h"
 
+namespace FNV
+{
 UINT32 BOOKRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void BOOKRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

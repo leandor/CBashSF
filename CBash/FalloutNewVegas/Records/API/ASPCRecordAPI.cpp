@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\ASPCRecord .h"
+#include "..\ASPCRecord.h"
 
+namespace FNV
+{
 UINT32 ASPCRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void ASPCRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

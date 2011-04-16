@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\ACHRRecord .h"
+#include "..\ACHRRecord.h"
 
+namespace FNV
+{
 UINT32 ACHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void ACHRRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\BPTDRecord .h"
+#include "..\BPTDRecord.h"
 
+namespace FNV
+{
 UINT32 BPTDRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void BPTDRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

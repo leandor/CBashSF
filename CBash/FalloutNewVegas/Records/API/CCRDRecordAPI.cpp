@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\CCRDRecord .h"
+#include "..\CCRDRecord.h"
 
+namespace FNV
+{
 UINT32 CCRDRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void CCRDRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\ANIORecord .h"
+#include "..\ANIORecord.h"
 
+namespace FNV
+{
 UINT32 ANIORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void ANIORecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

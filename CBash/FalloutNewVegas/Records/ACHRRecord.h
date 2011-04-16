@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class ACHRRecord  : public Record
+namespace FNV
+{
+class ACHRRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        ACHRRecord (unsigned char *_recData=NULL);
-        ACHRRecord (ACHRRecord  *srcRecord);
-        ~ACHRRecord ();
+        ACHRRecord(unsigned char *_recData=NULL);
+        ACHRRecord(ACHRRecord *srcRecord);
+        ~ACHRRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class ACHRRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const ACHRRecord  &other) const;
-        bool operator !=(const ACHRRecord  &other) const;
+        bool operator ==(const ACHRRecord &other) const;
+        bool operator !=(const ACHRRecord &other) const;
     };
+}

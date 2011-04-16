@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "ALOCRecord .h"
+#include "ALOCRecord.h"
 
-ALOCRecord ::ALOCRecord (unsigned char *_recData):
+namespace FNV
+{
+ALOCRecord::ALOCRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-ALOCRecord ::ALOCRecord (ALOCRecord  *srcRecord):
+ALOCRecord::ALOCRecord(ALOCRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ ALOCRecord ::ALOCRecord (ALOCRecord  *srcRecord):
     return;
     }
 
-ALOCRecord ::~ALOCRecord ()
+ALOCRecord::~ALOCRecord()
     {
     //
     }
 
-bool ALOCRecord ::VisitFormIDs(FormIDOp &op)
+bool ALOCRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool ALOCRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 ALOCRecord ::GetSize(bool forceCalc)
+UINT32 ALOCRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 ALOCRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 ALOCRecord ::GetType()
+UINT32 ALOCRecord::GetType()
     {
     return 'COLA';
     }
 
-STRING ALOCRecord ::GetStrType()
+STRING ALOCRecord::GetStrType()
     {
     return "ALOC";
     }
 
-SINT32 ALOCRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 ALOCRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 ALOCRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 ALOCRecord ::Unload()
+SINT32 ALOCRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 ALOCRecord ::Unload()
     return 1;
     }
 
-SINT32 ALOCRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 ALOCRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool ALOCRecord ::operator ==(const ALOCRecord  &other) const
+bool ALOCRecord::operator ==(const ALOCRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool ALOCRecord ::operator !=(const ALOCRecord  &other) const
+bool ALOCRecord::operator !=(const ALOCRecord &other) const
     {
     return !(*this == other);
     }
+}

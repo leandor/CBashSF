@@ -84,7 +84,7 @@ GENDODT::GENDODT():
     blue(0),
     unused2(0x00)
     {
-    memset(&unused1[0], 0x00, 2)
+    memset(&unused1[0], 0x00, 2);
     }
 
 GENDODT::~GENDODT()

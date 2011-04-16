@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\ARMARecord .h"
+#include "..\ARMARecord.h"
 
+namespace FNV
+{
 UINT32 ARMARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void ARMARecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

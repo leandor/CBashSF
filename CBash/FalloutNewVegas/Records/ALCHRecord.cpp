@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "ALCHRecord .h"
+#include "ALCHRecord.h"
 
-ALCHRecord ::ALCHRecord (unsigned char *_recData):
+namespace FNV
+{
+ALCHRecord::ALCHRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-ALCHRecord ::ALCHRecord (ALCHRecord  *srcRecord):
+ALCHRecord::ALCHRecord(ALCHRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ ALCHRecord ::ALCHRecord (ALCHRecord  *srcRecord):
     return;
     }
 
-ALCHRecord ::~ALCHRecord ()
+ALCHRecord::~ALCHRecord()
     {
     //
     }
 
-bool ALCHRecord ::VisitFormIDs(FormIDOp &op)
+bool ALCHRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool ALCHRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 ALCHRecord ::GetSize(bool forceCalc)
+UINT32 ALCHRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 ALCHRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 ALCHRecord ::GetType()
+UINT32 ALCHRecord::GetType()
     {
     return 'HCLA';
     }
 
-STRING ALCHRecord ::GetStrType()
+STRING ALCHRecord::GetStrType()
     {
     return "ALCH";
     }
 
-SINT32 ALCHRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 ALCHRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 ALCHRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 ALCHRecord ::Unload()
+SINT32 ALCHRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 ALCHRecord ::Unload()
     return 1;
     }
 
-SINT32 ALCHRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 ALCHRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool ALCHRecord ::operator ==(const ALCHRecord  &other) const
+bool ALCHRecord::operator ==(const ALCHRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool ALCHRecord ::operator !=(const ALCHRecord  &other) const
+bool ALCHRecord::operator !=(const ALCHRecord &other) const
     {
     return !(*this == other);
     }
+}

@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class ANIORecord  : public Record
+namespace FNV
+{
+class ANIORecord : public Record
     {
     public:
         StringRecord EDID;
 
-        ANIORecord (unsigned char *_recData=NULL);
-        ANIORecord (ANIORecord  *srcRecord);
-        ~ANIORecord ();
+        ANIORecord(unsigned char *_recData=NULL);
+        ANIORecord(ANIORecord *srcRecord);
+        ~ANIORecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class ANIORecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const ANIORecord  &other) const;
-        bool operator !=(const ANIORecord  &other) const;
+        bool operator ==(const ANIORecord &other) const;
+        bool operator !=(const ANIORecord &other) const;
     };
+}

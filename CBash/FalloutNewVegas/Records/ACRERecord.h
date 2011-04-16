@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class ACRERecord  : public Record
+namespace FNV
+{
+class ACRERecord : public Record
     {
     public:
         StringRecord EDID;
 
-        ACRERecord (unsigned char *_recData=NULL);
-        ACRERecord (ACRERecord  *srcRecord);
-        ~ACRERecord ();
+        ACRERecord(unsigned char *_recData=NULL);
+        ACRERecord(ACRERecord *srcRecord);
+        ~ACRERecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class ACRERecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const ACRERecord  &other) const;
-        bool operator !=(const ACRERecord  &other) const;
+        bool operator ==(const ACRERecord &other) const;
+        bool operator !=(const ACRERecord &other) const;
     };
+}
