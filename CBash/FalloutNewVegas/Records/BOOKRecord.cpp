@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "BOOKRecord .h"
+#include "BOOKRecord.h"
 
-BOOKRecord ::BOOKRecord (unsigned char *_recData):
+namespace FNV
+{
+BOOKRecord::BOOKRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-BOOKRecord ::BOOKRecord (BOOKRecord  *srcRecord):
+BOOKRecord::BOOKRecord(BOOKRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ BOOKRecord ::BOOKRecord (BOOKRecord  *srcRecord):
     return;
     }
 
-BOOKRecord ::~BOOKRecord ()
+BOOKRecord::~BOOKRecord()
     {
     //
     }
 
-bool BOOKRecord ::VisitFormIDs(FormIDOp &op)
+bool BOOKRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool BOOKRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 BOOKRecord ::GetSize(bool forceCalc)
+UINT32 BOOKRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 BOOKRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 BOOKRecord ::GetType()
+UINT32 BOOKRecord::GetType()
     {
     return 'KOOB';
     }
 
-STRING BOOKRecord ::GetStrType()
+STRING BOOKRecord::GetStrType()
     {
     return "BOOK";
     }
 
-SINT32 BOOKRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 BOOKRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 BOOKRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 BOOKRecord ::Unload()
+SINT32 BOOKRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 BOOKRecord ::Unload()
     return 1;
     }
 
-SINT32 BOOKRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 BOOKRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool BOOKRecord ::operator ==(const BOOKRecord  &other) const
+bool BOOKRecord::operator ==(const BOOKRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool BOOKRecord ::operator !=(const BOOKRecord  &other) const
+bool BOOKRecord::operator !=(const BOOKRecord &other) const
     {
     return !(*this == other);
     }
+}

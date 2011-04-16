@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\NOTERecord .h"
+#include "..\NOTERecord.h"
 
+namespace FNV
+{
 UINT32 NOTERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void NOTERecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

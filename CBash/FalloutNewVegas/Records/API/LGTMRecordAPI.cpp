@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\LGTMRecord .h"
+#include "..\LGTMRecord.h"
 
+namespace FNV
+{
 UINT32 LGTMRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void LGTMRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

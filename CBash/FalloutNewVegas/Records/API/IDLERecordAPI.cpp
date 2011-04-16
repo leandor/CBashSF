@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\IDLERecord .h"
+#include "..\IDLERecord.h"
 
+namespace FNV
+{
 UINT32 IDLERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void IDLERecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

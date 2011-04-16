@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\HAIRRecord .h"
+#include "..\HAIRRecord.h"
 
+namespace FNV
+{
 UINT32 HAIRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void HAIRRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

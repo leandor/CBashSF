@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "ARMORecord .h"
+#include "ARMORecord.h"
 
-ARMORecord ::ARMORecord (unsigned char *_recData):
+namespace FNV
+{
+ARMORecord::ARMORecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-ARMORecord ::ARMORecord (ARMORecord  *srcRecord):
+ARMORecord::ARMORecord(ARMORecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ ARMORecord ::ARMORecord (ARMORecord  *srcRecord):
     return;
     }
 
-ARMORecord ::~ARMORecord ()
+ARMORecord::~ARMORecord()
     {
     //
     }
 
-bool ARMORecord ::VisitFormIDs(FormIDOp &op)
+bool ARMORecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool ARMORecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 ARMORecord ::GetSize(bool forceCalc)
+UINT32 ARMORecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 ARMORecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 ARMORecord ::GetType()
+UINT32 ARMORecord::GetType()
     {
     return 'OMRA';
     }
 
-STRING ARMORecord ::GetStrType()
+STRING ARMORecord::GetStrType()
     {
     return "ARMO";
     }
 
-SINT32 ARMORecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 ARMORecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 ARMORecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 ARMORecord ::Unload()
+SINT32 ARMORecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 ARMORecord ::Unload()
     return 1;
     }
 
-SINT32 ARMORecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 ARMORecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool ARMORecord ::operator ==(const ARMORecord  &other) const
+bool ARMORecord::operator ==(const ARMORecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool ARMORecord ::operator !=(const ARMORecord  &other) const
+bool ARMORecord::operator !=(const ARMORecord &other) const
     {
     return !(*this == other);
     }
+}

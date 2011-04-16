@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\TERMRecord .h"
+#include "..\TERMRecord.h"
 
+namespace FNV
+{
 UINT32 TERMRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void TERMRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

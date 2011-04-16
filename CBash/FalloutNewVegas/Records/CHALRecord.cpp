@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "CHALRecord .h"
+#include "CHALRecord.h"
 
-CHALRecord ::CHALRecord (unsigned char *_recData):
+namespace FNV
+{
+CHALRecord::CHALRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-CHALRecord ::CHALRecord (CHALRecord  *srcRecord):
+CHALRecord::CHALRecord(CHALRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ CHALRecord ::CHALRecord (CHALRecord  *srcRecord):
     return;
     }
 
-CHALRecord ::~CHALRecord ()
+CHALRecord::~CHALRecord()
     {
     //
     }
 
-bool CHALRecord ::VisitFormIDs(FormIDOp &op)
+bool CHALRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool CHALRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 CHALRecord ::GetSize(bool forceCalc)
+UINT32 CHALRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 CHALRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 CHALRecord ::GetType()
+UINT32 CHALRecord::GetType()
     {
     return 'LAHC';
     }
 
-STRING CHALRecord ::GetStrType()
+STRING CHALRecord::GetStrType()
     {
     return "CHAL";
     }
 
-SINT32 CHALRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 CHALRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 CHALRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 CHALRecord ::Unload()
+SINT32 CHALRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 CHALRecord ::Unload()
     return 1;
     }
 
-SINT32 CHALRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 CHALRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool CHALRecord ::operator ==(const CHALRecord  &other) const
+bool CHALRecord::operator ==(const CHALRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool CHALRecord ::operator !=(const CHALRecord  &other) const
+bool CHALRecord::operator !=(const CHALRecord &other) const
     {
     return !(*this == other);
     }
+}

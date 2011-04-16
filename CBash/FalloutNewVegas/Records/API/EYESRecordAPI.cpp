@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\EYESRecord .h"
+#include "..\EYESRecord.h"
 
+namespace FNV
+{
 UINT32 EYESRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void EYESRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

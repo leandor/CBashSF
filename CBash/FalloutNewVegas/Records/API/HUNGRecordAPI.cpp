@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\HUNGRecord .h"
+#include "..\HUNGRecord.h"
 
+namespace FNV
+{
 UINT32 HUNGRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void HUNGRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

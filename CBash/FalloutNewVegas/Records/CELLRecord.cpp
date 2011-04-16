@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "CELLRecord .h"
+#include "CELLRecord.h"
 
-CELLRecord ::CELLRecord (unsigned char *_recData):
+namespace FNV
+{
+CELLRecord::CELLRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-CELLRecord ::CELLRecord (CELLRecord  *srcRecord):
+CELLRecord::CELLRecord(CELLRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ CELLRecord ::CELLRecord (CELLRecord  *srcRecord):
     return;
     }
 
-CELLRecord ::~CELLRecord ()
+CELLRecord::~CELLRecord()
     {
     //
     }
 
-bool CELLRecord ::VisitFormIDs(FormIDOp &op)
+bool CELLRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool CELLRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 CELLRecord ::GetSize(bool forceCalc)
+UINT32 CELLRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 CELLRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 CELLRecord ::GetType()
+UINT32 CELLRecord::GetType()
     {
     return 'LLEC';
     }
 
-STRING CELLRecord ::GetStrType()
+STRING CELLRecord::GetStrType()
     {
     return "CELL";
     }
 
-SINT32 CELLRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 CELLRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 CELLRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 CELLRecord ::Unload()
+SINT32 CELLRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 CELLRecord ::Unload()
     return 1;
     }
 
-SINT32 CELLRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 CELLRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool CELLRecord ::operator ==(const CELLRecord  &other) const
+bool CELLRecord::operator ==(const CELLRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool CELLRecord ::operator !=(const CELLRecord  &other) const
+bool CELLRecord::operator !=(const CELLRecord &other) const
     {
     return !(*this == other);
     }
+}

@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class BPTDRecord  : public Record
+namespace FNV
+{
+class BPTDRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        BPTDRecord (unsigned char *_recData=NULL);
-        BPTDRecord (BPTDRecord  *srcRecord);
-        ~BPTDRecord ();
+        BPTDRecord(unsigned char *_recData=NULL);
+        BPTDRecord(BPTDRecord *srcRecord);
+        ~BPTDRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class BPTDRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const BPTDRecord  &other) const;
-        bool operator !=(const BPTDRecord  &other) const;
+        bool operator ==(const BPTDRecord &other) const;
+        bool operator !=(const BPTDRecord &other) const;
     };
+}

@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\NAVMRecord .h"
+#include "..\NAVMRecord.h"
 
+namespace FNV
+{
 UINT32 NAVMRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void NAVMRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "ASPCRecord .h"
+#include "ASPCRecord.h"
 
-ASPCRecord ::ASPCRecord (unsigned char *_recData):
+namespace FNV
+{
+ASPCRecord::ASPCRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-ASPCRecord ::ASPCRecord (ASPCRecord  *srcRecord):
+ASPCRecord::ASPCRecord(ASPCRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ ASPCRecord ::ASPCRecord (ASPCRecord  *srcRecord):
     return;
     }
 
-ASPCRecord ::~ASPCRecord ()
+ASPCRecord::~ASPCRecord()
     {
     //
     }
 
-bool ASPCRecord ::VisitFormIDs(FormIDOp &op)
+bool ASPCRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool ASPCRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 ASPCRecord ::GetSize(bool forceCalc)
+UINT32 ASPCRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 ASPCRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 ASPCRecord ::GetType()
+UINT32 ASPCRecord::GetType()
     {
     return 'CPSA';
     }
 
-STRING ASPCRecord ::GetStrType()
+STRING ASPCRecord::GetStrType()
     {
     return "ASPC";
     }
 
-SINT32 ASPCRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 ASPCRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 ASPCRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 ASPCRecord ::Unload()
+SINT32 ASPCRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 ASPCRecord ::Unload()
     return 1;
     }
 
-SINT32 ASPCRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 ASPCRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool ASPCRecord ::operator ==(const ASPCRecord  &other) const
+bool ASPCRecord::operator ==(const ASPCRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool ASPCRecord ::operator !=(const ASPCRecord  &other) const
+bool ASPCRecord::operator !=(const ASPCRecord &other) const
     {
     return !(*this == other);
     }
+}

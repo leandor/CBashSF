@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\RACERecord .h"
+#include "..\RACERecord.h"
 
+namespace FNV
+{
 UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void RACERecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

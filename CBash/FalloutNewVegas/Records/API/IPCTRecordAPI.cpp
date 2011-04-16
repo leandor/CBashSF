@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\IPCTRecord .h"
+#include "..\IPCTRecord.h"
 
+namespace FNV
+{
 UINT32 IPCTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void IPCTRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\MSETRecord .h"
+#include "..\MSETRecord.h"
 
+namespace FNV
+{
 UINT32 MSETRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void MSETRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class CDCKRecord  : public Record
+namespace FNV
+{
+class CDCKRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        CDCKRecord (unsigned char *_recData=NULL);
-        CDCKRecord (CDCKRecord  *srcRecord);
-        ~CDCKRecord ();
+        CDCKRecord(unsigned char *_recData=NULL);
+        CDCKRecord(CDCKRecord *srcRecord);
+        ~CDCKRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class CDCKRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const CDCKRecord  &other) const;
-        bool operator !=(const CDCKRecord  &other) const;
+        bool operator ==(const CDCKRecord &other) const;
+        bool operator !=(const CDCKRecord &other) const;
     };
+}

@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\VTYPRecord .h"
+#include "..\VTYPRecord.h"
 
+namespace FNV
+{
 UINT32 VTYPRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void VTYPRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

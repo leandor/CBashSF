@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\FACTRecord .h"
+#include "..\FACTRecord.h"
 
+namespace FNV
+{
 UINT32 FACTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void FACTRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

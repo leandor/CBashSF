@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "CAMSRecord .h"
+#include "CAMSRecord.h"
 
-CAMSRecord ::CAMSRecord (unsigned char *_recData):
+namespace FNV
+{
+CAMSRecord::CAMSRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-CAMSRecord ::CAMSRecord (CAMSRecord  *srcRecord):
+CAMSRecord::CAMSRecord(CAMSRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ CAMSRecord ::CAMSRecord (CAMSRecord  *srcRecord):
     return;
     }
 
-CAMSRecord ::~CAMSRecord ()
+CAMSRecord::~CAMSRecord()
     {
     //
     }
 
-bool CAMSRecord ::VisitFormIDs(FormIDOp &op)
+bool CAMSRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool CAMSRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 CAMSRecord ::GetSize(bool forceCalc)
+UINT32 CAMSRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 CAMSRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 CAMSRecord ::GetType()
+UINT32 CAMSRecord::GetType()
     {
     return 'SMAC';
     }
 
-STRING CAMSRecord ::GetStrType()
+STRING CAMSRecord::GetStrType()
     {
     return "CAMS";
     }
 
-SINT32 CAMSRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 CAMSRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 CAMSRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 CAMSRecord ::Unload()
+SINT32 CAMSRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 CAMSRecord ::Unload()
     return 1;
     }
 
-SINT32 CAMSRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 CAMSRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool CAMSRecord ::operator ==(const CAMSRecord  &other) const
+bool CAMSRecord::operator ==(const CAMSRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool CAMSRecord ::operator !=(const CAMSRecord  &other) const
+bool CAMSRecord::operator !=(const CAMSRecord &other) const
     {
     return !(*this == other);
     }
+}

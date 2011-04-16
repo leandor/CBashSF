@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\CREARecord .h"
+#include "..\CREARecord.h"
 
+namespace FNV
+{
 UINT32 CREARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void CREARecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

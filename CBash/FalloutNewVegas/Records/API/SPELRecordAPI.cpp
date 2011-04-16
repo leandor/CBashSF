@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\SPELRecord .h"
+#include "..\SPELRecord.h"
 
+namespace FNV
+{
 UINT32 SPELRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void SPELRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

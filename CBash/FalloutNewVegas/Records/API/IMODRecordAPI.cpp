@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\IMODRecord .h"
+#include "..\IMODRecord.h"
 
+namespace FNV
+{
 UINT32 IMODRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void IMODRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\SCOLRecord .h"
+#include "..\SCOLRecord.h"
 
+namespace FNV
+{
 UINT32 SCOLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void SCOLRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

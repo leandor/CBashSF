@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\IMGSRecord .h"
+#include "..\IMGSRecord.h"
 
+namespace FNV
+{
 UINT32 IMGSRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void IMGSRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

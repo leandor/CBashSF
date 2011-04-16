@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\ECZNRecord .h"
+#include "..\ECZNRecord.h"
 
+namespace FNV
+{
 UINT32 ECZNRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void ECZNRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\WATRRecord .h"
+#include "..\WATRRecord.h"
 
+namespace FNV
+{
 UINT32 WATRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void WATRRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

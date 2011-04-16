@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\HDPTRecord .h"
+#include "..\HDPTRecord.h"
 
+namespace FNV
+{
 UINT32 HDPTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void HDPTRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

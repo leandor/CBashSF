@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\CHIPRecord .h"
+#include "..\CHIPRecord.h"
 
+namespace FNV
+{
 UINT32 CHIPRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void CHIPRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

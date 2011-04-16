@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\TXSTRecord .h"
+#include "..\TXSTRecord.h"
 
+namespace FNV
+{
 UINT32 TXSTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -118,11 +120,11 @@ void * TXSTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 4: //eid
             return EDID.value;
         case 5: //boundX
-            return OBND.IsLoaded() ? &OBND->x : NULL;
+            return OBND.IsLoaded() ? &OBND.value.x : NULL;
         case 6: //boundY
-            return OBND.IsLoaded() ? &OBND->y : NULL;
+            return OBND.IsLoaded() ? &OBND.value.y : NULL;
         case 7: //boundZ
-            return OBND.IsLoaded() ? &OBND->z : NULL;
+            return OBND.IsLoaded() ? &OBND.value.z : NULL;
         case 8: //baseImageOrTransparency
             return TX00.value;
         case 9: //normalMapOrSpecular
@@ -164,7 +166,7 @@ void * TXSTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 27: //decalUnused2
             return DODT.IsLoaded() ? &DODT->unused2 : NULL;
         case 28: //flags
-            return DNAM.IsLoaded() ? &DNAM->flags : NULL;
+            return DNAM.IsLoaded() ? &DNAM.value.flags : NULL;
         default:
             return NULL;
         }
@@ -185,15 +187,15 @@ bool TXSTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             break;
         case 5: //boundX
             OBND.Load();
-            OBND->x = *(SINT16 *)FieldValue;
+            OBND.value.x = *(SINT16 *)FieldValue;
             break;
         case 6: //boundY
             OBND.Load();
-            OBND->y = *(SINT16 *)FieldValue;
+            OBND.value.y = *(SINT16 *)FieldValue;
             break;
         case 7: //boundZ
             OBND.Load();
-            OBND->z = *(SINT16 *)FieldValue;
+            OBND.value.z = *(SINT16 *)FieldValue;
             break;
         case 8: //baseImageOrTransparency
             TX00.Copy((STRING)FieldValue);
@@ -247,7 +249,7 @@ bool TXSTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             break;
         case 22: //decalFlags
             DODT.Load();
-            DODT.SetFlagMask(*(UINT8 *)FieldValue);
+            DODT->SetFlagMask(*(UINT8 *)FieldValue);
             break;
         case 23: //decalUnused1
             if(ArraySize != 2)
@@ -287,6 +289,7 @@ void TXSTRecord::DeleteField(FIELD_IDENTIFIERS)
     {
     GENOBND defaultOBND;
     GENU16FLAG defaultU16FLAG;
+    GENDODT defaultDODT;
     
     switch(FieldID)
         {
@@ -301,15 +304,15 @@ void TXSTRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         case 5: //boundX
             if(OBND.IsLoaded())
-                OBND->x = defaultOBND.x;
+                OBND.value.x = defaultOBND.x;
             return;
         case 6: //boundY
             if(OBND.IsLoaded())
-                OBND->y = defaultOBND.y;
+                OBND.value.y = defaultOBND.y;
             return;
         case 7: //boundZ
             if(OBND.IsLoaded())
-                OBND->z = defaultOBND.z;
+                OBND.value.z = defaultOBND.z;
             return;
         case 8: //baseImageOrTransparency
             TX00.Unload();
@@ -395,3 +398,4 @@ void TXSTRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

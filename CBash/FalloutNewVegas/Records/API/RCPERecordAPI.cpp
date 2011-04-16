@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\RCPERecord .h"
+#include "..\RCPERecord.h"
 
+namespace FNV
+{
 UINT32 RCPERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void RCPERecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

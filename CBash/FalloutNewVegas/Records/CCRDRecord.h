@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class CCRDRecord  : public Record
+namespace FNV
+{
+class CCRDRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        CCRDRecord (unsigned char *_recData=NULL);
-        CCRDRecord (CCRDRecord  *srcRecord);
-        ~CCRDRecord ();
+        CCRDRecord(unsigned char *_recData=NULL);
+        CCRDRecord(CCRDRecord *srcRecord);
+        ~CCRDRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class CCRDRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const CCRDRecord  &other) const;
-        bool operator !=(const CCRDRecord  &other) const;
+        bool operator ==(const CCRDRecord &other) const;
+        bool operator !=(const CCRDRecord &other) const;
     };
+}

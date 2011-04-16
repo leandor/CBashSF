@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\GRASRecord .h"
+#include "..\GRASRecord.h"
 
+namespace FNV
+{
 UINT32 GRASRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void GRASRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\MICNRecord .h"
+#include "..\MICNRecord.h"
 
+namespace FNV
+{
 UINT32 MICNRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void MICNRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

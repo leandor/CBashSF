@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\CHALRecord .h"
+#include "..\CHALRecord.h"
 
+namespace FNV
+{
 UINT32 CHALRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void CHALRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

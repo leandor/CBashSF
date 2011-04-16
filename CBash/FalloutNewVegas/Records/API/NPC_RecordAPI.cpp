@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\NPC_Record .h"
+#include "..\NPC_Record.h"
 
+namespace FNV
+{
 UINT32 NPC_Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void NPC_Record::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\SOUNRecord .h"
+#include "..\SOUNRecord.h"
 
+namespace FNV
+{
 UINT32 SOUNRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void SOUNRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

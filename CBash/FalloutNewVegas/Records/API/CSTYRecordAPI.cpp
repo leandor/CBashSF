@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\CSTYRecord .h"
+#include "..\CSTYRecord.h"
 
+namespace FNV
+{
 UINT32 CSTYRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void CSTYRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

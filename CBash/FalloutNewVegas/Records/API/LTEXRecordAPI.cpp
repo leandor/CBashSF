@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\LTEXRecord .h"
+#include "..\LTEXRecord.h"
 
+namespace FNV
+{
 UINT32 LTEXRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void LTEXRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

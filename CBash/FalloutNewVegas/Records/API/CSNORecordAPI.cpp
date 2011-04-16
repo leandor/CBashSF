@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\CSNORecord .h"
+#include "..\CSNORecord.h"
 
+namespace FNV
+{
 UINT32 CSNORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void CSNORecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

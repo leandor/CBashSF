@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\LANDRecord .h"
+#include "..\LANDRecord.h"
 
+namespace FNV
+{
 UINT32 LANDRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void LANDRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

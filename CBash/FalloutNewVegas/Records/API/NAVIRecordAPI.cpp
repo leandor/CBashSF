@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\NAVIRecord .h"
+#include "..\NAVIRecord.h"
 
+namespace FNV
+{
 UINT32 NAVIRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void NAVIRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\DIALRecord .h"
+#include "..\DIALRecord.h"
 
+namespace FNV
+{
 UINT32 DIALRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void DIALRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

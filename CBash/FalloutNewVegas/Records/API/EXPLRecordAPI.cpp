@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\EXPLRecord .h"
+#include "..\EXPLRecord.h"
 
+namespace FNV
+{
 UINT32 EXPLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void EXPLRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

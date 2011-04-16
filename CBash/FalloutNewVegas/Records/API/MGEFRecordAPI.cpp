@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\MGEFRecord .h"
+#include "..\MGEFRecord.h"
 
+namespace FNV
+{
 UINT32 MGEFRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void MGEFRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

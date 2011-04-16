@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "AVIFRecord .h"
+#include "AVIFRecord.h"
 
-AVIFRecord ::AVIFRecord (unsigned char *_recData):
+namespace FNV
+{
+AVIFRecord::AVIFRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-AVIFRecord ::AVIFRecord (AVIFRecord  *srcRecord):
+AVIFRecord::AVIFRecord(AVIFRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ AVIFRecord ::AVIFRecord (AVIFRecord  *srcRecord):
     return;
     }
 
-AVIFRecord ::~AVIFRecord ()
+AVIFRecord::~AVIFRecord()
     {
     //
     }
 
-bool AVIFRecord ::VisitFormIDs(FormIDOp &op)
+bool AVIFRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool AVIFRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 AVIFRecord ::GetSize(bool forceCalc)
+UINT32 AVIFRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 AVIFRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 AVIFRecord ::GetType()
+UINT32 AVIFRecord::GetType()
     {
     return 'FIVA';
     }
 
-STRING AVIFRecord ::GetStrType()
+STRING AVIFRecord::GetStrType()
     {
     return "AVIF";
     }
 
-SINT32 AVIFRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 AVIFRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 AVIFRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 AVIFRecord ::Unload()
+SINT32 AVIFRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 AVIFRecord ::Unload()
     return 1;
     }
 
-SINT32 AVIFRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 AVIFRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool AVIFRecord ::operator ==(const AVIFRecord  &other) const
+bool AVIFRecord::operator ==(const AVIFRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool AVIFRecord ::operator !=(const AVIFRecord  &other) const
+bool AVIFRecord::operator !=(const AVIFRecord &other) const
     {
     return !(*this == other);
     }
+}

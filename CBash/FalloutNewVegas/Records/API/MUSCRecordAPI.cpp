@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\MUSCRecord .h"
+#include "..\MUSCRecord.h"
 
+namespace FNV
+{
 UINT32 MUSCRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void MUSCRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

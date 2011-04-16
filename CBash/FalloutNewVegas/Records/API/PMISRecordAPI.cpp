@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\PMISRecord .h"
+#include "..\PMISRecord.h"
 
+namespace FNV
+{
 UINT32 PMISRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void PMISRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

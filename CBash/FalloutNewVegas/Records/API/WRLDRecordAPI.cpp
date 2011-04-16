@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\WRLDRecord .h"
+#include "..\WRLDRecord.h"
 
+namespace FNV
+{
 UINT32 WRLDRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void WRLDRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

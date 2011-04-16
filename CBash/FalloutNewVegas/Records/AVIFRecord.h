@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class AVIFRecord  : public Record
+namespace FNV
+{
+class AVIFRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        AVIFRecord (unsigned char *_recData=NULL);
-        AVIFRecord (AVIFRecord  *srcRecord);
-        ~AVIFRecord ();
+        AVIFRecord(unsigned char *_recData=NULL);
+        AVIFRecord(AVIFRecord *srcRecord);
+        ~AVIFRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class AVIFRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const AVIFRecord  &other) const;
-        bool operator !=(const AVIFRecord  &other) const;
+        bool operator ==(const AVIFRecord &other) const;
+        bool operator !=(const AVIFRecord &other) const;
     };
+}

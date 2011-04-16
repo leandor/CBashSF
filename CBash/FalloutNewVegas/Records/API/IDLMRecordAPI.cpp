@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\IDLMRecord .h"
+#include "..\IDLMRecord.h"
 
+namespace FNV
+{
 UINT32 IDLMRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void IDLMRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

@@ -22,6 +22,8 @@ GPL License and Copyright Notice ============================================
 #include "..\..\..\Common.h"
 #include "..\GMSTRecord.h"
 
+namespace FNV
+{
 UINT32 GMSTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -174,3 +176,4 @@ void GMSTRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

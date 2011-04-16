@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\SLPDRecord .h"
+#include "..\SLPDRecord.h"
 
+namespace FNV
+{
 UINT32 SLPDRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void SLPDRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

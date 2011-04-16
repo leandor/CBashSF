@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\PERKRecord .h"
+#include "..\PERKRecord.h"
 
+namespace FNV
+{
 UINT32 PERKRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void PERKRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "BPTDRecord .h"
+#include "BPTDRecord.h"
 
-BPTDRecord ::BPTDRecord (unsigned char *_recData):
+namespace FNV
+{
+BPTDRecord::BPTDRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-BPTDRecord ::BPTDRecord (BPTDRecord  *srcRecord):
+BPTDRecord::BPTDRecord(BPTDRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ BPTDRecord ::BPTDRecord (BPTDRecord  *srcRecord):
     return;
     }
 
-BPTDRecord ::~BPTDRecord ()
+BPTDRecord::~BPTDRecord()
     {
     //
     }
 
-bool BPTDRecord ::VisitFormIDs(FormIDOp &op)
+bool BPTDRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool BPTDRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 BPTDRecord ::GetSize(bool forceCalc)
+UINT32 BPTDRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 BPTDRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 BPTDRecord ::GetType()
+UINT32 BPTDRecord::GetType()
     {
     return 'DTPB';
     }
 
-STRING BPTDRecord ::GetStrType()
+STRING BPTDRecord::GetStrType()
     {
     return "BPTD";
     }
 
-SINT32 BPTDRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 BPTDRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 BPTDRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 BPTDRecord ::Unload()
+SINT32 BPTDRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 BPTDRecord ::Unload()
     return 1;
     }
 
-SINT32 BPTDRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 BPTDRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool BPTDRecord ::operator ==(const BPTDRecord  &other) const
+bool BPTDRecord::operator ==(const BPTDRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool BPTDRecord ::operator !=(const BPTDRecord  &other) const
+bool BPTDRecord::operator !=(const BPTDRecord &other) const
     {
     return !(*this == other);
     }
+}

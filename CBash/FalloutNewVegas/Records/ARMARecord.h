@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class ARMARecord  : public Record
+namespace FNV
+{
+class ARMARecord : public Record
     {
     public:
         StringRecord EDID;
 
-        ARMARecord (unsigned char *_recData=NULL);
-        ARMARecord (ARMARecord  *srcRecord);
-        ~ARMARecord ();
+        ARMARecord(unsigned char *_recData=NULL);
+        ARMARecord(ARMARecord *srcRecord);
+        ~ARMARecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class ARMARecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const ARMARecord  &other) const;
-        bool operator !=(const ARMARecord  &other) const;
+        bool operator ==(const ARMARecord &other) const;
+        bool operator !=(const ARMARecord &other) const;
     };
+}

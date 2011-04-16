@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\LSCRRecord .h"
+#include "..\LSCRRecord.h"
 
+namespace FNV
+{
 UINT32 LSCRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void LSCRRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

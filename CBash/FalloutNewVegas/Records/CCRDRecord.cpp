@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "CCRDRecord .h"
+#include "CCRDRecord.h"
 
-CCRDRecord ::CCRDRecord (unsigned char *_recData):
+namespace FNV
+{
+CCRDRecord::CCRDRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-CCRDRecord ::CCRDRecord (CCRDRecord  *srcRecord):
+CCRDRecord::CCRDRecord(CCRDRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ CCRDRecord ::CCRDRecord (CCRDRecord  *srcRecord):
     return;
     }
 
-CCRDRecord ::~CCRDRecord ()
+CCRDRecord::~CCRDRecord()
     {
     //
     }
 
-bool CCRDRecord ::VisitFormIDs(FormIDOp &op)
+bool CCRDRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool CCRDRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 CCRDRecord ::GetSize(bool forceCalc)
+UINT32 CCRDRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 CCRDRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 CCRDRecord ::GetType()
+UINT32 CCRDRecord::GetType()
     {
     return 'DRCC';
     }
 
-STRING CCRDRecord ::GetStrType()
+STRING CCRDRecord::GetStrType()
     {
     return "CCRD";
     }
 
-SINT32 CCRDRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 CCRDRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 CCRDRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 CCRDRecord ::Unload()
+SINT32 CCRDRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 CCRDRecord ::Unload()
     return 1;
     }
 
-SINT32 CCRDRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 CCRDRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool CCRDRecord ::operator ==(const CCRDRecord  &other) const
+bool CCRDRecord::operator ==(const CCRDRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool CCRDRecord ::operator !=(const CCRDRecord  &other) const
+bool CCRDRecord::operator !=(const CCRDRecord &other) const
     {
     return !(*this == other);
     }
+}

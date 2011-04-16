@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class ASPCRecord  : public Record
+namespace FNV
+{
+class ASPCRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        ASPCRecord (unsigned char *_recData=NULL);
-        ASPCRecord (ASPCRecord  *srcRecord);
-        ~ASPCRecord ();
+        ASPCRecord(unsigned char *_recData=NULL);
+        ASPCRecord(ASPCRecord *srcRecord);
+        ~ASPCRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class ASPCRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const ASPCRecord  &other) const;
-        bool operator !=(const ASPCRecord  &other) const;
+        bool operator ==(const ASPCRecord &other) const;
+        bool operator !=(const ASPCRecord &other) const;
     };
+}

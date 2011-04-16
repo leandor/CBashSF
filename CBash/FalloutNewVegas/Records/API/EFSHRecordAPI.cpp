@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\EFSHRecord .h"
+#include "..\EFSHRecord.h"
 
+namespace FNV
+{
 UINT32 EFSHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void EFSHRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

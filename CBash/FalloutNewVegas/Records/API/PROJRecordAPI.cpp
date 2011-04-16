@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\PROJRecord .h"
+#include "..\PROJRecord.h"
 
+namespace FNV
+{
 UINT32 PROJRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void PROJRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

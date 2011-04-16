@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\DEHYRecord .h"
+#include "..\DEHYRecord.h"
 
+namespace FNV
+{
 UINT32 DEHYRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void DEHYRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

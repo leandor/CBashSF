@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\RCCTRecord .h"
+#include "..\RCCTRecord.h"
 
+namespace FNV
+{
 UINT32 RCCTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void RCCTRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

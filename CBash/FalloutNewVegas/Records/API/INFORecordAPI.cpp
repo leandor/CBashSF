@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\INFORecord .h"
+#include "..\INFORecord.h"
 
+namespace FNV
+{
 UINT32 INFORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void INFORecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

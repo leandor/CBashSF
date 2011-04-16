@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\MISCRecord .h"
+#include "..\MISCRecord.h"
 
+namespace FNV
+{
 UINT32 MISCRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void MISCRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

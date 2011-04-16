@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class BOOKRecord  : public Record
+namespace FNV
+{
+class BOOKRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        BOOKRecord (unsigned char *_recData=NULL);
-        BOOKRecord (BOOKRecord  *srcRecord);
-        ~BOOKRecord ();
+        BOOKRecord(unsigned char *_recData=NULL);
+        BOOKRecord(BOOKRecord *srcRecord);
+        ~BOOKRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class BOOKRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const BOOKRecord  &other) const;
-        bool operator !=(const BOOKRecord  &other) const;
+        bool operator ==(const BOOKRecord &other) const;
+        bool operator !=(const BOOKRecord &other) const;
     };
+}

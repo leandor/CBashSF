@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\RGDLRecord .h"
+#include "..\RGDLRecord.h"
 
+namespace FNV
+{
 UINT32 RGDLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void RGDLRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

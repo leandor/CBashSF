@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\REGNRecord .h"
+#include "..\REGNRecord.h"
 
+namespace FNV
+{
 UINT32 REGNRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void REGNRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

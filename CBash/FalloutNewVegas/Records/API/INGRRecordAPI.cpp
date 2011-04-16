@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\INGRRecord .h"
+#include "..\INGRRecord.h"
 
+namespace FNV
+{
 UINT32 INGRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void INGRRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

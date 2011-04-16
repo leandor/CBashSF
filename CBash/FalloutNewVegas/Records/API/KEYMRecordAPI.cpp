@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\KEYMRecord .h"
+#include "..\KEYMRecord.h"
 
+namespace FNV
+{
 UINT32 KEYMRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void KEYMRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

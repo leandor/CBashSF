@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\LVLIRecord .h"
+#include "..\LVLIRecord.h"
 
+namespace FNV
+{
 UINT32 LVLIRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void LVLIRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

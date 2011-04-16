@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\TES4Record .h"
+#include "..\TES4Record.h"
 
+namespace FNV
+{
 UINT32 TES4Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void TES4Record::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}

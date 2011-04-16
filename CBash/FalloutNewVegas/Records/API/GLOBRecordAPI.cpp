@@ -20,8 +20,10 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\GLOBRecord .h"
+#include "..\GLOBRecord.h"
 
+namespace FNV
+{
 UINT32 GLOBRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -94,3 +96,4 @@ void GLOBRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         }
     }
+}
