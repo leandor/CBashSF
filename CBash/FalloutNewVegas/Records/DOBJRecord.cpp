@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "DOBJRecord .h"
+#include "DOBJRecord.h"
 
-DOBJRecord ::DOBJRecord (unsigned char *_recData):
+namespace FNV
+{
+DOBJRecord::DOBJRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-DOBJRecord ::DOBJRecord (DOBJRecord  *srcRecord):
+DOBJRecord::DOBJRecord(DOBJRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ DOBJRecord ::DOBJRecord (DOBJRecord  *srcRecord):
     return;
     }
 
-DOBJRecord ::~DOBJRecord ()
+DOBJRecord::~DOBJRecord()
     {
     //
     }
 
-bool DOBJRecord ::VisitFormIDs(FormIDOp &op)
+bool DOBJRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool DOBJRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 DOBJRecord ::GetSize(bool forceCalc)
+UINT32 DOBJRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 DOBJRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 DOBJRecord ::GetType()
+UINT32 DOBJRecord::GetType()
     {
     return 'JBOD';
     }
 
-STRING DOBJRecord ::GetStrType()
+STRING DOBJRecord::GetStrType()
     {
     return "DOBJ";
     }
 
-SINT32 DOBJRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 DOBJRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 DOBJRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 DOBJRecord ::Unload()
+SINT32 DOBJRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 DOBJRecord ::Unload()
     return 1;
     }
 
-SINT32 DOBJRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 DOBJRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool DOBJRecord ::operator ==(const DOBJRecord  &other) const
+bool DOBJRecord::operator ==(const DOBJRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool DOBJRecord ::operator !=(const DOBJRecord  &other) const
+bool DOBJRecord::operator !=(const DOBJRecord &other) const
     {
     return !(*this == other);
     }
+}

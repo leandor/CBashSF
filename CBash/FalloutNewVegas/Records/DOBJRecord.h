@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class DOBJRecord  : public Record
+namespace FNV
+{
+class DOBJRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        DOBJRecord (unsigned char *_recData=NULL);
-        DOBJRecord (DOBJRecord  *srcRecord);
-        ~DOBJRecord ();
+        DOBJRecord(unsigned char *_recData=NULL);
+        DOBJRecord(DOBJRecord *srcRecord);
+        ~DOBJRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class DOBJRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const DOBJRecord  &other) const;
-        bool operator !=(const DOBJRecord  &other) const;
+        bool operator ==(const DOBJRecord &other) const;
+        bool operator !=(const DOBJRecord &other) const;
     };
+}

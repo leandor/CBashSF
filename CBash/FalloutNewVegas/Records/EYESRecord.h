@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class EYESRecord  : public Record
+namespace FNV
+{
+class EYESRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        EYESRecord (unsigned char *_recData=NULL);
-        EYESRecord (EYESRecord  *srcRecord);
-        ~EYESRecord ();
+        EYESRecord(unsigned char *_recData=NULL);
+        EYESRecord(EYESRecord *srcRecord);
+        ~EYESRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class EYESRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const EYESRecord  &other) const;
-        bool operator !=(const EYESRecord  &other) const;
+        bool operator ==(const EYESRecord &other) const;
+        bool operator !=(const EYESRecord &other) const;
     };
+}

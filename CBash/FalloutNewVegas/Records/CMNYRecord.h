@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class CMNYRecord  : public Record
+namespace FNV
+{
+class CMNYRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        CMNYRecord (unsigned char *_recData=NULL);
-        CMNYRecord (CMNYRecord  *srcRecord);
-        ~CMNYRecord ();
+        CMNYRecord(unsigned char *_recData=NULL);
+        CMNYRecord(CMNYRecord *srcRecord);
+        ~CMNYRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class CMNYRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const CMNYRecord  &other) const;
-        bool operator !=(const CMNYRecord  &other) const;
+        bool operator ==(const CMNYRecord &other) const;
+        bool operator !=(const CMNYRecord &other) const;
     };
+}

@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class IMODRecord  : public Record
+namespace FNV
+{
+class IMODRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        IMODRecord (unsigned char *_recData=NULL);
-        IMODRecord (IMODRecord  *srcRecord);
-        ~IMODRecord ();
+        IMODRecord(unsigned char *_recData=NULL);
+        IMODRecord(IMODRecord *srcRecord);
+        ~IMODRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class IMODRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const IMODRecord  &other) const;
-        bool operator !=(const IMODRecord  &other) const;
+        bool operator ==(const IMODRecord &other) const;
+        bool operator !=(const IMODRecord &other) const;
     };
+}

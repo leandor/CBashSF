@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "FACTRecord .h"
+#include "FACTRecord.h"
 
-FACTRecord ::FACTRecord (unsigned char *_recData):
+namespace FNV
+{
+FACTRecord::FACTRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-FACTRecord ::FACTRecord (FACTRecord  *srcRecord):
+FACTRecord::FACTRecord(FACTRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ FACTRecord ::FACTRecord (FACTRecord  *srcRecord):
     return;
     }
 
-FACTRecord ::~FACTRecord ()
+FACTRecord::~FACTRecord()
     {
     //
     }
 
-bool FACTRecord ::VisitFormIDs(FormIDOp &op)
+bool FACTRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool FACTRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 FACTRecord ::GetSize(bool forceCalc)
+UINT32 FACTRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 FACTRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 FACTRecord ::GetType()
+UINT32 FACTRecord::GetType()
     {
     return 'TCAF';
     }
 
-STRING FACTRecord ::GetStrType()
+STRING FACTRecord::GetStrType()
     {
     return "FACT";
     }
 
-SINT32 FACTRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 FACTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 FACTRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 FACTRecord ::Unload()
+SINT32 FACTRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 FACTRecord ::Unload()
     return 1;
     }
 
-SINT32 FACTRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 FACTRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool FACTRecord ::operator ==(const FACTRecord  &other) const
+bool FACTRecord::operator ==(const FACTRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool FACTRecord ::operator !=(const FACTRecord  &other) const
+bool FACTRecord::operator !=(const FACTRecord &other) const
     {
     return !(*this == other);
     }
+}

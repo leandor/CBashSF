@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class HAIRRecord  : public Record
+namespace FNV
+{
+class HAIRRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        HAIRRecord (unsigned char *_recData=NULL);
-        HAIRRecord (HAIRRecord  *srcRecord);
-        ~HAIRRecord ();
+        HAIRRecord(unsigned char *_recData=NULL);
+        HAIRRecord(HAIRRecord *srcRecord);
+        ~HAIRRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class HAIRRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const HAIRRecord  &other) const;
-        bool operator !=(const HAIRRecord  &other) const;
+        bool operator ==(const HAIRRecord &other) const;
+        bool operator !=(const HAIRRecord &other) const;
     };
+}

@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class DEBRRecord  : public Record
+namespace FNV
+{
+class DEBRRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        DEBRRecord (unsigned char *_recData=NULL);
-        DEBRRecord (DEBRRecord  *srcRecord);
-        ~DEBRRecord ();
+        DEBRRecord(unsigned char *_recData=NULL);
+        DEBRRecord(DEBRRecord *srcRecord);
+        ~DEBRRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class DEBRRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const DEBRRecord  &other) const;
-        bool operator !=(const DEBRRecord  &other) const;
+        bool operator ==(const DEBRRecord &other) const;
+        bool operator !=(const DEBRRecord &other) const;
     };
+}

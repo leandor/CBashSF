@@ -23,6 +23,8 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
+namespace FNV
+{
 class GMSTRecord : public Record
     {
     private:
@@ -71,3 +73,4 @@ class GMSTRecord : public Record
         bool operator ==(const GMSTRecord &other) const;
         bool operator !=(const GMSTRecord &other) const;
     };
+}

@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class LGTMRecord  : public Record
+namespace FNV
+{
+class LGTMRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        LGTMRecord (unsigned char *_recData=NULL);
-        LGTMRecord (LGTMRecord  *srcRecord);
-        ~LGTMRecord ();
+        LGTMRecord(unsigned char *_recData=NULL);
+        LGTMRecord(LGTMRecord *srcRecord);
+        ~LGTMRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class LGTMRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const LGTMRecord  &other) const;
-        bool operator !=(const LGTMRecord  &other) const;
+        bool operator ==(const LGTMRecord &other) const;
+        bool operator !=(const LGTMRecord &other) const;
     };
+}

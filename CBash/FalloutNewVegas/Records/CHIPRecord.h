@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class CHIPRecord  : public Record
+namespace FNV
+{
+class CHIPRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        CHIPRecord (unsigned char *_recData=NULL);
-        CHIPRecord (CHIPRecord  *srcRecord);
-        ~CHIPRecord ();
+        CHIPRecord(unsigned char *_recData=NULL);
+        CHIPRecord(CHIPRecord *srcRecord);
+        ~CHIPRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class CHIPRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const CHIPRecord  &other) const;
-        bool operator !=(const CHIPRecord  &other) const;
+        bool operator ==(const CHIPRecord &other) const;
+        bool operator !=(const CHIPRecord &other) const;
     };
+}

@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class KEYMRecord  : public Record
+namespace FNV
+{
+class KEYMRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        KEYMRecord (unsigned char *_recData=NULL);
-        KEYMRecord (KEYMRecord  *srcRecord);
-        ~KEYMRecord ();
+        KEYMRecord(unsigned char *_recData=NULL);
+        KEYMRecord(KEYMRecord *srcRecord);
+        ~KEYMRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class KEYMRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const KEYMRecord  &other) const;
-        bool operator !=(const KEYMRecord  &other) const;
+        bool operator ==(const KEYMRecord &other) const;
+        bool operator !=(const KEYMRecord &other) const;
     };
+}

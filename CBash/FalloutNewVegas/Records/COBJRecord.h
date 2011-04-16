@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class COBJRecord  : public Record
+namespace FNV
+{
+class COBJRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        COBJRecord (unsigned char *_recData=NULL);
-        COBJRecord (COBJRecord  *srcRecord);
-        ~COBJRecord ();
+        COBJRecord(unsigned char *_recData=NULL);
+        COBJRecord(COBJRecord *srcRecord);
+        ~COBJRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class COBJRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const COBJRecord  &other) const;
-        bool operator !=(const COBJRecord  &other) const;
+        bool operator ==(const COBJRecord &other) const;
+        bool operator !=(const COBJRecord &other) const;
     };
+}

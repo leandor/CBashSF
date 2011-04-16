@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "INGRRecord .h"
+#include "INGRRecord.h"
 
-INGRRecord ::INGRRecord (unsigned char *_recData):
+namespace FNV
+{
+INGRRecord::INGRRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-INGRRecord ::INGRRecord (INGRRecord  *srcRecord):
+INGRRecord::INGRRecord(INGRRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ INGRRecord ::INGRRecord (INGRRecord  *srcRecord):
     return;
     }
 
-INGRRecord ::~INGRRecord ()
+INGRRecord::~INGRRecord()
     {
     //
     }
 
-bool INGRRecord ::VisitFormIDs(FormIDOp &op)
+bool INGRRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool INGRRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 INGRRecord ::GetSize(bool forceCalc)
+UINT32 INGRRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 INGRRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 INGRRecord ::GetType()
+UINT32 INGRRecord::GetType()
     {
     return 'RGNI';
     }
 
-STRING INGRRecord ::GetStrType()
+STRING INGRRecord::GetStrType()
     {
     return "INGR";
     }
 
-SINT32 INGRRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 INGRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 INGRRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 INGRRecord ::Unload()
+SINT32 INGRRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 INGRRecord ::Unload()
     return 1;
     }
 
-SINT32 INGRRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 INGRRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool INGRRecord ::operator ==(const INGRRecord  &other) const
+bool INGRRecord::operator ==(const INGRRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool INGRRecord ::operator !=(const INGRRecord  &other) const
+bool INGRRecord::operator !=(const INGRRecord &other) const
     {
     return !(*this == other);
     }
+}

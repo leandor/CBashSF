@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "CPTHRecord .h"
+#include "CPTHRecord.h"
 
-CPTHRecord ::CPTHRecord (unsigned char *_recData):
+namespace FNV
+{
+CPTHRecord::CPTHRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-CPTHRecord ::CPTHRecord (CPTHRecord  *srcRecord):
+CPTHRecord::CPTHRecord(CPTHRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ CPTHRecord ::CPTHRecord (CPTHRecord  *srcRecord):
     return;
     }
 
-CPTHRecord ::~CPTHRecord ()
+CPTHRecord::~CPTHRecord()
     {
     //
     }
 
-bool CPTHRecord ::VisitFormIDs(FormIDOp &op)
+bool CPTHRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool CPTHRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 CPTHRecord ::GetSize(bool forceCalc)
+UINT32 CPTHRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 CPTHRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 CPTHRecord ::GetType()
+UINT32 CPTHRecord::GetType()
     {
     return 'HTPC';
     }
 
-STRING CPTHRecord ::GetStrType()
+STRING CPTHRecord::GetStrType()
     {
     return "CPTH";
     }
 
-SINT32 CPTHRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 CPTHRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 CPTHRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 CPTHRecord ::Unload()
+SINT32 CPTHRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 CPTHRecord ::Unload()
     return 1;
     }
 
-SINT32 CPTHRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 CPTHRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool CPTHRecord ::operator ==(const CPTHRecord  &other) const
+bool CPTHRecord::operator ==(const CPTHRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool CPTHRecord ::operator !=(const CPTHRecord  &other) const
+bool CPTHRecord::operator !=(const CPTHRecord &other) const
     {
     return !(*this == other);
     }
+}

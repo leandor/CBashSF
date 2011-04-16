@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class IMADRecord  : public Record
+namespace FNV
+{
+class IMADRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        IMADRecord (unsigned char *_recData=NULL);
-        IMADRecord (IMADRecord  *srcRecord);
-        ~IMADRecord ();
+        IMADRecord(unsigned char *_recData=NULL);
+        IMADRecord(IMADRecord *srcRecord);
+        ~IMADRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class IMADRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const IMADRecord  &other) const;
-        bool operator !=(const IMADRecord  &other) const;
+        bool operator ==(const IMADRecord &other) const;
+        bool operator !=(const IMADRecord &other) const;
     };
+}

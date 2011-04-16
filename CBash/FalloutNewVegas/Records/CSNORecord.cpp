@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "CSNORecord .h"
+#include "CSNORecord.h"
 
-CSNORecord ::CSNORecord (unsigned char *_recData):
+namespace FNV
+{
+CSNORecord::CSNORecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-CSNORecord ::CSNORecord (CSNORecord  *srcRecord):
+CSNORecord::CSNORecord(CSNORecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ CSNORecord ::CSNORecord (CSNORecord  *srcRecord):
     return;
     }
 
-CSNORecord ::~CSNORecord ()
+CSNORecord::~CSNORecord()
     {
     //
     }
 
-bool CSNORecord ::VisitFormIDs(FormIDOp &op)
+bool CSNORecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool CSNORecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 CSNORecord ::GetSize(bool forceCalc)
+UINT32 CSNORecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 CSNORecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 CSNORecord ::GetType()
+UINT32 CSNORecord::GetType()
     {
     return 'ONSC';
     }
 
-STRING CSNORecord ::GetStrType()
+STRING CSNORecord::GetStrType()
     {
     return "CSNO";
     }
 
-SINT32 CSNORecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 CSNORecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 CSNORecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 CSNORecord ::Unload()
+SINT32 CSNORecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 CSNORecord ::Unload()
     return 1;
     }
 
-SINT32 CSNORecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 CSNORecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool CSNORecord ::operator ==(const CSNORecord  &other) const
+bool CSNORecord::operator ==(const CSNORecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool CSNORecord ::operator !=(const CSNORecord  &other) const
+bool CSNORecord::operator !=(const CSNORecord &other) const
     {
     return !(*this == other);
     }
+}

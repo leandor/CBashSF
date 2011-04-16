@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "FLSTRecord .h"
+#include "FLSTRecord.h"
 
-FLSTRecord ::FLSTRecord (unsigned char *_recData):
+namespace FNV
+{
+FLSTRecord::FLSTRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-FLSTRecord ::FLSTRecord (FLSTRecord  *srcRecord):
+FLSTRecord::FLSTRecord(FLSTRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ FLSTRecord ::FLSTRecord (FLSTRecord  *srcRecord):
     return;
     }
 
-FLSTRecord ::~FLSTRecord ()
+FLSTRecord::~FLSTRecord()
     {
     //
     }
 
-bool FLSTRecord ::VisitFormIDs(FormIDOp &op)
+bool FLSTRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool FLSTRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 FLSTRecord ::GetSize(bool forceCalc)
+UINT32 FLSTRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 FLSTRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 FLSTRecord ::GetType()
+UINT32 FLSTRecord::GetType()
     {
     return 'TSLF';
     }
 
-STRING FLSTRecord ::GetStrType()
+STRING FLSTRecord::GetStrType()
     {
     return "FLST";
     }
 
-SINT32 FLSTRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 FLSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 FLSTRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 FLSTRecord ::Unload()
+SINT32 FLSTRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 FLSTRecord ::Unload()
     return 1;
     }
 
-SINT32 FLSTRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 FLSTRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool FLSTRecord ::operator ==(const FLSTRecord  &other) const
+bool FLSTRecord::operator ==(const FLSTRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool FLSTRecord ::operator !=(const FLSTRecord  &other) const
+bool FLSTRecord::operator !=(const FLSTRecord &other) const
     {
     return !(*this == other);
     }
+}

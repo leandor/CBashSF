@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class IPCTRecord  : public Record
+namespace FNV
+{
+class IPCTRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        IPCTRecord (unsigned char *_recData=NULL);
-        IPCTRecord (IPCTRecord  *srcRecord);
-        ~IPCTRecord ();
+        IPCTRecord(unsigned char *_recData=NULL);
+        IPCTRecord(IPCTRecord *srcRecord);
+        ~IPCTRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class IPCTRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const IPCTRecord  &other) const;
-        bool operator !=(const IPCTRecord  &other) const;
+        bool operator ==(const IPCTRecord &other) const;
+        bool operator !=(const IPCTRecord &other) const;
     };
+}

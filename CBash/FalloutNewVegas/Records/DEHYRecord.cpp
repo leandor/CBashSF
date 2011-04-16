@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "DEHYRecord .h"
+#include "DEHYRecord.h"
 
-DEHYRecord ::DEHYRecord (unsigned char *_recData):
+namespace FNV
+{
+DEHYRecord::DEHYRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-DEHYRecord ::DEHYRecord (DEHYRecord  *srcRecord):
+DEHYRecord::DEHYRecord(DEHYRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ DEHYRecord ::DEHYRecord (DEHYRecord  *srcRecord):
     return;
     }
 
-DEHYRecord ::~DEHYRecord ()
+DEHYRecord::~DEHYRecord()
     {
     //
     }
 
-bool DEHYRecord ::VisitFormIDs(FormIDOp &op)
+bool DEHYRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool DEHYRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 DEHYRecord ::GetSize(bool forceCalc)
+UINT32 DEHYRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 DEHYRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 DEHYRecord ::GetType()
+UINT32 DEHYRecord::GetType()
     {
     return 'YHED';
     }
 
-STRING DEHYRecord ::GetStrType()
+STRING DEHYRecord::GetStrType()
     {
     return "DEHY";
     }
 
-SINT32 DEHYRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 DEHYRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 DEHYRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 DEHYRecord ::Unload()
+SINT32 DEHYRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 DEHYRecord ::Unload()
     return 1;
     }
 
-SINT32 DEHYRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 DEHYRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool DEHYRecord ::operator ==(const DEHYRecord  &other) const
+bool DEHYRecord::operator ==(const DEHYRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool DEHYRecord ::operator !=(const DEHYRecord  &other) const
+bool DEHYRecord::operator !=(const DEHYRecord &other) const
     {
     return !(*this == other);
     }
+}

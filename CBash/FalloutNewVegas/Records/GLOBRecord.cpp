@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "GLOBRecord .h"
+#include "GLOBRecord.h"
 
-GLOBRecord ::GLOBRecord (unsigned char *_recData):
+namespace FNV
+{
+GLOBRecord::GLOBRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-GLOBRecord ::GLOBRecord (GLOBRecord  *srcRecord):
+GLOBRecord::GLOBRecord(GLOBRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ GLOBRecord ::GLOBRecord (GLOBRecord  *srcRecord):
     return;
     }
 
-GLOBRecord ::~GLOBRecord ()
+GLOBRecord::~GLOBRecord()
     {
     //
     }
 
-bool GLOBRecord ::VisitFormIDs(FormIDOp &op)
+bool GLOBRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool GLOBRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 GLOBRecord ::GetSize(bool forceCalc)
+UINT32 GLOBRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 GLOBRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 GLOBRecord ::GetType()
+UINT32 GLOBRecord::GetType()
     {
     return 'BOLG';
     }
 
-STRING GLOBRecord ::GetStrType()
+STRING GLOBRecord::GetStrType()
     {
     return "GLOB";
     }
 
-SINT32 GLOBRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 GLOBRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 GLOBRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 GLOBRecord ::Unload()
+SINT32 GLOBRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 GLOBRecord ::Unload()
     return 1;
     }
 
-SINT32 GLOBRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 GLOBRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool GLOBRecord ::operator ==(const GLOBRecord  &other) const
+bool GLOBRecord::operator ==(const GLOBRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool GLOBRecord ::operator !=(const GLOBRecord  &other) const
+bool GLOBRecord::operator !=(const GLOBRecord &other) const
     {
     return !(*this == other);
     }
+}

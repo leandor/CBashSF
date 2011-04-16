@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class EFSHRecord  : public Record
+namespace FNV
+{
+class EFSHRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        EFSHRecord (unsigned char *_recData=NULL);
-        EFSHRecord (EFSHRecord  *srcRecord);
-        ~EFSHRecord ();
+        EFSHRecord(unsigned char *_recData=NULL);
+        EFSHRecord(EFSHRecord *srcRecord);
+        ~EFSHRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class EFSHRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const EFSHRecord  &other) const;
-        bool operator !=(const EFSHRecord  &other) const;
+        bool operator ==(const EFSHRecord &other) const;
+        bool operator !=(const EFSHRecord &other) const;
     };
+}

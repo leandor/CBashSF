@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "CLMTRecord .h"
+#include "CLMTRecord.h"
 
-CLMTRecord ::CLMTRecord (unsigned char *_recData):
+namespace FNV
+{
+CLMTRecord::CLMTRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-CLMTRecord ::CLMTRecord (CLMTRecord  *srcRecord):
+CLMTRecord::CLMTRecord(CLMTRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ CLMTRecord ::CLMTRecord (CLMTRecord  *srcRecord):
     return;
     }
 
-CLMTRecord ::~CLMTRecord ()
+CLMTRecord::~CLMTRecord()
     {
     //
     }
 
-bool CLMTRecord ::VisitFormIDs(FormIDOp &op)
+bool CLMTRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool CLMTRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 CLMTRecord ::GetSize(bool forceCalc)
+UINT32 CLMTRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 CLMTRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 CLMTRecord ::GetType()
+UINT32 CLMTRecord::GetType()
     {
     return 'TMLC';
     }
 
-STRING CLMTRecord ::GetStrType()
+STRING CLMTRecord::GetStrType()
     {
     return "CLMT";
     }
 
-SINT32 CLMTRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 CLMTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 CLMTRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 CLMTRecord ::Unload()
+SINT32 CLMTRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 CLMTRecord ::Unload()
     return 1;
     }
 
-SINT32 CLMTRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 CLMTRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool CLMTRecord ::operator ==(const CLMTRecord  &other) const
+bool CLMTRecord::operator ==(const CLMTRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool CLMTRecord ::operator !=(const CLMTRecord  &other) const
+bool CLMTRecord::operator !=(const CLMTRecord &other) const
     {
     return !(*this == other);
     }
+}

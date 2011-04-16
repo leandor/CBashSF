@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "GRASRecord .h"
+#include "GRASRecord.h"
 
-GRASRecord ::GRASRecord (unsigned char *_recData):
+namespace FNV
+{
+GRASRecord::GRASRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-GRASRecord ::GRASRecord (GRASRecord  *srcRecord):
+GRASRecord::GRASRecord(GRASRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ GRASRecord ::GRASRecord (GRASRecord  *srcRecord):
     return;
     }
 
-GRASRecord ::~GRASRecord ()
+GRASRecord::~GRASRecord()
     {
     //
     }
 
-bool GRASRecord ::VisitFormIDs(FormIDOp &op)
+bool GRASRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool GRASRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 GRASRecord ::GetSize(bool forceCalc)
+UINT32 GRASRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 GRASRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 GRASRecord ::GetType()
+UINT32 GRASRecord::GetType()
     {
     return 'SARG';
     }
 
-STRING GRASRecord ::GetStrType()
+STRING GRASRecord::GetStrType()
     {
     return "GRAS";
     }
 
-SINT32 GRASRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 GRASRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 GRASRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 GRASRecord ::Unload()
+SINT32 GRASRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 GRASRecord ::Unload()
     return 1;
     }
 
-SINT32 GRASRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 GRASRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool GRASRecord ::operator ==(const GRASRecord  &other) const
+bool GRASRecord::operator ==(const GRASRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool GRASRecord ::operator !=(const GRASRecord  &other) const
+bool GRASRecord::operator !=(const GRASRecord &other) const
     {
     return !(*this == other);
     }
+}

@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "DOORRecord .h"
+#include "DOORRecord.h"
 
-DOORRecord ::DOORRecord (unsigned char *_recData):
+namespace FNV
+{
+DOORRecord::DOORRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-DOORRecord ::DOORRecord (DOORRecord  *srcRecord):
+DOORRecord::DOORRecord(DOORRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ DOORRecord ::DOORRecord (DOORRecord  *srcRecord):
     return;
     }
 
-DOORRecord ::~DOORRecord ()
+DOORRecord::~DOORRecord()
     {
     //
     }
 
-bool DOORRecord ::VisitFormIDs(FormIDOp &op)
+bool DOORRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool DOORRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 DOORRecord ::GetSize(bool forceCalc)
+UINT32 DOORRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 DOORRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 DOORRecord ::GetType()
+UINT32 DOORRecord::GetType()
     {
     return 'ROOD';
     }
 
-STRING DOORRecord ::GetStrType()
+STRING DOORRecord::GetStrType()
     {
     return "DOOR";
     }
 
-SINT32 DOORRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 DOORRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 DOORRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 DOORRecord ::Unload()
+SINT32 DOORRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 DOORRecord ::Unload()
     return 1;
     }
 
-SINT32 DOORRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 DOORRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool DOORRecord ::operator ==(const DOORRecord  &other) const
+bool DOORRecord::operator ==(const DOORRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool DOORRecord ::operator !=(const DOORRecord  &other) const
+bool DOORRecord::operator !=(const DOORRecord &other) const
     {
     return !(*this == other);
     }
+}

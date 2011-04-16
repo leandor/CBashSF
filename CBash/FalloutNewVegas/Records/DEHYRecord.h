@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class DEHYRecord  : public Record
+namespace FNV
+{
+class DEHYRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        DEHYRecord (unsigned char *_recData=NULL);
-        DEHYRecord (DEHYRecord  *srcRecord);
-        ~DEHYRecord ();
+        DEHYRecord(unsigned char *_recData=NULL);
+        DEHYRecord(DEHYRecord *srcRecord);
+        ~DEHYRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class DEHYRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const DEHYRecord  &other) const;
-        bool operator !=(const DEHYRecord  &other) const;
+        bool operator ==(const DEHYRecord &other) const;
+        bool operator !=(const DEHYRecord &other) const;
     };
+}

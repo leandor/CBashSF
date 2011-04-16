@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class IDLMRecord  : public Record
+namespace FNV
+{
+class IDLMRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        IDLMRecord (unsigned char *_recData=NULL);
-        IDLMRecord (IDLMRecord  *srcRecord);
-        ~IDLMRecord ();
+        IDLMRecord(unsigned char *_recData=NULL);
+        IDLMRecord(IDLMRecord *srcRecord);
+        ~IDLMRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class IDLMRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const IDLMRecord  &other) const;
-        bool operator !=(const IDLMRecord  &other) const;
+        bool operator ==(const IDLMRecord &other) const;
+        bool operator !=(const IDLMRecord &other) const;
     };
+}

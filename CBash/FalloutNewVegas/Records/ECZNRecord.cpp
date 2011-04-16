@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "ECZNRecord .h"
+#include "ECZNRecord.h"
 
-ECZNRecord ::ECZNRecord (unsigned char *_recData):
+namespace FNV
+{
+ECZNRecord::ECZNRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-ECZNRecord ::ECZNRecord (ECZNRecord  *srcRecord):
+ECZNRecord::ECZNRecord(ECZNRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ ECZNRecord ::ECZNRecord (ECZNRecord  *srcRecord):
     return;
     }
 
-ECZNRecord ::~ECZNRecord ()
+ECZNRecord::~ECZNRecord()
     {
     //
     }
 
-bool ECZNRecord ::VisitFormIDs(FormIDOp &op)
+bool ECZNRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool ECZNRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 ECZNRecord ::GetSize(bool forceCalc)
+UINT32 ECZNRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 ECZNRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 ECZNRecord ::GetType()
+UINT32 ECZNRecord::GetType()
     {
     return 'NZCE';
     }
 
-STRING ECZNRecord ::GetStrType()
+STRING ECZNRecord::GetStrType()
     {
     return "ECZN";
     }
 
-SINT32 ECZNRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 ECZNRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 ECZNRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 ECZNRecord ::Unload()
+SINT32 ECZNRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 ECZNRecord ::Unload()
     return 1;
     }
 
-SINT32 ECZNRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 ECZNRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool ECZNRecord ::operator ==(const ECZNRecord  &other) const
+bool ECZNRecord::operator ==(const ECZNRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool ECZNRecord ::operator !=(const ECZNRecord  &other) const
+bool ECZNRecord::operator !=(const ECZNRecord &other) const
     {
     return !(*this == other);
     }
+}

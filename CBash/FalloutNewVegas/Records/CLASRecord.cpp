@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "CLASRecord .h"
+#include "CLASRecord.h"
 
-CLASRecord ::CLASRecord (unsigned char *_recData):
+namespace FNV
+{
+CLASRecord::CLASRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-CLASRecord ::CLASRecord (CLASRecord  *srcRecord):
+CLASRecord::CLASRecord(CLASRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ CLASRecord ::CLASRecord (CLASRecord  *srcRecord):
     return;
     }
 
-CLASRecord ::~CLASRecord ()
+CLASRecord::~CLASRecord()
     {
     //
     }
 
-bool CLASRecord ::VisitFormIDs(FormIDOp &op)
+bool CLASRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool CLASRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 CLASRecord ::GetSize(bool forceCalc)
+UINT32 CLASRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 CLASRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 CLASRecord ::GetType()
+UINT32 CLASRecord::GetType()
     {
     return 'SALC';
     }
 
-STRING CLASRecord ::GetStrType()
+STRING CLASRecord::GetStrType()
     {
     return "CLAS";
     }
 
-SINT32 CLASRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 CLASRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 CLASRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 CLASRecord ::Unload()
+SINT32 CLASRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 CLASRecord ::Unload()
     return 1;
     }
 
-SINT32 CLASRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 CLASRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool CLASRecord ::operator ==(const CLASRecord  &other) const
+bool CLASRecord::operator ==(const CLASRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool CLASRecord ::operator !=(const CLASRecord  &other) const
+bool CLASRecord::operator !=(const CLASRecord &other) const
     {
     return !(*this == other);
     }
+}

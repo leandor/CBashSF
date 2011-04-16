@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class DIALRecord  : public Record
+namespace FNV
+{
+class DIALRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        DIALRecord (unsigned char *_recData=NULL);
-        DIALRecord (DIALRecord  *srcRecord);
-        ~DIALRecord ();
+        DIALRecord(unsigned char *_recData=NULL);
+        DIALRecord(DIALRecord *srcRecord);
+        ~DIALRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class DIALRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const DIALRecord  &other) const;
-        bool operator !=(const DIALRecord  &other) const;
+        bool operator ==(const DIALRecord &other) const;
+        bool operator !=(const DIALRecord &other) const;
     };
+}

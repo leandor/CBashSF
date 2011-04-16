@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class FACTRecord  : public Record
+namespace FNV
+{
+class FACTRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        FACTRecord (unsigned char *_recData=NULL);
-        FACTRecord (FACTRecord  *srcRecord);
-        ~FACTRecord ();
+        FACTRecord(unsigned char *_recData=NULL);
+        FACTRecord(FACTRecord *srcRecord);
+        ~FACTRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class FACTRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const FACTRecord  &other) const;
-        bool operator !=(const FACTRecord  &other) const;
+        bool operator ==(const FACTRecord &other) const;
+        bool operator !=(const FACTRecord &other) const;
     };
+}

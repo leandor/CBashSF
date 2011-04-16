@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class DOORRecord  : public Record
+namespace FNV
+{
+class DOORRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        DOORRecord (unsigned char *_recData=NULL);
-        DOORRecord (DOORRecord  *srcRecord);
-        ~DOORRecord ();
+        DOORRecord(unsigned char *_recData=NULL);
+        DOORRecord(DOORRecord *srcRecord);
+        ~DOORRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class DOORRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const DOORRecord  &other) const;
-        bool operator !=(const DOORRecord  &other) const;
+        bool operator ==(const DOORRecord &other) const;
+        bool operator !=(const DOORRecord &other) const;
     };
+}

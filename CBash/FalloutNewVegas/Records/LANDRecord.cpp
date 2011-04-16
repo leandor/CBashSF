@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "LANDRecord .h"
+#include "LANDRecord.h"
 
-LANDRecord ::LANDRecord (unsigned char *_recData):
+namespace FNV
+{
+LANDRecord::LANDRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-LANDRecord ::LANDRecord (LANDRecord  *srcRecord):
+LANDRecord::LANDRecord(LANDRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ LANDRecord ::LANDRecord (LANDRecord  *srcRecord):
     return;
     }
 
-LANDRecord ::~LANDRecord ()
+LANDRecord::~LANDRecord()
     {
     //
     }
 
-bool LANDRecord ::VisitFormIDs(FormIDOp &op)
+bool LANDRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool LANDRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 LANDRecord ::GetSize(bool forceCalc)
+UINT32 LANDRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 LANDRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 LANDRecord ::GetType()
+UINT32 LANDRecord::GetType()
     {
     return 'DNAL';
     }
 
-STRING LANDRecord ::GetStrType()
+STRING LANDRecord::GetStrType()
     {
     return "LAND";
     }
 
-SINT32 LANDRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 LANDRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 LANDRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 LANDRecord ::Unload()
+SINT32 LANDRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 LANDRecord ::Unload()
     return 1;
     }
 
-SINT32 LANDRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 LANDRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool LANDRecord ::operator ==(const LANDRecord  &other) const
+bool LANDRecord::operator ==(const LANDRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool LANDRecord ::operator !=(const LANDRecord  &other) const
+bool LANDRecord::operator !=(const LANDRecord &other) const
     {
     return !(*this == other);
     }
+}

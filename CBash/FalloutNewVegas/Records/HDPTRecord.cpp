@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "HDPTRecord .h"
+#include "HDPTRecord.h"
 
-HDPTRecord ::HDPTRecord (unsigned char *_recData):
+namespace FNV
+{
+HDPTRecord::HDPTRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-HDPTRecord ::HDPTRecord (HDPTRecord  *srcRecord):
+HDPTRecord::HDPTRecord(HDPTRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ HDPTRecord ::HDPTRecord (HDPTRecord  *srcRecord):
     return;
     }
 
-HDPTRecord ::~HDPTRecord ()
+HDPTRecord::~HDPTRecord()
     {
     //
     }
 
-bool HDPTRecord ::VisitFormIDs(FormIDOp &op)
+bool HDPTRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool HDPTRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 HDPTRecord ::GetSize(bool forceCalc)
+UINT32 HDPTRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 HDPTRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 HDPTRecord ::GetType()
+UINT32 HDPTRecord::GetType()
     {
     return 'TPDH';
     }
 
-STRING HDPTRecord ::GetStrType()
+STRING HDPTRecord::GetStrType()
     {
     return "HDPT";
     }
 
-SINT32 HDPTRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 HDPTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 HDPTRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 HDPTRecord ::Unload()
+SINT32 HDPTRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 HDPTRecord ::Unload()
     return 1;
     }
 
-SINT32 HDPTRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 HDPTRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool HDPTRecord ::operator ==(const HDPTRecord  &other) const
+bool HDPTRecord::operator ==(const HDPTRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool HDPTRecord ::operator !=(const HDPTRecord  &other) const
+bool HDPTRecord::operator !=(const HDPTRecord &other) const
     {
     return !(*this == other);
     }
+}

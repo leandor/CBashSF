@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class CSTYRecord  : public Record
+namespace FNV
+{
+class CSTYRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        CSTYRecord (unsigned char *_recData=NULL);
-        CSTYRecord (CSTYRecord  *srcRecord);
-        ~CSTYRecord ();
+        CSTYRecord(unsigned char *_recData=NULL);
+        CSTYRecord(CSTYRecord *srcRecord);
+        ~CSTYRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class CSTYRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const CSTYRecord  &other) const;
-        bool operator !=(const CSTYRecord  &other) const;
+        bool operator ==(const CSTYRecord &other) const;
+        bool operator !=(const CSTYRecord &other) const;
     };
+}

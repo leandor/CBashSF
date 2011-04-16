@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class CONTRecord  : public Record
+namespace FNV
+{
+class CONTRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        CONTRecord (unsigned char *_recData=NULL);
-        CONTRecord (CONTRecord  *srcRecord);
-        ~CONTRecord ();
+        CONTRecord(unsigned char *_recData=NULL);
+        CONTRecord(CONTRecord *srcRecord);
+        ~CONTRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class CONTRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const CONTRecord  &other) const;
-        bool operator !=(const CONTRecord  &other) const;
+        bool operator ==(const CONTRecord &other) const;
+        bool operator !=(const CONTRecord &other) const;
     };
+}

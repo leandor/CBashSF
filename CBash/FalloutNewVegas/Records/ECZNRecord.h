@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class ECZNRecord  : public Record
+namespace FNV
+{
+class ECZNRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        ECZNRecord (unsigned char *_recData=NULL);
-        ECZNRecord (ECZNRecord  *srcRecord);
-        ~ECZNRecord ();
+        ECZNRecord(unsigned char *_recData=NULL);
+        ECZNRecord(ECZNRecord *srcRecord);
+        ~ECZNRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class ECZNRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const ECZNRecord  &other) const;
-        bool operator !=(const ECZNRecord  &other) const;
+        bool operator ==(const ECZNRecord &other) const;
+        bool operator !=(const ECZNRecord &other) const;
     };
+}

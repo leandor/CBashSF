@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "DIALRecord .h"
+#include "DIALRecord.h"
 
-DIALRecord ::DIALRecord (unsigned char *_recData):
+namespace FNV
+{
+DIALRecord::DIALRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-DIALRecord ::DIALRecord (DIALRecord  *srcRecord):
+DIALRecord::DIALRecord(DIALRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ DIALRecord ::DIALRecord (DIALRecord  *srcRecord):
     return;
     }
 
-DIALRecord ::~DIALRecord ()
+DIALRecord::~DIALRecord()
     {
     //
     }
 
-bool DIALRecord ::VisitFormIDs(FormIDOp &op)
+bool DIALRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool DIALRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 DIALRecord ::GetSize(bool forceCalc)
+UINT32 DIALRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 DIALRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 DIALRecord ::GetType()
+UINT32 DIALRecord::GetType()
     {
     return 'LAID';
     }
 
-STRING DIALRecord ::GetStrType()
+STRING DIALRecord::GetStrType()
     {
     return "DIAL";
     }
 
-SINT32 DIALRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 DIALRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 DIALRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 DIALRecord ::Unload()
+SINT32 DIALRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 DIALRecord ::Unload()
     return 1;
     }
 
-SINT32 DIALRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 DIALRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool DIALRecord ::operator ==(const DIALRecord  &other) const
+bool DIALRecord::operator ==(const DIALRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool DIALRecord ::operator !=(const DIALRecord  &other) const
+bool DIALRecord::operator !=(const DIALRecord &other) const
     {
     return !(*this == other);
     }
+}

@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class IPDSRecord  : public Record
+namespace FNV
+{
+class IPDSRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        IPDSRecord (unsigned char *_recData=NULL);
-        IPDSRecord (IPDSRecord  *srcRecord);
-        ~IPDSRecord ();
+        IPDSRecord(unsigned char *_recData=NULL);
+        IPDSRecord(IPDSRecord *srcRecord);
+        ~IPDSRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class IPDSRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const IPDSRecord  &other) const;
-        bool operator !=(const IPDSRecord  &other) const;
+        bool operator ==(const IPDSRecord &other) const;
+        bool operator !=(const IPDSRecord &other) const;
     };
+}

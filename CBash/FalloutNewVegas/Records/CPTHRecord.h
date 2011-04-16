@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class CPTHRecord  : public Record
+namespace FNV
+{
+class CPTHRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        CPTHRecord (unsigned char *_recData=NULL);
-        CPTHRecord (CPTHRecord  *srcRecord);
-        ~CPTHRecord ();
+        CPTHRecord(unsigned char *_recData=NULL);
+        CPTHRecord(CPTHRecord *srcRecord);
+        ~CPTHRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class CPTHRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const CPTHRecord  &other) const;
-        bool operator !=(const CPTHRecord  &other) const;
+        bool operator ==(const CPTHRecord &other) const;
+        bool operator !=(const CPTHRecord &other) const;
     };
+}

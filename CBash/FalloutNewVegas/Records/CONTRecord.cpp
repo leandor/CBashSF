@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "CONTRecord .h"
+#include "CONTRecord.h"
 
-CONTRecord ::CONTRecord (unsigned char *_recData):
+namespace FNV
+{
+CONTRecord::CONTRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-CONTRecord ::CONTRecord (CONTRecord  *srcRecord):
+CONTRecord::CONTRecord(CONTRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ CONTRecord ::CONTRecord (CONTRecord  *srcRecord):
     return;
     }
 
-CONTRecord ::~CONTRecord ()
+CONTRecord::~CONTRecord()
     {
     //
     }
 
-bool CONTRecord ::VisitFormIDs(FormIDOp &op)
+bool CONTRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool CONTRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 CONTRecord ::GetSize(bool forceCalc)
+UINT32 CONTRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 CONTRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 CONTRecord ::GetType()
+UINT32 CONTRecord::GetType()
     {
     return 'TNOC';
     }
 
-STRING CONTRecord ::GetStrType()
+STRING CONTRecord::GetStrType()
     {
     return "CONT";
     }
 
-SINT32 CONTRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 CONTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 CONTRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 CONTRecord ::Unload()
+SINT32 CONTRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 CONTRecord ::Unload()
     return 1;
     }
 
-SINT32 CONTRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 CONTRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool CONTRecord ::operator ==(const CONTRecord  &other) const
+bool CONTRecord::operator ==(const CONTRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool CONTRecord ::operator !=(const CONTRecord  &other) const
+bool CONTRecord::operator !=(const CONTRecord &other) const
     {
     return !(*this == other);
     }
+}

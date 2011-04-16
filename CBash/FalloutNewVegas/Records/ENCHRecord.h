@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class ENCHRecord  : public Record
+namespace FNV
+{
+class ENCHRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        ENCHRecord (unsigned char *_recData=NULL);
-        ENCHRecord (ENCHRecord  *srcRecord);
-        ~ENCHRecord ();
+        ENCHRecord(unsigned char *_recData=NULL);
+        ENCHRecord(ENCHRecord *srcRecord);
+        ~ENCHRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class ENCHRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const ENCHRecord  &other) const;
-        bool operator !=(const ENCHRecord  &other) const;
+        bool operator ==(const ENCHRecord &other) const;
+        bool operator !=(const ENCHRecord &other) const;
     };
+}

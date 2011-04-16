@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "KEYMRecord .h"
+#include "KEYMRecord.h"
 
-KEYMRecord ::KEYMRecord (unsigned char *_recData):
+namespace FNV
+{
+KEYMRecord::KEYMRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-KEYMRecord ::KEYMRecord (KEYMRecord  *srcRecord):
+KEYMRecord::KEYMRecord(KEYMRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ KEYMRecord ::KEYMRecord (KEYMRecord  *srcRecord):
     return;
     }
 
-KEYMRecord ::~KEYMRecord ()
+KEYMRecord::~KEYMRecord()
     {
     //
     }
 
-bool KEYMRecord ::VisitFormIDs(FormIDOp &op)
+bool KEYMRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool KEYMRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 KEYMRecord ::GetSize(bool forceCalc)
+UINT32 KEYMRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 KEYMRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 KEYMRecord ::GetType()
+UINT32 KEYMRecord::GetType()
     {
     return 'MYEK';
     }
 
-STRING KEYMRecord ::GetStrType()
+STRING KEYMRecord::GetStrType()
     {
     return "KEYM";
     }
 
-SINT32 KEYMRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 KEYMRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 KEYMRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 KEYMRecord ::Unload()
+SINT32 KEYMRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 KEYMRecord ::Unload()
     return 1;
     }
 
-SINT32 KEYMRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 KEYMRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool KEYMRecord ::operator ==(const KEYMRecord  &other) const
+bool KEYMRecord::operator ==(const KEYMRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool KEYMRecord ::operator !=(const KEYMRecord  &other) const
+bool KEYMRecord::operator !=(const KEYMRecord &other) const
     {
     return !(*this == other);
     }
+}

@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class IDLERecord  : public Record
+namespace FNV
+{
+class IDLERecord : public Record
     {
     public:
         StringRecord EDID;
 
-        IDLERecord (unsigned char *_recData=NULL);
-        IDLERecord (IDLERecord  *srcRecord);
-        ~IDLERecord ();
+        IDLERecord(unsigned char *_recData=NULL);
+        IDLERecord(IDLERecord *srcRecord);
+        ~IDLERecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class IDLERecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const IDLERecord  &other) const;
-        bool operator !=(const IDLERecord  &other) const;
+        bool operator ==(const IDLERecord &other) const;
+        bool operator !=(const IDLERecord &other) const;
     };
+}

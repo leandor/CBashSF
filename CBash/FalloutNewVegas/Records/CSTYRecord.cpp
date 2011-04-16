@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "CSTYRecord .h"
+#include "CSTYRecord.h"
 
-CSTYRecord ::CSTYRecord (unsigned char *_recData):
+namespace FNV
+{
+CSTYRecord::CSTYRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-CSTYRecord ::CSTYRecord (CSTYRecord  *srcRecord):
+CSTYRecord::CSTYRecord(CSTYRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ CSTYRecord ::CSTYRecord (CSTYRecord  *srcRecord):
     return;
     }
 
-CSTYRecord ::~CSTYRecord ()
+CSTYRecord::~CSTYRecord()
     {
     //
     }
 
-bool CSTYRecord ::VisitFormIDs(FormIDOp &op)
+bool CSTYRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool CSTYRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 CSTYRecord ::GetSize(bool forceCalc)
+UINT32 CSTYRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 CSTYRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 CSTYRecord ::GetType()
+UINT32 CSTYRecord::GetType()
     {
     return 'YTSC';
     }
 
-STRING CSTYRecord ::GetStrType()
+STRING CSTYRecord::GetStrType()
     {
     return "CSTY";
     }
 
-SINT32 CSTYRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 CSTYRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 CSTYRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 CSTYRecord ::Unload()
+SINT32 CSTYRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 CSTYRecord ::Unload()
     return 1;
     }
 
-SINT32 CSTYRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 CSTYRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool CSTYRecord ::operator ==(const CSTYRecord  &other) const
+bool CSTYRecord::operator ==(const CSTYRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool CSTYRecord ::operator !=(const CSTYRecord  &other) const
+bool CSTYRecord::operator !=(const CSTYRecord &other) const
     {
     return !(*this == other);
     }
+}

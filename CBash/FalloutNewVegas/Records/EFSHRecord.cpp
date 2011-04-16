@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "EFSHRecord .h"
+#include "EFSHRecord.h"
 
-EFSHRecord ::EFSHRecord (unsigned char *_recData):
+namespace FNV
+{
+EFSHRecord::EFSHRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-EFSHRecord ::EFSHRecord (EFSHRecord  *srcRecord):
+EFSHRecord::EFSHRecord(EFSHRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ EFSHRecord ::EFSHRecord (EFSHRecord  *srcRecord):
     return;
     }
 
-EFSHRecord ::~EFSHRecord ()
+EFSHRecord::~EFSHRecord()
     {
     //
     }
 
-bool EFSHRecord ::VisitFormIDs(FormIDOp &op)
+bool EFSHRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool EFSHRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 EFSHRecord ::GetSize(bool forceCalc)
+UINT32 EFSHRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 EFSHRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 EFSHRecord ::GetType()
+UINT32 EFSHRecord::GetType()
     {
     return 'HSFE';
     }
 
-STRING EFSHRecord ::GetStrType()
+STRING EFSHRecord::GetStrType()
     {
     return "EFSH";
     }
 
-SINT32 EFSHRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 EFSHRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 EFSHRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 EFSHRecord ::Unload()
+SINT32 EFSHRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 EFSHRecord ::Unload()
     return 1;
     }
 
-SINT32 EFSHRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 EFSHRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool EFSHRecord ::operator ==(const EFSHRecord  &other) const
+bool EFSHRecord::operator ==(const EFSHRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool EFSHRecord ::operator !=(const EFSHRecord  &other) const
+bool EFSHRecord::operator !=(const EFSHRecord &other) const
     {
     return !(*this == other);
     }
+}

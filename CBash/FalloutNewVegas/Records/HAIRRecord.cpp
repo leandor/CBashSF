@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "HAIRRecord .h"
+#include "HAIRRecord.h"
 
-HAIRRecord ::HAIRRecord (unsigned char *_recData):
+namespace FNV
+{
+HAIRRecord::HAIRRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-HAIRRecord ::HAIRRecord (HAIRRecord  *srcRecord):
+HAIRRecord::HAIRRecord(HAIRRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ HAIRRecord ::HAIRRecord (HAIRRecord  *srcRecord):
     return;
     }
 
-HAIRRecord ::~HAIRRecord ()
+HAIRRecord::~HAIRRecord()
     {
     //
     }
 
-bool HAIRRecord ::VisitFormIDs(FormIDOp &op)
+bool HAIRRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool HAIRRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 HAIRRecord ::GetSize(bool forceCalc)
+UINT32 HAIRRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 HAIRRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 HAIRRecord ::GetType()
+UINT32 HAIRRecord::GetType()
     {
     return 'RIAH';
     }
 
-STRING HAIRRecord ::GetStrType()
+STRING HAIRRecord::GetStrType()
     {
     return "HAIR";
     }
 
-SINT32 HAIRRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 HAIRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 HAIRRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 HAIRRecord ::Unload()
+SINT32 HAIRRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 HAIRRecord ::Unload()
     return 1;
     }
 
-SINT32 HAIRRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 HAIRRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool HAIRRecord ::operator ==(const HAIRRecord  &other) const
+bool HAIRRecord::operator ==(const HAIRRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool HAIRRecord ::operator !=(const HAIRRecord  &other) const
+bool HAIRRecord::operator !=(const HAIRRecord &other) const
     {
     return !(*this == other);
     }
+}

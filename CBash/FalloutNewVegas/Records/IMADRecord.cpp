@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "IMADRecord .h"
+#include "IMADRecord.h"
 
-IMADRecord ::IMADRecord (unsigned char *_recData):
+namespace FNV
+{
+IMADRecord::IMADRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-IMADRecord ::IMADRecord (IMADRecord  *srcRecord):
+IMADRecord::IMADRecord(IMADRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ IMADRecord ::IMADRecord (IMADRecord  *srcRecord):
     return;
     }
 
-IMADRecord ::~IMADRecord ()
+IMADRecord::~IMADRecord()
     {
     //
     }
 
-bool IMADRecord ::VisitFormIDs(FormIDOp &op)
+bool IMADRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool IMADRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 IMADRecord ::GetSize(bool forceCalc)
+UINT32 IMADRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 IMADRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 IMADRecord ::GetType()
+UINT32 IMADRecord::GetType()
     {
     return 'DAMI';
     }
 
-STRING IMADRecord ::GetStrType()
+STRING IMADRecord::GetStrType()
     {
     return "IMAD";
     }
 
-SINT32 IMADRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 IMADRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 IMADRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 IMADRecord ::Unload()
+SINT32 IMADRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 IMADRecord ::Unload()
     return 1;
     }
 
-SINT32 IMADRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 IMADRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool IMADRecord ::operator ==(const IMADRecord  &other) const
+bool IMADRecord::operator ==(const IMADRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool IMADRecord ::operator !=(const IMADRecord  &other) const
+bool IMADRecord::operator !=(const IMADRecord &other) const
     {
     return !(*this == other);
     }
+}

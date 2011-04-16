@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "CHIPRecord .h"
+#include "CHIPRecord.h"
 
-CHIPRecord ::CHIPRecord (unsigned char *_recData):
+namespace FNV
+{
+CHIPRecord::CHIPRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-CHIPRecord ::CHIPRecord (CHIPRecord  *srcRecord):
+CHIPRecord::CHIPRecord(CHIPRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ CHIPRecord ::CHIPRecord (CHIPRecord  *srcRecord):
     return;
     }
 
-CHIPRecord ::~CHIPRecord ()
+CHIPRecord::~CHIPRecord()
     {
     //
     }
 
-bool CHIPRecord ::VisitFormIDs(FormIDOp &op)
+bool CHIPRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool CHIPRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 CHIPRecord ::GetSize(bool forceCalc)
+UINT32 CHIPRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 CHIPRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 CHIPRecord ::GetType()
+UINT32 CHIPRecord::GetType()
     {
     return 'PIHC';
     }
 
-STRING CHIPRecord ::GetStrType()
+STRING CHIPRecord::GetStrType()
     {
     return "CHIP";
     }
 
-SINT32 CHIPRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 CHIPRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 CHIPRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 CHIPRecord ::Unload()
+SINT32 CHIPRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 CHIPRecord ::Unload()
     return 1;
     }
 
-SINT32 CHIPRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 CHIPRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool CHIPRecord ::operator ==(const CHIPRecord  &other) const
+bool CHIPRecord::operator ==(const CHIPRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool CHIPRecord ::operator !=(const CHIPRecord  &other) const
+bool CHIPRecord::operator !=(const CHIPRecord &other) const
     {
     return !(*this == other);
     }
+}

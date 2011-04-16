@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class CSNORecord  : public Record
+namespace FNV
+{
+class CSNORecord : public Record
     {
     public:
         StringRecord EDID;
 
-        CSNORecord (unsigned char *_recData=NULL);
-        CSNORecord (CSNORecord  *srcRecord);
-        ~CSNORecord ();
+        CSNORecord(unsigned char *_recData=NULL);
+        CSNORecord(CSNORecord *srcRecord);
+        ~CSNORecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class CSNORecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const CSNORecord  &other) const;
-        bool operator !=(const CSNORecord  &other) const;
+        bool operator ==(const CSNORecord &other) const;
+        bool operator !=(const CSNORecord &other) const;
     };
+}

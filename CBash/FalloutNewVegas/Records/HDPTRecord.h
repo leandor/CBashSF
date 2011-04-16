@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class HDPTRecord  : public Record
+namespace FNV
+{
+class HDPTRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        HDPTRecord (unsigned char *_recData=NULL);
-        HDPTRecord (HDPTRecord  *srcRecord);
-        ~HDPTRecord ();
+        HDPTRecord(unsigned char *_recData=NULL);
+        HDPTRecord(HDPTRecord *srcRecord);
+        ~HDPTRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class HDPTRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const HDPTRecord  &other) const;
-        bool operator !=(const HDPTRecord  &other) const;
+        bool operator ==(const HDPTRecord &other) const;
+        bool operator !=(const HDPTRecord &other) const;
     };
+}

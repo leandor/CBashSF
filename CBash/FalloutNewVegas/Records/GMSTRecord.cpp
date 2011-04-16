@@ -22,16 +22,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "GMSTRecord.h"
 
+namespace FNV
+{
 GMSTRecord::GMSTDATA::GMSTDATA(STRING _DATA):
-    s(_DATA),
     format('s'),
-    i(0)
+    s(_DATA)
     {
     //
     }
 
 GMSTRecord::GMSTDATA::GMSTDATA(SINT32 _DATA):
-    s(NULL),
     format('i'),
     i(_DATA)
     {
@@ -39,7 +39,6 @@ GMSTRecord::GMSTDATA::GMSTDATA(SINT32 _DATA):
     }
 
 GMSTRecord::GMSTDATA::GMSTDATA(FLOAT32 _DATA):
-    s(NULL),
     format('f'),
     f(_DATA)
     {
@@ -48,7 +47,6 @@ GMSTRecord::GMSTDATA::GMSTDATA(FLOAT32 _DATA):
 
 GMSTRecord::GMSTDATA::GMSTDATA():
     format(0),
-    s(NULL),
     i(0)
     {
     //
@@ -258,7 +256,6 @@ SINT32 GMSTRecord::Unload()
     if(DATA.format == 's')
         delete []DATA.s;
     DATA.i = 0;
-    DATA.s = NULL;
     DATA.format = 0;
     return 1;
     }
@@ -298,3 +295,4 @@ bool GMSTRecord::operator !=(const GMSTRecord &other) const
     {
     return !(*this == other);
     }
+}

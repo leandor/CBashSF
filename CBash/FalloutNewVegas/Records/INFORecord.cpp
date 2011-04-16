@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "INFORecord .h"
+#include "INFORecord.h"
 
-INFORecord ::INFORecord (unsigned char *_recData):
+namespace FNV
+{
+INFORecord::INFORecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-INFORecord ::INFORecord (INFORecord  *srcRecord):
+INFORecord::INFORecord(INFORecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ INFORecord ::INFORecord (INFORecord  *srcRecord):
     return;
     }
 
-INFORecord ::~INFORecord ()
+INFORecord::~INFORecord()
     {
     //
     }
 
-bool INFORecord ::VisitFormIDs(FormIDOp &op)
+bool INFORecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool INFORecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 INFORecord ::GetSize(bool forceCalc)
+UINT32 INFORecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 INFORecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 INFORecord ::GetType()
+UINT32 INFORecord::GetType()
     {
     return 'OFNI';
     }
 
-STRING INFORecord ::GetStrType()
+STRING INFORecord::GetStrType()
     {
     return "INFO";
     }
 
-SINT32 INFORecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 INFORecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 INFORecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 INFORecord ::Unload()
+SINT32 INFORecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 INFORecord ::Unload()
     return 1;
     }
 
-SINT32 INFORecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 INFORecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool INFORecord ::operator ==(const INFORecord  &other) const
+bool INFORecord::operator ==(const INFORecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool INFORecord ::operator !=(const INFORecord  &other) const
+bool INFORecord::operator !=(const INFORecord &other) const
     {
     return !(*this == other);
     }
+}

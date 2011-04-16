@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class GRASRecord  : public Record
+namespace FNV
+{
+class GRASRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        GRASRecord (unsigned char *_recData=NULL);
-        GRASRecord (GRASRecord  *srcRecord);
-        ~GRASRecord ();
+        GRASRecord(unsigned char *_recData=NULL);
+        GRASRecord(GRASRecord *srcRecord);
+        ~GRASRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class GRASRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const GRASRecord  &other) const;
-        bool operator !=(const GRASRecord  &other) const;
+        bool operator ==(const GRASRecord &other) const;
+        bool operator !=(const GRASRecord &other) const;
     };
+}

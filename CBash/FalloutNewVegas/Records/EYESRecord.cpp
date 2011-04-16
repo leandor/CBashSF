@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "EYESRecord .h"
+#include "EYESRecord.h"
 
-EYESRecord ::EYESRecord (unsigned char *_recData):
+namespace FNV
+{
+EYESRecord::EYESRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-EYESRecord ::EYESRecord (EYESRecord  *srcRecord):
+EYESRecord::EYESRecord(EYESRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ EYESRecord ::EYESRecord (EYESRecord  *srcRecord):
     return;
     }
 
-EYESRecord ::~EYESRecord ()
+EYESRecord::~EYESRecord()
     {
     //
     }
 
-bool EYESRecord ::VisitFormIDs(FormIDOp &op)
+bool EYESRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool EYESRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 EYESRecord ::GetSize(bool forceCalc)
+UINT32 EYESRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 EYESRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 EYESRecord ::GetType()
+UINT32 EYESRecord::GetType()
     {
     return 'SEYE';
     }
 
-STRING EYESRecord ::GetStrType()
+STRING EYESRecord::GetStrType()
     {
     return "EYES";
     }
 
-SINT32 EYESRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 EYESRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 EYESRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 EYESRecord ::Unload()
+SINT32 EYESRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 EYESRecord ::Unload()
     return 1;
     }
 
-SINT32 EYESRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 EYESRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool EYESRecord ::operator ==(const EYESRecord  &other) const
+bool EYESRecord::operator ==(const EYESRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool EYESRecord ::operator !=(const EYESRecord  &other) const
+bool EYESRecord::operator !=(const EYESRecord &other) const
     {
     return !(*this == other);
     }
+}

@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class CLMTRecord  : public Record
+namespace FNV
+{
+class CLMTRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        CLMTRecord (unsigned char *_recData=NULL);
-        CLMTRecord (CLMTRecord  *srcRecord);
-        ~CLMTRecord ();
+        CLMTRecord(unsigned char *_recData=NULL);
+        CLMTRecord(CLMTRecord *srcRecord);
+        ~CLMTRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class CLMTRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const CLMTRecord  &other) const;
-        bool operator !=(const CLMTRecord  &other) const;
+        bool operator ==(const CLMTRecord &other) const;
+        bool operator !=(const CLMTRecord &other) const;
     };
+}

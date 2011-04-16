@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "LGTMRecord .h"
+#include "LGTMRecord.h"
 
-LGTMRecord ::LGTMRecord (unsigned char *_recData):
+namespace FNV
+{
+LGTMRecord::LGTMRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-LGTMRecord ::LGTMRecord (LGTMRecord  *srcRecord):
+LGTMRecord::LGTMRecord(LGTMRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ LGTMRecord ::LGTMRecord (LGTMRecord  *srcRecord):
     return;
     }
 
-LGTMRecord ::~LGTMRecord ()
+LGTMRecord::~LGTMRecord()
     {
     //
     }
 
-bool LGTMRecord ::VisitFormIDs(FormIDOp &op)
+bool LGTMRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool LGTMRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 LGTMRecord ::GetSize(bool forceCalc)
+UINT32 LGTMRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 LGTMRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 LGTMRecord ::GetType()
+UINT32 LGTMRecord::GetType()
     {
     return 'MTGL';
     }
 
-STRING LGTMRecord ::GetStrType()
+STRING LGTMRecord::GetStrType()
     {
     return "LGTM";
     }
 
-SINT32 LGTMRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 LGTMRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 LGTMRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 LGTMRecord ::Unload()
+SINT32 LGTMRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 LGTMRecord ::Unload()
     return 1;
     }
 
-SINT32 LGTMRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 LGTMRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool LGTMRecord ::operator ==(const LGTMRecord  &other) const
+bool LGTMRecord::operator ==(const LGTMRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool LGTMRecord ::operator !=(const LGTMRecord  &other) const
+bool LGTMRecord::operator !=(const LGTMRecord &other) const
     {
     return !(*this == other);
     }
+}

@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "CREARecord .h"
+#include "CREARecord.h"
 
-CREARecord ::CREARecord (unsigned char *_recData):
+namespace FNV
+{
+CREARecord::CREARecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-CREARecord ::CREARecord (CREARecord  *srcRecord):
+CREARecord::CREARecord(CREARecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ CREARecord ::CREARecord (CREARecord  *srcRecord):
     return;
     }
 
-CREARecord ::~CREARecord ()
+CREARecord::~CREARecord()
     {
     //
     }
 
-bool CREARecord ::VisitFormIDs(FormIDOp &op)
+bool CREARecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool CREARecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 CREARecord ::GetSize(bool forceCalc)
+UINT32 CREARecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 CREARecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 CREARecord ::GetType()
+UINT32 CREARecord::GetType()
     {
     return 'AERC';
     }
 
-STRING CREARecord ::GetStrType()
+STRING CREARecord::GetStrType()
     {
     return "CREA";
     }
 
-SINT32 CREARecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 CREARecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 CREARecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 CREARecord ::Unload()
+SINT32 CREARecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 CREARecord ::Unload()
     return 1;
     }
 
-SINT32 CREARecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 CREARecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool CREARecord ::operator ==(const CREARecord  &other) const
+bool CREARecord::operator ==(const CREARecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool CREARecord ::operator !=(const CREARecord  &other) const
+bool CREARecord::operator !=(const CREARecord &other) const
     {
     return !(*this == other);
     }
+}

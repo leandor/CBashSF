@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "FURNRecord .h"
+#include "FURNRecord.h"
 
-FURNRecord ::FURNRecord (unsigned char *_recData):
+namespace FNV
+{
+FURNRecord::FURNRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-FURNRecord ::FURNRecord (FURNRecord  *srcRecord):
+FURNRecord::FURNRecord(FURNRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ FURNRecord ::FURNRecord (FURNRecord  *srcRecord):
     return;
     }
 
-FURNRecord ::~FURNRecord ()
+FURNRecord::~FURNRecord()
     {
     //
     }
 
-bool FURNRecord ::VisitFormIDs(FormIDOp &op)
+bool FURNRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool FURNRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 FURNRecord ::GetSize(bool forceCalc)
+UINT32 FURNRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 FURNRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 FURNRecord ::GetType()
+UINT32 FURNRecord::GetType()
     {
     return 'NRUF';
     }
 
-STRING FURNRecord ::GetStrType()
+STRING FURNRecord::GetStrType()
     {
     return "FURN";
     }
 
-SINT32 FURNRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 FURNRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 FURNRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 FURNRecord ::Unload()
+SINT32 FURNRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 FURNRecord ::Unload()
     return 1;
     }
 
-SINT32 FURNRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 FURNRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool FURNRecord ::operator ==(const FURNRecord  &other) const
+bool FURNRecord::operator ==(const FURNRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool FURNRecord ::operator !=(const FURNRecord  &other) const
+bool FURNRecord::operator !=(const FURNRecord &other) const
     {
     return !(*this == other);
     }
+}

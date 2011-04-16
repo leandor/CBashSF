@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "IDLMRecord .h"
+#include "IDLMRecord.h"
 
-IDLMRecord ::IDLMRecord (unsigned char *_recData):
+namespace FNV
+{
+IDLMRecord::IDLMRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-IDLMRecord ::IDLMRecord (IDLMRecord  *srcRecord):
+IDLMRecord::IDLMRecord(IDLMRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ IDLMRecord ::IDLMRecord (IDLMRecord  *srcRecord):
     return;
     }
 
-IDLMRecord ::~IDLMRecord ()
+IDLMRecord::~IDLMRecord()
     {
     //
     }
 
-bool IDLMRecord ::VisitFormIDs(FormIDOp &op)
+bool IDLMRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool IDLMRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 IDLMRecord ::GetSize(bool forceCalc)
+UINT32 IDLMRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 IDLMRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 IDLMRecord ::GetType()
+UINT32 IDLMRecord::GetType()
     {
     return 'MLDI';
     }
 
-STRING IDLMRecord ::GetStrType()
+STRING IDLMRecord::GetStrType()
     {
     return "IDLM";
     }
 
-SINT32 IDLMRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 IDLMRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 IDLMRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 IDLMRecord ::Unload()
+SINT32 IDLMRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 IDLMRecord ::Unload()
     return 1;
     }
 
-SINT32 IDLMRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 IDLMRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool IDLMRecord ::operator ==(const IDLMRecord  &other) const
+bool IDLMRecord::operator ==(const IDLMRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool IDLMRecord ::operator !=(const IDLMRecord  &other) const
+bool IDLMRecord::operator !=(const IDLMRecord &other) const
     {
     return !(*this == other);
     }
+}

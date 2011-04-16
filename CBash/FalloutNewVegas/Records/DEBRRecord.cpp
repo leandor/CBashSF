@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "DEBRRecord .h"
+#include "DEBRRecord.h"
 
-DEBRRecord ::DEBRRecord (unsigned char *_recData):
+namespace FNV
+{
+DEBRRecord::DEBRRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-DEBRRecord ::DEBRRecord (DEBRRecord  *srcRecord):
+DEBRRecord::DEBRRecord(DEBRRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ DEBRRecord ::DEBRRecord (DEBRRecord  *srcRecord):
     return;
     }
 
-DEBRRecord ::~DEBRRecord ()
+DEBRRecord::~DEBRRecord()
     {
     //
     }
 
-bool DEBRRecord ::VisitFormIDs(FormIDOp &op)
+bool DEBRRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool DEBRRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 DEBRRecord ::GetSize(bool forceCalc)
+UINT32 DEBRRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 DEBRRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 DEBRRecord ::GetType()
+UINT32 DEBRRecord::GetType()
     {
     return 'RBED';
     }
 
-STRING DEBRRecord ::GetStrType()
+STRING DEBRRecord::GetStrType()
     {
     return "DEBR";
     }
 
-SINT32 DEBRRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 DEBRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 DEBRRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 DEBRRecord ::Unload()
+SINT32 DEBRRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 DEBRRecord ::Unload()
     return 1;
     }
 
-SINT32 DEBRRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 DEBRRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool DEBRRecord ::operator ==(const DEBRRecord  &other) const
+bool DEBRRecord::operator ==(const DEBRRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool DEBRRecord ::operator !=(const DEBRRecord  &other) const
+bool DEBRRecord::operator !=(const DEBRRecord &other) const
     {
     return !(*this == other);
     }
+}

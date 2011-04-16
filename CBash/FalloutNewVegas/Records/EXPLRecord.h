@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class EXPLRecord  : public Record
+namespace FNV
+{
+class EXPLRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        EXPLRecord (unsigned char *_recData=NULL);
-        EXPLRecord (EXPLRecord  *srcRecord);
-        ~EXPLRecord ();
+        EXPLRecord(unsigned char *_recData=NULL);
+        EXPLRecord(EXPLRecord *srcRecord);
+        ~EXPLRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class EXPLRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const EXPLRecord  &other) const;
-        bool operator !=(const EXPLRecord  &other) const;
+        bool operator ==(const EXPLRecord &other) const;
+        bool operator !=(const EXPLRecord &other) const;
     };
+}
