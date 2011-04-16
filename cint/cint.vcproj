@@ -130,7 +130,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)\$(ProjectName).pyd"
+				OutputFile="$(OutDir)\$(ProjectName).test"
 				GenerateDebugInformation="false"
 				LargeAddressAware="2"
 				OptimizeReferences="2"

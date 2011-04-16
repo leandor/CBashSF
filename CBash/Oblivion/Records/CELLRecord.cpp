@@ -176,7 +176,7 @@ bool CELLRecord::VisitSubRecords(const UINT32 &RecordType, RecordOp &op)
     if(RecordType == NULL || RecordType == 'RHCA')
         for(UINT32 x = 0; x < ACHR.size();++x)
             {
-            stop = op.Accept(&ACHR[x]);
+            stop = op.Accept(ACHR[x]);
             if(ACHR[x] == NULL)
                 {
                 ACHR.erase(ACHR.begin() + x);
@@ -189,7 +189,7 @@ bool CELLRecord::VisitSubRecords(const UINT32 &RecordType, RecordOp &op)
     if(RecordType == NULL || RecordType == 'ERCA')
         for(UINT32 x = 0; x < ACRE.size();++x)
             {
-            stop = op.Accept(&ACRE[x]);
+            stop = op.Accept(ACRE[x]);
             if(ACRE[x] == NULL)
                 {
                 ACRE.erase(ACRE.begin() + x);
@@ -202,7 +202,7 @@ bool CELLRecord::VisitSubRecords(const UINT32 &RecordType, RecordOp &op)
     if(RecordType == NULL || RecordType == 'RFER')
         for(UINT32 x = 0; x < REFR.size();++x)
             {
-            stop = op.Accept(&REFR[x]);
+            stop = op.Accept(REFR[x]);
             if(REFR[x] == NULL)
                 {
                 REFR.erase(REFR.begin() + x);
@@ -216,7 +216,7 @@ bool CELLRecord::VisitSubRecords(const UINT32 &RecordType, RecordOp &op)
         {
         if(PGRD != NULL)
             {
-            if(op.Accept(&PGRD))
+            if(op.Accept(PGRD))
                 return true;
             }
         }
@@ -225,7 +225,7 @@ bool CELLRecord::VisitSubRecords(const UINT32 &RecordType, RecordOp &op)
         {
         if(LAND != NULL)
             {
-            if(op.Accept(&LAND))
+            if(op.Accept(LAND))
                 return true;
             }
         }

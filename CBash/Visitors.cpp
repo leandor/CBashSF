@@ -120,11 +120,11 @@ RecordUnloader::~RecordUnloader()
     //
     }
 
-bool RecordUnloader::Accept(Record **curRecord)
+bool RecordUnloader::Accept(Record *&curRecord)
     {
-    if(!(*curRecord)->IsChanged())
+    if(!curRecord->IsChanged())
         {
-        (*curRecord)->Unload();
+        curRecord->Unload();
         ++count;
         }
     return stop;
@@ -142,9 +142,9 @@ RecordIDRetriever::~RecordIDRetriever()
     //
     }
 
-bool RecordIDRetriever::Accept(Record **curRecord)
+bool RecordIDRetriever::Accept(Record *&curRecord)
     {
-    RecordIDs[count] = (*curRecord);
+    RecordIDs[count] = curRecord;
     ++count;
     return stop;
     }
@@ -201,7 +201,7 @@ RecordMasterChecker::~RecordMasterChecker()
     //
     }
 
-bool RecordMasterChecker::Accept(Record **curRecord)
+bool RecordMasterChecker::Accept(Record *&curRecord)
     {
     if(stop)
         return stop;
@@ -210,13 +210,13 @@ bool RecordMasterChecker::Accept(Record **curRecord)
     reader.Accept(curRecord);
 
     //See if the master is in use
-    checker.Accept((*curRecord)->formID);
-    (*curRecord)->VisitFormIDs(checker);
+    checker.Accept(curRecord->formID);
+    curRecord->VisitFormIDs(checker);
     stop = checker.GetResult();
 
     //If the record was read unload it again
     if(reader.GetResult())
-        (*curRecord)->Unload();
+        curRecord->Unload();
 
     return stop;
     }
@@ -272,25 +272,25 @@ RecordFormIDSwapper::~RecordFormIDSwapper()
     //
     }
 
-bool RecordFormIDSwapper::Accept(Record **curRecord)
+bool RecordFormIDSwapper::Accept(Record *&curRecord)
     {
     //Ensure the record is read
     reader.Accept(curRecord);
 
     //Perform the swap
-    stop = (*curRecord)->VisitFormIDs(swapper);
+    stop = curRecord->VisitFormIDs(swapper);
 
     //Check if anything was swapped
     if(count != swapper.GetCount())
         {
         //If so, mark the record as changed
-        (*curRecord)->IsChanged(true);
+        curRecord->IsChanged(true);
         count = swapper.GetCount();
         }
 
     //If the record was read, but not changed, unload it again
-    if(reader.GetResult() && !(*curRecord)->IsChanged())
-        (*curRecord)->Unload();
+    if(reader.GetResult() && !curRecord->IsChanged())
+        curRecord->Unload();
 
     return stop;
     }
@@ -309,18 +309,18 @@ RecordDeleter::~RecordDeleter()
     //
     }
 
-bool RecordDeleter::Accept(Record **curRecord)
+bool RecordDeleter::Accept(Record *&curRecord)
     {
-    if(curRecord == NULL || (*curRecord) == NULL)
+    if(curRecord == NULL || curRecord == NULL)
         return false;
 
-    if(RecordToDelete == NULL || (*curRecord) == RecordToDelete)
+    if(RecordToDelete == NULL || curRecord == RecordToDelete)
         {
         //De-Index the record
-        if((*curRecord)->IsKeyedByEditorID())
+        if(curRecord->IsKeyedByEditorID())
             {
-            for(EditorID_Range range = EditorID_ModFile_Record.equal_range(((*curRecord)->GetType() == 'FEGM' && ((MGEFRecord*)(*curRecord))->OBME.IsLoaded()) ? &(((MGEFRecord*)curRecord)->OBME->EDDX.value.mgefCode)[0] : (STRING)(*curRecord)->GetField(4)); range.first != range.second; ++range.first)
-                if(range.first->second.second == (*curRecord))
+            for(EditorID_Range range = EditorID_ModFile_Record.equal_range((curRecord->GetType() == 'FEGM' && ((MGEFRecord*)curRecord)->OBME.IsLoaded()) ? &(((MGEFRecord*)curRecord)->OBME->EDDX.value.mgefCode)[0] : (STRING)curRecord->GetField(4)); range.first != range.second; ++range.first)
+                if(range.first->second.second == curRecord)
                     {
                     EditorID_ModFile_Record.erase(range.first);
                     break;
@@ -328,21 +328,21 @@ bool RecordDeleter::Accept(Record **curRecord)
             }
         else
             {
-            for(FormID_Range range = FormID_ModFile_Record.equal_range((*curRecord)->formID); range.first != range.second; ++range.first)
-                if(range.first->second.second == (*curRecord))
+            for(FormID_Range range = FormID_ModFile_Record.equal_range(curRecord->formID); range.first != range.second; ++range.first)
+                if(range.first->second.second == curRecord)
                     {
                     FormID_ModFile_Record.erase(range.first);
                     break;
                     }
             }
-        if((*curRecord)->HasSubRecords())
+        if(curRecord->HasSubRecords())
             {
             RecordDeleter SubRecordDeleter(NULL, EditorID_ModFile_Record, FormID_ModFile_Record);
-            (*curRecord)->VisitSubRecords(NULL, SubRecordDeleter);
+            curRecord->VisitSubRecords(NULL, SubRecordDeleter);
             }
         //Delete the record
-        delete (*curRecord);
-        (*curRecord) = NULL;
+        delete curRecord;
+        curRecord = NULL;
         ++count;
         result = true;
         stop = RecordToDelete != NULL;
@@ -373,17 +373,17 @@ RecordIndexer::~RecordIndexer()
     //
     }
 
-bool RecordIndexer::Accept(Record **curRecord)
+bool RecordIndexer::Accept(Record *&curRecord)
     {
-    if((*curRecord)->IsKeyedByEditorID())
+    if(curRecord->IsKeyedByEditorID())
         {
-        if((*curRecord)->GetType() == 'FEGM' && ((MGEFRecord*)(*curRecord))->OBME.IsLoaded())
-            EditorID_ModFile_Record.insert(std::make_pair(&(((MGEFRecord*)(*curRecord))->OBME->EDDX.value.mgefCode)[0],std::make_pair(curModFile,*curRecord)));
+        if(curRecord->GetType() == 'FEGM' && ((MGEFRecord*)curRecord)->OBME.IsLoaded())
+            EditorID_ModFile_Record.insert(std::make_pair(&(((MGEFRecord*)curRecord)->OBME->EDDX.value.mgefCode)[0],std::make_pair(curModFile,curRecord)));
         else
-            EditorID_ModFile_Record.insert(std::make_pair((STRING)(*curRecord)->GetField(4),std::make_pair(curModFile,*curRecord)));
+            EditorID_ModFile_Record.insert(std::make_pair((STRING)curRecord->GetField(4),std::make_pair(curModFile,curRecord)));
         }
     else
-        FormID_ModFile_Record.insert(std::make_pair((*curRecord)->formID,std::make_pair(curModFile,*curRecord)));
+        FormID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return false;
     }
 

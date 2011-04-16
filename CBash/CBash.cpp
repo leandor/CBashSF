@@ -359,16 +359,42 @@ SINT32 DeleteCollection(Collection *CollectionID)
 
         #ifdef CBASH_CALLCOUNT
             printf("counts = [");
-            for(std::map<STRING, UINT32>::iterator it = CallCount.begin(); it != CallCount.end(); ++it)
+            for(std::map<char *, unsigned long>::iterator it = CallCount.begin(); it != CallCount.end(); ++it)
                 printf("(%d, '%s'),", it->second, it->first);
             printf("]\n");
-            CallCount.clear();
+            #ifndef CBASH_CALLTIMING
+                CallCount.clear();
+            #endif
         #endif
         #ifdef CBASH_CALLTIMING
+            double TotTime = 0.0f;
             printf("times = [");
             for(std::map<char *, double>::iterator it = CallTime.begin(); it != CallTime.end(); ++it)
+                {
+                TotTime += it->second;
                 printf("(%.10f, '%s'),", it->second, it->first);
-            printf("]\n");
+                }
+            printf("]\n\n");
+            #ifdef CBASH_CALLCOUNT
+                printf("Time in CBash = %.10f\n\n", TotTime);
+                printf("Time in CBash = sum(total time)\n");
+                printf("Total %% = Time in CBash / total time * 100%%\n");
+                printf("avg execution = total time / times called\n\n");
+                printf("Total %%,avg execution,total time,function,times called\n");
+                std::multimap<double, char *> CBashProfiling;
+                for(std::map<char *, double>::iterator it = CallTime.begin(); it != CallTime.end(); ++it)
+                    CBashProfiling.insert(std::make_pair((it->second / TotTime) * 100, it->first));
+                for(std::multimap<double, char *>::iterator it = CBashProfiling.end(); it != CBashProfiling.begin();)
+                    {
+                    --it;
+                    if(it->first < 10.0)
+                        printf("0");
+                    printf("%02.2f%%,%.10f,%.10f,%s,%d\n", it->first, CallTime[it->second] / CallCount[it->second], CallTime[it->second], it->second, CallCount[it->second]);
+                    }
+                printf("\n\n");
+                CBashProfiling.clear();
+                CallCount.clear();
+            #endif
             CallTime.clear();
         #endif
         }
@@ -574,16 +600,14 @@ SINT32 CleanModMasters(Collection *CollectionID, ModFile *ModID)
 
 SINT32 SaveMod(Collection *CollectionID, ModFile *ModID, const bool CloseCollection)
     {
-    PROFILE_FUNC
-    
+
     try
         {
+        //Profiling is in try block so that the timer gets destructed before DeleteCollection is called
+        PROFILE_FUNC
         ValidatePointer(CollectionID);
         ValidatePointer(ModID);
         CollectionID->SaveMod(ModID, CloseCollection);
-
-        if(CloseCollection)
-            DeleteCollection(CollectionID);
         }
     catch(std::exception &ex)
         {
@@ -597,6 +621,9 @@ SINT32 SaveMod(Collection *CollectionID, ModFile *ModID, const bool CloseCollect
         printf("\n\n");
         return -1;
         }
+
+    if(CloseCollection)
+        DeleteCollection(CollectionID);
     return 0;
     }
 ////////////////////////////////////////////////////////////////////////
@@ -1364,7 +1391,7 @@ SINT32 UpdateReferences(Collection *CollectionID, ModFile *ModID, Record *Record
 
         if(RecordID != NULL) //Swap possible uses of FormIDToReplace in a specific record only
             {
-            swapper.Accept(&RecordID);
+            swapper.Accept(RecordID);
             }
         else //Swap all possible uses of FormIDToReplace
             {
@@ -1405,7 +1432,7 @@ SINT32 GetNumReferences(Collection *CollectionID, ModFile *ModID, Record *Record
         
         //Ensure the record is fully loaded
         RecordReader reader(ModID->FormIDHandler, CollectionID->Expanders);
-        reader.Accept(&RecordID);
+        reader.Accept(RecordID);
 
         FormIDMatchCounter counter(FormIDToMatch);
         RecordID->VisitFormIDs(counter);
@@ -1440,7 +1467,7 @@ void SetField(Collection *CollectionID, ModFile *ModID, Record *RecordID, FIELD_
         
         //Ensure the record is fully loaded
         RecordReader reader(ModID->FormIDHandler, CollectionID->Expanders);
-        reader.Accept(&RecordID);
+        reader.Accept(RecordID);
 
         if(RecordID->SetField(FieldID, ListIndex, ListFieldID, ListX2Index, ListX2FieldID, ListX3Index, ListX3FieldID, FieldValue, ArraySize))
             {
@@ -1482,7 +1509,7 @@ void DeleteField(Collection *CollectionID, ModFile *ModID, Record *RecordID, FIE
         
         //Ensure the record is fully loaded
         RecordReader reader(ModID->FormIDHandler, CollectionID->Expanders);
-        reader.Accept(&RecordID);
+        reader.Accept(RecordID);
 
         RecordID->DeleteField(FieldID, ListIndex, ListFieldID, ListX2Index, ListX2FieldID, ListX3Index, ListX3FieldID);
 
@@ -1521,7 +1548,7 @@ UINT32 GetFieldAttribute(Collection *CollectionID, ModFile *ModID, Record *Recor
             //Any attribute other than type requires the record to be read
             //Ensure the record is fully loaded
             RecordReader reader(ModID->FormIDHandler, CollectionID->Expanders);
-            reader.Accept(&RecordID);
+            reader.Accept(RecordID);
             }
 
         return RecordID->GetFieldAttribute(FieldID, ListIndex, ListFieldID, ListX2Index, ListX2FieldID, ListX3Index, ListX3FieldID, WhichAttribute);
@@ -1554,18 +1581,18 @@ UINT32 GetFieldAttribute(Collection *CollectionID, ModFile *ModID, Record *Recor
     }
 
 void * GetField(Collection *CollectionID, ModFile *ModID, Record *RecordID, FIELD_IDENTIFIERS, void **FieldValues)
-    {                                   
+    {
     PROFILE_FUNC
 
     try
         {
-        ValidatePointer(CollectionID);
-        ValidatePointer(ModID);
-        ValidatePointer(RecordID);
+        //ValidatePointer(CollectionID);
+        //ValidatePointer(ModID);
+        //ValidatePointer(RecordID);
         
         //Ensure the record is fully loaded
         RecordReader reader(ModID->FormIDHandler, CollectionID->Expanders);
-        reader.Accept(&RecordID);
+        reader.Accept(RecordID);
 
         return RecordID->GetField(FieldID, ListIndex, ListFieldID, ListX2Index, ListX2FieldID, ListX3Index, ListX3FieldID, FieldValues);
         }

@@ -59,7 +59,7 @@ class RecordUnloader : public RecordOp
         RecordUnloader();
         ~RecordUnloader();
 
-        bool Accept(Record **curRecord);
+        bool Accept(Record *&curRecord);
     };
 
 class RecordIDRetriever : public RecordOp
@@ -71,7 +71,7 @@ class RecordIDRetriever : public RecordOp
         RecordIDRetriever(RECORDIDARRAY _RecordIDs);
         ~RecordIDRetriever();
 
-        bool Accept(Record **curRecord);
+        bool Accept(Record *&curRecord);
     };
 
 class RecordMasterChecker : public RecordOp
@@ -97,7 +97,7 @@ class RecordMasterChecker : public RecordOp
         RecordMasterChecker(FormIDHandlerClass &_FormIDHandler, std::vector<FormIDResolver *> &_Expanders, const UINT8 &_MasterIndex);
         ~RecordMasterChecker();
 
-        bool Accept(Record **curRecord);
+        bool Accept(Record *&curRecord);
     };
 
 class RecordFormIDSwapper : public RecordOp
@@ -124,7 +124,7 @@ class RecordFormIDSwapper : public RecordOp
         RecordFormIDSwapper(const UINT32 &_FormIDToMatch, const UINT32 &_FormIDToSwap, FormIDHandlerClass &_FormIDHandler, std::vector<FormIDResolver *> &_Expanders);
         ~RecordFormIDSwapper();
 
-        bool Accept(Record **curRecord);
+        bool Accept(Record *&curRecord);
     };
 
 class RecordDeleter : public RecordOp
@@ -138,7 +138,7 @@ class RecordDeleter : public RecordOp
         RecordDeleter(Record *_RecordToDelete, EditorID_Map &_EditorID_ModFile_Record, FormID_Map &_FormID_ModFile_Record);
         ~RecordDeleter();
 
-        bool Accept(Record **curRecord);
+        bool Accept(Record *&curRecord);
     };
 
 class RecordIndexer : public RecordOp
@@ -153,7 +153,7 @@ class RecordIndexer : public RecordOp
         RecordIndexer(EditorID_Map &_EditorID_Map, FormID_Map &_FormID_Map);
         ~RecordIndexer();
 
-        bool Accept(Record **curRecord);
+        bool Accept(Record *&curRecord);
 
         void SetModFile(ModFile *_curModFile);
     };

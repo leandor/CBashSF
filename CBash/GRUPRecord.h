@@ -70,7 +70,7 @@ class GRUPRecords
                 ReadHandler.read(&recordSize, 4);
                 if(processor(curRecord))
                     {
-                    indexer.Accept(&curRecord);
+                    indexer.Accept(curRecord);
                     Records.push_back(curRecord);
                     }
                 ReadHandler.set_used(recordSize);
@@ -92,7 +92,7 @@ class GRUPRecords
                 curRecord = Records[p];
                 if(RecordType == NULL || RecordType == curRecord->GetType())
                     {
-                    stop = op.Accept(&curRecord);
+                    stop = op.Accept(curRecord);
                     if(curRecord == NULL)
                         {
                         Records.erase(Records.begin() + p);
@@ -180,7 +180,7 @@ class GRUPRecords<DIALRecord>
                         curDIALRecord = new DIALRecord(ReadHandler.getBuffer(ReadHandler.tell()) + 12);
                         if(processor(curDIALRecord))
                             {
-                            indexer.Accept(&curDIALRecord);
+                            indexer.Accept(curDIALRecord);
                             Records.push_back(curDIALRecord);
                             }
                         break;
@@ -194,7 +194,7 @@ class GRUPRecords<DIALRecord>
                             {
                             if(curDIALRecord != NULL)
                                 {
-                                indexer.Accept(&curINFORecord);
+                                indexer.Accept(curINFORecord);
                                 ((DIALRecord *)curDIALRecord)->INFO.push_back(curINFORecord);
                                 }
                             else
@@ -227,7 +227,7 @@ class GRUPRecords<DIALRecord>
                 curRecord = Records[p];
                 if(RecordType == NULL || RecordType == curRecord->GetType())
                     {
-                    stop = op.Accept(&curRecord);
+                    stop = op.Accept(curRecord);
                     if(curRecord == NULL)
                         {
                         Records.erase(Records.begin() + p);
@@ -353,7 +353,7 @@ class GRUPRecords<CELLRecord>
                         curCELLRecord = new CELLRecord(ReadHandler.getBuffer(ReadHandler.tell()) + 12);
                         if(processor(curCELLRecord))
                             {
-                            indexer.Accept(&curCELLRecord);
+                            indexer.Accept(curCELLRecord);
                             Records.push_back(curCELLRecord);
                             }
                         break;
@@ -366,7 +366,7 @@ class GRUPRecords<CELLRecord>
                             {
                             if(curCELLRecord != NULL)
                                 {
-                                indexer.Accept(&curACHRRecord);
+                                indexer.Accept(curACHRRecord);
                                 ((CELLRecord *)curCELLRecord)->ACHR.push_back(curACHRRecord);
                                 }
                             else
@@ -382,7 +382,7 @@ class GRUPRecords<CELLRecord>
                             {
                             if(curCELLRecord != NULL)
                                 {
-                                indexer.Accept(&curACRERecord);
+                                indexer.Accept(curACRERecord);
                                 ((CELLRecord *)curCELLRecord)->ACRE.push_back(curACRERecord);
                                 }
                             else
@@ -398,7 +398,7 @@ class GRUPRecords<CELLRecord>
                             {
                             if(curCELLRecord != NULL)
                                 {
-                                indexer.Accept(&curREFRRecord);
+                                indexer.Accept(curREFRRecord);
                                 ((CELLRecord *)curCELLRecord)->REFR.push_back(curREFRRecord);
                                 }
                             else
@@ -416,7 +416,7 @@ class GRUPRecords<CELLRecord>
                                 {
                                 if(((CELLRecord *)curCELLRecord)->PGRD == NULL)
                                     {
-                                    indexer.Accept(&curPGRDRecord);
+                                    indexer.Accept(curPGRDRecord);
                                     ((CELLRecord *)curCELLRecord)->PGRD = curPGRDRecord;
                                     }
                                 else
@@ -455,7 +455,7 @@ class GRUPRecords<CELLRecord>
                 curRecord = Records[p];
                 if(RecordType == NULL || RecordType == curRecord->GetType())
                     {
-                    stop = op.Accept(&curRecord);
+                    stop = op.Accept(curRecord);
                     if(curRecord == NULL)
                         {
                         Records.erase(Records.begin() + p);
@@ -772,7 +772,7 @@ class GRUPRecords<WRLDRecord>
                         curWRLDRecord = new WRLDRecord(ReadHandler.getBuffer(ReadHandler.tell()) + 12);
                         if(processor(curWRLDRecord))
                             {
-                            indexer.Accept(&curWRLDRecord);
+                            indexer.Accept(curWRLDRecord);
                             Records.push_back(curWRLDRecord);
                             }
                         break;
@@ -788,7 +788,7 @@ class GRUPRecords<WRLDRecord>
                                     case eWorld:
                                         if(((WRLDRecord *)curWRLDRecord)->CELL == NULL)
                                             {
-                                            indexer.Accept(&curCELLRecord);
+                                            indexer.Accept(curCELLRecord);
                                             ((WRLDRecord *)curWRLDRecord)->CELL = curCELLRecord;
                                             }
                                         else
@@ -798,7 +798,7 @@ class GRUPRecords<WRLDRecord>
                                             }
                                         break;
                                     default:
-                                        indexer.Accept(&curCELLRecord);
+                                        indexer.Accept(curCELLRecord);
                                         ((WRLDRecord *)curWRLDRecord)->CELLS.push_back(curCELLRecord);
                                         break;
                                     }
@@ -825,7 +825,7 @@ class GRUPRecords<WRLDRecord>
                                 {
                                 if(((WRLDRecord *)curWRLDRecord)->ROAD == NULL)
                                     {
-                                    indexer.Accept(&curROADRecord);
+                                    indexer.Accept(curROADRecord);
                                     ((WRLDRecord *)curWRLDRecord)->ROAD = curROADRecord;
                                     }
                                 else
@@ -849,11 +849,11 @@ class GRUPRecords<WRLDRecord>
                                 {
                                 if(((CELLRecord *)curCELLRecord)->LAND == NULL)
                                     {
-                                    indexer.Accept(&curLANDRecord);
+                                    indexer.Accept(curLANDRecord);
                                     ((CELLRecord *)curCELLRecord)->LAND = curLANDRecord;
                                     if(processor.Flags.IsIndexLANDs)
                                         {
-                                        processor.reader.Accept(&curCELLRecord); //may already be loaded, but just to be sure.
+                                        processor.reader.Accept(curCELLRecord); //may already be loaded, but just to be sure.
                                         //CELL will be unloaded if needed after a second round of indexing when all records are loaded
                                         ((CELLRecord *)curCELLRecord)->XCLC.Load();
                                         GridXY_LAND[((CELLRecord *)curCELLRecord)->XCLC->posX][((CELLRecord *)curCELLRecord)->XCLC->posY] = (LANDRecord *)curLANDRecord;
@@ -880,7 +880,7 @@ class GRUPRecords<WRLDRecord>
                                 {
                                 if(((CELLRecord *)curCELLRecord)->PGRD == NULL)
                                     {
-                                    indexer.Accept(&curPGRDRecord);
+                                    indexer.Accept(curPGRDRecord);
                                     ((CELLRecord *)curCELLRecord)->PGRD = curPGRDRecord;
                                     }
                                 else
@@ -902,7 +902,7 @@ class GRUPRecords<WRLDRecord>
                             {
                             if(curCELLRecord != NULL)
                                 {
-                                indexer.Accept(&curACHRRecord);
+                                indexer.Accept(curACHRRecord);
                                 ((CELLRecord *)curCELLRecord)->ACHR.push_back(curACHRRecord);
                                 }
                             else
@@ -918,7 +918,7 @@ class GRUPRecords<WRLDRecord>
                             {
                             if(curCELLRecord != NULL)
                                 {
-                                indexer.Accept(&curACRERecord);
+                                indexer.Accept(curACRERecord);
                                 ((CELLRecord *)curCELLRecord)->ACRE.push_back(curACRERecord);
                                 }
                             else
@@ -934,7 +934,7 @@ class GRUPRecords<WRLDRecord>
                             {
                             if(curCELLRecord != NULL)
                                 {
-                                indexer.Accept(&curREFRRecord);
+                                indexer.Accept(curREFRRecord);
                                 ((CELLRecord *)curCELLRecord)->REFR.push_back(curREFRRecord);
                                 }
                             else
@@ -979,7 +979,7 @@ class GRUPRecords<WRLDRecord>
                                 {
                                 //Have to test each record to see if it belongs to the cell. This is determined by its positioning.
                                 curACHRRecord = curWRLDCELL->ACHR[x];
-                                processor.reader.Accept(&curACHRRecord);
+                                processor.reader.Accept(curACHRRecord);
 
                                 gridX = (SINT32)floor(((ACHRRecord *)curACHRRecord)->DATA.value.posX / 4096.0);
                                 gridY = (SINT32)floor(((ACHRRecord *)curACHRRecord)->DATA.value.posY / 4096.0);
@@ -1000,7 +1000,7 @@ class GRUPRecords<WRLDRecord>
                             for(UINT32 x = 0; x < curWRLDCELL->ACRE.size();)
                                 {
                                 curACRERecord = curWRLDCELL->ACRE[x];
-                                processor.reader.Accept(&curACRERecord);
+                                processor.reader.Accept(curACRERecord);
 
                                 gridX = (SINT32)floor(((ACRERecord *)curACRERecord)->DATA.value.posX / 4096.0);
                                 gridY = (SINT32)floor(((ACRERecord *)curACRERecord)->DATA.value.posY / 4096.0);
@@ -1019,7 +1019,7 @@ class GRUPRecords<WRLDRecord>
                             for(UINT32 x = 0; x < curWRLDCELL->REFR.size();)
                                 {
                                 curREFRRecord = curWRLDCELL->REFR[x];
-                                processor.reader.Accept(&curREFRRecord);
+                                processor.reader.Accept(curREFRRecord);
 
                                 gridX = (SINT32)floor(((REFRRecord *)curREFRRecord)->DATA.value.posX / 4096.0);
                                 gridY = (SINT32)floor(((REFRRecord *)curREFRRecord)->DATA.value.posY / 4096.0);
@@ -1077,7 +1077,7 @@ class GRUPRecords<WRLDRecord>
                 curRecord = Records[p];
                 if(RecordType == NULL || RecordType == curRecord->GetType())
                     {
-                    stop = op.Accept(&curRecord);
+                    stop = op.Accept(curRecord);
                     if(curRecord == NULL)
                         {
                         Records.erase(Records.begin() + p);

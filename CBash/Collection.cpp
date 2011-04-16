@@ -23,7 +23,7 @@ GPL License and Copyright Notice ============================================
 #include "Collection.h"
 #include <direct.h>
 #include <sys/utime.h>
-#include <boost/threadpool.hpp>
+//#include <boost/threadpool.hpp>
 
 bool compModRecordPair(std::pair<ModFile *, Record *> *&lhs, std::pair<ModFile *, Record *> *&rhs)
     {
@@ -688,7 +688,7 @@ Record * Collection::CreateRecord(ModFile *&curModFile, const UINT32 &RecordType
 
     //Index the new record
     RecordIndexer indexer(curModFile, curModFile->Flags.IsExtendedConflicts ? ExtendedEditorID_ModFile_Record: EditorID_ModFile_Record, curModFile->Flags.IsExtendedConflicts ? ExtendedFormID_ModFile_Record: FormID_ModFile_Record);
-    indexer.Accept(&curRecord);
+    indexer.Accept(curRecord);
 
     return curRecord;
     }
@@ -776,7 +776,7 @@ Record * Collection::CopyRecord(ModFile *&curModFile, Record *&curRecord, ModFil
     //Ensure the record has been fully read
     //Uses the source mod's formID resolution tables
     RecordReader reader(curModFile->FormIDHandler, Expanders);
-    reader.Accept(&RecordCopy);
+    reader.Accept(RecordCopy);
 
     //Then the destination mod's tables get used so that they can be updated
     FormIDMasterUpdater checker(DestModFile->FormIDHandler);
@@ -785,7 +785,7 @@ Record * Collection::CopyRecord(ModFile *&curModFile, Record *&curRecord, ModFil
 
     //Index the record
     RecordIndexer indexer(DestModFile, DestModFile->Flags.IsExtendedConflicts ? ExtendedEditorID_ModFile_Record: EditorID_ModFile_Record, DestModFile->Flags.IsExtendedConflicts ? ExtendedFormID_ModFile_Record: FormID_ModFile_Record);
-    indexer.Accept(&RecordCopy);
+    indexer.Accept(RecordCopy);
 
     if(reader.GetResult()) //If the record was read, go ahead and unload it
         RecordCopy->Unload();
@@ -886,7 +886,7 @@ SINT32 Collection::SetRecordIDs(ModFile *&curModFile, Record *&RecordID, const F
         {
         //Ensure the record is fully loaded, otherwise any changes could be lost when the record is later loaded
         RecordReader reader(curModFile->FormIDHandler, Expanders);
-        reader.Accept(&curRecord);
+        reader.Accept(curRecord);
         curRecord->SetField(4, 0, 0, 0, 0, 0, 0, (void *)EditorID, 0);
         curRecord->IsChanged(true);
         }
@@ -895,7 +895,7 @@ SINT32 Collection::SetRecordIDs(ModFile *&curModFile, Record *&RecordID, const F
     if(bDeIndexed)
         {
         RecordIndexer indexer(curModFile, curEditorID_Map, curFormID_Map);
-        indexer.Accept(&curRecord);
+        indexer.Accept(curRecord);
         }
     return (bChangingFormID || bChangingEditorID) ? 1 : -1;
     }

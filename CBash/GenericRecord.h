@@ -74,7 +74,7 @@ class RecordOp
         RecordOp();
         ~RecordOp();
 
-        virtual bool Accept(Record **curRecord);
+        virtual bool Accept(Record *&curRecord);
 
         UINT32 GetCount();
         void ResetCount();
@@ -92,7 +92,7 @@ class RecordReader : public RecordOp
         RecordReader(FormIDHandlerClass &_FormIDHandler, std::vector<FormIDResolver *> &_Expanders);
         ~RecordReader();
 
-        bool Accept(Record **curRecord);
+        bool Accept(Record *&curRecord);
     };
 
 class RecordProcessor

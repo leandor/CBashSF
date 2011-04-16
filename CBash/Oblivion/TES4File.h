@@ -25,7 +25,6 @@ GPL License and Copyright Notice ============================================
 #include "../ModFile.h"
 #include "../GenericRecord.h"
 #include "../GRUPRecord.h"
-#include "Records/TES4Record.h"
 #include "Records/GMSTRecord.h"
 #include "Records/GLOBRecord.h"
 #include "Records/CLASRecord.h"

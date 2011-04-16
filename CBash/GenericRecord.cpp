@@ -96,7 +96,7 @@ RecordOp::~RecordOp()
     //
     }
 
-bool RecordOp::Accept(Record **curRecord)
+bool RecordOp::Accept(Record *&curRecord)
     {
     return false;
     }
@@ -134,30 +134,31 @@ RecordReader::~RecordReader()
     //
     }
 
-bool RecordReader::Accept(Record **curRecord)
+bool RecordReader::Accept(Record *&curRecord)
     {
-    result = (*curRecord)->Read();
+    result = curRecord->Read();
     if(result)
         {
-        if((*curRecord)->IsValid(expander))
-            (*curRecord)->VisitFormIDs(expander);
+        if(curRecord->IsValid(expander))
+            curRecord->VisitFormIDs(expander);
         else
             {
             SINT32 index = -1;
             for(UINT32 x = 0; x < Expanders.size(); ++x)
-                if((*curRecord)->IsValid(*Expanders[x]))
+                if(curRecord->IsValid(*Expanders[x]))
                     {
-                    if(index != -1)
-                        printf("Multiple 'Correct' expanders found! Using last one found (likely incorrect unless lucky)\n");
+                    //if(index != -1)
+                    //    printf("Multiple 'Correct' expanders found! Using last one found (likely incorrect unless lucky)\n");
                     index = x;
+                    break;
                     }
             if(index == -1)
                 {
-                printf("Using the wrong expander!\n");
-                (*curRecord)->VisitFormIDs(expander);
+                printf("Unable to find the correct expander!\n");
+                curRecord->VisitFormIDs(expander);
                 }
             else
-                (*curRecord)->VisitFormIDs(*Expanders[index]);
+                curRecord->VisitFormIDs(*Expanders[index]);
             }
         ++count;
         }
@@ -206,7 +207,7 @@ bool RecordProcessor::operator()(Record *&curRecord)
     //Make sure the formID is unique within the mod
     if(UsedFormIDs.insert(curRecord->formID).second == true)
         {
-        reader.Accept(&curRecord);
+        reader.Accept(curRecord);
         //Threads.schedule(boost::bind(&RecordReader::Accept, reader, (Record **)&curRecord));
         if(IsTrackNewTypes && curRecord->GetType() != 'TSMG' && curRecord->GetType() != 'FEGM' && FormIDHandler.IsNewRecord(curRecord->formID))
             FormIDHandler.NewTypes.insert(curRecord->GetType());
@@ -357,20 +358,21 @@ UINT32 Record::Write(_FileHandler &SaveHandler, const bool &bMastersChanged, For
                 for(UINT32 x = 0; x < Expanders.size(); ++x)
                     if(IsValid(*Expanders[x]))
                         {
-                        if(index != -1)
-                            {
-                            printf("Multiple 'Correct' expanders found (%08X)! Using last one found (likely incorrect unless lucky)\n", formID);
-                            printf("  %i:   %08X, %08X, %08X\n", index, Expanders[index]->FileStart, recData, Expanders[index]->FileEnd);
-                            printf("  %i:   %08X, %08X, %08X\n", x, Expanders[x]->FileStart, recData, Expanders[x]->FileEnd);
-                            printf("Expanders:\n");
-                            for(UINT32 z = 0; z < Expanders.size(); ++z)
-                                printf("  %i of %i:   %08X, %08X\n", z, Expanders.size(), Expanders[z]->FileStart, Expanders[z]->FileEnd);
-                            }
+                        //if(index != -1)
+                        //    {
+                        //    printf("Multiple 'Correct' expanders found (%08X)! Using last one found (likely incorrect unless lucky)\n", formID);
+                        //    printf("  %i:   %08X, %08X, %08X\n", index, Expanders[index]->FileStart, recData, Expanders[index]->FileEnd);
+                        //    printf("  %i:   %08X, %08X, %08X\n", x, Expanders[x]->FileStart, recData, Expanders[x]->FileEnd);
+                        //    printf("Expanders:\n");
+                        //    for(UINT32 z = 0; z < Expanders.size(); ++z)
+                        //        printf("  %i of %i:   %08X, %08X\n", z, Expanders.size(), Expanders[z]->FileStart, Expanders[z]->FileEnd);
+                        //    }
                         index = x;
+                        break;
                         }
                 if(index == -1)
                     {
-                    printf("Using the wrong expander!\n");
+                    printf("Unable to find the correct expander!\n");
                     VisitFormIDs(expander);
                     }
                 else

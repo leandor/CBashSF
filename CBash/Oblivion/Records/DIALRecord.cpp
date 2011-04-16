@@ -76,7 +76,7 @@ bool DIALRecord::VisitSubRecords(const UINT32 &RecordType, RecordOp &op)
     if(RecordType == NULL || RecordType == 'OFNI')
         for(UINT32 x = 0; x < INFO.size();++x)
             {
-            stop = op.Accept(&INFO[x]);
+            stop = op.Accept(INFO[x]);
             if(INFO[x] == NULL)
                 {
                 INFO.erase(INFO.begin() + x);

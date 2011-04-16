@@ -139,7 +139,7 @@ bool WRLDRecord::VisitSubRecords(const UINT32 &RecordType, RecordOp &op)
         {
         if(ROAD != NULL)
             {
-            if(op.Accept(&ROAD))
+            if(op.Accept(ROAD))
                 return true;
             }
         }
@@ -151,13 +151,13 @@ bool WRLDRecord::VisitSubRecords(const UINT32 &RecordType, RecordOp &op)
         {
         if(CELL != NULL)
             {
-            if(op.Accept(&CELL))
+            if(op.Accept(CELL))
                 return true;
             }
 
         for(UINT32 x = 0; x < CELLS.size();++x)
             {
-            stop = op.Accept(&CELLS[x]);
+            stop = op.Accept(CELLS[x]);
             if(CELLS[x] == NULL)
                 {
                 CELLS.erase(CELLS.begin() + x);
