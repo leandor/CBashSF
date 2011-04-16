@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "RGDLRecord .h"
+#include "RGDLRecord.h"
 
-RGDLRecord ::RGDLRecord (unsigned char *_recData):
+namespace FNV
+{
+RGDLRecord::RGDLRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-RGDLRecord ::RGDLRecord (RGDLRecord  *srcRecord):
+RGDLRecord::RGDLRecord(RGDLRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ RGDLRecord ::RGDLRecord (RGDLRecord  *srcRecord):
     return;
     }
 
-RGDLRecord ::~RGDLRecord ()
+RGDLRecord::~RGDLRecord()
     {
     //
     }
 
-bool RGDLRecord ::VisitFormIDs(FormIDOp &op)
+bool RGDLRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool RGDLRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 RGDLRecord ::GetSize(bool forceCalc)
+UINT32 RGDLRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 RGDLRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 RGDLRecord ::GetType()
+UINT32 RGDLRecord::GetType()
     {
     return 'LDGR';
     }
 
-STRING RGDLRecord ::GetStrType()
+STRING RGDLRecord::GetStrType()
     {
     return "RGDL";
     }
 
-SINT32 RGDLRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 RGDLRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 RGDLRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 RGDLRecord ::Unload()
+SINT32 RGDLRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 RGDLRecord ::Unload()
     return 1;
     }
 
-SINT32 RGDLRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 RGDLRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool RGDLRecord ::operator ==(const RGDLRecord  &other) const
+bool RGDLRecord::operator ==(const RGDLRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool RGDLRecord ::operator !=(const RGDLRecord  &other) const
+bool RGDLRecord::operator !=(const RGDLRecord &other) const
     {
     return !(*this == other);
     }
+}

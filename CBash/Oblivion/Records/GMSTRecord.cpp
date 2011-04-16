@@ -23,15 +23,13 @@ GPL License and Copyright Notice ============================================
 #include "GMSTRecord.h"
 
 GMSTRecord::GMSTDATA::GMSTDATA(STRING _DATA):
-    s(_DATA),
     format('s'),
-    i(0)
+    s(_DATA)
     {
     //
     }
 
 GMSTRecord::GMSTDATA::GMSTDATA(SINT32 _DATA):
-    s(NULL),
     format('i'),
     i(_DATA)
     {
@@ -39,7 +37,6 @@ GMSTRecord::GMSTDATA::GMSTDATA(SINT32 _DATA):
     }
 
 GMSTRecord::GMSTDATA::GMSTDATA(FLOAT32 _DATA):
-    s(NULL),
     format('f'),
     f(_DATA)
     {
@@ -48,7 +45,6 @@ GMSTRecord::GMSTDATA::GMSTDATA(FLOAT32 _DATA):
 
 GMSTRecord::GMSTDATA::GMSTDATA():
     format(0),
-    s(NULL),
     i(0)
     {
     //
@@ -56,7 +52,8 @@ GMSTRecord::GMSTDATA::GMSTDATA():
 
 GMSTRecord::GMSTDATA::~GMSTDATA()
     {
-    delete []s;
+    if(format == 's')
+        delete []s;
     }
 
 bool GMSTRecord::GMSTDATA::operator ==(const GMSTDATA &other) const
@@ -260,7 +257,6 @@ SINT32 GMSTRecord::Unload()
     if(DATA.format == 's')
         delete []DATA.s;
     DATA.i = 0;
-    DATA.s = NULL;
     DATA.format = 0;
     return 1;
     }

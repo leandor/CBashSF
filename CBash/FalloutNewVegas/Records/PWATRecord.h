@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class PWATRecord  : public Record
+namespace FNV
+{
+class PWATRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        PWATRecord (unsigned char *_recData=NULL);
-        PWATRecord (PWATRecord  *srcRecord);
-        ~PWATRecord ();
+        PWATRecord(unsigned char *_recData=NULL);
+        PWATRecord(PWATRecord *srcRecord);
+        ~PWATRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class PWATRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const PWATRecord  &other) const;
-        bool operator !=(const PWATRecord  &other) const;
+        bool operator ==(const PWATRecord &other) const;
+        bool operator !=(const PWATRecord &other) const;
     };
+}

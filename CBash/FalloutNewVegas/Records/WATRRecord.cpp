@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "WATRRecord .h"
+#include "WATRRecord.h"
 
-WATRRecord ::WATRRecord (unsigned char *_recData):
+namespace FNV
+{
+WATRRecord::WATRRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-WATRRecord ::WATRRecord (WATRRecord  *srcRecord):
+WATRRecord::WATRRecord(WATRRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ WATRRecord ::WATRRecord (WATRRecord  *srcRecord):
     return;
     }
 
-WATRRecord ::~WATRRecord ()
+WATRRecord::~WATRRecord()
     {
     //
     }
 
-bool WATRRecord ::VisitFormIDs(FormIDOp &op)
+bool WATRRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool WATRRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 WATRRecord ::GetSize(bool forceCalc)
+UINT32 WATRRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 WATRRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 WATRRecord ::GetType()
+UINT32 WATRRecord::GetType()
     {
     return 'RTAW';
     }
 
-STRING WATRRecord ::GetStrType()
+STRING WATRRecord::GetStrType()
     {
     return "WATR";
     }
 
-SINT32 WATRRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 WATRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 WATRRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 WATRRecord ::Unload()
+SINT32 WATRRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 WATRRecord ::Unload()
     return 1;
     }
 
-SINT32 WATRRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 WATRRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool WATRRecord ::operator ==(const WATRRecord  &other) const
+bool WATRRecord::operator ==(const WATRRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool WATRRecord ::operator !=(const WATRRecord  &other) const
+bool WATRRecord::operator !=(const WATRRecord &other) const
     {
     return !(*this == other);
     }
+}

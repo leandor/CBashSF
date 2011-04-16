@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "RACERecord .h"
+#include "RACERecord.h"
 
-RACERecord ::RACERecord (unsigned char *_recData):
+namespace FNV
+{
+RACERecord::RACERecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-RACERecord ::RACERecord (RACERecord  *srcRecord):
+RACERecord::RACERecord(RACERecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ RACERecord ::RACERecord (RACERecord  *srcRecord):
     return;
     }
 
-RACERecord ::~RACERecord ()
+RACERecord::~RACERecord()
     {
     //
     }
 
-bool RACERecord ::VisitFormIDs(FormIDOp &op)
+bool RACERecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool RACERecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 RACERecord ::GetSize(bool forceCalc)
+UINT32 RACERecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 RACERecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 RACERecord ::GetType()
+UINT32 RACERecord::GetType()
     {
     return 'ECAR';
     }
 
-STRING RACERecord ::GetStrType()
+STRING RACERecord::GetStrType()
     {
     return "RACE";
     }
 
-SINT32 RACERecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 RACERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 RACERecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 RACERecord ::Unload()
+SINT32 RACERecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 RACERecord ::Unload()
     return 1;
     }
 
-SINT32 RACERecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 RACERecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool RACERecord ::operator ==(const RACERecord  &other) const
+bool RACERecord::operator ==(const RACERecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool RACERecord ::operator !=(const RACERecord  &other) const
+bool RACERecord::operator !=(const RACERecord &other) const
     {
     return !(*this == other);
     }
+}

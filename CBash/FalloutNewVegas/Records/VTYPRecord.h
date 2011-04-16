@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class VTYPRecord  : public Record
+namespace FNV
+{
+class VTYPRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        VTYPRecord (unsigned char *_recData=NULL);
-        VTYPRecord (VTYPRecord  *srcRecord);
-        ~VTYPRecord ();
+        VTYPRecord(unsigned char *_recData=NULL);
+        VTYPRecord(VTYPRecord *srcRecord);
+        ~VTYPRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class VTYPRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const VTYPRecord  &other) const;
-        bool operator !=(const VTYPRecord  &other) const;
+        bool operator ==(const VTYPRecord &other) const;
+        bool operator !=(const VTYPRecord &other) const;
     };
+}

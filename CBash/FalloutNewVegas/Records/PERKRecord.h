@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class PERKRecord  : public Record
+namespace FNV
+{
+class PERKRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        PERKRecord (unsigned char *_recData=NULL);
-        PERKRecord (PERKRecord  *srcRecord);
-        ~PERKRecord ();
+        PERKRecord(unsigned char *_recData=NULL);
+        PERKRecord(PERKRecord *srcRecord);
+        ~PERKRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class PERKRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const PERKRecord  &other) const;
-        bool operator !=(const PERKRecord  &other) const;
+        bool operator ==(const PERKRecord &other) const;
+        bool operator !=(const PERKRecord &other) const;
     };
+}

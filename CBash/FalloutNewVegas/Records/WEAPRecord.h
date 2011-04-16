@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class WEAPRecord  : public Record
+namespace FNV
+{
+class WEAPRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        WEAPRecord (unsigned char *_recData=NULL);
-        WEAPRecord (WEAPRecord  *srcRecord);
-        ~WEAPRecord ();
+        WEAPRecord(unsigned char *_recData=NULL);
+        WEAPRecord(WEAPRecord *srcRecord);
+        ~WEAPRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class WEAPRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const WEAPRecord  &other) const;
-        bool operator !=(const WEAPRecord  &other) const;
+        bool operator ==(const WEAPRecord &other) const;
+        bool operator !=(const WEAPRecord &other) const;
     };
+}

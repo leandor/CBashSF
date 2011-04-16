@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class RACERecord  : public Record
+namespace FNV
+{
+class RACERecord : public Record
     {
     public:
         StringRecord EDID;
 
-        RACERecord (unsigned char *_recData=NULL);
-        RACERecord (RACERecord  *srcRecord);
-        ~RACERecord ();
+        RACERecord(unsigned char *_recData=NULL);
+        RACERecord(RACERecord *srcRecord);
+        ~RACERecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class RACERecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const RACERecord  &other) const;
-        bool operator !=(const RACERecord  &other) const;
+        bool operator ==(const RACERecord &other) const;
+        bool operator !=(const RACERecord &other) const;
     };
+}

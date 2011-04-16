@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class LIGHRecord  : public Record
+namespace FNV
+{
+class LIGHRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        LIGHRecord (unsigned char *_recData=NULL);
-        LIGHRecord (LIGHRecord  *srcRecord);
-        ~LIGHRecord ();
+        LIGHRecord(unsigned char *_recData=NULL);
+        LIGHRecord(LIGHRecord *srcRecord);
+        ~LIGHRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class LIGHRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const LIGHRecord  &other) const;
-        bool operator !=(const LIGHRecord  &other) const;
+        bool operator ==(const LIGHRecord &other) const;
+        bool operator !=(const LIGHRecord &other) const;
     };
+}

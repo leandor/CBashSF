@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "RCCTRecord .h"
+#include "RCCTRecord.h"
 
-RCCTRecord ::RCCTRecord (unsigned char *_recData):
+namespace FNV
+{
+RCCTRecord::RCCTRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-RCCTRecord ::RCCTRecord (RCCTRecord  *srcRecord):
+RCCTRecord::RCCTRecord(RCCTRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ RCCTRecord ::RCCTRecord (RCCTRecord  *srcRecord):
     return;
     }
 
-RCCTRecord ::~RCCTRecord ()
+RCCTRecord::~RCCTRecord()
     {
     //
     }
 
-bool RCCTRecord ::VisitFormIDs(FormIDOp &op)
+bool RCCTRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool RCCTRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 RCCTRecord ::GetSize(bool forceCalc)
+UINT32 RCCTRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 RCCTRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 RCCTRecord ::GetType()
+UINT32 RCCTRecord::GetType()
     {
     return 'TCCR';
     }
 
-STRING RCCTRecord ::GetStrType()
+STRING RCCTRecord::GetStrType()
     {
     return "RCCT";
     }
 
-SINT32 RCCTRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 RCCTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 RCCTRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 RCCTRecord ::Unload()
+SINT32 RCCTRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 RCCTRecord ::Unload()
     return 1;
     }
 
-SINT32 RCCTRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 RCCTRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool RCCTRecord ::operator ==(const RCCTRecord  &other) const
+bool RCCTRecord::operator ==(const RCCTRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool RCCTRecord ::operator !=(const RCCTRecord  &other) const
+bool RCCTRecord::operator !=(const RCCTRecord &other) const
     {
     return !(*this == other);
     }
+}

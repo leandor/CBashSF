@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "PERKRecord .h"
+#include "PERKRecord.h"
 
-PERKRecord ::PERKRecord (unsigned char *_recData):
+namespace FNV
+{
+PERKRecord::PERKRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-PERKRecord ::PERKRecord (PERKRecord  *srcRecord):
+PERKRecord::PERKRecord(PERKRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ PERKRecord ::PERKRecord (PERKRecord  *srcRecord):
     return;
     }
 
-PERKRecord ::~PERKRecord ()
+PERKRecord::~PERKRecord()
     {
     //
     }
 
-bool PERKRecord ::VisitFormIDs(FormIDOp &op)
+bool PERKRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool PERKRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 PERKRecord ::GetSize(bool forceCalc)
+UINT32 PERKRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 PERKRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 PERKRecord ::GetType()
+UINT32 PERKRecord::GetType()
     {
     return 'KREP';
     }
 
-STRING PERKRecord ::GetStrType()
+STRING PERKRecord::GetStrType()
     {
     return "PERK";
     }
 
-SINT32 PERKRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 PERKRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 PERKRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 PERKRecord ::Unload()
+SINT32 PERKRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 PERKRecord ::Unload()
     return 1;
     }
 
-SINT32 PERKRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 PERKRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool PERKRecord ::operator ==(const PERKRecord  &other) const
+bool PERKRecord::operator ==(const PERKRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool PERKRecord ::operator !=(const PERKRecord  &other) const
+bool PERKRecord::operator !=(const PERKRecord &other) const
     {
     return !(*this == other);
     }
+}

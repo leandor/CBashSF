@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "TACTRecord .h"
+#include "TACTRecord.h"
 
-TACTRecord ::TACTRecord (unsigned char *_recData):
+namespace FNV
+{
+TACTRecord::TACTRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-TACTRecord ::TACTRecord (TACTRecord  *srcRecord):
+TACTRecord::TACTRecord(TACTRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ TACTRecord ::TACTRecord (TACTRecord  *srcRecord):
     return;
     }
 
-TACTRecord ::~TACTRecord ()
+TACTRecord::~TACTRecord()
     {
     //
     }
 
-bool TACTRecord ::VisitFormIDs(FormIDOp &op)
+bool TACTRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool TACTRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 TACTRecord ::GetSize(bool forceCalc)
+UINT32 TACTRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 TACTRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 TACTRecord ::GetType()
+UINT32 TACTRecord::GetType()
     {
     return 'TCAT';
     }
 
-STRING TACTRecord ::GetStrType()
+STRING TACTRecord::GetStrType()
     {
     return "TACT";
     }
 
-SINT32 TACTRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 TACTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 TACTRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 TACTRecord ::Unload()
+SINT32 TACTRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 TACTRecord ::Unload()
     return 1;
     }
 
-SINT32 TACTRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 TACTRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool TACTRecord ::operator ==(const TACTRecord  &other) const
+bool TACTRecord::operator ==(const TACTRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool TACTRecord ::operator !=(const TACTRecord  &other) const
+bool TACTRecord::operator !=(const TACTRecord &other) const
     {
     return !(*this == other);
     }
+}

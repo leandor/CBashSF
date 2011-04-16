@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "TXSTRecord .h"
+#include "TXSTRecord.h"
 
-TXSTRecord ::TXSTRecord (unsigned char *_recData):
+namespace FNV
+{
+TXSTRecord::TXSTRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-TXSTRecord ::TXSTRecord (TXSTRecord  *srcRecord):
+TXSTRecord::TXSTRecord(TXSTRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -60,36 +62,35 @@ TXSTRecord ::TXSTRecord (TXSTRecord  *srcRecord):
     return;
     }
 
-TXSTRecord ::~TXSTRecord ()
+TXSTRecord::~TXSTRecord()
     {
     //
     }
 
-
-bool IsNoSpecularMap()
+bool TXSTRecord::IsNoSpecularMap()
     {
-    return DNAM.IsLoaded() ? (DNAM->flags & fIsNoSpecularMap) != 0 : false;
+    return DNAM.IsLoaded() ? (DNAM.value.flags & fIsNoSpecularMap) != 0 : false;
     }
     
-void IsNoSpecularMap(bool value)
+void TXSTRecord::IsNoSpecularMap(bool value)
     {
     if(!DNAM.IsLoaded()) return;
-    DNAM->flags = value ? (DNAM->flags | fIsNoSpecularMap) : (DNAM->flags & ~fIsNoSpecularMap);
+    DNAM.value.flags = value ? (DNAM.value.flags | fIsNoSpecularMap) : (DNAM.value.flags & ~fIsNoSpecularMap);
     }
     
-bool IsFlagMask(UINT16 Mask, bool Exact=false)
+bool TXSTRecord::IsFlagMask(UINT16 Mask, bool Exact)
     {
     if(!DNAM.IsLoaded()) return false;
-    return Exact ? ((DNAM->flags & Mask) == Mask) : ((DNAM->flags & Mask) != 0);
+    return Exact ? ((DNAM.value.flags & Mask) == Mask) : ((DNAM.value.flags & Mask) != 0);
     }
     
-void SetFlagMask(UINT16 Mask)
+void TXSTRecord::SetFlagMask(UINT16 Mask)
     {
     DNAM.Load();
-    DNAM->flags = Mask;
+    DNAM.value.flags = Mask;
     }
             
-UINT32 TXSTRecord ::GetSize(bool forceCalc)
+UINT32 TXSTRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -158,17 +159,17 @@ UINT32 TXSTRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 TXSTRecord ::GetType()
+UINT32 TXSTRecord::GetType()
     {
     return 'TSXT';
     }
 
-STRING TXSTRecord ::GetStrType()
+STRING TXSTRecord::GetStrType()
     {
     return "TXST";
     }
 
-SINT32 TXSTRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 TXSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -232,7 +233,7 @@ SINT32 TXSTRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 TXSTRecord ::Unload()
+SINT32 TXSTRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -249,7 +250,7 @@ SINT32 TXSTRecord ::Unload()
     return 1;
     }
 
-SINT32 TXSTRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 TXSTRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
@@ -274,7 +275,7 @@ SINT32 TXSTRecord ::WriteRecord(_FileHandler &SaveHandler)
     return -1;
     }
 
-bool TXSTRecord ::operator ==(const TXSTRecord  &other) const
+bool TXSTRecord::operator ==(const TXSTRecord &other) const
     {
     return (OBND == other.OBND &&
     	    DODT == other.DODT &&
@@ -285,11 +286,12 @@ bool TXSTRecord ::operator ==(const TXSTRecord  &other) const
     	    TX02.equalsi(other.TX02) &&
     	    TX03.equalsi(other.TX03) &&
     	    TX04.equalsi(other.TX04) &&
-    	    TX05.equalsi(other.TX05) &&
+    	    TX05.equalsi(other.TX05)
     	    );
     }
 
-bool TXSTRecord ::operator !=(const TXSTRecord  &other) const
+bool TXSTRecord::operator !=(const TXSTRecord &other) const
     {
     return !(*this == other);
     }
+}

@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "PROJRecord .h"
+#include "PROJRecord.h"
 
-PROJRecord ::PROJRecord (unsigned char *_recData):
+namespace FNV
+{
+PROJRecord::PROJRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-PROJRecord ::PROJRecord (PROJRecord  *srcRecord):
+PROJRecord::PROJRecord(PROJRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ PROJRecord ::PROJRecord (PROJRecord  *srcRecord):
     return;
     }
 
-PROJRecord ::~PROJRecord ()
+PROJRecord::~PROJRecord()
     {
     //
     }
 
-bool PROJRecord ::VisitFormIDs(FormIDOp &op)
+bool PROJRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool PROJRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 PROJRecord ::GetSize(bool forceCalc)
+UINT32 PROJRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 PROJRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 PROJRecord ::GetType()
+UINT32 PROJRecord::GetType()
     {
     return 'JORP';
     }
 
-STRING PROJRecord ::GetStrType()
+STRING PROJRecord::GetStrType()
     {
     return "PROJ";
     }
 
-SINT32 PROJRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 PROJRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 PROJRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 PROJRecord ::Unload()
+SINT32 PROJRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 PROJRecord ::Unload()
     return 1;
     }
 
-SINT32 PROJRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 PROJRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool PROJRecord ::operator ==(const PROJRecord  &other) const
+bool PROJRecord::operator ==(const PROJRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool PROJRecord ::operator !=(const PROJRecord  &other) const
+bool PROJRecord::operator !=(const PROJRecord &other) const
     {
     return !(*this == other);
     }
+}

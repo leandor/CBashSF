@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class SLPDRecord  : public Record
+namespace FNV
+{
+class SLPDRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        SLPDRecord (unsigned char *_recData=NULL);
-        SLPDRecord (SLPDRecord  *srcRecord);
-        ~SLPDRecord ();
+        SLPDRecord(unsigned char *_recData=NULL);
+        SLPDRecord(SLPDRecord *srcRecord);
+        ~SLPDRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class SLPDRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const SLPDRecord  &other) const;
-        bool operator !=(const SLPDRecord  &other) const;
+        bool operator ==(const SLPDRecord &other) const;
+        bool operator !=(const SLPDRecord &other) const;
     };
+}

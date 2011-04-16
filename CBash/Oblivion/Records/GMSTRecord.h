@@ -37,8 +37,8 @@ class GMSTRecord : public Record
                 {
                 FLOAT32 f;
                 SINT32 i;
+				STRING s;
                 };
-            STRING s;
             char format;
 
             GMSTDATA(STRING _DATA);

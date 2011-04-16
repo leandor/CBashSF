@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "TES4Record .h"
+#include "TES4Record.h"
 
-TES4Record ::TES4Record (unsigned char *_recData):
+namespace FNV
+{
+TES4Record::TES4Record(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-TES4Record ::TES4Record (TES4Record  *srcRecord):
+TES4Record::TES4Record(TES4Record *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ TES4Record ::TES4Record (TES4Record  *srcRecord):
     return;
     }
 
-TES4Record ::~TES4Record ()
+TES4Record::~TES4Record()
     {
     //
     }
 
-bool TES4Record ::VisitFormIDs(FormIDOp &op)
+bool TES4Record::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool TES4Record ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 TES4Record ::GetSize(bool forceCalc)
+UINT32 TES4Record::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 TES4Record ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 TES4Record ::GetType()
+UINT32 TES4Record::GetType()
     {
     return '4SET';
     }
 
-STRING TES4Record ::GetStrType()
+STRING TES4Record::GetStrType()
     {
     return "TES4";
     }
 
-SINT32 TES4Record ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 TES4Record::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 TES4Record ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 TES4Record ::Unload()
+SINT32 TES4Record::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 TES4Record ::Unload()
     return 1;
     }
 
-SINT32 TES4Record ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 TES4Record::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool TES4Record ::operator ==(const TES4Record  &other) const
+bool TES4Record::operator ==(const TES4Record &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool TES4Record ::operator !=(const TES4Record  &other) const
+bool TES4Record::operator !=(const TES4Record &other) const
     {
     return !(*this == other);
     }
+}

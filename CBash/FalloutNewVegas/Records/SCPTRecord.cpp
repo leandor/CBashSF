@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "SCPTRecord .h"
+#include "SCPTRecord.h"
 
-SCPTRecord ::SCPTRecord (unsigned char *_recData):
+namespace FNV
+{
+SCPTRecord::SCPTRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-SCPTRecord ::SCPTRecord (SCPTRecord  *srcRecord):
+SCPTRecord::SCPTRecord(SCPTRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ SCPTRecord ::SCPTRecord (SCPTRecord  *srcRecord):
     return;
     }
 
-SCPTRecord ::~SCPTRecord ()
+SCPTRecord::~SCPTRecord()
     {
     //
     }
 
-bool SCPTRecord ::VisitFormIDs(FormIDOp &op)
+bool SCPTRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool SCPTRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 SCPTRecord ::GetSize(bool forceCalc)
+UINT32 SCPTRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 SCPTRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 SCPTRecord ::GetType()
+UINT32 SCPTRecord::GetType()
     {
     return 'TPCS';
     }
 
-STRING SCPTRecord ::GetStrType()
+STRING SCPTRecord::GetStrType()
     {
     return "SCPT";
     }
 
-SINT32 SCPTRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 SCPTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 SCPTRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 SCPTRecord ::Unload()
+SINT32 SCPTRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 SCPTRecord ::Unload()
     return 1;
     }
 
-SINT32 SCPTRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 SCPTRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool SCPTRecord ::operator ==(const SCPTRecord  &other) const
+bool SCPTRecord::operator ==(const SCPTRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool SCPTRecord ::operator !=(const SCPTRecord  &other) const
+bool SCPTRecord::operator !=(const SCPTRecord &other) const
     {
     return !(*this == other);
     }
+}

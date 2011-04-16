@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "PMISRecord .h"
+#include "PMISRecord.h"
 
-PMISRecord ::PMISRecord (unsigned char *_recData):
+namespace FNV
+{
+PMISRecord::PMISRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-PMISRecord ::PMISRecord (PMISRecord  *srcRecord):
+PMISRecord::PMISRecord(PMISRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ PMISRecord ::PMISRecord (PMISRecord  *srcRecord):
     return;
     }
 
-PMISRecord ::~PMISRecord ()
+PMISRecord::~PMISRecord()
     {
     //
     }
 
-bool PMISRecord ::VisitFormIDs(FormIDOp &op)
+bool PMISRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool PMISRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 PMISRecord ::GetSize(bool forceCalc)
+UINT32 PMISRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 PMISRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 PMISRecord ::GetType()
+UINT32 PMISRecord::GetType()
     {
     return 'SIMP';
     }
 
-STRING PMISRecord ::GetStrType()
+STRING PMISRecord::GetStrType()
     {
     return "PMIS";
     }
 
-SINT32 PMISRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 PMISRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 PMISRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 PMISRecord ::Unload()
+SINT32 PMISRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 PMISRecord ::Unload()
     return 1;
     }
 
-SINT32 PMISRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 PMISRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool PMISRecord ::operator ==(const PMISRecord  &other) const
+bool PMISRecord::operator ==(const PMISRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool PMISRecord ::operator !=(const PMISRecord  &other) const
+bool PMISRecord::operator !=(const PMISRecord &other) const
     {
     return !(*this == other);
     }
+}

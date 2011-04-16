@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class PROJRecord  : public Record
+namespace FNV
+{
+class PROJRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        PROJRecord (unsigned char *_recData=NULL);
-        PROJRecord (PROJRecord  *srcRecord);
-        ~PROJRecord ();
+        PROJRecord(unsigned char *_recData=NULL);
+        PROJRecord(PROJRecord *srcRecord);
+        ~PROJRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class PROJRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const PROJRecord  &other) const;
-        bool operator !=(const PROJRecord  &other) const;
+        bool operator ==(const PROJRecord &other) const;
+        bool operator !=(const PROJRecord &other) const;
     };
+}

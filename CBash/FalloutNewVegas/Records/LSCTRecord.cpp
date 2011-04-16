@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "LSCTRecord .h"
+#include "LSCTRecord.h"
 
-LSCTRecord ::LSCTRecord (unsigned char *_recData):
+namespace FNV
+{
+LSCTRecord::LSCTRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-LSCTRecord ::LSCTRecord (LSCTRecord  *srcRecord):
+LSCTRecord::LSCTRecord(LSCTRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ LSCTRecord ::LSCTRecord (LSCTRecord  *srcRecord):
     return;
     }
 
-LSCTRecord ::~LSCTRecord ()
+LSCTRecord::~LSCTRecord()
     {
     //
     }
 
-bool LSCTRecord ::VisitFormIDs(FormIDOp &op)
+bool LSCTRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool LSCTRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 LSCTRecord ::GetSize(bool forceCalc)
+UINT32 LSCTRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 LSCTRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 LSCTRecord ::GetType()
+UINT32 LSCTRecord::GetType()
     {
     return 'TCSL';
     }
 
-STRING LSCTRecord ::GetStrType()
+STRING LSCTRecord::GetStrType()
     {
     return "LSCT";
     }
 
-SINT32 LSCTRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 LSCTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 LSCTRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 LSCTRecord ::Unload()
+SINT32 LSCTRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 LSCTRecord ::Unload()
     return 1;
     }
 
-SINT32 LSCTRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 LSCTRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool LSCTRecord ::operator ==(const LSCTRecord  &other) const
+bool LSCTRecord::operator ==(const LSCTRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool LSCTRecord ::operator !=(const LSCTRecord  &other) const
+bool LSCTRecord::operator !=(const LSCTRecord &other) const
     {
     return !(*this == other);
     }
+}

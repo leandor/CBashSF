@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "REPURecord .h"
+#include "REPURecord.h"
 
-REPURecord ::REPURecord (unsigned char *_recData):
+namespace FNV
+{
+REPURecord::REPURecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-REPURecord ::REPURecord (REPURecord  *srcRecord):
+REPURecord::REPURecord(REPURecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ REPURecord ::REPURecord (REPURecord  *srcRecord):
     return;
     }
 
-REPURecord ::~REPURecord ()
+REPURecord::~REPURecord()
     {
     //
     }
 
-bool REPURecord ::VisitFormIDs(FormIDOp &op)
+bool REPURecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool REPURecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 REPURecord ::GetSize(bool forceCalc)
+UINT32 REPURecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 REPURecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 REPURecord ::GetType()
+UINT32 REPURecord::GetType()
     {
     return 'UPER';
     }
 
-STRING REPURecord ::GetStrType()
+STRING REPURecord::GetStrType()
     {
     return "REPU";
     }
 
-SINT32 REPURecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 REPURecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 REPURecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 REPURecord ::Unload()
+SINT32 REPURecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 REPURecord ::Unload()
     return 1;
     }
 
-SINT32 REPURecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 REPURecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool REPURecord ::operator ==(const REPURecord  &other) const
+bool REPURecord::operator ==(const REPURecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool REPURecord ::operator !=(const REPURecord  &other) const
+bool REPURecord::operator !=(const REPURecord &other) const
     {
     return !(*this == other);
     }
+}

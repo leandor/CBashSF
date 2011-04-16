@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class SCPTRecord  : public Record
+namespace FNV
+{
+class SCPTRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        SCPTRecord (unsigned char *_recData=NULL);
-        SCPTRecord (SCPTRecord  *srcRecord);
-        ~SCPTRecord ();
+        SCPTRecord(unsigned char *_recData=NULL);
+        SCPTRecord(SCPTRecord *srcRecord);
+        ~SCPTRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class SCPTRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const SCPTRecord  &other) const;
-        bool operator !=(const SCPTRecord  &other) const;
+        bool operator ==(const SCPTRecord &other) const;
+        bool operator !=(const SCPTRecord &other) const;
     };
+}

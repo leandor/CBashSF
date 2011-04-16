@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class QUSTRecord  : public Record
+namespace FNV
+{
+class QUSTRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        QUSTRecord (unsigned char *_recData=NULL);
-        QUSTRecord (QUSTRecord  *srcRecord);
-        ~QUSTRecord ();
+        QUSTRecord(unsigned char *_recData=NULL);
+        QUSTRecord(QUSTRecord *srcRecord);
+        ~QUSTRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class QUSTRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const QUSTRecord  &other) const;
-        bool operator !=(const QUSTRecord  &other) const;
+        bool operator ==(const QUSTRecord &other) const;
+        bool operator !=(const QUSTRecord &other) const;
     };
+}

@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "PACKRecord .h"
+#include "PACKRecord.h"
 
-PACKRecord ::PACKRecord (unsigned char *_recData):
+namespace FNV
+{
+PACKRecord::PACKRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-PACKRecord ::PACKRecord (PACKRecord  *srcRecord):
+PACKRecord::PACKRecord(PACKRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ PACKRecord ::PACKRecord (PACKRecord  *srcRecord):
     return;
     }
 
-PACKRecord ::~PACKRecord ()
+PACKRecord::~PACKRecord()
     {
     //
     }
 
-bool PACKRecord ::VisitFormIDs(FormIDOp &op)
+bool PACKRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool PACKRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 PACKRecord ::GetSize(bool forceCalc)
+UINT32 PACKRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 PACKRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 PACKRecord ::GetType()
+UINT32 PACKRecord::GetType()
     {
     return 'KCAP';
     }
 
-STRING PACKRecord ::GetStrType()
+STRING PACKRecord::GetStrType()
     {
     return "PACK";
     }
 
-SINT32 PACKRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 PACKRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 PACKRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 PACKRecord ::Unload()
+SINT32 PACKRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 PACKRecord ::Unload()
     return 1;
     }
 
-SINT32 PACKRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 PACKRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool PACKRecord ::operator ==(const PACKRecord  &other) const
+bool PACKRecord::operator ==(const PACKRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool PACKRecord ::operator !=(const PACKRecord  &other) const
+bool PACKRecord::operator !=(const PACKRecord &other) const
     {
     return !(*this == other);
     }
+}

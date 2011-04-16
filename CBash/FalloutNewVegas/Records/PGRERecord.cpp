@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "PGRERecord .h"
+#include "PGRERecord.h"
 
-PGRERecord ::PGRERecord (unsigned char *_recData):
+namespace FNV
+{
+PGRERecord::PGRERecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-PGRERecord ::PGRERecord (PGRERecord  *srcRecord):
+PGRERecord::PGRERecord(PGRERecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ PGRERecord ::PGRERecord (PGRERecord  *srcRecord):
     return;
     }
 
-PGRERecord ::~PGRERecord ()
+PGRERecord::~PGRERecord()
     {
     //
     }
 
-bool PGRERecord ::VisitFormIDs(FormIDOp &op)
+bool PGRERecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool PGRERecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 PGRERecord ::GetSize(bool forceCalc)
+UINT32 PGRERecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 PGRERecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 PGRERecord ::GetType()
+UINT32 PGRERecord::GetType()
     {
     return 'ERGP';
     }
 
-STRING PGRERecord ::GetStrType()
+STRING PGRERecord::GetStrType()
     {
     return "PGRE";
     }
 
-SINT32 PGRERecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 PGRERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 PGRERecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 PGRERecord ::Unload()
+SINT32 PGRERecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 PGRERecord ::Unload()
     return 1;
     }
 
-SINT32 PGRERecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 PGRERecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool PGRERecord ::operator ==(const PGRERecord  &other) const
+bool PGRERecord::operator ==(const PGRERecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool PGRERecord ::operator !=(const PGRERecord  &other) const
+bool PGRERecord::operator !=(const PGRERecord &other) const
     {
     return !(*this == other);
     }
+}

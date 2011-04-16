@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class PMISRecord  : public Record
+namespace FNV
+{
+class PMISRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        PMISRecord (unsigned char *_recData=NULL);
-        PMISRecord (PMISRecord  *srcRecord);
-        ~PMISRecord ();
+        PMISRecord(unsigned char *_recData=NULL);
+        PMISRecord(PMISRecord *srcRecord);
+        ~PMISRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class PMISRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const PMISRecord  &other) const;
-        bool operator !=(const PMISRecord  &other) const;
+        bool operator ==(const PMISRecord &other) const;
+        bool operator !=(const PMISRecord &other) const;
     };
+}

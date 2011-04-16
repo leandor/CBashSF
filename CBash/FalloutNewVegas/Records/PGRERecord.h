@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class PGRERecord  : public Record
+namespace FNV
+{
+class PGRERecord : public Record
     {
     public:
         StringRecord EDID;
 
-        PGRERecord (unsigned char *_recData=NULL);
-        PGRERecord (PGRERecord  *srcRecord);
-        ~PGRERecord ();
+        PGRERecord(unsigned char *_recData=NULL);
+        PGRERecord(PGRERecord *srcRecord);
+        ~PGRERecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class PGRERecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const PGRERecord  &other) const;
-        bool operator !=(const PGRERecord  &other) const;
+        bool operator ==(const PGRERecord &other) const;
+        bool operator !=(const PGRERecord &other) const;
     };
+}

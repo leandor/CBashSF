@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "LTEXRecord .h"
+#include "LTEXRecord.h"
 
-LTEXRecord ::LTEXRecord (unsigned char *_recData):
+namespace FNV
+{
+LTEXRecord::LTEXRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-LTEXRecord ::LTEXRecord (LTEXRecord  *srcRecord):
+LTEXRecord::LTEXRecord(LTEXRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ LTEXRecord ::LTEXRecord (LTEXRecord  *srcRecord):
     return;
     }
 
-LTEXRecord ::~LTEXRecord ()
+LTEXRecord::~LTEXRecord()
     {
     //
     }
 
-bool LTEXRecord ::VisitFormIDs(FormIDOp &op)
+bool LTEXRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool LTEXRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 LTEXRecord ::GetSize(bool forceCalc)
+UINT32 LTEXRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 LTEXRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 LTEXRecord ::GetType()
+UINT32 LTEXRecord::GetType()
     {
     return 'XETL';
     }
 
-STRING LTEXRecord ::GetStrType()
+STRING LTEXRecord::GetStrType()
     {
     return "LTEX";
     }
 
-SINT32 LTEXRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 LTEXRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 LTEXRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 LTEXRecord ::Unload()
+SINT32 LTEXRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 LTEXRecord ::Unload()
     return 1;
     }
 
-SINT32 LTEXRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 LTEXRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool LTEXRecord ::operator ==(const LTEXRecord  &other) const
+bool LTEXRecord::operator ==(const LTEXRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool LTEXRecord ::operator !=(const LTEXRecord  &other) const
+bool LTEXRecord::operator !=(const LTEXRecord &other) const
     {
     return !(*this == other);
     }
+}

@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class TES4Record  : public Record
+namespace FNV
+{
+class TES4Record : public Record
     {
     public:
         StringRecord EDID;
 
-        TES4Record (unsigned char *_recData=NULL);
-        TES4Record (TES4Record  *srcRecord);
-        ~TES4Record ();
+        TES4Record(unsigned char *_recData=NULL);
+        TES4Record(TES4Record *srcRecord);
+        ~TES4Record();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class TES4Record  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const TES4Record  &other) const;
-        bool operator !=(const TES4Record  &other) const;
+        bool operator ==(const TES4Record &other) const;
+        bool operator !=(const TES4Record &other) const;
     };
+}

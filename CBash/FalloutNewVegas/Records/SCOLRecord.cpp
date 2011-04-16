@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "SCOLRecord .h"
+#include "SCOLRecord.h"
 
-SCOLRecord ::SCOLRecord (unsigned char *_recData):
+namespace FNV
+{
+SCOLRecord::SCOLRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-SCOLRecord ::SCOLRecord (SCOLRecord  *srcRecord):
+SCOLRecord::SCOLRecord(SCOLRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ SCOLRecord ::SCOLRecord (SCOLRecord  *srcRecord):
     return;
     }
 
-SCOLRecord ::~SCOLRecord ()
+SCOLRecord::~SCOLRecord()
     {
     //
     }
 
-bool SCOLRecord ::VisitFormIDs(FormIDOp &op)
+bool SCOLRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool SCOLRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 SCOLRecord ::GetSize(bool forceCalc)
+UINT32 SCOLRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 SCOLRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 SCOLRecord ::GetType()
+UINT32 SCOLRecord::GetType()
     {
     return 'LOCS';
     }
 
-STRING SCOLRecord ::GetStrType()
+STRING SCOLRecord::GetStrType()
     {
     return "SCOL";
     }
 
-SINT32 SCOLRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 SCOLRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 SCOLRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 SCOLRecord ::Unload()
+SINT32 SCOLRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 SCOLRecord ::Unload()
     return 1;
     }
 
-SINT32 SCOLRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 SCOLRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool SCOLRecord ::operator ==(const SCOLRecord  &other) const
+bool SCOLRecord::operator ==(const SCOLRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool SCOLRecord ::operator !=(const SCOLRecord  &other) const
+bool SCOLRecord::operator !=(const SCOLRecord &other) const
     {
     return !(*this == other);
     }
+}

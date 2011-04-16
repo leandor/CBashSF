@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "QUSTRecord .h"
+#include "QUSTRecord.h"
 
-QUSTRecord ::QUSTRecord (unsigned char *_recData):
+namespace FNV
+{
+QUSTRecord::QUSTRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-QUSTRecord ::QUSTRecord (QUSTRecord  *srcRecord):
+QUSTRecord::QUSTRecord(QUSTRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ QUSTRecord ::QUSTRecord (QUSTRecord  *srcRecord):
     return;
     }
 
-QUSTRecord ::~QUSTRecord ()
+QUSTRecord::~QUSTRecord()
     {
     //
     }
 
-bool QUSTRecord ::VisitFormIDs(FormIDOp &op)
+bool QUSTRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool QUSTRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 QUSTRecord ::GetSize(bool forceCalc)
+UINT32 QUSTRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 QUSTRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 QUSTRecord ::GetType()
+UINT32 QUSTRecord::GetType()
     {
     return 'TSUQ';
     }
 
-STRING QUSTRecord ::GetStrType()
+STRING QUSTRecord::GetStrType()
     {
     return "QUST";
     }
 
-SINT32 QUSTRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 QUSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 QUSTRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 QUSTRecord ::Unload()
+SINT32 QUSTRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 QUSTRecord ::Unload()
     return 1;
     }
 
-SINT32 QUSTRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 QUSTRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool QUSTRecord ::operator ==(const QUSTRecord  &other) const
+bool QUSTRecord::operator ==(const QUSTRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool QUSTRecord ::operator !=(const QUSTRecord  &other) const
+bool QUSTRecord::operator !=(const QUSTRecord &other) const
     {
     return !(*this == other);
     }
+}

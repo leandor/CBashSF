@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "TERMRecord .h"
+#include "TERMRecord.h"
 
-TERMRecord ::TERMRecord (unsigned char *_recData):
+namespace FNV
+{
+TERMRecord::TERMRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-TERMRecord ::TERMRecord (TERMRecord  *srcRecord):
+TERMRecord::TERMRecord(TERMRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ TERMRecord ::TERMRecord (TERMRecord  *srcRecord):
     return;
     }
 
-TERMRecord ::~TERMRecord ()
+TERMRecord::~TERMRecord()
     {
     //
     }
 
-bool TERMRecord ::VisitFormIDs(FormIDOp &op)
+bool TERMRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool TERMRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 TERMRecord ::GetSize(bool forceCalc)
+UINT32 TERMRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 TERMRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 TERMRecord ::GetType()
+UINT32 TERMRecord::GetType()
     {
     return 'MRET';
     }
 
-STRING TERMRecord ::GetStrType()
+STRING TERMRecord::GetStrType()
     {
     return "TERM";
     }
 
-SINT32 TERMRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 TERMRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 TERMRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 TERMRecord ::Unload()
+SINT32 TERMRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 TERMRecord ::Unload()
     return 1;
     }
 
-SINT32 TERMRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 TERMRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool TERMRecord ::operator ==(const TERMRecord  &other) const
+bool TERMRecord::operator ==(const TERMRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool TERMRecord ::operator !=(const TERMRecord  &other) const
+bool TERMRecord::operator !=(const TERMRecord &other) const
     {
     return !(*this == other);
     }
+}

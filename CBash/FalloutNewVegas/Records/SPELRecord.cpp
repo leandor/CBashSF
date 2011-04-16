@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "SPELRecord .h"
+#include "SPELRecord.h"
 
-SPELRecord ::SPELRecord (unsigned char *_recData):
+namespace FNV
+{
+SPELRecord::SPELRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-SPELRecord ::SPELRecord (SPELRecord  *srcRecord):
+SPELRecord::SPELRecord(SPELRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ SPELRecord ::SPELRecord (SPELRecord  *srcRecord):
     return;
     }
 
-SPELRecord ::~SPELRecord ()
+SPELRecord::~SPELRecord()
     {
     //
     }
 
-bool SPELRecord ::VisitFormIDs(FormIDOp &op)
+bool SPELRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool SPELRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 SPELRecord ::GetSize(bool forceCalc)
+UINT32 SPELRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 SPELRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 SPELRecord ::GetType()
+UINT32 SPELRecord::GetType()
     {
     return 'LEPS';
     }
 
-STRING SPELRecord ::GetStrType()
+STRING SPELRecord::GetStrType()
     {
     return "SPEL";
     }
 
-SINT32 SPELRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 SPELRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 SPELRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 SPELRecord ::Unload()
+SINT32 SPELRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 SPELRecord ::Unload()
     return 1;
     }
 
-SINT32 SPELRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 SPELRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool SPELRecord ::operator ==(const SPELRecord  &other) const
+bool SPELRecord::operator ==(const SPELRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool SPELRecord ::operator !=(const SPELRecord  &other) const
+bool SPELRecord::operator !=(const SPELRecord &other) const
     {
     return !(*this == other);
     }
+}

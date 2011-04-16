@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class WATRRecord  : public Record
+namespace FNV
+{
+class WATRRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        WATRRecord (unsigned char *_recData=NULL);
-        WATRRecord (WATRRecord  *srcRecord);
-        ~WATRRecord ();
+        WATRRecord(unsigned char *_recData=NULL);
+        WATRRecord(WATRRecord *srcRecord);
+        ~WATRRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class WATRRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const WATRRecord  &other) const;
-        bool operator !=(const WATRRecord  &other) const;
+        bool operator ==(const WATRRecord &other) const;
+        bool operator !=(const WATRRecord &other) const;
     };
+}

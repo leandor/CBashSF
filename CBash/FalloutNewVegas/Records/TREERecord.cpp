@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "TREERecord .h"
+#include "TREERecord.h"
 
-TREERecord ::TREERecord (unsigned char *_recData):
+namespace FNV
+{
+TREERecord::TREERecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-TREERecord ::TREERecord (TREERecord  *srcRecord):
+TREERecord::TREERecord(TREERecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ TREERecord ::TREERecord (TREERecord  *srcRecord):
     return;
     }
 
-TREERecord ::~TREERecord ()
+TREERecord::~TREERecord()
     {
     //
     }
 
-bool TREERecord ::VisitFormIDs(FormIDOp &op)
+bool TREERecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool TREERecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 TREERecord ::GetSize(bool forceCalc)
+UINT32 TREERecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 TREERecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 TREERecord ::GetType()
+UINT32 TREERecord::GetType()
     {
     return 'EERT';
     }
 
-STRING TREERecord ::GetStrType()
+STRING TREERecord::GetStrType()
     {
     return "TREE";
     }
 
-SINT32 TREERecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 TREERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 TREERecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 TREERecord ::Unload()
+SINT32 TREERecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 TREERecord ::Unload()
     return 1;
     }
 
-SINT32 TREERecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 TREERecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool TREERecord ::operator ==(const TREERecord  &other) const
+bool TREERecord::operator ==(const TREERecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool TREERecord ::operator !=(const TREERecord  &other) const
+bool TREERecord::operator !=(const TREERecord &other) const
     {
     return !(*this == other);
     }
+}

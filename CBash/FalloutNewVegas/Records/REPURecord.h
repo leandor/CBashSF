@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class REPURecord  : public Record
+namespace FNV
+{
+class REPURecord : public Record
     {
     public:
         StringRecord EDID;
 
-        REPURecord (unsigned char *_recData=NULL);
-        REPURecord (REPURecord  *srcRecord);
-        ~REPURecord ();
+        REPURecord(unsigned char *_recData=NULL);
+        REPURecord(REPURecord *srcRecord);
+        ~REPURecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class REPURecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const REPURecord  &other) const;
-        bool operator !=(const REPURecord  &other) const;
+        bool operator ==(const REPURecord &other) const;
+        bool operator !=(const REPURecord &other) const;
     };
+}

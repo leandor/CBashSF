@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "RCPERecord .h"
+#include "RCPERecord.h"
 
-RCPERecord ::RCPERecord (unsigned char *_recData):
+namespace FNV
+{
+RCPERecord::RCPERecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-RCPERecord ::RCPERecord (RCPERecord  *srcRecord):
+RCPERecord::RCPERecord(RCPERecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ RCPERecord ::RCPERecord (RCPERecord  *srcRecord):
     return;
     }
 
-RCPERecord ::~RCPERecord ()
+RCPERecord::~RCPERecord()
     {
     //
     }
 
-bool RCPERecord ::VisitFormIDs(FormIDOp &op)
+bool RCPERecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool RCPERecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 RCPERecord ::GetSize(bool forceCalc)
+UINT32 RCPERecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 RCPERecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 RCPERecord ::GetType()
+UINT32 RCPERecord::GetType()
     {
     return 'EPCR';
     }
 
-STRING RCPERecord ::GetStrType()
+STRING RCPERecord::GetStrType()
     {
     return "RCPE";
     }
 
-SINT32 RCPERecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 RCPERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 RCPERecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 RCPERecord ::Unload()
+SINT32 RCPERecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 RCPERecord ::Unload()
     return 1;
     }
 
-SINT32 RCPERecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 RCPERecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool RCPERecord ::operator ==(const RCPERecord  &other) const
+bool RCPERecord::operator ==(const RCPERecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool RCPERecord ::operator !=(const RCPERecord  &other) const
+bool RCPERecord::operator !=(const RCPERecord &other) const
     {
     return !(*this == other);
     }
+}

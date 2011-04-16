@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class SPELRecord  : public Record
+namespace FNV
+{
+class SPELRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        SPELRecord (unsigned char *_recData=NULL);
-        SPELRecord (SPELRecord  *srcRecord);
-        ~SPELRecord ();
+        SPELRecord(unsigned char *_recData=NULL);
+        SPELRecord(SPELRecord *srcRecord);
+        ~SPELRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class SPELRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const SPELRecord  &other) const;
-        bool operator !=(const SPELRecord  &other) const;
+        bool operator ==(const SPELRecord &other) const;
+        bool operator !=(const SPELRecord &other) const;
     };
+}

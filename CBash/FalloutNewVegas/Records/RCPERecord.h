@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class RCPERecord  : public Record
+namespace FNV
+{
+class RCPERecord : public Record
     {
     public:
         StringRecord EDID;
 
-        RCPERecord (unsigned char *_recData=NULL);
-        RCPERecord (RCPERecord  *srcRecord);
-        ~RCPERecord ();
+        RCPERecord(unsigned char *_recData=NULL);
+        RCPERecord(RCPERecord *srcRecord);
+        ~RCPERecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class RCPERecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const RCPERecord  &other) const;
-        bool operator !=(const RCPERecord  &other) const;
+        bool operator ==(const RCPERecord &other) const;
+        bool operator !=(const RCPERecord &other) const;
     };
+}

@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "WTHRRecord .h"
+#include "WTHRRecord.h"
 
-WTHRRecord ::WTHRRecord (unsigned char *_recData):
+namespace FNV
+{
+WTHRRecord::WTHRRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-WTHRRecord ::WTHRRecord (WTHRRecord  *srcRecord):
+WTHRRecord::WTHRRecord(WTHRRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ WTHRRecord ::WTHRRecord (WTHRRecord  *srcRecord):
     return;
     }
 
-WTHRRecord ::~WTHRRecord ()
+WTHRRecord::~WTHRRecord()
     {
     //
     }
 
-bool WTHRRecord ::VisitFormIDs(FormIDOp &op)
+bool WTHRRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool WTHRRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 WTHRRecord ::GetSize(bool forceCalc)
+UINT32 WTHRRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 WTHRRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 WTHRRecord ::GetType()
+UINT32 WTHRRecord::GetType()
     {
     return 'RHTW';
     }
 
-STRING WTHRRecord ::GetStrType()
+STRING WTHRRecord::GetStrType()
     {
     return "WTHR";
     }
 
-SINT32 WTHRRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 WTHRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 WTHRRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 WTHRRecord ::Unload()
+SINT32 WTHRRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 WTHRRecord ::Unload()
     return 1;
     }
 
-SINT32 WTHRRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 WTHRRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool WTHRRecord ::operator ==(const WTHRRecord  &other) const
+bool WTHRRecord::operator ==(const WTHRRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool WTHRRecord ::operator !=(const WTHRRecord  &other) const
+bool WTHRRecord::operator !=(const WTHRRecord &other) const
     {
     return !(*this == other);
     }
+}

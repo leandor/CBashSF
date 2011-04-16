@@ -23,7 +23,9 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class TXSTRecord  : public Record
+namespace FNV
+{
+class TXSTRecord : public Record
     {
     private:
         enum flagsFlags
@@ -43,9 +45,9 @@ class TXSTRecord  : public Record
         OptSubRecord<GENDODT> DODT;
         ReqSubRecord<GENU16FLAG> DNAM;
 
-        TXSTRecord (unsigned char *_recData=NULL);
-        TXSTRecord (TXSTRecord  *srcRecord);
-        ~TXSTRecord ();
+        TXSTRecord(unsigned char *_recData=NULL);
+        TXSTRecord(TXSTRecord *srcRecord);
+        ~TXSTRecord();
 
         bool   IsNoSpecularMap();
         void   IsNoSpecularMap(bool value);
@@ -65,6 +67,7 @@ class TXSTRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const TXSTRecord  &other) const;
-        bool operator !=(const TXSTRecord  &other) const;
+        bool operator ==(const TXSTRecord &other) const;
+        bool operator !=(const TXSTRecord &other) const;
     };
+}

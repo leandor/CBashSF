@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class RADSRecord  : public Record
+namespace FNV
+{
+class RADSRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        RADSRecord (unsigned char *_recData=NULL);
-        RADSRecord (RADSRecord  *srcRecord);
-        ~RADSRecord ();
+        RADSRecord(unsigned char *_recData=NULL);
+        RADSRecord(RADSRecord *srcRecord);
+        ~RADSRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class RADSRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const RADSRecord  &other) const;
-        bool operator !=(const RADSRecord  &other) const;
+        bool operator ==(const RADSRecord &other) const;
+        bool operator !=(const RADSRecord &other) const;
     };
+}

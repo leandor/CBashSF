@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "WEAPRecord .h"
+#include "WEAPRecord.h"
 
-WEAPRecord ::WEAPRecord (unsigned char *_recData):
+namespace FNV
+{
+WEAPRecord::WEAPRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-WEAPRecord ::WEAPRecord (WEAPRecord  *srcRecord):
+WEAPRecord::WEAPRecord(WEAPRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ WEAPRecord ::WEAPRecord (WEAPRecord  *srcRecord):
     return;
     }
 
-WEAPRecord ::~WEAPRecord ()
+WEAPRecord::~WEAPRecord()
     {
     //
     }
 
-bool WEAPRecord ::VisitFormIDs(FormIDOp &op)
+bool WEAPRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool WEAPRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 WEAPRecord ::GetSize(bool forceCalc)
+UINT32 WEAPRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 WEAPRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 WEAPRecord ::GetType()
+UINT32 WEAPRecord::GetType()
     {
     return 'PAEW';
     }
 
-STRING WEAPRecord ::GetStrType()
+STRING WEAPRecord::GetStrType()
     {
     return "WEAP";
     }
 
-SINT32 WEAPRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 WEAPRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 WEAPRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 WEAPRecord ::Unload()
+SINT32 WEAPRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 WEAPRecord ::Unload()
     return 1;
     }
 
-SINT32 WEAPRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 WEAPRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool WEAPRecord ::operator ==(const WEAPRecord  &other) const
+bool WEAPRecord::operator ==(const WEAPRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool WEAPRecord ::operator !=(const WEAPRecord  &other) const
+bool WEAPRecord::operator !=(const WEAPRecord &other) const
     {
     return !(*this == other);
     }
+}

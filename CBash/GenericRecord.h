@@ -23,6 +23,7 @@ GPL License and Copyright Notice ============================================
 // BaseRecord.h
 #include "Common.h"
 #include "Oblivion\GenericChunks.h"
+#include "FalloutNewVegas\GenericChunks.h"
 
 class Record;
 

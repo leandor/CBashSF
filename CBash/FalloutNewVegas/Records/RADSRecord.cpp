@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "RADSRecord .h"
+#include "RADSRecord.h"
 
-RADSRecord ::RADSRecord (unsigned char *_recData):
+namespace FNV
+{
+RADSRecord::RADSRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-RADSRecord ::RADSRecord (RADSRecord  *srcRecord):
+RADSRecord::RADSRecord(RADSRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ RADSRecord ::RADSRecord (RADSRecord  *srcRecord):
     return;
     }
 
-RADSRecord ::~RADSRecord ()
+RADSRecord::~RADSRecord()
     {
     //
     }
 
-bool RADSRecord ::VisitFormIDs(FormIDOp &op)
+bool RADSRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool RADSRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 RADSRecord ::GetSize(bool forceCalc)
+UINT32 RADSRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 RADSRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 RADSRecord ::GetType()
+UINT32 RADSRecord::GetType()
     {
     return 'SDAR';
     }
 
-STRING RADSRecord ::GetStrType()
+STRING RADSRecord::GetStrType()
     {
     return "RADS";
     }
 
-SINT32 RADSRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 RADSRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 RADSRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 RADSRecord ::Unload()
+SINT32 RADSRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 RADSRecord ::Unload()
     return 1;
     }
 
-SINT32 RADSRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 RADSRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool RADSRecord ::operator ==(const RADSRecord  &other) const
+bool RADSRecord::operator ==(const RADSRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool RADSRecord ::operator !=(const RADSRecord  &other) const
+bool RADSRecord::operator !=(const RADSRecord &other) const
     {
     return !(*this == other);
     }
+}

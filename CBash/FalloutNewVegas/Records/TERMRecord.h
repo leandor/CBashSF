@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class TERMRecord  : public Record
+namespace FNV
+{
+class TERMRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        TERMRecord (unsigned char *_recData=NULL);
-        TERMRecord (TERMRecord  *srcRecord);
-        ~TERMRecord ();
+        TERMRecord(unsigned char *_recData=NULL);
+        TERMRecord(TERMRecord *srcRecord);
+        ~TERMRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class TERMRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const TERMRecord  &other) const;
-        bool operator !=(const TERMRecord  &other) const;
+        bool operator ==(const TERMRecord &other) const;
+        bool operator !=(const TERMRecord &other) const;
     };
+}

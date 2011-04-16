@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class TREERecord  : public Record
+namespace FNV
+{
+class TREERecord : public Record
     {
     public:
         StringRecord EDID;
 
-        TREERecord (unsigned char *_recData=NULL);
-        TREERecord (TREERecord  *srcRecord);
-        ~TREERecord ();
+        TREERecord(unsigned char *_recData=NULL);
+        TREERecord(TREERecord *srcRecord);
+        ~TREERecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class TREERecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const TREERecord  &other) const;
-        bool operator !=(const TREERecord  &other) const;
+        bool operator ==(const TREERecord &other) const;
+        bool operator !=(const TREERecord &other) const;
     };
+}

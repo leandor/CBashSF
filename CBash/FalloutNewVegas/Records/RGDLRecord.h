@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class RGDLRecord  : public Record
+namespace FNV
+{
+class RGDLRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        RGDLRecord (unsigned char *_recData=NULL);
-        RGDLRecord (RGDLRecord  *srcRecord);
-        ~RGDLRecord ();
+        RGDLRecord(unsigned char *_recData=NULL);
+        RGDLRecord(RGDLRecord *srcRecord);
+        ~RGDLRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class RGDLRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const RGDLRecord  &other) const;
-        bool operator !=(const RGDLRecord  &other) const;
+        bool operator ==(const RGDLRecord &other) const;
+        bool operator !=(const RGDLRecord &other) const;
     };
+}

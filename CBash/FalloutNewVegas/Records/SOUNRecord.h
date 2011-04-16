@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class SOUNRecord  : public Record
+namespace FNV
+{
+class SOUNRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        SOUNRecord (unsigned char *_recData=NULL);
-        SOUNRecord (SOUNRecord  *srcRecord);
-        ~SOUNRecord ();
+        SOUNRecord(unsigned char *_recData=NULL);
+        SOUNRecord(SOUNRecord *srcRecord);
+        ~SOUNRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class SOUNRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const SOUNRecord  &other) const;
-        bool operator !=(const SOUNRecord  &other) const;
+        bool operator ==(const SOUNRecord &other) const;
+        bool operator !=(const SOUNRecord &other) const;
     };
+}

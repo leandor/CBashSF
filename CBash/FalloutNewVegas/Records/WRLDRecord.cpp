@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "WRLDRecord .h"
+#include "WRLDRecord.h"
 
-WRLDRecord ::WRLDRecord (unsigned char *_recData):
+namespace FNV
+{
+WRLDRecord::WRLDRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-WRLDRecord ::WRLDRecord (WRLDRecord  *srcRecord):
+WRLDRecord::WRLDRecord(WRLDRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ WRLDRecord ::WRLDRecord (WRLDRecord  *srcRecord):
     return;
     }
 
-WRLDRecord ::~WRLDRecord ()
+WRLDRecord::~WRLDRecord()
     {
     //
     }
 
-bool WRLDRecord ::VisitFormIDs(FormIDOp &op)
+bool WRLDRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool WRLDRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 WRLDRecord ::GetSize(bool forceCalc)
+UINT32 WRLDRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 WRLDRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 WRLDRecord ::GetType()
+UINT32 WRLDRecord::GetType()
     {
     return 'DLRW';
     }
 
-STRING WRLDRecord ::GetStrType()
+STRING WRLDRecord::GetStrType()
     {
     return "WRLD";
     }
 
-SINT32 WRLDRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 WRLDRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 WRLDRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 WRLDRecord ::Unload()
+SINT32 WRLDRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 WRLDRecord ::Unload()
     return 1;
     }
 
-SINT32 WRLDRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 WRLDRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool WRLDRecord ::operator ==(const WRLDRecord  &other) const
+bool WRLDRecord::operator ==(const WRLDRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool WRLDRecord ::operator !=(const WRLDRecord  &other) const
+bool WRLDRecord::operator !=(const WRLDRecord &other) const
     {
     return !(*this == other);
     }
+}

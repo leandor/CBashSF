@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "STATRecord .h"
+#include "STATRecord.h"
 
-STATRecord ::STATRecord (unsigned char *_recData):
+namespace FNV
+{
+STATRecord::STATRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-STATRecord ::STATRecord (STATRecord  *srcRecord):
+STATRecord::STATRecord(STATRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ STATRecord ::STATRecord (STATRecord  *srcRecord):
     return;
     }
 
-STATRecord ::~STATRecord ()
+STATRecord::~STATRecord()
     {
     //
     }
 
-bool STATRecord ::VisitFormIDs(FormIDOp &op)
+bool STATRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool STATRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 STATRecord ::GetSize(bool forceCalc)
+UINT32 STATRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 STATRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 STATRecord ::GetType()
+UINT32 STATRecord::GetType()
     {
     return 'TATS';
     }
 
-STRING STATRecord ::GetStrType()
+STRING STATRecord::GetStrType()
     {
     return "STAT";
     }
 
-SINT32 STATRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 STATRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 STATRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 STATRecord ::Unload()
+SINT32 STATRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 STATRecord ::Unload()
     return 1;
     }
 
-SINT32 STATRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 STATRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool STATRecord ::operator ==(const STATRecord  &other) const
+bool STATRecord::operator ==(const STATRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool STATRecord ::operator !=(const STATRecord  &other) const
+bool STATRecord::operator !=(const STATRecord &other) const
     {
     return !(*this == other);
     }
+}

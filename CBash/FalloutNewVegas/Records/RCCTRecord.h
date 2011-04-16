@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class RCCTRecord  : public Record
+namespace FNV
+{
+class RCCTRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        RCCTRecord (unsigned char *_recData=NULL);
-        RCCTRecord (RCCTRecord  *srcRecord);
-        ~RCCTRecord ();
+        RCCTRecord(unsigned char *_recData=NULL);
+        RCCTRecord(RCCTRecord *srcRecord);
+        ~RCCTRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class RCCTRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const RCCTRecord  &other) const;
-        bool operator !=(const RCCTRecord  &other) const;
+        bool operator ==(const RCCTRecord &other) const;
+        bool operator !=(const RCCTRecord &other) const;
     };
+}

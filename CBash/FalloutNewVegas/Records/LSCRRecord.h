@@ -23,14 +23,16 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class LSCRRecord  : public Record
+namespace FNV
+{
+class LSCRRecord : public Record
     {
     public:
         StringRecord EDID;
 
-        LSCRRecord (unsigned char *_recData=NULL);
-        LSCRRecord (LSCRRecord  *srcRecord);
-        ~LSCRRecord ();
+        LSCRRecord(unsigned char *_recData=NULL);
+        LSCRRecord(LSCRRecord *srcRecord);
+        ~LSCRRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -47,6 +49,7 @@ class LSCRRecord  : public Record
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
 
-        bool operator ==(const LSCRRecord  &other) const;
-        bool operator !=(const LSCRRecord  &other) const;
+        bool operator ==(const LSCRRecord &other) const;
+        bool operator !=(const LSCRRecord &other) const;
     };
+}

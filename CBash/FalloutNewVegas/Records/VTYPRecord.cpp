@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "VTYPRecord .h"
+#include "VTYPRecord.h"
 
-VTYPRecord ::VTYPRecord (unsigned char *_recData):
+namespace FNV
+{
+VTYPRecord::VTYPRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-VTYPRecord ::VTYPRecord (VTYPRecord  *srcRecord):
+VTYPRecord::VTYPRecord(VTYPRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ VTYPRecord ::VTYPRecord (VTYPRecord  *srcRecord):
     return;
     }
 
-VTYPRecord ::~VTYPRecord ()
+VTYPRecord::~VTYPRecord()
     {
     //
     }
 
-bool VTYPRecord ::VisitFormIDs(FormIDOp &op)
+bool VTYPRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool VTYPRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 VTYPRecord ::GetSize(bool forceCalc)
+UINT32 VTYPRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 VTYPRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 VTYPRecord ::GetType()
+UINT32 VTYPRecord::GetType()
     {
     return 'PYTV';
     }
 
-STRING VTYPRecord ::GetStrType()
+STRING VTYPRecord::GetStrType()
     {
     return "VTYP";
     }
 
-SINT32 VTYPRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 VTYPRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 VTYPRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 VTYPRecord ::Unload()
+SINT32 VTYPRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 VTYPRecord ::Unload()
     return 1;
     }
 
-SINT32 VTYPRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 VTYPRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool VTYPRecord ::operator ==(const VTYPRecord  &other) const
+bool VTYPRecord::operator ==(const VTYPRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool VTYPRecord ::operator !=(const VTYPRecord  &other) const
+bool VTYPRecord::operator !=(const VTYPRecord &other) const
     {
     return !(*this == other);
     }
+}

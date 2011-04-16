@@ -20,15 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "PWATRecord .h"
+#include "PWATRecord.h"
 
-PWATRecord ::PWATRecord (unsigned char *_recData):
+namespace FNV
+{
+PWATRecord::PWATRecord(unsigned char *_recData):
     Record(_recData)
     {
     //
     }
 
-PWATRecord ::PWATRecord (PWATRecord  *srcRecord):
+PWATRecord::PWATRecord(PWATRecord *srcRecord):
     Record()
     {
     if(srcRecord == NULL)
@@ -49,12 +51,12 @@ PWATRecord ::PWATRecord (PWATRecord  *srcRecord):
     return;
     }
 
-PWATRecord ::~PWATRecord ()
+PWATRecord::~PWATRecord()
     {
     //
     }
 
-bool PWATRecord ::VisitFormIDs(FormIDOp &op)
+bool PWATRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -62,7 +64,7 @@ bool PWATRecord ::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 PWATRecord ::GetSize(bool forceCalc)
+UINT32 PWATRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
         return *(UINT32*)&recData[-16];
@@ -80,17 +82,17 @@ UINT32 PWATRecord ::GetSize(bool forceCalc)
     return TotSize;
     }
 
-UINT32 PWATRecord ::GetType()
+UINT32 PWATRecord::GetType()
     {
     return 'TAWP';
     }
 
-STRING PWATRecord ::GetStrType()
+STRING PWATRecord::GetStrType()
     {
     return "PWAT";
     }
 
-SINT32 PWATRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 PWATRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -127,7 +129,7 @@ SINT32 PWATRecord ::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 PWATRecord ::Unload()
+SINT32 PWATRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -135,19 +137,20 @@ SINT32 PWATRecord ::Unload()
     return 1;
     }
 
-SINT32 PWATRecord ::WriteRecord(_FileHandler &SaveHandler)
+SINT32 PWATRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     return -1;
     }
 
-bool PWATRecord ::operator ==(const PWATRecord  &other) const
+bool PWATRecord::operator ==(const PWATRecord &other) const
     {
     return (EDID.equalsi(other.EDID));
     }
 
-bool PWATRecord ::operator !=(const PWATRecord  &other) const
+bool PWATRecord::operator !=(const PWATRecord &other) const
     {
     return !(*this == other);
     }
+}
