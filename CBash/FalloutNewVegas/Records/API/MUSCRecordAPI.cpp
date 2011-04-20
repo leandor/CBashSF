@@ -34,10 +34,34 @@ UINT32 MUSCRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
             return UINT32_FLAG_FIELD;
         case 2: //fid
             return FORMID_FIELD;
-        case 3: //flags2
-            return UINT32_FLAG_FIELD;
-        case 4: //eid
+        case 3: //versionControl1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 4;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+        case 4: //formVersion
+            return UINT16_FIELD;
+        case 5: //versionControl2
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 2;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+        case 6: //edid Editor ID
             return ISTRING_FIELD;
+        case 7: //fnam Filename
+            return ISTRING_FIELD;
+        case 8: //anam dB (positive = Loop)
+            return FLOAT32_FIELD;
         default:
             return UNKNOWN_FIELD;
         }
@@ -51,10 +75,20 @@ void * MUSCRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return &flags;
         case 2: //fid
             return &formID;
-        case 3: //flags2
-            return &flagsUnk;
-        case 4: //eid
+        case 3: //versionControl1
+            *FieldValues = &flagsUnk;
+            return NULL;
+        case 4: //formVersion
+            return &formVersion;
+        case 5: //versionControl2
+            *FieldValues = &versionControl2;
+            return NULL;
+        case 6: //edid Editor ID
             return EDID.value;
+        case 7: //fnam Filename
+            return FNAM.value;
+        case 8: //anam dB (positive = Loop)
+            return ANAM.IsLoaded() ? &ANAM->value8 : NULL;
         default:
             return NULL;
         }
@@ -67,11 +101,32 @@ bool MUSCRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 1: //flags1
             SetHeaderFlagMask(*(UINT32 *)FieldValue);
             break;
-        case 3: //flags2
-            SetHeaderUnknownFlagMask(*(UINT32 *)FieldValue);
+        case 3: //versionControl1
+            if(ArraySize != 4)
+                break;
+            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8 *)FieldValue)[0];
+            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8 *)FieldValue)[1];
+            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8 *)FieldValue)[2];
+            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8 *)FieldValue)[3];
             break;
-        case 4: //eid
+        case 4: //formVersion
+            formVersion = *(UINT16 *)FieldValue;
+            break;
+        case 5: //versionControl2
+            if(ArraySize != 2)
+                break;
+            versionControl2[0] = ((UINT8 *)FieldValue)[0];
+            versionControl2[1] = ((UINT8 *)FieldValue)[1];
+            break;
+        case 6: //edid Editor ID
             EDID.Copy((STRING)FieldValue);
+            break;
+        case 7: //fnam Filename
+            FNAM.Copy((STRING)FieldValue);
+            break;
+        case 8: //anam dB (positive = Loop)
+            ANAM.Load();
+            ANAM->value8 = *(FLOAT32 *)FieldValue;
             break;
         default:
             break;
@@ -86,11 +141,24 @@ void MUSCRecord::DeleteField(FIELD_IDENTIFIERS)
         case 1: //flags1
             SetHeaderFlagMask(0);
             return;
-        case 3: //flags2
+        case 3: //versionControl1
             flagsUnk = 0;
             return;
-        case 4: //eid
+        case 4: //formVersion
+            formVersion = 0;
+            return;
+        case 5: //versionControl2
+            versionControl2[0] = 0;
+            versionControl2[1] = 0;
+            return;
+        case 6: //edid Editor ID
             EDID.Unload();
+            return;
+        case 7: //fnam Filename
+            FNAM.Unload();
+            return;
+        case 8: //anam dB (positive = Loop)
+            ANAM.Unload();
             return;
         default:
             return;

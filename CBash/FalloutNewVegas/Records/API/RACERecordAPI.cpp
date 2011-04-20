@@ -34,10 +34,166 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
             return UINT32_FLAG_FIELD;
         case 2: //fid
             return FORMID_FIELD;
-        case 3: //flags2
-            return UINT32_FLAG_FIELD;
-        case 4: //eid
+        case 3: //versionControl1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 4;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+        case 4: //formVersion
+            return UINT16_FIELD;
+        case 5: //versionControl2
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 2;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+        case 6: //edid Editor ID
             return ISTRING_FIELD;
+        case 7: //full Name
+            return STRING_FIELD;
+        case 8: //desc Description
+            return STRING_FIELD;
+        case 9: //xnam Relation
+            return FORMID_FIELD;
+        case 10: //xnam Relation
+            return SINT32_FIELD;
+        case 11: //xnam Relation
+            return UINT32_FIELD;
+        case 12: //data DATA ,, Struct
+            return SINT8_FIELD;
+        case 13: //data_p DATA ,, Struct
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 2;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+        case 14: //data DATA ,, Struct
+            return FLOAT32_FIELD;
+        case 15: //data DATA ,, Struct
+            return FLOAT32_FIELD;
+        case 16: //data DATA ,, Struct
+            return FLOAT32_FIELD;
+        case 17: //data DATA ,, Struct
+            return FLOAT32_FIELD;
+        case 18: //data DATA ,, Struct
+            return UINT32_FIELD;
+        case 19: //onam Older
+            return FORMID_FIELD;
+        case 20: //ynam Younger
+            return FORMID_FIELD;
+        case 21: //vtck Voices
+            return UNPARSED_FIELD;
+        case 22: //dnam Default Hair Styles
+            return UNPARSED_FIELD;
+        case 23: //cnam Default Hair Colors
+            return UNPARSED_FIELD;
+        case 24: //pnam FaceGen - Main clamp
+            return FLOAT32_FIELD;
+        case 25: //unam FaceGen - Face clamp
+            return FLOAT32_FIELD;
+        case 26: //attr_p Unknown
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return ATTR.GetSize();
+                default:
+                    return UNKNOWN_FIELD;
+                }
+        case 27: //indx Index
+            return UINT32_FIELD;
+        case 28: //modl Model Filename
+            return STRING_FIELD;
+        case 29: //modb_p Unknown
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return MODB.GetSize();
+                default:
+                    return UNKNOWN_FIELD;
+                }
+        case 30: //modt_p Texture Files Hashes
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return MODT.GetSize();
+                default:
+                    return UNKNOWN_FIELD;
+                }
+        case 31: //mods Alternate Textures
+            return ISTRING_FIELD;
+        case 32: //mods Alternate Textures
+            return FORMID_FIELD;
+        case 33: //mods Alternate Textures
+            return SINT32_FIELD;
+        case 34: //modd FaceGen Model Flags
+            return UINT8_FIELD;
+        case 35: //icon Large Icon Filename
+            return ISTRING_FIELD;
+        case 36: //mico Small Icon Filename
+            return ISTRING_FIELD;
+        case 37: //hnam Hairs
+            return UNPARSED_FIELD;
+        case 38: //enam Eyes
+            return UNPARSED_FIELD;
+        case 39: //fggs_p FaceGen Geometry-Symmetric
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return FGGS.GetSize();
+                default:
+                    return UNKNOWN_FIELD;
+                }
+        case 40: //fgga_p FaceGen Geometry-Asymmetric
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return FGGA.GetSize();
+                default:
+                    return UNKNOWN_FIELD;
+                }
+        case 41: //fgts_p FaceGen Texture-Symmetric
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return FGTS.GetSize();
+                default:
+                    return UNKNOWN_FIELD;
+                }
+        case 42: //snam_p Unknown
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return SNAM.GetSize();
+                default:
+                    return UNKNOWN_FIELD;
+                }
         default:
             return UNKNOWN_FIELD;
         }
@@ -51,10 +207,96 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return &flags;
         case 2: //fid
             return &formID;
-        case 3: //flags2
-            return &flagsUnk;
-        case 4: //eid
+        case 3: //versionControl1
+            *FieldValues = &flagsUnk;
+            return NULL;
+        case 4: //formVersion
+            return &formVersion;
+        case 5: //versionControl2
+            *FieldValues = &versionControl2;
+            return NULL;
+        case 6: //edid Editor ID
             return EDID.value;
+        case 7: //full Name
+            return FULLReq.value;
+        case 8: //desc Description
+            return DESCReq.value;
+        case 9: //xnam Relation
+            return XNAMs.IsLoaded() ? &XNAMs->value9 : NULL;
+        case 10: //xnam Relation
+            return XNAMs.IsLoaded() ? &XNAMs->value10 : NULL;
+        case 11: //xnam Relation
+            return XNAMs.IsLoaded() ? &XNAMs->value11 : NULL;
+        case 12: //data DATA ,, Struct
+            return DATA.IsLoaded() ? &DATA->value12 : NULL;
+        case 13: //data_p DATA ,, Struct
+            *FieldValues = DATA.IsLoaded() ? &DATA->value13[0] : NULL;
+            return NULL;
+        case 14: //data DATA ,, Struct
+            return DATA.IsLoaded() ? &DATA->value14 : NULL;
+        case 15: //data DATA ,, Struct
+            return DATA.IsLoaded() ? &DATA->value15 : NULL;
+        case 16: //data DATA ,, Struct
+            return DATA.IsLoaded() ? &DATA->value16 : NULL;
+        case 17: //data DATA ,, Struct
+            return DATA.IsLoaded() ? &DATA->value17 : NULL;
+        case 18: //data DATA ,, Struct
+            return DATA.IsLoaded() ? &DATA->value18 : NULL;
+        case 19: //onam Older
+            return ONAM.IsLoaded() ? &ONAM->value19 : NULL;
+        case 20: //ynam Younger
+            return YNAM.IsLoaded() ? &YNAM->value20 : NULL;
+        case 21: //vtck Voices
+            return UNPARSEDGET_FIELD21;
+        case 22: //dnam Default Hair Styles
+            return UNPARSEDGET_FIELD22;
+        case 23: //cnam Default Hair Colors
+            return UNPARSEDGET_FIELD23;
+        case 24: //pnam FaceGen - Main clamp
+            return PNAM.IsLoaded() ? &PNAM->value24 : NULL;
+        case 25: //unam FaceGen - Face clamp
+            return UNAM.IsLoaded() ? &UNAM->value25 : NULL;
+        case 26: //attr_p Unknown
+            *FieldValues = ATTR.value;
+            return NULL;
+        case 27: //indx Index
+            return INDX.IsLoaded() ? &INDX->value27 : NULL;
+        case 28: //modl Model Filename
+            return MODL.IsLoaded() ? MODL->MODL.value : NULL;
+        case 29: //modb_p Unknown
+            *FieldValues = (MODL.IsLoaded()) ? MODL->MODB.value : NULL;
+            return NULL;
+        case 30: //modt_p Texture Files Hashes
+            *FieldValues = (MODL.IsLoaded()) ? MODL->MODT.value : NULL;
+            return NULL;
+        case 31: //mods Alternate Textures
+            return MODL.IsLoaded() ? MODL->MODS.value : NULL;
+        case 32: //mods Alternate Textures
+            return MODL.IsLoaded() ? &MODL->MODS->value32 : NULL;
+        case 33: //mods Alternate Textures
+            return MODL.IsLoaded() ? &MODL->MODS->value33 : NULL;
+        case 34: //modd FaceGen Model Flags
+            return MODL.IsLoaded() ? &MODL->MODD->value34 : NULL;
+        case 35: //icon Large Icon Filename
+            return ICON.IsLoaded() ? ICON->ICON.value : NULL;
+        case 36: //mico Small Icon Filename
+            return ICON.IsLoaded() ? ICON->MICO.value : NULL;
+        case 37: //hnam Hairs
+            return UNPARSEDGET_FIELD37;
+        case 38: //enam Eyes
+            return UNPARSEDGET_FIELD38;
+        case 39: //fggs_p FaceGen Geometry-Symmetric
+            *FieldValues = (FGGS.IsLoaded()) ? FGGS->FGGS.value : NULL;
+            return NULL;
+        case 40: //fgga_p FaceGen Geometry-Asymmetric
+            *FieldValues = (FGGS.IsLoaded()) ? FGGS->FGGA.value : NULL;
+            return NULL;
+        case 41: //fgts_p FaceGen Texture-Symmetric
+            *FieldValues = (FGGS.IsLoaded()) ? FGGS->FGTS.value : NULL;
+            return NULL;
+        case 42: //snam_p Unknown
+            *FieldValues = SNAM, cpNormal, True.value;
+            return NULL;
         default:
             return NULL;
         }
@@ -67,11 +309,161 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 1: //flags1
             SetHeaderFlagMask(*(UINT32 *)FieldValue);
             break;
-        case 3: //flags2
-            SetHeaderUnknownFlagMask(*(UINT32 *)FieldValue);
+        case 3: //versionControl1
+            if(ArraySize != 4)
+                break;
+            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8 *)FieldValue)[0];
+            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8 *)FieldValue)[1];
+            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8 *)FieldValue)[2];
+            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8 *)FieldValue)[3];
             break;
-        case 4: //eid
+        case 4: //formVersion
+            formVersion = *(UINT16 *)FieldValue;
+            break;
+        case 5: //versionControl2
+            if(ArraySize != 2)
+                break;
+            versionControl2[0] = ((UINT8 *)FieldValue)[0];
+            versionControl2[1] = ((UINT8 *)FieldValue)[1];
+            break;
+        case 6: //edid Editor ID
             EDID.Copy((STRING)FieldValue);
+            break;
+        case 7: //full Name
+            FULLReq.Copy((STRING)FieldValue);
+            break;
+        case 8: //desc Description
+            DESCReq.Copy((STRING)FieldValue);
+            break;
+        case 9: //xnam Relation
+            XNAMs.Load();
+            XNAMs->value9 = *(FORMID *)FieldValue;
+            return true;
+        case 10: //xnam Relation
+            XNAMs.Load();
+            XNAMs->value10 = *(SINT32 *)FieldValue;
+            break;
+        case 11: //xnam Relation
+            XNAMs.Load();
+            XNAMs->value11 = *(UINT32 *)FieldValue;
+            break;
+        case 12: //data DATA ,, Struct
+            DATA.Load();
+            DATA->value12 = *(SINT8 *)FieldValue;
+            break;
+        case 13: //data_p DATA ,, Struct
+            if(ArraySize != 2)
+                break;
+            DATA.Load();
+            DATA->value13[0] = ((UINT8 *)FieldValue)[0];
+            DATA->value13[1] = ((UINT8 *)FieldValue)[1];
+            break;
+        case 14: //data DATA ,, Struct
+            DATA.Load();
+            DATA->value14 = *(FLOAT32 *)FieldValue;
+            break;
+        case 15: //data DATA ,, Struct
+            DATA.Load();
+            DATA->value15 = *(FLOAT32 *)FieldValue;
+            break;
+        case 16: //data DATA ,, Struct
+            DATA.Load();
+            DATA->value16 = *(FLOAT32 *)FieldValue;
+            break;
+        case 17: //data DATA ,, Struct
+            DATA.Load();
+            DATA->value17 = *(FLOAT32 *)FieldValue;
+            break;
+        case 18: //data DATA ,, Struct
+            DATA.Load();
+            DATA->value18 = *(UINT32 *)FieldValue;
+            break;
+        case 19: //onam Older
+            ONAM.Load();
+            ONAM->value19 = *(FORMID *)FieldValue;
+            return true;
+        case 20: //ynam Younger
+            YNAM.Load();
+            YNAM->value20 = *(FORMID *)FieldValue;
+            return true;
+        case 21: //vtck Voices
+            return UNPARSEDGET_FIELD21;
+        case 22: //dnam Default Hair Styles
+            return UNPARSEDGET_FIELD22;
+        case 23: //cnam Default Hair Colors
+            return UNPARSEDGET_FIELD23;
+        case 24: //pnam FaceGen - Main clamp
+            PNAM.Load();
+            PNAM->value24 = *(FLOAT32 *)FieldValue;
+            break;
+        case 25: //unam FaceGen - Face clamp
+            UNAM.Load();
+            UNAM->value25 = *(FLOAT32 *)FieldValue;
+            break;
+        case 26: //attr_p Unknown
+            ATTR.Copy((UINT8ARRAY)FieldValue, ArraySize);
+            break;
+        case 27: //indx Index
+            INDX.Load();
+            INDX->value27 = *(UINT32 *)FieldValue;
+            break;
+        case 28: //modl Model Filename
+            MODL.Load();
+            MODL->MODL.Copy((STRING)FieldValue);
+            break;
+        case 29: //modb_p Unknown
+            MODL.Load();
+            MODL->MODB.Copy((UINT8ARRAY)FieldValue, ArraySize);
+            break;
+        case 30: //modt_p Texture Files Hashes
+            MODL.Load();
+            MODL->MODT.Copy((UINT8ARRAY)FieldValue, ArraySize);
+            break;
+        case 31: //mods Alternate Textures
+            MODL.Load();
+            MODL->MODS.Copy((STRING)FieldValue);
+            break;
+        case 32: //mods Alternate Textures
+            MODL.Load();
+            MODL->MODS.Load();
+            MODL->MODS->value32 = *(FORMID *)FieldValue;
+            return true;
+        case 33: //mods Alternate Textures
+            MODL.Load();
+            MODL->MODS.Load();
+            MODL->MODS->value33 = *(SINT32 *)FieldValue;
+            break;
+        case 34: //modd FaceGen Model Flags
+            MODL.Load();
+            MODL->MODD.Load();
+            MODL->MODD->value34 = *(UINT8 *)FieldValue;
+            break;
+        case 35: //icon Large Icon Filename
+            ICON.Load();
+            ICON->ICON.Copy((STRING)FieldValue);
+            break;
+        case 36: //mico Small Icon Filename
+            ICON.Load();
+            ICON->MICO.Copy((STRING)FieldValue);
+            break;
+        case 37: //hnam Hairs
+            return UNPARSEDGET_FIELD37;
+        case 38: //enam Eyes
+            return UNPARSEDGET_FIELD38;
+        case 39: //fggs_p FaceGen Geometry-Symmetric
+            FGGS.Load();
+            FGGS->FGGS.Copy((UINT8ARRAY)FieldValue, ArraySize);
+            break;
+        case 40: //fgga_p FaceGen Geometry-Asymmetric
+            FGGS.Load();
+            FGGS->FGGA.Copy((UINT8ARRAY)FieldValue, ArraySize);
+            break;
+        case 41: //fgts_p FaceGen Texture-Symmetric
+            FGGS.Load();
+            FGGS->FGTS.Copy((UINT8ARRAY)FieldValue, ArraySize);
+            break;
+        case 42: //snam_p Unknown
+            SNAM, cpNormal, True.Copy((UINT8ARRAY)FieldValue, ArraySize);
             break;
         default:
             break;
@@ -86,11 +478,133 @@ void RACERecord::DeleteField(FIELD_IDENTIFIERS)
         case 1: //flags1
             SetHeaderFlagMask(0);
             return;
-        case 3: //flags2
+        case 3: //versionControl1
             flagsUnk = 0;
             return;
-        case 4: //eid
+        case 4: //formVersion
+            formVersion = 0;
+            return;
+        case 5: //versionControl2
+            versionControl2[0] = 0;
+            versionControl2[1] = 0;
+            return;
+        case 6: //edid Editor ID
             EDID.Unload();
+            return;
+        case 7: //full Name
+            FULLReq.Unload();
+            return;
+        case 8: //desc Description
+            DESCReq.Unload();
+            return;
+        case 9: //xnam Relation
+            XNAMs.Unload();
+            return;
+        case 10: //xnam Relation
+            XNAMs.Unload();
+            return;
+        case 11: //xnam Relation
+            XNAMs.Unload();
+            return;
+        case 12: //data DATA ,, Struct
+            DATA.Unload();
+            return;
+        case 13: //data_p DATA ,, Struct
+            DATA.Unload();
+            return;
+        case 14: //data DATA ,, Struct
+            DATA.Unload();
+            return;
+        case 15: //data DATA ,, Struct
+            DATA.Unload();
+            return;
+        case 16: //data DATA ,, Struct
+            DATA.Unload();
+            return;
+        case 17: //data DATA ,, Struct
+            DATA.Unload();
+            return;
+        case 18: //data DATA ,, Struct
+            DATA.Unload();
+            return;
+        case 19: //onam Older
+            ONAM.Unload();
+            return;
+        case 20: //ynam Younger
+            YNAM.Unload();
+            return;
+        case 21: //vtck Voices
+            return UNPARSEDDEL_FIELD21;
+        case 22: //dnam Default Hair Styles
+            return UNPARSEDDEL_FIELD22;
+        case 23: //cnam Default Hair Colors
+            return UNPARSEDDEL_FIELD23;
+        case 24: //pnam FaceGen - Main clamp
+            PNAM.Unload();
+            return;
+        case 25: //unam FaceGen - Face clamp
+            UNAM.Unload();
+            return;
+        case 26: //attr_p Unknown
+            ATTR.Unload();
+            return;
+        case 27: //indx Index
+            INDX.Unload();
+            return;
+        case 28: //modl Model Filename
+            if(MODL.IsLoaded())
+                MODL->MODL.Unload();
+            return;
+        case 29: //modb_p Unknown
+            if(MODL.IsLoaded())
+                MODL->MODB.Unload();
+            return;
+        case 30: //modt_p Texture Files Hashes
+            if(MODL.IsLoaded())
+                MODL->MODT.Unload();
+            return;
+        case 31: //mods Alternate Textures
+            if(MODL.IsLoaded())
+                MODL->MODS.Unload();
+            return;
+        case 32: //mods Alternate Textures
+            if(MODL.IsLoaded())
+                MODL->MODS.Unload();
+            return;
+        case 33: //mods Alternate Textures
+            if(MODL.IsLoaded())
+                MODL->MODS.Unload();
+            return;
+        case 34: //modd FaceGen Model Flags
+            if(MODL.IsLoaded())
+                MODL->MODD.Unload();
+            return;
+        case 35: //icon Large Icon Filename
+            if(ICON.IsLoaded())
+                ICON->ICON.Unload();
+            return;
+        case 36: //mico Small Icon Filename
+            if(ICON.IsLoaded())
+                ICON->MICO.Unload();
+            return;
+        case 37: //hnam Hairs
+            return UNPARSEDDEL_FIELD37;
+        case 38: //enam Eyes
+            return UNPARSEDDEL_FIELD38;
+        case 39: //fggs_p FaceGen Geometry-Symmetric
+            if(FGGS.IsLoaded())
+                FGGS->FGGS.Unload();
+            return;
+        case 40: //fgga_p FaceGen Geometry-Asymmetric
+            if(FGGS.IsLoaded())
+                FGGS->FGGA.Unload();
+            return;
+        case 41: //fgts_p FaceGen Texture-Symmetric
+            if(FGGS.IsLoaded())
+                FGGS->FGTS.Unload();
+            return;
+        case 42: //snam_p Unknown
+            SNAM, cpNormal, True.Unload();
             return;
         default:
             return;
