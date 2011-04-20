@@ -37,8 +37,8 @@ class LVLCRecord : public Record
 
     public:
         StringRecord EDID;
-        ReqSubRecord<LVLLVLD> LVLD;
-        SemiOptSubRecord<GENFLAG> LVLF;
+        ReqSubRecord<GENU8> LVLD;
+        SemiOptSubRecord<GENU8> LVLF;
         OptSubRecord<GENFID> SCRI;
         OptSubRecord<GENFID> TNAM;
         std::vector<ReqSubRecord<LVLLVLO> *> Entries;

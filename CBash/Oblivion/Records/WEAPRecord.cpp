@@ -106,9 +106,9 @@ bool WEAPRecord::VisitFormIDs(FormIDOp &op)
         return false;
 
     if(SCRI.IsLoaded())
-        op.Accept(SCRI->fid);
+        op.Accept(SCRI->value);
     if(ENAM.IsLoaded())
-        op.Accept(ENAM->fid);
+        op.Accept(ENAM->value);
 
     return op.Stop();
     }

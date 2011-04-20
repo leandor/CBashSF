@@ -4852,10 +4852,10 @@ class ObWRLDRecord(ObBaseRecord):
     SECellX = CBashGeneric(14, c_short)
     SECellY = CBashGeneric(15, c_short)
     flags = CBashGeneric(16, c_ubyte)
-    unknown00 = CBashFLOAT32(17)
-    unknown01 = CBashFLOAT32(18)
-    unknown90 = CBashFLOAT32(19)
-    unknown91 = CBashFLOAT32(20)
+    xMinObjBounds = CBashFLOAT32(17)
+    yMinObjBounds = CBashFLOAT32(18)
+    xMaxObjBounds = CBashFLOAT32(19)
+    yMaxObjBounds = CBashFLOAT32(20)
     musicType = CBashGeneric(21, c_ulong)
     ofst_p = CBashUINT8ARRAY(22)
     def create_ROAD(self, EditorID=0, FormID=0):
@@ -4887,8 +4887,8 @@ class ObWRLDRecord(ObBaseRecord):
     IsDungeon = CBashBasicType('musicType', 2, 'IsDefault')
     exportattrs = copyattrs = ObBaseRecord.baseattrs + ['full', 'parent', 'climate', 'water', 'mapPath',
                                         'dimX', 'dimY', 'NWCellX', 'NWCellY', 'SECellX',
-                                        'SECellY', 'flags', 'unknown00', 'unknown01',
-                                        'unknown90', 'unknown91', 'musicType', 'ROAD', 'WorldCELL'] #'ofst_p',
+                                        'SECellY', 'flags', 'xMinObjBounds', 'yMinObjBounds',
+                                        'xMaxObjBounds', 'yMaxObjBounds', 'musicType', 'ROAD', 'WorldCELL'] #'ofst_p',
 
 class ObWTHRRecord(ObBaseRecord):
     _Type = 'WTHR'

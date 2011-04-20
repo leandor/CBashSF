@@ -102,48 +102,6 @@ bool NPC_Record::NPC_DATA::operator !=(const NPC_DATA &other) const
     return !(*this == other);
     }
 
-NPC_Record::NPC_LNAM::NPC_LNAM():
-    hairLength(0.0f)
-    {
-    //
-    }
-
-NPC_Record::NPC_LNAM::~NPC_LNAM()
-    {
-    //
-    }
-
-bool NPC_Record::NPC_LNAM::operator ==(const NPC_LNAM &other) const
-    {
-    return (AlmostEqual(hairLength,other.hairLength,2));
-    }
-
-bool NPC_Record::NPC_LNAM::operator !=(const NPC_LNAM &other) const
-    {
-    return !(*this == other);
-    }
-
-NPC_Record::NPC_FNAM::NPC_FNAM():
-    fnam(0)
-    {
-    //
-    }
-
-NPC_Record::NPC_FNAM::~NPC_FNAM()
-    {
-    //
-    }
-
-bool NPC_Record::NPC_FNAM::operator ==(const NPC_FNAM &other) const
-    {
-    return (fnam == other.fnam);
-    }
-
-bool NPC_Record::NPC_FNAM::operator !=(const NPC_FNAM &other) const
-    {
-    return !(*this == other);
-    }
-
 NPC_Record::NPC_Record(unsigned char *_recData):
     Record(_recData)
     {
@@ -236,16 +194,16 @@ bool NPC_Record::VisitFormIDs(FormIDOp &op)
         op.Accept(SNAM[x]->value.faction);
 
     if(INAM.IsLoaded())
-        op.Accept(INAM->fid);
+        op.Accept(INAM->value);
 
     if(RNAM.IsLoaded())
-        op.Accept(RNAM->fid);
+        op.Accept(RNAM->value);
 
     for(UINT32 x = 0; x < SPLO.size(); x++)
         op.Accept(SPLO[x]);
 
     if(SCRI.IsLoaded())
-        op.Accept(SCRI->fid);
+        op.Accept(SCRI->value);
 
     for(UINT32 x = 0; x < CNTO.size(); x++)
         op.Accept(CNTO[x]->value.item);
@@ -254,16 +212,16 @@ bool NPC_Record::VisitFormIDs(FormIDOp &op)
         op.Accept(PKID[x]);
 
     if(CNAM.IsLoaded())
-        op.Accept(CNAM.value.fid);
+        op.Accept(CNAM.value.value);
 
     if(HNAM.IsLoaded())
-        op.Accept(HNAM->fid);
+        op.Accept(HNAM->value);
 
     if(ENAM.IsLoaded())
-        op.Accept(ENAM->fid);
+        op.Accept(ENAM->value);
 
     if(ZNAM.IsLoaded())
-        op.Accept(ZNAM->fid);
+        op.Accept(ZNAM->value);
 
     return op.Stop();
     }

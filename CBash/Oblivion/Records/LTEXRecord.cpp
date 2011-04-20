@@ -47,27 +47,6 @@ bool LTEXRecord::LTEXHNAM::operator !=(const LTEXHNAM &other) const
     return !(*this == other);
     }
 
-LTEXRecord::LTEXSNAM::LTEXSNAM():
-    specular(0)
-    {
-    //
-    }
-
-LTEXRecord::LTEXSNAM::~LTEXSNAM()
-    {
-    //
-    }
-
-bool LTEXRecord::LTEXSNAM::operator ==(const LTEXSNAM &other) const
-    {
-    return (specular == other.specular);
-    }
-
-bool LTEXRecord::LTEXSNAM::operator !=(const LTEXSNAM &other) const
-    {
-    return !(*this == other);
-    }
-
 LTEXRecord::LTEXRecord(unsigned char *_recData):
     Record(_recData)
     {

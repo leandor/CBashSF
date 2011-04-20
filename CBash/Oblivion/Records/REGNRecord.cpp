@@ -46,27 +46,6 @@ bool REGNRecord::REGNRPLD::operator !=(const REGNRPLD &other) const
     return !(*this == other);
     }
 
-REGNRecord::REGNRPLI::REGNRPLI():
-    edgeFalloff(0)
-    {
-    //
-    }
-
-REGNRecord::REGNRPLI::~REGNRPLI()
-    {
-    //
-    }
-
-bool REGNRecord::REGNRPLI::operator ==(const REGNRPLI &other) const
-    {
-    return (edgeFalloff == other.edgeFalloff);
-    }
-
-bool REGNRecord::REGNRPLI::operator !=(const REGNRPLI &other) const
-    {
-    return !(*this == other);
-    }
-
 bool REGNRecord::REGNArea::operator ==(const REGNArea &other) const
     {
     if(RPLI == other.RPLI &&
@@ -182,27 +161,6 @@ bool REGNRecord::REGNRDSD::operator ==(const REGNRDSD &other) const
     }
 
 bool REGNRecord::REGNRDSD::operator !=(const REGNRDSD &other) const
-    {
-    return !(*this == other);
-    }
-
-REGNRecord::REGNRDMD::REGNRDMD():
-    type(0)
-    {
-    //
-    }
-
-REGNRecord::REGNRDMD::~REGNRDMD()
-    {
-    //
-    }
-
-bool REGNRecord::REGNRDMD::operator ==(const REGNRDMD &other) const
-    {
-    return (type == other.type);
-    }
-
-bool REGNRecord::REGNRDMD::operator !=(const REGNRDMD &other) const
     {
     return !(*this == other);
     }
@@ -507,7 +465,7 @@ void REGNRecord::REGNEntry::SetType(UINT32 Type)
 
 bool REGNRecord::REGNEntry::IsDefaultMusic()
     {
-    return RDMD.IsLoaded() ? (RDMD->type == eDefault) : false;
+    return RDMD.IsLoaded() ? (RDMD->value == eDefault) : false;
     }
 
 void REGNRecord::REGNEntry::IsDefaultMusic(bool value)
@@ -516,14 +474,14 @@ void REGNRecord::REGNEntry::IsDefaultMusic(bool value)
         return;
 
     if(value)
-        RDMD->type = eDefault;
+        RDMD->value = eDefault;
     else if(IsDefaultMusic())
-        RDMD->type = ePublic;
+        RDMD->value = ePublic;
     }
 
 bool REGNRecord::REGNEntry::IsPublicMusic()
     {
-    return RDMD.IsLoaded() ? (RDMD->type == ePublic) : false;
+    return RDMD.IsLoaded() ? (RDMD->value == ePublic) : false;
     }
 
 void REGNRecord::REGNEntry::IsPublicMusic(bool value)
@@ -532,14 +490,14 @@ void REGNRecord::REGNEntry::IsPublicMusic(bool value)
         return;
 
     if(value)
-        RDMD->type = ePublic;
+        RDMD->value = ePublic;
     else if(IsPublicMusic())
-        RDMD->type = eDefault;
+        RDMD->value = eDefault;
     }
 
 bool REGNRecord::REGNEntry::IsDungeonMusic()
     {
-    return RDMD.IsLoaded() ? (RDMD->type == eDungeon) : false;
+    return RDMD.IsLoaded() ? (RDMD->value == eDungeon) : false;
     }
 
 void REGNRecord::REGNEntry::IsDungeonMusic(bool value)
@@ -548,20 +506,20 @@ void REGNRecord::REGNEntry::IsDungeonMusic(bool value)
         return;
 
     if(value)
-        RDMD->type = eDungeon;
+        RDMD->value = eDungeon;
     else if(IsDungeonMusic())
-        RDMD->type = eDefault;
+        RDMD->value = eDefault;
     }
 
 bool REGNRecord::REGNEntry::IsMusicType(UINT32 Type)
     {
-    return RDMD.IsLoaded() ? (RDMD->type == Type) : false;
+    return RDMD.IsLoaded() ? (RDMD->value == Type) : false;
     }
 
 void REGNRecord::REGNEntry::SetMusicType(UINT32 Type)
     {
     RDMD.Load();
-    RDMD->type = Type;
+    RDMD->value = Type;
     }
 
 bool REGNRecord::REGNEntry::operator ==(const REGNEntry &other) const
@@ -679,7 +637,7 @@ bool REGNRecord::VisitFormIDs(FormIDOp &op)
         return false;
 
     if(WNAM.IsLoaded())
-        op.Accept(WNAM.value.fid);
+        op.Accept(WNAM.value.value);
     for(UINT32 x = 0; x < Entries.size(); x++)
         {
         for(UINT32 y = 0; y < Entries[x]->RDOT.size(); y++)

@@ -8036,10 +8036,10 @@ def TestWRLD():
     newRecord.SECellX = 14
     newRecord.SECellY = 15
     newRecord.flags = 1
-    newRecord.unknown00 = 16
-    newRecord.unknown01 = 17
-    newRecord.unknown90 = 18
-    newRecord.unknown91 = 19
+    newRecord.xMinObjBounds = 16.0
+    newRecord.yMinObjBounds = 17.0
+    newRecord.xMaxObjBounds = 18.0
+    newRecord.yMaxObjBounds = 19.0
     newRecord.sound = 20
     newRecord.ofst_p = [1,2,3,4,5,6,7,8,9,10]
 
@@ -8062,10 +8062,10 @@ def TestWRLD():
     print "SECellX   :", newRecord.SECellX
     print "SECellY   :", newRecord.SECellY
     print "flags     :", newRecord.flags
-    print "unknown00 :", newRecord.unknown00
-    print "unknown01 :", newRecord.unknown01
-    print "unknown90 :", newRecord.unknown90
-    print "unknown91 :", newRecord.unknown91
+    print "xMinObjBounds :", newRecord.xMinObjBounds
+    print "yMinObjBounds :", newRecord.yMinObjBounds
+    print "xMaxObjBounds :", newRecord.xMaxObjBounds
+    print "yMaxObjBounds :", newRecord.yMaxObjBounds
     print "sound     :", newRecord.sound
     print "ofst_p    :", newRecord.ofst_p
 

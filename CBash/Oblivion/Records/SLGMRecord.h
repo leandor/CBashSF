@@ -26,17 +26,6 @@ GPL License and Copyright Notice ============================================
 class SLGMRecord : public Record
     {
     private:
-        struct SLGMSOUL
-            {
-            UINT8   soul;
-
-            SLGMSOUL();
-            ~SLGMSOUL();
-
-            bool operator ==(const SLGMSOUL &other) const;
-            bool operator !=(const SLGMSOUL &other) const;
-            };
-
         struct SLGMSLCP
             {
             UINT8   capacity;
@@ -65,7 +54,7 @@ class SLGMRecord : public Record
         StringRecord ICON;
         OptSubRecord<GENFID> SCRI;
         ReqSubRecord<GENVALUEWEIGHT> DATA;
-        ReqSubRecord<SLGMSOUL> SOUL;
+        ReqSubRecord<GENU8> SOUL;
         ReqSubRecord<SLGMSLCP> SLCP;
 
         SLGMRecord(unsigned char *_recData=NULL);

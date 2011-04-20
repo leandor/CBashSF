@@ -128,69 +128,6 @@ bool RACERecord::RACEDNAM::operator !=(const RACEDNAM &other) const
     return !(*this == other);
     }
 
-RACERecord::RACECNAM::RACECNAM():
-    defaultHairColor(0)
-    {
-    //
-    }
-
-RACERecord::RACECNAM::~RACECNAM()
-    {
-    //
-    }
-
-bool RACERecord::RACECNAM::operator ==(const RACECNAM &other) const
-    {
-    return (defaultHairColor == other.defaultHairColor);
-    }
-
-bool RACERecord::RACECNAM::operator !=(const RACECNAM &other) const
-    {
-    return !(*this == other);
-    }
-
-RACERecord::RACEPNAM::RACEPNAM():
-    mainClamp(0.0f)
-    {
-    //
-    }
-
-RACERecord::RACEPNAM::~RACEPNAM()
-    {
-    //
-    }
-
-bool RACERecord::RACEPNAM::operator ==(const RACEPNAM &other) const
-    {
-    return (AlmostEqual(mainClamp,other.mainClamp,2));
-    }
-
-bool RACERecord::RACEPNAM::operator !=(const RACEPNAM &other) const
-    {
-    return !(*this == other);
-    }
-
-RACERecord::RACEUNAM::RACEUNAM():
-    faceClamp(0.0f)
-    {
-    //
-    }
-
-RACERecord::RACEUNAM::~RACEUNAM()
-    {
-    //
-    }
-
-bool RACERecord::RACEUNAM::operator ==(const RACEUNAM &other) const
-    {
-    return (AlmostEqual(faceClamp,other.faceClamp,2));
-    }
-
-bool RACERecord::RACEUNAM::operator !=(const RACEUNAM &other) const
-    {
-    return !(*this == other);
-    }
-
 RACERecord::RACEATTR::RACEATTR():maleStrength(50), maleIntelligence(50),
     maleWillpower(50), maleAgility(50),
     maleSpeed(50), maleEndurance(50),

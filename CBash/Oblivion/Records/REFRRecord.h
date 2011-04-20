@@ -67,66 +67,11 @@ class REFRRecord : public Record
             bool operator !=(const REFRXSED &other) const;
             };
 
-        struct REFRXCHG
-            {
-            FLOAT32 charge;
-
-            REFRXCHG();
-            ~REFRXCHG();
-
-            bool operator ==(const REFRXCHG &other) const;
-            bool operator !=(const REFRXCHG &other) const;
-            };
-
-        struct REFRXHLT
-            {
-            SINT32  health;
-
-            REFRXHLT();
-            ~REFRXHLT();
-
-            bool operator ==(const REFRXHLT &other) const;
-            bool operator !=(const REFRXHLT &other) const;
-            };
-
-        struct REFRXLCM
-            {
-            SINT32  levelMod;
-
-            REFRXLCM();
-            ~REFRXLCM();
-
-            bool operator ==(const REFRXLCM &other) const;
-            bool operator !=(const REFRXLCM &other) const;
-            };
-
-        struct REFRXCNT
-            {
-            SINT32  count;
-
-            REFRXCNT();
-            ~REFRXCNT();
-
-            bool operator ==(const REFRXCNT &other) const;
-            bool operator !=(const REFRXCNT &other) const;
-            };
-
-        struct REFRTNAM
-            {
-            UINT8   markerType, unused1;
-
-            REFRTNAM();
-            ~REFRTNAM();
-
-            bool operator ==(const REFRTNAM &other) const;
-            bool operator !=(const REFRTNAM &other) const;
-            };
-
         struct REFRMAPMARKER
             {
-            ReqSubRecord<GENFLAG> FNAM;
+            ReqSubRecord<GENU8> FNAM;
             StringRecord FULL;
-            ReqSubRecord<REFRTNAM> TNAM;
+            ReqSubRecord<GENTNAM> TNAM;
 
             bool operator ==(const REFRMAPMARKER &other) const;
             bool operator !=(const REFRMAPMARKER &other) const;
@@ -193,17 +138,17 @@ class REFRRecord : public Record
         OptSubRecord<GENFID> XTRG;
         SemiOptSubRecord<REFRXSED> XSED;
         OptSubRecord<GENXLOD> XLOD;
-        OptSubRecord<REFRXCHG> XCHG;
-        OptSubRecord<REFRXHLT> XHLT;
+        OptSubRecord<GENFLOAT> XCHG;
+        OptSubRecord<GENS32> XHLT;
         OptSubRecord<GENXPCI> XPCI;
-        OptSubRecord<REFRXLCM> XLCM;
+        OptSubRecord<GENS32> XLCM;
         OptSubRecord<GENFID> XRTM;
-        OptSubRecord<GENUFLAG> XACT;
-        OptSubRecord<REFRXCNT> XCNT;
+        OptSubRecord<GENU32> XACT;
+        OptSubRecord<GENS32> XCNT;
         OptSubRecord<REFRMAPMARKER> Marker;
         //bool ONAM; //Open by Default, empty marker, written whenever fOpenByDefault is true
         OptSubRecord<GENXSCL> XSCL;
-        OptSubRecord<GENFLAG> XSOL;
+        OptSubRecord<GENU8> XSOL;
         ReqSubRecord<GENPOSDATA> DATA;
 
         REFRRecord(unsigned char *_recData=NULL);

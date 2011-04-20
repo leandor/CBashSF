@@ -83,7 +83,7 @@ MGEFRecord::OBMEEDDX::~OBMEEDDX()
     //
     }
 
-bool MGEFRecord::OBMEEDDX::operator ==(const OBMEEDDX& other) const
+bool MGEFRecord::OBMEEDDX::operator ==(const OBMEEDDX &other) const
     {
     return mgefCode == other.mgefCode;
     }

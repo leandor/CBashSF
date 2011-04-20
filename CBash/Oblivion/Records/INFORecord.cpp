@@ -238,15 +238,10 @@ INFORecord::INFORecord(INFORecord *srcRecord):
     for(UINT32 x = 0; x < srcRecord->TCLF.size(); x++)
         TCLF[x] = srcRecord->TCLF[x];
     //SCHD = srcRecord->SCHD;
-    SCHR = srcRecord->SCHR;
-    SCDA = srcRecord->SCDA;
-    SCTX = srcRecord->SCTX;
-    SCR_.clear();
-    SCR_.resize(srcRecord->SCR_.size());
-    for(UINT32 x = 0; x < srcRecord->SCR_.size(); x++)
+    if(srcRecord->Script.IsLoaded())
         {
-        SCR_[x] = new ReqSubRecord<GENSCR_>;
-        *SCR_[x] = *srcRecord->SCR_[x];
+        Script.Load();
+        Script->Copy(*srcRecord->Script.value);
         }
     return;
     }
@@ -257,8 +252,6 @@ INFORecord::~INFORecord()
         delete Responses[x];
     for(UINT32 x = 0; x < CTDA.size(); x++)
         delete CTDA[x];
-    for(UINT32 x = 0; x < SCR_.size(); x++)
-        delete SCR_[x];
     }
 
 bool INFORecord::VisitFormIDs(FormIDOp &op)
@@ -268,11 +261,11 @@ bool INFORecord::VisitFormIDs(FormIDOp &op)
 
     FunctionArguments CTDAFunction;
     Function_Arguments_Iterator curCTDAFunction;
-    op.Accept(QSTI.value.fid);
+    op.Accept(QSTI.value.value);
     if(TPIC.IsLoaded())
-        op.Accept(TPIC->fid);
+        op.Accept(TPIC->value);
     if(PNAM.IsLoaded())
-        op.Accept(PNAM->fid);
+        op.Accept(PNAM->value);
     for(UINT32 x = 0; x < NAME.size(); x++)
         op.Accept(NAME[x]);
     for(UINT32 x = 0; x < CTDA.size(); x++)
@@ -295,9 +288,9 @@ bool INFORecord::VisitFormIDs(FormIDOp &op)
         op.Accept(TCLT[x]);
     for(UINT32 x = 0; x < TCLF.size(); x++)
         op.Accept(TCLF[x]);
-    for(UINT32 x = 0; x < SCR_.size(); x++)
-        if(SCR_[x]->value.isSCRO)
-            op.Accept(SCR_[x]->value.reference);
+
+    if(Script.IsLoaded())
+        Script->VisitFormIDs(op);
 
     return op.Stop();
     }
@@ -539,24 +532,8 @@ UINT32 INFORecord::GetSize(bool forceCalc)
     //if(SCHD.IsLoaded())
     //    cSize += SCHD.GetSize() + 6;
 
-    if(SCHR.IsLoaded())
-        TotSize += SCHR.GetSize() + 6;
-
-    if(SCDA.IsLoaded())
-        {
-        cSize = SCDA.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(SCTX.IsLoaded())
-        {
-        cSize = SCTX.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    TotSize += (sizeof(UINT32) + 6) * (UINT32)SCR_.size();
+    if(Script.IsLoaded())
+        TotSize += Script->GetSize();
 
     return TotSize;
     }
@@ -582,9 +559,6 @@ SINT32 INFORecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     UINT32 subSize = 0;
     UINT32 curPos = 0;
     FORMID curFormID = 0;
-    INFOResponse *newResponse = NULL;
-    ReqSubRecord<GENCTDA> *newCTDA = NULL;
-    ReqSubRecord<GENSCR_> *newSCR_ = NULL;
     while(curPos < recSize){
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
@@ -619,31 +593,23 @@ SINT32 INFORecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 NAME.push_back(curFormID);
                 break;
             case 'TDRT':
-                newResponse = new INFOResponse;
-                newResponse->TRDT.Read(buffer, subSize, curPos);
-                Responses.push_back(newResponse);
+                Responses.push_back(new INFOResponse);
+                Responses.back()->TRDT.Read(buffer, subSize, curPos);
                 break;
             case '1MAN':
-                if(newResponse == NULL)
-                    {
-                    newResponse = new INFOResponse;
-                    Responses.push_back(newResponse);
-                    }
-                newResponse->NAM1.Read(buffer, subSize, curPos);
+                if(Responses.size() == 0)
+                    Responses.push_back(new INFOResponse);
+                Responses.back()->NAM1.Read(buffer, subSize, curPos);
                 break;
             case '2MAN':
-                if(newResponse == NULL)
-                    {
-                    newResponse = new INFOResponse;
-                    Responses.push_back(newResponse);
-                    }
-                newResponse->NAM2.Read(buffer, subSize, curPos);
+                if(Responses.size() == 0)
+                    Responses.push_back(new INFOResponse);
+                Responses.back()->NAM2.Read(buffer, subSize, curPos);
                 break;
             case 'TDTC':
             case 'ADTC':
-                newCTDA = new ReqSubRecord<GENCTDA>;
-                newCTDA->Read(buffer, subSize, curPos);
-                CTDA.push_back(newCTDA);
+                CTDA.push_back(new ReqSubRecord<GENCTDA>);
+                CTDA.back()->Read(buffer, subSize, curPos);
                 break;
             case 'TLCT':
                 _readBuffer(&curFormID,buffer,subSize,curPos);
@@ -657,25 +623,28 @@ SINT32 INFORecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 curPos += subSize;
                 break;
             case 'RHCS': //SCHDs are also larger than SCHRs, so the end will be truncated.
-                SCHR.Read(buffer, subSize, curPos);
+                Script.Load();
+                Script->SCHR.Read(buffer, subSize, curPos);
                 break;
             case 'ADCS':
-                SCDA.Read(buffer, subSize, curPos);
+                Script.Load();
+                Script->SCDA.Read(buffer, subSize, curPos);
                 break;
             case 'XTCS':
-                SCTX.Read(buffer, subSize, curPos);
+                Script.Load();
+                Script->SCTX.Read(buffer, subSize, curPos);
                 break;
             case 'VRCS':
-                newSCR_ = new ReqSubRecord<GENSCR_>;
-                newSCR_->Read(buffer, subSize, curPos);
-                newSCR_->value.isSCRO = false;
-                SCR_.push_back(newSCR_);
+                Script.Load();
+                Script->SCR_.push_back(new ReqSubRecord<GENSCR_>);
+                Script->SCR_.back()->Read(buffer, subSize, curPos);
+                Script->SCR_.back()->value.isSCRO = false;
                 break;
             case 'ORCS':
-                newSCR_ = new ReqSubRecord<GENSCR_>;
-                newSCR_->Read(buffer, subSize, curPos);
-                newSCR_->value.isSCRO = true;
-                SCR_.push_back(newSCR_);
+                Script.Load();
+                Script->SCR_.push_back(new ReqSubRecord<GENSCR_>);
+                Script->SCR_.back()->Read(buffer, subSize, curPos);
+                Script->SCR_.back()->value.isSCRO = true;
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
@@ -712,13 +681,7 @@ SINT32 INFORecord::Unload()
     TCLF.clear();
 
     //SCHD.Unload();
-    SCHR.Unload();
-    SCDA.Unload();
-    SCTX.Unload();
-
-    for(UINT32 x = 0; x < SCR_.size(); x++)
-        delete SCR_[x];
-    SCR_.clear();
+    Script.Unload();
     return 1;
     }
 
@@ -768,18 +731,8 @@ SINT32 INFORecord::WriteRecord(_FileHandler &SaveHandler)
         SaveHandler.writeSubRecord('FLCT', &TCLF[p], sizeof(UINT32));
     //if(SCHD.IsLoaded())
     //    SaveHandler.writeSubRecord('DHCS', SCHD.value, SCHD.GetSize());
-    if(SCHR.IsLoaded())
-        SaveHandler.writeSubRecord('RHCS', &SCHR.value, SCHR.GetSize());
-    if(SCDA.IsLoaded())
-        SaveHandler.writeSubRecord('ADCS', SCDA.value, SCDA.GetSize());
-    if(SCTX.IsLoaded())
-        SaveHandler.writeSubRecord('XTCS', SCTX.value, SCTX.GetSize());
-    for(UINT32 p = 0; p < SCR_.size(); p++)
-        if(SCR_[p]->IsLoaded())
-            if(SCR_[p]->value.isSCRO)
-                SaveHandler.writeSubRecord('ORCS', &SCR_[p]->value.reference, sizeof(UINT32));
-            else
-                SaveHandler.writeSubRecord('VRCS', &SCR_[p]->value.reference, sizeof(UINT32));
+    if(Script.IsLoaded())
+        Script->writeSubRecords(SaveHandler);
     return -1;
     }
 
@@ -789,15 +742,12 @@ bool INFORecord::operator ==(const INFORecord &other) const
         QSTI == other.QSTI &&
         TPIC == other.TPIC &&
         PNAM == other.PNAM &&
-        SCHR == other.SCHR &&
-        SCDA == other.SCDA &&
-        SCTX.equalsi(other.SCTX) &&
+        Script == other.Script &&
         NAME.size() == other.NAME.size() &&
         Responses.size() == other.Responses.size() &&
         CTDA.size() == other.CTDA.size() &&
         TCLT.size() == other.TCLT.size() &&
-        TCLF.size() == other.TCLF.size() &&
-        SCR_.size() == other.SCR_.size())
+        TCLF.size() == other.TCLF.size())
         {
         //Not sure if record order matters on add topics, so equality testing is a guess
         //Fix-up later
@@ -828,10 +778,6 @@ bool INFORecord::operator ==(const INFORecord &other) const
             if(TCLF[x] != other.TCLF[x])
                 return false;
 
-        //Record order matters on references, so equality testing is easy
-        for(UINT32 x = 0; x < SCR_.size(); ++x)
-            if(*SCR_[x] != *other.SCR_[x])
-                return false;
         return true;
         }
 

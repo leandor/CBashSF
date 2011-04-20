@@ -97,14 +97,14 @@ bool INGRRecord::VisitFormIDs(FormIDOp &op)
         return false;
 
     if(SCRI.IsLoaded())
-        op.Accept(SCRI->fid);
+        op.Accept(SCRI->value);
 
     for(UINT32 x = 0; x < Effects.size(); x++)
         {
         if(Effects[x]->OBME.IsLoaded())
             {
-            if(Effects[x]->EFID.value.name >= 0x80000000)
-                op.AcceptMGEF(Effects[x]->EFID.value.name);
+            if(Effects[x]->EFID.value.value >= 0x80000000)
+                op.AcceptMGEF(Effects[x]->EFID.value.value);
 
             if(Effects[x]->EFIT.value.name >= 0x80000000)
                 op.AcceptMGEF(Effects[x]->EFIT.value.name);

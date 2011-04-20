@@ -79,41 +79,41 @@ bool LVLIRecord::VisitFormIDs(FormIDOp &op)
 
 bool LVLIRecord::IsCalcFromAllLevels()
     {
-    return LVLF.IsLoaded() ? (LVLF->flags & fCalcFromAllLevels) != 0 : false;
+    return LVLF.IsLoaded() ? (LVLF->value & fCalcFromAllLevels) != 0 : false;
     }
 
 void LVLIRecord::IsCalcFromAllLevels(bool value)
     {
     if(!LVLF.IsLoaded()) return;
-    LVLF->flags = value ? (LVLF->flags | fCalcFromAllLevels) : (LVLF->flags & ~fCalcFromAllLevels);
+    LVLF->value = value ? (LVLF->value | fCalcFromAllLevels) : (LVLF->value & ~fCalcFromAllLevels);
     }
 
 bool LVLIRecord::IsCalcForEachItem()
     {
-    return LVLF.IsLoaded() ? (LVLF->flags & fCalcForEachItem) != 0 : false;
+    return LVLF.IsLoaded() ? (LVLF->value & fCalcForEachItem) != 0 : false;
     }
 
 void LVLIRecord::IsCalcForEachItem(bool value)
     {
     if(!LVLF.IsLoaded()) return;
-    LVLF->flags = value ? (LVLF->flags | fCalcForEachItem) : (LVLF->flags & ~fCalcForEachItem);
+    LVLF->value = value ? (LVLF->value | fCalcForEachItem) : (LVLF->value & ~fCalcForEachItem);
     }
 
 bool LVLIRecord::IsUseAllSpells()
     {
-    return LVLF.IsLoaded() ? (LVLF->flags & fUseAllSpells) != 0 : false;
+    return LVLF.IsLoaded() ? (LVLF->value & fUseAllSpells) != 0 : false;
     }
 
 void LVLIRecord::IsUseAllSpells(bool value)
     {
     if(!LVLF.IsLoaded()) return;
-    LVLF->flags = value ? (LVLF->flags | fUseAllSpells) : (LVLF->flags & ~fUseAllSpells);
+    LVLF->value = value ? (LVLF->value | fUseAllSpells) : (LVLF->value & ~fUseAllSpells);
     }
 
 bool LVLIRecord::IsFlagMask(UINT8 Mask, bool Exact)
     {
     if(!LVLF.IsLoaded()) return false;
-    return Exact ? ((LVLF->flags & Mask) == Mask) : ((LVLF->flags & Mask) != 0);
+    return Exact ? ((LVLF->value & Mask) == Mask) : ((LVLF->value & Mask) != 0);
     }
 
 void LVLIRecord::SetFlagMask(UINT8 Mask)
@@ -121,7 +121,7 @@ void LVLIRecord::SetFlagMask(UINT8 Mask)
     if(Mask)
         {
         LVLF.Load();
-        LVLF->flags = Mask;
+        LVLF->value = Mask;
         }
     else
         LVLF.Unload();
@@ -198,9 +198,9 @@ SINT32 LVLIRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 break;
             case 'DLVL':
                 LVLD.Read(buffer, subSize, curPos);
-                if((LVLD.value.chanceNone & fAltCalcFromAllLevels) != 0)
+                if((LVLD.value.value & fAltCalcFromAllLevels) != 0)
                     {
-                    LVLD.value.chanceNone &= ~fAltCalcFromAllLevels;
+                    LVLD.value.value &= ~fAltCalcFromAllLevels;
                     LVLF.Load();
                     IsCalcFromAllLevels(true);
                     }

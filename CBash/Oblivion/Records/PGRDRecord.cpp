@@ -22,27 +22,6 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "PGRDRecord.h"
 
-PGRDRecord::PGRDDATA::PGRDDATA():
-    count(0)
-    {
-    //
-    }
-
-PGRDRecord::PGRDDATA::~PGRDDATA()
-    {
-    //
-    }
-
-bool PGRDRecord::PGRDDATA::operator ==(const PGRDDATA &other) const
-    {
-    return (count == other.count);
-    }
-
-bool PGRDRecord::PGRDDATA::operator !=(const PGRDDATA &other) const
-    {
-    return !(*this == other);
-    }
-
 PGRDRecord::PGRDPGRI::PGRDPGRI():point(0), x(0.0f), y(0.0f), z(0.0f)
     {
     memset(&unused1, 0x00, 2);

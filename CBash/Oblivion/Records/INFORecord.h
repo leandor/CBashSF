@@ -123,10 +123,7 @@ class INFORecord : public Record
         std::vector<ReqSubRecord<GENCTDA> *> CTDA;
         std::vector<FORMID> TCLT;
         std::vector<FORMID> TCLF;
-        ReqSubRecord<GENSCHR> SCHR;
-        RawRecord SCDA;
-        NonNullStringRecord SCTX;
-        std::vector<ReqSubRecord<GENSCR_> *> SCR_;
+        OptSubRecord<GENMINSCRIPT> Script;
 
         INFORecord(unsigned char *_recData=NULL);
         INFORecord(INFORecord *srcRecord);

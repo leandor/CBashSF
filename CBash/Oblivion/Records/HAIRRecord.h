@@ -39,7 +39,7 @@ class HAIRRecord : public Record
         StringRecord FULL;
         OptSubRecord<GENMODEL> MODL;
         StringRecord ICON;
-        ReqSubRecord<GENFLAG> DATA;
+        ReqSubRecord<GENU8> DATA;
 
         HAIRRecord(unsigned char *_recData=NULL);
         HAIRRecord(HAIRRecord *srcRecord);

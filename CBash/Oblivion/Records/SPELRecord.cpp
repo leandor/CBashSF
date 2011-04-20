@@ -116,8 +116,8 @@ bool SPELRecord::VisitFormIDs(FormIDOp &op)
         {
         if(Effects[x]->OBME.IsLoaded())
             {
-            if(Effects[x]->EFID.value.name >= 0x80000000)
-                op.AcceptMGEF(Effects[x]->EFID.value.name);
+            if(Effects[x]->EFID.value.value >= 0x80000000)
+                op.AcceptMGEF(Effects[x]->EFID.value.value);
 
             if(Effects[x]->EFIT.value.name >= 0x80000000)
                 op.AcceptMGEF(Effects[x]->EFIT.value.name);

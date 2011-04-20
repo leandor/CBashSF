@@ -74,39 +74,6 @@ class RACERecord : public Record
             bool operator !=(const RACEDNAM &other) const;
             };
 
-        struct RACECNAM
-            {
-            UINT8   defaultHairColor;
-
-            RACECNAM();
-            ~RACECNAM();
-
-            bool operator ==(const RACECNAM &other) const;
-            bool operator !=(const RACECNAM &other) const;
-            };
-
-        struct RACEPNAM
-            {
-            FLOAT32 mainClamp;
-
-            RACEPNAM();
-            ~RACEPNAM();
-
-            bool operator ==(const RACEPNAM &other) const;
-            bool operator !=(const RACEPNAM &other) const;
-            };
-
-        struct RACEUNAM
-            {
-            FLOAT32 faceClamp;
-
-            RACEUNAM();
-            ~RACEUNAM();
-
-            bool operator ==(const RACEUNAM &other) const;
-            bool operator !=(const RACEUNAM &other) const;
-            };
-
         struct RACEATTR
             {
             UINT8   maleStrength, maleIntelligence, maleWillpower,
@@ -125,7 +92,7 @@ class RACERecord : public Record
 
         struct RACEMODEL
             {
-            ReqSubRecord<MODELMODB> MODB;
+            ReqSubRecord<GENFLOAT> MODB;
             StringRecord MODL;
             RawRecord MODT;
             StringRecord ICON;
@@ -159,9 +126,9 @@ class RACERecord : public Record
         ReqSubRecord<RACEDATA> DATA;
         SubRecord<RACEVNAM> VNAM;
         SubRecord<RACEDNAM> DNAM;
-        ReqSubRecord<RACECNAM> CNAM;
-        OptSubRecord<RACEPNAM> PNAM;
-        OptSubRecord<RACEUNAM> UNAM;
+        ReqSubRecord<GENU8> CNAM;
+        OptSubRecord<GENFLOAT> PNAM;
+        OptSubRecord<GENFLOAT> UNAM;
         ReqSubRecord<RACEATTR> ATTR;
         OptSubRecord<RACEMODEL> MOD0;
         OptSubRecord<RACEMODEL> MOD1;

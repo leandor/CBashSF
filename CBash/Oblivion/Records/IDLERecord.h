@@ -27,17 +27,6 @@ GPL License and Copyright Notice ============================================
 class IDLERecord : public Record
     {
     private:
-        struct IDLEANAM
-            {
-            UINT8   group;
-
-            IDLEANAM();
-            ~IDLEANAM();
-
-            bool operator ==(const IDLEANAM &other) const;
-            bool operator !=(const IDLEANAM &other) const;
-            };
-
         struct IDLEDATA
             {
             FORMID  parent, prevId;
@@ -69,7 +58,7 @@ class IDLERecord : public Record
         StringRecord EDID;
         OptSubRecord<GENMODEL> MODL;
         std::vector<ReqSubRecord<GENCTDA> *> CTDA;
-        ReqSubRecord<IDLEANAM> ANAM;
+        ReqSubRecord<GENU8> ANAM;
         ReqSubRecord<IDLEDATA> DATA;
 
         IDLERecord(unsigned char *_recData=NULL);

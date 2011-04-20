@@ -26,17 +26,6 @@ GPL License and Copyright Notice ============================================
 class PGRDRecord : public Record
     {
     private:
-        struct PGRDDATA
-            {
-            UINT16  count;
-
-            PGRDDATA();
-            ~PGRDDATA();
-
-            bool operator ==(const PGRDDATA &other) const;
-            bool operator !=(const PGRDDATA &other) const;
-            };
-
         //struct PGRDPGRR
         //    {
         //    unsigned short start, end;
@@ -82,7 +71,7 @@ class PGRDRecord : public Record
             };
 
     public:
-        ReqSubRecord<PGRDDATA> DATA;
+        ReqSubRecord<GENU16> DATA;
         std::vector<GENPGRP> PGRP;
         RawRecord PGAG;
         RawRecord PGRR;

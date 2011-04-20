@@ -4495,10 +4495,10 @@ class ObWRLDRecord(ObBaseRecord):
     SINT16_MACRO(SECellX, 14)
     SINT16_MACRO(SECellY, 15)
     UINT8_FLAG_MACRO(flags, 16)
-    FLOAT32_MACRO(unknown00, 17)
-    FLOAT32_MACRO(unknown01, 18)
-    FLOAT32_MACRO(unknown90, 19)
-    FLOAT32_MACRO(unknown91, 20)
+    FLOAT32_MACRO(xMinObjBounds, 17)
+    FLOAT32_MACRO(yMinObjBounds, 18)
+    FLOAT32_MACRO(xMaxObjBounds, 19)
+    FLOAT32_MACRO(yMaxObjBounds, 20)
     UINT32_MACRO(musicType, 21)
     UINT8_ARRAY_MACRO(ofst_p, 22)
     SUBRECORD_MACRO(ROAD, "ROAD", 23, ObROADRecord, 0)
@@ -4515,8 +4515,8 @@ class ObWRLDRecord(ObBaseRecord):
     BasicTypeMACRO(IsDungeon, musicType, 2, IsDefault)
     exportattrs = copyattrs = ObBaseRecord.baseattrs + ['full', 'parent', 'climate', 'water', 'mapPath',
                                         'dimX', 'dimY', 'NWCellX', 'NWCellY', 'SECellX',
-                                        'SECellY', 'flags', 'unknown00', 'unknown01',
-                                        'unknown90', 'unknown91', 'musicType', 'ROAD', 'WorldCELL'] #'ofst_p',
+                                        'SECellY', 'flags', 'xMinObjBounds', 'yMinObjBounds',
+                                        'xMaxObjBounds', 'yMaxObjBounds', 'musicType', 'ROAD', 'WorldCELL'] #'ofst_p',
 
 class ObWTHRRecord(ObBaseRecord):
     _Type = 'WTHR'

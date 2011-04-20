@@ -40,13 +40,10 @@ class QUSTRecord : public Record
 
         struct QUSTEntry
             {
-            ReqSubRecord<GENFLAG> QSDT;
+            ReqSubRecord<GENU8> QSDT;
             std::vector<ReqSubRecord<GENCTDA> *> CTDA;
             StringRecord CNAM;
-            ReqSubRecord<GENSCHR> SCHR;
-            RawRecord SCDA;
-            NonNullStringRecord SCTX;
-            std::vector<ReqSubRecord<GENSCR_> *> SCR_;
+            OptSubRecord<GENMINSCRIPT> Script;
 
             enum entriesFlags
                 {
@@ -65,20 +62,9 @@ class QUSTRecord : public Record
             bool operator !=(const QUSTEntry &other) const;
             };
 
-        struct QUSTINDX
-            {
-            UINT16  stage;
-
-            QUSTINDX();
-            ~QUSTINDX();
-
-            bool operator ==(const QUSTINDX &other) const;
-            bool operator !=(const QUSTINDX &other) const;
-            };
-
         struct QUSTStage
             {
-            ReqSubRecord<QUSTINDX> INDX;
+            ReqSubRecord<GENU16> INDX;
             std::vector<QUSTEntry *> Entries;
 
             QUSTStage();

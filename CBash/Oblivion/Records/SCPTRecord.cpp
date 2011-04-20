@@ -217,8 +217,7 @@ SINT32 SCPTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     UINT32 subType = 0;
     UINT32 subSize = 0;
     UINT32 curPos = 0;
-    SCPTVARS *newVARS = NULL;
-    ReqSubRecord<GENSCR_> *newSCR_ = NULL;
+
     while(curPos < recSize){
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
@@ -249,29 +248,23 @@ SINT32 SCPTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 SCTX.Read(buffer, subSize, curPos);
                 break;
             case 'DSLS':
-                newVARS = new SCPTVARS;
-                newVARS->SLSD.Read(buffer, subSize, curPos);
-                VARS.push_back(newVARS);
+                VARS.push_back(new SCPTVARS);
+                VARS.back()->SLSD.Read(buffer, subSize, curPos);
                 break;
             case 'RVCS':
-                if(newVARS == NULL)
-                    {
-                    newVARS = new SCPTVARS;
-                    VARS.push_back(newVARS);
-                    }
-                newVARS->SCVR.Read(buffer, subSize, curPos);
+                if(VARS.size() == 0)
+                    VARS.push_back(new SCPTVARS);
+                VARS.back()->SCVR.Read(buffer, subSize, curPos);
                 break;
             case 'VRCS':
-                newSCR_ = new ReqSubRecord<GENSCR_>;
-                newSCR_->Read(buffer, subSize, curPos);
-                newSCR_->value.isSCRO = false;
-                SCR_.push_back(newSCR_);
+                SCR_.push_back(new ReqSubRecord<GENSCR_>);
+                SCR_.back()->Read(buffer, subSize, curPos);
+                SCR_.back()->value.isSCRO = false;
                 break;
             case 'ORCS':
-                newSCR_ = new ReqSubRecord<GENSCR_>;
-                newSCR_->Read(buffer, subSize, curPos);
-                newSCR_->value.isSCRO = true;
-                SCR_.push_back(newSCR_);
+                SCR_.push_back(new ReqSubRecord<GENSCR_>);
+                SCR_.back()->Read(buffer, subSize, curPos);
+                SCR_.back()->value.isSCRO = true;
                 break;
             default:
                 //printf("FileName = %s\n", FileName);

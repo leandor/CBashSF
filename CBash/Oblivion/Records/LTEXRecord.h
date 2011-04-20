@@ -38,17 +38,6 @@ class LTEXRecord : public Record
             bool operator !=(const LTEXHNAM &other) const;
             };
 
-        struct LTEXSNAM
-            {
-            UINT8   specular;
-
-            LTEXSNAM();
-            ~LTEXSNAM();
-
-            bool operator ==(const LTEXSNAM &other) const;
-            bool operator !=(const LTEXSNAM &other) const;
-            };
-
         enum flagsFlags
             {
             fIsStone      = 0x00000001,
@@ -72,7 +61,7 @@ class LTEXRecord : public Record
         StringRecord EDID;
         StringRecord ICON;
         SubRecord<LTEXHNAM> HNAM;
-        SubRecord<LTEXSNAM> SNAM;
+        SubRecord<GENU8> SNAM;
         std::vector<FORMID> GNAM;
 
         LTEXRecord(unsigned char *_recData=NULL);

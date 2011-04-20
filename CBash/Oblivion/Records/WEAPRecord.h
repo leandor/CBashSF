@@ -66,7 +66,7 @@ class WEAPRecord : public Record
         StringRecord ICON;
         OptSubRecord<GENFID> SCRI;
         OptSubRecord<GENFID> ENAM;
-        OptSubRecord<GENANAM> ANAM;
+        OptSubRecord<GENU16> ANAM;
         ReqSubRecord<WEAPDATA> DATA;
 
         WEAPRecord(unsigned char *_recData=NULL);

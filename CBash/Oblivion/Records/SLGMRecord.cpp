@@ -22,27 +22,6 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "SLGMRecord.h"
 
-SLGMRecord::SLGMSOUL::SLGMSOUL():
-    soul(0)
-    {
-    //
-    }
-
-SLGMRecord::SLGMSOUL::~SLGMSOUL()
-    {
-    //
-    }
-
-bool SLGMRecord::SLGMSOUL::operator ==(const SLGMSOUL &other) const
-    {
-    return (soul == other.soul);
-    }
-
-bool SLGMRecord::SLGMSOUL::operator !=(const SLGMSOUL &other) const
-    {
-    return !(*this == other);
-    }
-
 SLGMRecord::SLGMSLCP::SLGMSLCP():
     capacity(1)
     {
@@ -114,97 +93,97 @@ bool SLGMRecord::VisitFormIDs(FormIDOp &op)
         return false;
 
     if(SCRI.IsLoaded())
-        op.Accept(SCRI->fid);
+        op.Accept(SCRI->value);
 
     return op.Stop();
     }
 
 bool SLGMRecord::IsNoSoul()
     {
-    return (SOUL.value.soul == eNone);
+    return (SOUL.value.value == eNone);
     }
 
 void SLGMRecord::IsNoSoul(bool value)
     {
     if(value)
-        SOUL.value.soul = eNone;
+        SOUL.value.value = eNone;
     else if(IsNoSoul())
-        SOUL.value.soul = ePetty;
+        SOUL.value.value = ePetty;
     }
 
 bool SLGMRecord::IsPettySoul()
     {
-    return (SOUL.value.soul == ePetty);
+    return (SOUL.value.value == ePetty);
     }
 
 void SLGMRecord::IsPettySoul(bool value)
     {
     if(value)
-        SOUL.value.soul = ePetty;
+        SOUL.value.value = ePetty;
     else if(IsPettySoul())
-        SOUL.value.soul = eNone;
+        SOUL.value.value = eNone;
     }
 
 bool SLGMRecord::IsLesserSoul()
     {
-    return (SOUL.value.soul == eLesser);
+    return (SOUL.value.value == eLesser);
     }
 
 void SLGMRecord::IsLesserSoul(bool value)
     {
     if(value)
-        SOUL.value.soul = eLesser;
+        SOUL.value.value = eLesser;
     else if(IsLesserSoul())
-        SOUL.value.soul = eNone;
+        SOUL.value.value = eNone;
     }
 
 bool SLGMRecord::IsCommonSoul()
     {
-    return (SOUL.value.soul == eCommon);
+    return (SOUL.value.value == eCommon);
     }
 
 void SLGMRecord::IsCommonSoul(bool value)
     {
     if(value)
-        SOUL.value.soul = eCommon;
+        SOUL.value.value = eCommon;
     else if(IsCommonSoul())
-        SOUL.value.soul = eNone;
+        SOUL.value.value = eNone;
     }
 
 bool SLGMRecord::IsGreaterSoul()
     {
-    return (SOUL.value.soul == eGreater);
+    return (SOUL.value.value == eGreater);
     }
 
 void SLGMRecord::IsGreaterSoul(bool value)
     {
     if(value)
-        SOUL.value.soul = eGreater;
+        SOUL.value.value = eGreater;
     else if(IsGreaterSoul())
-        SOUL.value.soul = eNone;
+        SOUL.value.value = eNone;
     }
 
 bool SLGMRecord::IsGrandSoul()
     {
-    return (SOUL.value.soul == eGrand);
+    return (SOUL.value.value == eGrand);
     }
 
 void SLGMRecord::IsGrandSoul(bool value)
     {
     if(value)
-        SOUL.value.soul = eGrand;
+        SOUL.value.value = eGrand;
     else if(IsGrandSoul())
-        SOUL.value.soul = eNone;
+        SOUL.value.value = eNone;
     }
 
 bool SLGMRecord::IsSoul(UINT8 Type)
     {
-    return (SOUL.value.soul == Type);
+    return (SOUL.value.value == Type);
     }
 
 void SLGMRecord::SetSoul(UINT8 Type)
     {
-    SOUL.value.soul = Type;
+    SOUL.value.value = Type;
     }
 
 

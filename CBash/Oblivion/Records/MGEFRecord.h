@@ -55,7 +55,7 @@ class MGEFRecord : public Record
             OBMEEDDX();
             ~OBMEEDDX();
 
-            bool operator ==(const OBMEEDDX& other) const;
+            bool operator ==(const OBMEEDDX &other) const;
             bool operator !=(const OBMEEDDX &other) const;
             };
 

@@ -50,28 +50,6 @@ class NPC_Record : public Record
             };
         #pragma pack(pop)
 
-        struct NPC_LNAM
-            {
-            FLOAT32 hairLength;
-
-            NPC_LNAM();
-            ~NPC_LNAM();
-
-            bool operator ==(const NPC_LNAM &other) const;
-            bool operator !=(const NPC_LNAM &other) const;
-            };
-
-        struct NPC_FNAM
-            {
-            UINT16  fnam;
-
-            NPC_FNAM();
-            ~NPC_FNAM();
-
-            bool operator ==(const NPC_FNAM &other) const;
-            bool operator !=(const NPC_FNAM &other) const;
-            };
-
         enum flagsFlags
             {
             fIsFemale         = 0x00000001,
@@ -121,14 +99,14 @@ class NPC_Record : public Record
         ReqSubRecord<GENFID> CNAM;
         ReqSubRecord<NPC_DATA> DATA;
         OptSubRecord<GENFID> HNAM;
-        SemiOptSubRecord<NPC_LNAM> LNAM;
+        SemiOptSubRecord<GENFLOAT> LNAM;
         OptSubRecord<GENFID> ENAM;
         ReqSubRecord<GENCLR> HCLR;
         OptSubRecord<GENFID> ZNAM;
         RawRecord FGGS; //FaceGen Geometry-Symmetric
         RawRecord FGGA; //FaceGen Geometry-Asymmetric
         RawRecord FGTS; //FaceGen Texture-Symmetric
-        ReqSubRecord<NPC_FNAM> FNAM;
+        ReqSubRecord<GENU16> FNAM;
 
         NPC_Record(unsigned char *_recData=NULL);
         NPC_Record(NPC_Record *srcRecord);

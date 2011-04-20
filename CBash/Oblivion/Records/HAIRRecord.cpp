@@ -65,22 +65,22 @@ HAIRRecord::~HAIRRecord()
 
 bool HAIRRecord::IsPlayable()
     {
-    return (DATA.value.flags & fIsPlayable) != 0;
+    return (DATA.value.value & fIsPlayable) != 0;
     }
 
 void HAIRRecord::IsPlayable(bool value)
     {
-    DATA.value.flags = value ? (DATA.value.flags | fIsPlayable) : (DATA.value.flags & ~fIsPlayable);
+    DATA.value.value = value ? (DATA.value.value | fIsPlayable) : (DATA.value.value & ~fIsPlayable);
     }
 
 bool HAIRRecord::IsNotMale()
     {
-    return (DATA.value.flags & fIsNotMale) != 0;
+    return (DATA.value.value & fIsNotMale) != 0;
     }
 
 void HAIRRecord::IsNotMale(bool value)
     {
-    DATA.value.flags = value ? (DATA.value.flags | fIsNotMale) : (DATA.value.flags & ~fIsNotMale);
+    DATA.value.value = value ? (DATA.value.value | fIsNotMale) : (DATA.value.value & ~fIsNotMale);
     }
 
 bool HAIRRecord::IsMale()
@@ -98,12 +98,12 @@ void HAIRRecord::IsMale(bool value)
 
 bool HAIRRecord::IsNotFemale()
     {
-    return (DATA.value.flags & fIsNotFemale) != 0;
+    return (DATA.value.value & fIsNotFemale) != 0;
     }
 
 void HAIRRecord::IsNotFemale(bool value)
     {
-    DATA.value.flags = value ? (DATA.value.flags | fIsNotFemale) : (DATA.value.flags & ~fIsNotFemale);
+    DATA.value.value = value ? (DATA.value.value | fIsNotFemale) : (DATA.value.value & ~fIsNotFemale);
     }
 
 bool HAIRRecord::IsFemale()
@@ -121,22 +121,22 @@ void HAIRRecord::IsFemale(bool value)
 
 bool HAIRRecord::IsFixedColor()
     {
-    return (DATA.value.flags & fIsFixedColor) != 0;
+    return (DATA.value.value & fIsFixedColor) != 0;
     }
 
 void HAIRRecord::IsFixedColor(bool value)
     {
-    DATA.value.flags = value ? (DATA.value.flags | fIsFixedColor) : (DATA.value.flags & ~fIsFixedColor);
+    DATA.value.value = value ? (DATA.value.value | fIsFixedColor) : (DATA.value.value & ~fIsFixedColor);
     }
 
 bool HAIRRecord::IsFlagMask(UINT8 Mask, bool Exact)
     {
-    return Exact ? ((DATA.value.flags & Mask) == Mask) : ((DATA.value.flags & Mask) != 0);
+    return Exact ? ((DATA.value.value & Mask) == Mask) : ((DATA.value.value & Mask) != 0);
     }
 
 void HAIRRecord::SetFlagMask(UINT8 Mask)
     {
-    DATA.value.flags = Mask;
+    DATA.value.value = Mask;
     }
 
 UINT32 HAIRRecord::GetSize(bool forceCalc)

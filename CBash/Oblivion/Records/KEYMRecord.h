@@ -25,7 +25,6 @@ GPL License and Copyright Notice ============================================
 
 class KEYMRecord : public Record
     {
-    private:
     public:
         StringRecord EDID;
         StringRecord FULL;

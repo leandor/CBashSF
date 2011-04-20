@@ -100,112 +100,6 @@ bool REFRRecord::REFRXSED::operator !=(const REFRXSED &other) const
     return !(*this == other);
     }
 
-REFRRecord::REFRXCHG::REFRXCHG():
-    charge(0.0f)
-    {
-    //
-    }
-
-REFRRecord::REFRXCHG::~REFRXCHG()
-    {
-    //
-    }
-
-bool REFRRecord::REFRXCHG::operator ==(const REFRXCHG &other) const
-    {
-    return (AlmostEqual(charge,other.charge,2));
-    }
-
-bool REFRRecord::REFRXCHG::operator !=(const REFRXCHG &other) const
-    {
-    return !(*this == other);
-    }
-
-REFRRecord::REFRXHLT::REFRXHLT():
-    health(0)
-    {
-    //
-    }
-
-REFRRecord::REFRXHLT::~REFRXHLT()
-    {
-    //
-    }
-
-bool REFRRecord::REFRXHLT::operator ==(const REFRXHLT &other) const
-    {
-    return (health == other.health);
-    }
-
-bool REFRRecord::REFRXHLT::operator !=(const REFRXHLT &other) const
-    {
-    return !(*this == other);
-    }
-
-REFRRecord::REFRXLCM::REFRXLCM():
-    levelMod(0)
-    {
-    //
-    }
-
-REFRRecord::REFRXLCM::~REFRXLCM()
-    {
-    //
-    }
-
-bool REFRRecord::REFRXLCM::operator ==(const REFRXLCM &other) const
-    {
-    return (levelMod == other.levelMod);
-    }
-
-bool REFRRecord::REFRXLCM::operator !=(const REFRXLCM &other) const
-    {
-    return !(*this == other);
-    }
-
-REFRRecord::REFRXCNT::REFRXCNT():
-    count(0)
-    {
-    //
-    }
-
-REFRRecord::REFRXCNT::~REFRXCNT()
-    {
-    //
-    }
-
-bool REFRRecord::REFRXCNT::operator ==(const REFRXCNT &other) const
-    {
-    return (count == other.count);
-    }
-
-bool REFRRecord::REFRXCNT::operator !=(const REFRXCNT &other) const
-    {
-    return !(*this == other);
-    }
-
-REFRRecord::REFRTNAM::REFRTNAM():
-    markerType(0),
-    unused1(0)
-    {
-    //
-    }
-
-REFRRecord::REFRTNAM::~REFRTNAM()
-    {
-    //
-    }
-
-bool REFRRecord::REFRTNAM::operator ==(const REFRTNAM &other) const
-    {
-    return (markerType == other.markerType);
-    }
-
-bool REFRRecord::REFRTNAM::operator !=(const REFRTNAM &other) const
-    {
-    return !(*this == other);
-    }
-
 bool REFRRecord::REFRMAPMARKER::operator ==(const REFRMAPMARKER &other) const
     {
     return (FNAM == other.FNAM &&
@@ -292,7 +186,7 @@ bool REFRRecord::VisitFormIDs(FormIDOp &op)
     if(!IsLoaded())
         return false;
 
-    op.Accept(NAME.value.fid);
+    op.Accept(NAME.value.value);
     if(XTEL.IsLoaded())
         op.Accept(XTEL->destinationFid);
     if(XLOC.IsLoaded())
@@ -300,18 +194,18 @@ bool REFRRecord::VisitFormIDs(FormIDOp &op)
     if(Ownership.IsLoaded())
         {
         if(Ownership->XOWN.IsLoaded())
-            op.Accept(Ownership->XOWN.value.fid);
+            op.Accept(Ownership->XOWN.value.value);
         if(Ownership->XGLB.IsLoaded())
-            op.Accept(Ownership->XGLB->fid);
+            op.Accept(Ownership->XGLB->value);
         }
     if(XESP.IsLoaded())
         op.Accept(XESP->parent);
     if(XTRG.IsLoaded())
-        op.Accept(XTRG->fid);
+        op.Accept(XTRG->value);
     if(XPCI.IsLoaded() && XPCI->XPCI.IsLoaded())
-        op.Accept(XPCI->XPCI->fid);
+        op.Accept(XPCI->XPCI->value);
     if(XRTM.IsLoaded())
-        op.Accept(XRTM->fid);
+        op.Accept(XRTM->value);
 
     return op.Stop();
     }
@@ -346,115 +240,115 @@ void REFRRecord::SetParentFlagMask(UINT8 Mask)
 bool REFRRecord::IsVisible()
     {
     if(!Marker.IsLoaded()) return false;
-    return (Marker->FNAM.value.flags & fVisible) != 0;
+    return (Marker->FNAM.value.value & fVisible) != 0;
     }
 
 void REFRRecord::IsVisible(bool value)
     {
     if(!Marker.IsLoaded()) return;
     if(value)
-        Marker->FNAM.value.flags |= fVisible;
+        Marker->FNAM.value.value |= fVisible;
     else
-        Marker->FNAM.value.flags &= ~fVisible;
+        Marker->FNAM.value.value &= ~fVisible;
     }
 
 bool REFRRecord::IsCanTravelTo()
     {
     if(!Marker.IsLoaded()) return false;
-    return (Marker->FNAM.value.flags & fCanTravelTo) != 0;
+    return (Marker->FNAM.value.value & fCanTravelTo) != 0;
     }
 
 void REFRRecord::IsCanTravelTo(bool value)
     {
     if(!Marker.IsLoaded()) return;
     if(value)
-        Marker->FNAM.value.flags |= fCanTravelTo;
+        Marker->FNAM.value.value |= fCanTravelTo;
     else
-        Marker->FNAM.value.flags &= ~fCanTravelTo;
+        Marker->FNAM.value.value &= ~fCanTravelTo;
     }
 
 bool REFRRecord::IsMapFlagMask(UINT8 Mask, bool Exact)
     {
     if(!Marker.IsLoaded()) return false;
-    return Exact ? ((Marker->FNAM.value.flags & Mask) == Mask) : ((Marker->FNAM.value.flags & Mask) != 0);
+    return Exact ? ((Marker->FNAM.value.value & Mask) == Mask) : ((Marker->FNAM.value.value & Mask) != 0);
     }
 
 void REFRRecord::SetMapFlagMask(UINT8 Mask)
     {
     Marker.Load();
-    Marker->FNAM.value.flags = Mask;
+    Marker->FNAM.value.value = Mask;
     }
 
 bool REFRRecord::IsUseDefault()
     {
     if(!XACT.IsLoaded()) return false;
-    return (XACT->flags & fUseDefault) != 0;
+    return (XACT->value & fUseDefault) != 0;
     }
 
 void REFRRecord::IsUseDefault(bool value)
     {
     if(!XACT.IsLoaded()) return;
     if(value)
-        XACT->flags |= fUseDefault;
+        XACT->value |= fUseDefault;
     else
-        XACT->flags &= ~fUseDefault;
+        XACT->value &= ~fUseDefault;
     }
 
 bool REFRRecord::IsActivate()
     {
     if(!XACT.IsLoaded()) return false;
-    return (XACT->flags & fActivate) != 0;
+    return (XACT->value & fActivate) != 0;
     }
 
 void REFRRecord::IsActivate(bool value)
     {
     if(!XACT.IsLoaded()) return;
     if(value)
-        XACT->flags |= fActivate;
+        XACT->value |= fActivate;
     else
-        XACT->flags &= ~fActivate;
+        XACT->value &= ~fActivate;
     }
 
 bool REFRRecord::IsOpen()
     {
     if(!XACT.IsLoaded()) return false;
-    return (XACT->flags & fOpen) != 0;
+    return (XACT->value & fOpen) != 0;
     }
 
 void REFRRecord::IsOpen(bool value)
     {
     if(!XACT.IsLoaded()) return;
     if(value)
-        XACT->flags |= fOpen;
+        XACT->value |= fOpen;
     else
-        XACT->flags &= ~fOpen;
+        XACT->value &= ~fOpen;
     }
 
 bool REFRRecord::IsOpenByDefault()
     {
     if(!XACT.IsLoaded()) return false;
-    return (XACT->flags & fOpenByDefault) != 0;
+    return (XACT->value & fOpenByDefault) != 0;
     }
 
 void REFRRecord::IsOpenByDefault(bool value)
     {
     if(!XACT.IsLoaded()) return;
     if(value)
-        XACT->flags |= fOpenByDefault;
+        XACT->value |= fOpenByDefault;
     else
-        XACT->flags &= ~fOpenByDefault;
+        XACT->value &= ~fOpenByDefault;
     }
 
 bool REFRRecord::IsActionFlagMask(UINT32 Mask, bool Exact)
     {
     if(!XACT.IsLoaded()) return false;
-    return Exact ? ((XACT->flags & Mask) == Mask) : ((XACT->flags & Mask) != 0);
+    return Exact ? ((XACT->value & Mask) == Mask) : ((XACT->value & Mask) != 0);
     }
 
 void REFRRecord::SetActionFlagMask(UINT32 Mask)
     {
     XACT.Load();
-    XACT->flags = Mask;
+    XACT->value = Mask;
     }
 
 bool REFRRecord::IsLeveledLock()
@@ -694,103 +588,103 @@ void REFRRecord::SetMarkerType(UINT8 Type)
 bool REFRRecord::IsNoSoul()
     {
     if(!XSOL.IsLoaded()) return true;
-    return (XSOL->flags == eNone);
+    return (XSOL->value == eNone);
     }
 
 void REFRRecord::IsNoSoul(bool value)
     {
     if(!XSOL.IsLoaded()) return;
     if(value)
-        XSOL->flags = eNone;
+        XSOL->value = eNone;
     else if(IsNoSoul())
-        XSOL->flags = ePetty;
+        XSOL->value = ePetty;
     }
 
 bool REFRRecord::IsPettySoul()
     {
     if(!XSOL.IsLoaded()) return false;
-    return (XSOL->flags == ePetty);
+    return (XSOL->value == ePetty);
     }
 
 void REFRRecord::IsPettySoul(bool value)
     {
     if(!XSOL.IsLoaded()) return;
     if(value)
-        XSOL->flags = ePetty;
+        XSOL->value = ePetty;
     else if(IsPettySoul())
-        XSOL->flags = eNone;
+        XSOL->value = eNone;
     }
 
 bool REFRRecord::IsLesserSoul()
     {
     if(!XSOL.IsLoaded()) return false;
-    return (XSOL->flags == eLesser);
+    return (XSOL->value == eLesser);
     }
 
 void REFRRecord::IsLesserSoul(bool value)
     {
     if(!XSOL.IsLoaded()) return;
     if(value)
-        XSOL->flags = eLesser;
+        XSOL->value = eLesser;
     else if(IsLesserSoul())
-        XSOL->flags = eNone;
+        XSOL->value = eNone;
     }
 
 bool REFRRecord::IsCommonSoul()
     {
     if(!XSOL.IsLoaded()) return false;
-    return (XSOL->flags == eCommon);
+    return (XSOL->value == eCommon);
     }
 
 void REFRRecord::IsCommonSoul(bool value)
     {
     if(!XSOL.IsLoaded()) return;
     if(value)
-        XSOL->flags = eCommon;
+        XSOL->value = eCommon;
     else if(IsCommonSoul())
-        XSOL->flags = eNone;
+        XSOL->value = eNone;
     }
 
 bool REFRRecord::IsGreaterSoul()
     {
     if(!XSOL.IsLoaded()) return false;
-    return (XSOL->flags == eGreater);
+    return (XSOL->value == eGreater);
     }
 
 void REFRRecord::IsGreaterSoul(bool value)
     {
     if(!XSOL.IsLoaded()) return;
     if(value)
-        XSOL->flags = eGreater;
+        XSOL->value = eGreater;
     else if(IsGreaterSoul())
-        XSOL->flags = eNone;
+        XSOL->value = eNone;
     }
 
 bool REFRRecord::IsGrandSoul()
     {
     if(!XSOL.IsLoaded()) return false;
-    return (XSOL->flags == eGrand);
+    return (XSOL->value == eGrand);
     }
 
 void REFRRecord::IsGrandSoul(bool value)
     {
     if(!XSOL.IsLoaded()) return;
     if(value)
-        XSOL->flags = eGrand;
+        XSOL->value = eGrand;
     else if(IsGrandSoul())
-        XSOL->flags = eNone;
+        XSOL->value = eNone;
     }
 
 bool REFRRecord::IsSoul(UINT8 Type)
     {
     if(!XSOL.IsLoaded()) return false;
-    return (XSOL->flags == Type);
+    return (XSOL->value == Type);
     }
 
 void REFRRecord::SetSoul(UINT8 Type)
     {
     XSOL.Load();
-    XSOL->flags = Type;
+    XSOL->value = Type;
     }
 
 UINT32 REFRRecord::GetSize(bool forceCalc)

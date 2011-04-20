@@ -71,7 +71,7 @@ bool KEYMRecord::VisitFormIDs(FormIDOp &op)
         return false;
 
     if(SCRI.IsLoaded())
-        op.Accept(SCRI->fid);
+        op.Accept(SCRI->value);
 
     return op.Stop();
     }

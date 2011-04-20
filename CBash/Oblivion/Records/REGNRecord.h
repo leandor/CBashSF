@@ -38,20 +38,9 @@ class REGNRecord : public Record
             bool operator !=(const REGNRPLD &other) const;
             };
 
-        struct REGNRPLI
-            {
-            UINT32  edgeFalloff;
-
-            REGNRPLI();
-            ~REGNRPLI();
-
-            bool operator ==(const REGNRPLI &other) const;
-            bool operator !=(const REGNRPLI &other) const;
-            };
-
         struct REGNArea
             {
-            ReqSubRecord<REGNRPLI> RPLI;
+            ReqSubRecord<GENU32> RPLI;
             std::vector<REGNRPLD> RPLD;
 
             bool operator ==(const REGNArea &other) const;
@@ -99,17 +88,6 @@ class REGNRecord : public Record
 
             bool operator ==(const REGNRDSD &other) const;
             bool operator !=(const REGNRDSD &other) const;
-            };
-
-        struct REGNRDMD
-            {
-            UINT32  type;
-
-            REGNRDMD();
-            ~REGNRDMD();
-
-            bool operator ==(const REGNRDMD &other) const;
-            bool operator !=(const REGNRDMD &other) const;
             };
 
         struct REGNRDGS
@@ -194,7 +172,7 @@ class REGNRecord : public Record
             StringRecord RDMP;
             StringRecord ICON;
             std::vector<REGNRDGS> RDGS;
-            SemiOptSubRecord<REGNRDMD> RDMD;
+            SemiOptSubRecord<GENU32> RDMD;
             std::vector<REGNRDSD> RDSD;
             std::vector<REGNRDWT> RDWT;
 

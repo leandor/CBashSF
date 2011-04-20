@@ -43,17 +43,6 @@ class LIGHRecord : public Record
             bool operator !=(const LIGHDATA &other) const;
             };
 
-        struct LIGHFNAM
-            {
-            FLOAT32 fade;
-
-            LIGHFNAM();
-            ~LIGHFNAM();
-
-            bool operator ==(const LIGHFNAM &other) const;
-            bool operator !=(const LIGHFNAM &other) const;
-            };
-
         enum flagsFlags
             {
             fIsDynamic      = 0x00000001,
@@ -75,7 +64,7 @@ class LIGHRecord : public Record
         StringRecord FULL;
         StringRecord ICON;
         ReqSubRecord<LIGHDATA> DATA;
-        OptSubRecord<LIGHFNAM> FNAM;
+        OptSubRecord<GENFLOAT> FNAM;
         OptSubRecord<GENFID> SNAM;
 
         LIGHRecord(unsigned char *_recData=NULL);

@@ -29,29 +29,6 @@ GPL License and Copyright Notice ============================================
 class WRLDRecord : public Record
     {
     private:
-        struct WRLDMNAM
-            {
-            SINT32  dimX, dimY;
-            SINT16  NWCellX, NWCellY, SECellX, SECellY;
-
-            WRLDMNAM();
-            ~WRLDMNAM();
-
-            bool operator ==(const WRLDMNAM &other) const;
-            bool operator !=(const WRLDMNAM &other) const;
-            };
-
-        struct WRLDUNK
-            {
-            FLOAT32 unk1, unk2;
-
-            WRLDUNK();
-            ~WRLDUNK();
-
-            bool operator ==(const WRLDUNK &other) const;
-            bool operator !=(const WRLDUNK &other) const;
-            };
-
         enum flagsFlags
             {
             fSmallWorld         = 0x00000001,
@@ -74,11 +51,11 @@ class WRLDRecord : public Record
         OptSubRecord<GENFID> CNAM;
         OptSubRecord<GENFID> NAM2;
         StringRecord ICON;
-        SemiOptSubRecord<WRLDMNAM> MNAM;
-        ReqSubRecord<GENFLAG> DATA;
-        ReqSubRecord<WRLDUNK> NAM0;
-        ReqSubRecord<WRLDUNK> NAM9;
-        OptSubRecord<GENUFLAG> SNAM;
+        SemiOptSubRecord<GENMNAM> MNAM;
+        ReqSubRecord<GENU8> DATA;
+        ReqSubRecord<GENNAM> NAM0;
+        ReqSubRecord<GENNAM> NAM9;
+        OptSubRecord<GENU32> SNAM;
         RawRecord OFST;
 
         Record *ROAD;

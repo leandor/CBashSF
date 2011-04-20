@@ -37,8 +37,8 @@ class LVLIRecord : public Record
 
     public:
         StringRecord EDID;
-        ReqSubRecord<LVLLVLD> LVLD;
-        SemiOptSubRecord<GENFLAG> LVLF;
+        ReqSubRecord<GENU8> LVLD;
+        SemiOptSubRecord<GENU8> LVLF;
         std::vector<ReqSubRecord<LVLLVLO> *> Entries;
         //RawRecord DATA; //Older version of LVLF. Auto-updated to newer format.
 

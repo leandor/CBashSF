@@ -40,39 +40,18 @@ LIGHRecord::LIGHDATA::~LIGHDATA()
     }
 
 bool LIGHRecord::LIGHDATA::operator ==(const LIGHDATA &other) const
-{
-return (duration == other.duration &&
-        radius == other.radius &&
-        color == other.color &&
-        flags == other.flags &&
-        AlmostEqual(falloff,other.falloff,2) &&
-        AlmostEqual(fov,other.fov,2) &&
-        value == other.value &&
-        AlmostEqual(weight,other.weight,2));
-}
+    {
+    return (duration == other.duration &&
+            radius == other.radius &&
+            color == other.color &&
+            flags == other.flags &&
+            AlmostEqual(falloff,other.falloff,2) &&
+            AlmostEqual(fov,other.fov,2) &&
+            value == other.value &&
+            AlmostEqual(weight,other.weight,2));
+    }
 
 bool LIGHRecord::LIGHDATA::operator !=(const LIGHDATA &other) const
-{
-return !(*this == other);
-}
-
-LIGHRecord::LIGHFNAM::LIGHFNAM():
-    fade(0.0f)
-    {
-    //
-    }
-
-LIGHRecord::LIGHFNAM::~LIGHFNAM()
-    {
-    //
-    }
-
-bool LIGHRecord::LIGHFNAM::operator ==(const LIGHFNAM &other) const
-    {
-    return (AlmostEqual(fade,other.fade,2));
-    }
-
-bool LIGHRecord::LIGHFNAM::operator !=(const LIGHFNAM &other) const
     {
     return !(*this == other);
     }
@@ -128,9 +107,9 @@ bool LIGHRecord::VisitFormIDs(FormIDOp &op)
         return false;
 
     if(SCRI.IsLoaded())
-        op.Accept(SCRI->fid);
+        op.Accept(SCRI->value);
     if(SNAM.IsLoaded())
-        op.Accept(SNAM->fid);
+        op.Accept(SNAM->value);
 
     return op.Stop();
     }
