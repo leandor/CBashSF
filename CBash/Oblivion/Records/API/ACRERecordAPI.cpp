@@ -106,13 +106,13 @@ void * ACRERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 4: //eid
             return EDID.value;
         case 5: //base
-            return &NAME.value.fid;
+            return &NAME.value.value;
         case 6: //owner
-            return Ownership.IsLoaded() ? &Ownership->XOWN.value.fid : NULL;
+            return Ownership.IsLoaded() ? &Ownership->XOWN.value.value : NULL;
         case 7: //rank
-            return (Ownership.IsLoaded() && Ownership->XRNK.IsLoaded()) ? &Ownership->XRNK->rank : NULL;
+            return (Ownership.IsLoaded() && Ownership->XRNK.IsLoaded()) ? &Ownership->XRNK->value : NULL;
         case 8: //globalVariable
-            return (Ownership.IsLoaded() && Ownership->XGLB.IsLoaded()) ? &Ownership->XGLB->fid : NULL;
+            return (Ownership.IsLoaded() && Ownership->XGLB.IsLoaded()) ? &Ownership->XGLB->value : NULL;
         case 9: //lod1
             return XLOD.IsLoaded() ? &XLOD->lod1 : NULL;
         case 10: //lod2
@@ -162,21 +162,21 @@ bool ACRERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             EDID.Copy((STRING)FieldValue);
             break;
         case 5: //base
-            NAME.value.fid = *(FORMID *)FieldValue;
+            NAME.value.value = *(FORMID *)FieldValue;
             return true;
         case 6: //owner
             Ownership.Load();
-            Ownership->XOWN.value.fid = *(FORMID *)FieldValue;
+            Ownership->XOWN.value.value = *(FORMID *)FieldValue;
             return true;
         case 7: //rank
             Ownership.Load();
             Ownership->XRNK.Load();
-            Ownership->XRNK->rank = *(SINT32 *)FieldValue;
+            Ownership->XRNK->value = *(SINT32 *)FieldValue;
             break;
         case 8: //globalVariable
             Ownership.Load();
             Ownership->XGLB.Load();
-            Ownership->XGLB->fid = *(FORMID *)FieldValue;
+            Ownership->XGLB->value = *(FORMID *)FieldValue;
             return true;
         case 9: //lod1
             XLOD.Load();

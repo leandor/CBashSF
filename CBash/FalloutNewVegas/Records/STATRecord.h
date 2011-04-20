@@ -25,10 +25,14 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class STATRecord : public Record
+class STATRecord : public Record //Static
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENOBND> OBND; //Object Bounds
+        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<GENS8> BRUS; //Passthrough Sound
+        OptSubRecord<GENFID> RNAM; //Sound - Looping/Random
 
         STATRecord(unsigned char *_recData=NULL);
         STATRecord(STATRecord *srcRecord);

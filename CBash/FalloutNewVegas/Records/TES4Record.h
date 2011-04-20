@@ -25,10 +25,18 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class TES4Record : public Record
+class TES4Record : public Record //Main File Header
     {
     public:
-        StringRecord EDID;
+        OptSubRecord<GENHEDR> HEDR; //HEDR ,, Struct
+        RawRecord OFST; //Unknown
+        RawRecord DELE; //Unknown
+        StringRecord CNAM; //Author
+        StringRecord SNAM; //Description
+        StringRecord MAST; //Filename
+        OptSubRecord<GENDATA> DATA; //Unused
+        OptSubRecord<GENONAM> ONAM; //Overriden Forms
+        RawRecord SCRN; //Screenshot
 
         TES4Record(unsigned char *_recData=NULL);
         TES4Record(TES4Record *srcRecord);

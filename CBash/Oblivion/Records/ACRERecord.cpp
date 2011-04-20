@@ -72,13 +72,13 @@ bool ACRERecord::VisitFormIDs(FormIDOp &op)
     if(!IsLoaded())
         return false;
 
-    op.Accept(NAME.value.fid);
+    op.Accept(NAME.value.value);
     if(Ownership.IsLoaded())
         {
         if(Ownership->XOWN.IsLoaded())
-            op.Accept(Ownership->XOWN.value.fid);
+            op.Accept(Ownership->XOWN.value.value);
         if(Ownership->XGLB.IsLoaded())
-            op.Accept(Ownership->XGLB->fid);
+            op.Accept(Ownership->XGLB->value);
         }
     if(XESP.IsLoaded())
         op.Accept(XESP->parent);

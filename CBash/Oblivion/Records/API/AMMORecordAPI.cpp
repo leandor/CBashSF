@@ -100,16 +100,16 @@ void * AMMORecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 6: //modPath
             return MODL.IsLoaded() ? MODL->MODL.value : NULL;
         case 7: //modb
-            return MODL.IsLoaded() ? &MODL->MODB.value.MODB : NULL;
+            return MODL.IsLoaded() ? &MODL->MODB.value.value : NULL;
         case 8: //modt_p
             *FieldValues = MODL.IsLoaded() ? MODL->MODT.value : NULL;
             return NULL;
         case 9: //iconPath
             return ICON.value;
         case 10: //enchantment
-            return ENAM.IsLoaded() ? &ENAM->fid : NULL;
+            return ENAM.IsLoaded() ? &ENAM->value : NULL;
         case 11: //enchantPoints
-            return ANAM.IsLoaded() ? &ANAM->enchantPoints : NULL;
+            return ANAM.IsLoaded() ? &ANAM->value : NULL;
         case 12: //speed
             return &DATA.value.speed;
         case 13: //flags
@@ -150,7 +150,7 @@ bool AMMORecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             break;
         case 7: //modb
             MODL.Load();
-            MODL->MODB.value.MODB = *(FLOAT32 *)FieldValue;
+            MODL->MODB.value.value = *(FLOAT32 *)FieldValue;
             break;
         case 8: //modt_p
             MODL.Load();
@@ -161,11 +161,11 @@ bool AMMORecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             break;
         case 10: //enchantment
             ENAM.Load();
-            ENAM->fid = *(FORMID *)FieldValue;
+            ENAM->value = *(FORMID *)FieldValue;
             return true;
         case 11: //enchantPoints
             ANAM.Load();
-            ANAM->enchantPoints = *(UINT16 *)FieldValue;
+            ANAM->value = *(UINT16 *)FieldValue;
             break;
         case 12: //speed
             DATA.value.speed = *(FLOAT32 *)FieldValue;

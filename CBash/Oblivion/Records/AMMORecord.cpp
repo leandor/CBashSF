@@ -101,7 +101,7 @@ bool AMMORecord::VisitFormIDs(FormIDOp &op)
         return false;
 
     if(ENAM.IsLoaded())
-        op.Accept(ENAM->fid);
+        op.Accept(ENAM->value);
 
     return op.Stop();
     }

@@ -25,10 +25,18 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class TACTRecord : public Record
+class TACTRecord : public Record //Talking Activator
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENOBND> OBND; //Object Bounds
+        StringRecord FULL; //Name
+        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<GENFID> SCRI; //Script
+        OptSubRecord<GENDESTRUCT> Destructable; //Destructable
+        OptSubRecord<GENFID> SNAM; //Looping Sound
+        OptSubRecord<GENFID> VNAM; //Voice Type
+        OptSubRecord<GENFID> INAM; //Radio Template
 
         TACTRecord(unsigned char *_recData=NULL);
         TACTRecord(TACTRecord *srcRecord);

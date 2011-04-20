@@ -72,12 +72,12 @@ void * ANIORecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 5: //modPath
             return MODL.IsLoaded() ? MODL->MODL.value : NULL;
         case 6: //modb
-            return MODL.IsLoaded() ? &MODL->MODB.value.MODB : NULL;
+            return MODL.IsLoaded() ? &MODL->MODB.value.value : NULL;
         case 7: //modt_p
             *FieldValues = MODL.IsLoaded() ? MODL->MODT.value : NULL;
             return NULL;
         case 8: //animationId
-            return &DATA.value.fid;
+            return &DATA.value.value;
         default:
             return NULL;
         }
@@ -102,14 +102,14 @@ bool ANIORecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             break;
         case 6: //modb
             MODL.Load();
-            MODL->MODB.value.MODB = *(FLOAT32 *)FieldValue;
+            MODL->MODB.value.value = *(FLOAT32 *)FieldValue;
             break;
         case 7: //modt_p
             MODL.Load();
             MODL->MODT.Copy((UINT8ARRAY)FieldValue, ArraySize);
             break;
         case 8: //animationId
-            DATA.value.fid = *(FORMID *)FieldValue;
+            DATA.value.value = *(FORMID *)FieldValue;
             return true;
         default:
             break;

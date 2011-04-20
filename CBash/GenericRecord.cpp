@@ -24,65 +24,6 @@ GPL License and Copyright Notice ============================================
 #include "GenericRecord.h"
 #include "zlib/zlib.h"
 
-FormIDOp::FormIDOp():
-    count(0),
-    stop(false),
-    result(false)
-    {
-    //
-    }
-
-FormIDOp::~FormIDOp()
-    {
-    //
-    }
-
-UINT32 FormIDOp::GetCount()
-    {
-    return count;
-    }
-
-void FormIDOp::ResetCount()
-    {
-    count = 0;
-    }
-
-bool FormIDOp::Stop()
-    {
-    return stop;
-    }
-
-bool FormIDOp::GetResult()
-    {
-    return result;
-    }
-
-FormIDResolver::FormIDResolver(const UINT8 (&_ResolveTable)[256], const unsigned char * const _FileStart, const unsigned char * const _FileEnd):
-    FormIDOp(),
-    ResolveTable(_ResolveTable),
-    FileStart(_FileStart),
-    FileEnd(_FileEnd)
-    {
-    //
-    }
-
-FormIDResolver::~FormIDResolver()
-    {
-    //
-    }
-
-bool FormIDResolver::Accept(UINT32 &curFormID)
-    {
-    curFormID = (ResolveTable[curFormID >> 24] << 24 ) | (curFormID & 0x00FFFFFF);
-    return stop;
-    }
-
-bool FormIDResolver::AcceptMGEF(UINT32 &curMgefCode)
-    {
-    curMgefCode = (ResolveTable[curMgefCode & 0x000000FF]) | (curMgefCode & 0xFFFFFF00);
-    return stop;
-    }
-
 RecordOp::RecordOp():
     count(0),
     stop(false),
@@ -473,28 +414,28 @@ void Record::IsBorderRegion(bool value)
 
 bool Record::IsTurnOffFire()
     {
-    return (flags & fTurnOffFire) != 0;
+    return (flags & fIsTurnOffFire) != 0;
     }
 
 void Record::IsTurnOffFire(bool value)
     {
     if(value)
-        flags |= fTurnOffFire;
+        flags |= fIsTurnOffFire;
     else
-        flags &= ~fTurnOffFire;
+        flags &= ~fIsTurnOffFire;
     }
 
 bool Record::IsCastsShadows()
     {
-    return (flags & fCastsShadows) != 0;
+    return (flags & fIsCastsShadows) != 0;
     }
 
 void Record::IsCastsShadows(bool value)
     {
     if(value)
-        flags |= fCastsShadows;
+        flags |= fIsCastsShadows;
     else
-        flags &= ~fCastsShadows;
+        flags &= ~fIsCastsShadows;
     }
 
 bool Record::IsQuestOrPersistent()
@@ -658,15 +599,15 @@ void Record::IsCompressed(bool value)
 
 bool Record::IsCantWait()
     {
-    return (flags & fCantWait) != 0;
+    return (flags & fIsCantWait) != 0;
     }
 
 void Record::IsCantWait(bool value)
     {
     if(value)
-        flags |= fCantWait;
+        flags |= fIsCantWait;
     else
-        flags &= ~fCantWait;
+        flags &= ~fIsCantWait;
     }
 
 bool Record::IsHeaderFlagMask(UINT32 Mask, bool Exact)

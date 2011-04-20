@@ -47,7 +47,15 @@ TES4Record::TES4Record(TES4Record *srcRecord):
         return;
         }
 
-    EDID = srcRecord->EDID;
+    HEDR = srcRecord->HEDR;
+    OFST = srcRecord->OFST;
+    DELE = srcRecord->DELE;
+    CNAM = srcRecord->CNAM;
+    SNAM = srcRecord->SNAM;
+    MAST = srcRecord->MAST;
+    DATA = srcRecord->DATA;
+    ONAM = srcRecord->ONAM;
+    SCRN = srcRecord->SCRN;
     return;
     }
 
@@ -61,6 +69,9 @@ bool TES4Record::VisitFormIDs(FormIDOp &op)
     if(!IsLoaded())
         return false;
 
+    //if(ONAM.IsLoaded()) //FILL IN MANUALLY
+    //    op.Accept(ONAM->value);
+
     return op.Stop();
     }
 
@@ -72,9 +83,53 @@ UINT32 TES4Record::GetSize(bool forceCalc)
     UINT32 cSize = 0;
     UINT32 TotSize = 0;
 
-    if(EDID.IsLoaded())
+    if(HEDR.IsLoaded())
+        TotSize += HEDR.GetSize() + 6;
+
+    if(OFST.IsLoaded())
         {
-        cSize = EDID.GetSize();
+        cSize = OFST.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(DELE.IsLoaded())
+        {
+        cSize = DELE.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(CNAM.IsLoaded())
+        {
+        cSize = CNAM.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(SNAM.IsLoaded())
+        {
+        cSize = SNAM.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(MAST.IsLoaded())
+        {
+        cSize = MAST.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(DATA.IsLoaded())
+        TotSize += DATA.GetSize() + 6;
+
+    if(ONAM.IsLoaded())
+        TotSize += ONAM.GetSize() + 6;
+
+    if(SCRN.IsLoaded())
+        {
+        cSize = SCRN.GetSize();
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
         }
@@ -114,8 +169,32 @@ SINT32 TES4Record::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
-                EDID.Read(buffer, subSize, curPos);
+            case 'RDEH':
+                HEDR.Read(buffer, subSize, curPos);
+                break;
+            case 'TSFO':
+                OFST.Read(buffer, subSize, curPos);
+                break;
+            case 'ELED':
+                DELE.Read(buffer, subSize, curPos);
+                break;
+            case 'MANC':
+                CNAM.Read(buffer, subSize, curPos);
+                break;
+            case 'MANS':
+                SNAM.Read(buffer, subSize, curPos);
+                break;
+            case 'TSAM':
+                MAST.Read(buffer, subSize, curPos);
+                break;
+            case 'ATAD':
+                DATA.Read(buffer, subSize, curPos);
+                break;
+            case 'MANO':
+                ONAM.Read(buffer, subSize, curPos);
+                break;
+            case 'NRCS':
+                SCRN.Read(buffer, subSize, curPos);
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
@@ -133,20 +212,61 @@ SINT32 TES4Record::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
-    EDID.Unload();
+    HEDR.Unload();
+    OFST.Unload();
+    DELE.Unload();
+    CNAM.Unload();
+    SNAM.Unload();
+    MAST.Unload();
+    DATA.Unload();
+    ONAM.Unload();
+    SCRN.Unload();
     return 1;
     }
 
 SINT32 TES4Record::WriteRecord(_FileHandler &SaveHandler)
     {
-    if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+    if(HEDR.IsLoaded())
+        SaveHandler.writeSubRecord('RDEH', HEDR.value, HEDR.GetSize());
+
+    if(OFST.IsLoaded())
+        SaveHandler.writeSubRecord('TSFO', OFST.value, OFST.GetSize());
+
+    if(DELE.IsLoaded())
+        SaveHandler.writeSubRecord('ELED', DELE.value, DELE.GetSize());
+
+    if(CNAM.IsLoaded())
+        SaveHandler.writeSubRecord('MANC', CNAM.value, CNAM.GetSize());
+
+    if(SNAM.IsLoaded())
+        SaveHandler.writeSubRecord('MANS', SNAM.value, SNAM.GetSize());
+
+    if(MAST.IsLoaded())
+        SaveHandler.writeSubRecord('TSAM', MAST.value, MAST.GetSize());
+
+    if(DATA.IsLoaded())
+        SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
+
+    if(ONAM.IsLoaded())
+        SaveHandler.writeSubRecord('MANO', ONAM.value, ONAM.GetSize());
+
+    if(SCRN.IsLoaded())
+        SaveHandler.writeSubRecord('NRCS', SCRN.value, SCRN.GetSize());
+
     return -1;
     }
 
 bool TES4Record::operator ==(const TES4Record &other) const
     {
-    return (EDID.equalsi(other.EDID));
+    return (HEDR == other.HEDR &&
+            OFST == other.OFST &&
+            DELE == other.DELE &&
+            CNAM.equalsi(other.CNAM) &&
+            SNAM.equalsi(other.SNAM) &&
+            MAST.equalsi(other.MAST) &&
+            DATA == other.DATA &&
+            ONAM == other.ONAM &&
+            SCRN == other.SCRN);
     }
 
 bool TES4Record::operator !=(const TES4Record &other) const

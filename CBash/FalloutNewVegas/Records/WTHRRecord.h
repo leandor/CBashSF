@@ -25,10 +25,29 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class WTHRRecord : public Record
+class WTHRRecord : public Record //Weather
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENFID> 0IAD; //Sunrise Image Space Modifier
+        OptSubRecord<GENFID> 1IAD; //Day Image Space Modifier
+        OptSubRecord<GENFID> 2IAD; //Sunset Image Space Modifier
+        OptSubRecord<GENFID> 3IAD; //Night Image Space Modifier
+        OptSubRecord<GENFID> 4IAD; //Unknown
+        OptSubRecord<GENFID> 5IAD; //Unknown
+        StringRecord DNAM; //Cloud Textures - Layer 0
+        StringRecord CNAM; //Cloud Textures - Layer 1
+        StringRecord ANAM; //Cloud Textures - Layer 2
+        StringRecord BNAM; //Cloud Textures - Layer 3
+        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<GENLNAM> LNAM; //Unknown
+        OptSubRecord<GENONAM> ONAM; //Cloud Speed
+        RawRecord PNAM; //Unused
+        OptSubRecord<GENNAM> NAM0; //NAM0 ,, Struct
+        OptSubRecord<GENFNAM> FNAM; //FNAM ,, Struct
+        OptSubRecord<GENINAM> INAM; //Unused
+        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
+        OptSubRecord<GENSNAM> SNAM; //SNAM ,, Struct
 
         WTHRRecord(unsigned char *_recData=NULL);
         WTHRRecord(WTHRRecord *srcRecord);

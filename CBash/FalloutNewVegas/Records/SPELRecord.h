@@ -25,10 +25,13 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class SPELRecord : public Record
+class SPELRecord : public Record //Actor Effect
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        StringRecord FULL; //Name
+        OptSubRecord<GENSPIT> SPIT; //SPIT ,, Struct
+        OptSubRecord<GENEFID> EFID; //Base Effect
 
         SPELRecord(unsigned char *_recData=NULL);
         SPELRecord(SPELRecord *srcRecord);

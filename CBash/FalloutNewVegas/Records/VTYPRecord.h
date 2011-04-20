@@ -25,10 +25,11 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class VTYPRecord : public Record
+class VTYPRecord : public Record //Voice Type
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENU8> DNAM; //Flags
 
         VTYPRecord(unsigned char *_recData=NULL);
         VTYPRecord(VTYPRecord *srcRecord);

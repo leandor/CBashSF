@@ -20,26 +20,211 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 
-#include "../Common.h"
+#include "Common.h"
 #include "GenericChunks.h"
 
-GENFLAG::GENFLAG():
-    flags(0)
+FormIDOp::FormIDOp():
+    count(0),
+    stop(false),
+    result(false)
     {
     //
     }
 
-GENFLAG::~GENFLAG()
+FormIDOp::~FormIDOp()
     {
     //
     }
 
-bool GENFLAG::operator ==(const GENFLAG &other) const
+UINT32 FormIDOp::GetCount()
     {
-    return flags == other.flags;
+    return count;
     }
 
-bool GENFLAG::operator !=(const GENFLAG &other) const
+void FormIDOp::ResetCount()
+    {
+    count = 0;
+    }
+
+bool FormIDOp::Stop()
+    {
+    return stop;
+    }
+
+bool FormIDOp::GetResult()
+    {
+    return result;
+    }
+
+FormIDResolver::FormIDResolver(const UINT8 (&_ResolveTable)[256], const unsigned char * const _FileStart, const unsigned char * const _FileEnd):
+    FormIDOp(),
+    ResolveTable(_ResolveTable),
+    FileStart(_FileStart),
+    FileEnd(_FileEnd)
+    {
+    //
+    }
+
+FormIDResolver::~FormIDResolver()
+    {
+    //
+    }
+
+bool FormIDResolver::Accept(UINT32 &curFormID)
+    {
+    curFormID = (ResolveTable[curFormID >> 24] << 24 ) | (curFormID & 0x00FFFFFF);
+    return stop;
+    }
+
+bool FormIDResolver::AcceptMGEF(UINT32 &curMgefCode)
+    {
+    curMgefCode = (ResolveTable[curMgefCode & 0x000000FF]) | (curMgefCode & 0xFFFFFF00);
+    return stop;
+    }
+
+GENU8::GENU8():
+    value(0)
+    {
+    //
+    }
+
+GENU8::~GENU8()
+    {
+    //
+    }
+
+bool GENU8::operator ==(const GENU8 &other) const
+    {
+    return (value == other.value);
+    }
+
+bool GENU8::operator !=(const GENU8 &other) const
+    {
+    return !(*this == other);
+    }
+
+GENU16::GENU16():
+    value(0)
+    {
+    //
+    }
+
+GENU16::~GENU16()
+    {
+    //
+    }
+
+bool GENU16::operator ==(const GENU16 &other) const
+    {
+    return (value == other.value);
+    }
+
+bool GENU16::operator !=(const GENU16 &other) const
+    {
+    return !(*this == other);
+    }
+
+GENU32::GENU32():
+    value(0)
+    {
+    //
+    }
+
+GENU32::~GENU32()
+    {
+    //
+    }
+
+bool GENU32::operator ==(const GENU32 &other) const
+    {
+    return (value == other.value);
+    }
+
+bool GENU32::operator !=(const GENU32 &other) const
+    {
+    return !(*this == other);
+    }
+
+GENS8::GENS8():
+    value(0)
+    {
+    //
+    }
+
+GENS8::~GENS8()
+    {
+    //
+    }
+
+bool GENS8::operator ==(const GENS8 &other) const
+    {
+    return (value == other.value);
+    }
+
+bool GENS8::operator !=(const GENS8 &other) const
+    {
+    return !(*this == other);
+    }
+
+GENS16::GENS16():
+    value(0)
+    {
+    //
+    }
+
+GENS16::~GENS16()
+    {
+    //
+    }
+
+bool GENS16::operator ==(const GENS16 &other) const
+    {
+    return (value == other.value);
+    }
+
+bool GENS16::operator !=(const GENS16 &other) const
+    {
+    return !(*this == other);
+    }
+
+GENS32::GENS32():
+    value(0)
+    {
+    //
+    }
+
+GENS32::~GENS32()
+    {
+    //
+    }
+
+bool GENS32::operator ==(const GENS32 &other) const
+    {
+    return (value == other.value);
+    }
+
+bool GENS32::operator !=(const GENS32 &other) const
+    {
+    return !(*this == other);
+    }
+
+GENFLOAT::GENFLOAT():
+    value(0.0f)
+    {
+    //
+    }
+
+GENFLOAT::~GENFLOAT()
+    {
+    //
+    }
+
+bool GENFLOAT::operator ==(const GENFLOAT &other) const
+    {
+    return (AlmostEqual(value,other.value,2));
+    }
+
+bool GENFLOAT::operator !=(const GENFLOAT &other) const
     {
     return !(*this == other);
     }
@@ -62,27 +247,6 @@ bool GENXNAM::operator ==(const GENXNAM &other) const
     }
 
 bool GENXNAM::operator !=(const GENXNAM &other) const
-    {
-    return !(*this == other);
-    }
-
-GENFID::GENFID():
-    fid(0)
-    {
-    //
-    }
-
-GENFID::~GENFID()
-    {
-    //
-    }
-
-bool GENFID::operator ==(const GENFID &other) const
-    {
-    return fid == other.fid;
-    }
-
-bool GENFID::operator !=(const GENFID &other) const
     {
     return !(*this == other);
     }
@@ -126,6 +290,61 @@ GENSCR_::~GENSCR_()
     //
     }
 
+GENSLSD::GENSLSD():
+    index(0),
+    flags(0)
+    {
+    memset(&unused1[0], 0, sizeof(unused1));
+    memset(&unused2[0], 0, sizeof(unused2));
+    }
+
+GENSLSD::~GENSLSD()
+    {
+    //
+    }
+
+bool GENSLSD::operator ==(const GENSLSD &other) const
+    {
+    return (index == other.index &&
+            flags == other.flags);
+    }
+
+bool GENSLSD::operator !=(const GENSLSD &other) const
+    {
+    return !(*this == other);
+    }
+
+bool GENVARS::IsLongOrShort()
+    {
+    return (SLSD.value.flags & fIsLongOrShort) != 0;
+    }
+
+void GENVARS::IsLongOrShort(bool value)
+    {
+    SLSD.value.flags = value ? (SLSD.value.flags | fIsLongOrShort) : (SLSD.value.flags & ~fIsLongOrShort);
+    }
+
+bool GENVARS::IsFlagMask(UINT8 Mask, bool Exact)
+    {
+    return Exact ? ((SLSD.value.flags & Mask) == Mask) : ((SLSD.value.flags & Mask) != 0);
+    }
+
+void GENVARS::SetFlagMask(UINT8 Mask)
+    {
+    SLSD.value.flags = Mask;
+    }
+
+bool GENVARS::operator ==(const GENVARS &other) const
+    {
+    return (SLSD == other.SLSD &&
+            SCVR.equalsi(other.SCVR));
+    }
+
+bool GENVARS::operator !=(const GENVARS &other) const
+    {
+    return !(*this == other);
+    }
+
 bool GENSCR_::operator ==(const GENSCR_ &other) const
     {
     return (reference == other.reference &&
@@ -137,23 +356,267 @@ bool GENSCR_::operator !=(const GENSCR_ &other) const
     return !(*this == other);
     }
 
-GENEFID::GENEFID():
-    name(0)
+GENSCRIPT::GENSCRIPT()
     {
     //
     }
 
-GENEFID::~GENEFID()
+GENSCRIPT::~GENSCRIPT()
+    {
+    for(UINT32 x = 0; x < VARS.size(); x++)
+        delete VARS[x];
+    for(UINT32 x = 0; x < SCR_.size(); x++)
+        delete SCR_[x];
+    }
+
+void GENSCRIPT::Copy(GENSCRIPT &rhs)
+    {
+    SCHR = rhs.SCHR;
+    SCDA = rhs.SCDA;
+    SCTX = rhs.SCTX;
+    VARS.resize(rhs.VARS.size());
+    for(UINT32 x = 0; x < rhs.VARS.size(); x++)
+        {
+        VARS[x] = new GENVARS;
+        VARS[x]->SLSD = rhs.VARS[x]->SLSD;
+        VARS[x]->SCVR = rhs.VARS[x]->SCVR;
+        }
+
+    SCR_.resize(rhs.SCR_.size());
+    for(UINT32 x = 0; x < rhs.SCR_.size(); x++)
+        {
+        SCR_[x] = new ReqSubRecord<GENSCR_>;
+        *SCR_[x] = *rhs.SCR_[x];
+        }
+    }
+
+bool GENSCRIPT::IsType(UINT32 Type)
+    {
+    return SCHR.value.scriptType == Type;
+    }
+
+void GENSCRIPT::SetType(UINT32 Type)
+    {
+    SCHR.value.scriptType = Type;
+    }
+
+bool GENSCRIPT::VisitFormIDs(FormIDOp &op)
+    {
+    for(UINT32 x = 0; x < SCR_.size(); x++)
+        if(SCR_[x]->value.isSCRO)
+            op.Accept(SCR_[x]->value.reference);
+
+    return op.Stop();
+    }
+
+UINT32 GENSCRIPT::GetSize()
+    {
+    UINT32 cSize = 0;
+    UINT32 TotSize = 0;
+
+    if(SCHR.IsLoaded())
+        TotSize += SCHR.GetSize() + 6;
+
+    if(SCDA.IsLoaded())
+        {
+        cSize = SCDA.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(SCTX.IsLoaded())
+        {
+        cSize = SCTX.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    for(UINT32 p = 0; p < VARS.size(); p++)
+        {
+        if(VARS[p]->SLSD.IsLoaded())
+            TotSize += VARS[p]->SLSD.GetSize() + 6;
+
+        if(VARS[p]->SCVR.IsLoaded())
+            {
+            cSize = VARS[p]->SCVR.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        }
+
+    TotSize += (sizeof(UINT32) + 6) * (UINT32)SCR_.size();
+
+    return TotSize;
+    }
+
+void GENSCRIPT::writeSubRecords(_FileHandler &SaveHandler)
+    {
+    if(SCHR.IsLoaded())
+        {
+        SCHR.value.compiledSize = SCDA.GetSize(); //Just to ensure that the value is correct
+        SaveHandler.writeSubRecord('RHCS', &SCHR.value, SCHR.GetSize());
+        }
+    if(SCDA.IsLoaded())
+        SaveHandler.writeSubRecord('ADCS', SCDA.value, SCDA.GetSize());
+    if(SCTX.IsLoaded())
+        SaveHandler.writeSubRecord('XTCS', SCTX.value, SCTX.GetSize());
+    for(UINT32 p = 0; p < VARS.size(); p++)
+        {
+        if(VARS[p]->SLSD.IsLoaded())
+            SaveHandler.writeSubRecord('DSLS', &VARS[p]->SLSD.value, VARS[p]->SLSD.GetSize());
+        if(VARS[p]->SCVR.IsLoaded())
+            SaveHandler.writeSubRecord('RVCS', VARS[p]->SCVR.value, VARS[p]->SCVR.GetSize());
+        }
+
+    for(UINT32 p = 0; p < SCR_.size(); p++)
+        if(SCR_[p]->IsLoaded())
+            if(SCR_[p]->value.isSCRO)
+                SaveHandler.writeSubRecord('ORCS', &SCR_[p]->value.reference, sizeof(UINT32));
+            else
+                SaveHandler.writeSubRecord('VRCS', &SCR_[p]->value.reference, sizeof(UINT32));
+    }
+
+bool GENSCRIPT::operator ==(const GENSCRIPT &other) const
+    {
+    if(SCHR == other.SCHR &&
+        SCDA == other.SCDA &&
+        SCTX.equalsi(other.SCTX) &&
+        VARS.size() == other.VARS.size() &&
+        SCR_.size() == other.SCR_.size())
+        {
+        //Record order doesn't matter on vars, so equality testing isn't easy
+        //Instead, they're keyed by var index (SLSD.value.index)
+        //The proper solution would be to see if each indexed var matches the other
+        //But they're usually ordered, so the lazy approach is to not bother
+        //Fix-up later
+        for(UINT32 x = 0; x < VARS.size(); ++x)
+            if(*VARS[x] != *other.VARS[x])
+                return false;
+
+        //Record order matters on references, so equality testing is easy
+        for(UINT32 x = 0; x < SCR_.size(); ++x)
+            if(*SCR_[x] != *other.SCR_[x])
+                return false;
+        return true;
+        }
+
+    return false;
+    }
+
+bool GENSCRIPT::operator !=(const GENSCRIPT &other) const
+    {
+    return !(*this == other);
+    }
+
+GENMINSCRIPT::GENMINSCRIPT()
     {
     //
     }
 
-bool GENEFID::operator ==(const GENEFID &other) const
+GENMINSCRIPT::~GENMINSCRIPT()
     {
-    return (name == other.name);
+    for(UINT32 x = 0; x < SCR_.size(); x++)
+        delete SCR_[x];
     }
 
-bool GENEFID::operator !=(const GENEFID &other) const
+void GENMINSCRIPT::Copy(GENMINSCRIPT &rhs)
+    {
+    SCHR = rhs.SCHR;
+    SCDA = rhs.SCDA;
+    SCTX = rhs.SCTX;
+
+    SCR_.resize(rhs.SCR_.size());
+    for(UINT32 x = 0; x < rhs.SCR_.size(); x++)
+        {
+        SCR_[x] = new ReqSubRecord<GENSCR_>;
+        *SCR_[x] = *rhs.SCR_[x];
+        }
+    }
+
+bool GENMINSCRIPT::IsType(UINT32 Type)
+    {
+    return SCHR.value.scriptType == Type;
+    }
+
+void GENMINSCRIPT::SetType(UINT32 Type)
+    {
+    SCHR.value.scriptType = Type;
+    }
+
+bool GENMINSCRIPT::VisitFormIDs(FormIDOp &op)
+    {
+    for(UINT32 x = 0; x < SCR_.size(); x++)
+        if(SCR_[x]->value.isSCRO)
+            op.Accept(SCR_[x]->value.reference);
+
+    return op.Stop();
+    }
+
+UINT32 GENMINSCRIPT::GetSize()
+    {
+    UINT32 cSize = 0;
+    UINT32 TotSize = 0;
+
+    if(SCHR.IsLoaded())
+        TotSize += SCHR.GetSize() + 6;
+
+    if(SCDA.IsLoaded())
+        {
+        cSize = SCDA.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(SCTX.IsLoaded())
+        {
+        cSize = SCTX.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    TotSize += (sizeof(UINT32) + 6) * (UINT32)SCR_.size();
+
+    return TotSize;
+    }
+
+void GENMINSCRIPT::writeSubRecords(_FileHandler &SaveHandler)
+    {
+    if(SCHR.IsLoaded())
+        {
+        SCHR.value.compiledSize = SCDA.GetSize(); //Just to ensure that the value is correct
+        SaveHandler.writeSubRecord('RHCS', &SCHR.value, SCHR.GetSize());
+        }
+    if(SCDA.IsLoaded())
+        SaveHandler.writeSubRecord('ADCS', SCDA.value, SCDA.GetSize());
+    if(SCTX.IsLoaded())
+        SaveHandler.writeSubRecord('XTCS', SCTX.value, SCTX.GetSize());
+
+    for(UINT32 p = 0; p < SCR_.size(); p++)
+        if(SCR_[p]->IsLoaded())
+            if(SCR_[p]->value.isSCRO)
+                SaveHandler.writeSubRecord('ORCS', &SCR_[p]->value.reference, sizeof(UINT32));
+            else
+                SaveHandler.writeSubRecord('VRCS', &SCR_[p]->value.reference, sizeof(UINT32));
+    }
+
+bool GENMINSCRIPT::operator ==(const GENMINSCRIPT &other) const
+    {
+    if(SCHR == other.SCHR &&
+        SCDA == other.SCDA &&
+        SCTX.equalsi(other.SCTX) &&
+        SCR_.size() == other.SCR_.size())
+        {
+        //Record order matters on references, so equality testing is easy
+        for(UINT32 x = 0; x < SCR_.size(); ++x)
+            if(*SCR_[x] != *other.SCR_[x])
+                return false;
+        return true;
+        }
+
+    return false;
+    }
+
+bool GENMINSCRIPT::operator !=(const GENMINSCRIPT &other) const
     {
     return !(*this == other);
     }
@@ -1077,70 +1540,6 @@ void GENEffect::OBME_SetFlagMask(UINT32 Mask)
     OBME->EFIX->efixFlags = Mask;
     }
 
-
-GENANAM::GENANAM():
-    enchantPoints(0)
-    {
-    //
-    }
-
-GENANAM::~GENANAM()
-    {
-    //
-    }
-
-bool GENANAM::operator ==(const GENANAM &other) const
-    {
-    return (enchantPoints == other.enchantPoints);
-    }
-
-bool GENANAM::operator !=(const GENANAM &other) const
-    {
-    return !(*this == other);
-    }
-
-GENUFLAG::GENUFLAG():
-    flags(0)
-    {
-    //
-    }
-
-GENUFLAG::~GENUFLAG()
-    {
-    //
-    }
-
-bool GENUFLAG::operator ==(const GENUFLAG &other) const
-    {
-    return (flags == other.flags);
-    }
-
-bool GENUFLAG::operator !=(const GENUFLAG &other) const
-    {
-    return !(*this == other);
-    }
-
-GENWEIGHT::GENWEIGHT():
-    weight(0.0f)
-    {
-    //
-    }
-
-GENWEIGHT::~GENWEIGHT()
-    {
-    //
-    }
-
-bool GENWEIGHT::operator ==(const GENWEIGHT &other) const
-    {
-    return AlmostEqual(weight,other.weight,2);
-    }
-
-bool GENWEIGHT::operator !=(const GENWEIGHT &other) const
-    {
-    return !(*this == other);
-    }
-
 GENENIT::GENENIT():
     value(0),
     flags(0)
@@ -1546,27 +1945,6 @@ bool GENCLR::operator !=(const GENCLR &other) const
     return !(*this == other);
     }
 
-MODELMODB::MODELMODB():
-    MODB(0.0f)
-    {
-    //
-    }
-
-MODELMODB::~MODELMODB()
-    {
-    //
-    }
-
-bool MODELMODB::operator ==(const MODELMODB &other) const
-    {
-    return AlmostEqual(MODB,other.MODB,2);
-    }
-
-bool MODELMODB::operator !=(const MODELMODB &other) const
-    {
-    return !(*this == other);
-    }
-
 bool GENMODEL::operator ==(const GENMODEL &other) const
     {
     return (MODB == other.MODB &&
@@ -1575,27 +1953,6 @@ bool GENMODEL::operator ==(const GENMODEL &other) const
     }
 
 bool GENMODEL::operator !=(const GENMODEL &other) const
-    {
-    return !(*this == other);
-    }
-
-GENRANK::GENRANK():
-    rank(0)
-    {
-    //
-    }
-
-GENRANK::~GENRANK()
-    {
-    //
-    }
-
-bool GENRANK::operator ==(const GENRANK &other) const
-    {
-    return (rank == other.rank);
-    }
-
-bool GENRANK::operator !=(const GENRANK &other) const
     {
     return !(*this == other);
     }
@@ -1752,27 +2109,6 @@ bool GENPGRP::operator !=(const GENPGRP &other) const
     return !(*this == other);
     }
 
-LVLLVLD::LVLLVLD():
-    chanceNone(0)
-    {
-    //
-    }
-
-LVLLVLD::~LVLLVLD()
-    {
-    //
-    }
-
-bool LVLLVLD::operator ==(const LVLLVLD &other) const
-    {
-    return (chanceNone == other.chanceNone);
-    }
-
-bool LVLLVLD::operator !=(const LVLLVLD &other) const
-    {
-    return !(*this == other);
-    }
-
 LVLLVLO::LVLLVLO():
     level(0),
     listId(0),
@@ -1834,6 +2170,228 @@ bool OBMEMAGIC::operator ==(const OBMEMAGIC &other) const
     }
 
 bool OBMEMAGIC::operator !=(const OBMEMAGIC &other) const
+    {
+    return !(*this == other);
+    }
+
+GENMNAM::GENMNAM():
+    dimX(0),
+    dimY(0),
+    NWCellX(0),
+    NWCellY(0),
+    SECellX(0),
+    SECellY(0)
+    {
+    //
+    }
+
+GENMNAM::~GENMNAM()
+    {
+    //
+    }
+
+bool GENMNAM::operator ==(const GENMNAM &other) const
+    {
+    return (dimX == other.dimX &&
+            dimY == other.dimY &&
+            NWCellX == other.NWCellX &&
+            NWCellY == other.NWCellY &&
+            SECellX == other.SECellX &&
+            SECellY == other.SECellY);
+    }
+
+bool GENMNAM::operator !=(const GENMNAM &other) const
+    {
+    return !(*this == other);
+    }
+
+GENNAM::GENNAM():
+    x(0.0f),
+    y(0.0f)
+    {
+    //
+    }
+
+GENNAM::~GENNAM()
+    {
+    //
+    }
+
+bool GENNAM::operator ==(const GENNAM &other) const
+    {
+    return (AlmostEqual(x,other.x,2) &&
+            AlmostEqual(y,other.y,2));
+    }
+
+bool GENNAM::operator !=(const GENNAM &other) const
+    {
+    return !(*this == other);
+    }
+
+GENTNAM::GENTNAM():
+    markerType(0),
+    unused1(0)
+    {
+    //
+    }
+
+GENTNAM::~GENTNAM()
+    {
+    //
+    }
+
+bool GENTNAM::operator ==(const GENTNAM &other) const
+    {
+    return (markerType == other.markerType);
+    }
+
+bool GENTNAM::operator !=(const GENTNAM &other) const
+    {
+    return !(*this == other);
+    }
+//Fallout New Vegas Chunks
+
+GENOBND::GENOBND():
+    x(0),
+    y(0),
+    z(0)
+    {
+    //
+    }
+
+GENOBND::~GENOBND()
+    {
+    //
+    }
+
+bool GENOBND::operator ==(const GENOBND &other) const
+    {
+    return (x == other.x &&
+            y == other.y &&
+            z == other.z);
+    }
+
+bool GENOBND::operator !=(const GENOBND &other) const
+    {
+    return !(*this == other);
+    }
+
+GENDODT::GENDODT():
+    minWidth(0.0f),
+    maxWidth(0.0f),
+    minHeight(0.0f),
+    maxHeight(0.0f),
+    depth(0.0f),
+    shininess(0.0f),
+    scale(0.0f),
+    passes(0),
+    flags(0),
+    red(0),
+    green(0),
+    blue(0),
+    unused2(0x00)
+    {
+    memset(&unused1[0], 0x00, 2);
+    }
+
+GENDODT::~GENDODT()
+    {
+    //
+    }
+
+bool GENDODT::operator ==(const GENDODT &other) const
+    {
+    return (passes == other.passes &&
+            flags == other.flags &&
+            red == other.red &&
+            green == other.green &&
+            blue == other.blue &&
+            AlmostEqual(minWidth,other.minWidth,2) &&
+            AlmostEqual(maxWidth,other.maxWidth,2) &&
+            AlmostEqual(minHeight,other.minHeight,2) &&
+            AlmostEqual(maxHeight,other.maxHeight,2) &&
+            AlmostEqual(depth,other.depth,2) &&
+            AlmostEqual(shininess,other.shininess,2) &&
+            AlmostEqual(scale,other.scale,2));
+    }
+
+bool GENDODT::operator !=(const GENDODT &other) const
+    {
+    return !(*this == other);
+    }
+
+bool GENDODT::IsParallax()
+    {
+    return (flags & fIsParallax) != 0;
+    }
+
+void GENDODT::IsParallax(bool value)
+    {
+    if(value)
+        flags |= fIsParallax;
+    else
+        flags &= ~fIsParallax;
+    }
+
+bool GENDODT::IsAlphaBlending()
+    {
+    return (flags & fIsAlphaBlending) != 0;
+    }
+
+void GENDODT::IsAlphaBlending(bool value)
+    {
+    if(value)
+        flags |= fIsAlphaBlending;
+    else
+        flags &= ~fIsAlphaBlending;
+    }
+
+bool GENDODT::IsAlphaTesting()
+    {
+    return (flags & fIsAlphaTesting) != 0;
+    }
+
+void GENDODT::IsAlphaTesting(bool value)
+    {
+    if(value)
+        flags |= fIsAlphaTesting;
+    else
+        flags &= ~fIsAlphaTesting;
+    }
+
+bool GENDODT::IsFlagMask(UINT8 Mask, bool Exact)
+    {
+    if(Exact)
+        return (flags & Mask) == Mask;
+    else
+        return (flags & Mask) != 0;
+    }
+
+void GENDODT::SetFlagMask(UINT8 Mask)
+    {
+    flags = Mask;
+    }
+
+bool GENPATROL::operator ==(const GENPATROL &other) const
+    {
+    return (XPRD == other.XPRD &&
+            Script == other.Script &&
+            INAM == other.INAM &&
+            TNAM == other.TNAM);
+    }
+
+bool GENPATROL::operator !=(const GENPATROL &other) const
+    {
+    return !(*this == other);
+    }
+
+bool GENXCLP::operator ==(const GENXCLP &other) const
+    {
+    return (start == other.start &&
+            end == other.end);
+    }
+
+bool GENXCLP::operator !=(const GENXCLP &other) const
     {
     return !(*this == other);
     }

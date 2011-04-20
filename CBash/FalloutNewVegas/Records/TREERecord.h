@@ -25,10 +25,16 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class TREERecord : public Record
+class TREERecord : public Record //Tree
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENOBND> OBND; //Object Bounds
+        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<GENICON> ICON; //Large Icon Filename
+        OptSubRecord<GENSNAM> SNAM; //SpeedTree Seeds
+        OptSubRecord<GENCNAM> CNAM; //CNAM ,, Struct
+        OptSubRecord<GENBNAM> BNAM; //BNAM ,, Struct
 
         TREERecord(unsigned char *_recData=NULL);
         TREERecord(TREERecord *srcRecord);

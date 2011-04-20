@@ -25,10 +25,20 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class WATRRecord : public Record
+class WATRRecord : public Record //Water
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        StringRecord FULL; //Name
+        StringRecord NNAM; //Noise Map
+        OptSubRecord<GENU8> ANAM; //Opacity
+        OptSubRecord<GENU8> FNAM; //Flags
+        StringRecord MNAM; //Material ID
+        OptSubRecord<GENFID> SNAM; //Sound
+        OptSubRecord<GENFID> XNAM; //Actor Effect
+        OptSubRecord<GENU16> DATA; //Damage
+        OptSubRecord<GENDNAM> DNAM; //DNAM ,, Struct
+        OptSubRecord<GENGNAM> GNAM; //GNAM ,, Struct
 
         WATRRecord(unsigned char *_recData=NULL);
         WATRRecord(WATRRecord *srcRecord);

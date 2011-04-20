@@ -70,9 +70,9 @@ bool ACTIRecord::VisitFormIDs(FormIDOp &op)
         return false;
 
     if(SCRI.IsLoaded())
-        op.Accept(SCRI->fid);
+        op.Accept(SCRI->value);
     if(SNAM.IsLoaded())
-        op.Accept(SNAM->fid);
+        op.Accept(SNAM->value);
 
     return op.Stop();
     }

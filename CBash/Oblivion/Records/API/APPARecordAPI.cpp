@@ -86,14 +86,14 @@ void * APPARecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 6: //modPath
             return MODL.IsLoaded() ? MODL->MODL.value : NULL;
         case 7: //modb
-            return MODL.IsLoaded() ? &MODL->MODB.value.MODB : NULL;
+            return MODL.IsLoaded() ? &MODL->MODB.value.value : NULL;
         case 8: //modt_p
             *FieldValues = MODL.IsLoaded() ? MODL->MODT.value : NULL;
             return NULL;
         case 9: //iconPath
             return ICON.value;
         case 10: //script
-            return SCRI.IsLoaded() ? &SCRI->fid : NULL;
+            return SCRI.IsLoaded() ? &SCRI->value : NULL;
         case 11: //apparatusType
             return &DATA.value.apparatus;
         case 12: //value
@@ -129,7 +129,7 @@ bool APPARecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             break;
         case 7: //modb
             MODL.Load();
-            MODL->MODB.value.MODB = *(FLOAT32 *)FieldValue;
+            MODL->MODB.value.value = *(FLOAT32 *)FieldValue;
             break;
         case 8: //modt_p
             MODL.Load();
@@ -140,7 +140,7 @@ bool APPARecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             break;
         case 10: //script
             SCRI.Load();
-            SCRI->fid = *(FORMID *)FieldValue;
+            SCRI->value = *(FORMID *)FieldValue;
             return true;
         case 11: //apparatusType
             SetType(*(UINT8 *)FieldValue);

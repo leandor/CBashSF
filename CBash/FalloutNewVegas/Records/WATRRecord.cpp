@@ -48,6 +48,16 @@ WATRRecord::WATRRecord(WATRRecord *srcRecord):
         }
 
     EDID = srcRecord->EDID;
+    FULL = srcRecord->FULL;
+    NNAM = srcRecord->NNAM;
+    ANAM = srcRecord->ANAM;
+    FNAM = srcRecord->FNAM;
+    MNAM = srcRecord->MNAM;
+    SNAM = srcRecord->SNAM;
+    XNAM = srcRecord->XNAM;
+    DATA = srcRecord->DATA;
+    DNAM = srcRecord->DNAM;
+    GNAM = srcRecord->GNAM;
     return;
     }
 
@@ -60,6 +70,13 @@ bool WATRRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
+
+    if(SNAM.IsLoaded())
+        op.Accept(SNAM->value);
+    if(XNAM.IsLoaded())
+        op.Accept(XNAM->value);
+    //if(GNAM.IsLoaded()) //FILL IN MANUALLY
+    //    op.Accept(GNAM->value);
 
     return op.Stop();
     }
@@ -78,6 +95,48 @@ UINT32 WATRRecord::GetSize(bool forceCalc)
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
         }
+
+    if(FULL.IsLoaded())
+        {
+        cSize = FULL.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(NNAM.IsLoaded())
+        {
+        cSize = NNAM.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(ANAM.IsLoaded())
+        TotSize += ANAM.GetSize() + 6;
+
+    if(FNAM.IsLoaded())
+        TotSize += FNAM.GetSize() + 6;
+
+    if(MNAM.IsLoaded())
+        {
+        cSize = MNAM.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(SNAM.IsLoaded())
+        TotSize += SNAM.GetSize() + 6;
+
+    if(XNAM.IsLoaded())
+        TotSize += XNAM.GetSize() + 6;
+
+    if(DATA.IsLoaded())
+        TotSize += DATA.GetSize() + 6;
+
+    if(DNAM.IsLoaded())
+        TotSize += DNAM.GetSize() + 6;
+
+    if(GNAM.IsLoaded())
+        TotSize += GNAM.GetSize() + 6;
 
     return TotSize;
     }
@@ -117,6 +176,36 @@ SINT32 WATRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             case 'DIDE':
                 EDID.Read(buffer, subSize, curPos);
                 break;
+            case 'LLUF':
+                FULL.Read(buffer, subSize, curPos);
+                break;
+            case 'MANN':
+                NNAM.Read(buffer, subSize, curPos);
+                break;
+            case 'MANA':
+                ANAM.Read(buffer, subSize, curPos);
+                break;
+            case 'MANF':
+                FNAM.Read(buffer, subSize, curPos);
+                break;
+            case 'MANM':
+                MNAM.Read(buffer, subSize, curPos);
+                break;
+            case 'MANS':
+                SNAM.Read(buffer, subSize, curPos);
+                break;
+            case 'MANX':
+                XNAM.Read(buffer, subSize, curPos);
+                break;
+            case 'ATAD':
+                DATA.Read(buffer, subSize, curPos);
+                break;
+            case 'MAND':
+                DNAM.Read(buffer, subSize, curPos);
+                break;
+            case 'MANG':
+                GNAM.Read(buffer, subSize, curPos);
+                break;
             default:
                 //printf("FileName = %s\n", FileName);
                 printf("  WATR: %08X - Unknown subType = %04x\n", formID, subType);
@@ -134,6 +223,16 @@ SINT32 WATRRecord::Unload()
     IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
+    FULL.Unload();
+    NNAM.Unload();
+    ANAM.Unload();
+    FNAM.Unload();
+    MNAM.Unload();
+    SNAM.Unload();
+    XNAM.Unload();
+    DATA.Unload();
+    DNAM.Unload();
+    GNAM.Unload();
     return 1;
     }
 
@@ -141,12 +240,53 @@ SINT32 WATRRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+
+    if(FULL.IsLoaded())
+        SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
+
+    if(NNAM.IsLoaded())
+        SaveHandler.writeSubRecord('MANN', NNAM.value, NNAM.GetSize());
+
+    if(ANAM.IsLoaded())
+        SaveHandler.writeSubRecord('MANA', ANAM.value, ANAM.GetSize());
+
+    if(FNAM.IsLoaded())
+        SaveHandler.writeSubRecord('MANF', FNAM.value, FNAM.GetSize());
+
+    if(MNAM.IsLoaded())
+        SaveHandler.writeSubRecord('MANM', MNAM.value, MNAM.GetSize());
+
+    if(SNAM.IsLoaded())
+        SaveHandler.writeSubRecord('MANS', SNAM.value, SNAM.GetSize());
+
+    if(XNAM.IsLoaded())
+        SaveHandler.writeSubRecord('MANX', XNAM.value, XNAM.GetSize());
+
+    if(DATA.IsLoaded())
+        SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
+
+    if(DNAM.IsLoaded())
+        SaveHandler.writeSubRecord('MAND', DNAM.value, DNAM.GetSize());
+
+    if(GNAM.IsLoaded())
+        SaveHandler.writeSubRecord('MANG', GNAM.value, GNAM.GetSize());
+
     return -1;
     }
 
 bool WATRRecord::operator ==(const WATRRecord &other) const
     {
-    return (EDID.equalsi(other.EDID));
+    return (EDID.equalsi(other.EDID) &&
+            FULL.equals(other.FULL) &&
+            NNAM.equalsi(other.NNAM) &&
+            ANAM == other.ANAM &&
+            FNAM == other.FNAM &&
+            MNAM.equalsi(other.MNAM) &&
+            SNAM == other.SNAM &&
+            XNAM == other.XNAM &&
+            DATA == other.DATA &&
+            DNAM == other.DNAM &&
+            GNAM == other.GNAM);
     }
 
 bool WATRRecord::operator !=(const WATRRecord &other) const

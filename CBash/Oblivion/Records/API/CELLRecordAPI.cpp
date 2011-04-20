@@ -204,7 +204,7 @@ void * CELLRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 5: //full
             return FULL.value;
         case 6: //flags
-            return &DATA.value.flags;
+            return &DATA.value.value;
         case 7: //ambientRed
             return XCLL.IsLoaded() ? &XCLL->ambient.red : NULL;
         case 8: //ambientGreen
@@ -245,15 +245,15 @@ void * CELLRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 24: //fogClip
             return XCLL.IsLoaded() ? &XCLL->fogClip : NULL;
         case 25: //musicType
-            return &XCMT.value.flags;
+            return &XCMT.value.value;
         case 26: //owner
-            return Ownership.IsLoaded() ? &Ownership->XOWN.value.fid : NULL;
+            return Ownership.IsLoaded() ? &Ownership->XOWN.value.value : NULL;
         case 27: //rank
-            return (Ownership.IsLoaded() && Ownership->XRNK.IsLoaded()) ? &Ownership->XRNK->rank : NULL;
+            return (Ownership.IsLoaded() && Ownership->XRNK.IsLoaded()) ? &Ownership->XRNK->value : NULL;
         case 28: //globalVariable
-            return (Ownership.IsLoaded() && Ownership->XGLB.IsLoaded()) ? &Ownership->XGLB->fid : NULL;
+            return (Ownership.IsLoaded() && Ownership->XGLB.IsLoaded()) ? &Ownership->XGLB->value : NULL;
         case 29: //climate
-            return &XCCM.value.fid;
+            return &XCCM.value.value;
         case 30: //waterHeight
             return &XCLW.value.waterHeight;
         case 31: //regions
@@ -264,7 +264,7 @@ void * CELLRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 33: //posY
             return (!IsInterior() & XCLC.IsLoaded()) ? &XCLC->posY : NULL;
         case 34: //water
-            return &XCWT.value.fid;
+            return &XCWT.value.value;
         case 35: //ACHR
             for(UINT32 p = 0;p < (UINT32)ACHR.size();++p)
                 ((RECORDIDARRAY)FieldValues)[p] = ACHR[p];
@@ -390,21 +390,21 @@ bool CELLRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             break;
         case 26: //owner
             Ownership.Load();
-            Ownership->XOWN.value.fid = *(FORMID *)FieldValue;
+            Ownership->XOWN.value.value = *(FORMID *)FieldValue;
             return true;
         case 27: //rank
             Ownership.Load();
             Ownership->XRNK.Load();
-            Ownership->XRNK->rank = *(SINT32 *)FieldValue;
+            Ownership->XRNK->value = *(SINT32 *)FieldValue;
             break;
         case 28: //globalVariable
             Ownership.Load();
             Ownership->XGLB.Load();
-            Ownership->XGLB->fid = *(FORMID *)FieldValue;
+            Ownership->XGLB->value = *(FORMID *)FieldValue;
             return true;
         case 29: //climate
             XCCM.Load();
-            XCCM.value.fid = *(FORMID *)FieldValue;
+            XCCM.value.value = *(FORMID *)FieldValue;
             return true;
         case 30: //waterHeight
             XCLW.Load();
@@ -429,7 +429,7 @@ bool CELLRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             break;
         case 34: //water
             XCWT.Load();
-            XCWT.value.fid = *(FORMID *)FieldValue;
+            XCWT.value.value = *(FORMID *)FieldValue;
             return true;
         default:
             break;

@@ -73,14 +73,14 @@ bool ACHRRecord::VisitFormIDs(FormIDOp &op)
     if(!IsLoaded())
         return false;
 
-    op.Accept(NAME.value.fid);
+    op.Accept(NAME.value.value);
     if(XPCI.IsLoaded() && XPCI->XPCI.IsLoaded())
-        op.Accept(XPCI->XPCI->fid);
+        op.Accept(XPCI->XPCI->value);
     if(XESP.IsLoaded())
         op.Accept(XESP->parent);
     if(XMRC.IsLoaded())
-        op.Accept(XMRC->fid);
-    op.Accept(XHRS.value.fid);
+        op.Accept(XMRC->value);
+    op.Accept(XHRS.value.value);
 
     return op.Stop();
     }

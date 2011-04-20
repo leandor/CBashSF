@@ -25,10 +25,24 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class TERMRecord : public Record
+class TERMRecord : public Record //Terminal
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENOBND> OBND; //Object Bounds
+        StringRecord FULL; //Name
+        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<GENFID> SCRI; //Script
+        OptSubRecord<GENDESTRUCT> Destructable; //Destructable
+        StringRecord DESC; //Description
+        OptSubRecord<GENFID> SNAM; //Sound - Looping
+        OptSubRecord<GENFID> PNAM; //Password Note
+        OptSubRecord<GENDNAM> DNAM; //DNAM ,, Struct
+        OptSubRecord<GENITXT> ITXT; //Item Text
+        OptSubRecord<GENFID> INAM; //Display Note
+        OptSubRecord<GENFID> TNAM; //Sub Menu
+        OptSubRecord<GENSCHR> SCHR; //Basic Script Data
+        OptSubRecord<GENCTDA> CTDA; //Conditions
 
         TERMRecord(unsigned char *_recData=NULL);
         TERMRecord(TERMRecord *srcRecord);

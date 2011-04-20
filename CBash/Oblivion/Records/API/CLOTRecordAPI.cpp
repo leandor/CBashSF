@@ -130,24 +130,24 @@ void * CLOTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 5: //full
             return FULL.value;
         case 6: //script
-            return SCRI.IsLoaded() ? &SCRI->fid : NULL;
+            return SCRI.IsLoaded() ? &SCRI->value : NULL;
         case 7: //enchantment
-            return ENAM.IsLoaded() ? &ENAM->fid : NULL;
+            return ENAM.IsLoaded() ? &ENAM->value : NULL;
         case 8: //enchantPoints
-            return ANAM.IsLoaded() ? &ANAM->enchantPoints : NULL;
+            return ANAM.IsLoaded() ? &ANAM->value : NULL;
         case 9: //flags
-            return &BMDT.value.flags;
+            return &BMDT.value.value;
         case 10: //maleBody_modPath
             return MODL.IsLoaded() ? MODL->MODL.value : NULL;
         case 11: //maleBody_modb
-            return MODL.IsLoaded() ? &MODL->MODB.value.MODB : NULL;
+            return MODL.IsLoaded() ? &MODL->MODB.value.value : NULL;
         case 12: //maleBody_modt_p
             *FieldValues = MODL.IsLoaded() ? MODL->MODT.value : NULL;
             return NULL;
         case 13: //maleWorld_modPath
             return MOD2.IsLoaded() ? MOD2->MODL.value : NULL;
         case 14: //maleWorld_modb
-            return MOD2.IsLoaded() ? &MOD2->MODB.value.MODB : NULL;
+            return MOD2.IsLoaded() ? &MOD2->MODB.value.value : NULL;
         case 15: //maleWorld_modt_p
             *FieldValues = MOD2.IsLoaded() ? MOD2->MODT.value : NULL;
             return NULL;
@@ -156,14 +156,14 @@ void * CLOTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 17: //femaleBody_modPath
             return MOD3.IsLoaded() ? MOD3->MODL.value : NULL;
         case 18: //femaleBody_modb
-            return MOD3.IsLoaded() ? &MOD3->MODB.value.MODB : NULL;
+            return MOD3.IsLoaded() ? &MOD3->MODB.value.value : NULL;
         case 19: //femaleBody_modt_p
             *FieldValues = MOD3.IsLoaded() ? MOD3->MODT.value : NULL;
             return NULL;
         case 20: //femaleWorld_modPath
             return MOD4.IsLoaded() ? MOD4->MODL.value : NULL;
         case 21: //femaleWorld_modb
-            return MOD4.IsLoaded() ? &MOD4->MODB.value.MODB : NULL;
+            return MOD4.IsLoaded() ? &MOD4->MODB.value.value : NULL;
         case 22: //femaleWorld_modt_p
             *FieldValues = MOD4.IsLoaded() ? MOD4->MODT.value : NULL;
             return NULL;
@@ -196,15 +196,15 @@ bool CLOTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             break;
         case 6: //script
             SCRI.Load();
-            SCRI->fid = *(FORMID *)FieldValue;
+            SCRI->value = *(FORMID *)FieldValue;
             return true;
         case 7: //enchantment
             ENAM.Load();
-            ENAM->fid = *(FORMID *)FieldValue;
+            ENAM->value = *(FORMID *)FieldValue;
             return true;
         case 8: //enchantPoints
             ANAM.Load();
-            ANAM->enchantPoints = *(UINT16 *)FieldValue;
+            ANAM->value = *(UINT16 *)FieldValue;
             break;
         case 9: //flags
             SetFlagMask(*(UINT32 *)FieldValue);
@@ -215,7 +215,7 @@ bool CLOTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             break;
         case 11: //maleBody_modb
             MODL.Load();
-            MODL->MODB.value.MODB = *(FLOAT32 *)FieldValue;
+            MODL->MODB.value.value = *(FLOAT32 *)FieldValue;
             break;
         case 12: //maleBody_modt_p
             MODL.Load();
@@ -227,7 +227,7 @@ bool CLOTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             break;
         case 14: //maleWorld_modb
             MOD2.Load();
-            MOD2->MODB.value.MODB = *(FLOAT32 *)FieldValue;
+            MOD2->MODB.value.value = *(FLOAT32 *)FieldValue;
             break;
         case 15: //maleWorld_modt_p
             MOD2.Load();
@@ -242,7 +242,7 @@ bool CLOTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             break;
         case 18: //femaleBody_modb
             MOD3.Load();
-            MOD3->MODB.value.MODB = *(FLOAT32 *)FieldValue;
+            MOD3->MODB.value.value = *(FLOAT32 *)FieldValue;
             break;
         case 19: //femaleBody_modt_p
             MOD3.Load();
@@ -254,7 +254,7 @@ bool CLOTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             break;
         case 21: //femaleWorld_modb
             MOD4.Load();
-            MOD4->MODB.value.MODB = *(FLOAT32 *)FieldValue;
+            MOD4->MODB.value.value = *(FLOAT32 *)FieldValue;
             break;
         case 22: //femaleWorld_modt_p
             MOD4.Load();

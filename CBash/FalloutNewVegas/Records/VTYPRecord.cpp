@@ -48,6 +48,7 @@ VTYPRecord::VTYPRecord(VTYPRecord *srcRecord):
         }
 
     EDID = srcRecord->EDID;
+    DNAM = srcRecord->DNAM;
     return;
     }
 
@@ -60,6 +61,7 @@ bool VTYPRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
+
 
     return op.Stop();
     }
@@ -78,6 +80,9 @@ UINT32 VTYPRecord::GetSize(bool forceCalc)
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
         }
+
+    if(DNAM.IsLoaded())
+        TotSize += DNAM.GetSize() + 6;
 
     return TotSize;
     }
@@ -117,6 +122,9 @@ SINT32 VTYPRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             case 'DIDE':
                 EDID.Read(buffer, subSize, curPos);
                 break;
+            case 'MAND':
+                DNAM.Read(buffer, subSize, curPos);
+                break;
             default:
                 //printf("FileName = %s\n", FileName);
                 printf("  VTYP: %08X - Unknown subType = %04x\n", formID, subType);
@@ -134,6 +142,7 @@ SINT32 VTYPRecord::Unload()
     IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
+    DNAM.Unload();
     return 1;
     }
 
@@ -141,12 +150,17 @@ SINT32 VTYPRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+
+    if(DNAM.IsLoaded())
+        SaveHandler.writeSubRecord('MAND', DNAM.value, DNAM.GetSize());
+
     return -1;
     }
 
 bool VTYPRecord::operator ==(const VTYPRecord &other) const
     {
-    return (EDID.equalsi(other.EDID));
+    return (EDID.equalsi(other.EDID) &&
+            DNAM == other.DNAM);
     }
 
 bool VTYPRecord::operator !=(const VTYPRecord &other) const

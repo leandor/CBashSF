@@ -129,7 +129,7 @@ void * CLMTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 8: //modPath
             return MODL.IsLoaded() ? MODL->MODL.value : NULL;
         case 9: //modb
-            return MODL.IsLoaded() ? &MODL->MODB.value.MODB : NULL;
+            return MODL.IsLoaded() ? &MODL->MODB.value.value : NULL;
         case 10: //modt_p
             *FieldValues = MODL.IsLoaded() ? MODL->MODT.value : NULL;
             return NULL;
@@ -197,7 +197,7 @@ bool CLMTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             break;
         case 9: //modb
             MODL.Load();
-            MODL->MODB.value.MODB = *(FLOAT32 *)FieldValue;
+            MODL->MODB.value.value = *(FLOAT32 *)FieldValue;
             break;
         case 10: //modt_p
             MODL.Load();

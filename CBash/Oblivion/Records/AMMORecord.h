@@ -55,7 +55,7 @@ class AMMORecord : public Record
         OptSubRecord<GENMODEL> MODL;
         StringRecord ICON;
         OptSubRecord<GENFID> ENAM;
-        OptSubRecord<GENANAM> ANAM;
+        OptSubRecord<GENU16> ANAM;
         ReqSubRecord<AMMODATA> DATA;
 
         AMMORecord(unsigned char *_recData=NULL);

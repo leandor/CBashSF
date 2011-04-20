@@ -68,7 +68,7 @@ bool ANIORecord::VisitFormIDs(FormIDOp &op)
         return false;
 
     if(DATA.IsLoaded())
-        op.Accept(DATA.value.fid);
+        op.Accept(DATA.value.value);
 
     return op.Stop();
     }

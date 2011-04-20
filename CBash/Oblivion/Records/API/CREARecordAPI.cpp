@@ -322,7 +322,7 @@ void * CREARecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 6: //modPath
             return MODL.IsLoaded() ? MODL->MODL.value : NULL;
         case 7: //modb
-            return MODL.IsLoaded() ? &MODL->MODB.value.MODB : NULL;
+            return MODL.IsLoaded() ? &MODL->MODB.value.value : NULL;
         case 8: //modt_p
             *FieldValues = MODL.IsLoaded() ? MODL->MODT.value : NULL;
             return NULL;
@@ -371,9 +371,9 @@ void * CREARecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                     return NULL;
                 }
         case 20: //deathItem
-            return INAM.IsLoaded() ? &INAM->fid : NULL;
+            return INAM.IsLoaded() ? &INAM->value : NULL;
         case 21: //script
-            return SCRI.IsLoaded() ? &SCRI->fid : NULL;
+            return SCRI.IsLoaded() ? &SCRI->value : NULL;
         case 22: //items
             if(ListIndex >= CNTO.size())
                 return NULL;
@@ -448,17 +448,17 @@ void * CREARecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 49: //luck
             return &DATA.value.luck;
         case 50: //attackReach
-            return &RNAM.value.attackReach;
+            return &RNAM.value.value;
         case 51: //combatStyle
-            return ZNAM.IsLoaded() ? &ZNAM->fid : NULL;
+            return ZNAM.IsLoaded() ? &ZNAM->value : NULL;
         case 52: //turningSpeed
-            return &TNAM.value.turningSpeed;
+            return &TNAM.value.value;
         case 53: //baseScale
-            return &BNAM.value.baseScale;
+            return &BNAM.value.value;
         case 54: //footWeight
-            return &WNAM.value.footWeight;
+            return &WNAM.value.value;
         case 55: //inheritsSoundsFrom
-            return CSCR.IsLoaded() ? &CSCR->fid : NULL;
+            return CSCR.IsLoaded() ? &CSCR->value : NULL;
         case 56: //bloodSprayPath
             return NAM0.value;
         case 57: //bloodDecalPath
@@ -470,11 +470,11 @@ void * CREARecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             switch(ListFieldID)
                 {
                 case 1: //soundType
-                    return &Sounds[ListIndex]->CSDT.value.soundType;
+                    return &Sounds[ListIndex]->CSDT.value.value;
                 case 2: //sound
-                    return &Sounds[ListIndex]->CSDI.value.fid;
+                    return &Sounds[ListIndex]->CSDI.value.value;
                 case 3: //chance
-                    return &Sounds[ListIndex]->CSDC.value.chance;
+                    return &Sounds[ListIndex]->CSDC.value.value;
                 default:
                     return NULL;
                 }
@@ -505,7 +505,7 @@ bool CREARecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             break;
         case 7: //modb
             MODL.Load();
-            MODL->MODB.value.MODB = *(FLOAT32 *)FieldValue;
+            MODL->MODB.value.value = *(FLOAT32 *)FieldValue;
             break;
         case 8: //modt_p
             MODL.Load();
@@ -587,11 +587,11 @@ bool CREARecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             break;
         case 20: //deathItem
             INAM.Load();
-            INAM->fid = *(FORMID *)FieldValue;
+            INAM->value = *(FORMID *)FieldValue;
             return true;
         case 21: //script
             SCRI.Load();
-            SCRI->fid = *(FORMID *)FieldValue;
+            SCRI->value = *(FORMID *)FieldValue;
             return true;
         case 22: //items
             if(ListFieldID == 0) //itemsSize
@@ -720,24 +720,24 @@ bool CREARecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             DATA.value.luck = *(UINT8 *)FieldValue;
             break;
         case 50: //attackReach
-            RNAM.value.attackReach = *(UINT8 *)FieldValue;
+            RNAM.value.value = *(UINT8 *)FieldValue;
             break;
         case 51: //combatStyle
             ZNAM.Load();
-            ZNAM->fid = *(FORMID *)FieldValue;
+            ZNAM->value = *(FORMID *)FieldValue;
             return true;
         case 52: //turningSpeed
-            TNAM.value.turningSpeed = *(FLOAT32 *)FieldValue;
+            TNAM.value.value = *(FLOAT32 *)FieldValue;
             break;
         case 53: //baseScale
-            BNAM.value.baseScale = *(FLOAT32 *)FieldValue;
+            BNAM.value.value = *(FLOAT32 *)FieldValue;
             break;
         case 54: //footWeight
-            WNAM.value.footWeight = *(FLOAT32 *)FieldValue;
+            WNAM.value.value = *(FLOAT32 *)FieldValue;
             break;
         case 55: //inheritsSoundsFrom
             CSCR.Load();
-            CSCR->fid = *(FORMID *)FieldValue;
+            CSCR->value = *(FORMID *)FieldValue;
             return true;
         case 56: //bloodSprayPath
             NAM0.Copy((STRING)FieldValue);
@@ -772,10 +772,10 @@ bool CREARecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                     Sounds[ListIndex]->SetType(*(UINT32 *)FieldValue);
                     break;
                 case 2: //sound
-                    Sounds[ListIndex]->CSDI.value.fid = *(FORMID *)FieldValue;
+                    Sounds[ListIndex]->CSDI.value.value = *(FORMID *)FieldValue;
                     return true;
                 case 3: //chance
-                    Sounds[ListIndex]->CSDC.value.chance = *(UINT8 *)FieldValue;
+                    Sounds[ListIndex]->CSDC.value.value = *(UINT8 *)FieldValue;
                     break;
                 default:
                     break;

@@ -25,34 +25,20 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class TXSTRecord : public Record
+class TXSTRecord : public Record //Texture Set
     {
-    private:
-        enum flagsFlags
-            {
-            fIsNoSpecularMap = 0x00000001
-            };
-
     public:
-        StringRecord EDID;
-        ReqSubRecord<GENOBND> OBND;
-        StringRecord TX00;
-        StringRecord TX01;
-        StringRecord TX02;
-        StringRecord TX03;
-        StringRecord TX04;
-        StringRecord TX05;
-        OptSubRecord<GENDODT> DODT;
-        ReqSubRecord<GENU16FLAG> DNAM;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENOBND> OBND; //Object Bounds
+        OptSubRecord<GENTX00> TX00; //Base Image / Transparency
+        OptSubRecord<GENDODT> DODT; //Decal Data
+        OptSubRecord<GENU16> DNAM; //Flags
 
         TXSTRecord(unsigned char *_recData=NULL);
         TXSTRecord(TXSTRecord *srcRecord);
         ~TXSTRecord();
 
-        bool   IsNoSpecularMap();
-        void   IsNoSpecularMap(bool value);
-        bool   IsFlagMask(UINT16 Mask, bool Exact=false);
-        void   SetFlagMask(UINT16 Mask);
+        bool   VisitFormIDs(FormIDOp &op);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

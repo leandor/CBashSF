@@ -48,6 +48,18 @@ STATRecord::STATRecord(STATRecord *srcRecord):
         }
 
     EDID = srcRecord->EDID;
+    OBND = srcRecord->OBND;
+    if(srcRecord->MODL.IsLoaded())
+        {
+        MODL.Load();
+        MODL->MODL = srcRecord->MODL->MODL;
+        MODL->MODB = srcRecord->MODL->MODB;
+        MODL->MODT = srcRecord->MODL->MODT;
+        MODL->MODS = srcRecord->MODL->MODS;
+        MODL->MODD = srcRecord->MODL->MODD;
+        }
+    BRUS = srcRecord->BRUS;
+    RNAM = srcRecord->RNAM;
     return;
     }
 
@@ -60,6 +72,11 @@ bool STATRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
+
+    if(MODL.IsLoaded() && MODL->MODS.IsLoaded())
+        op.Accept(MODL->MODS->value);
+    if(RNAM.IsLoaded())
+        op.Accept(RNAM->value);
 
     return op.Stop();
     }
@@ -78,6 +95,41 @@ UINT32 STATRecord::GetSize(bool forceCalc)
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
         }
+
+    if(OBND.IsLoaded())
+        TotSize += OBND.GetSize() + 6;
+
+    if(MODL.IsLoaded())
+        {
+        if(MODL->MODL.IsLoaded())
+            {
+            cSize = MODL->MODL.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        if(MODL->MODB.IsLoaded())
+            {
+            cSize = MODL->MODB.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        if(MODL->MODT.IsLoaded())
+            {
+            cSize = MODL->MODT.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        if(MODL->MODS.IsLoaded())
+            TotSize += MODL->MODS.GetSize() + 6;
+        if(MODL->MODD.IsLoaded())
+            TotSize += MODL->MODD.GetSize() + 6;
+        }
+
+    if(BRUS.IsLoaded())
+        TotSize += BRUS.GetSize() + 6;
+
+    if(RNAM.IsLoaded())
+        TotSize += RNAM.GetSize() + 6;
 
     return TotSize;
     }
@@ -117,6 +169,35 @@ SINT32 STATRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             case 'DIDE':
                 EDID.Read(buffer, subSize, curPos);
                 break;
+            case 'DNBO':
+                OBND.Read(buffer, subSize, curPos);
+                break;
+            case 'LDOM':
+                MODL.Load();
+                MODL->MODL.Read(buffer, subSize, curPos);
+                break;
+            case 'BDOM':
+                MODL.Load();
+                MODL->MODB.Read(buffer, subSize, curPos);
+                break;
+            case 'TDOM':
+                MODL.Load();
+                MODL->MODT.Read(buffer, subSize, curPos);
+                break;
+            case 'SDOM':
+                MODL.Load();
+                MODL->MODS.Read(buffer, subSize, curPos);
+                break;
+            case 'DDOM':
+                MODL.Load();
+                MODL->MODD.Read(buffer, subSize, curPos);
+                break;
+            case 'SURB':
+                BRUS.Read(buffer, subSize, curPos);
+                break;
+            case 'MANR':
+                RNAM.Read(buffer, subSize, curPos);
+                break;
             default:
                 //printf("FileName = %s\n", FileName);
                 printf("  STAT: %08X - Unknown subType = %04x\n", formID, subType);
@@ -134,6 +215,10 @@ SINT32 STATRecord::Unload()
     IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
+    OBND.Unload();
+    MODL.Unload();
+    BRUS.Unload();
+    RNAM.Unload();
     return 1;
     }
 
@@ -141,12 +226,45 @@ SINT32 STATRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+
+    if(OBND.IsLoaded())
+        SaveHandler.writeSubRecord('DNBO', OBND.value, OBND.GetSize());
+
+    if(MODL.IsLoaded())
+        {
+        if(MODL->MODL.IsLoaded())
+            SaveHandler.writeSubRecord('LDOM', MODL->MODL.value, MODL->MODL.GetSize());
+
+        if(MODL->MODB.IsLoaded())
+            SaveHandler.writeSubRecord('BDOM', MODL->MODB.value, MODL->MODB.GetSize());
+
+        if(MODL->MODT.IsLoaded())
+            SaveHandler.writeSubRecord('TDOM', MODL->MODT.value, MODL->MODT.GetSize());
+
+        if(MODL->MODS.IsLoaded())
+            SaveHandler.writeSubRecord('SDOM', MODL->MODS.value, MODL->MODS.GetSize());
+
+        if(MODL->MODD.IsLoaded())
+            SaveHandler.writeSubRecord('DDOM', MODL->MODD.value, MODL->MODD.GetSize());
+
+        }
+
+    if(BRUS.IsLoaded())
+        SaveHandler.writeSubRecord('SURB', BRUS.value, BRUS.GetSize());
+
+    if(RNAM.IsLoaded())
+        SaveHandler.writeSubRecord('MANR', RNAM.value, RNAM.GetSize());
+
     return -1;
     }
 
 bool STATRecord::operator ==(const STATRecord &other) const
     {
-    return (EDID.equalsi(other.EDID));
+    return (EDID.equalsi(other.EDID) &&
+            OBND == other.OBND &&
+            MODL == other.MODL &&
+            BRUS == other.BRUS &&
+            RNAM == other.RNAM);
     }
 
 bool STATRecord::operator !=(const STATRecord &other) const
