@@ -25,10 +25,15 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class IDLMRecord : public Record
+class IDLMRecord : public Record //Idle Marker
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENOBND> OBND; //Object Bounds
+        OptSubRecord<GENU8> IDLF; //Flags
+        OptSubRecord<GENIDLC> IDLC; //IDLC ,, Struct
+        OptSubRecord<GENFLOAT> IDLT; //Idle Timer Setting
+        OptSubRecord<GENIDLA> IDLA; //Animations
 
         IDLMRecord(unsigned char *_recData=NULL);
         IDLMRecord(IDLMRecord *srcRecord);

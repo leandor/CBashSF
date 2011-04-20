@@ -25,10 +25,14 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class HAIRRecord : public Record
+class HAIRRecord : public Record //Hair
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        StringRecord FULL; //Name
+        OptSubRecord<GENMODEL> MODL; //Model Filename
+        StringRecord ICON; //Texture
+        OptSubRecord<GENU8> DATA; //Flags
 
         HAIRRecord(unsigned char *_recData=NULL);
         HAIRRecord(HAIRRecord *srcRecord);

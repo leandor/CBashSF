@@ -48,6 +48,8 @@ GLOBRecord::GLOBRecord(GLOBRecord *srcRecord):
         }
 
     EDID = srcRecord->EDID;
+    FNAM = srcRecord->FNAM;
+    FLTV = srcRecord->FLTV;
     return;
     }
 
@@ -60,6 +62,7 @@ bool GLOBRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
+
 
     return op.Stop();
     }
@@ -78,6 +81,12 @@ UINT32 GLOBRecord::GetSize(bool forceCalc)
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
         }
+
+    if(FNAM.IsLoaded())
+        TotSize += FNAM.GetSize() + 6;
+
+    if(FLTV.IsLoaded())
+        TotSize += FLTV.GetSize() + 6;
 
     return TotSize;
     }
@@ -117,6 +126,12 @@ SINT32 GLOBRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             case 'DIDE':
                 EDID.Read(buffer, subSize, curPos);
                 break;
+            case 'MANF':
+                FNAM.Read(buffer, subSize, curPos);
+                break;
+            case 'VTLF':
+                FLTV.Read(buffer, subSize, curPos);
+                break;
             default:
                 //printf("FileName = %s\n", FileName);
                 printf("  GLOB: %08X - Unknown subType = %04x\n", formID, subType);
@@ -134,6 +149,8 @@ SINT32 GLOBRecord::Unload()
     IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
+    FNAM.Unload();
+    FLTV.Unload();
     return 1;
     }
 
@@ -141,12 +158,21 @@ SINT32 GLOBRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+
+    if(FNAM.IsLoaded())
+        SaveHandler.writeSubRecord('MANF', FNAM.value, FNAM.GetSize());
+
+    if(FLTV.IsLoaded())
+        SaveHandler.writeSubRecord('VTLF', FLTV.value, FLTV.GetSize());
+
     return -1;
     }
 
 bool GLOBRecord::operator ==(const GLOBRecord &other) const
     {
-    return (EDID.equalsi(other.EDID));
+    return (EDID.equalsi(other.EDID) &&
+            FNAM == other.FNAM &&
+            FLTV == other.FLTV);
     }
 
 bool GLOBRecord::operator !=(const GLOBRecord &other) const

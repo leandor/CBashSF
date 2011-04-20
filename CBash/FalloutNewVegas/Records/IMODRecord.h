@@ -25,10 +25,20 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class IMODRecord : public Record
+class IMODRecord : public Record //Item Mod
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENOBND> OBND; //Object Bounds
+        StringRecord FULL; //Name
+        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<GENICON> ICON; //Large Icon Filename
+        OptSubRecord<GENFID> SCRI; //Script
+        StringRecord DESC; //Description
+        OptSubRecord<GENDESTRUCT> Destructable; //Destructable
+        OptSubRecord<GENFID> YNAM; //Sound - Pick Up
+        OptSubRecord<GENFID> ZNAM; //Sound - Drop
+        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
 
         IMODRecord(unsigned char *_recData=NULL);
         IMODRecord(IMODRecord *srcRecord);

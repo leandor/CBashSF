@@ -29,7 +29,7 @@ class ANIORecord : public Record //Animated Object
     {
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<FNVMODEL> MODL; //Model Filename
         OptSubRecord<GENFID> DATA; //Animation
 
         ANIORecord(unsigned char *_recData=NULL);

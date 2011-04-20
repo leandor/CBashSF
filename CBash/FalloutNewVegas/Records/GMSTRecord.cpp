@@ -24,63 +24,6 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-GMSTRecord::GMSTDATA::GMSTDATA(STRING _DATA):
-    format('s'),
-    s(_DATA)
-    {
-    //
-    }
-
-GMSTRecord::GMSTDATA::GMSTDATA(SINT32 _DATA):
-    format('i'),
-    i(_DATA)
-    {
-    //
-    }
-
-GMSTRecord::GMSTDATA::GMSTDATA(FLOAT32 _DATA):
-    format('f'),
-    f(_DATA)
-    {
-    //
-    }
-
-GMSTRecord::GMSTDATA::GMSTDATA():
-    format(0),
-    i(0)
-    {
-    //
-    }
-
-GMSTRecord::GMSTDATA::~GMSTDATA()
-    {
-    if(format == 's')
-        delete []s;
-    }
-
-bool GMSTRecord::GMSTDATA::operator ==(const GMSTDATA &other) const
-    {
-    if(format != other.format)
-        return false;
-
-    switch(format)
-        {
-        case 's':
-            return strcmp(s, other.s) == 0;
-        case 'i':
-            return i == other.i;
-        case 'f':
-            return AlmostEqual(f, other.f, 2);
-        default:
-            return false;
-        }
-    }
-
-bool GMSTRecord::GMSTDATA::operator !=(const GMSTDATA &other) const
-    {
-    return !(*this == other);
-    }
-
 GMSTRecord::GMSTRecord(unsigned char *_recData):
     Record(_recData)
     {
@@ -96,7 +39,6 @@ GMSTRecord::GMSTRecord(GMSTRecord *srcRecord):
     flags = srcRecord->flags;
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
-    EDID = srcRecord->EDID;
 
     if(!srcRecord->IsChanged())
         {
@@ -105,30 +47,23 @@ GMSTRecord::GMSTRecord(GMSTRecord *srcRecord):
         return;
         }
 
-    DATA.format = srcRecord->DATA.format;
-    UINT32 vSize;
-    switch(DATA.format)
-        {
-        case 'f':
-            DATA.f = srcRecord->DATA.f;
-            break;
-        case 'i':
-            DATA.i = srcRecord->DATA.i;
-            break;
-        case 's':
-            vSize = (UINT32)strlen(srcRecord->DATA.s) + 1;
-            DATA.s = new char [vSize];
-            strcpy_s(DATA.s, vSize, srcRecord->DATA.s);
-            break;
-        default:
-            break;
-        }
+    EDID = srcRecord->EDID;
+    DATA = srcRecord->DATA;
     return;
     }
 
 GMSTRecord::~GMSTRecord()
     {
     //
+    }
+
+bool GMSTRecord::VisitFormIDs(FormIDOp &op)
+    {
+    if(!IsLoaded())
+        return false;
+
+
+    return op.Stop();
     }
 
 UINT32 GMSTRecord::GetSize(bool forceCalc)
@@ -146,25 +81,11 @@ UINT32 GMSTRecord::GetSize(bool forceCalc)
         TotSize += cSize += 6;
         }
 
-    switch(DATA.format)
+    if(DATA.IsLoaded())
         {
-        case 'i':
-        case 'f':
-            TotSize += 10;
-            break;
-        case 's':
-            if(DATA.s != NULL)
-                {
-                cSize = (UINT32)strlen(DATA.s) + 1;
-                if(cSize > 65535) cSize += 10;
-                }
-            else
-                cSize = 1;
-            TotSize += cSize += 6;
-            break;
-        default:
-            printf("Unknown GMST format (%c) in GetSize(): %s\n", DATA.format, EDID.value);
-            break;
+        cSize = DATA.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
         }
 
     return TotSize;
@@ -178,11 +99,6 @@ UINT32 GMSTRecord::GetType()
 STRING GMSTRecord::GetStrType()
     {
     return "GMST";
-    }
-
-bool GMSTRecord::IsKeyedByEditorID()
-    {
-    return true;
     }
 
 SINT32 GMSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
@@ -211,34 +127,11 @@ SINT32 GMSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 EDID.Read(buffer, subSize, curPos);
                 break;
             case 'ATAD':
-                DATA.format = EDID.value[0];
-                switch(DATA.format)
-                    {
-                    case 's':
-                        DATA.s = new char[subSize];
-                        memcpy(DATA.s, buffer + curPos, subSize);
-                        curPos += subSize;
-                        break;
-                    case 'i':
-                        memcpy(&DATA.i, buffer + curPos, subSize);
-                        curPos += subSize;
-                        break;
-                    case 'f':
-                        memcpy(&DATA.f, buffer + curPos, subSize);
-                        curPos += subSize;
-                        break;
-                    default:
-                        //printf("FileName = %s\n", FileName);
-                        printf("  GMST: %08X - Unknown type = %c\n", formID, DATA.format);
-                        printf("  Size = %i\n", subSize);
-                        printf("  CurPos = %04x\n\n", curPos - 6);
-                        curPos = recSize;
-                        break;
-                    }
+                DATA.Read(buffer, subSize, curPos);
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
-                printf("  GMST: Unknown subType = %04X\n", subType);
+                printf("  GMST: %08X - Unknown subType = %04x\n", formID, subType);
                 printf("  Size = %i\n", subSize);
                 printf("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
@@ -252,11 +145,8 @@ SINT32 GMSTRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
-    //Don't unload EDID since it is used to index the record
-    if(DATA.format == 's')
-        delete []DATA.s;
-    DATA.i = 0;
-    DATA.format = 0;
+    EDID.Unload();
+    DATA.Unload();
     return 1;
     }
 
@@ -264,31 +154,17 @@ SINT32 GMSTRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
-    UINT8 null = 0;
-    switch(DATA.format)
-        {
-        case 'i':
-            SaveHandler.writeSubRecord('ATAD', &DATA.i, 4);
-            break;
-        case 'f':
-            SaveHandler.writeSubRecord('ATAD', &DATA.f, 4);
-            break;
-        case 's':
-            if(DATA.s != NULL)
-                SaveHandler.writeSubRecord('ATAD', DATA.s, (UINT32)strlen(DATA.s) + 1);
-            else
-                SaveHandler.writeSubRecord('ATAD', &null, 1);
-            break;
-        default:
-            printf("Unknown GMST format (%c) when writing: %s\n", DATA.format, EDID.value);
-        }
+
+    if(DATA.IsLoaded())
+        SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
+
     return -1;
     }
 
 bool GMSTRecord::operator ==(const GMSTRecord &other) const
     {
     return (EDID.equalsi(other.EDID) &&
-            DATA == other.DATA);
+            DATA.equalsi(other.DATA));
     }
 
 bool GMSTRecord::operator !=(const GMSTRecord &other) const

@@ -27,21 +27,58 @@ namespace FNV
 {
 class AMMORecord : public Record //Ammunition
     {
+    private:
+        struct AMMODATA
+            {
+            FLOAT32 speed; //Speed
+            UINT8   flags; //Flags
+            UINT8   unused[3]; //Unused
+            SINT32  value; //Value
+            UINT8   clipRounds; //Clip Rounds
+
+            AMMODATA();
+            ~AMMODATA();
+
+            bool operator ==(const AMMODATA &other) const;
+            bool operator !=(const AMMODATA &other) const;
+            };
+
+        struct AMMODAT2
+            {
+            UINT32  projectilesPerShot; //Proj. per Shot
+            FORMID  projectile; //Projectile
+            FLOAT32 weight; //Weight
+            FORMID  consumedAmmo; //Consumed Ammo
+            FLOAT32 consumedPercentage; //Consumed Percentage
+
+            AMMODAT2();
+            ~AMMODAT2();
+
+            bool operator ==(const AMMODAT2 &other) const;
+            bool operator !=(const AMMODAT2 &other) const;
+            };
+
+        enum flagsFlags
+            {
+            fIsNotNormalWeapon = 0x01,
+            fIsNonPlayable     = 0x02
+            };
+
     public:
         StringRecord EDID; //Editor ID
         OptSubRecord<GENOBND> OBND; //Object Bounds
         StringRecord FULL; //Name
-        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<FNVMODEL> MODL; //Model
         OptSubRecord<GENICON> ICON; //Large Icon Filename
         OptSubRecord<GENFID> SCRI; //Script
-        OptSubRecord<GENDEST> DEST; //Header
+        OptSubRecord<GENDESTRUCT> Destructable; //Destructable
         OptSubRecord<GENFID> YNAM; //Sound - Pick Up
         OptSubRecord<GENFID> ZNAM; //Sound - Drop
-        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
-        OptSubRecord<GENDAT2> DAT2; //DAT2 ,, Struct
+        OptSubRecord<AMMODATA> DATA; //Ammo Data
+        OptSubRecord<AMMODAT2> DAT2; //Extra Ammo Data
         StringRecord ONAM; //Short Name
         StringRecord QNAM; //Abbrev.
-        OptSubRecord<GENFID> RCIL; //Effect
+        std::vector<FORMID> RCIL; //Ammo Effects
 
         AMMORecord(unsigned char *_recData=NULL);
         AMMORecord(AMMORecord *srcRecord);

@@ -25,10 +25,14 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class IDLERecord : public Record
+class IDLERecord : public Record //Idle Animation
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<GENCTDA> CTDA; //Conditions
+        OptSubRecord<GENANAM> ANAM; //Related Idle Animations
+        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
 
         IDLERecord(unsigned char *_recData=NULL);
         IDLERecord(IDLERecord *srcRecord);

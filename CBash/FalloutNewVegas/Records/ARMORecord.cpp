@@ -139,6 +139,714 @@ bool ARMORecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+bool ARMORecord::IsHead()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsHead) != 0;
+    }
+
+void ARMORecord::IsHead(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsHead;
+    else
+        Dummy->flags &= ~fIsHead;
+    }
+
+bool ARMORecord::IsHair()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsHair) != 0;
+    }
+
+void ARMORecord::IsHair(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsHair;
+    else
+        Dummy->flags &= ~fIsHair;
+    }
+
+bool ARMORecord::IsUpperBody()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsUpperBody) != 0;
+    }
+
+void ARMORecord::IsUpperBody(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsUpperBody;
+    else
+        Dummy->flags &= ~fIsUpperBody;
+    }
+
+bool ARMORecord::IsLeftHand()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsLeftHand) != 0;
+    }
+
+void ARMORecord::IsLeftHand(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsLeftHand;
+    else
+        Dummy->flags &= ~fIsLeftHand;
+    }
+
+bool ARMORecord::IsRightHand()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsRightHand) != 0;
+    }
+
+void ARMORecord::IsRightHand(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsRightHand;
+    else
+        Dummy->flags &= ~fIsRightHand;
+    }
+
+bool ARMORecord::IsWeapon()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsWeapon) != 0;
+    }
+
+void ARMORecord::IsWeapon(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsWeapon;
+    else
+        Dummy->flags &= ~fIsWeapon;
+    }
+
+bool ARMORecord::IsPipBoy()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsPipBoy) != 0;
+    }
+
+void ARMORecord::IsPipBoy(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsPipBoy;
+    else
+        Dummy->flags &= ~fIsPipBoy;
+    }
+
+bool ARMORecord::IsBackpack()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsBackpack) != 0;
+    }
+
+void ARMORecord::IsBackpack(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsBackpack;
+    else
+        Dummy->flags &= ~fIsBackpack;
+    }
+
+bool ARMORecord::IsNecklace()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsNecklace) != 0;
+    }
+
+void ARMORecord::IsNecklace(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsNecklace;
+    else
+        Dummy->flags &= ~fIsNecklace;
+    }
+
+bool ARMORecord::IsHeadband()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsHeadband) != 0;
+    }
+
+void ARMORecord::IsHeadband(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsHeadband;
+    else
+        Dummy->flags &= ~fIsHeadband;
+    }
+
+bool ARMORecord::IsHat()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsHat) != 0;
+    }
+
+void ARMORecord::IsHat(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsHat;
+    else
+        Dummy->flags &= ~fIsHat;
+    }
+
+bool ARMORecord::IsEyeGlasses()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsEyeGlasses) != 0;
+    }
+
+void ARMORecord::IsEyeGlasses(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsEyeGlasses;
+    else
+        Dummy->flags &= ~fIsEyeGlasses;
+    }
+
+bool ARMORecord::IsNoseRing()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsNoseRing) != 0;
+    }
+
+void ARMORecord::IsNoseRing(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsNoseRing;
+    else
+        Dummy->flags &= ~fIsNoseRing;
+    }
+
+bool ARMORecord::IsEarrings()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsEarrings) != 0;
+    }
+
+void ARMORecord::IsEarrings(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsEarrings;
+    else
+        Dummy->flags &= ~fIsEarrings;
+    }
+
+bool ARMORecord::IsMask()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsMask) != 0;
+    }
+
+void ARMORecord::IsMask(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsMask;
+    else
+        Dummy->flags &= ~fIsMask;
+    }
+
+bool ARMORecord::IsChoker()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsChoker) != 0;
+    }
+
+void ARMORecord::IsChoker(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsChoker;
+    else
+        Dummy->flags &= ~fIsChoker;
+    }
+
+bool ARMORecord::IsMouthObject()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsMouthObject) != 0;
+    }
+
+void ARMORecord::IsMouthObject(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsMouthObject;
+    else
+        Dummy->flags &= ~fIsMouthObject;
+    }
+
+bool ARMORecord::IsBodyAddon1()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsBodyAddon1) != 0;
+    }
+
+void ARMORecord::IsBodyAddon1(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsBodyAddon1;
+    else
+        Dummy->flags &= ~fIsBodyAddon1;
+    }
+
+bool ARMORecord::IsBodyAddon2()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsBodyAddon2) != 0;
+    }
+
+void ARMORecord::IsBodyAddon2(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsBodyAddon2;
+    else
+        Dummy->flags &= ~fIsBodyAddon2;
+    }
+
+bool ARMORecord::IsBodyAddon3()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsBodyAddon3) != 0;
+    }
+
+void ARMORecord::IsBodyAddon3(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsBodyAddon3;
+    else
+        Dummy->flags &= ~fIsBodyAddon3;
+    }
+
+bool ARMORecord::IsFlagMask(UINT32 Mask, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    }
+
+void ARMORecord::SetFlagMask(UINT32 Mask)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
+bool ARMORecord::IsUnknown1()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsUnknown1) != 0;
+    }
+
+void ARMORecord::IsUnknown1(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsUnknown1;
+    else
+        Dummy->flags &= ~fIsUnknown1;
+    }
+
+bool ARMORecord::IsUnknown2()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsUnknown2) != 0;
+    }
+
+void ARMORecord::IsUnknown2(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsUnknown2;
+    else
+        Dummy->flags &= ~fIsUnknown2;
+    }
+
+bool ARMORecord::IsHasBackpack()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsHasBackpack) != 0;
+    }
+
+void ARMORecord::IsHasBackpack(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsHasBackpack;
+    else
+        Dummy->flags &= ~fIsHasBackpack;
+    }
+
+bool ARMORecord::IsMedium()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsMedium) != 0;
+    }
+
+void ARMORecord::IsMedium(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsMedium;
+    else
+        Dummy->flags &= ~fIsMedium;
+    }
+
+bool ARMORecord::IsUnknown3()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsUnknown3) != 0;
+    }
+
+void ARMORecord::IsUnknown3(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsUnknown3;
+    else
+        Dummy->flags &= ~fIsUnknown3;
+    }
+
+bool ARMORecord::IsPowerArmor()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsPowerArmor) != 0;
+    }
+
+void ARMORecord::IsPowerArmor(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsPowerArmor;
+    else
+        Dummy->flags &= ~fIsPowerArmor;
+    }
+
+bool ARMORecord::IsNonPlayable()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsNonPlayable) != 0;
+    }
+
+void ARMORecord::IsNonPlayable(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsNonPlayable;
+    else
+        Dummy->flags &= ~fIsNonPlayable;
+    }
+
+bool ARMORecord::IsHeavy()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsHeavy) != 0;
+    }
+
+void ARMORecord::IsHeavy(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsHeavy;
+    else
+        Dummy->flags &= ~fIsHeavy;
+    }
+
+bool ARMORecord::IsExtraFlagMask(UINT8 Mask, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    }
+
+void ARMORecord::SetExtraFlagMask(UINT8 Mask)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
+bool ARMORecord::IsNone()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eNone);
+    }
+
+void ARMORecord::IsNone(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eNone;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool ARMORecord::IsBigGuns()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eBigGuns);
+    }
+
+void ARMORecord::IsBigGuns(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eBigGuns;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool ARMORecord::IsEnergyWeapons()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eEnergyWeapons);
+    }
+
+void ARMORecord::IsEnergyWeapons(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eEnergyWeapons;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool ARMORecord::IsSmallGuns()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eSmallGuns);
+    }
+
+void ARMORecord::IsSmallGuns(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eSmallGuns;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool ARMORecord::IsMeleeWeapons()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eMeleeWeapons);
+    }
+
+void ARMORecord::IsMeleeWeapons(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eMeleeWeapons;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool ARMORecord::IsUnarmedWeapon()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eUnarmedWeapon);
+    }
+
+void ARMORecord::IsUnarmedWeapon(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eUnarmedWeapon;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool ARMORecord::IsThrownWeapons()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eThrownWeapons);
+    }
+
+void ARMORecord::IsThrownWeapons(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eThrownWeapons;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool ARMORecord::IsMine()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eMine);
+    }
+
+void ARMORecord::IsMine(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eMine;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool ARMORecord::IsBodyWear()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eBodyWear);
+    }
+
+void ARMORecord::IsBodyWear(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eBodyWear;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool ARMORecord::IsHeadWear()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eHeadWear);
+    }
+
+void ARMORecord::IsHeadWear(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eHeadWear;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool ARMORecord::IsHandWear()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eHandWear);
+    }
+
+void ARMORecord::IsHandWear(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eHandWear;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool ARMORecord::IsChems()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eChems);
+    }
+
+void ARMORecord::IsChems(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eChems;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool ARMORecord::IsStimpack()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eStimpack);
+    }
+
+void ARMORecord::IsStimpack(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eStimpack;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool ARMORecord::IsFood()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eFood);
+    }
+
+void ARMORecord::IsFood(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eFood;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool ARMORecord::IsAlcohol()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eAlcohol);
+    }
+
+void ARMORecord::IsAlcohol(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eAlcohol;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool ARMORecord::IsEquipmentType(UINT32 Type, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    }
+
+void ARMORecord::SetEquipmentType(UINT32 Type)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
+bool ARMORecord::IsModulatesVoice()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsModulatesVoice) != 0;
+    }
+
+void ARMORecord::IsModulatesVoice(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsModulatesVoice;
+    else
+        Dummy->flags &= ~fIsModulatesVoice;
+    }
+
+bool ARMORecord::IsDNAMFlagMask(UINT16 Mask, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    }
+
+void ARMORecord::SetDNAMFlagMask(UINT16 Mask)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
 UINT32 ARMORecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())

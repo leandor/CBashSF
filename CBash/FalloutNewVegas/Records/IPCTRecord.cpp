@@ -48,6 +48,20 @@ IPCTRecord::IPCTRecord(IPCTRecord *srcRecord):
         }
 
     EDID = srcRecord->EDID;
+    if(srcRecord->MODL.IsLoaded())
+        {
+        MODL.Load();
+        MODL->MODL = srcRecord->MODL->MODL;
+        MODL->MODB = srcRecord->MODL->MODB;
+        MODL->MODT = srcRecord->MODL->MODT;
+        MODL->MODS = srcRecord->MODL->MODS;
+        MODL->MODD = srcRecord->MODL->MODD;
+        }
+    DATA = srcRecord->DATA;
+    DODT = srcRecord->DODT;
+    DNAM = srcRecord->DNAM;
+    SNAM = srcRecord->SNAM;
+    NAM1 = srcRecord->NAM1;
     return;
     }
 
@@ -60,6 +74,15 @@ bool IPCTRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
+
+    if(MODL.IsLoaded() && MODL->MODS.IsLoaded())
+        op.Accept(MODL->MODS->value);
+    if(DNAM.IsLoaded())
+        op.Accept(DNAM->value);
+    if(SNAM.IsLoaded())
+        op.Accept(SNAM->value);
+    if(NAM1.IsLoaded())
+        op.Accept(NAM1->value);
 
     return op.Stop();
     }
@@ -78,6 +101,47 @@ UINT32 IPCTRecord::GetSize(bool forceCalc)
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
         }
+
+    if(MODL.IsLoaded())
+        {
+        if(MODL->MODL.IsLoaded())
+            {
+            cSize = MODL->MODL.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        if(MODL->MODB.IsLoaded())
+            {
+            cSize = MODL->MODB.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        if(MODL->MODT.IsLoaded())
+            {
+            cSize = MODL->MODT.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        if(MODL->MODS.IsLoaded())
+            TotSize += MODL->MODS.GetSize() + 6;
+        if(MODL->MODD.IsLoaded())
+            TotSize += MODL->MODD.GetSize() + 6;
+        }
+
+    if(DATA.IsLoaded())
+        TotSize += DATA.GetSize() + 6;
+
+    if(DODT.IsLoaded())
+        TotSize += DODT.GetSize() + 6;
+
+    if(DNAM.IsLoaded())
+        TotSize += DNAM.GetSize() + 6;
+
+    if(SNAM.IsLoaded())
+        TotSize += SNAM.GetSize() + 6;
+
+    if(NAM1.IsLoaded())
+        TotSize += NAM1.GetSize() + 6;
 
     return TotSize;
     }
@@ -117,6 +181,41 @@ SINT32 IPCTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             case 'DIDE':
                 EDID.Read(buffer, subSize, curPos);
                 break;
+            case 'LDOM':
+                MODL.Load();
+                MODL->MODL.Read(buffer, subSize, curPos);
+                break;
+            case 'BDOM':
+                MODL.Load();
+                MODL->MODB.Read(buffer, subSize, curPos);
+                break;
+            case 'TDOM':
+                MODL.Load();
+                MODL->MODT.Read(buffer, subSize, curPos);
+                break;
+            case 'SDOM':
+                MODL.Load();
+                MODL->MODS.Read(buffer, subSize, curPos);
+                break;
+            case 'DDOM':
+                MODL.Load();
+                MODL->MODD.Read(buffer, subSize, curPos);
+                break;
+            case 'ATAD':
+                DATA.Read(buffer, subSize, curPos);
+                break;
+            case 'TDOD':
+                DODT.Read(buffer, subSize, curPos);
+                break;
+            case 'MAND':
+                DNAM.Read(buffer, subSize, curPos);
+                break;
+            case 'MANS':
+                SNAM.Read(buffer, subSize, curPos);
+                break;
+            case '1MAN':
+                NAM1.Read(buffer, subSize, curPos);
+                break;
             default:
                 //printf("FileName = %s\n", FileName);
                 printf("  IPCT: %08X - Unknown subType = %04x\n", formID, subType);
@@ -134,6 +233,12 @@ SINT32 IPCTRecord::Unload()
     IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
+    MODL.Unload();
+    DATA.Unload();
+    DODT.Unload();
+    DNAM.Unload();
+    SNAM.Unload();
+    NAM1.Unload();
     return 1;
     }
 
@@ -141,12 +246,53 @@ SINT32 IPCTRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+
+    if(MODL.IsLoaded())
+        {
+        if(MODL->MODL.IsLoaded())
+            SaveHandler.writeSubRecord('LDOM', MODL->MODL.value, MODL->MODL.GetSize());
+
+        if(MODL->MODB.IsLoaded())
+            SaveHandler.writeSubRecord('BDOM', MODL->MODB.value, MODL->MODB.GetSize());
+
+        if(MODL->MODT.IsLoaded())
+            SaveHandler.writeSubRecord('TDOM', MODL->MODT.value, MODL->MODT.GetSize());
+
+        if(MODL->MODS.IsLoaded())
+            SaveHandler.writeSubRecord('SDOM', MODL->MODS.value, MODL->MODS.GetSize());
+
+        if(MODL->MODD.IsLoaded())
+            SaveHandler.writeSubRecord('DDOM', MODL->MODD.value, MODL->MODD.GetSize());
+
+        }
+
+    if(DATA.IsLoaded())
+        SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
+
+    if(DODT.IsLoaded())
+        SaveHandler.writeSubRecord('TDOD', DODT.value, DODT.GetSize());
+
+    if(DNAM.IsLoaded())
+        SaveHandler.writeSubRecord('MAND', DNAM.value, DNAM.GetSize());
+
+    if(SNAM.IsLoaded())
+        SaveHandler.writeSubRecord('MANS', SNAM.value, SNAM.GetSize());
+
+    if(NAM1.IsLoaded())
+        SaveHandler.writeSubRecord('1MAN', NAM1.value, NAM1.GetSize());
+
     return -1;
     }
 
 bool IPCTRecord::operator ==(const IPCTRecord &other) const
     {
-    return (EDID.equalsi(other.EDID));
+    return (EDID.equalsi(other.EDID) &&
+            MODL == other.MODL &&
+            DATA == other.DATA &&
+            DODT == other.DODT &&
+            DNAM == other.DNAM &&
+            SNAM == other.SNAM &&
+            NAM1 == other.NAM1);
     }
 
 bool IPCTRecord::operator !=(const IPCTRecord &other) const

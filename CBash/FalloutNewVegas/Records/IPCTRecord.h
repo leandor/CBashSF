@@ -25,10 +25,16 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class IPCTRecord : public Record
+class IPCTRecord : public Record //Impact
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
+        OptSubRecord<GENDODT> DODT; //Decal Data
+        OptSubRecord<GENFID> DNAM; //Texture Set
+        OptSubRecord<GENFID> SNAM; //Sound 1
+        OptSubRecord<GENFID> NAM1; //Sound 2
 
         IPCTRecord(unsigned char *_recData=NULL);
         IPCTRecord(IPCTRecord *srcRecord);

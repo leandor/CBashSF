@@ -48,6 +48,11 @@ IDLMRecord::IDLMRecord(IDLMRecord *srcRecord):
         }
 
     EDID = srcRecord->EDID;
+    OBND = srcRecord->OBND;
+    IDLF = srcRecord->IDLF;
+    IDLC = srcRecord->IDLC;
+    IDLT = srcRecord->IDLT;
+    IDLA = srcRecord->IDLA;
     return;
     }
 
@@ -60,6 +65,9 @@ bool IDLMRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
+
+    //if(IDLA.IsLoaded()) //FILL IN MANUALLY
+    //    op.Accept(IDLA->value);
 
     return op.Stop();
     }
@@ -78,6 +86,21 @@ UINT32 IDLMRecord::GetSize(bool forceCalc)
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
         }
+
+    if(OBND.IsLoaded())
+        TotSize += OBND.GetSize() + 6;
+
+    if(IDLF.IsLoaded())
+        TotSize += IDLF.GetSize() + 6;
+
+    if(IDLC.IsLoaded())
+        TotSize += IDLC.GetSize() + 6;
+
+    if(IDLT.IsLoaded())
+        TotSize += IDLT.GetSize() + 6;
+
+    if(IDLA.IsLoaded())
+        TotSize += IDLA.GetSize() + 6;
 
     return TotSize;
     }
@@ -117,6 +140,21 @@ SINT32 IDLMRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             case 'DIDE':
                 EDID.Read(buffer, subSize, curPos);
                 break;
+            case 'DNBO':
+                OBND.Read(buffer, subSize, curPos);
+                break;
+            case 'FLDI':
+                IDLF.Read(buffer, subSize, curPos);
+                break;
+            case 'CLDI':
+                IDLC.Read(buffer, subSize, curPos);
+                break;
+            case 'TLDI':
+                IDLT.Read(buffer, subSize, curPos);
+                break;
+            case 'ALDI':
+                IDLA.Read(buffer, subSize, curPos);
+                break;
             default:
                 //printf("FileName = %s\n", FileName);
                 printf("  IDLM: %08X - Unknown subType = %04x\n", formID, subType);
@@ -134,6 +172,11 @@ SINT32 IDLMRecord::Unload()
     IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
+    OBND.Unload();
+    IDLF.Unload();
+    IDLC.Unload();
+    IDLT.Unload();
+    IDLA.Unload();
     return 1;
     }
 
@@ -141,12 +184,33 @@ SINT32 IDLMRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+
+    if(OBND.IsLoaded())
+        SaveHandler.writeSubRecord('DNBO', OBND.value, OBND.GetSize());
+
+    if(IDLF.IsLoaded())
+        SaveHandler.writeSubRecord('FLDI', IDLF.value, IDLF.GetSize());
+
+    if(IDLC.IsLoaded())
+        SaveHandler.writeSubRecord('CLDI', IDLC.value, IDLC.GetSize());
+
+    if(IDLT.IsLoaded())
+        SaveHandler.writeSubRecord('TLDI', IDLT.value, IDLT.GetSize());
+
+    if(IDLA.IsLoaded())
+        SaveHandler.writeSubRecord('ALDI', IDLA.value, IDLA.GetSize());
+
     return -1;
     }
 
 bool IDLMRecord::operator ==(const IDLMRecord &other) const
     {
-    return (EDID.equalsi(other.EDID));
+    return (EDID.equalsi(other.EDID) &&
+            OBND == other.OBND &&
+            IDLF == other.IDLF &&
+            IDLC == other.IDLC &&
+            IDLT == other.IDLT &&
+            IDLA == other.IDLA);
     }
 
 bool IDLMRecord::operator !=(const IDLMRecord &other) const

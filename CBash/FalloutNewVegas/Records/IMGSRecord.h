@@ -25,10 +25,11 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class IMGSRecord : public Record
+class IMGSRecord : public Record //Image Space
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENDNAM> DNAM; //DNAM ,, Struct
 
         IMGSRecord(unsigned char *_recData=NULL);
         IMGSRecord(IMGSRecord *srcRecord);

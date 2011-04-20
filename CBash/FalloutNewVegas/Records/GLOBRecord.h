@@ -25,10 +25,12 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class GLOBRecord : public Record
+class GLOBRecord : public Record //Global
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENU8> FNAM; //Type
+        OptSubRecord<GENFLOAT> FLTV; //Value
 
         GLOBRecord(unsigned char *_recData=NULL);
         GLOBRecord(GLOBRecord *srcRecord);

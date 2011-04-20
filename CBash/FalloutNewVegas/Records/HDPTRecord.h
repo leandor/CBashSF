@@ -25,10 +25,14 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class HDPTRecord : public Record
+class HDPTRecord : public Record //Head Part
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        StringRecord FULL; //Name
+        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<GENU8> DATA; //Flags
+        OptSubRecord<GENFID> HNAM; //Part
 
         HDPTRecord(unsigned char *_recData=NULL);
         HDPTRecord(HDPTRecord *srcRecord);

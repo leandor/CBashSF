@@ -25,10 +25,16 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class FURNRecord : public Record
+class FURNRecord : public Record //Furniture
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENOBND> OBND; //Object Bounds
+        StringRecord FULL; //Name
+        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<GENFID> SCRI; //Script
+        OptSubRecord<GENDESTRUCT> Destructable; //Destructable
+        RawRecord MNAM; //Marker Flags
 
         FURNRecord(unsigned char *_recData=NULL);
         FURNRecord(FURNRecord *srcRecord);

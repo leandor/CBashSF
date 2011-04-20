@@ -25,10 +25,11 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class HUNGRecord : public Record
+class HUNGRecord : public Record //Hunger Stage
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
 
         HUNGRecord(unsigned char *_recData=NULL);
         HUNGRecord(HUNGRecord *srcRecord);

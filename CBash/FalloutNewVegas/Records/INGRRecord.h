@@ -25,10 +25,19 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class INGRRecord : public Record
+class INGRRecord : public Record //Ingredient
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENOBND> OBND; //Object Bounds
+        StringRecord FULL; //Name
+        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<GENICON> ICON; //Large Icon Filename
+        OptSubRecord<GENFID> SCRI; //Script
+        OptSubRecord<GENS32> ETYP; //Equipment Type
+        OptSubRecord<GENFLOAT> DATA; //Weight
+        OptSubRecord<GENENIT> ENIT; //ENIT ,, Struct
+        OptSubRecord<GENEFID> EFID; //Base Effect
 
         INGRRecord(unsigned char *_recData=NULL);
         INGRRecord(INGRRecord *srcRecord);
