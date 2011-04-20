@@ -25,10 +25,12 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class AMEFRecord : public Record
+class AMEFRecord : public Record //Ammo Effect
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        StringRecord FULL; //Name
+        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
 
         AMEFRecord(unsigned char *_recData=NULL);
         AMEFRecord(AMEFRecord *srcRecord);

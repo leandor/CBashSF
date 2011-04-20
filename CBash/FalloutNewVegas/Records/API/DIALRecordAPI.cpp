@@ -34,10 +34,48 @@ UINT32 DIALRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
             return UINT32_FLAG_FIELD;
         case 2: //fid
             return FORMID_FIELD;
-        case 3: //flags2
-            return UINT32_FLAG_FIELD;
-        case 4: //eid
+        case 3: //versionControl1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 4;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+        case 4: //formVersion
+            return UINT16_FIELD;
+        case 5: //versionControl2
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 2;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+        case 6: //edid Editor ID
             return ISTRING_FIELD;
+        case 7: //qsti Quest
+            return FORMID_FIELD;
+        case 8: //infc Unknown
+            return FORMID_FIELD;
+        case 9: //infx Unknown
+            return SINT32_FIELD;
+        case 10: //qstr Quest
+            return FORMID_FIELD;
+        case 11: //full Name
+            return STRING_FIELD;
+        case 12: //pnam Priority
+            return FLOAT32_FIELD;
+        case 13: //tdum 
+            return ISTRING_FIELD;
+        case 14: //data DATA ,, Struct
+            return UINT8_FIELD;
+        case 15: //data DATA ,, Struct
+            return UINT8_FIELD;
         default:
             return UNKNOWN_FIELD;
         }
@@ -51,10 +89,34 @@ void * DIALRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return &flags;
         case 2: //fid
             return &formID;
-        case 3: //flags2
-            return &flagsUnk;
-        case 4: //eid
+        case 3: //versionControl1
+            *FieldValues = &flagsUnk;
+            return NULL;
+        case 4: //formVersion
+            return &formVersion;
+        case 5: //versionControl2
+            *FieldValues = &versionControl2;
+            return NULL;
+        case 6: //edid Editor ID
             return EDID.value;
+        case 7: //qsti Quest
+            return QSTI.IsLoaded() ? &QSTI->value7 : NULL;
+        case 8: //infc Unknown
+            return INFC.IsLoaded() ? &INFC->value8 : NULL;
+        case 9: //infx Unknown
+            return INFX.IsLoaded() ? &INFX->value9 : NULL;
+        case 10: //qstr Quest
+            return QSTR.IsLoaded() ? &QSTR->value10 : NULL;
+        case 11: //full Name
+            return FULL.value;
+        case 12: //pnam Priority
+            return PNAM.IsLoaded() ? &PNAM->value12 : NULL;
+        case 13: //tdum 
+            return TDUM.value;
+        case 14: //data DATA ,, Struct
+            return DATA.IsLoaded() ? &DATA->value14 : NULL;
+        case 15: //data DATA ,, Struct
+            return DATA.IsLoaded() ? &DATA->value15 : NULL;
         default:
             return NULL;
         }
@@ -67,11 +129,59 @@ bool DIALRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 1: //flags1
             SetHeaderFlagMask(*(UINT32 *)FieldValue);
             break;
-        case 3: //flags2
-            SetHeaderUnknownFlagMask(*(UINT32 *)FieldValue);
+        case 3: //versionControl1
+            if(ArraySize != 4)
+                break;
+            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8 *)FieldValue)[0];
+            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8 *)FieldValue)[1];
+            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8 *)FieldValue)[2];
+            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8 *)FieldValue)[3];
             break;
-        case 4: //eid
+        case 4: //formVersion
+            formVersion = *(UINT16 *)FieldValue;
+            break;
+        case 5: //versionControl2
+            if(ArraySize != 2)
+                break;
+            versionControl2[0] = ((UINT8 *)FieldValue)[0];
+            versionControl2[1] = ((UINT8 *)FieldValue)[1];
+            break;
+        case 6: //edid Editor ID
             EDID.Copy((STRING)FieldValue);
+            break;
+        case 7: //qsti Quest
+            QSTI.Load();
+            QSTI->value7 = *(FORMID *)FieldValue;
+            return true;
+        case 8: //infc Unknown
+            INFC.Load();
+            INFC->value8 = *(FORMID *)FieldValue;
+            return true;
+        case 9: //infx Unknown
+            INFX.Load();
+            INFX->value9 = *(SINT32 *)FieldValue;
+            break;
+        case 10: //qstr Quest
+            QSTR.Load();
+            QSTR->value10 = *(FORMID *)FieldValue;
+            return true;
+        case 11: //full Name
+            FULL.Copy((STRING)FieldValue);
+            break;
+        case 12: //pnam Priority
+            PNAM.Load();
+            PNAM->value12 = *(FLOAT32 *)FieldValue;
+            break;
+        case 13: //tdum 
+            TDUM.Copy((STRING)FieldValue);
+            break;
+        case 14: //data DATA ,, Struct
+            DATA.Load();
+            DATA->value14 = *(UINT8 *)FieldValue;
+            break;
+        case 15: //data DATA ,, Struct
+            DATA.Load();
+            DATA->value15 = *(UINT8 *)FieldValue;
             break;
         default:
             break;
@@ -86,11 +196,45 @@ void DIALRecord::DeleteField(FIELD_IDENTIFIERS)
         case 1: //flags1
             SetHeaderFlagMask(0);
             return;
-        case 3: //flags2
+        case 3: //versionControl1
             flagsUnk = 0;
             return;
-        case 4: //eid
+        case 4: //formVersion
+            formVersion = 0;
+            return;
+        case 5: //versionControl2
+            versionControl2[0] = 0;
+            versionControl2[1] = 0;
+            return;
+        case 6: //edid Editor ID
             EDID.Unload();
+            return;
+        case 7: //qsti Quest
+            QSTI.Unload();
+            return;
+        case 8: //infc Unknown
+            INFC.Unload();
+            return;
+        case 9: //infx Unknown
+            INFX.Unload();
+            return;
+        case 10: //qstr Quest
+            QSTR.Unload();
+            return;
+        case 11: //full Name
+            FULL.Unload();
+            return;
+        case 12: //pnam Priority
+            PNAM.Unload();
+            return;
+        case 13: //tdum 
+            TDUM.Unload();
+            return;
+        case 14: //data DATA ,, Struct
+            DATA.Unload();
+            return;
+        case 15: //data DATA ,, Struct
+            DATA.Unload();
             return;
         default:
             return;

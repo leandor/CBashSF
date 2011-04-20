@@ -25,10 +25,12 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class ANIORecord : public Record
+class ANIORecord : public Record //Animated Object
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<GENFID> DATA; //Animation
 
         ANIORecord(unsigned char *_recData=NULL);
         ANIORecord(ANIORecord *srcRecord);

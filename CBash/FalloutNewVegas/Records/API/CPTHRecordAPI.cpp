@@ -34,10 +34,76 @@ UINT32 CPTHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
             return UINT32_FLAG_FIELD;
         case 2: //fid
             return FORMID_FIELD;
-        case 3: //flags2
-            return UINT32_FLAG_FIELD;
-        case 4: //eid
+        case 3: //versionControl1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 4;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+        case 4: //formVersion
+            return UINT16_FIELD;
+        case 5: //versionControl2
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 2;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+        case 6: //edid Editor ID
             return ISTRING_FIELD;
+        case 7: //ctda Conditions
+            return UINT8_FIELD;
+        case 8: //ctda_p Conditions
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 3;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+        case 9: //ctda Conditions
+            return UNPARSED_FIELD;
+        case 10: //ctda Conditions
+            return UINT32_FIELD;
+        case 11: //ctda_p Conditions
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 4;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+        case 12: //ctda_p Conditions
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 4;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+        case 13: //ctda Conditions
+            return UINT32_FIELD;
+        case 14: //ctda Conditions
+            return UNPARSED_FIELD;
+        case 15: //anam Related Camera Paths
+            return UNPARSED_FIELD;
+        case 16: //data Camera Zoom
+            return UINT8_FIELD;
+        case 17: //snam Camera Shot
+            return FORMID_FIELD;
         default:
             return UNKNOWN_FIELD;
         }
@@ -51,10 +117,41 @@ void * CPTHRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return &flags;
         case 2: //fid
             return &formID;
-        case 3: //flags2
-            return &flagsUnk;
-        case 4: //eid
+        case 3: //versionControl1
+            *FieldValues = &flagsUnk;
+            return NULL;
+        case 4: //formVersion
+            return &formVersion;
+        case 5: //versionControl2
+            *FieldValues = &versionControl2;
+            return NULL;
+        case 6: //edid Editor ID
             return EDID.value;
+        case 7: //ctda Conditions
+            return CTDAs.IsLoaded() ? &CTDAs->value7 : NULL;
+        case 8: //ctda_p Conditions
+            *FieldValues = CTDAs.IsLoaded() ? &CTDAs->value8[0] : NULL;
+            return NULL;
+        case 9: //ctda Conditions
+            return UNPARSEDGET_FIELD9;
+        case 10: //ctda Conditions
+            return CTDAs.IsLoaded() ? &CTDAs->value10 : NULL;
+        case 11: //ctda_p Conditions
+            *FieldValues = CTDAs.IsLoaded() ? &CTDAs->value11[0] : NULL;
+            return NULL;
+        case 12: //ctda_p Conditions
+            *FieldValues = CTDAs.IsLoaded() ? &CTDAs->value12[0] : NULL;
+            return NULL;
+        case 13: //ctda Conditions
+            return CTDAs.IsLoaded() ? &CTDAs->value13 : NULL;
+        case 14: //ctda Conditions
+            return UNPARSEDGET_FIELD14;
+        case 15: //anam Related Camera Paths
+            return UNPARSEDGET_FIELD15;
+        case 16: //data Camera Zoom
+            return DATA.IsLoaded() ? &DATA->value16 : NULL;
+        case 17: //snam Camera Shot
+            return SNAM.IsLoaded() ? &SNAM->value17 : NULL;
         default:
             return NULL;
         }
@@ -67,12 +164,78 @@ bool CPTHRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 1: //flags1
             SetHeaderFlagMask(*(UINT32 *)FieldValue);
             break;
-        case 3: //flags2
-            SetHeaderUnknownFlagMask(*(UINT32 *)FieldValue);
+        case 3: //versionControl1
+            if(ArraySize != 4)
+                break;
+            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8 *)FieldValue)[0];
+            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8 *)FieldValue)[1];
+            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8 *)FieldValue)[2];
+            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8 *)FieldValue)[3];
             break;
-        case 4: //eid
+        case 4: //formVersion
+            formVersion = *(UINT16 *)FieldValue;
+            break;
+        case 5: //versionControl2
+            if(ArraySize != 2)
+                break;
+            versionControl2[0] = ((UINT8 *)FieldValue)[0];
+            versionControl2[1] = ((UINT8 *)FieldValue)[1];
+            break;
+        case 6: //edid Editor ID
             EDID.Copy((STRING)FieldValue);
             break;
+        case 7: //ctda Conditions
+            CTDAs.Load();
+            CTDAs->value7 = *(UINT8 *)FieldValue;
+            break;
+        case 8: //ctda_p Conditions
+            if(ArraySize != 3)
+                break;
+            CTDAs.Load();
+            CTDAs->value8[0] = ((UINT8 *)FieldValue)[0];
+            CTDAs->value8[1] = ((UINT8 *)FieldValue)[1];
+            CTDAs->value8[2] = ((UINT8 *)FieldValue)[2];
+            break;
+        case 9: //ctda Conditions
+            return UNPARSEDGET_FIELD9;
+        case 10: //ctda Conditions
+            CTDAs.Load();
+            CTDAs->value10 = *(UINT32 *)FieldValue;
+            break;
+        case 11: //ctda_p Conditions
+            if(ArraySize != 4)
+                break;
+            CTDAs.Load();
+            CTDAs->value11[0] = ((UINT8 *)FieldValue)[0];
+            CTDAs->value11[1] = ((UINT8 *)FieldValue)[1];
+            CTDAs->value11[2] = ((UINT8 *)FieldValue)[2];
+            CTDAs->value11[3] = ((UINT8 *)FieldValue)[3];
+            break;
+        case 12: //ctda_p Conditions
+            if(ArraySize != 4)
+                break;
+            CTDAs.Load();
+            CTDAs->value12[0] = ((UINT8 *)FieldValue)[0];
+            CTDAs->value12[1] = ((UINT8 *)FieldValue)[1];
+            CTDAs->value12[2] = ((UINT8 *)FieldValue)[2];
+            CTDAs->value12[3] = ((UINT8 *)FieldValue)[3];
+            break;
+        case 13: //ctda Conditions
+            CTDAs.Load();
+            CTDAs->value13 = *(UINT32 *)FieldValue;
+            break;
+        case 14: //ctda Conditions
+            return UNPARSEDGET_FIELD14;
+        case 15: //anam Related Camera Paths
+            return UNPARSEDGET_FIELD15;
+        case 16: //data Camera Zoom
+            DATA.Load();
+            DATA->value16 = *(UINT8 *)FieldValue;
+            break;
+        case 17: //snam Camera Shot
+            SNAM.Load();
+            SNAM->value17 = *(FORMID *)FieldValue;
+            return true;
         default:
             break;
         }
@@ -86,11 +249,48 @@ void CPTHRecord::DeleteField(FIELD_IDENTIFIERS)
         case 1: //flags1
             SetHeaderFlagMask(0);
             return;
-        case 3: //flags2
+        case 3: //versionControl1
             flagsUnk = 0;
             return;
-        case 4: //eid
+        case 4: //formVersion
+            formVersion = 0;
+            return;
+        case 5: //versionControl2
+            versionControl2[0] = 0;
+            versionControl2[1] = 0;
+            return;
+        case 6: //edid Editor ID
             EDID.Unload();
+            return;
+        case 7: //ctda Conditions
+            CTDAs.Unload();
+            return;
+        case 8: //ctda_p Conditions
+            CTDAs.Unload();
+            return;
+        case 9: //ctda Conditions
+            return UNPARSEDDEL_FIELD9;
+        case 10: //ctda Conditions
+            CTDAs.Unload();
+            return;
+        case 11: //ctda_p Conditions
+            CTDAs.Unload();
+            return;
+        case 12: //ctda_p Conditions
+            CTDAs.Unload();
+            return;
+        case 13: //ctda Conditions
+            CTDAs.Unload();
+            return;
+        case 14: //ctda Conditions
+            return UNPARSEDDEL_FIELD14;
+        case 15: //anam Related Camera Paths
+            return UNPARSEDDEL_FIELD15;
+        case 16: //data Camera Zoom
+            DATA.Unload();
+            return;
+        case 17: //snam Camera Shot
+            SNAM.Unload();
             return;
         default:
             return;

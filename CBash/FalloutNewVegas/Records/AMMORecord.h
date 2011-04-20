@@ -25,10 +25,23 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class AMMORecord : public Record
+class AMMORecord : public Record //Ammunition
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENOBND> OBND; //Object Bounds
+        StringRecord FULL; //Name
+        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<GENICON> ICON; //Large Icon Filename
+        OptSubRecord<GENFID> SCRI; //Script
+        OptSubRecord<GENDEST> DEST; //Header
+        OptSubRecord<GENFID> YNAM; //Sound - Pick Up
+        OptSubRecord<GENFID> ZNAM; //Sound - Drop
+        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
+        OptSubRecord<GENDAT2> DAT2; //DAT2 ,, Struct
+        StringRecord ONAM; //Short Name
+        StringRecord QNAM; //Abbrev.
+        OptSubRecord<GENFID> RCIL; //Effect
 
         AMMORecord(unsigned char *_recData=NULL);
         AMMORecord(AMMORecord *srcRecord);
