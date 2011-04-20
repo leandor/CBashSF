@@ -270,6 +270,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\GenericChunks.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\GenericRecord.cpp"
 				>
 			</File>
@@ -287,10 +291,6 @@
 				<Filter
 					Name="Oblivion"
 					>
-					<File
-						RelativePath=".\Oblivion\GenericChunks.cpp"
-						>
-					</File>
 					<File
 						RelativePath=".\Oblivion\TES4File.cpp"
 						>
@@ -1097,37 +1097,6 @@
 						RelativePath=".\FalloutNewVegas\FNVFile.cpp"
 						>
 					</File>
-					<File
-						RelativePath=".\FalloutNewVegas\GenericChunks.cpp"
-						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="FullDebug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-							/>
-						</FileConfiguration>
-					</File>
 					<Filter
 						Name="Complex"
 						>
@@ -1157,6 +1126,10 @@
 						</File>
 						<File
 							RelativePath=".\FalloutNewVegas\Records\PGRERecord.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\FalloutNewVegas\Records\PMISRecord.cpp"
 							>
 						</File>
 						<File
@@ -2360,10 +2333,6 @@
 						</File>
 						<File
 							RelativePath=".\FalloutNewVegas\Records\PERKRecord.cpp"
-							>
-						</File>
-						<File
-							RelativePath=".\FalloutNewVegas\Records\PMISRecord.cpp"
 							>
 						</File>
 						<File
@@ -4691,6 +4660,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\GenericChunks.h"
+				>
+			</File>
+			<File
 				RelativePath=".\GenericRecord.h"
 				>
 			</File>
@@ -4716,10 +4689,6 @@
 				<Filter
 					Name="Oblivion"
 					>
-					<File
-						RelativePath=".\Oblivion\GenericChunks.h"
-						>
-					</File>
 					<File
 						RelativePath=".\Oblivion\TES4File.h"
 						>
@@ -4996,10 +4965,6 @@
 						RelativePath=".\FalloutNewVegas\FNVFile.h"
 						>
 					</File>
-					<File
-						RelativePath=".\FalloutNewVegas\GenericChunks.h"
-						>
-					</File>
 					<Filter
 						Name="Complex"
 						>
@@ -5029,6 +4994,10 @@
 						</File>
 						<File
 							RelativePath=".\FalloutNewVegas\Records\PGRERecord.h"
+							>
+						</File>
+						<File
+							RelativePath=".\FalloutNewVegas\Records\PMISRecord.h"
 							>
 						</File>
 						<File
@@ -5341,10 +5310,6 @@
 						</File>
 						<File
 							RelativePath=".\FalloutNewVegas\Records\PERKRecord.h"
-							>
-						</File>
-						<File
-							RelativePath=".\FalloutNewVegas\Records\PMISRecord.h"
 							>
 						</File>
 						<File

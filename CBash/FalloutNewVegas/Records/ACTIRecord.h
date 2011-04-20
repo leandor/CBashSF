@@ -25,10 +25,21 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class ACTIRecord : public Record
+class ACTIRecord : public Record //Activator
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENOBND> OBND; //Object Bounds
+        StringRecord FULL; //Name
+        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<GENFID> SCRI; //Script
+        OptSubRecord<GENDEST> DEST; //Header
+        OptSubRecord<GENFID> SNAM; //Sound - Looping
+        OptSubRecord<GENFID> VNAM; //Sound - Activation
+        OptSubRecord<GENFID> INAM; //Radio Template
+        OptSubRecord<GENFID> RNAM; //Radio Station
+        OptSubRecord<GENFID> WNAM; //Water Type
+        StringRecord XATO; //Activation Prompt
 
         ACTIRecord(unsigned char *_recData=NULL);
         ACTIRecord(ACTIRecord *srcRecord);

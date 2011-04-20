@@ -25,10 +25,15 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class ADDNRecord : public Record
+class ADDNRecord : public Record //Addon Node
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENOBND> OBND; //Object Bounds
+        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<GENS32> DATA; //Node Index
+        OptSubRecord<GENFID> SNAM; //Sound
+        OptSubRecord<GENDNAM> DNAM; //DNAM ,, Struct
 
         ADDNRecord(unsigned char *_recData=NULL);
         ADDNRecord(ADDNRecord *srcRecord);

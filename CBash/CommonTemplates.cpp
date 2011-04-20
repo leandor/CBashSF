@@ -141,7 +141,7 @@ template<class T> OptSubRecord<T>::OptSubRecord():
 
 template<class T> OptSubRecord<T>::~OptSubRecord()
     {
-    delete value;
+    Unload();
     }
 
 template<class T> UINT32 OptSubRecord<T>::GetSize() const
@@ -237,7 +237,7 @@ template<class T> SemiOptSubRecord<T>::SemiOptSubRecord():
 
 template<class T> SemiOptSubRecord<T>::~SemiOptSubRecord()
     {
-    delete value;
+    Unload();
     }
 
 template<class T> UINT32 SemiOptSubRecord<T>::GetSize() const
@@ -332,7 +332,7 @@ template<class T> OBMEEFIXSubRecord<T>::OBMEEFIXSubRecord():
 
 template<class T> OBMEEFIXSubRecord<T>::~OBMEEFIXSubRecord()
     {
-    delete value;
+    Unload();
     }
 
 template<class T> UINT32 OBMEEFIXSubRecord<T>::GetSize() const

@@ -25,10 +25,26 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class ALOCRecord : public Record
+class ALOCRecord : public Record //Media Location Controller
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        StringRecord FULL; //Name
+        RawRecord NAM1; //Flags and Enums, messily combined
+        RawRecord NAM2; //Unknown
+        RawRecord NAM3; //Unknown
+        OptSubRecord<GENFLOAT> NAM4; //Location Delay
+        OptSubRecord<GENU32> NAM5; //Day Start
+        OptSubRecord<GENU32> NAM6; //Night Start
+        OptSubRecord<GENFLOAT> NAM7; //Retrigger Delay
+        OptSubRecord<GENFID> HNAM; //Media Set
+        OptSubRecord<GENFID> ZNAM; //Media Set
+        OptSubRecord<GENFID> XNAM; //Media Set
+        OptSubRecord<GENFID> YNAM; //Media Set
+        OptSubRecord<GENFID> LNAM; //Media Set
+        OptSubRecord<GENFID> GNAM; //Media Set
+        OptSubRecord<GENFID> RNAM; //Conditional Faction
+        RawRecord FNAM; //Unknown
 
         ALOCRecord(unsigned char *_recData=NULL);
         ALOCRecord(ALOCRecord *srcRecord);

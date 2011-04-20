@@ -25,10 +25,22 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class ALCHRecord : public Record
+class ALCHRecord : public Record //Ingestible
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENOBND> OBND; //Object Bounds
+        StringRecord FULL; //Name
+        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<GENICON> ICON; //Large Icon Filename
+        OptSubRecord<GENFID> SCRI; //Script
+        OptSubRecord<GENDEST> DEST; //Header
+        OptSubRecord<GENFID> YNAM; //Sound - Pick Up
+        OptSubRecord<GENFID> ZNAM; //Sound - Drop
+        OptSubRecord<GENS32> ETYP; //Equipment Type
+        OptSubRecord<GENFLOAT> DATA; //Weight
+        OptSubRecord<GENENIT> ENIT; //ENIT ,, Struct
+        OptSubRecord<GENEFID> EFID; //Base Effect
 
         ALCHRecord(unsigned char *_recData=NULL);
         ALCHRecord(ALCHRecord *srcRecord);

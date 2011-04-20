@@ -426,12 +426,12 @@ FormIDHandlerClass::~FormIDHandlerClass()
 
 void FormIDHandlerClass::SetLoadOrder(std::vector<STRING> &cLoadOrder)
     {
-	if(cLoadOrder.size() > 0xFF)
-		{
+    if(cLoadOrder.size() > 0xFF)
+        {
         printf("Error: Tried to set load order > 0xFF. Load order size = %i\n", cLoadOrder.size());
-		throw 1;
+        throw 1;
         return;
-		}
+        }
     LoadOrder255 = cLoadOrder;
     return;
     }
@@ -517,7 +517,7 @@ void FormIDHandlerClass::CreateFormIDLookup(const UINT8 expandedIndex)
     UINT32 numMods = (UINT32)LoadOrder255.size();
     STRING curMaster = NULL;
     CollapsedIndex = (UINT8)MAST.size();
-	ExpandedIndex = expandedIndex;
+    ExpandedIndex = expandedIndex;
 
     for(UINT16 p = 0; p <= 0xFF; ++p)
         {
@@ -717,7 +717,7 @@ StringRecord::StringRecord(const STRING p):
 
 StringRecord::~StringRecord()
     {
-    delete []value;
+    Unload();
     }
 
 UINT32 StringRecord::GetSize() const
@@ -856,7 +856,7 @@ RawRecord::RawRecord(const RawRecord &p):
 
 RawRecord::~RawRecord()
     {
-    delete []value;
+    Unload();
     }
 
 UINT32 RawRecord::GetSize() const
