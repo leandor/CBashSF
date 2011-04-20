@@ -30,7 +30,7 @@ class HDPTRecord : public Record //Head Part
     public:
         StringRecord EDID; //Editor ID
         StringRecord FULL; //Name
-        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<FNVMODEL> MODL; //Model
         OptSubRecord<GENU8> DATA; //Flags
         OptSubRecord<GENFID> HNAM; //Part
 

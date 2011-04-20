@@ -30,7 +30,7 @@ class SCOLRecord : public Record //Static Collection
     public:
         StringRecord EDID; //Editor ID
         OptSubRecord<GENOBND> OBND; //Object Bounds
-        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<FNVMODEL> MODL; //Model
         OptSubRecord<GENFID> ONAM; //Static
         OptSubRecord<GENDATA> DATA; //DATA ,, Struct
 

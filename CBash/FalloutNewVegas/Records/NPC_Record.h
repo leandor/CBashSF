@@ -31,7 +31,7 @@ class NPC_Record : public Record //Non-Player Character
         StringRecord EDID; //Editor ID
         OptSubRecord<GENOBND> OBND; //Object Bounds
         StringRecord FULL; //Name
-        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<FNVMODEL> MODL; //Model
         OptSubRecord<GENACBS> ACBS; //ACBS ,, Struct
         OptSubRecord<GENSNAM> SNAM; //SNAM ,, Struct
         OptSubRecord<GENFID> INAM; //Death item

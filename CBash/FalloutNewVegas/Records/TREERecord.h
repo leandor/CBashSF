@@ -30,7 +30,7 @@ class TREERecord : public Record //Tree
     public:
         StringRecord EDID; //Editor ID
         OptSubRecord<GENOBND> OBND; //Object Bounds
-        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<FNVMODEL> MODL; //Model
         OptSubRecord<GENICON> ICON; //Large Icon Filename
         OptSubRecord<GENSNAM> SNAM; //SpeedTree Seeds
         OptSubRecord<GENCNAM> CNAM; //CNAM ,, Struct

@@ -31,7 +31,7 @@ class CREARecord : public Record //Creature
         StringRecord EDID; //Editor ID
         OptSubRecord<GENOBND> OBND; //Object Bounds
         StringRecord FULL; //Name
-        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<FNVMODEL> MODL; //Model
         OptSubRecord<GENFID> SPLO; //Actor Effect
         OptSubRecord<GENFID> EITM; //Unarmed Attack Effect
         OptSubRecord<GENU16> EAMT; //Unarmed Attack Animation

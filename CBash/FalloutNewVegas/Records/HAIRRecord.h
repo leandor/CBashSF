@@ -30,7 +30,7 @@ class HAIRRecord : public Record //Hair
     public:
         StringRecord EDID; //Editor ID
         StringRecord FULL; //Name
-        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<FNVMODEL> MODL; //Model
         StringRecord ICON; //Texture
         OptSubRecord<GENU8> DATA; //Flags
 

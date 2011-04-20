@@ -34,7 +34,7 @@ class LVLCRecord : public Record //Leveled Creature
         OptSubRecord<GENU8> LVLF; //Flags
         OptSubRecord<GENLVLO> LVLO; //LVLO ,, Struct
         OptSubRecord<GENCOED> COED; //Extra Data
-        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<FNVMODEL> MODL; //Model
 
         LVLCRecord(unsigned char *_recData=NULL);
         LVLCRecord(LVLCRecord *srcRecord);

@@ -31,7 +31,7 @@ class CHIPRecord : public Record //Casino Chip
         StringRecord EDID; //Editor ID
         OptSubRecord<GENOBND> OBND; //Object Bounds
         StringRecord FULL; //Name
-        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<FNVMODEL> MODL; //Model
         OptSubRecord<GENICON> ICON; //Large Icon Filename
         OptSubRecord<GENDESTRUCT> Destructable; //Destructable
         OptSubRecord<GENFID> YNAM; //Sound - Pick Up

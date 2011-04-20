@@ -45,7 +45,7 @@ class RACERecord : public Record //Race
         OptSubRecord<GENNAM> NAM0; //Head Data Marker
         OptSubRecord<GENMNAM> MNAM; //Male Data Marker
         OptSubRecord<GENU32> INDX; //Index
-        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<FNVMODEL> MODL; //Model
         OptSubRecord<GENICON> ICON; //Large Icon Filename
         OptSubRecord<GENFNAM> FNAM; //Female Data Marker
         OptSubRecord<GENNAM1> NAM1; //Body Data Marker

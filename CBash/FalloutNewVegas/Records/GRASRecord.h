@@ -30,7 +30,7 @@ class GRASRecord : public Record //Grass
     public:
         StringRecord EDID; //Editor ID
         OptSubRecord<GENOBND> OBND; //Object Bounds
-        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<FNVMODEL> MODL; //Model
         OptSubRecord<GENDATA> DATA; //DATA ,, Struct
 
         GRASRecord(unsigned char *_recData=NULL);

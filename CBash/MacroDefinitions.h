@@ -219,6 +219,10 @@
     #define FORMID_OR_UINT32 unsigned long
 #endif
 
+#ifndef FORMID_OR_FLOAT32
+    #define FORMID_OR_FLOAT32 unsigned long
+#endif
+
 #ifndef MGEFCODE_OR_UINT32
     #define MGEFCODE_OR_UINT32 unsigned long
 #endif

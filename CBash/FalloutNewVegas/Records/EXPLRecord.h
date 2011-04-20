@@ -31,7 +31,7 @@ class EXPLRecord : public Record //Explosion
         StringRecord EDID; //Editor ID
         OptSubRecord<GENOBND> OBND; //Object Bounds
         StringRecord FULL; //Name
-        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<FNVMODEL> MODL; //Model
         OptSubRecord<GENFID> EITM; //Object Effect
         OptSubRecord<GENFID> MNAM; //Image Space Modifier
         OptSubRecord<GENDATA> DATA; //DATA ,, Struct

@@ -32,7 +32,7 @@ class MGEFRecord : public Record //Base Effect
         StringRecord FULL; //Name
         StringRecord DESC; //Description
         OptSubRecord<GENICON> ICON; //Large Icon Filename
-        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<FNVMODEL> MODL; //Model
         OptSubRecord<GENDATA> DATA; //DATA ,, Struct
 
         MGEFRecord(unsigned char *_recData=NULL);

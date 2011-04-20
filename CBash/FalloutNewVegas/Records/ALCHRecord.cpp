@@ -120,6 +120,243 @@ bool ALCHRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+bool ALCHRecord::IsNone()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eNone);
+    }
+
+void ALCHRecord::IsNone(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eNone;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool ALCHRecord::IsBigGuns()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eBigGuns);
+    }
+
+void ALCHRecord::IsBigGuns(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eBigGuns;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool ALCHRecord::IsEnergyWeapons()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eEnergyWeapons);
+    }
+
+void ALCHRecord::IsEnergyWeapons(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eEnergyWeapons;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool ALCHRecord::IsSmallGuns()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eSmallGuns);
+    }
+
+void ALCHRecord::IsSmallGuns(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eSmallGuns;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool ALCHRecord::IsMeleeWeapons()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eMeleeWeapons);
+    }
+
+void ALCHRecord::IsMeleeWeapons(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eMeleeWeapons;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool ALCHRecord::IsUnarmedWeapon()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eUnarmedWeapon);
+    }
+
+void ALCHRecord::IsUnarmedWeapon(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eUnarmedWeapon;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool ALCHRecord::IsThrownWeapons()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eThrownWeapons);
+    }
+
+void ALCHRecord::IsThrownWeapons(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eThrownWeapons;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool ALCHRecord::IsMine()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eMine);
+    }
+
+void ALCHRecord::IsMine(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eMine;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool ALCHRecord::IsBodyWear()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eBodyWear);
+    }
+
+void ALCHRecord::IsBodyWear(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eBodyWear;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool ALCHRecord::IsHeadWear()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eHeadWear);
+    }
+
+void ALCHRecord::IsHeadWear(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eHeadWear;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool ALCHRecord::IsHandWear()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eHandWear);
+    }
+
+void ALCHRecord::IsHandWear(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eHandWear;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool ALCHRecord::IsChems()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eChems);
+    }
+
+void ALCHRecord::IsChems(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eChems;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool ALCHRecord::IsStimpack()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eStimpack);
+    }
+
+void ALCHRecord::IsStimpack(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eStimpack;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool ALCHRecord::IsFood()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eFood);
+    }
+
+void ALCHRecord::IsFood(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eFood;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool ALCHRecord::IsAlcohol()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eAlcohol);
+    }
+
+void ALCHRecord::IsAlcohol(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eAlcohol;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool ALCHRecord::IsEquipmentType(UINT32 Type, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    }
+
+void ALCHRecord::SetEquipmentType(UINT32 Type)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
 UINT32 ALCHRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())

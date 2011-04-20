@@ -215,6 +215,8 @@ extern const std::map<UINT32, STRING> PACKLocType_Name;
 extern const std::map<UINT32, STRING> PACKTargetType_Name;
 extern const std::map<UINT32, STRING> HardCodedFormID_EditorID;
 
+extern const std::map<UINT32, FunctionArguments> FNVFunction_Arguments;
+
 inline void _readBuffer(void *_DstBuf, const unsigned char *_SrcBuf, const UINT32 &_MaxCharCount, UINT32 &_BufPos)
     {
     memcpy(_DstBuf, _SrcBuf + _BufPos, _MaxCharCount);

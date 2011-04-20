@@ -29,7 +29,7 @@ class BPTDRecord : public Record //Body Part Data
     {
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<FNVMODEL> MODL; //Model
         StringRecord BPTN; //Part Name
         StringRecord BPNN; //Part Node
         StringRecord BPNT; //VATS Target

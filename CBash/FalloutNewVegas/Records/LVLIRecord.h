@@ -34,7 +34,7 @@ class LVLIRecord : public Record //Leveled Item
         OptSubRecord<GENU8> LVLF; //Flags
         OptSubRecord<GENLVLO> LVLO; //LVLO ,, Struct
         OptSubRecord<GENCOED> COED; //Extra Data
-        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<FNVMODEL> MODL; //Model
 
         LVLIRecord(unsigned char *_recData=NULL);
         LVLIRecord(LVLIRecord *srcRecord);

@@ -39,7 +39,7 @@ class WTHRRecord : public Record //Weather
         StringRecord CNAM; //Cloud Textures - Layer 1
         StringRecord ANAM; //Cloud Textures - Layer 2
         StringRecord BNAM; //Cloud Textures - Layer 3
-        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<FNVMODEL> MODL; //Model
         OptSubRecord<GENLNAM> LNAM; //Unknown
         OptSubRecord<GENONAM> ONAM; //Cloud Speed
         RawRecord PNAM; //Unused

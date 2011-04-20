@@ -31,7 +31,7 @@ class MSTTRecord : public Record //Moveable Static
         StringRecord EDID; //Editor ID
         OptSubRecord<GENOBND> OBND; //Object Bounds
         StringRecord FULL; //Name
-        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<FNVMODEL> MODL; //Model
         OptSubRecord<GENDESTRUCT> Destructable; //Destructable
         OptSubRecord<GENDATA> DATA; //Unknown
         OptSubRecord<GENFID> SNAM; //Sound

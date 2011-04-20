@@ -30,7 +30,7 @@ class STATRecord : public Record //Static
     public:
         StringRecord EDID; //Editor ID
         OptSubRecord<GENOBND> OBND; //Object Bounds
-        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<FNVMODEL> MODL; //Model
         OptSubRecord<GENS8> BRUS; //Passthrough Sound
         OptSubRecord<GENFID> RNAM; //Sound - Looping/Random
 

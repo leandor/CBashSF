@@ -31,7 +31,7 @@ class NOTERecord : public Record //Note
         StringRecord EDID; //Editor ID
         OptSubRecord<GENOBND> OBND; //Object Bounds
         StringRecord FULL; //Name
-        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<FNVMODEL> MODL; //Model
         OptSubRecord<GENICON> ICON; //Large Icon Filename
         OptSubRecord<GENFID> YNAM; //Sound - Pick Up
         OptSubRecord<GENFID> ZNAM; //Sound - Drop

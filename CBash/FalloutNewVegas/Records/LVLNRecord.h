@@ -34,7 +34,7 @@ class LVLNRecord : public Record //Leveled NPC
         OptSubRecord<GENU8> LVLF; //Flags
         OptSubRecord<GENLVLO> LVLO; //LVLO ,, Struct
         OptSubRecord<GENCOED> COED; //Extra Data
-        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<FNVMODEL> MODL; //Model
 
         LVLNRecord(unsigned char *_recData=NULL);
         LVLNRecord(LVLNRecord *srcRecord);

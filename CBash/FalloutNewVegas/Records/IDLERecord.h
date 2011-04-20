@@ -29,7 +29,7 @@ class IDLERecord : public Record //Idle Animation
     {
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<FNVMODEL> MODL; //Model
         OptSubRecord<GENCTDA> CTDA; //Conditions
         OptSubRecord<GENANAM> ANAM; //Related Idle Animations
         OptSubRecord<GENDATA> DATA; //DATA ,, Struct

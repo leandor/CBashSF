@@ -30,7 +30,7 @@ class LIGHRecord : public Record //Light
     public:
         StringRecord EDID; //Editor ID
         OptSubRecord<GENOBND> OBND; //Object Bounds
-        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<FNVMODEL> MODL; //Model
         OptSubRecord<GENFID> SCRI; //Script
         StringRecord FULL; //Name
         OptSubRecord<GENICON> ICON; //Large Icon Filename

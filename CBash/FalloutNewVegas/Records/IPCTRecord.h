@@ -29,7 +29,7 @@ class IPCTRecord : public Record //Impact
     {
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<FNVMODEL> MODL; //Model
         OptSubRecord<GENDATA> DATA; //DATA ,, Struct
         OptSubRecord<GENDODT> DODT; //Decal Data
         OptSubRecord<GENFID> DNAM; //Texture Set

@@ -27,13 +27,25 @@ namespace FNV
 {
 class ADDNRecord : public Record //Addon Node
     {
+    private:
+        struct ADDNDNAM
+            {
+            UINT16  particleCap; //Master Particle System Cap
+            UINT8   unknown[2];
+
+            ADDNDNAM();
+            ~ADDNDNAM();
+
+            bool operator ==(const ADDNDNAM &other) const;
+            bool operator !=(const ADDNDNAM &other) const;
+            };
     public:
         StringRecord EDID; //Editor ID
         OptSubRecord<GENOBND> OBND; //Object Bounds
-        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<FNVMODEL> MODL; //Model
         OptSubRecord<GENS32> DATA; //Node Index
         OptSubRecord<GENFID> SNAM; //Sound
-        OptSubRecord<GENDNAM> DNAM; //DNAM ,, Struct
+        OptSubRecord<ADDNDNAM> DNAM; //Data
 
         ADDNRecord(unsigned char *_recData=NULL);
         ADDNRecord(ADDNRecord *srcRecord);

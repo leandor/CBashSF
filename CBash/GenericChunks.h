@@ -1318,3 +1318,139 @@ struct GENDESTRUCT //Destructable
     bool operator ==(const GENDESTRUCT &other) const;
     bool operator !=(const GENDESTRUCT &other) const;
     };
+
+struct FNVCTDA //Condition
+    {
+    UINT8   operType, unused1[3]; //Type, Unused
+    FORMID_OR_FLOAT32 compValue; //Float or Global (if fIsUseGlobal is true)
+    UINT32  ifunc;
+    FORMID_OR_UINT32 param1, param2;
+    UINT32  runOn; //Run On
+    FORMID_OR_UINT32 reference; //Reference (if runOn == 2) or Unused
+
+    enum operTypeType
+        {
+        eEqual          = 0x00,
+        eNotEqual       = 0x20,
+        eGreater        = 0x40,
+        eGreaterOrEqual = 0x60,
+        eLess           = 0x80,
+        eLessOrEqual    = 0xA0
+        };
+
+    enum operTypeFlag
+        {
+        fIsNone        = 0x00,
+        fIsOr          = 0x01,
+        fIsRunOnTarget = 0x02,
+        fIsUseGlobal   = 0x04
+        };
+
+    enum operRunOnType
+        {
+        eSubject = 0,
+        eTarget,
+        eReference,
+        eCombatTarget,
+        eLinkedReference
+        };
+
+    FNVCTDA();
+    ~FNVCTDA();
+
+    bool operator ==(const FNVCTDA &other) const;
+    bool operator !=(const FNVCTDA &other) const;
+
+    bool IsEqual();
+    void IsEqual(bool value);
+    bool IsNotEqual();
+    void IsNotEqual(bool value);
+    bool IsGreater();
+    void IsGreater(bool value);
+    bool IsGreaterOrEqual();
+    void IsGreaterOrEqual(bool value);
+    bool IsLess();
+    void IsLess(bool value);
+    bool IsLessOrEqual();
+    void IsLessOrEqual(bool value);
+    bool IsType(UINT8 Type);
+    void SetType(UINT8 Type);
+
+    bool IsNone();
+    void IsNone(bool value);
+    bool IsOr();
+    void IsOr(bool value);
+    bool IsRunOnTarget();
+    void IsRunOnTarget(bool value);
+    bool IsUseGlobal();
+    void IsUseGlobal(bool value);
+    bool IsFlagMask(UINT8 Mask, bool Exact=false);
+    void SetFlagMask(UINT8 Mask);
+
+    bool   IsRunOnSubject();
+    void   IsRunOnSubject(bool value);
+    bool   IsRunOnTarget();
+    void   IsRunOnTarget(bool value);
+    bool   IsRunOnReference();
+    void   IsRunOnReference(bool value);
+    bool   IsRunOnCombatTarget();
+    void   IsRunOnCombatTarget(bool value);
+    bool   IsRunOnLinkedReference();
+    void   IsRunOnLinkedReference(bool value);
+    bool   IsRunOnType(UINT8 Type, bool Exact=false);
+    void   SetRunOnType(UINT8 Type);
+    };
+
+struct FNVENIT //Effect Data
+    {
+    SINT32  value; //Value
+    UINT8   flags; //Flags?
+    UINT8   unused1[3]; //Unused
+    FORMID  withdrawalEffect; //Withdrawal Effect
+    FLOAT32 addictionChance; //Addiction Chance
+    FORMID  consumeSound; //Sound - Consume
+
+    FNVENIT();
+    ~FNVENIT();
+
+    bool operator ==(const FNVENIT &other) const;
+    bool operator !=(const FNVENIT &other) const;
+    };
+
+struct FNVEFIT
+    {
+    UINT32  magnitude, area, duration, rangeType;
+    ACTORVALUE actorValue;
+
+    FNVEFIT();
+    ~FNVEFIT();
+
+    bool operator ==(const FNVEFIT &other) const;
+    bool operator !=(const FNVEFIT &other) const;
+    };
+
+struct FNVEffect
+    {
+    ReqSubRecord<GENEFID> EFID; //Effect ID
+    ReqSubRecord<FNVEFIT> EFIT; //Effect Data
+    std::vector<ReqSubRecord<FNVCTDA> *> CTDA; //Conditions
+
+    enum eRanges
+        {
+        eRangeSelf    = 0,
+        eRangeTouch   = 1,
+        eRangeTarget  = 2
+        };
+
+    bool operator ==(const FNVEffect &other) const;
+    bool operator !=(const FNVEffect &other) const;
+
+    bool IsRangeSelf();
+    void IsRangeSelf(bool value);
+    bool IsRangeTouch();
+    void IsRangeTouch(bool value);
+    bool IsRangeTarget();
+    void IsRangeTarget(bool value);
+    bool IsRange(UINT32  Mask);
+    void SetRange(UINT32  Mask);
+    };

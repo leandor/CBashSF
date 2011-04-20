@@ -31,7 +31,7 @@ class KEYMRecord : public Record //Key
         StringRecord EDID; //Editor ID
         OptSubRecord<GENOBND> OBND; //Object Bounds
         StringRecord FULL; //Name
-        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<FNVMODEL> MODL; //Model
         OptSubRecord<GENICON> ICON; //Large Icon Filename
         OptSubRecord<GENFID> SCRI; //Script
         OptSubRecord<GENDESTRUCT> Destructable; //Destructable

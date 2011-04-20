@@ -164,7 +164,7 @@ class INFORecord : public Record //Dialog response
         OptSubRecord<GENFID> PNAM; //Previous INFO
         std::vector<FORMID> NAME; //Topics
         std::vector<INFOResponse *> Responses; //Responses
-        std::vector<ReqSubRecord<GENCTDA> *> CTDA; //Conditions
+        std::vector<ReqSubRecord<FNVCTDA> *> CTDA; //Conditions
 
         std::vector<FORMID> TCLT; //Choices
         std::vector<FORMID> TCLF; //Link From

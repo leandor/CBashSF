@@ -31,7 +31,7 @@ class CONTRecord : public Record //Container
         StringRecord EDID; //Editor ID
         OptSubRecord<GENOBND> OBND; //Object Bounds
         StringRecord FULL; //Name
-        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<FNVMODEL> MODL; //Model
         OptSubRecord<GENFID> SCRI; //Script
         OptSubRecord<GENCNTO> CNTO; //Item
         OptSubRecord<GENDESTRUCT> Destructable; //Destructable

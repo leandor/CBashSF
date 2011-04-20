@@ -32,7 +32,7 @@ class CLMTRecord : public Record //Climate
         OptSubRecord<GENWLST> WLST; //Weather Types ,, Array
         StringRecord FNAM; //Sun Texture
         StringRecord GNAM; //Sun Glare Texture
-        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<FNVMODEL> MODL; //Model
         OptSubRecord<GENTNAM> TNAM; //TNAM ,, Struct
 
         CLMTRecord(unsigned char *_recData=NULL);
