@@ -48,6 +48,17 @@ SCPTRecord::SCPTRecord(SCPTRecord *srcRecord):
         }
 
     EDID = srcRecord->EDID;
+    if(srcRecord->SCHR.IsLoaded())
+        {
+        SCHR.Load();
+        SCHR->SCHR = srcRecord->SCHR->SCHR;
+        SCHR->SCDA = srcRecord->SCHR->SCDA;
+        SCHR->SCTX = srcRecord->SCHR->SCTX;
+        SCHR->SLSD = srcRecord->SCHR->SLSD;
+        SCHR->SCVR = srcRecord->SCHR->SCVR;
+        SCHR->SCRO = srcRecord->SCHR->SCRO;
+        SCHR->SCRV = srcRecord->SCHR->SCRV;
+        }
     return;
     }
 
@@ -60,6 +71,9 @@ bool SCPTRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
+
+    if(SCHR.IsLoaded() && SCHR->SCRO.IsLoaded())
+        op.Accept(SCHR->SCRO->value);
 
     return op.Stop();
     }
@@ -77,6 +91,36 @@ UINT32 SCPTRecord::GetSize(bool forceCalc)
         cSize = EDID.GetSize();
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
+        }
+
+    if(SCHR.IsLoaded())
+        {
+        if(SCHR->SCHR.IsLoaded())
+            TotSize += SCHR->SCHR.GetSize() + 6;
+        if(SCHR->SCDA.IsLoaded())
+            {
+            cSize = SCHR->SCDA.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        if(SCHR->SCTX.IsLoaded())
+            {
+            cSize = SCHR->SCTX.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        if(SCHR->SLSD.IsLoaded())
+            TotSize += SCHR->SLSD.GetSize() + 6;
+        if(SCHR->SCVR.IsLoaded())
+            {
+            cSize = SCHR->SCVR.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        if(SCHR->SCRO.IsLoaded())
+            TotSize += SCHR->SCRO.GetSize() + 6;
+        if(SCHR->SCRV.IsLoaded())
+            TotSize += SCHR->SCRV.GetSize() + 6;
         }
 
     return TotSize;
@@ -117,6 +161,34 @@ SINT32 SCPTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             case 'DIDE':
                 EDID.Read(buffer, subSize, curPos);
                 break;
+            case 'RHCS':
+                SCHR.Load();
+                SCHR->SCHR.Read(buffer, subSize, curPos);
+                break;
+            case 'ADCS':
+                SCHR.Load();
+                SCHR->SCDA.Read(buffer, subSize, curPos);
+                break;
+            case 'XTCS':
+                SCHR.Load();
+                SCHR->SCTX.Read(buffer, subSize, curPos);
+                break;
+            case 'DSLS':
+                SCHR.Load();
+                SCHR->SLSD.Read(buffer, subSize, curPos);
+                break;
+            case 'RVCS':
+                SCHR.Load();
+                SCHR->SCVR.Read(buffer, subSize, curPos);
+                break;
+            case 'ORCS':
+                SCHR.Load();
+                SCHR->SCRO.Read(buffer, subSize, curPos);
+                break;
+            case 'VRCS':
+                SCHR.Load();
+                SCHR->SCRV.Read(buffer, subSize, curPos);
+                break;
             default:
                 //printf("FileName = %s\n", FileName);
                 printf("  SCPT: %08X - Unknown subType = %04x\n", formID, subType);
@@ -134,6 +206,7 @@ SINT32 SCPTRecord::Unload()
     IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
+    SCHR.Unload();
     return 1;
     }
 
@@ -141,12 +214,39 @@ SINT32 SCPTRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+
+    if(SCHR.IsLoaded())
+        {
+        if(SCHR->SCHR.IsLoaded())
+            SaveHandler.writeSubRecord('RHCS', SCHR->SCHR.value, SCHR->SCHR.GetSize());
+
+        if(SCHR->SCDA.IsLoaded())
+            SaveHandler.writeSubRecord('ADCS', SCHR->SCDA.value, SCHR->SCDA.GetSize());
+
+        if(SCHR->SCTX.IsLoaded())
+            SaveHandler.writeSubRecord('XTCS', SCHR->SCTX.value, SCHR->SCTX.GetSize());
+
+        if(SCHR->SLSD.IsLoaded())
+            SaveHandler.writeSubRecord('DSLS', SCHR->SLSD.value, SCHR->SLSD.GetSize());
+
+        if(SCHR->SCVR.IsLoaded())
+            SaveHandler.writeSubRecord('RVCS', SCHR->SCVR.value, SCHR->SCVR.GetSize());
+
+        if(SCHR->SCRO.IsLoaded())
+            SaveHandler.writeSubRecord('ORCS', SCHR->SCRO.value, SCHR->SCRO.GetSize());
+
+        if(SCHR->SCRV.IsLoaded())
+            SaveHandler.writeSubRecord('VRCS', SCHR->SCRV.value, SCHR->SCRV.GetSize());
+
+        }
+
     return -1;
     }
 
 bool SCPTRecord::operator ==(const SCPTRecord &other) const
     {
-    return (EDID.equalsi(other.EDID));
+    return (EDID.equalsi(other.EDID) &&
+            SCHR == other.SCHR);
     }
 
 bool SCPTRecord::operator !=(const SCPTRecord &other) const

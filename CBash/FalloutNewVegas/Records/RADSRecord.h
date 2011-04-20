@@ -25,10 +25,11 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class RADSRecord : public Record
+class RADSRecord : public Record //Radiation Stage
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
 
         RADSRecord(unsigned char *_recData=NULL);
         RADSRecord(RADSRecord *srcRecord);

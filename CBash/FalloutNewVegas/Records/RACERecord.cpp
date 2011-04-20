@@ -48,6 +48,49 @@ RACERecord::RACERecord(RACERecord *srcRecord):
         }
 
     EDID = srcRecord->EDID;
+    FULL = srcRecord->FULL;
+    DESC = srcRecord->DESC;
+    XNAM = srcRecord->XNAM;
+    DATA = srcRecord->DATA;
+    ONAM = srcRecord->ONAM;
+    YNAM = srcRecord->YNAM;
+    NAM2 = srcRecord->NAM2;
+    VTCK = srcRecord->VTCK;
+    DNAM = srcRecord->DNAM;
+    CNAM = srcRecord->CNAM;
+    PNAM = srcRecord->PNAM;
+    UNAM = srcRecord->UNAM;
+    ATTR = srcRecord->ATTR;
+    NAM0 = srcRecord->NAM0;
+    MNAM = srcRecord->MNAM;
+    INDX = srcRecord->INDX;
+    if(srcRecord->MODL.IsLoaded())
+        {
+        MODL.Load();
+        MODL->MODL = srcRecord->MODL->MODL;
+        MODL->MODB = srcRecord->MODL->MODB;
+        MODL->MODT = srcRecord->MODL->MODT;
+        MODL->MODS = srcRecord->MODL->MODS;
+        MODL->MODD = srcRecord->MODL->MODD;
+        }
+    if(srcRecord->ICON.IsLoaded())
+        {
+        ICON.Load();
+        ICON->ICON = srcRecord->ICON->ICON;
+        ICON->MICO = srcRecord->ICON->MICO;
+        }
+    FNAM = srcRecord->FNAM;
+    NAM1 = srcRecord->NAM1;
+    HNAM = srcRecord->HNAM;
+    ENAM = srcRecord->ENAM;
+    if(srcRecord->FGGS.IsLoaded())
+        {
+        FGGS.Load();
+        FGGS->FGGS = srcRecord->FGGS->FGGS;
+        FGGS->FGGA = srcRecord->FGGS->FGGA;
+        FGGS->FGTS = srcRecord->FGGS->FGTS;
+        }
+    SNAM = srcRecord->SNAM;
     return;
     }
 
@@ -60,6 +103,23 @@ bool RACERecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
+
+    //if(XNAM.IsLoaded()) //FILL IN MANUALLY
+    //    op.Accept(XNAM->value);
+    if(ONAM.IsLoaded())
+        op.Accept(ONAM->value);
+    if(YNAM.IsLoaded())
+        op.Accept(YNAM->value);
+    //if(VTCK.IsLoaded()) //FILL IN MANUALLY
+    //    op.Accept(VTCK->value);
+    //if(DNAM.IsLoaded()) //FILL IN MANUALLY
+    //    op.Accept(DNAM->value);
+    if(MODL.IsLoaded() && MODL->MODS.IsLoaded())
+        op.Accept(MODL->MODS->value);
+    //if(HNAM.IsLoaded()) //FILL IN MANUALLY
+    //    op.Accept(HNAM->value);
+    //if(ENAM.IsLoaded()) //FILL IN MANUALLY
+    //    op.Accept(ENAM->value);
 
     return op.Stop();
     }
@@ -75,6 +135,149 @@ UINT32 RACERecord::GetSize(bool forceCalc)
     if(EDID.IsLoaded())
         {
         cSize = EDID.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(FULL.IsLoaded())
+        {
+        cSize = FULL.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(DESC.IsLoaded())
+        {
+        cSize = DESC.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(XNAM.IsLoaded())
+        TotSize += XNAM.GetSize() + 6;
+
+    if(DATA.IsLoaded())
+        TotSize += DATA.GetSize() + 6;
+
+    if(ONAM.IsLoaded())
+        TotSize += ONAM.GetSize() + 6;
+
+    if(YNAM.IsLoaded())
+        TotSize += YNAM.GetSize() + 6;
+
+    if(NAM2.IsLoaded())
+        TotSize += NAM2.GetSize() + 6;
+
+    if(VTCK.IsLoaded())
+        TotSize += VTCK.GetSize() + 6;
+
+    if(DNAM.IsLoaded())
+        TotSize += DNAM.GetSize() + 6;
+
+    if(CNAM.IsLoaded())
+        TotSize += CNAM.GetSize() + 6;
+
+    if(PNAM.IsLoaded())
+        TotSize += PNAM.GetSize() + 6;
+
+    if(UNAM.IsLoaded())
+        TotSize += UNAM.GetSize() + 6;
+
+    if(ATTR.IsLoaded())
+        {
+        cSize = ATTR.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(NAM0.IsLoaded())
+        TotSize += NAM0.GetSize() + 6;
+
+    if(MNAM.IsLoaded())
+        TotSize += MNAM.GetSize() + 6;
+
+    if(INDX.IsLoaded())
+        TotSize += INDX.GetSize() + 6;
+
+    if(MODL.IsLoaded())
+        {
+        if(MODL->MODL.IsLoaded())
+            {
+            cSize = MODL->MODL.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        if(MODL->MODB.IsLoaded())
+            {
+            cSize = MODL->MODB.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        if(MODL->MODT.IsLoaded())
+            {
+            cSize = MODL->MODT.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        if(MODL->MODS.IsLoaded())
+            TotSize += MODL->MODS.GetSize() + 6;
+        if(MODL->MODD.IsLoaded())
+            TotSize += MODL->MODD.GetSize() + 6;
+        }
+
+    if(ICON.IsLoaded())
+        {
+        if(ICON->ICON.IsLoaded())
+            {
+            cSize = ICON->ICON.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        if(ICON->MICO.IsLoaded())
+            {
+            cSize = ICON->MICO.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        }
+
+    if(FNAM.IsLoaded())
+        TotSize += FNAM.GetSize() + 6;
+
+    if(NAM1.IsLoaded())
+        TotSize += NAM1.GetSize() + 6;
+
+    if(HNAM.IsLoaded())
+        TotSize += HNAM.GetSize() + 6;
+
+    if(ENAM.IsLoaded())
+        TotSize += ENAM.GetSize() + 6;
+
+    if(FGGS.IsLoaded())
+        {
+        if(FGGS->FGGS.IsLoaded())
+            {
+            cSize = FGGS->FGGS.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        if(FGGS->FGGA.IsLoaded())
+            {
+            cSize = FGGS->FGGA.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        if(FGGS->FGTS.IsLoaded())
+            {
+            cSize = FGGS->FGTS.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        }
+
+    if(SNAM.IsLoaded())
+        {
+        cSize = SNAM.GetSize();
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
         }
@@ -117,6 +320,109 @@ SINT32 RACERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             case 'DIDE':
                 EDID.Read(buffer, subSize, curPos);
                 break;
+            case 'LLUF':
+                FULL.Read(buffer, subSize, curPos);
+                break;
+            case 'CSED':
+                DESC.Read(buffer, subSize, curPos);
+                break;
+            case 'MANX':
+                XNAM.Read(buffer, subSize, curPos);
+                break;
+            case 'ATAD':
+                DATA.Read(buffer, subSize, curPos);
+                break;
+            case 'MANO':
+                ONAM.Read(buffer, subSize, curPos);
+                break;
+            case 'MANY':
+                YNAM.Read(buffer, subSize, curPos);
+                break;
+            case '2MAN':
+                //NAM2.Read(buffer, subSize, curPos); //FILL IN MANUALLY
+                break;
+            case 'KCTV':
+                VTCK.Read(buffer, subSize, curPos);
+                break;
+            case 'MAND':
+                DNAM.Read(buffer, subSize, curPos);
+                break;
+            case 'MANC':
+                CNAM.Read(buffer, subSize, curPos);
+                break;
+            case 'MANP':
+                PNAM.Read(buffer, subSize, curPos);
+                break;
+            case 'MANU':
+                UNAM.Read(buffer, subSize, curPos);
+                break;
+            case 'RTTA':
+                ATTR.Read(buffer, subSize, curPos);
+                break;
+            case '0MAN':
+                //NAM0.Read(buffer, subSize, curPos); //FILL IN MANUALLY
+                break;
+            case 'MANM':
+                //MNAM.Read(buffer, subSize, curPos); //FILL IN MANUALLY
+                break;
+            case 'XDNI':
+                INDX.Read(buffer, subSize, curPos);
+                break;
+            case 'LDOM':
+                MODL.Load();
+                MODL->MODL.Read(buffer, subSize, curPos);
+                break;
+            case 'BDOM':
+                MODL.Load();
+                MODL->MODB.Read(buffer, subSize, curPos);
+                break;
+            case 'TDOM':
+                MODL.Load();
+                MODL->MODT.Read(buffer, subSize, curPos);
+                break;
+            case 'SDOM':
+                MODL.Load();
+                MODL->MODS.Read(buffer, subSize, curPos);
+                break;
+            case 'DDOM':
+                MODL.Load();
+                MODL->MODD.Read(buffer, subSize, curPos);
+                break;
+            case 'NOCI':
+                ICON.Load();
+                ICON->ICON.Read(buffer, subSize, curPos);
+                break;
+            case 'OCIM':
+                ICON.Load();
+                ICON->MICO.Read(buffer, subSize, curPos);
+                break;
+            case 'MANF':
+                //FNAM.Read(buffer, subSize, curPos); //FILL IN MANUALLY
+                break;
+            case '1MAN':
+                //NAM1.Read(buffer, subSize, curPos); //FILL IN MANUALLY
+                break;
+            case 'MANH':
+                HNAM.Read(buffer, subSize, curPos);
+                break;
+            case 'MANE':
+                ENAM.Read(buffer, subSize, curPos);
+                break;
+            case 'SGGF':
+                FGGS.Load();
+                FGGS->FGGS.Read(buffer, subSize, curPos);
+                break;
+            case 'AGGF':
+                FGGS.Load();
+                FGGS->FGGA.Read(buffer, subSize, curPos);
+                break;
+            case 'STGF':
+                FGGS.Load();
+                FGGS->FGTS.Read(buffer, subSize, curPos);
+                break;
+            case 'MANS':
+                SNAM.Read(buffer, subSize, curPos);
+                break;
             default:
                 //printf("FileName = %s\n", FileName);
                 printf("  RACE: %08X - Unknown subType = %04x\n", formID, subType);
@@ -134,6 +440,30 @@ SINT32 RACERecord::Unload()
     IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
+    FULL.Unload();
+    DESC.Unload();
+    XNAM.Unload();
+    DATA.Unload();
+    ONAM.Unload();
+    YNAM.Unload();
+    //NAM2.Unload(); //FILL IN MANUALLY
+    VTCK.Unload();
+    DNAM.Unload();
+    CNAM.Unload();
+    PNAM.Unload();
+    UNAM.Unload();
+    ATTR.Unload();
+    //NAM0.Unload(); //FILL IN MANUALLY
+    //MNAM.Unload(); //FILL IN MANUALLY
+    INDX.Unload();
+    MODL.Unload();
+    ICON.Unload();
+    //FNAM.Unload(); //FILL IN MANUALLY
+    //NAM1.Unload(); //FILL IN MANUALLY
+    HNAM.Unload();
+    ENAM.Unload();
+    FGGS.Unload();
+    SNAM.Unload();
     return 1;
     }
 
@@ -141,12 +471,142 @@ SINT32 RACERecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+
+    if(FULL.IsLoaded())
+        SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
+
+    if(DESC.IsLoaded())
+        SaveHandler.writeSubRecord('CSED', DESC.value, DESC.GetSize());
+
+    if(XNAM.IsLoaded())
+        SaveHandler.writeSubRecord('MANX', XNAM.value, XNAM.GetSize());
+
+    if(DATA.IsLoaded())
+        SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
+
+    if(ONAM.IsLoaded())
+        SaveHandler.writeSubRecord('MANO', ONAM.value, ONAM.GetSize());
+
+    if(YNAM.IsLoaded())
+        SaveHandler.writeSubRecord('MANY', YNAM.value, YNAM.GetSize());
+
+    //if(NAM2.IsLoaded()) //FILL IN MANUALLY
+        //SaveHandler.writeSubRecord('2MAN', NAM2.value, NAM2.GetSize());
+
+    if(VTCK.IsLoaded())
+        SaveHandler.writeSubRecord('KCTV', VTCK.value, VTCK.GetSize());
+
+    if(DNAM.IsLoaded())
+        SaveHandler.writeSubRecord('MAND', DNAM.value, DNAM.GetSize());
+
+    if(CNAM.IsLoaded())
+        SaveHandler.writeSubRecord('MANC', CNAM.value, CNAM.GetSize());
+
+    if(PNAM.IsLoaded())
+        SaveHandler.writeSubRecord('MANP', PNAM.value, PNAM.GetSize());
+
+    if(UNAM.IsLoaded())
+        SaveHandler.writeSubRecord('MANU', UNAM.value, UNAM.GetSize());
+
+    if(ATTR.IsLoaded())
+        SaveHandler.writeSubRecord('RTTA', ATTR.value, ATTR.GetSize());
+
+    //if(NAM0.IsLoaded()) //FILL IN MANUALLY
+        //SaveHandler.writeSubRecord('0MAN', NAM0.value, NAM0.GetSize());
+
+    //if(MNAM.IsLoaded()) //FILL IN MANUALLY
+        //SaveHandler.writeSubRecord('MANM', MNAM.value, MNAM.GetSize());
+
+    if(INDX.IsLoaded())
+        SaveHandler.writeSubRecord('XDNI', INDX.value, INDX.GetSize());
+
+    if(MODL.IsLoaded())
+        {
+        if(MODL->MODL.IsLoaded())
+            SaveHandler.writeSubRecord('LDOM', MODL->MODL.value, MODL->MODL.GetSize());
+
+        if(MODL->MODB.IsLoaded())
+            SaveHandler.writeSubRecord('BDOM', MODL->MODB.value, MODL->MODB.GetSize());
+
+        if(MODL->MODT.IsLoaded())
+            SaveHandler.writeSubRecord('TDOM', MODL->MODT.value, MODL->MODT.GetSize());
+
+        if(MODL->MODS.IsLoaded())
+            SaveHandler.writeSubRecord('SDOM', MODL->MODS.value, MODL->MODS.GetSize());
+
+        if(MODL->MODD.IsLoaded())
+            SaveHandler.writeSubRecord('DDOM', MODL->MODD.value, MODL->MODD.GetSize());
+
+        }
+
+    if(ICON.IsLoaded())
+        {
+        if(ICON->ICON.IsLoaded())
+            SaveHandler.writeSubRecord('NOCI', ICON->ICON.value, ICON->ICON.GetSize());
+
+        if(ICON->MICO.IsLoaded())
+            SaveHandler.writeSubRecord('OCIM', ICON->MICO.value, ICON->MICO.GetSize());
+
+        }
+
+    //if(FNAM.IsLoaded()) //FILL IN MANUALLY
+        //SaveHandler.writeSubRecord('MANF', FNAM.value, FNAM.GetSize());
+
+    //if(NAM1.IsLoaded()) //FILL IN MANUALLY
+        //SaveHandler.writeSubRecord('1MAN', NAM1.value, NAM1.GetSize());
+
+    if(HNAM.IsLoaded())
+        SaveHandler.writeSubRecord('MANH', HNAM.value, HNAM.GetSize());
+
+    if(ENAM.IsLoaded())
+        SaveHandler.writeSubRecord('MANE', ENAM.value, ENAM.GetSize());
+
+    if(FGGS.IsLoaded())
+        {
+        if(FGGS->FGGS.IsLoaded())
+            SaveHandler.writeSubRecord('SGGF', FGGS->FGGS.value, FGGS->FGGS.GetSize());
+
+        if(FGGS->FGGA.IsLoaded())
+            SaveHandler.writeSubRecord('AGGF', FGGS->FGGA.value, FGGS->FGGA.GetSize());
+
+        if(FGGS->FGTS.IsLoaded())
+            SaveHandler.writeSubRecord('STGF', FGGS->FGTS.value, FGGS->FGTS.GetSize());
+
+        }
+
+    if(SNAM.IsLoaded())
+        SaveHandler.writeSubRecord('MANS', SNAM.value, SNAM.GetSize());
+
     return -1;
     }
 
 bool RACERecord::operator ==(const RACERecord &other) const
     {
-    return (EDID.equalsi(other.EDID));
+    return (EDID.equalsi(other.EDID) &&
+            FULL.equals(other.FULL) &&
+            DESC.equals(other.DESC) &&
+            XNAM == other.XNAM &&
+            DATA == other.DATA &&
+            ONAM == other.ONAM &&
+            YNAM == other.YNAM &&
+            //Empty &&
+            VTCK == other.VTCK &&
+            DNAM == other.DNAM &&
+            CNAM == other.CNAM &&
+            PNAM == other.PNAM &&
+            UNAM == other.UNAM &&
+            ATTR == other.ATTR &&
+            //Empty &&
+            //Empty &&
+            INDX == other.INDX &&
+            MODL == other.MODL &&
+            ICON == other.ICON &&
+            //Empty &&
+            //Empty &&
+            HNAM == other.HNAM &&
+            ENAM == other.ENAM &&
+            FGGS == other.FGGS &&
+            SNAM == other.SNAM);
     }
 
 bool RACERecord::operator !=(const RACERecord &other) const

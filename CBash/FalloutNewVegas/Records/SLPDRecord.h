@@ -25,10 +25,11 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class SLPDRecord : public Record
+class SLPDRecord : public Record //Sleep Deprivation Stage
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
 
         SLPDRecord(unsigned char *_recData=NULL);
         SLPDRecord(SLPDRecord *srcRecord);

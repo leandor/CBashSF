@@ -25,10 +25,34 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class RACERecord : public Record
+class RACERecord : public Record //Race
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        StringRecord FULL; //Name
+        StringRecord DESC; //Description
+        OptSubRecord<GENXNAM> XNAM; //Relation
+        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
+        OptSubRecord<GENFID> ONAM; //Older
+        OptSubRecord<GENFID> YNAM; //Younger
+        OptSubRecord<GENNAM2> NAM2; //Unknown Marker
+        OptSubRecord<GENVTCK> VTCK; //Voices
+        OptSubRecord<GENDNAM> DNAM; //Default Hair Styles
+        OptSubRecord<GENCNAM> CNAM; //Default Hair Colors
+        OptSubRecord<GENFLOAT> PNAM; //FaceGen - Main clamp
+        OptSubRecord<GENFLOAT> UNAM; //FaceGen - Face clamp
+        RawRecord ATTR; //Unknown
+        OptSubRecord<GENNAM> NAM0; //Head Data Marker
+        OptSubRecord<GENMNAM> MNAM; //Male Data Marker
+        OptSubRecord<GENU32> INDX; //Index
+        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<GENICON> ICON; //Large Icon Filename
+        OptSubRecord<GENFNAM> FNAM; //Female Data Marker
+        OptSubRecord<GENNAM1> NAM1; //Body Data Marker
+        OptSubRecord<GENHNAM> HNAM; //Hairs
+        OptSubRecord<GENENAM> ENAM; //Eyes
+        OptSubRecord<GENFGGS> FGGS; //FaceGen Geometry-Symmetric
+        RawRecord SNAM; //Unknown
 
         RACERecord(unsigned char *_recData=NULL);
         RACERecord(RACERecord *srcRecord);

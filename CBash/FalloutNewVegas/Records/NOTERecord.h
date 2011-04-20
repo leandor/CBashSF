@@ -25,10 +25,21 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class NOTERecord : public Record
+class NOTERecord : public Record //Note
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENOBND> OBND; //Object Bounds
+        StringRecord FULL; //Name
+        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<GENICON> ICON; //Large Icon Filename
+        OptSubRecord<GENFID> YNAM; //Sound - Pick Up
+        OptSubRecord<GENFID> ZNAM; //Sound - Drop
+        OptSubRecord<GENU8> DATA; //Type
+        OptSubRecord<GENFID> ONAM; //Quest
+        StringRecord XNAM; //Texture
+        StringRecord TNAM; //Text
+        OptSubRecord<GENFID> SNAM; //Sound
 
         NOTERecord(unsigned char *_recData=NULL);
         NOTERecord(NOTERecord *srcRecord);

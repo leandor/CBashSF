@@ -25,10 +25,14 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class SCOLRecord : public Record
+class SCOLRecord : public Record //Static Collection
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENOBND> OBND; //Object Bounds
+        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<GENFID> ONAM; //Static
+        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
 
         SCOLRecord(unsigned char *_recData=NULL);
         SCOLRecord(SCOLRecord *srcRecord);

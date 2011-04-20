@@ -113,6 +113,48 @@ bool AMMORecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+bool AMMORecord::IsNotNormalWeapon()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsNotNormalWeapon) != 0;
+    }
+
+void AMMORecord::IsNotNormalWeapon(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsNotNormalWeapon;
+    else
+        Dummy->flags &= ~fIsNotNormalWeapon;
+    }
+
+bool AMMORecord::IsNonPlayable()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsNonPlayable) != 0;
+    }
+
+void AMMORecord::IsNonPlayable(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsNonPlayable;
+    else
+        Dummy->flags &= ~fIsNonPlayable;
+    }
+
+bool AMMORecord::IsFlagMask(UINT8 Mask, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    }
+
+void AMMORecord::SetFlagMask(UINT8 Mask)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
 UINT32 AMMORecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())

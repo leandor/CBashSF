@@ -48,6 +48,12 @@ RCPERecord::RCPERecord(RCPERecord *srcRecord):
         }
 
     EDID = srcRecord->EDID;
+    FULL = srcRecord->FULL;
+    CTDA = srcRecord->CTDA;
+    DATA = srcRecord->DATA;
+    RCIL = srcRecord->RCIL;
+    RCQY = srcRecord->RCQY;
+    RCOD = srcRecord->RCOD;
     return;
     }
 
@@ -60,6 +66,15 @@ bool RCPERecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
+
+    //if(CTDA.IsLoaded()) //FILL IN MANUALLY
+    //    op.Accept(CTDA->value);
+    //if(DATA.IsLoaded()) //FILL IN MANUALLY
+    //    op.Accept(DATA->value);
+    if(RCIL.IsLoaded())
+        op.Accept(RCIL->value);
+    if(RCOD.IsLoaded())
+        op.Accept(RCOD->value);
 
     return op.Stop();
     }
@@ -78,6 +93,28 @@ UINT32 RCPERecord::GetSize(bool forceCalc)
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
         }
+
+    if(FULL.IsLoaded())
+        {
+        cSize = FULL.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(CTDA.IsLoaded())
+        TotSize += CTDA.GetSize() + 6;
+
+    if(DATA.IsLoaded())
+        TotSize += DATA.GetSize() + 6;
+
+    if(RCIL.IsLoaded())
+        TotSize += RCIL.GetSize() + 6;
+
+    if(RCQY.IsLoaded())
+        TotSize += RCQY.GetSize() + 6;
+
+    if(RCOD.IsLoaded())
+        TotSize += RCOD.GetSize() + 6;
 
     return TotSize;
     }
@@ -117,6 +154,24 @@ SINT32 RCPERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             case 'DIDE':
                 EDID.Read(buffer, subSize, curPos);
                 break;
+            case 'LLUF':
+                FULL.Read(buffer, subSize, curPos);
+                break;
+            case 'ADTC':
+                CTDA.Read(buffer, subSize, curPos);
+                break;
+            case 'ATAD':
+                DATA.Read(buffer, subSize, curPos);
+                break;
+            case 'LICR':
+                RCIL.Read(buffer, subSize, curPos);
+                break;
+            case 'YQCR':
+                RCQY.Read(buffer, subSize, curPos);
+                break;
+            case 'DOCR':
+                RCOD.Read(buffer, subSize, curPos);
+                break;
             default:
                 //printf("FileName = %s\n", FileName);
                 printf("  RCPE: %08X - Unknown subType = %04x\n", formID, subType);
@@ -134,6 +189,12 @@ SINT32 RCPERecord::Unload()
     IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
+    FULL.Unload();
+    CTDA.Unload();
+    DATA.Unload();
+    RCIL.Unload();
+    RCQY.Unload();
+    RCOD.Unload();
     return 1;
     }
 
@@ -141,12 +202,37 @@ SINT32 RCPERecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+
+    if(FULL.IsLoaded())
+        SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
+
+    if(CTDA.IsLoaded())
+        SaveHandler.writeSubRecord('ADTC', CTDA.value, CTDA.GetSize());
+
+    if(DATA.IsLoaded())
+        SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
+
+    if(RCIL.IsLoaded())
+        SaveHandler.writeSubRecord('LICR', RCIL.value, RCIL.GetSize());
+
+    if(RCQY.IsLoaded())
+        SaveHandler.writeSubRecord('YQCR', RCQY.value, RCQY.GetSize());
+
+    if(RCOD.IsLoaded())
+        SaveHandler.writeSubRecord('DOCR', RCOD.value, RCOD.GetSize());
+
     return -1;
     }
 
 bool RCPERecord::operator ==(const RCPERecord &other) const
     {
-    return (EDID.equalsi(other.EDID));
+    return (EDID.equalsi(other.EDID) &&
+            FULL.equals(other.FULL) &&
+            CTDA == other.CTDA &&
+            DATA == other.DATA &&
+            RCIL == other.RCIL &&
+            RCQY == other.RCQY &&
+            RCOD == other.RCOD);
     }
 
 bool RCPERecord::operator !=(const RCPERecord &other) const

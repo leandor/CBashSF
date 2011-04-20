@@ -25,10 +25,23 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class PERKRecord : public Record
+class PERKRecord : public Record //Perk
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        StringRecord FULL; //Name
+        StringRecord DESC; //Description
+        OptSubRecord<GENICON> ICON; //Large Icon Filename
+        OptSubRecord<GENCTDA> CTDA; //Conditions
+        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
+        OptSubRecord<GENPRKE> PRKE; //PRKE ,, Struct
+        OptSubRecord<GENS8> PRKC; //Run On
+        OptSubRecord<GENCTDA> CTDA; //Conditions
+        OptSubRecord<GENEPFT> EPFT; //Type
+        StringRecord EPF2; //Button Label
+        OptSubRecord<GENU16> EPF3; //Script Flags
+        OptSubRecord<GENSCHR> SCHR; //Basic Script Data
+        OptSubRecord<GENPRKF> PRKF; //End Marker
 
         PERKRecord(unsigned char *_recData=NULL);
         PERKRecord(PERKRecord *srcRecord);

@@ -25,10 +25,41 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class NPC_Record : public Record
+class NPC_Record : public Record //Non-Player Character
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENOBND> OBND; //Object Bounds
+        StringRecord FULL; //Name
+        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<GENACBS> ACBS; //ACBS ,, Struct
+        OptSubRecord<GENSNAM> SNAM; //SNAM ,, Struct
+        OptSubRecord<GENFID> INAM; //Death item
+        OptSubRecord<GENFID> VTCK; //Voice
+        OptSubRecord<GENFID> TPLT; //Template
+        OptSubRecord<GENFID> RNAM; //Race
+        OptSubRecord<GENFID> SPLO; //Actor Effect
+        OptSubRecord<GENFID> EITM; //Unarmed Attack Effect
+        OptSubRecord<GENU16> EAMT; //Unarmed Attack Animation
+        OptSubRecord<GENDESTRUCT> Destructable; //Destructable
+        OptSubRecord<GENFID> SCRI; //Script
+        OptSubRecord<GENCNTO> CNTO; //Item
+        OptSubRecord<GENAIDT> AIDT; //AI Data
+        OptSubRecord<GENFID> PKID; //Package
+        OptSubRecord<GENFID> CNAM; //Class
+        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
+        OptSubRecord<GENDNAM> DNAM; //DNAM ,, Struct
+        OptSubRecord<GENFID> PNAM; //Head Part
+        OptSubRecord<GENFID> HNAM; //Hair
+        OptSubRecord<GENFLOAT> LNAM; //Hair length
+        OptSubRecord<GENFID> ENAM; //Eyes
+        OptSubRecord<GENHCLR> HCLR; //HCLR ,, Struct
+        OptSubRecord<GENFID> ZNAM; //Combat Style
+        OptSubRecord<GENU32> NAM4; //Impact Material Type
+        OptSubRecord<GENFGGS> FGGS; //FaceGen Geometry-Symmetric
+        OptSubRecord<GENU16> NAM5; //Unknown
+        OptSubRecord<GENFLOAT> NAM6; //Height
+        OptSubRecord<GENFLOAT> NAM7; //Weight
 
         NPC_Record(unsigned char *_recData=NULL);
         NPC_Record(NPC_Record *srcRecord);

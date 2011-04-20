@@ -25,10 +25,12 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class MUSCRecord : public Record
+class MUSCRecord : public Record //Music Type
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        StringRecord FNAM; //Filename
+        OptSubRecord<GENFLOAT> ANAM; //dB (positive = Loop)
 
         MUSCRecord(unsigned char *_recData=NULL);
         MUSCRecord(MUSCRecord *srcRecord);

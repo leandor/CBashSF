@@ -25,10 +25,18 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class RGDLRecord : public Record
+class RGDLRecord : public Record //Ragdoll
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENU32> NVER; //Version
+        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
+        OptSubRecord<GENFID> XNAM; //Actor Base
+        OptSubRecord<GENFID> TNAM; //Body Part Data
+        OptSubRecord<GENRAFD> RAFD; //RAFD ,, Struct
+        OptSubRecord<GENRAFB> RAFB; //Feedback Dynamic Bones
+        OptSubRecord<GENRAPS> RAPS; //RAPS ,, Struct
+        StringRecord ANAM; //Death Pose
 
         RGDLRecord(unsigned char *_recData=NULL);
         RGDLRecord(RGDLRecord *srcRecord);

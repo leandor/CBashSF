@@ -25,10 +25,18 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class PROJRecord : public Record
+class PROJRecord : public Record //Projectile
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENOBND> OBND; //Object Bounds
+        StringRecord FULL; //Name
+        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<GENDESTRUCT> Destructable; //Destructable
+        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
+        StringRecord NAM1; //Model Filename
+        RawRecord NAM2; //Texture Files Hashes
+        OptSubRecord<GENU32> VNAM; //Sound Level
 
         PROJRecord(unsigned char *_recData=NULL);
         PROJRecord(PROJRecord *srcRecord);

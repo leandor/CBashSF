@@ -25,10 +25,16 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class RCPERecord : public Record
+class RCPERecord : public Record //Recipe
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        StringRecord FULL; //Name
+        OptSubRecord<GENCTDA> CTDA; //Conditions
+        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
+        OptSubRecord<GENFID> RCIL; //Item
+        OptSubRecord<GENU32> RCQY; //Quantity
+        OptSubRecord<GENFID> RCOD; //Item
 
         RCPERecord(unsigned char *_recData=NULL);
         RCPERecord(RCPERecord *srcRecord);

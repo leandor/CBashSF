@@ -25,10 +25,11 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class SCPTRecord : public Record
+class SCPTRecord : public Record //Script
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENSCHR> SCHR; //Basic Script Data
 
         SCPTRecord(unsigned char *_recData=NULL);
         SCPTRecord(SCPTRecord *srcRecord);

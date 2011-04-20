@@ -48,6 +48,30 @@ PROJRecord::PROJRecord(PROJRecord *srcRecord):
         }
 
     EDID = srcRecord->EDID;
+    OBND = srcRecord->OBND;
+    FULL = srcRecord->FULL;
+    if(srcRecord->MODL.IsLoaded())
+        {
+        MODL.Load();
+        MODL->MODL = srcRecord->MODL->MODL;
+        MODL->MODB = srcRecord->MODL->MODB;
+        MODL->MODT = srcRecord->MODL->MODT;
+        MODL->MODS = srcRecord->MODL->MODS;
+        MODL->MODD = srcRecord->MODL->MODD;
+        }
+    if(srcRecord->DEST.IsLoaded())
+        {
+        DEST.Load();
+        DEST->DEST = srcRecord->DEST->DEST;
+        DEST->DSTD = srcRecord->DEST->DSTD;
+        DEST->DMDL = srcRecord->DEST->DMDL;
+        DEST->DMDT = srcRecord->DEST->DMDT;
+        DEST->DSTF = srcRecord->DEST->DSTF;
+        }
+    DATA = srcRecord->DATA;
+    NAM1 = srcRecord->NAM1;
+    NAM2 = srcRecord->NAM2;
+    VNAM = srcRecord->VNAM;
     return;
     }
 
@@ -60,6 +84,13 @@ bool PROJRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
+
+    if(MODL.IsLoaded() && MODL->MODS.IsLoaded())
+        op.Accept(MODL->MODS->value);
+    if(DEST.IsLoaded() && DEST->DSTD.IsLoaded())
+        op.Accept(DEST->DSTD->value);
+    //if(DATA.IsLoaded()) //FILL IN MANUALLY
+    //    op.Accept(DATA->value);
 
     return op.Stop();
     }
@@ -78,6 +109,84 @@ UINT32 PROJRecord::GetSize(bool forceCalc)
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
         }
+
+    if(OBND.IsLoaded())
+        TotSize += OBND.GetSize() + 6;
+
+    if(FULL.IsLoaded())
+        {
+        cSize = FULL.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(MODL.IsLoaded())
+        {
+        if(MODL->MODL.IsLoaded())
+            {
+            cSize = MODL->MODL.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        if(MODL->MODB.IsLoaded())
+            {
+            cSize = MODL->MODB.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        if(MODL->MODT.IsLoaded())
+            {
+            cSize = MODL->MODT.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        if(MODL->MODS.IsLoaded())
+            TotSize += MODL->MODS.GetSize() + 6;
+        if(MODL->MODD.IsLoaded())
+            TotSize += MODL->MODD.GetSize() + 6;
+        }
+
+    if(DEST.IsLoaded())
+        {
+        if(DEST->DEST.IsLoaded())
+            TotSize += DEST->DEST.GetSize() + 6;
+        if(DEST->DSTD.IsLoaded())
+            TotSize += DEST->DSTD.GetSize() + 6;
+        if(DEST->DMDL.IsLoaded())
+            {
+            cSize = DEST->DMDL.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        if(DEST->DMDT.IsLoaded())
+            {
+            cSize = DEST->DMDT.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        if(DEST->DSTF.IsLoaded())
+            TotSize += DEST->DSTF.GetSize() + 6;
+        }
+
+    if(DATA.IsLoaded())
+        TotSize += DATA.GetSize() + 6;
+
+    if(NAM1.IsLoaded())
+        {
+        cSize = NAM1.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(NAM2.IsLoaded())
+        {
+        cSize = NAM2.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(VNAM.IsLoaded())
+        TotSize += VNAM.GetSize() + 6;
 
     return TotSize;
     }
@@ -117,6 +226,64 @@ SINT32 PROJRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             case 'DIDE':
                 EDID.Read(buffer, subSize, curPos);
                 break;
+            case 'DNBO':
+                OBND.Read(buffer, subSize, curPos);
+                break;
+            case 'LLUF':
+                FULL.Read(buffer, subSize, curPos);
+                break;
+            case 'LDOM':
+                MODL.Load();
+                MODL->MODL.Read(buffer, subSize, curPos);
+                break;
+            case 'BDOM':
+                MODL.Load();
+                MODL->MODB.Read(buffer, subSize, curPos);
+                break;
+            case 'TDOM':
+                MODL.Load();
+                MODL->MODT.Read(buffer, subSize, curPos);
+                break;
+            case 'SDOM':
+                MODL.Load();
+                MODL->MODS.Read(buffer, subSize, curPos);
+                break;
+            case 'DDOM':
+                MODL.Load();
+                MODL->MODD.Read(buffer, subSize, curPos);
+                break;
+            case 'TSED':
+                DEST.Load();
+                DEST->DEST.Read(buffer, subSize, curPos);
+                break;
+            case 'DTSD':
+                DEST.Load();
+                DEST->DSTD.Read(buffer, subSize, curPos);
+                break;
+            case 'LDMD':
+                DEST.Load();
+                DEST->DMDL.Read(buffer, subSize, curPos);
+                break;
+            case 'TDMD':
+                DEST.Load();
+                DEST->DMDT.Read(buffer, subSize, curPos);
+                break;
+            case 'FTSD':
+                //DEST.Load();
+                //DEST->DSTF.Read(buffer, subSize, curPos); //FILL IN MANUALLY
+                break;
+            case 'ATAD':
+                DATA.Read(buffer, subSize, curPos);
+                break;
+            case '1MAN':
+                NAM1.Read(buffer, subSize, curPos);
+                break;
+            case '2MAN':
+                NAM2.Read(buffer, subSize, curPos);
+                break;
+            case 'MANV':
+                VNAM.Read(buffer, subSize, curPos);
+                break;
             default:
                 //printf("FileName = %s\n", FileName);
                 printf("  PROJ: %08X - Unknown subType = %04x\n", formID, subType);
@@ -134,6 +301,14 @@ SINT32 PROJRecord::Unload()
     IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
+    OBND.Unload();
+    FULL.Unload();
+    MODL.Unload();
+    DEST.Unload();
+    DATA.Unload();
+    NAM1.Unload();
+    NAM2.Unload();
+    VNAM.Unload();
     return 1;
     }
 
@@ -141,12 +316,77 @@ SINT32 PROJRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+
+    if(OBND.IsLoaded())
+        SaveHandler.writeSubRecord('DNBO', OBND.value, OBND.GetSize());
+
+    if(FULL.IsLoaded())
+        SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
+
+    if(MODL.IsLoaded())
+        {
+        if(MODL->MODL.IsLoaded())
+            SaveHandler.writeSubRecord('LDOM', MODL->MODL.value, MODL->MODL.GetSize());
+
+        if(MODL->MODB.IsLoaded())
+            SaveHandler.writeSubRecord('BDOM', MODL->MODB.value, MODL->MODB.GetSize());
+
+        if(MODL->MODT.IsLoaded())
+            SaveHandler.writeSubRecord('TDOM', MODL->MODT.value, MODL->MODT.GetSize());
+
+        if(MODL->MODS.IsLoaded())
+            SaveHandler.writeSubRecord('SDOM', MODL->MODS.value, MODL->MODS.GetSize());
+
+        if(MODL->MODD.IsLoaded())
+            SaveHandler.writeSubRecord('DDOM', MODL->MODD.value, MODL->MODD.GetSize());
+
+        }
+
+    if(DEST.IsLoaded())
+        {
+        if(DEST->DEST.IsLoaded())
+            SaveHandler.writeSubRecord('TSED', DEST->DEST.value, DEST->DEST.GetSize());
+
+        if(DEST->DSTD.IsLoaded())
+            SaveHandler.writeSubRecord('DTSD', DEST->DSTD.value, DEST->DSTD.GetSize());
+
+        if(DEST->DMDL.IsLoaded())
+            SaveHandler.writeSubRecord('LDMD', DEST->DMDL.value, DEST->DMDL.GetSize());
+
+        if(DEST->DMDT.IsLoaded())
+            SaveHandler.writeSubRecord('TDMD', DEST->DMDT.value, DEST->DMDT.GetSize());
+
+        //if(DEST->DSTF.IsLoaded()) //FILL IN MANUALLY
+            //SaveHandler.writeSubRecord('FTSD', DEST->DSTF.value, DEST->DSTF.GetSize());
+
+        }
+
+    if(DATA.IsLoaded())
+        SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
+
+    if(NAM1.IsLoaded())
+        SaveHandler.writeSubRecord('1MAN', NAM1.value, NAM1.GetSize());
+
+    if(NAM2.IsLoaded())
+        SaveHandler.writeSubRecord('2MAN', NAM2.value, NAM2.GetSize());
+
+    if(VNAM.IsLoaded())
+        SaveHandler.writeSubRecord('MANV', VNAM.value, VNAM.GetSize());
+
     return -1;
     }
 
 bool PROJRecord::operator ==(const PROJRecord &other) const
     {
-    return (EDID.equalsi(other.EDID));
+    return (EDID.equalsi(other.EDID) &&
+            OBND == other.OBND &&
+            FULL.equals(other.FULL) &&
+            MODL == other.MODL &&
+            DEST == other.DEST &&
+            DATA == other.DATA &&
+            NAM1.equalsi(other.NAM1) &&
+            NAM2 == other.NAM2 &&
+            VNAM == other.VNAM);
     }
 
 bool PROJRecord::operator !=(const PROJRecord &other) const

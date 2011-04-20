@@ -25,10 +25,23 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class QUSTRecord : public Record
+class QUSTRecord : public Record //Quest
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENFID> SCRI; //Script
+        StringRecord FULL; //Name
+        OptSubRecord<GENICON> ICON; //Large Icon Filename
+        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
+        OptSubRecord<GENCTDA> CTDA; //Conditions
+        OptSubRecord<GENS16> INDX; //Stage Index
+        OptSubRecord<GENU8> QSDT; //Stage Flags
+        StringRecord CNAM; //Log Entry
+        OptSubRecord<GENSCHR> SCHR; //Basic Script Data
+        OptSubRecord<GENFID> NAM0; //Next Quest
+        OptSubRecord<GENS32> QOBJ; //Objective Index
+        StringRecord NNAM; //Description
+        OptSubRecord<GENQSTA> QSTA; //QSTA ,, Struct
 
         QUSTRecord(unsigned char *_recData=NULL);
         QUSTRecord(QUSTRecord *srcRecord);

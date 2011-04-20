@@ -25,16 +25,50 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class PGRERecord : public Record
+class PGRERecord : public Record //Placed Grenade
     {
+    private:
+        enum xespFlags
+            {
+            fIsOppositeParent = 0x00000001,
+            fIsPopIn          = 0x00000002
+            };
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENFID> NAME; //Base
+        OptSubRecord<GENFID> XEZN; //Encounter Zone
+        RawRecord XRGD; //Ragdoll Data
+        RawRecord XRGB; //Ragdoll Biped Data
+        OptSubRecord<GENPATROL> Patrol; //Patrol Data
+        OptSubRecord<FNVXOWN> Ownership; //Owner
+        OptSubRecord<GENS32> XCNT; //Count
+        OptSubRecord<GENFLOAT> XRDS; //Radius
+        OptSubRecord<GENFLOAT> XHLP; //Health
+        std::vector<ReqSubRecord<GENXPWR> *> Reflections; //Reflected/Refracted By
+        std::vector<ReqSubRecord<GENXDCR> *> Decals; //Linked Decals
+        OptSubRecord<GENFID> XLKR; //Linked Reference
+        OptSubRecord<GENXCLP> XCLP; //Linked Reference Color
+        OptSubRecord<GENACTPARENT> ActivateParents; //Activate Parents
+        StringRecord XATO; //Activation Prompt
+        OptSubRecord<GENXESP> XESP; //Enable Parent
+        OptSubRecord<GENFID> XEMI; //Emittance
+        OptSubRecord<GENFID> XMBR; //MultiBound Reference
+        //OptSubRecord<GENXIBS> XIBS; //Ignored By Sandbox (Empty)
+        OptSubRecord<GENXSCL> XSCL; //Scale
+        OptSubRecord<GENPOSDATA> DATA; //Position/Rotation
 
         PGRERecord(unsigned char *_recData=NULL);
         PGRERecord(PGRERecord *srcRecord);
         ~PGRERecord();
 
         bool   VisitFormIDs(FormIDOp &op);
+
+        bool   IsOppositeParent();
+        void   IsOppositeParent(bool value);
+        bool   IsPopIn();
+        void   IsPopIn(bool value);
+        bool   IsFlagMask(UINT8 Mask, bool Exact=false);
+        void   SetFlagMask(UINT8 Mask);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

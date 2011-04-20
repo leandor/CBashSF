@@ -48,6 +48,7 @@ SLPDRecord::SLPDRecord(SLPDRecord *srcRecord):
         }
 
     EDID = srcRecord->EDID;
+    DATA = srcRecord->DATA;
     return;
     }
 
@@ -60,6 +61,9 @@ bool SLPDRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
+
+    //if(DATA.IsLoaded()) //FILL IN MANUALLY
+    //    op.Accept(DATA->value);
 
     return op.Stop();
     }
@@ -78,6 +82,9 @@ UINT32 SLPDRecord::GetSize(bool forceCalc)
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
         }
+
+    if(DATA.IsLoaded())
+        TotSize += DATA.GetSize() + 6;
 
     return TotSize;
     }
@@ -117,6 +124,9 @@ SINT32 SLPDRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             case 'DIDE':
                 EDID.Read(buffer, subSize, curPos);
                 break;
+            case 'ATAD':
+                DATA.Read(buffer, subSize, curPos);
+                break;
             default:
                 //printf("FileName = %s\n", FileName);
                 printf("  SLPD: %08X - Unknown subType = %04x\n", formID, subType);
@@ -134,6 +144,7 @@ SINT32 SLPDRecord::Unload()
     IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
+    DATA.Unload();
     return 1;
     }
 
@@ -141,12 +152,17 @@ SINT32 SLPDRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+
+    if(DATA.IsLoaded())
+        SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
+
     return -1;
     }
 
 bool SLPDRecord::operator ==(const SLPDRecord &other) const
     {
-    return (EDID.equalsi(other.EDID));
+    return (EDID.equalsi(other.EDID) &&
+            DATA == other.DATA);
     }
 
 bool SLPDRecord::operator !=(const SLPDRecord &other) const

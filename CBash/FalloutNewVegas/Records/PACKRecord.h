@@ -25,10 +25,34 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class PACKRecord : public Record
+class PACKRecord : public Record //Package
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENPKDT> PKDT; //PKDT ,, Struct
+        OptSubRecord<GENPLDT> PLDT; //PLDT ,, Struct
+        OptSubRecord<GENPLD2> PLD2; //PLD2 ,, Struct
+        OptSubRecord<GENPSDT> PSDT; //PSDT ,, Struct
+        OptSubRecord<GENPTDT> PTDT; //PTDT ,, Struct
+        OptSubRecord<GENCTDA> CTDA; //Conditions
+        OptSubRecord<GENU8> IDLF; //Flags
+        OptSubRecord<GENIDLC> IDLC; //IDLC ,, Struct
+        OptSubRecord<GENFLOAT> IDLT; //Idle Timer Setting
+        OptSubRecord<GENFID> IDLA; //Animation
+        OptSubRecord<GENIDLB> IDLB; //Unused
+        OptSubRecord<GENPKED> PKED; //Eat Marker
+        OptSubRecord<GENU32> PKE2; //Escort Distance
+        OptSubRecord<GENFID> CNAM; //Combat Style
+        OptSubRecord<GENFLOAT> PKFD; //Follow - Start Location - Trigger Radius
+        OptSubRecord<GENPKPT> PKPT; //PKPT ,, Struct
+        OptSubRecord<GENPKW3> PKW3; //PKW3 ,, Struct
+        OptSubRecord<GENPTD2> PTD2; //PTD2 ,, Struct
+        OptSubRecord<GENPUID> PUID; //Use Item Marker
+        OptSubRecord<GENPKAM> PKAM; //Ambush Marker
+        OptSubRecord<GENPKDD> PKDD; //PKDD ,, Struct
+        OptSubRecord<GENPOBA> POBA; //OnBegin Marker
+        OptSubRecord<GENPOEA> POEA; //OnEnd Marker
+        OptSubRecord<GENPOCA> POCA; //OnChange Marker
 
         PACKRecord(unsigned char *_recData=NULL);
         PACKRecord(PACKRecord *srcRecord);

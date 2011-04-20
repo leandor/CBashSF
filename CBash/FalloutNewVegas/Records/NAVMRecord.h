@@ -25,10 +25,18 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class NAVMRecord : public Record
+class NAVMRecord : public Record //Navigation Mesh
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENU32> NVER; //Version
+        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
+        OptSubRecord<GENNVVX> NVVX; //NVVX ,, Struct
+        OptSubRecord<GENNVTR> NVTR; //NVTR ,, Struct
+        OptSubRecord<GENNVCA> NVCA; //Unknown
+        OptSubRecord<GENNVDP> NVDP; //NVDP ,, Struct
+        OptSubRecord<GENNVGD> NVGD; //NVGD ,, Struct
+        OptSubRecord<GENNVEX> NVEX; //NVEX ,, Struct
 
         NAVMRecord(unsigned char *_recData=NULL);
         NAVMRecord(NAVMRecord *srcRecord);

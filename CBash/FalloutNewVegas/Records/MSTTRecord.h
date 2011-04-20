@@ -25,10 +25,16 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class MSTTRecord : public Record
+class MSTTRecord : public Record //Moveable Static
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENOBND> OBND; //Object Bounds
+        StringRecord FULL; //Name
+        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<GENDESTRUCT> Destructable; //Destructable
+        OptSubRecord<GENDATA> DATA; //Unknown
+        OptSubRecord<GENFID> SNAM; //Sound
 
         MSTTRecord(unsigned char *_recData=NULL);
         MSTTRecord(MSTTRecord *srcRecord);

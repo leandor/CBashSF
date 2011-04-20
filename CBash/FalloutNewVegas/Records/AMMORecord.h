@@ -86,6 +86,13 @@ class AMMORecord : public Record //Ammunition
 
         bool   VisitFormIDs(FormIDOp &op);
 
+        bool   IsNotNormalWeapon();
+        void   IsNotNormalWeapon(bool value);
+        bool   IsNonPlayable();
+        void   IsNonPlayable(bool value);
+        bool   IsFlagMask(UINT8 Mask, bool Exact=false);
+        void   SetFlagMask(UINT8 Mask);
+
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);
         bool   SetField(DEFAULTED_FIELD_IDENTIFIERS, void *FieldValue=NULL, UINT32 ArraySize=0);

@@ -25,10 +25,18 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class SOUNRecord : public Record
+class SOUNRecord : public Record //Sound
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENOBND> OBND; //Object Bounds
+        StringRecord FNAM; //Sound Filename
+        OptSubRecord<GENU8> RNAM; //Random Chance %
+        OptSubRecord<GENSNDD> SNDD; //SNDD ,, Struct
+        OptSubRecord<GENSNDX> SNDX; //SNDX ,, Struct
+        OptSubRecord<GENANAM> ANAM; //Attenuation Curve
+        OptSubRecord<GENS16> GNAM; //Reverb Attenuation Control
+        OptSubRecord<GENS32> HNAM; //Priority
 
         SOUNRecord(unsigned char *_recData=NULL);
         SOUNRecord(SOUNRecord *srcRecord);

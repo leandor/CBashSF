@@ -48,6 +48,14 @@ SOUNRecord::SOUNRecord(SOUNRecord *srcRecord):
         }
 
     EDID = srcRecord->EDID;
+    OBND = srcRecord->OBND;
+    FNAM = srcRecord->FNAM;
+    RNAM = srcRecord->RNAM;
+    SNDD = srcRecord->SNDD;
+    SNDX = srcRecord->SNDX;
+    ANAM = srcRecord->ANAM;
+    GNAM = srcRecord->GNAM;
+    HNAM = srcRecord->HNAM;
     return;
     }
 
@@ -60,6 +68,7 @@ bool SOUNRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
+
 
     return op.Stop();
     }
@@ -78,6 +87,34 @@ UINT32 SOUNRecord::GetSize(bool forceCalc)
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
         }
+
+    if(OBND.IsLoaded())
+        TotSize += OBND.GetSize() + 6;
+
+    if(FNAM.IsLoaded())
+        {
+        cSize = FNAM.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(RNAM.IsLoaded())
+        TotSize += RNAM.GetSize() + 6;
+
+    if(SNDD.IsLoaded())
+        TotSize += SNDD.GetSize() + 6;
+
+    if(SNDX.IsLoaded())
+        TotSize += SNDX.GetSize() + 6;
+
+    if(ANAM.IsLoaded())
+        TotSize += ANAM.GetSize() + 6;
+
+    if(GNAM.IsLoaded())
+        TotSize += GNAM.GetSize() + 6;
+
+    if(HNAM.IsLoaded())
+        TotSize += HNAM.GetSize() + 6;
 
     return TotSize;
     }
@@ -117,6 +154,30 @@ SINT32 SOUNRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             case 'DIDE':
                 EDID.Read(buffer, subSize, curPos);
                 break;
+            case 'DNBO':
+                OBND.Read(buffer, subSize, curPos);
+                break;
+            case 'MANF':
+                FNAM.Read(buffer, subSize, curPos);
+                break;
+            case 'MANR':
+                RNAM.Read(buffer, subSize, curPos);
+                break;
+            case 'DDNS':
+                SNDD.Read(buffer, subSize, curPos);
+                break;
+            case 'XDNS':
+                SNDX.Read(buffer, subSize, curPos);
+                break;
+            case 'MANA':
+                ANAM.Read(buffer, subSize, curPos);
+                break;
+            case 'MANG':
+                GNAM.Read(buffer, subSize, curPos);
+                break;
+            case 'MANH':
+                HNAM.Read(buffer, subSize, curPos);
+                break;
             default:
                 //printf("FileName = %s\n", FileName);
                 printf("  SOUN: %08X - Unknown subType = %04x\n", formID, subType);
@@ -134,6 +195,14 @@ SINT32 SOUNRecord::Unload()
     IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
+    OBND.Unload();
+    FNAM.Unload();
+    RNAM.Unload();
+    SNDD.Unload();
+    SNDX.Unload();
+    ANAM.Unload();
+    GNAM.Unload();
+    HNAM.Unload();
     return 1;
     }
 
@@ -141,12 +210,45 @@ SINT32 SOUNRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+
+    if(OBND.IsLoaded())
+        SaveHandler.writeSubRecord('DNBO', OBND.value, OBND.GetSize());
+
+    if(FNAM.IsLoaded())
+        SaveHandler.writeSubRecord('MANF', FNAM.value, FNAM.GetSize());
+
+    if(RNAM.IsLoaded())
+        SaveHandler.writeSubRecord('MANR', RNAM.value, RNAM.GetSize());
+
+    if(SNDD.IsLoaded())
+        SaveHandler.writeSubRecord('DDNS', SNDD.value, SNDD.GetSize());
+
+    if(SNDX.IsLoaded())
+        SaveHandler.writeSubRecord('XDNS', SNDX.value, SNDX.GetSize());
+
+    if(ANAM.IsLoaded())
+        SaveHandler.writeSubRecord('MANA', ANAM.value, ANAM.GetSize());
+
+    if(GNAM.IsLoaded())
+        SaveHandler.writeSubRecord('MANG', GNAM.value, GNAM.GetSize());
+
+    if(HNAM.IsLoaded())
+        SaveHandler.writeSubRecord('MANH', HNAM.value, HNAM.GetSize());
+
     return -1;
     }
 
 bool SOUNRecord::operator ==(const SOUNRecord &other) const
     {
-    return (EDID.equalsi(other.EDID));
+    return (EDID.equalsi(other.EDID) &&
+            OBND == other.OBND &&
+            FNAM.equalsi(other.FNAM) &&
+            RNAM == other.RNAM &&
+            SNDD == other.SNDD &&
+            SNDX == other.SNDX &&
+            ANAM == other.ANAM &&
+            GNAM == other.GNAM &&
+            HNAM == other.HNAM);
     }
 
 bool SOUNRecord::operator !=(const SOUNRecord &other) const

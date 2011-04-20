@@ -25,10 +25,26 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class REGNRecord : public Record
+class REGNRecord : public Record //Region
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENICON> ICON; //Large Icon Filename
+        OptSubRecord<GENRCLR> RCLR; //RCLR ,, Struct
+        OptSubRecord<GENFID> WNAM; //Worldspace
+        OptSubRecord<GENU32> RPLI; //Edge Fall-off
+        OptSubRecord<GENRPLD> RPLD; //RPLD ,, Struct
+        OptSubRecord<GENRDAT> RDAT; //RDAT ,, Struct
+        OptSubRecord<GENRDOT> RDOT; //RDOT ,, Struct
+        StringRecord RDMP; //Map Name
+        OptSubRecord<GENRDGS> RDGS; //RDGS ,, Struct
+        OptSubRecord<GENU32> RDMD; //Music Type
+        OptSubRecord<GENFID> RDMO; //Music
+        OptSubRecord<GENFID> RDSI; //Incidental MediaSet
+        OptSubRecord<GENFID> RDSB; //Battle MediaSet
+        OptSubRecord<GENRDSD> RDSD; //RDSD ,, Struct
+        OptSubRecord<GENRDWT> RDWT; //RDWT ,, Struct
+        OptSubRecord<GENRDID> RDID; //Imposters
 
         REGNRecord(unsigned char *_recData=NULL);
         REGNRecord(REGNRecord *srcRecord);

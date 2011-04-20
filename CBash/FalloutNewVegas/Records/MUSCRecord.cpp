@@ -48,6 +48,8 @@ MUSCRecord::MUSCRecord(MUSCRecord *srcRecord):
         }
 
     EDID = srcRecord->EDID;
+    FNAM = srcRecord->FNAM;
+    ANAM = srcRecord->ANAM;
     return;
     }
 
@@ -60,6 +62,7 @@ bool MUSCRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
+
 
     return op.Stop();
     }
@@ -78,6 +81,16 @@ UINT32 MUSCRecord::GetSize(bool forceCalc)
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
         }
+
+    if(FNAM.IsLoaded())
+        {
+        cSize = FNAM.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(ANAM.IsLoaded())
+        TotSize += ANAM.GetSize() + 6;
 
     return TotSize;
     }
@@ -117,6 +130,12 @@ SINT32 MUSCRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             case 'DIDE':
                 EDID.Read(buffer, subSize, curPos);
                 break;
+            case 'MANF':
+                FNAM.Read(buffer, subSize, curPos);
+                break;
+            case 'MANA':
+                ANAM.Read(buffer, subSize, curPos);
+                break;
             default:
                 //printf("FileName = %s\n", FileName);
                 printf("  MUSC: %08X - Unknown subType = %04x\n", formID, subType);
@@ -134,6 +153,8 @@ SINT32 MUSCRecord::Unload()
     IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
+    FNAM.Unload();
+    ANAM.Unload();
     return 1;
     }
 
@@ -141,12 +162,21 @@ SINT32 MUSCRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+
+    if(FNAM.IsLoaded())
+        SaveHandler.writeSubRecord('MANF', FNAM.value, FNAM.GetSize());
+
+    if(ANAM.IsLoaded())
+        SaveHandler.writeSubRecord('MANA', ANAM.value, ANAM.GetSize());
+
     return -1;
     }
 
 bool MUSCRecord::operator ==(const MUSCRecord &other) const
     {
-    return (EDID.equalsi(other.EDID));
+    return (EDID.equalsi(other.EDID) &&
+            FNAM.equalsi(other.FNAM) &&
+            ANAM == other.ANAM);
     }
 
 bool MUSCRecord::operator !=(const MUSCRecord &other) const

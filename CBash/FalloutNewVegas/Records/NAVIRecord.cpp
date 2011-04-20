@@ -48,6 +48,9 @@ NAVIRecord::NAVIRecord(NAVIRecord *srcRecord):
         }
 
     EDID = srcRecord->EDID;
+    NVER = srcRecord->NVER;
+    NVMI = srcRecord->NVMI;
+    NVCI = srcRecord->NVCI;
     return;
     }
 
@@ -60,6 +63,11 @@ bool NAVIRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
+
+    //if(NVMI.IsLoaded()) //FILL IN MANUALLY
+    //    op.Accept(NVMI->value);
+    //if(NVCI.IsLoaded()) //FILL IN MANUALLY
+    //    op.Accept(NVCI->value);
 
     return op.Stop();
     }
@@ -78,6 +86,15 @@ UINT32 NAVIRecord::GetSize(bool forceCalc)
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
         }
+
+    if(NVER.IsLoaded())
+        TotSize += NVER.GetSize() + 6;
+
+    if(NVMI.IsLoaded())
+        TotSize += NVMI.GetSize() + 6;
+
+    if(NVCI.IsLoaded())
+        TotSize += NVCI.GetSize() + 6;
 
     return TotSize;
     }
@@ -117,6 +134,15 @@ SINT32 NAVIRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             case 'DIDE':
                 EDID.Read(buffer, subSize, curPos);
                 break;
+            case 'REVN':
+                NVER.Read(buffer, subSize, curPos);
+                break;
+            case 'IMVN':
+                NVMI.Read(buffer, subSize, curPos);
+                break;
+            case 'ICVN':
+                NVCI.Read(buffer, subSize, curPos);
+                break;
             default:
                 //printf("FileName = %s\n", FileName);
                 printf("  NAVI: %08X - Unknown subType = %04x\n", formID, subType);
@@ -134,6 +160,9 @@ SINT32 NAVIRecord::Unload()
     IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
+    NVER.Unload();
+    NVMI.Unload();
+    NVCI.Unload();
     return 1;
     }
 
@@ -141,12 +170,25 @@ SINT32 NAVIRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+
+    if(NVER.IsLoaded())
+        SaveHandler.writeSubRecord('REVN', NVER.value, NVER.GetSize());
+
+    if(NVMI.IsLoaded())
+        SaveHandler.writeSubRecord('IMVN', NVMI.value, NVMI.GetSize());
+
+    if(NVCI.IsLoaded())
+        SaveHandler.writeSubRecord('ICVN', NVCI.value, NVCI.GetSize());
+
     return -1;
     }
 
 bool NAVIRecord::operator ==(const NAVIRecord &other) const
     {
-    return (EDID.equalsi(other.EDID));
+    return (EDID.equalsi(other.EDID) &&
+            NVER == other.NVER &&
+            NVMI == other.NVMI &&
+            NVCI == other.NVCI);
     }
 
 bool NAVIRecord::operator !=(const NAVIRecord &other) const

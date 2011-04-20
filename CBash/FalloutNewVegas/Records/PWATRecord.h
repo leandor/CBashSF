@@ -25,10 +25,13 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class PWATRecord : public Record
+class PWATRecord : public Record //Placeable Water
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENOBND> OBND; //Object Bounds
+        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<GENDNAM> DNAM; //DNAM ,, Struct
 
         PWATRecord(unsigned char *_recData=NULL);
         PWATRecord(PWATRecord *srcRecord);
