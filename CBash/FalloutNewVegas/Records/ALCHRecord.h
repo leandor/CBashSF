@@ -34,7 +34,7 @@ class ALCHRecord : public Record //Ingestible
         OptSubRecord<GENMODEL> MODL; //Model Filename
         OptSubRecord<GENICON> ICON; //Large Icon Filename
         OptSubRecord<GENFID> SCRI; //Script
-        OptSubRecord<GENDEST> DEST; //Header
+        OptSubRecord<GENDESTRUCT> Destructable; //Destructable
         OptSubRecord<GENFID> YNAM; //Sound - Pick Up
         OptSubRecord<GENFID> ZNAM; //Sound - Drop
         OptSubRecord<GENS32> ETYP; //Equipment Type

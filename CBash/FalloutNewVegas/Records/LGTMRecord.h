@@ -25,10 +25,11 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class LGTMRecord : public Record
+class LGTMRecord : public Record //Lighting Template
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
 
         LGTMRecord(unsigned char *_recData=NULL);
         LGTMRecord(LGTMRecord *srcRecord);

@@ -33,7 +33,7 @@ class DOORRecord : public Record //Door
         StringRecord FULL; //Name
         OptSubRecord<GENMODEL> MODL; //Model Filename
         OptSubRecord<GENFID> SCRI; //Script
-        OptSubRecord<GENDEST> DEST; //Header
+        OptSubRecord<GENDESTRUCT> Destructable; //Destructable
         OptSubRecord<GENFID> SNAM; //Sound - Open
         OptSubRecord<GENFID> ANAM; //Sound - Close
         OptSubRecord<GENFID> BNAM; //Sound - Looping

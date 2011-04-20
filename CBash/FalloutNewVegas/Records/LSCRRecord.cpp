@@ -48,6 +48,15 @@ LSCRRecord::LSCRRecord(LSCRRecord *srcRecord):
         }
 
     EDID = srcRecord->EDID;
+    if(srcRecord->ICON.IsLoaded())
+        {
+        ICON.Load();
+        ICON->ICON = srcRecord->ICON->ICON;
+        ICON->MICO = srcRecord->ICON->MICO;
+        }
+    DESC = srcRecord->DESC;
+    LNAM = srcRecord->LNAM;
+    WMI1 = srcRecord->WMI1;
     return;
     }
 
@@ -60,6 +69,11 @@ bool LSCRRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
+
+    //if(LNAM.IsLoaded()) //FILL IN MANUALLY
+    //    op.Accept(LNAM->value);
+    if(WMI1.IsLoaded())
+        op.Accept(WMI1->value);
 
     return op.Stop();
     }
@@ -78,6 +92,35 @@ UINT32 LSCRRecord::GetSize(bool forceCalc)
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
         }
+
+    if(ICON.IsLoaded())
+        {
+        if(ICON->ICON.IsLoaded())
+            {
+            cSize = ICON->ICON.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        if(ICON->MICO.IsLoaded())
+            {
+            cSize = ICON->MICO.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        }
+
+    if(DESC.IsLoaded())
+        {
+        cSize = DESC.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(LNAM.IsLoaded())
+        TotSize += LNAM.GetSize() + 6;
+
+    if(WMI1.IsLoaded())
+        TotSize += WMI1.GetSize() + 6;
 
     return TotSize;
     }
@@ -117,6 +160,23 @@ SINT32 LSCRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             case 'DIDE':
                 EDID.Read(buffer, subSize, curPos);
                 break;
+            case 'NOCI':
+                ICON.Load();
+                ICON->ICON.Read(buffer, subSize, curPos);
+                break;
+            case 'OCIM':
+                ICON.Load();
+                ICON->MICO.Read(buffer, subSize, curPos);
+                break;
+            case 'CSED':
+                DESC.Read(buffer, subSize, curPos);
+                break;
+            case 'MANL':
+                LNAM.Read(buffer, subSize, curPos);
+                break;
+            case '1IMW':
+                WMI1.Read(buffer, subSize, curPos);
+                break;
             default:
                 //printf("FileName = %s\n", FileName);
                 printf("  LSCR: %08X - Unknown subType = %04x\n", formID, subType);
@@ -134,6 +194,10 @@ SINT32 LSCRRecord::Unload()
     IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
+    ICON.Unload();
+    DESC.Unload();
+    LNAM.Unload();
+    WMI1.Unload();
     return 1;
     }
 
@@ -141,12 +205,36 @@ SINT32 LSCRRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+
+    if(ICON.IsLoaded())
+        {
+        if(ICON->ICON.IsLoaded())
+            SaveHandler.writeSubRecord('NOCI', ICON->ICON.value, ICON->ICON.GetSize());
+
+        if(ICON->MICO.IsLoaded())
+            SaveHandler.writeSubRecord('OCIM', ICON->MICO.value, ICON->MICO.GetSize());
+
+        }
+
+    if(DESC.IsLoaded())
+        SaveHandler.writeSubRecord('CSED', DESC.value, DESC.GetSize());
+
+    if(LNAM.IsLoaded())
+        SaveHandler.writeSubRecord('MANL', LNAM.value, LNAM.GetSize());
+
+    if(WMI1.IsLoaded())
+        SaveHandler.writeSubRecord('1IMW', WMI1.value, WMI1.GetSize());
+
     return -1;
     }
 
 bool LSCRRecord::operator ==(const LSCRRecord &other) const
     {
-    return (EDID.equalsi(other.EDID));
+    return (EDID.equalsi(other.EDID) &&
+            ICON == other.ICON &&
+            DESC.equals(other.DESC) &&
+            LNAM == other.LNAM &&
+            WMI1 == other.WMI1);
     }
 
 bool LSCRRecord::operator !=(const LSCRRecord &other) const

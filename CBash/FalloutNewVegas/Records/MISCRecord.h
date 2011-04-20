@@ -25,10 +25,20 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class MISCRecord : public Record
+class MISCRecord : public Record //Misc. Item
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENOBND> OBND; //Object Bounds
+        StringRecord FULL; //Name
+        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<GENICON> ICON; //Large Icon Filename
+        OptSubRecord<GENFID> SCRI; //Script
+        OptSubRecord<GENDESTRUCT> Destructable; //Destructable
+        OptSubRecord<GENFID> YNAM; //Sound - Pick Up
+        OptSubRecord<GENFID> ZNAM; //Sound - Drop
+        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
+        OptSubRecord<GENFID> RNAM; //Sound - Random/Looping
 
         MISCRecord(unsigned char *_recData=NULL);
         MISCRecord(MISCRecord *srcRecord);

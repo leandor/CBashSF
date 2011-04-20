@@ -25,10 +25,14 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class LSCRRecord : public Record
+class LSCRRecord : public Record //Load Screen
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENICON> ICON; //Large Icon Filename
+        StringRecord DESC; //Description
+        OptSubRecord<GENLNAM> LNAM; //LNAM ,, Struct
+        OptSubRecord<GENFID> WMI1; //Load Screen Type
 
         LSCRRecord(unsigned char *_recData=NULL);
         LSCRRecord(LSCRRecord *srcRecord);

@@ -34,7 +34,7 @@ class CONTRecord : public Record //Container
         OptSubRecord<GENMODEL> MODL; //Model Filename
         OptSubRecord<GENFID> SCRI; //Script
         OptSubRecord<GENCNTO> CNTO; //Item
-        OptSubRecord<GENDEST> DEST; //Header
+        OptSubRecord<GENDESTRUCT> Destructable; //Destructable
         OptSubRecord<GENDATA> DATA; //DATA ,, Struct
         OptSubRecord<GENFID> SNAM; //Sound - Open
         OptSubRecord<GENFID> QNAM; //Sound - Close

@@ -25,10 +25,15 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class MGEFRecord : public Record
+class MGEFRecord : public Record //Base Effect
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        StringRecord FULL; //Name
+        StringRecord DESC; //Description
+        OptSubRecord<GENICON> ICON; //Large Icon Filename
+        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
 
         MGEFRecord(unsigned char *_recData=NULL);
         MGEFRecord(MGEFRecord *srcRecord);

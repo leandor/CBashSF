@@ -25,10 +25,15 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class LTEXRecord : public Record
+class LTEXRecord : public Record //Landscape Texture
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENICON> ICON; //Large Icon Filename
+        OptSubRecord<GENFID> TNAM; //Texture
+        OptSubRecord<GENHNAM> HNAM; //HNAM ,, Struct
+        OptSubRecord<GENU8> SNAM; //Texture Specular Exponent
+        OptSubRecord<GENFID> GNAM; //Grass
 
         LTEXRecord(unsigned char *_recData=NULL);
         LTEXRecord(LTEXRecord *srcRecord);

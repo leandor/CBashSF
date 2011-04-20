@@ -25,10 +25,11 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class MICNRecord : public Record
+class MICNRecord : public Record //Menu Icon
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENICON> ICON; //Large Icon Filename
 
         MICNRecord(unsigned char *_recData=NULL);
         MICNRecord(MICNRecord *srcRecord);

@@ -48,6 +48,7 @@ LSCTRecord::LSCTRecord(LSCTRecord *srcRecord):
         }
 
     EDID = srcRecord->EDID;
+    DATA = srcRecord->DATA;
     return;
     }
 
@@ -60,6 +61,7 @@ bool LSCTRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
+
 
     return op.Stop();
     }
@@ -78,6 +80,9 @@ UINT32 LSCTRecord::GetSize(bool forceCalc)
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
         }
+
+    if(DATA.IsLoaded())
+        TotSize += DATA.GetSize() + 6;
 
     return TotSize;
     }
@@ -117,6 +122,9 @@ SINT32 LSCTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             case 'DIDE':
                 EDID.Read(buffer, subSize, curPos);
                 break;
+            case 'ATAD':
+                DATA.Read(buffer, subSize, curPos);
+                break;
             default:
                 //printf("FileName = %s\n", FileName);
                 printf("  LSCT: %08X - Unknown subType = %04x\n", formID, subType);
@@ -134,6 +142,7 @@ SINT32 LSCTRecord::Unload()
     IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
+    DATA.Unload();
     return 1;
     }
 
@@ -141,12 +150,17 @@ SINT32 LSCTRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+
+    if(DATA.IsLoaded())
+        SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
+
     return -1;
     }
 
 bool LSCTRecord::operator ==(const LSCTRecord &other) const
     {
-    return (EDID.equalsi(other.EDID));
+    return (EDID.equalsi(other.EDID) &&
+            DATA == other.DATA);
     }
 
 bool LSCTRecord::operator !=(const LSCTRecord &other) const

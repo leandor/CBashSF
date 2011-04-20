@@ -25,10 +25,18 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class LIGHRecord : public Record
+class LIGHRecord : public Record //Light
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENOBND> OBND; //Object Bounds
+        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<GENFID> SCRI; //Script
+        StringRecord FULL; //Name
+        OptSubRecord<GENICON> ICON; //Large Icon Filename
+        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
+        OptSubRecord<GENFLOAT> FNAM; //Fade value
+        OptSubRecord<GENFID> SNAM; //Sound
 
         LIGHRecord(unsigned char *_recData=NULL);
         LIGHRecord(LIGHRecord *srcRecord);

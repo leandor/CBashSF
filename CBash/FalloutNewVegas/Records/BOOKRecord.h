@@ -35,7 +35,7 @@ class BOOKRecord : public Record //Book
         OptSubRecord<GENICON> ICON; //Large Icon Filename
         OptSubRecord<GENFID> SCRI; //Script
         StringRecord DESC; //Description
-        OptSubRecord<GENDEST> DEST; //Header
+        OptSubRecord<GENDESTRUCT> Destructable; //Destructable
         OptSubRecord<GENDATA> DATA; //DATA ,, Struct
 
         BOOKRecord(unsigned char *_recData=NULL);

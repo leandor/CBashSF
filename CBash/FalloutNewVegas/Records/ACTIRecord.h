@@ -33,7 +33,7 @@ class ACTIRecord : public Record //Activator
         StringRecord FULL; //Name
         OptSubRecord<GENMODEL> MODL; //Model Filename
         OptSubRecord<GENFID> SCRI; //Script
-        OptSubRecord<GENDEST> DEST; //Header
+        OptSubRecord<GENDESTRUCT> Destructable; //Destructable
         OptSubRecord<GENFID> SNAM; //Sound - Looping
         OptSubRecord<GENFID> VNAM; //Sound - Activation
         OptSubRecord<GENFID> INAM; //Radio Template

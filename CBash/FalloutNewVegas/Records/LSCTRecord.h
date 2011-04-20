@@ -25,10 +25,11 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class LSCTRecord : public Record
+class LSCTRecord : public Record //Load Screen Type
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
 
         LSCTRecord(unsigned char *_recData=NULL);
         LSCTRecord(LSCTRecord *srcRecord);

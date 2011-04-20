@@ -25,10 +25,27 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class MESGRecord : public Record
+class MESGRecord : public Record //Message
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        StringRecord DESC; //Description
+        StringRecord FULL; //Name
+        OptSubRecord<GENFID> INAM; //Icon
+        OptSubRecord<GENNAM> NAM0; //Unused
+        OptSubRecord<GENNAM1> NAM1; //Unused
+        OptSubRecord<GENNAM2> NAM2; //Unused
+        OptSubRecord<GENNAM3> NAM3; //Unused
+        OptSubRecord<GENNAM4> NAM4; //Unused
+        OptSubRecord<GENNAM5> NAM5; //Unused
+        OptSubRecord<GENNAM6> NAM6; //Unused
+        OptSubRecord<GENNAM7> NAM7; //Unused
+        OptSubRecord<GENNAM8> NAM8; //Unused
+        OptSubRecord<GENNAM> NAM9; //Unused
+        OptSubRecord<GENU32> DNAM; //Flags
+        OptSubRecord<GENU32> TNAM; //Display Time
+        StringRecord ITXT; //Button Text
+        OptSubRecord<GENCTDA> CTDA; //Conditions
 
         MESGRecord(unsigned char *_recData=NULL);
         MESGRecord(MESGRecord *srcRecord);

@@ -25,10 +25,16 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class LVLNRecord : public Record
+class LVLNRecord : public Record //Leveled NPC
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENOBND> OBND; //Object Bounds
+        OptSubRecord<GENU8> LVLD; //Chance none
+        OptSubRecord<GENU8> LVLF; //Flags
+        OptSubRecord<GENLVLO> LVLO; //LVLO ,, Struct
+        OptSubRecord<GENCOED> COED; //Extra Data
+        OptSubRecord<GENMODEL> MODL; //Model Filename
 
         LVLNRecord(unsigned char *_recData=NULL);
         LVLNRecord(LVLNRecord *srcRecord);

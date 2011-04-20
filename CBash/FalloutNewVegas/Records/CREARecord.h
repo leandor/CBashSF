@@ -42,7 +42,7 @@ class CREARecord : public Record //Creature
         OptSubRecord<GENFID> INAM; //Death item
         OptSubRecord<GENFID> VTCK; //Voice
         OptSubRecord<GENFID> TPLT; //Template
-        OptSubRecord<GENDEST> DEST; //Header
+        OptSubRecord<GENDESTRUCT> Destructable; //Destructable
         OptSubRecord<GENFID> SCRI; //Script
         OptSubRecord<GENCNTO> CNTO; //Item
         OptSubRecord<GENAIDT> AIDT; //AI Data

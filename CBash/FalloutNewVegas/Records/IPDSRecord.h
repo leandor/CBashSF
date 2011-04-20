@@ -25,10 +25,11 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class IPDSRecord : public Record
+class IPDSRecord : public Record //Impact DataSet
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
 
         IPDSRecord(unsigned char *_recData=NULL);
         IPDSRecord(IPDSRecord *srcRecord);
