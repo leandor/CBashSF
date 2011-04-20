@@ -241,153 +241,153 @@ bool CELLRecord::VisitFormIDs(FormIDOp &op)
     if(Ownership.IsLoaded())
         {
         if(Ownership->XOWN.IsLoaded())
-            op.Accept(Ownership->XOWN.value.fid);
+            op.Accept(Ownership->XOWN.value.value);
         if(Ownership->XGLB.IsLoaded())
-            op.Accept(Ownership->XGLB->fid);
+            op.Accept(Ownership->XGLB->value);
         }
-    op.Accept(XCCM.value.fid);
+    op.Accept(XCCM.value.value);
     for(UINT32 x = 0; x < XCLR.size(); x++)
         op.Accept(XCLR[x]);
-    op.Accept(XCWT.value.fid);
+    op.Accept(XCWT.value.value);
 
     return op.Stop();
     }
 
 bool CELLRecord::IsInterior()
     {
-    return (DATA.value.flags & fIsInterior) != 0;
+    return (DATA.value.value & fIsInterior) != 0;
     }
 
 void CELLRecord::IsInterior(bool value)
     {
-    DATA.value.flags = value ? (DATA.value.flags | fIsInterior) : (DATA.value.flags & ~fIsInterior);
+    DATA.value.value = value ? (DATA.value.value | fIsInterior) : (DATA.value.value & ~fIsInterior);
     }
 
 bool CELLRecord::IsHasWater()
     {
-    return (DATA.value.flags & fHasWater) != 0;
+    return (DATA.value.value & fHasWater) != 0;
     }
 
 void CELLRecord::IsHasWater(bool value)
     {
-    DATA.value.flags = value ? (DATA.value.flags | fHasWater) : (DATA.value.flags & ~fHasWater);
+    DATA.value.value = value ? (DATA.value.value | fHasWater) : (DATA.value.value & ~fHasWater);
     }
 
 bool CELLRecord::IsInvertFastTravel()
     {
-    return (DATA.value.flags & fInvertFastTravel) != 0;
+    return (DATA.value.value & fInvertFastTravel) != 0;
     }
 
 void CELLRecord::IsInvertFastTravel(bool value)
     {
-    DATA.value.flags = value ? (DATA.value.flags | fInvertFastTravel) : (DATA.value.flags & ~fInvertFastTravel);
+    DATA.value.value = value ? (DATA.value.value | fInvertFastTravel) : (DATA.value.value & ~fInvertFastTravel);
     }
 
 bool CELLRecord::IsForceHideLand()
     {
-    return (DATA.value.flags & fForceHideLand) != 0;
+    return (DATA.value.value & fForceHideLand) != 0;
     }
 
 void CELLRecord::IsForceHideLand(bool value)
     {
-    DATA.value.flags = value ? (DATA.value.flags | fForceHideLand) : (DATA.value.flags & ~fForceHideLand);
+    DATA.value.value = value ? (DATA.value.value | fForceHideLand) : (DATA.value.value & ~fForceHideLand);
     }
 
 bool CELLRecord::IsPublicPlace()
     {
-    return (DATA.value.flags & fPublicPlace) != 0;
+    return (DATA.value.value & fPublicPlace) != 0;
     }
 
 void CELLRecord::IsPublicPlace(bool value)
     {
-    DATA.value.flags = value ? (DATA.value.flags | fPublicPlace) : (DATA.value.flags & ~fPublicPlace);
+    DATA.value.value = value ? (DATA.value.value | fPublicPlace) : (DATA.value.value & ~fPublicPlace);
     }
 
 bool CELLRecord::IsHandChanged()
     {
-    return (DATA.value.flags & fHandChanged) != 0;
+    return (DATA.value.value & fHandChanged) != 0;
     }
 
 void CELLRecord::IsHandChanged(bool value)
     {
-    DATA.value.flags = value ? (DATA.value.flags | fHandChanged) : (DATA.value.flags & ~fHandChanged);
+    DATA.value.value = value ? (DATA.value.value | fHandChanged) : (DATA.value.value & ~fHandChanged);
     }
 
 bool CELLRecord::IsBehaveLikeExterior()
     {
-    return (DATA.value.flags & fBehaveLikeExterior) != 0;
+    return (DATA.value.value & fBehaveLikeExterior) != 0;
     }
 
 void CELLRecord::IsBehaveLikeExterior(bool value)
     {
-    DATA.value.flags = value ? (DATA.value.flags | fBehaveLikeExterior) : (DATA.value.flags & ~fBehaveLikeExterior);
+    DATA.value.value = value ? (DATA.value.value | fBehaveLikeExterior) : (DATA.value.value & ~fBehaveLikeExterior);
     }
 
 bool CELLRecord::IsFlagMask(UINT8 Mask, bool Exact)
     {
-    return Exact ? ((DATA.value.flags & Mask) == Mask) : ((DATA.value.flags & Mask) != 0);
+    return Exact ? ((DATA.value.value & Mask) == Mask) : ((DATA.value.value & Mask) != 0);
     }
 
 void CELLRecord::SetFlagMask(UINT8 Mask)
     {
-    DATA.value.flags = Mask;
+    DATA.value.value = Mask;
     }
 
 bool CELLRecord::IsDefaultMusic()
     {
     XCMT.Load();
-    return XCMT.IsLoaded() ? (XCMT.value.flags == eDefault) : false;
+    return XCMT.IsLoaded() ? (XCMT.value.value == eDefault) : false;
     }
 
 void CELLRecord::IsDefaultMusic(bool value)
     {
     XCMT.Load();
     if(value)
-        XCMT.value.flags = eDefault;
+        XCMT.value.value = eDefault;
     else if(IsDefaultMusic())
-        XCMT.value.flags = ePublic;
+        XCMT.value.value = ePublic;
     }
 
 bool CELLRecord::IsPublicMusic()
     {
     XCMT.Load();
-    return XCMT.IsLoaded() ? (XCMT.value.flags == ePublic) : false;
+    return XCMT.IsLoaded() ? (XCMT.value.value == ePublic) : false;
     }
 
 void CELLRecord::IsPublicMusic(bool value)
     {
     XCMT.Load();
     if(value)
-        XCMT.value.flags = ePublic;
+        XCMT.value.value = ePublic;
     else if(IsPublicMusic())
-        XCMT.value.flags = eDefault;
+        XCMT.value.value = eDefault;
     }
 
 bool CELLRecord::IsDungeonMusic()
     {
     XCMT.Load();
-    return XCMT.IsLoaded() ? (XCMT.value.flags == eDungeon) : false;
+    return XCMT.IsLoaded() ? (XCMT.value.value == eDungeon) : false;
     }
 
 void CELLRecord::IsDungeonMusic(bool value)
     {
     XCMT.Load();
     if(value)
-        XCMT.value.flags = eDungeon;
+        XCMT.value.value = eDungeon;
     else if(IsDungeonMusic())
-        XCMT.value.flags = eDefault;
+        XCMT.value.value = eDefault;
     }
 
 bool CELLRecord::IsMusicType(UINT8 Type)
     {
     XCMT.Load();
-    return XCMT.IsLoaded() ? (XCMT.value.flags == Type) : false;
+    return XCMT.IsLoaded() ? (XCMT.value.value == Type) : false;
     }
 
 void CELLRecord::SetMusicType(UINT8 Type)
     {
     XCMT.Load();
-    XCMT.value.flags = Type;
+    XCMT.value.value = Type;
     }
 
 UINT32 CELLRecord::GetSize(bool forceCalc)

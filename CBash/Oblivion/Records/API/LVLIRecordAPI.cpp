@@ -116,9 +116,9 @@ void * LVLIRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 4: //eid
             return EDID.value;
         case 5: //chanceNone
-            return &LVLD.value.chanceNone;
+            return &LVLD.value.value;
         case 6: //flags
-            return LVLF.IsLoaded() ? &LVLF->flags : NULL;
+            return LVLF.IsLoaded() ? &LVLF->value : NULL;
         case 9: //entries
             if(ListIndex >= Entries.size())
                 return NULL;
@@ -160,10 +160,10 @@ bool LVLIRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             EDID.Copy((STRING)FieldValue);
             break;
         case 5: //chanceNone
-            LVLD.value.chanceNone = *(UINT8 *)FieldValue;
-            if((LVLD.value.chanceNone & fAltCalcFromAllLevels) != 0)
+            LVLD.value.value = *(UINT8 *)FieldValue;
+            if((LVLD.value.value & fAltCalcFromAllLevels) != 0)
                 {
-                LVLD.value.chanceNone &= ~fAltCalcFromAllLevels;
+                LVLD.value.value &= ~fAltCalcFromAllLevels;
                 LVLF.Load();
                 IsCalcFromAllLevels(true);
                 }

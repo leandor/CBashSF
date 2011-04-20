@@ -168,7 +168,7 @@ void * IDLERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 5: //modPath
             return MODL.IsLoaded() ? MODL->MODL.value : NULL;
         case 6: //modb
-            return MODL.IsLoaded() ? &MODL->MODB.value.MODB : NULL;
+            return MODL.IsLoaded() ? &MODL->MODB.value.value : NULL;
         case 7: //modt_p
             *FieldValues = MODL.IsLoaded() ? MODL->MODT.value : NULL;
             return NULL;
@@ -198,7 +198,7 @@ void * IDLERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                     return NULL;
                 }
         case 9: //group
-            return &ANAM.value.group;
+            return &ANAM.value.value;
         case 10: //parent
             return &DATA.value.parent;
         case 11: //prevId
@@ -227,7 +227,7 @@ bool IDLERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             break;
         case 6: //modb
             MODL.Load();
-            MODL->MODB.value.MODB = *(FLOAT32 *)FieldValue;
+            MODL->MODB.value.value = *(FLOAT32 *)FieldValue;
             break;
         case 7: //modt_p
             MODL.Load();
@@ -291,7 +291,7 @@ bool IDLERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                 }
             break;
         case 9: //group
-            ANAM.value.group = *(UINT8 *)FieldValue;
+            ANAM.value.value = *(UINT8 *)FieldValue;
             break;
         case 10: //parent
             DATA.value.parent = *(FORMID *)FieldValue;

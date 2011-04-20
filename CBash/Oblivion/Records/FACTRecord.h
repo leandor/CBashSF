@@ -61,7 +61,7 @@ class FACTRecord : public Record
         StringRecord EDID;
         StringRecord FULL;
         std::vector<ReqSubRecord<GENXNAM> *> XNAM;
-        ReqSubRecord<GENFLAG> DATA;
+        ReqSubRecord<GENU8> DATA;
         SemiOptSubRecord<FACTCNAM> CNAM;
         std::vector<ReqSubRecord<FACTRNAM> *> RNAM;
 

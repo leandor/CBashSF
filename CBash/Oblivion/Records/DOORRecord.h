@@ -43,7 +43,7 @@ class DOORRecord : public Record
         OptSubRecord<GENFID> SNAM;
         OptSubRecord<GENFID> ANAM;
         OptSubRecord<GENFID> BNAM;
-        ReqSubRecord<GENFLAG> FNAM;
+        ReqSubRecord<GENU8> FNAM;
         std::vector<FORMID> TNAM;
 
         DOORRecord(unsigned char *_recData=NULL);

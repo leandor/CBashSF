@@ -67,7 +67,7 @@ class FURNRecord : public Record
         StringRecord FULL;
         OptSubRecord<GENMODEL> MODL;
         OptSubRecord<GENFID> SCRI;
-        ReqSubRecord<GENUFLAG> MNAM;
+        ReqSubRecord<GENU32> MNAM;
 
         FURNRecord(unsigned char *_recData=NULL);
         FURNRecord(FURNRecord *srcRecord);

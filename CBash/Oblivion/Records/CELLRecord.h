@@ -93,9 +93,9 @@ class CELLRecord : public Record
     public:
         StringRecord EDID;
         StringRecord FULL;
-        ReqSubRecord<GENFLAG> DATA;
+        ReqSubRecord<GENU8> DATA;
         SemiOptSubRecord<CELLXCLL> XCLL;
-        SubRecord<GENFLAG> XCMT;
+        SubRecord<GENU8> XCMT;
         OptSubRecord<GENXOWN> Ownership;
         SubRecord<GENFID> XCCM;
         SubRecord<CELLXCLW> XCLW;

@@ -54,8 +54,8 @@ class CLOTRecord : public Record
         StringRecord FULL;
         OptSubRecord<GENFID> SCRI;
         OptSubRecord<GENFID> ENAM;
-        OptSubRecord<GENANAM> ANAM;
-        ReqSubRecord<GENUFLAG> BMDT;
+        OptSubRecord<GENU16> ANAM;
+        ReqSubRecord<GENU32> BMDT;
         OptSubRecord<GENMODEL> MODL;
         OptSubRecord<GENMODEL> MOD2;
         StringRecord ICON;

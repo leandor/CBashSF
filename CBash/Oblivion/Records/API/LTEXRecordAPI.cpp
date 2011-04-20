@@ -82,7 +82,7 @@ void * LTEXRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 8: //restitution
             return &HNAM.value.restitution;
         case 9: //specular
-            return &SNAM.value.specular;
+            return &SNAM.value.value;
         case 10: //grass
             *FieldValues = GNAM.size() ? &GNAM[0] : NULL;
             return NULL;
@@ -120,7 +120,7 @@ bool LTEXRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             break;
         case 9: //specular
             HNAM.Load();
-            SNAM.value.specular = *(UINT8 *)FieldValue;
+            SNAM.value.value = *(UINT8 *)FieldValue;
             break;
         case 10: //grass
             GNAM.resize(ArraySize);

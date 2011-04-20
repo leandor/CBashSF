@@ -110,13 +110,13 @@ void * LVLCRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 4: //eid
             return EDID.value;
         case 5: //chanceNone
-            return &LVLD.value.chanceNone;
+            return &LVLD.value.value;
         case 6: //flags
-            return LVLF.IsLoaded() ? &LVLF->flags : NULL;
+            return LVLF.IsLoaded() ? &LVLF->value : NULL;
         case 7: //script
-            return SCRI.IsLoaded() ? &SCRI->fid : NULL;
+            return SCRI.IsLoaded() ? &SCRI->value : NULL;
         case 8: //template
-            return TNAM.IsLoaded() ? &TNAM->fid : NULL;
+            return TNAM.IsLoaded() ? &TNAM->value : NULL;
         case 9: //entries
             if(ListIndex >= Entries.size())
                 return NULL;
@@ -158,10 +158,10 @@ bool LVLCRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             EDID.Copy((STRING)FieldValue);
             break;
         case 5: //chanceNone
-            LVLD.value.chanceNone = *(UINT8 *)FieldValue;
-            if((LVLD.value.chanceNone & fAltCalcFromAllLevels) != 0)
+            LVLD.value.value = *(UINT8 *)FieldValue;
+            if((LVLD.value.value & fAltCalcFromAllLevels) != 0)
                 {
-                LVLD.value.chanceNone &= ~fAltCalcFromAllLevels;
+                LVLD.value.value &= ~fAltCalcFromAllLevels;
                 LVLF.Load();
                 IsCalcFromAllLevels(true);
                 }
@@ -171,11 +171,11 @@ bool LVLCRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             break;
         case 7: //script
             SCRI.Load();
-            SCRI->fid = *(FORMID *)FieldValue;
+            SCRI->value = *(FORMID *)FieldValue;
             return true;
         case 8: //template
             TNAM.Load();
-            TNAM->fid = *(FORMID *)FieldValue;
+            TNAM->value = *(FORMID *)FieldValue;
             return true;
         case 9: //entries
             if(ListFieldID == 0) //entriesSize

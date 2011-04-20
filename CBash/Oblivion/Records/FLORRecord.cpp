@@ -98,9 +98,9 @@ bool FLORRecord::VisitFormIDs(FormIDOp &op)
         return false;
 
     if(SCRI.IsLoaded())
-        op.Accept(SCRI->fid);
+        op.Accept(SCRI->value);
     if(PFIG.IsLoaded())
-        op.Accept(PFIG.value.fid);
+        op.Accept(PFIG.value.value);
 
     return op.Stop();
     }

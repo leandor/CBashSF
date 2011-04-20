@@ -43,27 +43,6 @@ bool GLOBRecord::GLOBFNAM::operator !=(const GLOBFNAM &other) const
     return !(*this == other);
     }
 
-GLOBRecord::GLOBFLTV::GLOBFLTV():
-    value(0.0f)
-    {
-    //
-    }
-
-GLOBRecord::GLOBFLTV::~GLOBFLTV()
-    {
-    //
-    }
-
-bool GLOBRecord::GLOBFLTV::operator ==(const GLOBFLTV &other) const
-    {
-    return (AlmostEqual(value,other.value,2));
-    }
-
-bool GLOBRecord::GLOBFLTV::operator !=(const GLOBFLTV &other) const
-    {
-    return !(*this == other);
-    }
-
 GLOBRecord::GLOBRecord(unsigned char *_recData):
     Record(_recData)
     {

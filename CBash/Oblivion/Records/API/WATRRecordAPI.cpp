@@ -178,11 +178,11 @@ void * WATRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 6: //opacity
             return &ANAM.value.opacity;
         case 7: //flags
-            return &FNAM.value.flags;
+            return &FNAM.value.value;
         case 8: //materialPath
             return MNAM.value;
         case 9: //sound
-            return SNAM.IsLoaded() ? &SNAM->fid : NULL;
+            return SNAM.IsLoaded() ? &SNAM->value : NULL;
         case 10: //windVelocity
             return DATA.IsLoaded() ? &DATA->windVelocity : NULL;
         case 11: //windDirection
@@ -297,7 +297,7 @@ bool WATRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             break;
         case 9: //sound
             SNAM.Load();
-            SNAM->fid = *(FORMID *)FieldValue;
+            SNAM->value = *(FORMID *)FieldValue;
             return true;
         case 10: //windVelocity
             DATA.Load();

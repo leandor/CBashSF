@@ -27,16 +27,70 @@ namespace FNV
 {
 class AMEFRecord : public Record //Ammo Effect
     {
+    private:
+        struct AMEFDATA
+            {
+            UINT32  type; //Type
+            UINT32  op; //Operation
+            FLOAT32 value; //Value
+
+            AMEFDATA();
+            ~AMEFDATA();
+
+            bool operator ==(const AMEFDATA &other) const;
+            bool operator !=(const AMEFDATA &other) const;
+            };
+
+        enum eModType
+            {
+            eDamage = 0,
+            eDR,
+            eDT,
+            eSpread,
+            eCondition,
+            eFatigue
+            };
+
+        enum eOperationType
+            {
+            eAdd = 0,
+            eMultiply,
+            eSubtract
+            };
     public:
         StringRecord EDID; //Editor ID
         StringRecord FULL; //Name
-        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
+        OptSubRecord<AMEFDATA> DATA; //Data
 
         AMEFRecord(unsigned char *_recData=NULL);
         AMEFRecord(AMEFRecord *srcRecord);
         ~AMEFRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
+
+        bool   IsDamage();
+        void   IsDamage(bool value);
+        bool   IsDR();
+        void   IsDR(bool value);
+        bool   IsDT();
+        void   IsDT(bool value);
+        bool   IsSpread();
+        void   IsSpread(bool value);
+        bool   IsCondition();
+        void   IsCondition(bool value);
+        bool   IsFatigue();
+        void   IsFatigue(bool value);
+        bool   IsModType(UINT32 Type, bool Exact=false);
+        void   SetModType(UINT32 Type);
+
+        bool   IsAdd();
+        void   IsAdd(bool value);
+        bool   IsMultiply();
+        void   IsMultiply(bool value);
+        bool   IsSubtract();
+        void   IsSubtract(bool value);
+        bool   IsOpType(UINT32 Type, bool Exact=false);
+        void   SetOpType(UINT32 Type);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

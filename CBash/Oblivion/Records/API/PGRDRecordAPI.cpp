@@ -189,7 +189,7 @@ void * PGRDRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 3: //flags2
             return &flagsUnk;
         case 5: //count
-            return &DATA.value.count;
+            return &DATA.value.value;
         case 6: //pgrp
             if(ListIndex >= PGRP.size())
                 return NULL;
@@ -270,7 +270,7 @@ bool PGRDRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             SetHeaderUnknownFlagMask(*(UINT32 *)FieldValue);
             break;
         case 5: //count
-            DATA.value.count = *(UINT16 *)FieldValue;
+            DATA.value.value = *(UINT16 *)FieldValue;
             break;
         case 6: //pgrp
             if(ListFieldID == 0) //pgrpSize

@@ -37,21 +37,10 @@ class GLOBRecord : public Record
             bool operator !=(const GLOBFNAM &other) const;
             };
 
-        struct GLOBFLTV
-            {
-            FLOAT32 value;
-
-            GLOBFLTV();
-            ~GLOBFLTV();
-
-            bool operator ==(const GLOBFLTV &other) const;
-            bool operator !=(const GLOBFLTV &other) const;
-            };
-
     public:
         StringRecord EDID;
         ReqSubRecord<GLOBFNAM> FNAM;
-        ReqSubRecord<GLOBFLTV> FLTV;
+        ReqSubRecord<GENFLOAT> FLTV;
 
         GLOBRecord(unsigned char *_recData=NULL);
         GLOBRecord(GLOBRecord *srcRecord);

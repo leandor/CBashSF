@@ -97,211 +97,211 @@ bool CLOTRecord::VisitFormIDs(FormIDOp &op)
         return false;
 
     if(SCRI.IsLoaded())
-        op.Accept(SCRI->fid);
+        op.Accept(SCRI->value);
     if(ENAM.IsLoaded())
-        op.Accept(ENAM->fid);
+        op.Accept(ENAM->value);
 
     return op.Stop();
     }
 
 bool CLOTRecord::IsHead()
     {
-    return (BMDT.value.flags & fIsHead) != 0;
+    return (BMDT.value.value & fIsHead) != 0;
     }
 
 void CLOTRecord::IsHead(bool value)
     {
-    BMDT.value.flags = value ? (BMDT.value.flags | fIsHead) : (BMDT.value.flags & ~fIsHead);
+    BMDT.value.value = value ? (BMDT.value.value | fIsHead) : (BMDT.value.value & ~fIsHead);
     }
 
 bool CLOTRecord::IsHair()
     {
-    return (BMDT.value.flags & fIsHair) != 0;
+    return (BMDT.value.value & fIsHair) != 0;
     }
 
 void CLOTRecord::IsHair(bool value)
     {
-    BMDT.value.flags = value ? (BMDT.value.flags | fIsHair) : (BMDT.value.flags & ~fIsHair);
+    BMDT.value.value = value ? (BMDT.value.value | fIsHair) : (BMDT.value.value & ~fIsHair);
     }
 
 bool CLOTRecord::IsUpperBody()
     {
-    return (BMDT.value.flags & fIsUpperBody) != 0;
+    return (BMDT.value.value & fIsUpperBody) != 0;
     }
 
 void CLOTRecord::IsUpperBody(bool value)
     {
-    BMDT.value.flags = value ? (BMDT.value.flags | fIsUpperBody) : (BMDT.value.flags & ~fIsUpperBody);
+    BMDT.value.value = value ? (BMDT.value.value | fIsUpperBody) : (BMDT.value.value & ~fIsUpperBody);
     }
 
 bool CLOTRecord::IsLowerBody()
     {
-    return (BMDT.value.flags & fIsLowerBody) != 0;
+    return (BMDT.value.value & fIsLowerBody) != 0;
     }
 
 void CLOTRecord::IsLowerBody(bool value)
     {
-    BMDT.value.flags = value ? (BMDT.value.flags | fIsLowerBody) : (BMDT.value.flags & ~fIsLowerBody);
+    BMDT.value.value = value ? (BMDT.value.value | fIsLowerBody) : (BMDT.value.value & ~fIsLowerBody);
     }
 
 bool CLOTRecord::IsHand()
     {
-    return (BMDT.value.flags & fIsHand) != 0;
+    return (BMDT.value.value & fIsHand) != 0;
     }
 
 void CLOTRecord::IsHand(bool value)
     {
-    BMDT.value.flags = value ? (BMDT.value.flags | fIsHand) : (BMDT.value.flags & ~fIsHand);
+    BMDT.value.value = value ? (BMDT.value.value | fIsHand) : (BMDT.value.value & ~fIsHand);
     }
 
 bool CLOTRecord::IsFoot()
     {
-    return (BMDT.value.flags & fIsFoot) != 0;
+    return (BMDT.value.value & fIsFoot) != 0;
     }
 
 void CLOTRecord::IsFoot(bool value)
     {
-    BMDT.value.flags = value ? (BMDT.value.flags | fIsFoot) : (BMDT.value.flags & ~fIsFoot);
+    BMDT.value.value = value ? (BMDT.value.value | fIsFoot) : (BMDT.value.value & ~fIsFoot);
     }
 
 bool CLOTRecord::IsRightRing()
     {
-    return (BMDT.value.flags & fIsRightRing) != 0;
+    return (BMDT.value.value & fIsRightRing) != 0;
     }
 
 void CLOTRecord::IsRightRing(bool value)
     {
-    BMDT.value.flags = value ? (BMDT.value.flags | fIsRightRing) : (BMDT.value.flags & ~fIsRightRing);
+    BMDT.value.value = value ? (BMDT.value.value | fIsRightRing) : (BMDT.value.value & ~fIsRightRing);
     }
 
 bool CLOTRecord::IsLeftRing()
     {
-    return (BMDT.value.flags & fIsLeftRing) != 0;
+    return (BMDT.value.value & fIsLeftRing) != 0;
     }
 
 void CLOTRecord::IsLeftRing(bool value)
     {
-    BMDT.value.flags = value ? (BMDT.value.flags | fIsLeftRing) : (BMDT.value.flags & ~fIsLeftRing);
+    BMDT.value.value = value ? (BMDT.value.value | fIsLeftRing) : (BMDT.value.value & ~fIsLeftRing);
     }
 
 bool CLOTRecord::IsAmulet()
     {
-    return (BMDT.value.flags & fIsAmulet) != 0;
+    return (BMDT.value.value & fIsAmulet) != 0;
     }
 
 void CLOTRecord::IsAmulet(bool value)
     {
-    BMDT.value.flags = value ? (BMDT.value.flags | fIsAmulet) : (BMDT.value.flags & ~fIsAmulet);
+    BMDT.value.value = value ? (BMDT.value.value | fIsAmulet) : (BMDT.value.value & ~fIsAmulet);
     }
 
 bool CLOTRecord::IsWeapon()
     {
-    return (BMDT.value.flags & fIsWeapon) != 0;
+    return (BMDT.value.value & fIsWeapon) != 0;
     }
 
 void CLOTRecord::IsWeapon(bool value)
     {
-    BMDT.value.flags = value ? (BMDT.value.flags | fIsWeapon) : (BMDT.value.flags & ~fIsWeapon);
+    BMDT.value.value = value ? (BMDT.value.value | fIsWeapon) : (BMDT.value.value & ~fIsWeapon);
     }
 
 bool CLOTRecord::IsBackWeapon()
     {
-    return (BMDT.value.flags & fIsBackWeapon) != 0;
+    return (BMDT.value.value & fIsBackWeapon) != 0;
     }
 
 void CLOTRecord::IsBackWeapon(bool value)
     {
-    BMDT.value.flags = value ? (BMDT.value.flags | fIsBackWeapon) : (BMDT.value.flags & ~fIsBackWeapon);
+    BMDT.value.value = value ? (BMDT.value.value | fIsBackWeapon) : (BMDT.value.value & ~fIsBackWeapon);
     }
 
 bool CLOTRecord::IsSideWeapon()
     {
-    return (BMDT.value.flags & fIsSideWeapon) != 0;
+    return (BMDT.value.value & fIsSideWeapon) != 0;
     }
 
 void CLOTRecord::IsSideWeapon(bool value)
     {
-    BMDT.value.flags = value ? (BMDT.value.flags | fIsSideWeapon) : (BMDT.value.flags & ~fIsSideWeapon);
+    BMDT.value.value = value ? (BMDT.value.value | fIsSideWeapon) : (BMDT.value.value & ~fIsSideWeapon);
     }
 
 bool CLOTRecord::IsQuiver()
     {
-    return (BMDT.value.flags & fIsQuiver) != 0;
+    return (BMDT.value.value & fIsQuiver) != 0;
     }
 
 void CLOTRecord::IsQuiver(bool value)
     {
-    BMDT.value.flags = value ? (BMDT.value.flags | fIsQuiver) : (BMDT.value.flags & ~fIsQuiver);
+    BMDT.value.value = value ? (BMDT.value.value | fIsQuiver) : (BMDT.value.value & ~fIsQuiver);
     }
 
 bool CLOTRecord::IsShield()
     {
-    return (BMDT.value.flags & fIsShield) != 0;
+    return (BMDT.value.value & fIsShield) != 0;
     }
 
 void CLOTRecord::IsShield(bool value)
     {
-    BMDT.value.flags = value ? (BMDT.value.flags | fIsShield) : (BMDT.value.flags & ~fIsShield);
+    BMDT.value.value = value ? (BMDT.value.value | fIsShield) : (BMDT.value.value & ~fIsShield);
     }
 
 bool CLOTRecord::IsTorch()
     {
-    return (BMDT.value.flags & fIsTorch) != 0;
+    return (BMDT.value.value & fIsTorch) != 0;
     }
 
 void CLOTRecord::IsTorch(bool value)
     {
-    BMDT.value.flags = value ? (BMDT.value.flags | fIsTorch) : (BMDT.value.flags & ~fIsTorch);
+    BMDT.value.value = value ? (BMDT.value.value | fIsTorch) : (BMDT.value.value & ~fIsTorch);
     }
 
 bool CLOTRecord::IsTail()
     {
-    return (BMDT.value.flags & fIsTail) != 0;
+    return (BMDT.value.value & fIsTail) != 0;
     }
 
 void CLOTRecord::IsTail(bool value)
     {
-    BMDT.value.flags = value ? (BMDT.value.flags | fIsTail) : (BMDT.value.flags & ~fIsTail);
+    BMDT.value.value = value ? (BMDT.value.value | fIsTail) : (BMDT.value.value & ~fIsTail);
     }
 
 bool CLOTRecord::IsHideRings()
     {
-    return (BMDT.value.flags & fIsHideRings) != 0;
+    return (BMDT.value.value & fIsHideRings) != 0;
     }
 
 void CLOTRecord::IsHideRings(bool value)
     {
-    BMDT.value.flags = value ? (BMDT.value.flags | fIsHideRings) : (BMDT.value.flags & ~fIsHideRings);
+    BMDT.value.value = value ? (BMDT.value.value | fIsHideRings) : (BMDT.value.value & ~fIsHideRings);
     }
 
 bool CLOTRecord::IsHideAmulets()
     {
-    return (BMDT.value.flags & fIsHideAmulets) != 0;
+    return (BMDT.value.value & fIsHideAmulets) != 0;
     }
 
 void CLOTRecord::IsHideAmulets(bool value)
     {
-    BMDT.value.flags = value ? (BMDT.value.flags | fIsHideAmulets) : (BMDT.value.flags & ~fIsHideAmulets);
+    BMDT.value.value = value ? (BMDT.value.value | fIsHideAmulets) : (BMDT.value.value & ~fIsHideAmulets);
     }
 
 bool CLOTRecord::IsNonPlayable()
     {
-    return (BMDT.value.flags & fIsNonPlayable) != 0;
+    return (BMDT.value.value & fIsNonPlayable) != 0;
     }
 
 void CLOTRecord::IsNonPlayable(bool value)
     {
-    BMDT.value.flags = value ? (BMDT.value.flags | fIsNonPlayable) : (BMDT.value.flags & ~fIsNonPlayable);
+    BMDT.value.value = value ? (BMDT.value.value | fIsNonPlayable) : (BMDT.value.value & ~fIsNonPlayable);
     }
 
 bool CLOTRecord::IsFlagMask(UINT32 Mask, bool Exact)
     {
-    return Exact ? ((BMDT.value.flags & Mask) == Mask) : ((BMDT.value.flags & Mask) != 0);
+    return Exact ? ((BMDT.value.value & Mask) == Mask) : ((BMDT.value.value & Mask) != 0);
     }
 
 void CLOTRecord::SetFlagMask(UINT32 Mask)
     {
-    BMDT.value.flags = Mask;
+    BMDT.value.value = Mask;
     }
 
 UINT32 CLOTRecord::GetSize(bool forceCalc)

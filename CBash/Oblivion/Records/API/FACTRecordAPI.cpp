@@ -131,7 +131,7 @@ void * FACTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                     return NULL;
                 }
         case 7: //flags
-            return &DATA.value.flags;
+            return &DATA.value.value;
         case 8: //crimeGoldMultiplier
             return CNAM.IsLoaded() ? &CNAM->crimeGoldMultiplier : NULL;
         case 9: //ranks

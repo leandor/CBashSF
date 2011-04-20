@@ -67,6 +67,165 @@ bool AMEFRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+bool AMEFRecord::IsDamage()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eDamage);
+    }
+
+void AMEFRecord::IsDamage(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eDamage;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool AMEFRecord::IsDR()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eDR);
+    }
+
+void AMEFRecord::IsDR(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eDR;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool AMEFRecord::IsDT()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eDT);
+    }
+
+void AMEFRecord::IsDT(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eDT;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool AMEFRecord::IsSpread()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eSpread);
+    }
+
+void AMEFRecord::IsSpread(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eSpread;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool AMEFRecord::IsCondition()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eCondition);
+    }
+
+void AMEFRecord::IsCondition(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eCondition;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool AMEFRecord::IsFatigue()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eFatigue);
+    }
+
+void AMEFRecord::IsFatigue(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eFatigue;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool AMEFRecord::IsModType(UINT32 Type, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    }
+
+void AMEFRecord::SetModType(UINT32 Type)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
+bool AMEFRecord::IsAdd()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eAdd);
+    }
+
+void AMEFRecord::IsAdd(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eAdd;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool AMEFRecord::IsMultiply()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eMultiply);
+    }
+
+void AMEFRecord::IsMultiply(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eMultiply;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool AMEFRecord::IsSubtract()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eSubtract);
+    }
+
+void AMEFRecord::IsSubtract(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eSubtract;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool AMEFRecord::IsOpType(UINT32 Type, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    }
+
+void AMEFRecord::SetOpType(UINT32 Type)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
 UINT32 AMEFRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())

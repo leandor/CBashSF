@@ -60,13 +60,13 @@ UINT32 WRLDRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
             return SINT16_FIELD;
         case 16: //flags
             return UINT8_FLAG_FIELD;
-        case 17: //unknown00
+        case 17: //xMinObjBounds
             return FLOAT32_FIELD;
-        case 18: //unknown01
+        case 18: //yMinObjBounds
             return FLOAT32_FIELD;
-        case 19: //unknown90
+        case 19: //xMaxObjBounds
             return FLOAT32_FIELD;
-        case 20: //unknown91
+        case 20: //yMaxObjBounds
             return FLOAT32_FIELD;
         case 21: //soundType
             return UINT32_FIELD;
@@ -114,11 +114,11 @@ void * WRLDRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 5: //full
             return FULL.value;
         case 6: //parent
-            return WNAM.IsLoaded() ? &WNAM->fid : NULL;
+            return WNAM.IsLoaded() ? &WNAM->value : NULL;
         case 7: //climate
-            return CNAM.IsLoaded() ? &CNAM->fid : NULL;
+            return CNAM.IsLoaded() ? &CNAM->value : NULL;
         case 8: //water
-            return NAM2.IsLoaded() ? &NAM2->fid : NULL;
+            return NAM2.IsLoaded() ? &NAM2->value : NULL;
         case 9: //mapPath
             return ICON.value;
         case 10: //dimX
@@ -134,17 +134,17 @@ void * WRLDRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 15: //SECellY
             return MNAM.IsLoaded() ? &MNAM->SECellY : NULL;
         case 16: //flags
-            return &DATA.value.flags;
-        case 17: //unknown00
-            return &NAM0.value.unk1;
-        case 18: //unknown01
-            return &NAM0.value.unk2;
-        case 19: //unknown90
-            return &NAM9.value.unk1;
-        case 20: //unknown91
-            return &NAM9.value.unk2;
+            return &DATA.value.value;
+        case 17: //xMinObjBounds
+            return &NAM0.value.x;
+        case 18: //yMinObjBounds
+            return &NAM0.value.y;
+        case 19: //xMaxObjBounds
+            return &NAM9.value.x;
+        case 20: //yMaxObjBounds
+            return &NAM9.value.y;
         case 21: //soundType
-            return SNAM.IsLoaded() ? &SNAM->flags : NULL;
+            return SNAM.IsLoaded() ? &SNAM->value : NULL;
         case 22: //ofst_p
             *FieldValues = OFST.value;
             return NULL;
@@ -179,15 +179,15 @@ bool WRLDRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             break;
         case 6: //parent
             WNAM.Load();
-            WNAM->fid = *(FORMID *)FieldValue;
+            WNAM->value = *(FORMID *)FieldValue;
             return true;
         case 7: //climate
             CNAM.Load();
-            CNAM->fid = *(FORMID *)FieldValue;
+            CNAM->value = *(FORMID *)FieldValue;
             return true;
         case 8: //water
             NAM2.Load();
-            NAM2->fid = *(FORMID *)FieldValue;
+            NAM2->value = *(FORMID *)FieldValue;
             return true;
         case 9: //mapPath
             ICON.Copy((STRING)FieldValue);
@@ -217,19 +217,19 @@ bool WRLDRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             MNAM->SECellY = *(SINT16 *)FieldValue;
             break;
         case 16: //flags
-            DATA.value.flags = *(UINT8 *)FieldValue;
+            DATA.value.value = *(UINT8 *)FieldValue;
             break;
-        case 17: //unknown00
-            NAM0.value.unk1 = *(FLOAT32 *)FieldValue;
+        case 17: //xMinObjBounds
+            NAM0.value.x = *(FLOAT32 *)FieldValue;
             break;
-        case 18: //unknown01
-            NAM0.value.unk2 = *(FLOAT32 *)FieldValue;
+        case 18: //yMinObjBounds
+            NAM0.value.y = *(FLOAT32 *)FieldValue;
             break;
-        case 19: //unknown90
-            NAM9.value.unk1 = *(FLOAT32 *)FieldValue;
+        case 19: //xMaxObjBounds
+            NAM9.value.x = *(FLOAT32 *)FieldValue;
             break;
-        case 20: //unknown91
-            NAM9.value.unk2 = *(FLOAT32 *)FieldValue;
+        case 20: //yMaxObjBounds
+            NAM9.value.y = *(FLOAT32 *)FieldValue;
             break;
         case 21: //musicType
             SetMusicType(*(UINT32 *)FieldValue);
@@ -245,8 +245,8 @@ bool WRLDRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
 
 void WRLDRecord::DeleteField(FIELD_IDENTIFIERS)
     {
-    WRLDMNAM defaultMNAM;
-    WRLDUNK defaultUNK;
+    GENMNAM defaultMNAM;
+    GENNAM defaultUNK;
 
     switch(FieldID)
         {
@@ -301,17 +301,17 @@ void WRLDRecord::DeleteField(FIELD_IDENTIFIERS)
         case 16: //flags
             DATA.Unload();
             return;
-        case 17: //unknown00
-            NAM0.value.unk1 = defaultUNK.unk1;
+        case 17: //xMinObjBounds
+            NAM0.value.x = defaultUNK.x;
             return;
-        case 18: //unknown01
-            NAM0.value.unk2 = defaultUNK.unk2;
+        case 18: //yMinObjBounds
+            NAM0.value.y = defaultUNK.y;
             return;
-        case 19: //unknown90
-            NAM9.value.unk1 = defaultUNK.unk1;
+        case 19: //xMaxObjBounds
+            NAM9.value.x = defaultUNK.x;
             return;
-        case 20: //unknown91
-            NAM9.value.unk2 = defaultUNK.unk2;
+        case 20: //yMaxObjBounds
+            NAM9.value.y = defaultUNK.y;
             return;
         case 21: //soundType
             SNAM.Unload();

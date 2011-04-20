@@ -35,7 +35,7 @@ class EYESRecord : public Record
         StringRecord EDID;
         StringRecord FULL;
         StringRecord ICON;
-        ReqSubRecord<GENFLAG> DATA;
+        ReqSubRecord<GENU8> DATA;
 
         EYESRecord(unsigned char *_recData=NULL);
         EYESRecord(EYESRecord *srcRecord);

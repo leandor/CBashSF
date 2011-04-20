@@ -37,12 +37,12 @@ class ALOCRecord : public Record //Media Location Controller
         OptSubRecord<GENU32> NAM5; //Day Start
         OptSubRecord<GENU32> NAM6; //Night Start
         OptSubRecord<GENFLOAT> NAM7; //Retrigger Delay
-        OptSubRecord<GENFID> HNAM; //Media Set
-        OptSubRecord<GENFID> ZNAM; //Media Set
-        OptSubRecord<GENFID> XNAM; //Media Set
-        OptSubRecord<GENFID> YNAM; //Media Set
-        OptSubRecord<GENFID> LNAM; //Media Set
-        OptSubRecord<GENFID> GNAM; //Media Set
+        std::vector<FORMID> HNAM; //Neutral Media Sets
+        std::vector<FORMID> ZNAM; //Ally Media Sets
+        std::vector<FORMID> XNAM; //Friend Media Sets
+        std::vector<FORMID> YNAM; //Enemy Media Sets
+        std::vector<FORMID> LNAM; //Location Media Sets
+        std::vector<FORMID> GNAM; //Battle Media Sets
         OptSubRecord<GENFID> RNAM; //Conditional Faction
         RawRecord FNAM; //Unknown
 

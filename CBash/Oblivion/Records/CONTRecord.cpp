@@ -104,13 +104,13 @@ bool CONTRecord::VisitFormIDs(FormIDOp &op)
         return false;
 
     if(SCRI.IsLoaded())
-        op.Accept(SCRI->fid);
+        op.Accept(SCRI->value);
     for(UINT32 x = 0; x < CNTO.size(); x++)
         op.Accept(CNTO[x]->value.item);
     if(SNAM.IsLoaded())
-        op.Accept(SNAM->fid);
+        op.Accept(SNAM->value);
     if(QNAM.IsLoaded())
-        op.Accept(QNAM->fid);
+        op.Accept(QNAM->value);
 
     return op.Stop();
     }

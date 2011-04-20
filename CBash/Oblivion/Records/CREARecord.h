@@ -23,7 +23,6 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-//Possibly extra crap exposed. Copied from NPC_ and hastily incorporated, may have missed stuff.
 class CREARecord : public Record
     {
     private:
@@ -43,77 +42,11 @@ class CREARecord : public Record
             bool operator !=(const CREADATA &other) const;
             };
 
-        struct CREARNAM
-            {
-            UINT8   attackReach;
-
-            CREARNAM();
-            ~CREARNAM();
-
-            bool operator ==(const CREARNAM &other) const;
-            bool operator !=(const CREARNAM &other) const;
-            };
-
-        struct CREATNAM
-            {
-            FLOAT32 turningSpeed;
-
-            CREATNAM();
-            ~CREATNAM();
-
-            bool operator ==(const CREATNAM &other) const;
-            bool operator !=(const CREATNAM &other) const;
-            };
-
-        struct CREABNAM
-            {
-            FLOAT32 baseScale;
-
-            CREABNAM();
-            ~CREABNAM();
-
-            bool operator ==(const CREABNAM &other) const;
-            bool operator !=(const CREABNAM &other) const;
-            };
-
-        struct CREAWNAM
-            {
-            FLOAT32 footWeight;
-
-            CREAWNAM();
-            ~CREAWNAM();
-
-            bool operator ==(const CREAWNAM &other) const;
-            bool operator !=(const CREAWNAM &other) const;
-            };
-
-        struct CREACSDT
-            {
-            UINT32  soundType;
-
-            CREACSDT();
-            ~CREACSDT();
-
-            bool operator ==(const CREACSDT &other) const;
-            bool operator !=(const CREACSDT &other) const;
-            };
-
-        struct CREACSDC
-            {
-            UINT8   chance;
-
-            CREACSDC();
-            ~CREACSDC();
-
-            bool operator ==(const CREACSDC &other) const;
-            bool operator !=(const CREACSDC &other) const;
-            };
-
         struct CREASound
             {
-            ReqSubRecord<CREACSDT> CSDT;
+            ReqSubRecord<GENU32> CSDT;
             ReqSubRecord<GENFID> CSDI;
-            ReqSubRecord<CREACSDC> CSDC;
+            ReqSubRecord<GENU8> CSDC;
 
             enum eSoundType
                 {
@@ -232,11 +165,11 @@ class CREARecord : public Record
         std::vector<FORMID> PKID;
         std::vector<StringRecord> KFFZ;
         ReqSubRecord<CREADATA> DATA;
-        ReqSubRecord<CREARNAM> RNAM;
+        ReqSubRecord<GENU8> RNAM;
         OptSubRecord<GENFID> ZNAM;
-        ReqSubRecord<CREATNAM> TNAM;
-        ReqSubRecord<CREABNAM> BNAM;
-        ReqSubRecord<CREAWNAM> WNAM;
+        ReqSubRecord<GENFLOAT> TNAM;
+        ReqSubRecord<GENFLOAT> BNAM;
+        ReqSubRecord<GENFLOAT> WNAM;
         OptSubRecord<GENFID> CSCR;
         StringRecord NAM0;
         StringRecord NAM1;
