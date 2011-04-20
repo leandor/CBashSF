@@ -48,6 +48,21 @@ EXPLRecord::EXPLRecord(EXPLRecord *srcRecord):
         }
 
     EDID = srcRecord->EDID;
+    OBND = srcRecord->OBND;
+    FULL = srcRecord->FULL;
+    if(srcRecord->MODL.IsLoaded())
+        {
+        MODL.Load();
+        MODL->MODL = srcRecord->MODL->MODL;
+        MODL->MODB = srcRecord->MODL->MODB;
+        MODL->MODT = srcRecord->MODL->MODT;
+        MODL->MODS = srcRecord->MODL->MODS;
+        MODL->MODD = srcRecord->MODL->MODD;
+        }
+    EITM = srcRecord->EITM;
+    MNAM = srcRecord->MNAM;
+    DATA = srcRecord->DATA;
+    INAM = srcRecord->INAM;
     return;
     }
 
@@ -60,6 +75,17 @@ bool EXPLRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
+
+    if(MODL.IsLoaded() && MODL->MODS.IsLoaded())
+        op.Accept(MODL->MODS->value);
+    if(EITM.IsLoaded())
+        op.Accept(EITM->value);
+    if(MNAM.IsLoaded())
+        op.Accept(MNAM->value);
+    //if(DATA.IsLoaded()) //FILL IN MANUALLY
+    //    op.Accept(DATA->value);
+    if(INAM.IsLoaded())
+        op.Accept(INAM->value);
 
     return op.Stop();
     }
@@ -78,6 +104,54 @@ UINT32 EXPLRecord::GetSize(bool forceCalc)
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
         }
+
+    if(OBND.IsLoaded())
+        TotSize += OBND.GetSize() + 6;
+
+    if(FULL.IsLoaded())
+        {
+        cSize = FULL.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(MODL.IsLoaded())
+        {
+        if(MODL->MODL.IsLoaded())
+            {
+            cSize = MODL->MODL.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        if(MODL->MODB.IsLoaded())
+            {
+            cSize = MODL->MODB.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        if(MODL->MODT.IsLoaded())
+            {
+            cSize = MODL->MODT.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        if(MODL->MODS.IsLoaded())
+            TotSize += MODL->MODS.GetSize() + 6;
+        if(MODL->MODD.IsLoaded())
+            TotSize += MODL->MODD.GetSize() + 6;
+        }
+
+    if(EITM.IsLoaded())
+        TotSize += EITM.GetSize() + 6;
+
+    if(MNAM.IsLoaded())
+        TotSize += MNAM.GetSize() + 6;
+
+    if(DATA.IsLoaded())
+        TotSize += DATA.GetSize() + 6;
+
+    if(INAM.IsLoaded())
+        TotSize += INAM.GetSize() + 6;
 
     return TotSize;
     }
@@ -117,6 +191,44 @@ SINT32 EXPLRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             case 'DIDE':
                 EDID.Read(buffer, subSize, curPos);
                 break;
+            case 'DNBO':
+                OBND.Read(buffer, subSize, curPos);
+                break;
+            case 'LLUF':
+                FULL.Read(buffer, subSize, curPos);
+                break;
+            case 'LDOM':
+                MODL.Load();
+                MODL->MODL.Read(buffer, subSize, curPos);
+                break;
+            case 'BDOM':
+                MODL.Load();
+                MODL->MODB.Read(buffer, subSize, curPos);
+                break;
+            case 'TDOM':
+                MODL.Load();
+                MODL->MODT.Read(buffer, subSize, curPos);
+                break;
+            case 'SDOM':
+                MODL.Load();
+                MODL->MODS.Read(buffer, subSize, curPos);
+                break;
+            case 'DDOM':
+                MODL.Load();
+                MODL->MODD.Read(buffer, subSize, curPos);
+                break;
+            case 'MTIE':
+                EITM.Read(buffer, subSize, curPos);
+                break;
+            case 'MANM':
+                MNAM.Read(buffer, subSize, curPos);
+                break;
+            case 'ATAD':
+                DATA.Read(buffer, subSize, curPos);
+                break;
+            case 'MANI':
+                INAM.Read(buffer, subSize, curPos);
+                break;
             default:
                 //printf("FileName = %s\n", FileName);
                 printf("  EXPL: %08X - Unknown subType = %04x\n", formID, subType);
@@ -134,6 +246,13 @@ SINT32 EXPLRecord::Unload()
     IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
+    OBND.Unload();
+    FULL.Unload();
+    MODL.Unload();
+    EITM.Unload();
+    MNAM.Unload();
+    DATA.Unload();
+    INAM.Unload();
     return 1;
     }
 
@@ -141,12 +260,57 @@ SINT32 EXPLRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+
+    if(OBND.IsLoaded())
+        SaveHandler.writeSubRecord('DNBO', OBND.value, OBND.GetSize());
+
+    if(FULL.IsLoaded())
+        SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
+
+    if(MODL.IsLoaded())
+        {
+        if(MODL->MODL.IsLoaded())
+            SaveHandler.writeSubRecord('LDOM', MODL->MODL.value, MODL->MODL.GetSize());
+
+        if(MODL->MODB.IsLoaded())
+            SaveHandler.writeSubRecord('BDOM', MODL->MODB.value, MODL->MODB.GetSize());
+
+        if(MODL->MODT.IsLoaded())
+            SaveHandler.writeSubRecord('TDOM', MODL->MODT.value, MODL->MODT.GetSize());
+
+        if(MODL->MODS.IsLoaded())
+            SaveHandler.writeSubRecord('SDOM', MODL->MODS.value, MODL->MODS.GetSize());
+
+        if(MODL->MODD.IsLoaded())
+            SaveHandler.writeSubRecord('DDOM', MODL->MODD.value, MODL->MODD.GetSize());
+
+        }
+
+    if(EITM.IsLoaded())
+        SaveHandler.writeSubRecord('MTIE', EITM.value, EITM.GetSize());
+
+    if(MNAM.IsLoaded())
+        SaveHandler.writeSubRecord('MANM', MNAM.value, MNAM.GetSize());
+
+    if(DATA.IsLoaded())
+        SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
+
+    if(INAM.IsLoaded())
+        SaveHandler.writeSubRecord('MANI', INAM.value, INAM.GetSize());
+
     return -1;
     }
 
 bool EXPLRecord::operator ==(const EXPLRecord &other) const
     {
-    return (EDID.equalsi(other.EDID));
+    return (EDID.equalsi(other.EDID) &&
+            OBND == other.OBND &&
+            FULL.equals(other.FULL) &&
+            MODL == other.MODL &&
+            EITM == other.EITM &&
+            MNAM == other.MNAM &&
+            DATA == other.DATA &&
+            INAM == other.INAM);
     }
 
 bool EXPLRecord::operator !=(const EXPLRecord &other) const

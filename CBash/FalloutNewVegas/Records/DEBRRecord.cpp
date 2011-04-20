@@ -48,6 +48,8 @@ DEBRRecord::DEBRRecord(DEBRRecord *srcRecord):
         }
 
     EDID = srcRecord->EDID;
+    DATA = srcRecord->DATA;
+    MODT = srcRecord->MODT;
     return;
     }
 
@@ -60,6 +62,7 @@ bool DEBRRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
+
 
     return op.Stop();
     }
@@ -75,6 +78,16 @@ UINT32 DEBRRecord::GetSize(bool forceCalc)
     if(EDID.IsLoaded())
         {
         cSize = EDID.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(DATA.IsLoaded())
+        TotSize += DATA.GetSize() + 6;
+
+    if(MODT.IsLoaded())
+        {
+        cSize = MODT.GetSize();
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
         }
@@ -117,6 +130,12 @@ SINT32 DEBRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             case 'DIDE':
                 EDID.Read(buffer, subSize, curPos);
                 break;
+            case 'ATAD':
+                DATA.Read(buffer, subSize, curPos);
+                break;
+            case 'TDOM':
+                MODT.Read(buffer, subSize, curPos);
+                break;
             default:
                 //printf("FileName = %s\n", FileName);
                 printf("  DEBR: %08X - Unknown subType = %04x\n", formID, subType);
@@ -134,6 +153,8 @@ SINT32 DEBRRecord::Unload()
     IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
+    DATA.Unload();
+    MODT.Unload();
     return 1;
     }
 
@@ -141,12 +162,21 @@ SINT32 DEBRRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+
+    if(DATA.IsLoaded())
+        SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
+
+    if(MODT.IsLoaded())
+        SaveHandler.writeSubRecord('TDOM', MODT.value, MODT.GetSize());
+
     return -1;
     }
 
 bool DEBRRecord::operator ==(const DEBRRecord &other) const
     {
-    return (EDID.equalsi(other.EDID));
+    return (EDID.equalsi(other.EDID) &&
+            DATA == other.DATA &&
+            MODT == other.MODT);
     }
 
 bool DEBRRecord::operator !=(const DEBRRecord &other) const

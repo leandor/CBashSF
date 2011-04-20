@@ -48,6 +48,9 @@ CDCKRecord::CDCKRecord(CDCKRecord *srcRecord):
         }
 
     EDID = srcRecord->EDID;
+    FULL = srcRecord->FULL;
+    CARD = srcRecord->CARD;
+    DATA = srcRecord->DATA;
     return;
     }
 
@@ -60,6 +63,9 @@ bool CDCKRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
+
+    if(CARD.IsLoaded())
+        op.Accept(CARD->value);
 
     return op.Stop();
     }
@@ -78,6 +84,19 @@ UINT32 CDCKRecord::GetSize(bool forceCalc)
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
         }
+
+    if(FULL.IsLoaded())
+        {
+        cSize = FULL.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(CARD.IsLoaded())
+        TotSize += CARD.GetSize() + 6;
+
+    if(DATA.IsLoaded())
+        TotSize += DATA.GetSize() + 6;
 
     return TotSize;
     }
@@ -117,6 +136,15 @@ SINT32 CDCKRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             case 'DIDE':
                 EDID.Read(buffer, subSize, curPos);
                 break;
+            case 'LLUF':
+                FULL.Read(buffer, subSize, curPos);
+                break;
+            case 'DRAC':
+                CARD.Read(buffer, subSize, curPos);
+                break;
+            case 'ATAD':
+                DATA.Read(buffer, subSize, curPos);
+                break;
             default:
                 //printf("FileName = %s\n", FileName);
                 printf("  CDCK: %08X - Unknown subType = %04x\n", formID, subType);
@@ -134,6 +162,9 @@ SINT32 CDCKRecord::Unload()
     IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
+    FULL.Unload();
+    CARD.Unload();
+    DATA.Unload();
     return 1;
     }
 
@@ -141,12 +172,25 @@ SINT32 CDCKRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+
+    if(FULL.IsLoaded())
+        SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
+
+    if(CARD.IsLoaded())
+        SaveHandler.writeSubRecord('DRAC', CARD.value, CARD.GetSize());
+
+    if(DATA.IsLoaded())
+        SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
+
     return -1;
     }
 
 bool CDCKRecord::operator ==(const CDCKRecord &other) const
     {
-    return (EDID.equalsi(other.EDID));
+    return (EDID.equalsi(other.EDID) &&
+            FULL.equals(other.FULL) &&
+            CARD == other.CARD &&
+            DATA == other.DATA);
     }
 
 bool CDCKRecord::operator !=(const CDCKRecord &other) const

@@ -25,10 +25,20 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class CONTRecord : public Record
+class CONTRecord : public Record //Container
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENOBND> OBND; //Object Bounds
+        StringRecord FULL; //Name
+        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<GENFID> SCRI; //Script
+        OptSubRecord<GENCNTO> CNTO; //Item
+        OptSubRecord<GENDEST> DEST; //Header
+        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
+        OptSubRecord<GENFID> SNAM; //Sound - Open
+        OptSubRecord<GENFID> QNAM; //Sound - Close
+        OptSubRecord<GENFID> RNAM; //Sound - Random/Looping
 
         CONTRecord(unsigned char *_recData=NULL);
         CONTRecord(CONTRecord *srcRecord);

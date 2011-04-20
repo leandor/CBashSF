@@ -25,10 +25,13 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class CAMSRecord : public Record
+class CAMSRecord : public Record //Camera Shot
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
+        OptSubRecord<GENFID> MNAM; //Image Space Modifier
 
         CAMSRecord(unsigned char *_recData=NULL);
         CAMSRecord(CAMSRecord *srcRecord);

@@ -48,6 +48,16 @@ CLASRecord::CLASRecord(CLASRecord *srcRecord):
         }
 
     EDID = srcRecord->EDID;
+    FULL = srcRecord->FULL;
+    DESC = srcRecord->DESC;
+    if(srcRecord->ICON.IsLoaded())
+        {
+        ICON.Load();
+        ICON->ICON = srcRecord->ICON->ICON;
+        ICON->MICO = srcRecord->ICON->MICO;
+        }
+    DATA = srcRecord->DATA;
+    ATTR = srcRecord->ATTR;
     return;
     }
 
@@ -60,6 +70,7 @@ bool CLASRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
+
 
     return op.Stop();
     }
@@ -78,6 +89,42 @@ UINT32 CLASRecord::GetSize(bool forceCalc)
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
         }
+
+    if(FULL.IsLoaded())
+        {
+        cSize = FULL.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(DESC.IsLoaded())
+        {
+        cSize = DESC.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(ICON.IsLoaded())
+        {
+        if(ICON->ICON.IsLoaded())
+            {
+            cSize = ICON->ICON.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        if(ICON->MICO.IsLoaded())
+            {
+            cSize = ICON->MICO.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        }
+
+    if(DATA.IsLoaded())
+        TotSize += DATA.GetSize() + 6;
+
+    if(ATTR.IsLoaded())
+        TotSize += ATTR.GetSize() + 6;
 
     return TotSize;
     }
@@ -117,6 +164,26 @@ SINT32 CLASRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             case 'DIDE':
                 EDID.Read(buffer, subSize, curPos);
                 break;
+            case 'LLUF':
+                FULL.Read(buffer, subSize, curPos);
+                break;
+            case 'CSED':
+                DESC.Read(buffer, subSize, curPos);
+                break;
+            case 'NOCI':
+                ICON.Load();
+                ICON->ICON.Read(buffer, subSize, curPos);
+                break;
+            case 'OCIM':
+                ICON.Load();
+                ICON->MICO.Read(buffer, subSize, curPos);
+                break;
+            case 'ATAD':
+                DATA.Read(buffer, subSize, curPos);
+                break;
+            case 'RTTA':
+                ATTR.Read(buffer, subSize, curPos);
+                break;
             default:
                 //printf("FileName = %s\n", FileName);
                 printf("  CLAS: %08X - Unknown subType = %04x\n", formID, subType);
@@ -134,6 +201,11 @@ SINT32 CLASRecord::Unload()
     IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
+    FULL.Unload();
+    DESC.Unload();
+    ICON.Unload();
+    DATA.Unload();
+    ATTR.Unload();
     return 1;
     }
 
@@ -141,12 +213,40 @@ SINT32 CLASRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+
+    if(FULL.IsLoaded())
+        SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
+
+    if(DESC.IsLoaded())
+        SaveHandler.writeSubRecord('CSED', DESC.value, DESC.GetSize());
+
+    if(ICON.IsLoaded())
+        {
+        if(ICON->ICON.IsLoaded())
+            SaveHandler.writeSubRecord('NOCI', ICON->ICON.value, ICON->ICON.GetSize());
+
+        if(ICON->MICO.IsLoaded())
+            SaveHandler.writeSubRecord('OCIM', ICON->MICO.value, ICON->MICO.GetSize());
+
+        }
+
+    if(DATA.IsLoaded())
+        SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
+
+    if(ATTR.IsLoaded())
+        SaveHandler.writeSubRecord('RTTA', ATTR.value, ATTR.GetSize());
+
     return -1;
     }
 
 bool CLASRecord::operator ==(const CLASRecord &other) const
     {
-    return (EDID.equalsi(other.EDID));
+    return (EDID.equalsi(other.EDID) &&
+            FULL.equals(other.FULL) &&
+            DESC.equals(other.DESC) &&
+            ICON == other.ICON &&
+            DATA == other.DATA &&
+            ATTR == other.ATTR);
     }
 
 bool CLASRecord::operator !=(const CLASRecord &other) const

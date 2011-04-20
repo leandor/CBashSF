@@ -25,10 +25,12 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class DEBRRecord : public Record
+class DEBRRecord : public Record //Debris
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
+        RawRecord MODT; //Texture Files Hashes
 
         DEBRRecord(unsigned char *_recData=NULL);
         DEBRRecord(DEBRRecord *srcRecord);

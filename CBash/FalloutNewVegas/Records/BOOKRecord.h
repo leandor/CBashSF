@@ -25,10 +25,18 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class BOOKRecord : public Record
+class BOOKRecord : public Record //Book
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENOBND> OBND; //Object Bounds
+        StringRecord FULL; //Name
+        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<GENICON> ICON; //Large Icon Filename
+        OptSubRecord<GENFID> SCRI; //Script
+        StringRecord DESC; //Description
+        OptSubRecord<GENDEST> DEST; //Header
+        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
 
         BOOKRecord(unsigned char *_recData=NULL);
         BOOKRecord(BOOKRecord *srcRecord);

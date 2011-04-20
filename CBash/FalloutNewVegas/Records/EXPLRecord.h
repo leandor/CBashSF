@@ -25,10 +25,17 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class EXPLRecord : public Record
+class EXPLRecord : public Record //Explosion
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENOBND> OBND; //Object Bounds
+        StringRecord FULL; //Name
+        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<GENFID> EITM; //Object Effect
+        OptSubRecord<GENFID> MNAM; //Image Space Modifier
+        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
+        OptSubRecord<GENFID> INAM; //Placed Impact Object
 
         EXPLRecord(unsigned char *_recData=NULL);
         EXPLRecord(EXPLRecord *srcRecord);

@@ -25,10 +25,11 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class DEHYRecord : public Record
+class DEHYRecord : public Record //Dehydration Stage
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
 
         DEHYRecord(unsigned char *_recData=NULL);
         DEHYRecord(DEHYRecord *srcRecord);

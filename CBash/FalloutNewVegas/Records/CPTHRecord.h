@@ -25,10 +25,14 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class CPTHRecord : public Record
+class CPTHRecord : public Record //Camera Path
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENCTDA> CTDA; //Conditions
+        OptSubRecord<GENANAM> ANAM; //Related Camera Paths
+        OptSubRecord<GENU8> DATA; //Camera Zoom
+        OptSubRecord<GENFID> SNAM; //Camera Shot
 
         CPTHRecord(unsigned char *_recData=NULL);
         CPTHRecord(CPTHRecord *srcRecord);

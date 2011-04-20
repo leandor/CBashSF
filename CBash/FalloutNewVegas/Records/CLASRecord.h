@@ -25,10 +25,15 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class CLASRecord : public Record
+class CLASRecord : public Record //Class
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        StringRecord FULL; //Name
+        StringRecord DESC; //Description
+        OptSubRecord<GENICON> ICON; //Large Icon Filename
+        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
+        OptSubRecord<GENATTR> ATTR; //Attributes
 
         CLASRecord(unsigned char *_recData=NULL);
         CLASRecord(CLASRecord *srcRecord);

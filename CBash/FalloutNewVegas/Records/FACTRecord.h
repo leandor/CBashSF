@@ -25,10 +25,16 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class FACTRecord : public Record
+class FACTRecord : public Record //Faction
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        StringRecord FULL; //Name
+        OptSubRecord<GENXNAM> XNAM; //Relation
+        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
+        OptSubRecord<GENFLOAT> CNAM; //Unused
+        OptSubRecord<GENRNAM> RNAM; //Rank#
+        OptSubRecord<GENFID> WMI1; //Reputation
 
         FACTRecord(unsigned char *_recData=NULL);
         FACTRecord(FACTRecord *srcRecord);

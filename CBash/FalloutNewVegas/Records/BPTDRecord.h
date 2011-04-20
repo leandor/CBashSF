@@ -25,10 +25,20 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class BPTDRecord : public Record
+class BPTDRecord : public Record //Body Part Data
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENMODEL> MODL; //Model Filename
+        StringRecord BPTN; //Part Name
+        StringRecord BPNN; //Part Node
+        StringRecord BPNT; //VATS Target
+        StringRecord BPNI; //IK Data - Start Node
+        OptSubRecord<GENBPND> BPND; //BPND ,, Struct
+        StringRecord NAM1; //Limb Replacement Model
+        StringRecord NAM4; //Gore Effects - Target Bone
+        RawRecord NAM5; //Texture Files Hashes
+        OptSubRecord<GENFID> RAGA; //Ragdoll
 
         BPTDRecord(unsigned char *_recData=NULL);
         BPTDRecord(BPTDRecord *srcRecord);

@@ -25,10 +25,19 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class DOORRecord : public Record
+class DOORRecord : public Record //Door
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENOBND> OBND; //Object Bounds
+        StringRecord FULL; //Name
+        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<GENFID> SCRI; //Script
+        OptSubRecord<GENDEST> DEST; //Header
+        OptSubRecord<GENFID> SNAM; //Sound - Open
+        OptSubRecord<GENFID> ANAM; //Sound - Close
+        OptSubRecord<GENFID> BNAM; //Sound - Looping
+        OptSubRecord<GENU8> FNAM; //Flags
 
         DOORRecord(unsigned char *_recData=NULL);
         DOORRecord(DOORRecord *srcRecord);

@@ -25,10 +25,14 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class EFSHRecord : public Record
+class EFSHRecord : public Record //Effect Shader
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        StringRecord ICON; //Fill Texture
+        StringRecord ICO2; //Particle Shader Texture
+        StringRecord NAM7; //Holes Texture
+        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
 
         EFSHRecord(unsigned char *_recData=NULL);
         EFSHRecord(EFSHRecord *srcRecord);

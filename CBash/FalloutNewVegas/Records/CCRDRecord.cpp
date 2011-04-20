@@ -48,6 +48,39 @@ CCRDRecord::CCRDRecord(CCRDRecord *srcRecord):
         }
 
     EDID = srcRecord->EDID;
+    OBND = srcRecord->OBND;
+    FULL = srcRecord->FULL;
+    if(srcRecord->MODL.IsLoaded())
+        {
+        MODL.Load();
+        MODL->MODL = srcRecord->MODL->MODL;
+        MODL->MODB = srcRecord->MODL->MODB;
+        MODL->MODT = srcRecord->MODL->MODT;
+        MODL->MODS = srcRecord->MODL->MODS;
+        MODL->MODD = srcRecord->MODL->MODD;
+        }
+    if(srcRecord->ICON.IsLoaded())
+        {
+        ICON.Load();
+        ICON->ICON = srcRecord->ICON->ICON;
+        ICON->MICO = srcRecord->ICON->MICO;
+        }
+    SCRI = srcRecord->SCRI;
+    YNAM = srcRecord->YNAM;
+    ZNAM = srcRecord->ZNAM;
+    if(srcRecord->TX00.IsLoaded())
+        {
+        TX00.Load();
+        TX00->TX00 = srcRecord->TX00->TX00;
+        TX00->TX01 = srcRecord->TX00->TX01;
+        }
+    if(srcRecord->INTV.IsLoaded())
+        {
+        INTV.Load();
+        INTV->INTV = srcRecord->INTV->INTV;
+        }
+    INTV = srcRecord->INTV;
+    DATA = srcRecord->DATA;
     return;
     }
 
@@ -60,6 +93,15 @@ bool CCRDRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
+
+    if(MODL.IsLoaded() && MODL->MODS.IsLoaded())
+        op.Accept(MODL->MODS->value);
+    if(SCRI.IsLoaded())
+        op.Accept(SCRI->value);
+    if(YNAM.IsLoaded())
+        op.Accept(YNAM->value);
+    if(ZNAM.IsLoaded())
+        op.Accept(ZNAM->value);
 
     return op.Stop();
     }
@@ -78,6 +120,95 @@ UINT32 CCRDRecord::GetSize(bool forceCalc)
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
         }
+
+    if(OBND.IsLoaded())
+        TotSize += OBND.GetSize() + 6;
+
+    if(FULL.IsLoaded())
+        {
+        cSize = FULL.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(MODL.IsLoaded())
+        {
+        if(MODL->MODL.IsLoaded())
+            {
+            cSize = MODL->MODL.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        if(MODL->MODB.IsLoaded())
+            {
+            cSize = MODL->MODB.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        if(MODL->MODT.IsLoaded())
+            {
+            cSize = MODL->MODT.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        if(MODL->MODS.IsLoaded())
+            TotSize += MODL->MODS.GetSize() + 6;
+        if(MODL->MODD.IsLoaded())
+            TotSize += MODL->MODD.GetSize() + 6;
+        }
+
+    if(ICON.IsLoaded())
+        {
+        if(ICON->ICON.IsLoaded())
+            {
+            cSize = ICON->ICON.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        if(ICON->MICO.IsLoaded())
+            {
+            cSize = ICON->MICO.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        }
+
+    if(SCRI.IsLoaded())
+        TotSize += SCRI.GetSize() + 6;
+
+    if(YNAM.IsLoaded())
+        TotSize += YNAM.GetSize() + 6;
+
+    if(ZNAM.IsLoaded())
+        TotSize += ZNAM.GetSize() + 6;
+
+    if(TX00.IsLoaded())
+        {
+        if(TX00->TX00.IsLoaded())
+            {
+            cSize = TX00->TX00.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        if(TX00->TX01.IsLoaded())
+            {
+            cSize = TX00->TX01.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        }
+
+    if(INTV.IsLoaded())
+        {
+        if(INTV->INTV.IsLoaded())
+            TotSize += INTV->INTV.GetSize() + 6;
+        }
+
+    if(INTV.IsLoaded())
+        TotSize += INTV.GetSize() + 6;
+
+    if(DATA.IsLoaded())
+        TotSize += DATA.GetSize() + 6;
 
     return TotSize;
     }
@@ -117,6 +248,67 @@ SINT32 CCRDRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             case 'DIDE':
                 EDID.Read(buffer, subSize, curPos);
                 break;
+            case 'DNBO':
+                OBND.Read(buffer, subSize, curPos);
+                break;
+            case 'LLUF':
+                FULL.Read(buffer, subSize, curPos);
+                break;
+            case 'LDOM':
+                MODL.Load();
+                MODL->MODL.Read(buffer, subSize, curPos);
+                break;
+            case 'BDOM':
+                MODL.Load();
+                MODL->MODB.Read(buffer, subSize, curPos);
+                break;
+            case 'TDOM':
+                MODL.Load();
+                MODL->MODT.Read(buffer, subSize, curPos);
+                break;
+            case 'SDOM':
+                MODL.Load();
+                MODL->MODS.Read(buffer, subSize, curPos);
+                break;
+            case 'DDOM':
+                MODL.Load();
+                MODL->MODD.Read(buffer, subSize, curPos);
+                break;
+            case 'NOCI':
+                ICON.Load();
+                ICON->ICON.Read(buffer, subSize, curPos);
+                break;
+            case 'OCIM':
+                ICON.Load();
+                ICON->MICO.Read(buffer, subSize, curPos);
+                break;
+            case 'IRCS':
+                SCRI.Read(buffer, subSize, curPos);
+                break;
+            case 'MANY':
+                YNAM.Read(buffer, subSize, curPos);
+                break;
+            case 'MANZ':
+                ZNAM.Read(buffer, subSize, curPos);
+                break;
+            case '00XT':
+                TX00.Load();
+                TX00->TX00.Read(buffer, subSize, curPos);
+                break;
+            case '10XT':
+                TX00.Load();
+                TX00->TX01.Read(buffer, subSize, curPos);
+                break;
+            case 'VTNI':
+                INTV.Load();
+                INTV->INTV.Read(buffer, subSize, curPos);
+                break;
+            case 'VTNI':
+                INTV.Read(buffer, subSize, curPos);
+                break;
+            case 'ATAD':
+                DATA.Read(buffer, subSize, curPos);
+                break;
             default:
                 //printf("FileName = %s\n", FileName);
                 printf("  CCRD: %08X - Unknown subType = %04x\n", formID, subType);
@@ -134,6 +326,17 @@ SINT32 CCRDRecord::Unload()
     IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
+    OBND.Unload();
+    FULL.Unload();
+    MODL.Unload();
+    ICON.Unload();
+    SCRI.Unload();
+    YNAM.Unload();
+    ZNAM.Unload();
+    TX00.Unload();
+    INTV.Unload();
+    INTV.Unload();
+    DATA.Unload();
     return 1;
     }
 
@@ -141,12 +344,91 @@ SINT32 CCRDRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+
+    if(OBND.IsLoaded())
+        SaveHandler.writeSubRecord('DNBO', OBND.value, OBND.GetSize());
+
+    if(FULL.IsLoaded())
+        SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
+
+    if(MODL.IsLoaded())
+        {
+        if(MODL->MODL.IsLoaded())
+            SaveHandler.writeSubRecord('LDOM', MODL->MODL.value, MODL->MODL.GetSize());
+
+        if(MODL->MODB.IsLoaded())
+            SaveHandler.writeSubRecord('BDOM', MODL->MODB.value, MODL->MODB.GetSize());
+
+        if(MODL->MODT.IsLoaded())
+            SaveHandler.writeSubRecord('TDOM', MODL->MODT.value, MODL->MODT.GetSize());
+
+        if(MODL->MODS.IsLoaded())
+            SaveHandler.writeSubRecord('SDOM', MODL->MODS.value, MODL->MODS.GetSize());
+
+        if(MODL->MODD.IsLoaded())
+            SaveHandler.writeSubRecord('DDOM', MODL->MODD.value, MODL->MODD.GetSize());
+
+        }
+
+    if(ICON.IsLoaded())
+        {
+        if(ICON->ICON.IsLoaded())
+            SaveHandler.writeSubRecord('NOCI', ICON->ICON.value, ICON->ICON.GetSize());
+
+        if(ICON->MICO.IsLoaded())
+            SaveHandler.writeSubRecord('OCIM', ICON->MICO.value, ICON->MICO.GetSize());
+
+        }
+
+    if(SCRI.IsLoaded())
+        SaveHandler.writeSubRecord('IRCS', SCRI.value, SCRI.GetSize());
+
+    if(YNAM.IsLoaded())
+        SaveHandler.writeSubRecord('MANY', YNAM.value, YNAM.GetSize());
+
+    if(ZNAM.IsLoaded())
+        SaveHandler.writeSubRecord('MANZ', ZNAM.value, ZNAM.GetSize());
+
+    if(TX00.IsLoaded())
+        {
+        if(TX00->TX00.IsLoaded())
+            SaveHandler.writeSubRecord('00XT', TX00->TX00.value, TX00->TX00.GetSize());
+
+        if(TX00->TX01.IsLoaded())
+            SaveHandler.writeSubRecord('10XT', TX00->TX01.value, TX00->TX01.GetSize());
+
+        }
+
+    if(INTV.IsLoaded())
+        {
+        if(INTV->INTV.IsLoaded())
+            SaveHandler.writeSubRecord('VTNI', INTV->INTV.value, INTV->INTV.GetSize());
+
+        }
+
+    if(INTV.IsLoaded())
+        SaveHandler.writeSubRecord('VTNI', INTV.value, INTV.GetSize());
+
+    if(DATA.IsLoaded())
+        SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
+
     return -1;
     }
 
 bool CCRDRecord::operator ==(const CCRDRecord &other) const
     {
-    return (EDID.equalsi(other.EDID));
+    return (EDID.equalsi(other.EDID) &&
+            OBND == other.OBND &&
+            FULL.equals(other.FULL) &&
+            MODL == other.MODL &&
+            ICON == other.ICON &&
+            SCRI == other.SCRI &&
+            YNAM == other.YNAM &&
+            ZNAM == other.ZNAM &&
+            TX00 == other.TX00 &&
+            INTV == other.INTV &&
+            INTV == other.INTV &&
+            DATA == other.DATA);
     }
 
 bool CCRDRecord::operator !=(const CCRDRecord &other) const

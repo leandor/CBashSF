@@ -48,6 +48,10 @@ CPTHRecord::CPTHRecord(CPTHRecord *srcRecord):
         }
 
     EDID = srcRecord->EDID;
+    CTDA = srcRecord->CTDA;
+    ANAM = srcRecord->ANAM;
+    DATA = srcRecord->DATA;
+    SNAM = srcRecord->SNAM;
     return;
     }
 
@@ -60,6 +64,13 @@ bool CPTHRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
+
+    //if(CTDA.IsLoaded()) //FILL IN MANUALLY
+    //    op.Accept(CTDA->value);
+    //if(ANAM.IsLoaded()) //FILL IN MANUALLY
+    //    op.Accept(ANAM->value);
+    if(SNAM.IsLoaded())
+        op.Accept(SNAM->value);
 
     return op.Stop();
     }
@@ -78,6 +89,18 @@ UINT32 CPTHRecord::GetSize(bool forceCalc)
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
         }
+
+    if(CTDA.IsLoaded())
+        TotSize += CTDA.GetSize() + 6;
+
+    if(ANAM.IsLoaded())
+        TotSize += ANAM.GetSize() + 6;
+
+    if(DATA.IsLoaded())
+        TotSize += DATA.GetSize() + 6;
+
+    if(SNAM.IsLoaded())
+        TotSize += SNAM.GetSize() + 6;
 
     return TotSize;
     }
@@ -117,6 +140,18 @@ SINT32 CPTHRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             case 'DIDE':
                 EDID.Read(buffer, subSize, curPos);
                 break;
+            case 'ADTC':
+                CTDA.Read(buffer, subSize, curPos);
+                break;
+            case 'MANA':
+                ANAM.Read(buffer, subSize, curPos);
+                break;
+            case 'ATAD':
+                DATA.Read(buffer, subSize, curPos);
+                break;
+            case 'MANS':
+                SNAM.Read(buffer, subSize, curPos);
+                break;
             default:
                 //printf("FileName = %s\n", FileName);
                 printf("  CPTH: %08X - Unknown subType = %04x\n", formID, subType);
@@ -134,6 +169,10 @@ SINT32 CPTHRecord::Unload()
     IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
+    CTDA.Unload();
+    ANAM.Unload();
+    DATA.Unload();
+    SNAM.Unload();
     return 1;
     }
 
@@ -141,12 +180,29 @@ SINT32 CPTHRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+
+    if(CTDA.IsLoaded())
+        SaveHandler.writeSubRecord('ADTC', CTDA.value, CTDA.GetSize());
+
+    if(ANAM.IsLoaded())
+        SaveHandler.writeSubRecord('MANA', ANAM.value, ANAM.GetSize());
+
+    if(DATA.IsLoaded())
+        SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
+
+    if(SNAM.IsLoaded())
+        SaveHandler.writeSubRecord('MANS', SNAM.value, SNAM.GetSize());
+
     return -1;
     }
 
 bool CPTHRecord::operator ==(const CPTHRecord &other) const
     {
-    return (EDID.equalsi(other.EDID));
+    return (EDID.equalsi(other.EDID) &&
+            CTDA == other.CTDA &&
+            ANAM == other.ANAM &&
+            DATA == other.DATA &&
+            SNAM == other.SNAM);
     }
 
 bool CPTHRecord::operator !=(const CPTHRecord &other) const

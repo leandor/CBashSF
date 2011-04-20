@@ -25,10 +25,18 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class COBJRecord : public Record
+class COBJRecord : public Record //Constructible Object
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENOBND> OBND; //Object Bounds
+        StringRecord FULL; //Name
+        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<GENICON> ICON; //Large Icon Filename
+        OptSubRecord<GENFID> SCRI; //Script
+        OptSubRecord<GENFID> YNAM; //Sound - Pick Up
+        OptSubRecord<GENFID> ZNAM; //Sound - Drop
+        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
 
         COBJRecord(unsigned char *_recData=NULL);
         COBJRecord(COBJRecord *srcRecord);

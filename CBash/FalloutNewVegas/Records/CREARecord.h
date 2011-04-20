@@ -25,10 +25,42 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class CREARecord : public Record
+class CREARecord : public Record //Creature
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENOBND> OBND; //Object Bounds
+        StringRecord FULL; //Name
+        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<GENFID> SPLO; //Actor Effect
+        OptSubRecord<GENFID> EITM; //Unarmed Attack Effect
+        OptSubRecord<GENU16> EAMT; //Unarmed Attack Animation
+        OptSubRecord<GENNIFZ> NIFZ; //Model List
+        RawRecord NIFT; //Texture Files Hashes
+        OptSubRecord<GENACBS> ACBS; //ACBS ,, Struct
+        OptSubRecord<GENSNAM> SNAM; //SNAM ,, Struct
+        OptSubRecord<GENFID> INAM; //Death item
+        OptSubRecord<GENFID> VTCK; //Voice
+        OptSubRecord<GENFID> TPLT; //Template
+        OptSubRecord<GENDEST> DEST; //Header
+        OptSubRecord<GENFID> SCRI; //Script
+        OptSubRecord<GENCNTO> CNTO; //Item
+        OptSubRecord<GENAIDT> AIDT; //AI Data
+        OptSubRecord<GENFID> PKID; //Package
+        OptSubRecord<GENKFFZ> KFFZ; //Animations
+        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
+        OptSubRecord<GENU8> RNAM; //Attack reach
+        OptSubRecord<GENFID> ZNAM; //Combat Style
+        OptSubRecord<GENFID> PNAM; //Body Part Data
+        OptSubRecord<GENFLOAT> TNAM; //Turning Speed
+        OptSubRecord<GENFLOAT> BNAM; //Base Scale
+        OptSubRecord<GENFLOAT> WNAM; //Foot Weight
+        OptSubRecord<GENU32> NAM4; //Impact Material Type
+        OptSubRecord<GENU32> NAM5; //Sound Level
+        OptSubRecord<GENFID> CSCR; //Inherits Sounds from
+        OptSubRecord<GENCSDT> CSDT; //Type
+        OptSubRecord<GENFID> CNAM; //Impact Dataset
+        OptSubRecord<GENFID> LNAM; //Melee Weapon List
 
         CREARecord(unsigned char *_recData=NULL);
         CREARecord(CREARecord *srcRecord);

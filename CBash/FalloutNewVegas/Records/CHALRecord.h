@@ -25,10 +25,16 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class CHALRecord : public Record
+class CHALRecord : public Record //Challenge
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        StringRecord FULL; //Name
+        OptSubRecord<GENFID> SCRI; //Script
+        StringRecord DESC; //Description
+        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
+        OptSubRecord<GENFID> SNAM; //(depends on type)
+        OptSubRecord<GENFID> XNAM; //(depends on type)
 
         CHALRecord(unsigned char *_recData=NULL);
         CHALRecord(CHALRecord *srcRecord);

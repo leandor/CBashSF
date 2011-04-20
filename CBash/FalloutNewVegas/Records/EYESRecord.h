@@ -25,10 +25,13 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class EYESRecord : public Record
+class EYESRecord : public Record //Eyes
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        StringRecord FULL; //Name
+        StringRecord ICON; //Texture
+        OptSubRecord<GENU8> DATA; //Flags
 
         EYESRecord(unsigned char *_recData=NULL);
         EYESRecord(EYESRecord *srcRecord);

@@ -25,10 +25,19 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class CSNORecord : public Record
+class CSNORecord : public Record //Casino
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        StringRecord FULL; //Name
+        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
+        OptSubRecord<GENMODEL> MODL; //Roulette Chip
+        StringRecord MODL; //Slot Machine Model
+        StringRecord MOD2; //Slot Machine Model (again?)
+        StringRecord MOD3; //BlackJack Table Model
+        StringRecord MOD4; //Roulette Table Model
+        OptSubRecord<GENICON> ICON; //Symbol W
+        OptSubRecord<GENICO2> ICO2; //Deck 4
 
         CSNORecord(unsigned char *_recData=NULL);
         CSNORecord(CSNORecord *srcRecord);

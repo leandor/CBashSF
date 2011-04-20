@@ -25,10 +25,11 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class ECZNRecord : public Record
+class ECZNRecord : public Record //Encounter Zone
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
 
         ECZNRecord(unsigned char *_recData=NULL);
         ECZNRecord(ECZNRecord *srcRecord);

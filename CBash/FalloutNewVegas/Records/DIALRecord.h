@@ -25,16 +25,109 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class DIALRecord : public Record
+class DIALRecord : public Record //Dialog Topic
     {
+    private:
+        struct DIALUNK
+            {
+            OptSubRecord<GENFID> INFC; //Unknown
+            OptSubRecord<GENS32> INFX; //Unknown
+
+            bool operator ==(const DIALUNK &other) const;
+            bool operator !=(const DIALUNK &other) const;
+            };
+
+        struct DIALQSTI
+            {
+            OptSubRecord<GENFID> QSTI; //Quest
+            std::vector<DIALUNK *> Unknown; //Unknown
+
+            bool operator ==(const DIALQSTI &other) const;
+            bool operator !=(const DIALQSTI &other) const;
+            };
+
+        struct DIALQSTR
+            {
+            OptSubRecord<GENFID> QSTR; //Quest
+            std::vector<DIALUNK *> Unknown; //Unknown
+
+            bool operator ==(const DIALQSTR &other) const;
+            bool operator !=(const DIALQSTR &other) const;
+            };
+
+        struct DIALDATA
+            {
+            UINT8   dialType; //Type
+            UINT8   flags; //Flags
+
+            DIALDATA();
+            ~DIALDATA();
+
+            bool operator ==(const DIALDATA &other) const;
+            bool operator !=(const DIALDATA &other) const;
+            };
+
+        enum eDialogType
+            {
+            eTopic        = 0,
+            eConversation = 1,
+            eCombat       = 2,
+            ePersuasion   = 3,
+            eDetection    = 4,
+            eService      = 5,
+            eMisc         = 6,
+            eRadio        = 7
+            };
+
+        enum flagsFlags
+            {
+            fIsRumors    = 0x00000001,
+            fIsTopLevel  = 0x00000002
+            };
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        std::vector<ReqSubRecord<DIALQSTI> *> QSTI; //Added Quests
+        std::vector<ReqSubRecord<DIALQSTR> *> QSTR; //Removed Quests
+        StringRecord FULL; //Name
+        OptSubRecord<GENFLOAT> PNAM; //Priority
+        StringRecord TDUM; //Unknown
+        OptSubRecord<DIALDATA> DATA; //Dialog Data
+        std::vector<Record *> INFO;
 
         DIALRecord(unsigned char *_recData=NULL);
         DIALRecord(DIALRecord *srcRecord);
         ~DIALRecord();
 
+        bool   HasSubRecords();
+        bool   VisitSubRecords(const UINT32 &RecordType, RecordOp &op);
         bool   VisitFormIDs(FormIDOp &op);
+
+        bool   IsTopic();
+        void   IsTopic(bool value);
+        bool   IsConversation();
+        void   IsConversation(bool value);
+        bool   IsCombat();
+        void   IsCombat(bool value);
+        bool   IsPersuasion();
+        void   IsPersuasion(bool value);
+        bool   IsDetection();
+        void   IsDetection(bool value);
+        bool   IsService();
+        void   IsService(bool value);
+        bool   IsMisc();
+        void   IsMisc(bool value);
+        bool   IsRadio();
+        void   IsRadio(bool value);
+        bool   IsType(UINT8 Type, bool Exact=false);
+        void   SetType(UINT8 Type);
+
+        bool   IsRumors();
+        void   IsRumors(bool value);
+        bool   IsTopLevel();
+        void   IsTopLevel(bool value);
+        bool   IsFlagMask(UINT8 Mask, bool Exact=false);
+        void   SetFlagMask(UINT8 Mask);
+
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

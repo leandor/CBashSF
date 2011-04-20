@@ -48,6 +48,9 @@ CSTYRecord::CSTYRecord(CSTYRecord *srcRecord):
         }
 
     EDID = srcRecord->EDID;
+    CSTD = srcRecord->CSTD;
+    CSAD = srcRecord->CSAD;
+    CSSD = srcRecord->CSSD;
     return;
     }
 
@@ -60,6 +63,7 @@ bool CSTYRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
+
 
     return op.Stop();
     }
@@ -78,6 +82,15 @@ UINT32 CSTYRecord::GetSize(bool forceCalc)
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
         }
+
+    if(CSTD.IsLoaded())
+        TotSize += CSTD.GetSize() + 6;
+
+    if(CSAD.IsLoaded())
+        TotSize += CSAD.GetSize() + 6;
+
+    if(CSSD.IsLoaded())
+        TotSize += CSSD.GetSize() + 6;
 
     return TotSize;
     }
@@ -117,6 +130,15 @@ SINT32 CSTYRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             case 'DIDE':
                 EDID.Read(buffer, subSize, curPos);
                 break;
+            case 'DTSC':
+                CSTD.Read(buffer, subSize, curPos);
+                break;
+            case 'DASC':
+                CSAD.Read(buffer, subSize, curPos);
+                break;
+            case 'DSSC':
+                CSSD.Read(buffer, subSize, curPos);
+                break;
             default:
                 //printf("FileName = %s\n", FileName);
                 printf("  CSTY: %08X - Unknown subType = %04x\n", formID, subType);
@@ -134,6 +156,9 @@ SINT32 CSTYRecord::Unload()
     IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
+    CSTD.Unload();
+    CSAD.Unload();
+    CSSD.Unload();
     return 1;
     }
 
@@ -141,12 +166,25 @@ SINT32 CSTYRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+
+    if(CSTD.IsLoaded())
+        SaveHandler.writeSubRecord('DTSC', CSTD.value, CSTD.GetSize());
+
+    if(CSAD.IsLoaded())
+        SaveHandler.writeSubRecord('DASC', CSAD.value, CSAD.GetSize());
+
+    if(CSSD.IsLoaded())
+        SaveHandler.writeSubRecord('DSSC', CSSD.value, CSSD.GetSize());
+
     return -1;
     }
 
 bool CSTYRecord::operator ==(const CSTYRecord &other) const
     {
-    return (EDID.equalsi(other.EDID));
+    return (EDID.equalsi(other.EDID) &&
+            CSTD == other.CSTD &&
+            CSAD == other.CSAD &&
+            CSSD == other.CSSD);
     }
 
 bool CSTYRecord::operator !=(const CSTYRecord &other) const

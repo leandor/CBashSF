@@ -48,6 +48,10 @@ EFSHRecord::EFSHRecord(EFSHRecord *srcRecord):
         }
 
     EDID = srcRecord->EDID;
+    ICON = srcRecord->ICON;
+    ICO2 = srcRecord->ICO2;
+    NAM7 = srcRecord->NAM7;
+    DATA = srcRecord->DATA;
     return;
     }
 
@@ -60,6 +64,9 @@ bool EFSHRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
+
+    //if(DATA.IsLoaded()) //FILL IN MANUALLY
+    //    op.Accept(DATA->value);
 
     return op.Stop();
     }
@@ -78,6 +85,30 @@ UINT32 EFSHRecord::GetSize(bool forceCalc)
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
         }
+
+    if(ICON.IsLoaded())
+        {
+        cSize = ICON.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(ICO2.IsLoaded())
+        {
+        cSize = ICO2.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(NAM7.IsLoaded())
+        {
+        cSize = NAM7.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(DATA.IsLoaded())
+        TotSize += DATA.GetSize() + 6;
 
     return TotSize;
     }
@@ -117,6 +148,18 @@ SINT32 EFSHRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             case 'DIDE':
                 EDID.Read(buffer, subSize, curPos);
                 break;
+            case 'NOCI':
+                ICON.Read(buffer, subSize, curPos);
+                break;
+            case '2OCI':
+                ICO2.Read(buffer, subSize, curPos);
+                break;
+            case '7MAN':
+                NAM7.Read(buffer, subSize, curPos);
+                break;
+            case 'ATAD':
+                DATA.Read(buffer, subSize, curPos);
+                break;
             default:
                 //printf("FileName = %s\n", FileName);
                 printf("  EFSH: %08X - Unknown subType = %04x\n", formID, subType);
@@ -134,6 +177,10 @@ SINT32 EFSHRecord::Unload()
     IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
+    ICON.Unload();
+    ICO2.Unload();
+    NAM7.Unload();
+    DATA.Unload();
     return 1;
     }
 
@@ -141,12 +188,29 @@ SINT32 EFSHRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+
+    if(ICON.IsLoaded())
+        SaveHandler.writeSubRecord('NOCI', ICON.value, ICON.GetSize());
+
+    if(ICO2.IsLoaded())
+        SaveHandler.writeSubRecord('2OCI', ICO2.value, ICO2.GetSize());
+
+    if(NAM7.IsLoaded())
+        SaveHandler.writeSubRecord('7MAN', NAM7.value, NAM7.GetSize());
+
+    if(DATA.IsLoaded())
+        SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
+
     return -1;
     }
 
 bool EFSHRecord::operator ==(const EFSHRecord &other) const
     {
-    return (EDID.equalsi(other.EDID));
+    return (EDID.equalsi(other.EDID) &&
+            ICON.equalsi(other.ICON) &&
+            ICO2.equalsi(other.ICO2) &&
+            NAM7.equalsi(other.NAM7) &&
+            DATA == other.DATA);
     }
 
 bool EFSHRecord::operator !=(const EFSHRecord &other) const

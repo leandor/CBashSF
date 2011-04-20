@@ -25,10 +25,21 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class CCRDRecord : public Record
+class CCRDRecord : public Record //Caravan Card
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENOBND> OBND; //Object Bounds
+        StringRecord FULL; //Name
+        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<GENICON> ICON; //Large Icon Filename
+        OptSubRecord<GENFID> SCRI; //Script
+        OptSubRecord<GENFID> YNAM; //Sound - Pick Up
+        OptSubRecord<GENFID> ZNAM; //Sound - Drop
+        OptSubRecord<GENTX00> TX00; //Face
+        OptSubRecord<GENINTV> INTV; //Suit
+        OptSubRecord<GENU32> INTV; //Value
+        OptSubRecord<GENU32> DATA; //Value
 
         CCRDRecord(unsigned char *_recData=NULL);
         CCRDRecord(CCRDRecord *srcRecord);

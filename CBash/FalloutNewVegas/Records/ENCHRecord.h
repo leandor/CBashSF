@@ -25,10 +25,13 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class ENCHRecord : public Record
+class ENCHRecord : public Record //Object Effect
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        StringRecord FULL; //Name
+        OptSubRecord<GENENIT> ENIT; //ENIT ,, Struct
+        OptSubRecord<GENEFID> EFID; //Base Effect
 
         ENCHRecord(unsigned char *_recData=NULL);
         ENCHRecord(ENCHRecord *srcRecord);

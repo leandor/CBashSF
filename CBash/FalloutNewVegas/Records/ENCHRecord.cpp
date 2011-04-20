@@ -48,6 +48,15 @@ ENCHRecord::ENCHRecord(ENCHRecord *srcRecord):
         }
 
     EDID = srcRecord->EDID;
+    FULL = srcRecord->FULL;
+    ENIT = srcRecord->ENIT;
+    if(srcRecord->EFID.IsLoaded())
+        {
+        EFID.Load();
+        EFID->EFID = srcRecord->EFID->EFID;
+        EFID->EFIT = srcRecord->EFID->EFIT;
+        EFID->CTDA = srcRecord->EFID->CTDA;
+        }
     return;
     }
 
@@ -60,6 +69,11 @@ bool ENCHRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
+
+    if(EFID.IsLoaded() && EFID->EFID.IsLoaded())
+        op.Accept(EFID->EFID->value);
+    if(EFID.IsLoaded() && EFID->CTDA.IsLoaded())
+        op.Accept(EFID->CTDA->value);
 
     return op.Stop();
     }
@@ -77,6 +91,26 @@ UINT32 ENCHRecord::GetSize(bool forceCalc)
         cSize = EDID.GetSize();
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
+        }
+
+    if(FULL.IsLoaded())
+        {
+        cSize = FULL.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(ENIT.IsLoaded())
+        TotSize += ENIT.GetSize() + 6;
+
+    if(EFID.IsLoaded())
+        {
+        if(EFID->EFID.IsLoaded())
+            TotSize += EFID->EFID.GetSize() + 6;
+        if(EFID->EFIT.IsLoaded())
+            TotSize += EFID->EFIT.GetSize() + 6;
+        if(EFID->CTDA.IsLoaded())
+            TotSize += EFID->CTDA.GetSize() + 6;
         }
 
     return TotSize;
@@ -117,6 +151,24 @@ SINT32 ENCHRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             case 'DIDE':
                 EDID.Read(buffer, subSize, curPos);
                 break;
+            case 'LLUF':
+                FULL.Read(buffer, subSize, curPos);
+                break;
+            case 'TINE':
+                ENIT.Read(buffer, subSize, curPos);
+                break;
+            case 'DIFE':
+                EFID.Load();
+                EFID->EFID.Read(buffer, subSize, curPos);
+                break;
+            case 'TIFE':
+                EFID.Load();
+                EFID->EFIT.Read(buffer, subSize, curPos);
+                break;
+            case 'ADTC':
+                EFID.Load();
+                EFID->CTDA.Read(buffer, subSize, curPos);
+                break;
             default:
                 //printf("FileName = %s\n", FileName);
                 printf("  ENCH: %08X - Unknown subType = %04x\n", formID, subType);
@@ -134,6 +186,9 @@ SINT32 ENCHRecord::Unload()
     IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
+    FULL.Unload();
+    ENIT.Unload();
+    EFID.Unload();
     return 1;
     }
 
@@ -141,12 +196,35 @@ SINT32 ENCHRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+
+    if(FULL.IsLoaded())
+        SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
+
+    if(ENIT.IsLoaded())
+        SaveHandler.writeSubRecord('TINE', ENIT.value, ENIT.GetSize());
+
+    if(EFID.IsLoaded())
+        {
+        if(EFID->EFID.IsLoaded())
+            SaveHandler.writeSubRecord('DIFE', EFID->EFID.value, EFID->EFID.GetSize());
+
+        if(EFID->EFIT.IsLoaded())
+            SaveHandler.writeSubRecord('TIFE', EFID->EFIT.value, EFID->EFIT.GetSize());
+
+        if(EFID->CTDA.IsLoaded())
+            SaveHandler.writeSubRecord('ADTC', EFID->CTDA.value, EFID->CTDA.GetSize());
+
+        }
+
     return -1;
     }
 
 bool ENCHRecord::operator ==(const ENCHRecord &other) const
     {
-    return (EDID.equalsi(other.EDID));
+    return (EDID.equalsi(other.EDID) &&
+            FULL.equals(other.FULL) &&
+            ENIT == other.ENIT &&
+            EFID == other.EFID);
     }
 
 bool ENCHRecord::operator !=(const ENCHRecord &other) const

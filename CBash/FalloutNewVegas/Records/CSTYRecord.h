@@ -25,10 +25,13 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class CSTYRecord : public Record
+class CSTYRecord : public Record //Combat Style
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENCSTD> CSTD; //CSTD ,, Struct
+        OptSubRecord<GENCSAD> CSAD; //CSAD ,, Struct
+        OptSubRecord<GENCSSD> CSSD; //CSSD ,, Struct
 
         CSTYRecord(unsigned char *_recData=NULL);
         CSTYRecord(CSTYRecord *srcRecord);

@@ -25,10 +25,11 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class DOBJRecord : public Record
+class DOBJRecord : public Record //Default Object Manager
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENDATA> DATA; //Default Objects
 
         DOBJRecord(unsigned char *_recData=NULL);
         DOBJRecord(DOBJRecord *srcRecord);

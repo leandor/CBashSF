@@ -25,10 +25,13 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class CDCKRecord : public Record
+class CDCKRecord : public Record //Caravan Deck
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        StringRecord FULL; //Name
+        OptSubRecord<GENFID> CARD; //Card
+        OptSubRecord<GENU32> DATA; //Count (broken)
 
         CDCKRecord(unsigned char *_recData=NULL);
         CDCKRecord(CDCKRecord *srcRecord);

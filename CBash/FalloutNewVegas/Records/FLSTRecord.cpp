@@ -48,6 +48,7 @@ FLSTRecord::FLSTRecord(FLSTRecord *srcRecord):
         }
 
     EDID = srcRecord->EDID;
+    LNAM = srcRecord->LNAM;
     return;
     }
 
@@ -60,6 +61,9 @@ bool FLSTRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
+
+    if(LNAM.IsLoaded())
+        op.Accept(LNAM->value);
 
     return op.Stop();
     }
@@ -78,6 +82,9 @@ UINT32 FLSTRecord::GetSize(bool forceCalc)
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
         }
+
+    if(LNAM.IsLoaded())
+        TotSize += LNAM.GetSize() + 6;
 
     return TotSize;
     }
@@ -117,6 +124,9 @@ SINT32 FLSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             case 'DIDE':
                 EDID.Read(buffer, subSize, curPos);
                 break;
+            case 'MANL':
+                LNAM.Read(buffer, subSize, curPos);
+                break;
             default:
                 //printf("FileName = %s\n", FileName);
                 printf("  FLST: %08X - Unknown subType = %04x\n", formID, subType);
@@ -134,6 +144,7 @@ SINT32 FLSTRecord::Unload()
     IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
+    LNAM.Unload();
     return 1;
     }
 
@@ -141,12 +152,17 @@ SINT32 FLSTRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+
+    if(LNAM.IsLoaded())
+        SaveHandler.writeSubRecord('MANL', LNAM.value, LNAM.GetSize());
+
     return -1;
     }
 
 bool FLSTRecord::operator ==(const FLSTRecord &other) const
     {
-    return (EDID.equalsi(other.EDID));
+    return (EDID.equalsi(other.EDID) &&
+            LNAM == other.LNAM);
     }
 
 bool FLSTRecord::operator !=(const FLSTRecord &other) const

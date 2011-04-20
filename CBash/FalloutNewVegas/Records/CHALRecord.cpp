@@ -48,6 +48,12 @@ CHALRecord::CHALRecord(CHALRecord *srcRecord):
         }
 
     EDID = srcRecord->EDID;
+    FULL = srcRecord->FULL;
+    SCRI = srcRecord->SCRI;
+    DESC = srcRecord->DESC;
+    DATA = srcRecord->DATA;
+    SNAM = srcRecord->SNAM;
+    XNAM = srcRecord->XNAM;
     return;
     }
 
@@ -60,6 +66,13 @@ bool CHALRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
+
+    if(SCRI.IsLoaded())
+        op.Accept(SCRI->value);
+    if(SNAM.IsLoaded())
+        op.Accept(SNAM->value);
+    if(XNAM.IsLoaded())
+        op.Accept(XNAM->value);
 
     return op.Stop();
     }
@@ -78,6 +91,32 @@ UINT32 CHALRecord::GetSize(bool forceCalc)
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
         }
+
+    if(FULL.IsLoaded())
+        {
+        cSize = FULL.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(SCRI.IsLoaded())
+        TotSize += SCRI.GetSize() + 6;
+
+    if(DESC.IsLoaded())
+        {
+        cSize = DESC.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(DATA.IsLoaded())
+        TotSize += DATA.GetSize() + 6;
+
+    if(SNAM.IsLoaded())
+        TotSize += SNAM.GetSize() + 6;
+
+    if(XNAM.IsLoaded())
+        TotSize += XNAM.GetSize() + 6;
 
     return TotSize;
     }
@@ -117,6 +156,24 @@ SINT32 CHALRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             case 'DIDE':
                 EDID.Read(buffer, subSize, curPos);
                 break;
+            case 'LLUF':
+                FULL.Read(buffer, subSize, curPos);
+                break;
+            case 'IRCS':
+                SCRI.Read(buffer, subSize, curPos);
+                break;
+            case 'CSED':
+                DESC.Read(buffer, subSize, curPos);
+                break;
+            case 'ATAD':
+                DATA.Read(buffer, subSize, curPos);
+                break;
+            case 'MANS':
+                SNAM.Read(buffer, subSize, curPos);
+                break;
+            case 'MANX':
+                XNAM.Read(buffer, subSize, curPos);
+                break;
             default:
                 //printf("FileName = %s\n", FileName);
                 printf("  CHAL: %08X - Unknown subType = %04x\n", formID, subType);
@@ -134,6 +191,12 @@ SINT32 CHALRecord::Unload()
     IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
+    FULL.Unload();
+    SCRI.Unload();
+    DESC.Unload();
+    DATA.Unload();
+    SNAM.Unload();
+    XNAM.Unload();
     return 1;
     }
 
@@ -141,12 +204,37 @@ SINT32 CHALRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+
+    if(FULL.IsLoaded())
+        SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
+
+    if(SCRI.IsLoaded())
+        SaveHandler.writeSubRecord('IRCS', SCRI.value, SCRI.GetSize());
+
+    if(DESC.IsLoaded())
+        SaveHandler.writeSubRecord('CSED', DESC.value, DESC.GetSize());
+
+    if(DATA.IsLoaded())
+        SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
+
+    if(SNAM.IsLoaded())
+        SaveHandler.writeSubRecord('MANS', SNAM.value, SNAM.GetSize());
+
+    if(XNAM.IsLoaded())
+        SaveHandler.writeSubRecord('MANX', XNAM.value, XNAM.GetSize());
+
     return -1;
     }
 
 bool CHALRecord::operator ==(const CHALRecord &other) const
     {
-    return (EDID.equalsi(other.EDID));
+    return (EDID.equalsi(other.EDID) &&
+            FULL.equals(other.FULL) &&
+            SCRI == other.SCRI &&
+            DESC.equals(other.DESC) &&
+            DATA == other.DATA &&
+            SNAM == other.SNAM &&
+            XNAM == other.XNAM);
     }
 
 bool CHALRecord::operator !=(const CHALRecord &other) const

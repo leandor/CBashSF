@@ -25,10 +25,11 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class FLSTRecord : public Record
+class FLSTRecord : public Record //FormID List
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENFID> LNAM; //FormID
 
         FLSTRecord(unsigned char *_recData=NULL);
         FLSTRecord(FLSTRecord *srcRecord);

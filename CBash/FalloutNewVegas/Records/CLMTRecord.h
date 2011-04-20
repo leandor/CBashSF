@@ -25,10 +25,15 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class CLMTRecord : public Record
+class CLMTRecord : public Record //Climate
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENWLST> WLST; //Weather Types ,, Array
+        StringRecord FNAM; //Sun Texture
+        StringRecord GNAM; //Sun Glare Texture
+        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<GENTNAM> TNAM; //TNAM ,, Struct
 
         CLMTRecord(unsigned char *_recData=NULL);
         CLMTRecord(CLMTRecord *srcRecord);

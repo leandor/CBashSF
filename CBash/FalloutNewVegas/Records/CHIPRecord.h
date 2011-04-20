@@ -25,10 +25,17 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class CHIPRecord : public Record
+class CHIPRecord : public Record //Casino Chip
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENOBND> OBND; //Object Bounds
+        StringRecord FULL; //Name
+        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<GENICON> ICON; //Large Icon Filename
+        OptSubRecord<GENDEST> DEST; //Header
+        OptSubRecord<GENFID> YNAM; //Sound - Pick Up
+        OptSubRecord<GENFID> ZNAM; //Sound - Drop
 
         CHIPRecord(unsigned char *_recData=NULL);
         CHIPRecord(CHIPRecord *srcRecord);

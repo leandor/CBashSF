@@ -25,10 +25,24 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class ARMARecord : public Record
+class ARMARecord : public Record //Armor Addon
     {
     public:
-        StringRecord EDID;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENOBND> OBND; //Object Bounds
+        StringRecord FULL; //Name
+        OptSubRecord<GENBMDT> BMDT; //Biped Data
+        OptSubRecord<GENMODEL> MODL; //Model Filename
+        OptSubRecord<GENMOD2> MOD2; //Model Filename
+        StringRecord ICON; //Male icon filename
+        StringRecord MICO; //Male mico filename
+        OptSubRecord<GENMOD3> MOD3; //Model Filename
+        OptSubRecord<GENMOD4> MOD4; //Model Filename
+        StringRecord ICO2; //Female icon filename
+        StringRecord MIC2; //Female mico filename
+        OptSubRecord<GENS32> ETYP; //Equipment Type
+        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
+        OptSubRecord<GENDNAM> DNAM; //DNAM ,, Struct
 
         ARMARecord(unsigned char *_recData=NULL);
         ARMARecord(ARMARecord *srcRecord);

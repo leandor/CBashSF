@@ -48,6 +48,15 @@ AVIFRecord::AVIFRecord(AVIFRecord *srcRecord):
         }
 
     EDID = srcRecord->EDID;
+    FULL = srcRecord->FULL;
+    DESC = srcRecord->DESC;
+    if(srcRecord->ICON.IsLoaded())
+        {
+        ICON.Load();
+        ICON->ICON = srcRecord->ICON->ICON;
+        ICON->MICO = srcRecord->ICON->MICO;
+        }
+    ANAM = srcRecord->ANAM;
     return;
     }
 
@@ -60,6 +69,7 @@ bool AVIFRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
+
 
     return op.Stop();
     }
@@ -75,6 +85,43 @@ UINT32 AVIFRecord::GetSize(bool forceCalc)
     if(EDID.IsLoaded())
         {
         cSize = EDID.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(FULL.IsLoaded())
+        {
+        cSize = FULL.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(DESC.IsLoaded())
+        {
+        cSize = DESC.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(ICON.IsLoaded())
+        {
+        if(ICON->ICON.IsLoaded())
+            {
+            cSize = ICON->ICON.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        if(ICON->MICO.IsLoaded())
+            {
+            cSize = ICON->MICO.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
+        }
+
+    if(ANAM.IsLoaded())
+        {
+        cSize = ANAM.GetSize();
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
         }
@@ -117,6 +164,23 @@ SINT32 AVIFRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             case 'DIDE':
                 EDID.Read(buffer, subSize, curPos);
                 break;
+            case 'LLUF':
+                FULL.Read(buffer, subSize, curPos);
+                break;
+            case 'CSED':
+                DESC.Read(buffer, subSize, curPos);
+                break;
+            case 'NOCI':
+                ICON.Load();
+                ICON->ICON.Read(buffer, subSize, curPos);
+                break;
+            case 'OCIM':
+                ICON.Load();
+                ICON->MICO.Read(buffer, subSize, curPos);
+                break;
+            case 'MANA':
+                ANAM.Read(buffer, subSize, curPos);
+                break;
             default:
                 //printf("FileName = %s\n", FileName);
                 printf("  AVIF: %08X - Unknown subType = %04x\n", formID, subType);
@@ -134,6 +198,10 @@ SINT32 AVIFRecord::Unload()
     IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
+    FULL.Unload();
+    DESC.Unload();
+    ICON.Unload();
+    ANAM.Unload();
     return 1;
     }
 
@@ -141,12 +209,36 @@ SINT32 AVIFRecord::WriteRecord(_FileHandler &SaveHandler)
     {
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+
+    if(FULL.IsLoaded())
+        SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
+
+    if(DESC.IsLoaded())
+        SaveHandler.writeSubRecord('CSED', DESC.value, DESC.GetSize());
+
+    if(ICON.IsLoaded())
+        {
+        if(ICON->ICON.IsLoaded())
+            SaveHandler.writeSubRecord('NOCI', ICON->ICON.value, ICON->ICON.GetSize());
+
+        if(ICON->MICO.IsLoaded())
+            SaveHandler.writeSubRecord('OCIM', ICON->MICO.value, ICON->MICO.GetSize());
+
+        }
+
+    if(ANAM.IsLoaded())
+        SaveHandler.writeSubRecord('MANA', ANAM.value, ANAM.GetSize());
+
     return -1;
     }
 
 bool AVIFRecord::operator ==(const AVIFRecord &other) const
     {
-    return (EDID.equalsi(other.EDID));
+    return (EDID.equalsi(other.EDID) &&
+            FULL.equals(other.FULL) &&
+            DESC.equals(other.DESC) &&
+            ICON == other.ICON &&
+            ANAM.equalsi(other.ANAM));
     }
 
 bool AVIFRecord::operator !=(const AVIFRecord &other) const
