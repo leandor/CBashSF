@@ -34,10 +34,116 @@ UINT32 GRASRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
             return UINT32_FLAG_FIELD;
         case 2: //fid
             return FORMID_FIELD;
-        case 3: //flags2
-            return UINT32_FLAG_FIELD;
-        case 4: //eid
+        case 3: //versionControl1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 4;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+        case 4: //formVersion
+            return UINT16_FIELD;
+        case 5: //versionControl2
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 2;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+        case 6: //edid Editor ID
             return ISTRING_FIELD;
+        case 7: //obnd Object Bounds
+            return SINT16_FIELD;
+        case 8: //obnd Object Bounds
+            return SINT16_FIELD;
+        case 9: //obnd Object Bounds
+            return SINT16_FIELD;
+        case 10: //modl Model Filename
+            return STRING_FIELD;
+        case 11: //modb_p Unknown
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return MODB.GetSize();
+                default:
+                    return UNKNOWN_FIELD;
+                }
+        case 12: //modt_p Texture Files Hashes
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return MODT.GetSize();
+                default:
+                    return UNKNOWN_FIELD;
+                }
+        case 13: //mods Alternate Textures
+            return ISTRING_FIELD;
+        case 14: //mods Alternate Textures
+            return FORMID_FIELD;
+        case 15: //mods Alternate Textures
+            return SINT32_FIELD;
+        case 16: //modd FaceGen Model Flags
+            return UINT8_FIELD;
+        case 17: //data DATA ,, Struct
+            return UINT8_FIELD;
+        case 18: //data DATA ,, Struct
+            return UINT8_FIELD;
+        case 19: //data DATA ,, Struct
+            return UINT8_FIELD;
+        case 20: //data_p DATA ,, Struct
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+        case 21: //data DATA ,, Struct
+            return UINT16_FIELD;
+        case 22: //data_p DATA ,, Struct
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 2;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+        case 23: //data DATA ,, Struct
+            return UINT32_FIELD;
+        case 24: //data DATA ,, Struct
+            return FLOAT32_FIELD;
+        case 25: //data DATA ,, Struct
+            return FLOAT32_FIELD;
+        case 26: //data DATA ,, Struct
+            return FLOAT32_FIELD;
+        case 27: //data DATA ,, Struct
+            return FLOAT32_FIELD;
+        case 28: //data DATA ,, Struct
+            return UINT8_FIELD;
+        case 29: //data_p DATA ,, Struct
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 3;
+                default:
+                    return UNKNOWN_FIELD;
+                }
         default:
             return UNKNOWN_FIELD;
         }
@@ -51,10 +157,67 @@ void * GRASRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return &flags;
         case 2: //fid
             return &formID;
-        case 3: //flags2
-            return &flagsUnk;
-        case 4: //eid
+        case 3: //versionControl1
+            *FieldValues = &flagsUnk;
+            return NULL;
+        case 4: //formVersion
+            return &formVersion;
+        case 5: //versionControl2
+            *FieldValues = &versionControl2;
+            return NULL;
+        case 6: //edid Editor ID
             return EDID.value;
+        case 7: //obnd Object Bounds
+            return OBNDReq.IsLoaded() ? &OBNDReq->value7 : NULL;
+        case 8: //obnd Object Bounds
+            return OBNDReq.IsLoaded() ? &OBNDReq->value8 : NULL;
+        case 9: //obnd Object Bounds
+            return OBNDReq.IsLoaded() ? &OBNDReq->value9 : NULL;
+        case 10: //modl Model Filename
+            return MODL.IsLoaded() ? MODL->MODL.value : NULL;
+        case 11: //modb_p Unknown
+            *FieldValues = (MODL.IsLoaded()) ? MODL->MODB.value : NULL;
+            return NULL;
+        case 12: //modt_p Texture Files Hashes
+            *FieldValues = (MODL.IsLoaded()) ? MODL->MODT.value : NULL;
+            return NULL;
+        case 13: //mods Alternate Textures
+            return MODL.IsLoaded() ? MODL->MODS.value : NULL;
+        case 14: //mods Alternate Textures
+            return MODL.IsLoaded() ? &MODL->MODS->value14 : NULL;
+        case 15: //mods Alternate Textures
+            return MODL.IsLoaded() ? &MODL->MODS->value15 : NULL;
+        case 16: //modd FaceGen Model Flags
+            return MODL.IsLoaded() ? &MODL->MODD->value16 : NULL;
+        case 17: //data DATA ,, Struct
+            return DATA.IsLoaded() ? &DATA->value17 : NULL;
+        case 18: //data DATA ,, Struct
+            return DATA.IsLoaded() ? &DATA->value18 : NULL;
+        case 19: //data DATA ,, Struct
+            return DATA.IsLoaded() ? &DATA->value19 : NULL;
+        case 20: //data_p DATA ,, Struct
+            *FieldValues = DATA.IsLoaded() ? &DATA->value20[0] : NULL;
+            return NULL;
+        case 21: //data DATA ,, Struct
+            return DATA.IsLoaded() ? &DATA->value21 : NULL;
+        case 22: //data_p DATA ,, Struct
+            *FieldValues = DATA.IsLoaded() ? &DATA->value22[0] : NULL;
+            return NULL;
+        case 23: //data DATA ,, Struct
+            return DATA.IsLoaded() ? &DATA->value23 : NULL;
+        case 24: //data DATA ,, Struct
+            return DATA.IsLoaded() ? &DATA->value24 : NULL;
+        case 25: //data DATA ,, Struct
+            return DATA.IsLoaded() ? &DATA->value25 : NULL;
+        case 26: //data DATA ,, Struct
+            return DATA.IsLoaded() ? &DATA->value26 : NULL;
+        case 27: //data DATA ,, Struct
+            return DATA.IsLoaded() ? &DATA->value27 : NULL;
+        case 28: //data DATA ,, Struct
+            return DATA.IsLoaded() ? &DATA->value28 : NULL;
+        case 29: //data_p DATA ,, Struct
+            *FieldValues = DATA.IsLoaded() ? &DATA->value29[0] : NULL;
+            return NULL;
         default:
             return NULL;
         }
@@ -67,11 +230,129 @@ bool GRASRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 1: //flags1
             SetHeaderFlagMask(*(UINT32 *)FieldValue);
             break;
-        case 3: //flags2
-            SetHeaderUnknownFlagMask(*(UINT32 *)FieldValue);
+        case 3: //versionControl1
+            if(ArraySize != 4)
+                break;
+            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8 *)FieldValue)[0];
+            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8 *)FieldValue)[1];
+            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8 *)FieldValue)[2];
+            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8 *)FieldValue)[3];
             break;
-        case 4: //eid
+        case 4: //formVersion
+            formVersion = *(UINT16 *)FieldValue;
+            break;
+        case 5: //versionControl2
+            if(ArraySize != 2)
+                break;
+            versionControl2[0] = ((UINT8 *)FieldValue)[0];
+            versionControl2[1] = ((UINT8 *)FieldValue)[1];
+            break;
+        case 6: //edid Editor ID
             EDID.Copy((STRING)FieldValue);
+            break;
+        case 7: //obnd Object Bounds
+            OBNDReq.Load();
+            OBNDReq->value7 = *(SINT16 *)FieldValue;
+            break;
+        case 8: //obnd Object Bounds
+            OBNDReq.Load();
+            OBNDReq->value8 = *(SINT16 *)FieldValue;
+            break;
+        case 9: //obnd Object Bounds
+            OBNDReq.Load();
+            OBNDReq->value9 = *(SINT16 *)FieldValue;
+            break;
+        case 10: //modl Model Filename
+            MODL.Load();
+            MODL->MODL.Copy((STRING)FieldValue);
+            break;
+        case 11: //modb_p Unknown
+            MODL.Load();
+            MODL->MODB.Copy((UINT8ARRAY)FieldValue, ArraySize);
+            break;
+        case 12: //modt_p Texture Files Hashes
+            MODL.Load();
+            MODL->MODT.Copy((UINT8ARRAY)FieldValue, ArraySize);
+            break;
+        case 13: //mods Alternate Textures
+            MODL.Load();
+            MODL->MODS.Copy((STRING)FieldValue);
+            break;
+        case 14: //mods Alternate Textures
+            MODL.Load();
+            MODL->MODS.Load();
+            MODL->MODS->value14 = *(FORMID *)FieldValue;
+            return true;
+        case 15: //mods Alternate Textures
+            MODL.Load();
+            MODL->MODS.Load();
+            MODL->MODS->value15 = *(SINT32 *)FieldValue;
+            break;
+        case 16: //modd FaceGen Model Flags
+            MODL.Load();
+            MODL->MODD.Load();
+            MODL->MODD->value16 = *(UINT8 *)FieldValue;
+            break;
+        case 17: //data DATA ,, Struct
+            DATA.Load();
+            DATA->value17 = *(UINT8 *)FieldValue;
+            break;
+        case 18: //data DATA ,, Struct
+            DATA.Load();
+            DATA->value18 = *(UINT8 *)FieldValue;
+            break;
+        case 19: //data DATA ,, Struct
+            DATA.Load();
+            DATA->value19 = *(UINT8 *)FieldValue;
+            break;
+        case 20: //data_p DATA ,, Struct
+            if(ArraySize != 1)
+                break;
+            DATA.Load();
+            DATA->value20[0] = ((UINT8 *)FieldValue)[0];
+            break;
+        case 21: //data DATA ,, Struct
+            DATA.Load();
+            DATA->value21 = *(UINT16 *)FieldValue;
+            break;
+        case 22: //data_p DATA ,, Struct
+            if(ArraySize != 2)
+                break;
+            DATA.Load();
+            DATA->value22[0] = ((UINT8 *)FieldValue)[0];
+            DATA->value22[1] = ((UINT8 *)FieldValue)[1];
+            break;
+        case 23: //data DATA ,, Struct
+            DATA.Load();
+            DATA->value23 = *(UINT32 *)FieldValue;
+            break;
+        case 24: //data DATA ,, Struct
+            DATA.Load();
+            DATA->value24 = *(FLOAT32 *)FieldValue;
+            break;
+        case 25: //data DATA ,, Struct
+            DATA.Load();
+            DATA->value25 = *(FLOAT32 *)FieldValue;
+            break;
+        case 26: //data DATA ,, Struct
+            DATA.Load();
+            DATA->value26 = *(FLOAT32 *)FieldValue;
+            break;
+        case 27: //data DATA ,, Struct
+            DATA.Load();
+            DATA->value27 = *(FLOAT32 *)FieldValue;
+            break;
+        case 28: //data DATA ,, Struct
+            DATA.Load();
+            DATA->value28 = *(UINT8 *)FieldValue;
+            break;
+        case 29: //data_p DATA ,, Struct
+            if(ArraySize != 3)
+                break;
+            DATA.Load();
+            DATA->value29[0] = ((UINT8 *)FieldValue)[0];
+            DATA->value29[1] = ((UINT8 *)FieldValue)[1];
+            DATA->value29[2] = ((UINT8 *)FieldValue)[2];
             break;
         default:
             break;
@@ -86,11 +367,94 @@ void GRASRecord::DeleteField(FIELD_IDENTIFIERS)
         case 1: //flags1
             SetHeaderFlagMask(0);
             return;
-        case 3: //flags2
+        case 3: //versionControl1
             flagsUnk = 0;
             return;
-        case 4: //eid
+        case 4: //formVersion
+            formVersion = 0;
+            return;
+        case 5: //versionControl2
+            versionControl2[0] = 0;
+            versionControl2[1] = 0;
+            return;
+        case 6: //edid Editor ID
             EDID.Unload();
+            return;
+        case 7: //obnd Object Bounds
+            OBNDReq.Unload();
+            return;
+        case 8: //obnd Object Bounds
+            OBNDReq.Unload();
+            return;
+        case 9: //obnd Object Bounds
+            OBNDReq.Unload();
+            return;
+        case 10: //modl Model Filename
+            if(MODL.IsLoaded())
+                MODL->MODL.Unload();
+            return;
+        case 11: //modb_p Unknown
+            if(MODL.IsLoaded())
+                MODL->MODB.Unload();
+            return;
+        case 12: //modt_p Texture Files Hashes
+            if(MODL.IsLoaded())
+                MODL->MODT.Unload();
+            return;
+        case 13: //mods Alternate Textures
+            if(MODL.IsLoaded())
+                MODL->MODS.Unload();
+            return;
+        case 14: //mods Alternate Textures
+            if(MODL.IsLoaded())
+                MODL->MODS.Unload();
+            return;
+        case 15: //mods Alternate Textures
+            if(MODL.IsLoaded())
+                MODL->MODS.Unload();
+            return;
+        case 16: //modd FaceGen Model Flags
+            if(MODL.IsLoaded())
+                MODL->MODD.Unload();
+            return;
+        case 17: //data DATA ,, Struct
+            DATA.Unload();
+            return;
+        case 18: //data DATA ,, Struct
+            DATA.Unload();
+            return;
+        case 19: //data DATA ,, Struct
+            DATA.Unload();
+            return;
+        case 20: //data_p DATA ,, Struct
+            DATA.Unload();
+            return;
+        case 21: //data DATA ,, Struct
+            DATA.Unload();
+            return;
+        case 22: //data_p DATA ,, Struct
+            DATA.Unload();
+            return;
+        case 23: //data DATA ,, Struct
+            DATA.Unload();
+            return;
+        case 24: //data DATA ,, Struct
+            DATA.Unload();
+            return;
+        case 25: //data DATA ,, Struct
+            DATA.Unload();
+            return;
+        case 26: //data DATA ,, Struct
+            DATA.Unload();
+            return;
+        case 27: //data DATA ,, Struct
+            DATA.Unload();
+            return;
+        case 28: //data DATA ,, Struct
+            DATA.Unload();
+            return;
+        case 29: //data_p DATA ,, Struct
+            DATA.Unload();
             return;
         default:
             return;
