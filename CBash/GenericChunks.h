@@ -1454,3 +1454,35 @@ struct FNVEffect
     bool IsRange(UINT32  Mask);
     void SetRange(UINT32  Mask);
     };
+
+struct FNVAIDT
+    {
+    UINT8   aggression, confidence, energyLevel, responsibility, mood, unused1[3];
+    UINT32  flags;
+    SINT8   trainSkill;
+    UINT8   trainLevel, assistance, aggroFlags;
+    SINT32  aggroRadius;
+
+    FNVAIDT();
+    ~FNVAIDT();
+
+    bool operator ==(const FNVAIDT &other) const;
+    bool operator !=(const FNVAIDT &other) const;
+    };
+
+struct FNVACBS // Configuration
+    {
+    UINT32  flags; // Flags
+    UINT16  fatigue, barterGold; // Fatigue, Barter gold
+    SINT16  level; // Level or Level Multiplier
+    UINT16  calcMin, calcMax, speedMult; // Calc min, Calc max, Speed Multiplier
+    FLOAT32 karma; // Karma (Alignment)
+    SINT16  dispBase; // Disposition Base
+    UINT16  templateFlags; // Template Flags
+
+    FNVACBS();
+    ~FNVACBS();
+
+    bool operator ==(const FNVACBS &other) const;
+    bool operator !=(const FNVACBS &other) const;
+    };

@@ -88,6 +88,33 @@ bool CSNORecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+bool CSNORecord::IsDealerStayOnSoft17()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsDealerStayOnSoft17) != 0;
+    }
+
+void CSNORecord::IsDealerStayOnSoft17(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsDealerStayOnSoft17;
+    else
+        Dummy->flags &= ~fIsDealerStayOnSoft17;
+    }
+
+bool CSNORecord::IsFlagMask(UINT32 Mask, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    }
+
+void CSNORecord::SetFlagMask(UINT32 Mask)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
 UINT32 CSNORecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())

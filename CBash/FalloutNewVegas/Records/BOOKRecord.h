@@ -27,6 +27,28 @@ namespace FNV
 {
 class BOOKRecord : public Record //Book
     {
+    private:
+        #pragma pack(push)
+        #pragma pack(2)
+        struct BOOKDATA
+            {
+            UINT8   flags;
+            SINT8   teaches;
+            UINT32  value;
+            FLOAT32 weight;
+
+            BOOKDATA();
+            ~BOOKDATA();
+
+            bool operator ==(const BOOKDATA &other) const;
+            bool operator !=(const BOOKDATA &other) const;
+            };
+        #pragma pack(pop)
+
+        enum flagsFlags
+            {
+            fIsFixed  = 0x00000002
+            };
     public:
         StringRecord EDID; //Editor ID
         OptSubRecord<GENOBND> OBND; //Object Bounds
@@ -36,13 +58,20 @@ class BOOKRecord : public Record //Book
         OptSubRecord<GENFID> SCRI; //Script
         StringRecord DESC; //Description
         OptSubRecord<GENDESTRUCT> Destructable; //Destructable
-        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
+        OptSubRecord<BOOKDATA> DATA; //Data
 
         BOOKRecord(unsigned char *_recData=NULL);
         BOOKRecord(BOOKRecord *srcRecord);
         ~BOOKRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
+
+        bool   IsFixed();
+        void   IsFixed(bool value);
+        bool   IsCantBeTaken();
+        void   IsCantBeTaken(bool value);
+        bool   IsFlagMask(UINT8 Mask, bool Exact=false);
+        void   SetFlagMask(UINT8 Mask);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

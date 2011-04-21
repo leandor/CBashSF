@@ -100,6 +100,36 @@ bool BOOKRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+bool BOOKRecord::IsFixed()
+    {
+    return (DATA.value.flags & fIsFixed) != 0;
+    }
+
+void BOOKRecord::IsFixed(bool value)
+    {
+    DATA.value.flags = value ? (DATA.value.flags | fIsFixed) : (DATA.value.flags & ~fIsFixed);
+    }
+
+bool BOOKRecord::IsCantBeTaken()
+    {
+    return (DATA.value.flags & fIsFixed) != 0;
+    }
+
+void BOOKRecord::IsCantBeTaken(bool value)
+    {
+    DATA.value.flags = value ? (DATA.value.flags | fIsFixed) : (DATA.value.flags & ~fIsFixed);
+    }
+
+bool BOOKRecord::IsFlagMask(UINT8 Mask, bool Exact)
+    {
+    return Exact ? ((DATA.value.flags & Mask) == Mask) : ((DATA.value.flags & Mask) != 0);
+    }
+
+void BOOKRecord::SetFlagMask(UINT8 Mask)
+    {
+    DATA.value.flags = Mask;
+    }
+
 UINT32 BOOKRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
