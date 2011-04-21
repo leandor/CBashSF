@@ -24,6 +24,360 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
+bool BPTDRecord::BPTDPart::IsSeverable()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsSeverable) != 0;
+    }
+
+void BPTDRecord::BPTDPart::IsSeverable(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsSeverable;
+    else
+        Dummy->flags &= ~fIsSeverable;
+    }
+
+bool BPTDRecord::BPTDPart::IsIKData()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsIKData) != 0;
+    }
+
+void BPTDRecord::BPTDPart::IsIKData(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsIKData;
+    else
+        Dummy->flags &= ~fIsIKData;
+    }
+
+bool BPTDRecord::BPTDPart::IsIKDataBipedData()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsIKDataBipedData) != 0;
+    }
+
+void BPTDRecord::BPTDPart::IsIKDataBipedData(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsIKDataBipedData;
+    else
+        Dummy->flags &= ~fIsIKDataBipedData;
+    }
+
+bool BPTDRecord::BPTDPart::IsExplodable()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsExplodable) != 0;
+    }
+
+void BPTDRecord::BPTDPart::IsExplodable(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsExplodable;
+    else
+        Dummy->flags &= ~fIsExplodable;
+    }
+
+bool BPTDRecord::BPTDPart::IsIKDataIsHead()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsIKDataIsHead) != 0;
+    }
+
+void BPTDRecord::BPTDPart::IsIKDataIsHead(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsIKDataIsHead;
+    else
+        Dummy->flags &= ~fIsIKDataIsHead;
+    }
+
+bool BPTDRecord::BPTDPart::IsIKDataHeadTracking()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsIKDataHeadTracking) != 0;
+    }
+
+void BPTDRecord::BPTDPart::IsIKDataHeadTracking(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsIKDataHeadTracking;
+    else
+        Dummy->flags &= ~fIsIKDataHeadTracking;
+    }
+
+bool BPTDRecord::BPTDPart::IsAbsoluteHitChance()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsAbsoluteHitChance) != 0;
+    }
+
+void BPTDRecord::BPTDPart::IsAbsoluteHitChance(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsAbsoluteHitChance;
+    else
+        Dummy->flags &= ~fIsAbsoluteHitChance;
+    }
+
+bool BPTDRecord::BPTDPart::IsFlagMask(UINT8 Mask, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    }
+
+void BPTDRecord::BPTDPart::SetFlagMask(UINT8 Mask)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
+bool BPTDRecord::BPTDPart::IsTorso()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eTorso);
+    }
+
+void BPTDRecord::BPTDPart::IsTorso(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eTorso;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool BPTDRecord::BPTDPart::IsHead1()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eHead1);
+    }
+
+void BPTDRecord::BPTDPart::IsHead1(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eHead1;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool BPTDRecord::BPTDPart::IsHead2()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eHead2);
+    }
+
+void BPTDRecord::BPTDPart::IsHead2(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eHead2;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool BPTDRecord::BPTDPart::IsLeftArm1()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eLeftArm1);
+    }
+
+void BPTDRecord::BPTDPart::IsLeftArm1(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eLeftArm1;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool BPTDRecord::BPTDPart::IsLeftArm2()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eLeftArm2);
+    }
+
+void BPTDRecord::BPTDPart::IsLeftArm2(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eLeftArm2;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool BPTDRecord::BPTDPart::IsRightArm1()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eRightArm1);
+    }
+
+void BPTDRecord::BPTDPart::IsRightArm1(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eRightArm1;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool BPTDRecord::BPTDPart::IsRightArm2()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eRightArm2);
+    }
+
+void BPTDRecord::BPTDPart::IsRightArm2(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eRightArm2;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool BPTDRecord::BPTDPart::IsLeftLeg1()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eLeftLeg1);
+    }
+
+void BPTDRecord::BPTDPart::IsLeftLeg1(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eLeftLeg1;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool BPTDRecord::BPTDPart::IsLeftLeg2()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eLeftLeg2);
+    }
+
+void BPTDRecord::BPTDPart::IsLeftLeg2(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eLeftLeg2;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool BPTDRecord::BPTDPart::IsLeftLeg3()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eLeftLeg3);
+    }
+
+void BPTDRecord::BPTDPart::IsLeftLeg3(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eLeftLeg3;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool BPTDRecord::BPTDPart::IsRightLeg1()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eRightLeg1);
+    }
+
+void BPTDRecord::BPTDPart::IsRightLeg1(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eRightLeg1;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool BPTDRecord::BPTDPart::IsRightLeg2()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eRightLeg2);
+    }
+
+void BPTDRecord::BPTDPart::IsRightLeg2(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eRightLeg2;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool BPTDRecord::BPTDPart::IsRightLeg3()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eRightLeg3);
+    }
+
+void BPTDRecord::BPTDPart::IsRightLeg3(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eRightLeg3;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool BPTDRecord::BPTDPart::IsBrain()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eBrain);
+    }
+
+void BPTDRecord::BPTDPart::IsBrain(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eBrain;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool BPTDRecord::BPTDPart::IsWeapon()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eWeapon);
+    }
+
+void BPTDRecord::BPTDPart::IsWeapon(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eWeapon;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool BPTDRecord::BPTDPart::IsType(UINT8 Type, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    }
+
+void BPTDRecord::BPTDPart::SetType(UINT8 Type)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
 BPTDRecord::BPTDRecord(unsigned char *_recData):
     Record(_recData)
     {

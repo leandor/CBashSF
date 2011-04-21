@@ -105,6 +105,26 @@ bool CONTRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+bool CONTRecord::IsRespawn()
+    {
+    return (DATA.value.flags & fIsRespawn) != 0;
+    }
+
+void CONTRecord::IsRespawn(bool value)
+    {
+    DATA.value.flags = value ? (DATA.value.flags | fIsRespawn) : (DATA.value.flags & ~fIsRespawn);
+    }
+
+bool CONTRecord::IsFlagMask(UINT8 Mask, bool Exact)
+    {
+    return Exact ? ((DATA.value.flags & Mask) == Mask) : ((DATA.value.flags & Mask) != 0);
+    }
+
+void CONTRecord::SetFlagMask(UINT8 Mask)
+    {
+    DATA.value.flags = Mask;
+    }
+
 UINT32 CONTRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())

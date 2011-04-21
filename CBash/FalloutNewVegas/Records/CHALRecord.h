@@ -27,12 +27,47 @@ namespace FNV
 {
 class CHALRecord : public Record //Challenge
     {
+    private:
+        struct CHALDATA // Data
+            {
+            UINT32  challengeType, threshold, flags, interval; // Type, Threshold, Flags, Interval
+            UINT8   var1[2], var2[2], var3[4]; //(depends on type)
+
+            CHALDATA();
+            ~CHALDATA();
+
+            bool operator ==(const CHALDATA &other) const;
+            bool operator !=(const CHALDATA &other) const;
+            };
+
+        enum challengeTypeTypes
+            {
+            eKillFromList = 0,
+            eKillFormID,
+            eKillInCategory,
+            eHitEnemy,
+            eDiscoverMapMarker,
+            eUseItem,
+            eGetItem,
+            eUseSkill,
+            eDoDamage,
+            eUseItemFromList,
+            eGetItemFromList,
+            eMiscStat
+            };
+
+        enum challengeFlags
+            {
+            fIsStartDisabled    = 0x00000001,
+            fIsRecurring        = 0x00000002,
+            fIsShowZeroProgress = 0x00000004
+            };
     public:
         StringRecord EDID; //Editor ID
         StringRecord FULL; //Name
         OptSubRecord<GENFID> SCRI; //Script
         StringRecord DESC; //Description
-        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
+        OptSubRecord<CHALDATA> DATA; //Data
         OptSubRecord<GENFID> SNAM; //(depends on type)
         OptSubRecord<GENFID> XNAM; //(depends on type)
 
@@ -41,6 +76,42 @@ class CHALRecord : public Record //Challenge
         ~CHALRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
+
+        bool   IsStartDisabled();
+        void   IsStartDisabled(bool value);
+        bool   IsRecurring();
+        void   IsRecurring(bool value);
+        bool   IsShowZeroProgress();
+        void   IsShowZeroProgress(bool value);
+        bool   IsFlagMask(UINT8 Mask, bool Exact=false);
+        void   SetFlagMask(UINT8 Mask);
+
+        bool   IsKillFromList();
+        void   IsKillFromList(bool value);
+        bool   IsKillFormID();
+        void   IsKillFormID(bool value);
+        bool   IsKillInCategory();
+        void   IsKillInCategory(bool value);
+        bool   IsHitEnemy();
+        void   IsHitEnemy(bool value);
+        bool   IsDiscoverMapMarker();
+        void   IsDiscoverMapMarker(bool value);
+        bool   IsUseItem();
+        void   IsUseItem(bool value);
+        bool   IsGetItem();
+        void   IsGetItem(bool value);
+        bool   IsUseSkill();
+        void   IsUseSkill(bool value);
+        bool   IsDoDamage();
+        void   IsDoDamage(bool value);
+        bool   IsUseItemFromList();
+        void   IsUseItemFromList(bool value);
+        bool   IsGetItemFromList();
+        void   IsGetItemFromList(bool value);
+        bool   IsMiscStat();
+        void   IsMiscStat(bool value);
+        bool   IsType(UINT8 Type, bool Exact=false);
+        void   SetType(UINT8 Type);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

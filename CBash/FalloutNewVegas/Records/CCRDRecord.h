@@ -27,18 +27,29 @@ namespace FNV
 {
 class CCRDRecord : public Record //Caravan Card
     {
+    private:
+        enum suitTypes
+            {
+            eNone = 0,
+            eHearts,
+            eSpades,
+            eDiamonds,
+            eClubs,
+            eJoker
+            };
     public:
         StringRecord EDID; //Editor ID
         OptSubRecord<GENOBND> OBND; //Object Bounds
         StringRecord FULL; //Name
         OptSubRecord<FNVMODEL> MODL; //Model
-        OptSubRecord<GENICON> ICON; //Large Icon Filename
+        OptSubRecord<GENICON> ICON; //Icon Filenames
         OptSubRecord<GENFID> SCRI; //Script
         OptSubRecord<GENFID> YNAM; //Sound - Pick Up
         OptSubRecord<GENFID> ZNAM; //Sound - Drop
-        OptSubRecord<GENTX00> TX00; //Face
-        OptSubRecord<GENINTV> INTV; //Suit
-        OptSubRecord<GENU32> INTV; //Value
+        StringRecord TX00; //Face High Res Image
+        StringRecord TX01; //Back High Res Image
+        OptSubRecord<GENU32> INTV1; //Card Suit
+        OptSubRecord<GENU32> INTV2; //Card Value
         OptSubRecord<GENU32> DATA; //Value
 
         CCRDRecord(unsigned char *_recData=NULL);
@@ -46,6 +57,21 @@ class CCRDRecord : public Record //Caravan Card
         ~CCRDRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
+
+        bool   IsNone();
+        void   IsNone(bool value);
+        bool   IsHearts();
+        void   IsHearts(bool value);
+        bool   IsSpades();
+        void   IsSpades(bool value);
+        bool   IsDiamonds();
+        void   IsDiamonds(bool value);
+        bool   IsClubs();
+        void   IsClubs(bool value);
+        bool   IsJoker();
+        void   IsJoker(bool value);
+        bool   IsType(UINT32 Type, bool Exact=false);
+        void   SetType(UINT32 Type);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

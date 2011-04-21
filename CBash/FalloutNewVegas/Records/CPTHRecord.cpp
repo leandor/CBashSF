@@ -75,6 +75,63 @@ bool CPTHRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+bool CPTHRecord::IsDefault()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eDefault);
+    }
+
+void CPTHRecord::IsDefault(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eDefault;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool CPTHRecord::IsDisable()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eDisable);
+    }
+
+void CPTHRecord::IsDisable(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eDisable;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool CPTHRecord::IsShotList()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eShotList);
+    }
+
+void CPTHRecord::IsShotList(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eShotList;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool CPTHRecord::IsType(UINT8 Type, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    }
+
+void CPTHRecord::SetType(UINT8 Type)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
 UINT32 CPTHRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())

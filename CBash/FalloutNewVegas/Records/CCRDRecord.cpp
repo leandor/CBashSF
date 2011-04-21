@@ -106,6 +106,109 @@ bool CCRDRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+
+bool CCRDRecord::IsNone()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eNone);
+    }
+
+void CCRDRecord::IsNone(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eNone;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool CCRDRecord::IsHearts()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eHearts);
+    }
+
+void CCRDRecord::IsHearts(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eHearts;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool CCRDRecord::IsSpades()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eSpades);
+    }
+
+void CCRDRecord::IsSpades(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eSpades;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool CCRDRecord::IsDiamonds()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eDiamonds);
+    }
+
+void CCRDRecord::IsDiamonds(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eDiamonds;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool CCRDRecord::IsClubs()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eClubs);
+    }
+
+void CCRDRecord::IsClubs(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eClubs;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool CCRDRecord::IsJoker()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eJoker);
+    }
+
+void CCRDRecord::IsJoker(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eJoker;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool CCRDRecord::IsType(UINT32 Type, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    }
+
+void CCRDRecord::SetType(UINT32 Type)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
 UINT32 CCRDRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())

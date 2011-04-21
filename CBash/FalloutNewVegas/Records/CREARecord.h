@@ -394,7 +394,7 @@ class CREARecord : public Record //Creature
         OptSubRecord<GENFID> TPLT; //Template
         OptSubRecord<GENDESTRUCT> Destructable; //Destructable
         OptSubRecord<GENFID> SCRI; //Script
-        std::vector<ReqSubRecord<GENCNTO> *> CNTO;  //Items
+        std::vector<FNVCNTO *> CNTO;  //Items
         OptSubRecord<GENAIDT> AIDT; //AI Data
         std::vector<FORMID> PKID; //Packages
         std::vector<StringRecord> KFFZ; //Animations

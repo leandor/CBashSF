@@ -27,15 +27,35 @@ namespace FNV
 {
 class CONTRecord : public Record //Container
     {
+    private:
+        #pragma pack(push)
+        #pragma pack(1)
+        struct CONTDATA
+            {
+            UINT8   flags;
+            FLOAT32 weight;
+
+            CONTDATA();
+            ~CONTDATA();
+
+            bool operator ==(const CONTDATA &other) const;
+            bool operator !=(const CONTDATA &other) const;
+            };
+        #pragma pack(pop)
+
+        enum flagsFlags
+            {
+            fIsRespawn = 0x00000001
+            };
     public:
         StringRecord EDID; //Editor ID
         OptSubRecord<GENOBND> OBND; //Object Bounds
         StringRecord FULL; //Name
         OptSubRecord<FNVMODEL> MODL; //Model
         OptSubRecord<GENFID> SCRI; //Script
-        OptSubRecord<GENCNTO> CNTO; //Item
+        std::vector<FNVCNTO *> CNTO;  //Items
         OptSubRecord<GENDESTRUCT> Destructable; //Destructable
-        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
+        OptSubRecord<CONTDATA> DATA; //DATA ,, Struct
         OptSubRecord<GENFID> SNAM; //Sound - Open
         OptSubRecord<GENFID> QNAM; //Sound - Close
         OptSubRecord<GENFID> RNAM; //Sound - Random/Looping
@@ -45,6 +65,11 @@ class CONTRecord : public Record //Container
         ~CONTRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
+
+        bool   IsRespawn();
+        void   IsRespawn(bool value);
+        bool   IsFlagMask(UINT8 Mask, bool Exact=false);
+        void   SetFlagMask(UINT8 Mask);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

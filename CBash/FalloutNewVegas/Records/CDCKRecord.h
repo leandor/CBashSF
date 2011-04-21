@@ -30,7 +30,7 @@ class CDCKRecord : public Record //Caravan Deck
     public:
         StringRecord EDID; //Editor ID
         StringRecord FULL; //Name
-        OptSubRecord<GENFID> CARD; //Card
+        std::vector<FORMID> CARD; //Cards
         OptSubRecord<GENU32> DATA; //Count (broken)
 
         CDCKRecord(unsigned char *_recData=NULL);

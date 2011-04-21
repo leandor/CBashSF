@@ -77,6 +77,255 @@ bool CHALRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+bool CHALRecord::IsStartDisabled()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsStartDisabled) != 0;
+    }
+
+void CHALRecord::IsStartDisabled(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsStartDisabled;
+    else
+        Dummy->flags &= ~fIsStartDisabled;
+    }
+
+bool CHALRecord::IsRecurring()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsRecurring) != 0;
+    }
+
+void CHALRecord::IsRecurring(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsRecurring;
+    else
+        Dummy->flags &= ~fIsRecurring;
+    }
+
+bool CHALRecord::IsShowZeroProgress()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsShowZeroProgress) != 0;
+    }
+
+void CHALRecord::IsShowZeroProgress(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsShowZeroProgress;
+    else
+        Dummy->flags &= ~fIsShowZeroProgress;
+    }
+
+bool CHALRecord::Is0FlagMask(UINT8 Mask, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    }
+
+void CHALRecord::Set0FlagMask(UINT8 Mask)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
+bool CHALRecord::IsKillFromList()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eKillFromList);
+    }
+
+void CHALRecord::IsKillFromList(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eKillFromList;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool CHALRecord::IsKillFormID()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eKillFormID);
+    }
+
+void CHALRecord::IsKillFormID(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eKillFormID;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool CHALRecord::IsKillInCategory()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eKillInCategory);
+    }
+
+void CHALRecord::IsKillInCategory(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eKillInCategory;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool CHALRecord::IsHitEnemy()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eHitEnemy);
+    }
+
+void CHALRecord::IsHitEnemy(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eHitEnemy;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool CHALRecord::IsDiscoverMapMarker()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eDiscoverMapMarker);
+    }
+
+void CHALRecord::IsDiscoverMapMarker(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eDiscoverMapMarker;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool CHALRecord::IsUseItem()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eUseItem);
+    }
+
+void CHALRecord::IsUseItem(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eUseItem;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool CHALRecord::IsGetItem()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eGetItem);
+    }
+
+void CHALRecord::IsGetItem(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eGetItem;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool CHALRecord::IsUseSkill()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eUseSkill);
+    }
+
+void CHALRecord::IsUseSkill(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eUseSkill;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool CHALRecord::IsDoDamage()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eDoDamage);
+    }
+
+void CHALRecord::IsDoDamage(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eDoDamage;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool CHALRecord::IsUseItemFromList()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eUseItemFromList);
+    }
+
+void CHALRecord::IsUseItemFromList(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eUseItemFromList;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool CHALRecord::IsGetItemFromList()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eGetItemFromList);
+    }
+
+void CHALRecord::IsGetItemFromList(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eGetItemFromList;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool CHALRecord::IsMiscStat()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eMiscStat);
+    }
+
+void CHALRecord::IsMiscStat(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eMiscStat;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool CHALRecord::Is0Type(UINT8 Type, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    }
+
+void CHALRecord::Set0Type(UINT8 Type)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
 UINT32 CHALRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())

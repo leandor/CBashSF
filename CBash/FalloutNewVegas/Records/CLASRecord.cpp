@@ -75,6 +75,255 @@ bool CLASRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+bool CLASRecord::IsPlayable()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsPlayable) != 0;
+    }
+
+void CLASRecord::IsPlayable(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsPlayable;
+    else
+        Dummy->flags &= ~fIsPlayable;
+    }
+
+bool CLASRecord::IsGuard()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsGuard) != 0;
+    }
+
+void CLASRecord::IsGuard(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsGuard;
+    else
+        Dummy->flags &= ~fIsGuard;
+    }
+
+bool CLASRecord::IsFlagMask(UINT32 Mask, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    }
+
+void CLASRecord::SetFlagMask(UINT32 Mask)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
+bool CLASRecord::IsServicesWeapons()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsServicesWeapons) != 0;
+    }
+
+void CLASRecord::IsServicesWeapons(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsServicesWeapons;
+    else
+        Dummy->flags &= ~fIsServicesWeapons;
+    }
+
+bool CLASRecord::IsServicesArmor()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsServicesArmor) != 0;
+    }
+
+void CLASRecord::IsServicesArmor(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsServicesArmor;
+    else
+        Dummy->flags &= ~fIsServicesArmor;
+    }
+
+bool CLASRecord::IsServicesClothing()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsServicesClothing) != 0;
+    }
+
+void CLASRecord::IsServicesClothing(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsServicesClothing;
+    else
+        Dummy->flags &= ~fIsServicesClothing;
+    }
+
+bool CLASRecord::IsServicesBooks()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsServicesBooks) != 0;
+    }
+
+void CLASRecord::IsServicesBooks(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsServicesBooks;
+    else
+        Dummy->flags &= ~fIsServicesBooks;
+    }
+
+bool CLASRecord::IsServicesFood()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsServicesFood) != 0;
+    }
+
+void CLASRecord::IsServicesFood(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsServicesFood;
+    else
+        Dummy->flags &= ~fIsServicesFood;
+    }
+
+bool CLASRecord::IsServicesChems()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsServicesChems) != 0;
+    }
+
+void CLASRecord::IsServicesChems(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsServicesChems;
+    else
+        Dummy->flags &= ~fIsServicesChems;
+    }
+
+bool CLASRecord::IsServicesStimpacks()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsServicesStimpacks) != 0;
+    }
+
+void CLASRecord::IsServicesStimpacks(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsServicesStimpacks;
+    else
+        Dummy->flags &= ~fIsServicesStimpacks;
+    }
+
+bool CLASRecord::IsServicesLights()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsServicesLights) != 0;
+    }
+
+void CLASRecord::IsServicesLights(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsServicesLights;
+    else
+        Dummy->flags &= ~fIsServicesLights;
+    }
+
+bool CLASRecord::IsServicesMiscItems()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsServicesMiscItems) != 0;
+    }
+
+void CLASRecord::IsServicesMiscItems(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsServicesMiscItems;
+    else
+        Dummy->flags &= ~fIsServicesMiscItems;
+    }
+
+bool CLASRecord::IsServicesPotions()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsServicesPotions) != 0;
+    }
+
+void CLASRecord::IsServicesPotions(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsServicesPotions;
+    else
+        Dummy->flags &= ~fIsServicesPotions;
+    }
+
+bool CLASRecord::IsServicesTraining()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsServicesTraining) != 0;
+    }
+
+void CLASRecord::IsServicesTraining(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsServicesTraining;
+    else
+        Dummy->flags &= ~fIsServicesTraining;
+    }
+
+bool CLASRecord::IsServicesRecharge()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsServicesRecharge) != 0;
+    }
+
+void CLASRecord::IsServicesRecharge(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsServicesRecharge;
+    else
+        Dummy->flags &= ~fIsServicesRecharge;
+    }
+
+bool CLASRecord::IsServicesRepair()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsServicesRepair) != 0;
+    }
+
+void CLASRecord::IsServicesRepair(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsServicesRepair;
+    else
+        Dummy->flags &= ~fIsServicesRepair;
+    }
+
+bool CLASRecord::IsServicesFlagMask(UINT32 Mask, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    }
+
+void CLASRecord::SetServicesFlagMask(UINT32 Mask)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
 UINT32 CLASRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())

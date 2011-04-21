@@ -43,7 +43,7 @@ class NPC_Record : public Record //Non-Player Character
         OptSubRecord<GENU16> EAMT; //Unarmed Attack Animation
         OptSubRecord<GENDESTRUCT> Destructable; //Destructable
         OptSubRecord<GENFID> SCRI; //Script
-        OptSubRecord<GENCNTO> CNTO; //Item
+        std::vector<FNVCNTO *> CNTO;  //Items
         OptSubRecord<GENAIDT> AIDT; //AI Data
         OptSubRecord<GENFID> PKID; //Package
         OptSubRecord<GENFID> CNAM; //Class

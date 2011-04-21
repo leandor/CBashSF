@@ -27,13 +27,37 @@ namespace FNV
 {
 class CLMTRecord : public Record //Climate
     {
+    private:
+        struct CLMTWLST
+            {
+            UINT32  weather;
+            SINT32  chance;
+            FORMID  global;
+
+            CLMTWLST();
+            ~CLMTWLST();
+
+            bool operator ==(const CLMTWLST &other) const;
+            bool operator !=(const CLMTWLST &other) const;
+            };
+
+        struct CLMTTNAM
+            {
+            UINT8   riseBegin, riseEnd, setBegin, setEnd, volatility, phaseLength;
+
+            CLMTTNAM();
+            ~CLMTTNAM();
+
+            bool operator ==(const CLMTTNAM &other) const;
+            bool operator !=(const CLMTTNAM &other) const;
+            };
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENWLST> WLST; //Weather Types ,, Array
+        std::vector<CLMTWLST> Weathers; //Weather Types
         StringRecord FNAM; //Sun Texture
         StringRecord GNAM; //Sun Glare Texture
         OptSubRecord<FNVMODEL> MODL; //Model
-        OptSubRecord<GENTNAM> TNAM; //TNAM ,, Struct
+        ReqSubRecord<CLMTTNAM> TNAM; // Timing
 
         CLMTRecord(unsigned char *_recData=NULL);
         CLMTRecord(CLMTRecord *srcRecord);

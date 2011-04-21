@@ -1486,3 +1486,29 @@ struct FNVACBS // Configuration
     bool operator ==(const FNVACBS &other) const;
     bool operator !=(const FNVACBS &other) const;
     };
+
+struct GENCOED // Extra Data
+    {
+    FORMID  owner; // Owner
+    FORMID_OR_UINT32 globalOrRank; // Global Variable / Required Rank (global if owner is NPC_, rank if owner is FACT)
+    FLOAT32 condition; // Item Condition
+
+    GENCOED();
+    ~GENCOED();
+
+    bool operator ==(const GENCOED &other) const;
+    bool operator !=(const GENCOED &other) const;
+    };
+
+struct FNVCNTO
+    {
+    ReqSubRecord<GENCNTO> CNTO;
+    OptSubRecord<GENCOED> COED;
+
+    bool IsGlobal();
+    bool IsRank();
+    bool IsUnused();
+
+    bool operator ==(const FNVCNTO &other) const;
+    bool operator !=(const FNVCNTO &other) const;
+    };

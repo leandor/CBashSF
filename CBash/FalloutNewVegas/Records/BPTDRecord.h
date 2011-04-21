@@ -27,17 +27,134 @@ namespace FNV
 {
 class BPTDRecord : public Record //Body Part Data
     {
+    private:
+        struct BPTDBPND
+            {
+            FLOAT32 damageMult;
+            UINT8   flags, partType, healthPercent;
+            SINT8   actorValue;
+            UINT8   hitChance, explodableExplosionChance;
+            UINT16  explodableDebrisCount;
+            FORMID  explodableDebris, explodableExplosion;
+            FLOAT32 maxTrackAngle, explodableDebrisScale;
+            SINT32  severableDebrisCount;
+            FORMID  severableDebris, severableExplosion;
+            FLOAT32 severableDebrisScale;
+
+            //Gore Positioning
+            FLOAT32 transX, transY, transZ;
+            FLOAT32 rotX, rotY, rotZ;
+
+            FORMID  severableImpact, explodableImpact;
+            UINT8   severableDecalCount, explodableDecalCount, unused1[2];
+            FLOAT32 limbReplaceScale;
+
+            BPTDBPND();
+            ~BPTDBPND();
+
+            bool operator ==(const BPTDBPND &other) const;
+            bool operator !=(const BPTDBPND &other) const;
+            };
+
+        struct BPTDPart // Body Part
+            {
+            StringRecord BPTN; //Part Name
+            StringRecord BPNN; //Part Node
+            StringRecord BPNT; //VATS Target
+            StringRecord BPNI; //IK Data - Start Node
+            OptSubRecord<BPTDBPND> BPND; //Data
+            StringRecord NAM1; //Limb Replacement Model
+            StringRecord NAM4; //Gore Effects - Target Bone
+            RawRecord NAM5; //Texture Files Hashes
+
+            enum flagFlags
+                {
+                fIsSeverable = 0x00000001,
+                fIsIKData = 0x00000002,
+                fIsIKDataBipedData = 0x00000004,
+                fIsExplodable = 0x00000008,
+                fIsIKDataIsHead = 0x00000010,
+                fIsIKDataHeadTracking = 0x00000020,
+                fIsAbsoluteHitChance = 0x00000040
+                };
+
+            enum partTypes
+                {
+                eTorso = 0,
+                eHead1,
+                eHead2,
+                eLeftArm1,
+                eLeftArm2,
+                eRightArm1,
+                eRightArm2,
+                eLeftLeg1,
+                eLeftLeg2,
+                eLeftLeg3,
+                eRightLeg1,
+                eRightLeg2,
+                eRightLeg3,
+                eBrain,
+                eWeapon
+                };
+
+            bool   IsSeverable();
+            void   IsSeverable(bool value);
+            bool   IsIKData();
+            void   IsIKData(bool value);
+            bool   IsIKDataBipedData();
+            void   IsIKDataBipedData(bool value);
+            bool   IsExplodable();
+            void   IsExplodable(bool value);
+            bool   IsIKDataIsHead();
+            void   IsIKDataIsHead(bool value);
+            bool   IsIKDataHeadTracking();
+            void   IsIKDataHeadTracking(bool value);
+            bool   IsAbsoluteHitChance();
+            void   IsAbsoluteHitChance(bool value);
+            bool   IsFlagMask(UINT8 Mask, bool Exact=false);
+            void   SetFlagMask(UINT8 Mask);
+
+            bool   IsTorso();
+            void   IsTorso(bool value);
+            bool   IsHead1();
+            void   IsHead1(bool value);
+            bool   IsHead2();
+            void   IsHead2(bool value);
+            bool   IsLeftArm1();
+            void   IsLeftArm1(bool value);
+            bool   IsLeftArm2();
+            void   IsLeftArm2(bool value);
+            bool   IsRightArm1();
+            void   IsRightArm1(bool value);
+            bool   IsRightArm2();
+            void   IsRightArm2(bool value);
+            bool   IsLeftLeg1();
+            void   IsLeftLeg1(bool value);
+            bool   IsLeftLeg2();
+            void   IsLeftLeg2(bool value);
+            bool   IsLeftLeg3();
+            void   IsLeftLeg3(bool value);
+            bool   IsRightLeg1();
+            void   IsRightLeg1(bool value);
+            bool   IsRightLeg2();
+            void   IsRightLeg2(bool value);
+            bool   IsRightLeg3();
+            void   IsRightLeg3(bool value);
+            bool   IsBrain();
+            void   IsBrain(bool value);
+            bool   IsWeapon();
+            void   IsWeapon(bool value);
+            bool   IsType(UINT8 Type, bool Exact=false);
+            void   SetType(UINT8 Type);
+
+            bool operator ==(const BPTDPart &other) const;
+            bool operator !=(const BPTDPart &other) const;
+            };
+
     public:
         StringRecord EDID; //Editor ID
         OptSubRecord<FNVMODEL> MODL; //Model
-        StringRecord BPTN; //Part Name
-        StringRecord BPNN; //Part Node
-        StringRecord BPNT; //VATS Target
-        StringRecord BPNI; //IK Data - Start Node
-        OptSubRecord<GENBPND> BPND; //BPND ,, Struct
-        StringRecord NAM1; //Limb Replacement Model
-        StringRecord NAM4; //Gore Effects - Target Bone
-        RawRecord NAM5; //Texture Files Hashes
+        std::vector<ReqSubRecord<BPTDPart> *> Parts; // Body Parts
         OptSubRecord<GENFID> RAGA; //Ragdoll
 
         BPTDRecord(unsigned char *_recData=NULL);

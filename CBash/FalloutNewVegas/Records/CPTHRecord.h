@@ -27,18 +27,34 @@ namespace FNV
 {
 class CPTHRecord : public Record //Camera Path
     {
+    private:
+        enum zoomTypes
+            {
+            eDefault = 0,
+            eDisable,
+            eShotList
+            };
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENCTDA> CTDA; //Conditions
-        OptSubRecord<GENANAM> ANAM; //Related Camera Paths
+        std::vector<ReqSubRecord<FNVCTDA> *> CTDA; //Conditions
+        std::vector<FORMID> ANAM; //Related Camera Paths
         OptSubRecord<GENU8> DATA; //Camera Zoom
-        OptSubRecord<GENFID> SNAM; //Camera Shot
+        std::vector<FORMID> SNAM; //Camera Shots
 
         CPTHRecord(unsigned char *_recData=NULL);
         CPTHRecord(CPTHRecord *srcRecord);
         ~CPTHRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
+
+        bool   IsDefault();
+        void   IsDefault(bool value);
+        bool   IsDisable();
+        void   IsDisable(bool value);
+        bool   IsShotList();
+        void   IsShotList(bool value);
+        bool   IsType(UINT8 Type, bool Exact=false);
+        void   SetType(UINT8 Type);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);
