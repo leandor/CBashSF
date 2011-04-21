@@ -102,10 +102,10 @@ class ARMORecord : public Record //Armor
             fIsNonPlayable = 0x0040,
             fIsHeavy       = 0x0080
             };
-        
+
         enum eEquipTypes
             {
-            eNone = -1,
+            eNone    = -1,
             eBigGuns = 0,
             eEnergyWeapons,
             eSmallGuns,

@@ -45,7 +45,7 @@ class CLASRecord : public Record //Class
 
         struct CLASATTR
             {
-            UINT8   strength, perception, endurance, 
+            UINT8   strength, perception, endurance,
                     charisma, intelligence, agility, luck;
 
             CLASATTR();

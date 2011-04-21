@@ -32,9 +32,9 @@ class CSNORecord : public Record //Casino
             {
             FLOAT32 shufflePercent; // Decks % Before Shuffle
             FLOAT32 bjPayoutRatio; // BlackJack Payout Ratio
-            UINT32  symbol1Stop, symbol2Stop, 
-                    symbol3Stop, symbol4Stop, 
-                    symbol5Stop, symbol6Stop, 
+            UINT32  symbol1Stop, symbol2Stop,
+                    symbol3Stop, symbol4Stop,
+                    symbol5Stop, symbol6Stop,
                     symbolWStop; // Slot Reel Stops
             UINT32  numDecks; // Number of Decks
             UINT32  maxWinnings; // Max Winnings

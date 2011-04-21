@@ -356,12 +356,12 @@ class ModFlags
 
         //IndexLANDs causes LAND records to have extra indexing.
         // Increases load time per mod.
-        // It allows the safe editing of land records heights. 
+        // It allows the safe editing of land records heights.
         // Modifying one LAND may require changes in an adjacent LAND to prevent seams
 
         //FixupPlaceables moves any REFR,ACHR,ACRE records in a world cell to the actual cell they belong to.
         // Increases load time per mod.
-        // Use if you're planning on iterating through every placeable in a specific cell 
+        // Use if you're planning on iterating through every placeable in a specific cell
         //   so that you don't have to check the world cell as well.
 
         //IgnoreAbsentMasters causes any records that override masters not in the load order to be dropped

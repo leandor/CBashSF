@@ -70,7 +70,7 @@ UINT32 DIALRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
             return STRING_FIELD;
         case 12: //pnam Priority
             return FLOAT32_FIELD;
-        case 13: //tdum 
+        case 13: //tdum
             return ISTRING_FIELD;
         case 14: //data DATA ,, Struct
             return UINT8_FIELD;
@@ -111,7 +111,7 @@ void * DIALRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return FULL.value;
         case 12: //pnam Priority
             return PNAM.IsLoaded() ? &PNAM->value12 : NULL;
-        case 13: //tdum 
+        case 13: //tdum
             return TDUM.value;
         case 14: //data DATA ,, Struct
             return DATA.IsLoaded() ? &DATA->value14 : NULL;
@@ -172,7 +172,7 @@ bool DIALRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             PNAM.Load();
             PNAM->value12 = *(FLOAT32 *)FieldValue;
             break;
-        case 13: //tdum 
+        case 13: //tdum
             TDUM.Copy((STRING)FieldValue);
             break;
         case 14: //data DATA ,, Struct
@@ -227,7 +227,7 @@ void DIALRecord::DeleteField(FIELD_IDENTIFIERS)
         case 12: //pnam Priority
             PNAM.Unload();
             return;
-        case 13: //tdum 
+        case 13: //tdum
             TDUM.Unload();
             return;
         case 14: //data DATA ,, Struct

@@ -115,11 +115,11 @@ class MGEFRecord : public Record
             fIsUseSkill           = 0x00080000, //OBME Deprecated
             fIsUseAttr            = 0x00100000, //OBME Deprecated
             fIsPCHasEffect        = 0x00200000, //whether or not PC has effect, forced to zero during loading
-            fIsDisabled           = 0x00400000, //Changeable, many (all?) methods that loop over effects ignore those with this flag. 
+            fIsDisabled           = 0x00400000, //Changeable, many (all?) methods that loop over effects ignore those with this flag.
                                                 //  Spells with an effect with this flag are apparently uncastable.
 
             fIsUnknownO           = 0x00800000, //Changeable, POSN,DISE - these effects have *only* this bit set,
-                                                //  perhaps a flag for meta effects 
+                                                //  perhaps a flag for meta effects
 
             fIsUseAV              = 0x01000000, //OBME Deprecated, Changeable, but once set (by default or by a previously loaded mod file)
                                                 //  it cannot be unset by another mod, nor can the mgefParam be overriden
@@ -127,7 +127,7 @@ class MGEFRecord : public Record
             fIsSprayType          = 0x02000000, //Changeable
             fIsBoltType           = 0x04000000, //Changeable
             fIsFogType            = 0x06000000, //Changeable
-            fIsNoHitEffect        = 0x08000000, //Changeable, no hit shader on target 
+            fIsNoHitEffect        = 0x08000000, //Changeable, no hit shader on target
             fIsPersistOnDeath     = 0x10000000, //Effect is not automatically removed when its target dies
             fIsExplodesWithForce  = 0x20000000, //causes explosion that can move loose objects (e.g. ragdolls)
             fIsMagnitudeIsLevel   = 0x40000000, //OBME Deprecated

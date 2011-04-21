@@ -220,7 +220,7 @@ struct GENSCRIPT
     ~GENSCRIPT();
 
     void Copy(GENSCRIPT &rhs);
-    
+
     bool   IsType(UINT32 Type);
     void   SetType(UINT32 Type);
 
@@ -241,7 +241,7 @@ struct GENMINSCRIPT
 
     GENMINSCRIPT();
     ~GENMINSCRIPT();
-    
+
     void Copy(GENMINSCRIPT &rhs);
 
     bool   IsType(UINT32 Type);

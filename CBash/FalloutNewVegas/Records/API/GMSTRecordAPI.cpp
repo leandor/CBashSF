@@ -58,7 +58,7 @@ UINT32 GMSTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 }
         case 6: //edid Editor ID
             return ISTRING_FIELD;
-        case 7: //data 
+        case 7: //data
             return ISTRING_FIELD;
         default:
             return UNKNOWN_FIELD;
@@ -83,7 +83,7 @@ void * GMSTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return NULL;
         case 6: //edid Editor ID
             return EDID.value;
-        case 7: //data 
+        case 7: //data
             return DATA.value;
         default:
             return NULL;
@@ -117,7 +117,7 @@ bool GMSTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 6: //edid Editor ID
             EDID.Copy((STRING)FieldValue);
             break;
-        case 7: //data 
+        case 7: //data
             DATA.Copy((STRING)FieldValue);
             break;
         default:
@@ -146,7 +146,7 @@ void GMSTRecord::DeleteField(FIELD_IDENTIFIERS)
         case 6: //edid Editor ID
             EDID.Unload();
             return;
-        case 7: //data 
+        case 7: //data
             DATA.Unload();
             return;
         default:

@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 #include "GenericRecord.h"
 
 ModFile::ModFile(STRING FileName, STRING ModName, const UINT32 _flags):
-    Flags(_flags), 
+    Flags(_flags),
     TES4(),
     ReadHandler(FileName, ModName),
     FormIDHandler(TES4.MAST, TES4.HEDR.value.nextObject),

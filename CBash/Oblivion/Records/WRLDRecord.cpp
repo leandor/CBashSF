@@ -90,9 +90,9 @@ bool WRLDRecord::VisitSubRecords(const UINT32 &RecordType, RecordOp &op)
             }
         }
 
-    if(RecordType == NULL || RecordType != 'LLEC' || 
-        RecordType != 'DRGP' || RecordType != 'DNAL' || 
-        RecordType != 'RFER' || RecordType != 'RHCA' || 
+    if(RecordType == NULL || RecordType != 'LLEC' ||
+        RecordType != 'DRGP' || RecordType != 'DNAL' ||
+        RecordType != 'RFER' || RecordType != 'RHCA' ||
         RecordType != 'ERCA')
         {
         if(CELL != NULL)

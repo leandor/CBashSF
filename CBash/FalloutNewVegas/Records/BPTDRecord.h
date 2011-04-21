@@ -69,13 +69,13 @@ class BPTDRecord : public Record //Body Part Data
 
             enum flagFlags
                 {
-                fIsSeverable = 0x00000001,
-                fIsIKData = 0x00000002,
-                fIsIKDataBipedData = 0x00000004,
-                fIsExplodable = 0x00000008,
-                fIsIKDataIsHead = 0x00000010,
+                fIsSeverable          = 0x00000001,
+                fIsIKData             = 0x00000002,
+                fIsIKDataBipedData    = 0x00000004,
+                fIsExplodable         = 0x00000008,
+                fIsIKDataIsHead       = 0x00000010,
                 fIsIKDataHeadTracking = 0x00000020,
-                fIsAbsoluteHitChance = 0x00000040
+                fIsAbsoluteHitChance  = 0x00000040
                 };
 
             enum partTypes

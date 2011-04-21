@@ -94,9 +94,9 @@ bool AlmostEqual(FLOAT32 A, FLOAT32 B, SINT32 maxUlps)
 _FileHandler::_FileHandler(STRING _FileName, STRING _ModName):
     ModName(_ModName),
     FileName(_FileName),
-    m_region(NULL), 
-    f_map(NULL), 
-    _Buffer(NULL), 
+    m_region(NULL),
+    f_map(NULL),
+    _Buffer(NULL),
     _BufSize(0),
     _BufPos(0),
     _BufEnd(0),
@@ -110,7 +110,7 @@ _FileHandler::_FileHandler(STRING _FileName, UINT32 nSize):
     ModName(_FileName),
     FileName(_FileName),
     m_region(NULL),
-    f_map(NULL), 
+    f_map(NULL),
     _Buffer(NULL),
     _BufSize(nSize),
     _BufPos(0),
@@ -407,7 +407,7 @@ void _FileHandler::reserveBuffer(UINT32 nSize)
     }
 
 FormIDHandlerClass::FormIDHandlerClass(std::vector<StringRecord> &_MAST, UINT32 &_NextObject):
-    MAST(_MAST), 
+    MAST(_MAST),
     nextObject(_NextObject),
     ExpandedIndex(0),
     CollapsedIndex(0),
@@ -1873,11 +1873,11 @@ Function_NameType HardCodedFormID_EditorIDInit[] =
     Function_NameType(0x022B,"FSTMetal")
     };
 
-UINT32 _AllPossibleGroups[] = {'TCAF', 'ECAR', 'FEGM', 'TPCS', 'XETL', 'HCNE', 'LEPS', 'NGSB', 
-                       'ITCA', 'APPA', 'OMRA', 'KOOB', 'TOLC', 'TNOC', 'ROOD', 'RGNI', 
-                       'HGIL', 'CSIM', 'ROLF', 'NRUF', 'PAEW', 'OMMA', '_CPN', 'AERC', 
-                       'CLVL', 'MGLS', 'MYEK', 'HCLA', 'TSGS', 'ILVL', 'RHTW', 'TMLC', 
-                       'NGER', 'LLEC', 'DLRW', 'LAID', 'TSUQ', 'ELDI', 'KCAP', 'RCSL', 
+UINT32 _AllPossibleGroups[] = {'TCAF', 'ECAR', 'FEGM', 'TPCS', 'XETL', 'HCNE', 'LEPS', 'NGSB',
+                       'ITCA', 'APPA', 'OMRA', 'KOOB', 'TOLC', 'TNOC', 'ROOD', 'RGNI',
+                       'HGIL', 'CSIM', 'ROLF', 'NRUF', 'PAEW', 'OMMA', '_CPN', 'AERC',
+                       'CLVL', 'MGLS', 'MYEK', 'HCLA', 'TSGS', 'ILVL', 'RHTW', 'TMLC',
+                       'NGER', 'LLEC', 'DLRW', 'LAID', 'TSUQ', 'ELDI', 'KCAP', 'RCSL',
                        'PSVL', 'OINA', 'RTAW'};
 
 std::vector<UINT32> AllGroups(_AllPossibleGroups, _AllPossibleGroups + (sizeof(_AllPossibleGroups) / sizeof(_AllPossibleGroups[0])));

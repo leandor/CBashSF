@@ -231,13 +231,14 @@ class REGNRecord : public Record
             bool operator !=(const REGNEntry &other) const;
             };
 
-        enum eREGNType {
-            eREGNObjects=2,
-            eREGNWeathers=3,
-            eREGNMap=4,
-            eREGNIcon=5,
-            eREGNGrasses=6,
-            eREGNSounds=7
+        enum eREGNType
+            {
+            eREGNObjects  = 2,
+            eREGNWeathers = 3,
+            eREGNMap      = 4,
+            eREGNIcon     = 5,
+            eREGNGrasses  = 6,
+            eREGNSounds   = 7
             };
 
     public:

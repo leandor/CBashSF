@@ -66,7 +66,7 @@ class ARMARecord : public Record //Armor Addon
 
         enum eEquipTypes
             {
-            eNone = -1,
+            eNone    = -1,
             eBigGuns = 0,
             eEnergyWeapons,
             eSmallGuns,

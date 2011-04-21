@@ -1064,9 +1064,9 @@ class GRUPRecords<WRLDRecord>
             bool stop = false;
 
             if(RecordType != NULL && RecordType != 'DLRW' &&
-                RecordType != 'DAOR' && RecordType != 'LLEC' && 
-                RecordType != 'DRGP' && RecordType != 'DNAL' && 
-                RecordType != 'RFER' && RecordType != 'RHCA' && 
+                RecordType != 'DAOR' && RecordType != 'LLEC' &&
+                RecordType != 'DRGP' && RecordType != 'DNAL' &&
+                RecordType != 'RFER' && RecordType != 'RHCA' &&
                 RecordType != 'ERCA')
                 {
                 return false;

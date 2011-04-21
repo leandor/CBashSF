@@ -338,7 +338,7 @@ Collection * CreateCollection(STRING const ModsPath, const UINT32 CollectionType
 SINT32 DeleteCollection(Collection *CollectionID)
     {
     PROFILE_FUNC
-    
+
     try
         {
         ValidatePointer(CollectionID);
@@ -416,7 +416,7 @@ SINT32 DeleteCollection(Collection *CollectionID)
 SINT32 LoadCollection(Collection *CollectionID)
     {
     PROFILE_FUNC
-    
+
     #ifdef CBASH_USE_LOGGING
         CLOGGER;
         BOOST_LOG_FUNCTION();
@@ -445,7 +445,7 @@ SINT32 LoadCollection(Collection *CollectionID)
 SINT32 UnloadCollection(Collection *CollectionID)
     {
     PROFILE_FUNC
-    
+
     try
         {
         ValidatePointer(CollectionID);
@@ -469,7 +469,7 @@ SINT32 UnloadCollection(Collection *CollectionID)
 SINT32 DeleteAllCollections()
     {
     PROFILE_FUNC
-    
+
     try
         {
         for(UINT32 p = 0; p < Collections.size(); ++p)
@@ -496,7 +496,7 @@ SINT32 DeleteAllCollections()
 SINT32 AddMod(Collection *CollectionID, STRING const ModName, const UINT32 ModFlagsField)
     {
     PROFILE_FUNC
-    
+
     #ifdef CBASH_USE_LOGGING
         CLOGGER;
         BOOST_LOG_FUNCTION();
@@ -525,7 +525,7 @@ SINT32 AddMod(Collection *CollectionID, STRING const ModName, const UINT32 ModFl
 SINT32 LoadMod(Collection *CollectionID, ModFile *ModID)
     {
     PROFILE_FUNC
-    
+
     try
         {
         ValidatePointer(CollectionID);
@@ -551,7 +551,7 @@ SINT32 LoadMod(Collection *CollectionID, ModFile *ModID)
 SINT32 UnloadMod(Collection *CollectionID, ModFile *ModID)
     {
     PROFILE_FUNC
-    
+
     try
         {
         ValidatePointer(ModID);
@@ -576,7 +576,7 @@ SINT32 UnloadMod(Collection *CollectionID, ModFile *ModID)
 SINT32 CleanModMasters(Collection *CollectionID, ModFile *ModID)
     {
     PROFILE_FUNC
-    
+
     try
         {
         ValidatePointer(CollectionID);
@@ -631,7 +631,7 @@ SINT32 SaveMod(Collection *CollectionID, ModFile *ModID, const bool CloseCollect
 SINT32 GetAllNumMods(Collection *CollectionID)
     {
     PROFILE_FUNC
-    
+
     try
         {
         ValidatePointer(CollectionID);
@@ -1429,7 +1429,7 @@ SINT32 GetNumReferences(Collection *CollectionID, ModFile *ModID, Record *Record
         ValidatePointer(CollectionID);
         ValidatePointer(ModID);
         ValidatePointer(RecordID);
-        
+
         //Ensure the record is fully loaded
         RecordReader reader(ModID->FormIDHandler, CollectionID->Expanders);
         reader.Accept(RecordID);
@@ -1464,7 +1464,7 @@ void SetField(Collection *CollectionID, ModFile *ModID, Record *RecordID, FIELD_
         ValidatePointer(CollectionID);
         ValidatePointer(ModID);
         ValidatePointer(RecordID);
-        
+
         //Ensure the record is fully loaded
         RecordReader reader(ModID->FormIDHandler, CollectionID->Expanders);
         reader.Accept(RecordID);
@@ -1506,7 +1506,7 @@ void DeleteField(Collection *CollectionID, ModFile *ModID, Record *RecordID, FIE
         ValidatePointer(CollectionID);
         ValidatePointer(ModID);
         ValidatePointer(RecordID);
-        
+
         //Ensure the record is fully loaded
         RecordReader reader(ModID->FormIDHandler, CollectionID->Expanders);
         reader.Accept(RecordID);
@@ -1589,7 +1589,7 @@ void * GetField(Collection *CollectionID, ModFile *ModID, Record *RecordID, FIEL
         //ValidatePointer(CollectionID);
         //ValidatePointer(ModID);
         //ValidatePointer(RecordID);
-        
+
         //Ensure the record is fully loaded
         RecordReader reader(ModID->FormIDHandler, CollectionID->Expanders);
         reader.Accept(RecordID);

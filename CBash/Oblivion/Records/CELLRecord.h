@@ -73,14 +73,14 @@ class CELLRecord : public Record
 
         enum flagsFlags
             {
-            fIsInterior         = 0x00000001,
-            fHasWater           = 0x00000002,
-            fInvertFastTravel   = 0x00000004,
-            fForceHideLand      = 0x00000008,
+            fIsInterior           = 0x00000001,
+            fHasWater             = 0x00000002,
+            fInvertFastTravel     = 0x00000004,
+            fForceHideLand        = 0x00000008,
             //fIsOblivionInterior = 0x00000008, //From OBSE, unconfirmed
-            fPublicPlace        = 0x00000020,
-            fHandChanged        = 0x00000040,
-            fBehaveLikeExterior = 0x00000080
+            fPublicPlace          = 0x00000020,
+            fHandChanged          = 0x00000040,
+            fBehaveLikeExterior   = 0x00000080
             };
 
         enum eXCMTType

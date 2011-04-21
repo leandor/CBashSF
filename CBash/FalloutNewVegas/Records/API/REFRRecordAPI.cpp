@@ -172,9 +172,9 @@ UINT32 REFRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
-        case 40: //mnam 
+        case 40: //mnam
             return FLOAT32_FIELD;
-        case 41: //nnam 
+        case 41: //nnam
             return FLOAT32_FIELD;
         case 42: //xsrf_p Unknown
             switch(WhichAttribute)
@@ -595,9 +595,9 @@ void * REFRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 39: //bnam_p Unknown
             *FieldValues = (MMRK.IsLoaded()) ? MMRK->BNAM.value : NULL;
             return NULL;
-        case 40: //mnam 
+        case 40: //mnam
             return MMRK.IsLoaded() ? &MMRK->MNAM->value40 : NULL;
-        case 41: //nnam 
+        case 41: //nnam
             return MMRK.IsLoaded() ? &MMRK->NNAM->value41 : NULL;
         case 42: //xsrf_p Unknown
             *FieldValues = XSRF.value;
@@ -982,12 +982,12 @@ bool REFRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             MMRK.Load();
             MMRK->BNAM.Copy((UINT8ARRAY)FieldValue, ArraySize);
             break;
-        case 40: //mnam 
+        case 40: //mnam
             MMRK.Load();
             MMRK->MNAM.Load();
             MMRK->MNAM->value40 = *(FLOAT32 *)FieldValue;
             break;
-        case 41: //nnam 
+        case 41: //nnam
             MMRK.Load();
             MMRK->NNAM.Load();
             MMRK->NNAM->value41 = *(FLOAT32 *)FieldValue;
@@ -1612,11 +1612,11 @@ void REFRRecord::DeleteField(FIELD_IDENTIFIERS)
             if(MMRK.IsLoaded())
                 MMRK->BNAM.Unload();
             return;
-        case 40: //mnam 
+        case 40: //mnam
             if(MMRK.IsLoaded())
                 MMRK->MNAM.Unload();
             return;
-        case 41: //nnam 
+        case 41: //nnam
             if(MMRK.IsLoaded())
                 MMRK->NNAM.Unload();
             return;

@@ -52,7 +52,7 @@
             CStopWatch(char *FName):FunctionName(FName)
                 {
                 timer.start.QuadPart=0;
-                timer.stop.QuadPart=0; 
+                timer.stop.QuadPart=0;
                 QueryPerformanceFrequency(&frequency);
                 QueryPerformanceCounter(&timer.start);
                 }

@@ -573,7 +573,7 @@ SINT32 Collection::GetRecordConflicts(Record *&curRecord, MODIDARRAY ModIDs, REC
             ModIDs[x] = sortedConflicts[y - (x + 1)]->first;
             RecordIDs[x] = sortedConflicts[y - (x + 1)]->second;
             }
-        //if(y > 1) 
+        //if(y > 1)
         //    for(UINT32 x = 0; x < y; ++x)
         //        {
         //        printf("ModIDs[%d] = %d\n", x, ModIDs[x]->ModID);
@@ -623,7 +623,7 @@ SINT32 Collection::GetRecordHistory(ModFile *&curModFile, Record *&curRecord, MO
             ModIDs[x] = sortedHistory[x]->first;
             RecordIDs[x] = sortedHistory[x]->second;
             }
-        //if(y > 1) 
+        //if(y > 1)
         //    for(UINT32 x = 0; x < y; ++x)
         //        {
         //        printf("ModIDs[%d] = %d\n", x, ModIDs[x]->ModID);
@@ -820,7 +820,7 @@ SINT32 Collection::SetRecordIDs(ModFile *&curModFile, Record *&RecordID, const F
         else if(_stricmp(RecordEditorID, EditorID) != 0)
             bChangingEditorID = true;
         }
-    
+
     if(!(bChangingFormID || bChangingEditorID))
         return -1;
 
