@@ -114,7 +114,7 @@ class RACERecord : public Record
 
         enum flagsFlags
             {
-            fIsPlayable   = 0x00000001
+            fIsPlayable = 0x00000001
             };
 
     public:

@@ -79,7 +79,7 @@ class CSTYRecord : public Record
 
         enum flagsBFlags
             {
-            fIsDoNotAcquire       = 0x00000001 //OBSE, ignored?
+            fIsDoNotAcquire = 0x00000001 //OBSE, ignored?
             };
 
     public:

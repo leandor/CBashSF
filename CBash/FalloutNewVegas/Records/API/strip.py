@@ -1,5 +1,32 @@
 import os, glob
 
+def maxer(lines):
+    nums = [-1]
+    for line in lines:
+##        if line.lstrip()[:2] == '//':
+##            continue
+        pos = line.find('=')
+        if pos != -1:
+            i = 1
+            while line[pos-i] == ' ':
+                i += 1
+            nums.append(pos-i+2)
+    return max(nums)
+
+def spacer(line, maxsize):
+    pos = line.find('=')
+    if pos != -1:
+        i = 1
+        while line[pos-i] == ' ':
+            i += 1
+        g = 1
+        while line[pos+g] == ' ':
+            g += 1
+        line = line[:pos-i+1] + ' = ' + line[pos+g:]
+        pos = line.find('=')
+        return line[:pos] + ' ' * (maxsize - pos) + line[pos:]
+    return line
+
 for infile in glob.glob('*.cpp'):
     f = open(infile)
     contents = f.readlines()
@@ -12,11 +39,11 @@ for infile in glob.glob('*.cpp'):
         if inEnum:
             enumLines += [l]
             if '}' in l:
-                maxsize = max([line.find('=') for line in enumLines])
+                maxsize = maxer(enumLines)
                 for line in enumLines:
                     pos = line.find('=')
                     if pos != -1:
-                        line = line[:pos] + ' ' * (maxsize - pos) + line[pos:]
+                        line = spacer(line, maxsize)
                     o.write(line)
                 inEnum = False
                 enumLines = []
@@ -29,11 +56,11 @@ for infile in glob.glob('*.cpp'):
     if inEnum:
         enumLines += [l]
         if '}' in l:
-            maxsize = max([line.find('=') for line in enumLines])
+            maxsize = maxer(enumLines)
             for line in enumLines:
                 pos = line.find('=')
                 if pos != -1:
-                    line = line[:pos] + ' ' * (maxsize - pos) + line[pos:]
+                    line = spacer(line, maxsize)
                 o.write(line)
             inEnum = False
             enumLines = []
@@ -53,11 +80,11 @@ for infile in glob.glob('*.h'):
         if inEnum:
             enumLines += [l]
             if '}' in l:
-                maxsize = max([line.find('=') for line in enumLines])
+                maxsize = maxer(enumLines)
                 for line in enumLines:
                     pos = line.find('=')
                     if pos != -1:
-                        line = line[:pos] + ' ' * (maxsize - pos) + line[pos:]
+                        line = spacer(line, maxsize)
                     o.write(line)
                 inEnum = False
                 enumLines = []
@@ -69,11 +96,11 @@ for infile in glob.glob('*.h'):
     if inEnum:
         enumLines += [l]
         if '}' in l:
-            maxsize = max([line.find('=') for line in enumLines])
+            maxsize = maxer(enumLines)
             for line in enumLines:
                 pos = line.find('=')
                 if pos != -1:
-                    line = line[:pos] + ' ' * (maxsize - pos) + line[pos:]
+                    line = spacer(line, maxsize)
                 o.write(line)
             inEnum = False
             enumLines = []

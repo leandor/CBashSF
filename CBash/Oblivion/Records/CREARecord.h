@@ -91,24 +91,24 @@ class CREARecord : public Record
 
         enum flagsFlags
             {
-            fIsBiped             = 0x00000001,
-            fIsEssential         = 0x00000002,
-            fIsWeaponAndShield   = 0x00000004,
-            fIsRespawn           = 0x00000008,
-            fIsSwims             = 0x00000010,
-            fIsFlies             = 0x00000020,
-            fIsWalks             = 0x00000040,
-            fIsPCLevelOffset     = 0x00000080,
-            fIsNoLowLevel        = 0x00000200,
-            fIsNoBloodSpray      = 0x00000800,
-            fIsNoBloodDecal      = 0x00001000,
-            //fIsSummonable      = 0x00004000, //OBSE
-            fIsNoHead            = 0x00008000,
-            fIsNoRightArm        = 0x00010000,
-            fIsNoLeftArm         = 0x00020000,
-            fIsNoCombatInWater   = 0x00040000,
-            fIsNoShadow          = 0x00080000,
-            fIsNoCorpseCheck     = 0x00100000
+            fIsBiped           = 0x00000001,
+            fIsEssential       = 0x00000002,
+            fIsWeaponAndShield = 0x00000004,
+            fIsRespawn         = 0x00000008,
+            fIsSwims           = 0x00000010,
+            fIsFlies           = 0x00000020,
+            fIsWalks           = 0x00000040,
+            fIsPCLevelOffset   = 0x00000080,
+            fIsNoLowLevel      = 0x00000200,
+            fIsNoBloodSpray    = 0x00000800,
+            fIsNoBloodDecal    = 0x00001000,
+            //fIsSummonable    = 0x00004000, //OBSE
+            fIsNoHead          = 0x00008000,
+            fIsNoRightArm      = 0x00010000,
+            fIsNoLeftArm       = 0x00020000,
+            fIsNoCombatInWater = 0x00040000,
+            fIsNoShadow        = 0x00080000,
+            fIsNoCorpseCheck   = 0x00100000
             };
 
         enum servicesFlags

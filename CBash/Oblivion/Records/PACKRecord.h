@@ -132,9 +132,9 @@ class PACKRecord : public Record
 
         enum targetTypeType
             {
-            eTargetReference   = 0,
-            eTargetObjectID    = 1,
-            eTargetObjectType  = 2
+            eTargetReference  = 0,
+            eTargetObjectID   = 1,
+            eTargetObjectType = 2
             };
 
     public:

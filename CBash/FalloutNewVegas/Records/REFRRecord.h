@@ -85,7 +85,7 @@ class REFRRecord : public Record //Placed Object
 
         enum xtelFlags
             {
-            fIsNoAlarm   = 0x00000001
+            fIsNoAlarm = 0x00000001
             };
 
         enum fnamFlags
@@ -96,7 +96,7 @@ class REFRRecord : public Record //Placed Object
 
         enum markerTypeTypes
             {
-            eMarkerNone      = 0,
+            eMarkerNone = 0,
             eCity,
             eSettlement,
             eEncampment,

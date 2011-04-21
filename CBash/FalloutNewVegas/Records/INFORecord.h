@@ -125,9 +125,9 @@ class INFORecord : public Record //Dialog response
 
         enum eSpeakerType
             {
-            eTarget       = 0,
-            eSelf         = 1,
-            eEither       = 2
+            eTarget = 0,
+            eSelf   = 1,
+            eEither = 2
             };
 
         enum flags1Flags
@@ -144,8 +144,8 @@ class INFORecord : public Record //Dialog response
 
         enum flags2Flags
             {
-            fIsSayOnceADay    = 0x00000001,
-            fIsAlwaysDarken   = 0x00000002
+            fIsSayOnceADay  = 0x00000001,
+            fIsAlwaysDarken = 0x00000002
             };
 
         enum eChallengeLevelType

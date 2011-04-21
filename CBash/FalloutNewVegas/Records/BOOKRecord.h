@@ -47,7 +47,7 @@ class BOOKRecord : public Record //Book
 
         enum flagsFlags
             {
-            fIsFixed  = 0x00000002
+            fIsFixed = 0x00000002
             };
     public:
         StringRecord EDID; //Editor ID

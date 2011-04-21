@@ -92,58 +92,58 @@ class Record
             //fIsTaken              = 0x00000002, //From OBSE, unconfirmed, requires fIsDeleted also be set
             fIsDeleted              = 0x00000020,
             fIsBorderRegion         = 0x00000040,
-            fIsTurnOffFire            = 0x00000080,
-            fIsCastsShadows           = 0x00000200,
+            fIsTurnOffFire          = 0x00000080,
+            fIsCastsShadows         = 0x00000200,
             fIsQuestOrPersistent    = 0x00000400,
             fIsInitiallyDisabled    = 0x00000800,
             fIsIgnored              = 0x00001000,
-            //fIsTemporary            = 0x00004000, //From OBSE, unconfirmed
+            //fIsTemporary          = 0x00004000, //From OBSE, unconfirmed
             fIsVisibleWhenDistant   = 0x00008000,
             fIsDangerousOrOffLimits = 0x00020000,
             fIsCompressed           = 0x00040000,
-            fIsCantWait               = 0x00080000
+            fIsCantWait             = 0x00080000
             };
 
 /*        enum headerFlags
             {
-            fIsESM                  = 0x00000001,
-            fIsTaken                = 0x00000002, //From OBSE, unconfirmed, requires fIsDeleted also be set
-            fUnknown1               = 0x00000004,
-            fUnknown2               = 0x00000008,
-            fUnknown3               = 0x00000010,
-            fIsDeleted              = 0x00000020,
-            fIsBorderRegion         = 0x00000040, //Has Tree LOD / Constant / Hidden From Local Map (FNV)
-            fIsTurnOffFire            = 0x00000080,
-            fIsInaccessible         = 0x00000100, // (FNV)
-            fIsCastsShadows           = 0x00000200, //On Local Map / Motion Blur (FNV)
-            fIsQuestOrPersistent    = 0x00000400,
-            fIsInitiallyDisabled    = 0x00000800,
-            fIsIgnored              = 0x00001000,
-            fIsNoVoiceFilter        = 0x00002000, // (FNV)
-            fIsTemporary            = 0x00004000, //From OBSE, unconfirmed
-            fIsVisibleWhenDistant   = 0x00008000,
+            fIsESM                              = 0x00000001,
+            fIsTaken                            = 0x00000002, //From OBSE, unconfirmed, requires fIsDeleted also be set
+            fUnknown1                           = 0x00000004,
+            fUnknown2                           = 0x00000008,
+            fUnknown3                           = 0x00000010,
+            fIsDeleted                          = 0x00000020,
+            fIsBorderRegion                     = 0x00000040, //Has Tree LOD / Constant / Hidden From Local Map (FNV)
+            fIsTurnOffFire                      = 0x00000080,
+            fIsInaccessible                     = 0x00000100, // (FNV)
+            fIsCastsShadows                     = 0x00000200, //On Local Map / Motion Blur (FNV)
+            fIsQuestOrPersistent                = 0x00000400,
+            fIsInitiallyDisabled                = 0x00000800,
+            fIsIgnored                          = 0x00001000,
+            fIsNoVoiceFilter                    = 0x00002000, // (FNV)
+            fIsTemporary                        = 0x00004000, //From OBSE, unconfirmed
+            fIsVisibleWhenDistant               = 0x00008000,
             fIsRandomAnimStartOrHighPriorityLOD = 0x00010000, // (FNV)
-            fIsDangerousOrOffLimits = 0x00020000, // Radio Station (Talking Activator) (FNV)
-            fIsCompressed           = 0x00040000,
-            fIsCantWait               = 0x00080000, // Platform Specific Texture (FNV)
-            fUnknown4               = 0x00100000,
-            fUnknown5               = 0x00200000,
-            fUnknown6               = 0x00400000,
-            fUnknown7               = 0x00800000,
-            fUnknown8               = 0x01000000,
-            fIsObstacleOrNoAIAcquire = 0x02000000, // (FNV)
-            fIsNavMeshFilter                  = 0x03000000, //? (FNV)
-            //fIsNavMeshBoundBox                  = 0x04000000, //? (FNV)
+            fIsDangerousOrOffLimits             = 0x00020000, // Radio Station (Talking Activator) (FNV)
+            fIsCompressed                       = 0x00040000,
+            fIsCantWait                         = 0x00080000, // Platform Specific Texture (FNV)
+            fUnknown4                           = 0x00100000,
+            fUnknown5                           = 0x00200000,
+            fUnknown6                           = 0x00400000,
+            fUnknown7                           = 0x00800000,
+            fUnknown8                           = 0x01000000,
+            fIsObstacleOrNoAIAcquire            = 0x02000000, // (FNV)
+            fIsNavMeshFilter                    = 0x03000000, //? (FNV)
+            //fIsNavMeshBoundBox                = 0x04000000, //? (FNV)
             fIsNavMeshBoundBox                  = 0x08000000, // (FNV)
-            fIsNonPipboyOrAutoReflected                  = 0x10000000, // (FNV)
-            fIsChildUsableOrAutoRefracted                  = 0x20000000, // (FNV)
-            fIsNavMeshGround                  = 0x40000000, // (FNV)
-            fUnknown9                  = 0x80000000
+            fIsNonPipboyOrAutoReflected         = 0x10000000, // (FNV)
+            fIsChildUsableOrAutoRefracted       = 0x20000000, // (FNV)
+            fIsNavMeshGround                    = 0x40000000, // (FNV)
+            fUnknown9                           = 0x80000000
             };
 */
         enum cBashRecordFlags
             {
-            _fIsLoaded              = 0x80000000 //Not an actual flag. Used only by CBash internally. Won't be written.
+            _fIsLoaded = 0x80000000 //Not an actual flag. Used only by CBash internally. Won't be written.
             };
 
     public:

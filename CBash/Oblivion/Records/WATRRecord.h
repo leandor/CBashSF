@@ -70,8 +70,8 @@ class WATRRecord : public Record
 
         enum flagsFlags
             {
-            fIsCausesDamage  = 0x00000001,
-            fIsReflective    = 0x00000002
+            fIsCausesDamage = 0x00000001,
+            fIsReflective   = 0x00000002
             };
 
     public:

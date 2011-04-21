@@ -336,9 +336,9 @@ struct GENEffect
 
     enum eRanges
         {
-        eRangeSelf    = 0,
-        eRangeTouch   = 1,
-        eRangeTarget  = 2
+        eRangeSelf   = 0,
+        eRangeTouch  = 1,
+        eRangeTarget = 2
         };
 
     enum OBMEOverrideFlags
@@ -1437,9 +1437,9 @@ struct FNVEffect
 
     enum eRanges
         {
-        eRangeSelf    = 0,
-        eRangeTouch   = 1,
-        eRangeTarget  = 2
+        eRangeSelf   = 0,
+        eRangeTouch  = 1,
+        eRangeTarget = 2
         };
 
     bool operator ==(const FNVEffect &other) const;

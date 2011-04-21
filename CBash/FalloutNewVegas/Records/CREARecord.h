@@ -136,50 +136,50 @@ class CREARecord : public Record //Creature
 
         enum flagsFlags
             {
-            fIsBiped             = 0x00000001,
-            fIsEssential         = 0x00000002,
-            fIsWeaponAndShield   = 0x00000004, // ?
-            fIsRespawn           = 0x00000008,
-            fIsSwims             = 0x00000010,
-            fIsFlies             = 0x00000020,
-            fIsWalks             = 0x00000040,
-            fIsPCLevelOffset     = 0x00000080,
-            fIsUnknown1          = 0x00000100,
-            fIsNoLowLevel        = 0x00000200,
-            fIsNoBloodSpray      = 0x00000800,
-            fIsNoBloodDecal      = 0x00001000,
-            //fIsSummonable      = 0x00004000, //OBSE
-            fIsNoHead            = 0x00008000,
-            fIsNoRightArm        = 0x00010000,
-            fIsNoLeftArm         = 0x00020000,
-            fIsNoCombatInWater   = 0x00040000,
-            fIsNoShadow          = 0x00080000,
-            fIsNoVATSMelee       = 0x00100000,
-            fIsAllowPCDialogue   = 0x00200000,
-            fIsCantOpenDoords    = 0x00400000,
-            fIsImmobile          = 0x00800000,
-            fIsTiltFrontBack     = 0x01000000,
-            fIsTiltLeftRight     = 0x02000000,
-            fIsNoKnockdowns      = 0x03000000, //3?
-            fIsNotPushable       = 0x08000000,
-            fIsAllowPickpocket   = 0x10000000,
-            fIsGhost             = 0x20000000,
-            fIsNoHeadTracking    = 0x40000000,
-            fIsInvulnerable      = 0x80000000
+            fIsBiped           = 0x00000001,
+            fIsEssential       = 0x00000002,
+            fIsWeaponAndShield = 0x00000004, // ?
+            fIsRespawn         = 0x00000008,
+            fIsSwims           = 0x00000010,
+            fIsFlies           = 0x00000020,
+            fIsWalks           = 0x00000040,
+            fIsPCLevelOffset   = 0x00000080,
+            fIsUnknown1        = 0x00000100,
+            fIsNoLowLevel      = 0x00000200,
+            fIsNoBloodSpray    = 0x00000800,
+            fIsNoBloodDecal    = 0x00001000,
+            //fIsSummonable    = 0x00004000, //OBSE
+            fIsNoHead          = 0x00008000,
+            fIsNoRightArm      = 0x00010000,
+            fIsNoLeftArm       = 0x00020000,
+            fIsNoCombatInWater = 0x00040000,
+            fIsNoShadow        = 0x00080000,
+            fIsNoVATSMelee     = 0x00100000,
+            fIsAllowPCDialogue = 0x00200000,
+            fIsCantOpenDoords  = 0x00400000,
+            fIsImmobile        = 0x00800000,
+            fIsTiltFrontBack   = 0x01000000,
+            fIsTiltLeftRight   = 0x02000000,
+            fIsNoKnockdowns    = 0x03000000, //3?
+            fIsNotPushable     = 0x08000000,
+            fIsAllowPickpocket = 0x10000000,
+            fIsGhost           = 0x20000000,
+            fIsNoHeadTracking  = 0x40000000,
+            fIsInvulnerable    = 0x80000000
             };
 
         enum templateFlags
             {
-            fIsUseTraits           = 0x00000001,
-            fIsUseStats            = 0x00000002,
-            fIsUseFactions         = 0x00000004
-            fIsUseAEList           = 0x00000008,
-            fIsUseAIData           = 0x00000010,
-            fIsUseAIPackages       = 0x00000020,
-            fIsUseModelAnim        = 0x00000040,
-            fIsUseBaseData         = 0x00000080,
-            fIsUseInventory        = 0x00000100,
-            fIsUseScript           = 0x00000200
+            fIsUseTraits     = 0x00000001,
+            fIsUseStats      = 0x00000002,
+            fIsUseFactions   = 0x00000004
+            fIsUseAEList     = 0x00000008,
+            fIsUseAIData     = 0x00000010,
+            fIsUseAIPackages = 0x00000020,
+            fIsUseModelAnim  = 0x00000040,
+            fIsUseBaseData   = 0x00000080,
+            fIsUseInventory  = 0x00000100,
+            fIsUseScript     = 0x00000200
             };
 
         enum attackAnimTypes

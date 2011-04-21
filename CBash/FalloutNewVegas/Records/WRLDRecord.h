@@ -42,12 +42,12 @@ class WRLDRecord : public Record //Worldspace
 
         enum flagsFlags
             {
-            fIsSmallWorld         = 0x00000001,
-            fIsNoFastTravel       = 0x00000002,
-            fIsUnknown2           = 0x00000004,
-            fIsNoLODWater         = 0x00000010,
-            fIsNoLODNoise         = 0x00000020,
-            fIsNoNPCFallDmg       = 0x00000040
+            fIsSmallWorld   = 0x00000001,
+            fIsNoFastTravel = 0x00000002,
+            fIsUnknown2     = 0x00000004,
+            fIsNoLODWater   = 0x00000010,
+            fIsNoLODNoise   = 0x00000020,
+            fIsNoNPCFallDmg = 0x00000040
             };
     public:
         StringRecord EDID; //Editor ID

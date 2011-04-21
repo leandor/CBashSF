@@ -81,8 +81,8 @@ class DIALRecord : public Record //Dialog Topic
 
         enum flagsFlags
             {
-            fIsRumors    = 0x00000001,
-            fIsTopLevel  = 0x00000002
+            fIsRumors   = 0x00000001,
+            fIsTopLevel = 0x00000002
             };
     public:
         StringRecord EDID; //Editor ID

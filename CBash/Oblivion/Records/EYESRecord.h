@@ -28,7 +28,7 @@ class EYESRecord : public Record
     private:
         enum flagsFlags
             {
-            fIsPlayable   = 0x00000001
+            fIsPlayable = 0x00000001
             };
 
     public:
