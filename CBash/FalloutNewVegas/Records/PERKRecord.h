@@ -27,27 +27,188 @@ namespace FNV
 {
 class PERKRecord : public Record //Perk
     {
+    private:
+        struct PERKDATA
+            {
+            UINT8   trait, minLevel, ranks, playable, hidden;
+
+            PERKDATA();
+            ~PERKDATA();
+
+            bool operator ==(const PERKDATA &other) const;
+            bool operator !=(const PERKDATA &other) const;
+            };
+
+        struct PERKPRKE // Header
+            {
+            UINT8   perkType, rank, priority;
+
+            PERKPRKE();
+            ~PERKPRKE();
+
+            bool operator ==(const PERKPRKE &other) const;
+            bool operator !=(const PERKPRKE &other) const;
+            };
+
+        struct PRKEDATA // Effect Data
+            {
+            union //Determined by PRKE->perkType
+                {
+                struct PRKEDATA1 // Quest + Stage
+                    {
+                    FORMID  quest;
+                    SINT8   stage;
+                    UINT8   unused1[3];
+                    } DATA1;
+                struct PRKEDATA2 // Ability
+                    {
+                    FORMID  ability;
+                    } DATA2;
+                struct PRKEDATA3 // Entry Point
+                    {
+                    UINT8   entry, func, count;
+                    } DATA3;
+                };
+
+            PRKEDATA();
+            ~PRKEDATA();
+
+            bool operator ==(const PRKEDATA &other) const;
+            bool operator !=(const PRKEDATA &other) const;
+            };
+
+        struct PERKCondition // Perk Condition
+            {
+            OptSubRecord<GENS8> PRKC; //Run On
+            std::vector<ReqSubRecord<FNVCTDA> *> CTDA; //Conditions
+
+            bool   operator ==(const PERKCondition &other) const;
+            bool   operator !=(const PERKCondition &other) const;
+            };
+
+        struct PERKEPFD // Data
+            {
+            union //Determined mainly by EPFT->value
+                {
+                UINT8   unknown[4]; //default
+                FLOAT32 float1; // EPFT->value == 1
+                struct EPFDDATA1 // Quest + Stage
+                    {
+                    FLOAT32 float1;
+                    FLOAT32 float2;
+                    } DATA1; // EPFT->value == 2
+                FORMID leveledItem; // EPFT->value == 3
+                UINT8  unused; // EPFT->value == 4
+                struct EPFDDATA2 // Ability
+                    {
+                    UINT32  actorValue;
+                    FLOAT32 float1;
+                    } DATA2; // EPFT->value == 2 and DATA->DATA3.func == 5
+                };
+
+            PERKEPFD();
+            ~PERKEPFD();
+
+            bool operator ==(const PERKEPFD &other) const;
+            bool operator !=(const PERKEPFD &other) const;
+            };
+
+        struct PERKEffect // Effect
+            {
+            OptSubRecord<PERKPRKE> PRKE; //Header
+            OptSubRecord<PRKEDATA> DATA; //Effect Data
+            std::vector<PERKConditions *> Conditions; // Perk Conditions
+
+            OptSubRecord<GENU8> EPFT; //Type
+            OptSubRecord<PERKEPFD> EPFD; //Data
+            StringRecord EPF2; //Button Label
+            OptSubRecord<GENU16> EPF3; //Script Flags
+            OptSubRecord<GENSCRIPT> Script; //Basic Script
+            //OptSubRecord<GENPRKF> PRKF; //End Marker
+
+            enum epf3Flags
+                {
+                fIsRunImmediately = 0x0001
+                };
+
+            bool   IsRunImmediately();
+            void   IsRunImmediately(bool value);
+            bool   IsFlagMask(UINT16 Mask, bool Exact=false);
+            void   SetFlagMask(UINT16 Mask);
+
+            bool   operator ==(const PERKEffect &other) const;
+            bool   operator !=(const PERKEffect &other) const;
+            };
+
+        enum traitTypes
+            {
+            eNotTrait = 0,
+            eTrait
+            };
+
+        enum playableTypes
+            {
+            eNotPlayable = 0,
+            ePlayable
+            };
+
+        enum hiddenTypes
+            {
+            eNotHidden = 0,
+            eHidden
+            };
+
+        enum perkTypeTypes
+            {
+            eQuestStage = 0,
+            eAbility,
+            eEntryPoint
+            };
+
     public:
         StringRecord EDID; //Editor ID
         StringRecord FULL; //Name
         StringRecord DESC; //Description
-        OptSubRecord<GENICON> ICON; //Large Icon Filename
-        OptSubRecord<GENCTDA> CTDA; //Conditions
-        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
-        OptSubRecord<GENPRKE> PRKE; //PRKE ,, Struct
-        OptSubRecord<GENS8> PRKC; //Run On
-        OptSubRecord<GENCTDA> CTDA; //Conditions
-        OptSubRecord<GENEPFT> EPFT; //Type
-        StringRecord EPF2; //Button Label
-        OptSubRecord<GENU16> EPF3; //Script Flags
-        OptSubRecord<GENSCHR> SCHR; //Basic Script Data
-        OptSubRecord<GENPRKF> PRKF; //End Marker
+        OptSubRecord<GENICON> ICON; //Icon Filenames
+        std::vector<ReqSubRecord<FNVCTDA> *> CTDA; //Conditions
+        OptSubRecord<PERKDATA> DATA; //Data
+        std::vector<ReqSubRecord<PERKEffect> *> PRKE; //Effects
 
         PERKRecord(unsigned char *_recData=NULL);
         PERKRecord(PERKRecord *srcRecord);
         ~PERKRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
+
+        bool   IsNotTrait();
+        void   IsNotTrait(bool value);
+        bool   IsTrait();
+        void   IsTrait(bool value);
+        bool   IsTraitType(UINT8 Type, bool Exact=false);
+        void   SetTraitType(UINT8 Type);
+
+        bool   IsNotPlayable();
+        void   IsNotPlayable(bool value);
+        bool   IsPlayable();
+        void   IsPlayable(bool value);
+        bool   IsPlayableType(UINT8 Type, bool Exact=false);
+        void   SetPlayableType(UINT8 Type);
+
+        bool   IsNotHidden();
+        void   IsNotHidden(bool value);
+        bool   IsHidden();
+        void   IsHidden(bool value);
+        bool   IsHiddenType(UINT8 Type, bool Exact=false);
+        void   SetHiddenType(UINT8 Type);
+
+        bool   IsQuestStage();
+        void   IsQuestStage(bool value);
+        bool   IsAbility();
+        void   IsAbility(bool value);
+        bool   IsEntryPoint();
+        void   IsEntryPoint(bool value);
+        bool   IsType(UINT8 Type, bool Exact=false);
+        void   SetType(UINT8 Type);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

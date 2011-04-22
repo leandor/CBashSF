@@ -95,6 +95,327 @@ bool PROJRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+bool PROJRecord::IsHitscan()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsHitscan) != 0;
+    }
+
+void PROJRecord::IsHitscan(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsHitscan;
+    else
+        Dummy->flags &= ~fIsHitscan;
+    }
+
+bool PROJRecord::IsExplosion()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsExplosion) != 0;
+    }
+
+void PROJRecord::IsExplosion(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsExplosion;
+    else
+        Dummy->flags &= ~fIsExplosion;
+    }
+
+bool PROJRecord::IsAltTrigger()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsAltTrigger) != 0;
+    }
+
+void PROJRecord::IsAltTrigger(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsAltTrigger;
+    else
+        Dummy->flags &= ~fIsAltTrigger;
+    }
+
+bool PROJRecord::IsMuzzleFlash()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsMuzzleFlash) != 0;
+    }
+
+void PROJRecord::IsMuzzleFlash(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsMuzzleFlash;
+    else
+        Dummy->flags &= ~fIsMuzzleFlash;
+    }
+
+bool PROJRecord::IsDisableable()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsDisableable) != 0;
+    }
+
+void PROJRecord::IsDisableable(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsDisableable;
+    else
+        Dummy->flags &= ~fIsDisableable;
+    }
+
+bool PROJRecord::IsPickupable()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsPickupable) != 0;
+    }
+
+void PROJRecord::IsPickupable(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsPickupable;
+    else
+        Dummy->flags &= ~fIsPickupable;
+    }
+
+bool PROJRecord::IsSupersonic()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsSupersonic) != 0;
+    }
+
+void PROJRecord::IsSupersonic(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsSupersonic;
+    else
+        Dummy->flags &= ~fIsSupersonic;
+    }
+
+bool PROJRecord::IsPinsLimbs()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsPinsLimbs) != 0;
+    }
+
+void PROJRecord::IsPinsLimbs(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsPinsLimbs;
+    else
+        Dummy->flags &= ~fIsPinsLimbs;
+    }
+
+bool PROJRecord::IsPassSmallTransparent()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsPassSmallTransparent) != 0;
+    }
+
+void PROJRecord::IsPassSmallTransparent(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsPassSmallTransparent;
+    else
+        Dummy->flags &= ~fIsPassSmallTransparent;
+    }
+
+bool PROJRecord::IsDetonates()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsDetonates) != 0;
+    }
+
+void PROJRecord::IsDetonates(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsDetonates;
+    else
+        Dummy->flags &= ~fIsDetonates;
+    }
+
+bool PROJRecord::IsRotation()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsRotation) != 0;
+    }
+
+void PROJRecord::IsRotation(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsRotation;
+    else
+        Dummy->flags &= ~fIsRotation;
+    }
+
+bool PROJRecord::IsFlagMask(UINT32 Mask, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    }
+
+void PROJRecord::SetFlagMask(UINT32 Mask)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
+bool PROJRecord::IsMissile()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eMissile);
+    }
+
+void PROJRecord::IsMissile(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eMissile;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool PROJRecord::IsLobber()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eLobber);
+    }
+
+void PROJRecord::IsLobber(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eLobber;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool PROJRecord::IsBeam()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eBeam);
+    }
+
+void PROJRecord::IsBeam(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eBeam;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool PROJRecord::IsFlame()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eFlame);
+    }
+
+void PROJRecord::IsFlame(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eFlame;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool PROJRecord::IsContinuousBeam()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eContinuousBeam);
+    }
+
+void PROJRecord::IsContinuousBeam(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eContinuousBeam;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool PROJRecord::IsType(UINT32 Type, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    }
+
+void PROJRecord::SetType(UINT32 Type)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
+bool PROJRecord::IsLoud()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eLoud);
+    }
+
+void PROJRecord::IsLoud(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eLoud;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool PROJRecord::IsNormal()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eNormal);
+    }
+
+void PROJRecord::IsNormal(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eNormal;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool PROJRecord::IsSilent()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eSilent);
+    }
+
+void PROJRecord::IsSilent(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eSilent;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool PROJRecord::IsSoundLevelType(UINT8 Type, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    }
+
+void PROJRecord::SetSoundLevelType(UINT8 Type)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
 UINT32 PROJRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())

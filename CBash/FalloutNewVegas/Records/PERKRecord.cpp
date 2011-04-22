@@ -24,6 +24,33 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
+bool PERKRecord::PERKEffect::IsRunImmediately()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsRunImmediately) != 0;
+    }
+
+void PERKRecord::PERKEffect::IsRunImmediately(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsRunImmediately;
+    else
+        Dummy->flags &= ~fIsRunImmediately;
+    }
+
+bool PERKRecord::PERKEffect::IsFlagMask(UINT16 Mask, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    }
+
+void PERKRecord::PERKEffect::SetFlagMask(UINT16 Mask)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
 PERKRecord::PERKRecord(unsigned char *_recData):
     Record(_recData)
     {
@@ -106,6 +133,189 @@ bool PERKRecord::VisitFormIDs(FormIDOp &op)
         op.Accept(SCHR->SCRO->value);
 
     return op.Stop();
+    }
+
+bool PERKRecord::IsNotTrait()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eNotTrait);
+    }
+
+void PERKRecord::IsNotTrait(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eNotTrait;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool PERKRecord::IsTrait()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eTrait);
+    }
+
+void PERKRecord::IsTrait(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eTrait;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool PERKRecord::IsTraitType(UINT8 Type, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    }
+
+void PERKRecord::SetTraitType(UINT8 Type)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
+bool PERKRecord::IsNotPlayable()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eNotPlayable);
+    }
+
+void PERKRecord::IsNotPlayable(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eNotPlayable;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool PERKRecord::IsPlayable()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == ePlayable);
+    }
+
+void PERKRecord::IsPlayable(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = ePlayable;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool PERKRecord::IsPlayableType(UINT8 Type, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    }
+
+void PERKRecord::SetPlayableType(UINT8 Type)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
+bool PERKRecord::IsNotHidden()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eNotHidden);
+    }
+
+void PERKRecord::IsNotHidden(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eNotHidden;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool PERKRecord::IsHidden()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eHidden);
+    }
+
+void PERKRecord::IsHidden(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eHidden;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool PERKRecord::IsHiddenType(UINT8 Type, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    }
+
+void PERKRecord::SetHiddenType(UINT8 Type)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
+bool PERKRecord::IsQuestStage()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eQuestStage);
+    }
+
+void PERKRecord::IsQuestStage(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eQuestStage;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool PERKRecord::IsAbility()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eAbility);
+    }
+
+void PERKRecord::IsAbility(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eAbility;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool PERKRecord::IsEntryPoint()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eEntryPoint);
+    }
+
+void PERKRecord::IsEntryPoint(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eEntryPoint;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool PERKRecord::IsType(UINT8 Type, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    }
+
+void PERKRecord::SetType(UINT8 Type)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
     }
 
 UINT32 PERKRecord::GetSize(bool forceCalc)

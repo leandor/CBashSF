@@ -80,6 +80,288 @@ bool PWATRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+bool PWATRecord::IsReflects()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsReflects) != 0;
+    }
+
+void PWATRecord::IsReflects(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsReflects;
+    else
+        Dummy->flags &= ~fIsReflects;
+    }
+
+bool PWATRecord::IsReflectsActors()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsReflectsActors) != 0;
+    }
+
+void PWATRecord::IsReflectsActors(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsReflectsActors;
+    else
+        Dummy->flags &= ~fIsReflectsActors;
+    }
+
+bool PWATRecord::IsReflectsLand()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsReflectsLand) != 0;
+    }
+
+void PWATRecord::IsReflectsLand(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsReflectsLand;
+    else
+        Dummy->flags &= ~fIsReflectsLand;
+    }
+
+bool PWATRecord::IsReflectsLODLand()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsReflectsLODLand) != 0;
+    }
+
+void PWATRecord::IsReflectsLODLand(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsReflectsLODLand;
+    else
+        Dummy->flags &= ~fIsReflectsLODLand;
+    }
+
+bool PWATRecord::IsReflectsLODBuildings()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsReflectsLODBuildings) != 0;
+    }
+
+void PWATRecord::IsReflectsLODBuildings(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsReflectsLODBuildings;
+    else
+        Dummy->flags &= ~fIsReflectsLODBuildings;
+    }
+
+bool PWATRecord::IsReflectsTrees()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsReflectsTrees) != 0;
+    }
+
+void PWATRecord::IsReflectsTrees(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsReflectsTrees;
+    else
+        Dummy->flags &= ~fIsReflectsTrees;
+    }
+
+bool PWATRecord::IsReflectsSky()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsReflectsSky) != 0;
+    }
+
+void PWATRecord::IsReflectsSky(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsReflectsSky;
+    else
+        Dummy->flags &= ~fIsReflectsSky;
+    }
+
+bool PWATRecord::IsReflectsDynamicObjects()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsReflectsDynamicObjects) != 0;
+    }
+
+void PWATRecord::IsReflectsDynamicObjects(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsReflectsDynamicObjects;
+    else
+        Dummy->flags &= ~fIsReflectsDynamicObjects;
+    }
+
+bool PWATRecord::IsReflectsDeadBodies()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsReflectsDeadBodies) != 0;
+    }
+
+void PWATRecord::IsReflectsDeadBodies(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsReflectsDeadBodies;
+    else
+        Dummy->flags &= ~fIsReflectsDeadBodies;
+    }
+
+bool PWATRecord::IsRefracts()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsRefracts) != 0;
+    }
+
+void PWATRecord::IsRefracts(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsRefracts;
+    else
+        Dummy->flags &= ~fIsRefracts;
+    }
+
+bool PWATRecord::IsRefractsActors()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsRefractsActors) != 0;
+    }
+
+void PWATRecord::IsRefractsActors(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsRefractsActors;
+    else
+        Dummy->flags &= ~fIsRefractsActors;
+    }
+
+bool PWATRecord::IsRefractsDeadBodies()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsRefractsDeadBodies) != 0;
+    }
+
+void PWATRecord::IsRefractsDeadBodies(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsRefractsDeadBodies;
+    else
+        Dummy->flags &= ~fIsRefractsDeadBodies;
+    }
+
+bool PWATRecord::IsRefractsDynamicObjects()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsRefractsDynamicObjects) != 0;
+    }
+
+void PWATRecord::IsRefractsDynamicObjects(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsRefractsDynamicObjects;
+    else
+        Dummy->flags &= ~fIsRefractsDynamicObjects;
+    }
+
+bool PWATRecord::IsRefractsDeadBodies()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsRefractsDeadBodies) != 0;
+    }
+
+void PWATRecord::IsRefractsDeadBodies(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsRefractsDeadBodies;
+    else
+        Dummy->flags &= ~fIsRefractsDeadBodies;
+    }
+
+bool PWATRecord::IsSilhouetteReflections()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsSilhouetteReflections) != 0;
+    }
+
+void PWATRecord::IsSilhouetteReflections(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsSilhouetteReflections;
+    else
+        Dummy->flags &= ~fIsSilhouetteReflections;
+    }
+
+bool PWATRecord::IsDepth()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsDepth) != 0;
+    }
+
+void PWATRecord::IsDepth(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsDepth;
+    else
+        Dummy->flags &= ~fIsDepth;
+    }
+
+bool PWATRecord::IsObjectTextureCoordinates()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsObjectTextureCoordinates) != 0;
+    }
+
+void PWATRecord::IsObjectTextureCoordinates(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsObjectTextureCoordinates;
+    else
+        Dummy->flags &= ~fIsObjectTextureCoordinates;
+    }
+
+bool PWATRecord::IsNoUnderwaterFog()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsNoUnderwaterFog) != 0;
+    }
+
+void PWATRecord::IsNoUnderwaterFog(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsNoUnderwaterFog;
+    else
+        Dummy->flags &= ~fIsNoUnderwaterFog;
+    }
+
+bool PWATRecord::IsFlagMask(UINT32 Mask, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    }
+
+void PWATRecord::SetFlagMask(UINT32 Mask)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
 UINT32 PWATRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
