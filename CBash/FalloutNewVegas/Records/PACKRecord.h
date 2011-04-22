@@ -27,38 +27,248 @@ namespace FNV
 {
 class PACKRecord : public Record //Package
     {
+    private:
+        struct PACKPKDT //General
+            {
+            UINT32  flags; // General Flags
+            UINT8   aiType, unused1; // Type, Unused
+            UINT16  behaviorFlags; // Fallout Behavior Flags
+            UINT16  specificFlags; // Type Specific Flags
+            UINT8   unused2[2]; // Unused
+
+            PACKPKDT();
+            ~PACKPKDT();
+
+            bool operator ==(const PACKPKDT &other) const;
+            bool operator !=(const PACKPKDT &other) const;
+            };
+
+        struct PACKPLDT
+            {
+            SINT32  locType;
+            FORMID_OR_UINT32  locId;
+            SINT32  locRadius;
+
+            PACKPLDT();
+            ~PACKPLDT();
+
+            bool operator ==(const PACKPLDT &other) const;
+            bool operator !=(const PACKPLDT &other) const;
+            };
+
+        struct PACKPSDT // Schedule
+            {
+            SINT8   month, day;
+            UINT8   date;
+            SINT8   time;
+            SINT32  duration;
+
+            PACKPSDT();
+            ~PACKPSDT();
+
+            bool operator ==(const PACKPSDT &other) const;
+            bool operator !=(const PACKPSDT &other) const;
+            };
+
+        struct PACKPTDT // Target
+            {
+            SINT32  targetType; // Type
+            FORMID_OR_UINT32 targetId; // Reference
+            SINT32  targetCountOrDistance; // Count / Distance
+            FLOAT32 unknown; // Unknown
+
+            PACKPTDT();
+            ~PACKPTDT();
+
+            bool operator ==(const PACKPTDT &other) const;
+            bool operator !=(const PACKPTDT &other) const;
+            };
+
+        struct PACKIDLC // Idle Animation Count
+            {
+            UINT8   targetType, unused[3]; // Animation Count, Unused
+
+            PACKIDLC();
+            ~PACKIDLC();
+
+            bool operator ==(const PACKIDLC &other) const;
+            bool operator !=(const PACKIDLC &other) const;
+            };
+
+        struct PACKPKPT // Patrol Flags
+            {
+            UINT8   repeatableTypes, unused; // Repeatable, Unused
+
+            PACKPKPT();
+            ~PACKPKPT();
+
+            bool operator ==(const PACKPKPT &other) const;
+            bool operator !=(const PACKPKPT &other) const;
+            };
+
+        struct PACKPKW3 // Use Weapon Data
+            {
+            UINT32  flags; // Flags
+            UINT8   fireRate, fireType; // Fire Rate, Fire Count
+            UINT16  burstNum, minShots, maxShots; // Number of Bursts, Shoots Per Volleys (Min, Max)
+            FLOAT32 minPause, maxPause; // Pause Between Volleys (Min, Max)
+            UINT8   unused[4]; // Unused
+
+            PACKPKW3();
+            ~PACKPKW3();
+
+            bool operator ==(const PACKPKW3 &other) const;
+            bool operator !=(const PACKPKW3 &other) const;
+            };
+
+        struct PACKPKDD // Dialogue Data
+            {
+            FLOAT32 FOV; // FOV
+            FORMID  topic; // Topic
+            UINT32  flags; // Flags
+            UINT8   unused1[4];
+            UINT32  dialType;
+            UINT8   unknown[4];
+
+            PACKPKDD();
+            ~PACKPKDD();
+
+            bool operator ==(const PACKPKDD &other) const;
+            bool operator !=(const PACKPKDD &other) const;
+            };
+
+        struct PACKSCRI // Script
+            {
+            ReqSubRecord<GENFID> INAM; // Idle
+            OptSubRecord<GENSCRIPT> Script; // Script
+            ReqSubRecord<GENFID> TNAM; // Topic
+
+            bool   operator ==(const PACKSCRI &other) const;
+            bool   operator !=(const PACKSCRI &other) const;
+            };
+
+        enum specificFindEscortEatItemFlags
+            {
+            fIsAllowBuying   = 0x00000100,
+            fIsAllowKilling  = 0x00000200,
+            fIsAllowStealing = 0x00000400
+            };
+
+        enum specificWanderFlags
+            {
+            fIsNoEating       = 0x00000001,
+            fIsNoSleeping     = 0x00000002,
+            fIsNoConversation = 0x00000004,
+            fIsNoIdleMarkers  = 0x00000008,
+            fIsNoFurniture    = 0x00000010,
+            fIsNoWandering    = 0x00000020
+            };
+
+        enum specificItemFlags
+            {
+            fIsSitDown = 0x00000002
+            };
+
+        enum specificAmbushFlags
+            {
+            fIsHide = 0x00000001
+            };
+
+        enum specificSandboxFlags
+            {
+            fIsNoEating       = 0x00000001,
+            fIsNoSleeping     = 0x00000002,
+            fIsNoConversation = 0x00000004,
+            fIsNoIdleMarkers  = 0x00000008,
+            fIsNoFurniture    = 0x00000010,
+            fIsNoWandering    = 0x00000020
+            };
+
+        enum specificGuardFlags
+            {
+            fIsRemainNearReference = 0x00000004
+            };
+
+        enum idleFlags
+            {
+            fIsRunInSequence = 0x00000001,
+            fIsDoOnce        = 0x00000004
+            };
+
+        enum pkptTypes
+            {
+            eIsNotRepeatable = 0,
+            eIsRepeatable
+            };
+
+        enum weaponFlags
+            {
+            fIsAlwaysHit           = 0x00000001,
+            fIsDoNoDamage          = 0x00000100,
+            fIsCrouchToReload      = 0x00010000,
+            fIsHoldFireWhenBlocked = 0x01000000
+            };
+
+        enum weaponRateTypes
+            {
+            eAutoFire = 0,
+            eVolleyFire
+            };
+
+        enum weaponFireTypes
+            {
+            eNumberOfBursts = 0,
+            eRepeatFire
+            };
+
+        enum dialogueFlags
+            {
+            fIsNoHeadtracking            = 0x00000001,
+            fIsDontControlTargetMovement = 0x00000100
+            };
+
+        enum dialogueTypes
+            {
+            eConversation = 0,
+            eSayTo
+            };
+
+
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENPKDT> PKDT; //PKDT ,, Struct
-        OptSubRecord<GENPLDT> PLDT; //PLDT ,, Struct
-        OptSubRecord<GENPLD2> PLD2; //PLD2 ,, Struct
-        OptSubRecord<GENPSDT> PSDT; //PSDT ,, Struct
-        OptSubRecord<GENPTDT> PTDT; //PTDT ,, Struct
-        OptSubRecord<GENCTDA> CTDA; //Conditions
-        OptSubRecord<GENU8> IDLF; //Flags
-        OptSubRecord<GENIDLC> IDLC; //IDLC ,, Struct
+        OptSubRecord<PACKPKDT> PKDT; //General
+        OptSubRecord<PACKPLDT> PLDT; //Location 1
+        OptSubRecord<PACKPLDT> PLD2; //Location 2
+        OptSubRecord<PACKPSDT> PSDT; //Schedule
+        OptSubRecord<PACKPTDT> PTDT; //Target 1
+        std::vector<ReqSubRecord<FNVCTDA> *> CTDA; //Conditions
+        OptSubRecord<GENU8> IDLF; //Idle Animation Flags
+        OptSubRecord<PACKIDLC> IDLC; //Idle Animation Count
         OptSubRecord<GENFLOAT> IDLT; //Idle Timer Setting
-        OptSubRecord<GENFID> IDLA; //Animation
-        OptSubRecord<GENIDLB> IDLB; //Unused
-        OptSubRecord<GENPKED> PKED; //Eat Marker
+        std::vector<FORMID> IDLA; //Animations
+        RawRecord IDLB; //Unused
+        //OptSubRecord<GENPKED> PKED; //Eat Marker (Empty)
         OptSubRecord<GENU32> PKE2; //Escort Distance
         OptSubRecord<GENFID> CNAM; //Combat Style
         OptSubRecord<GENFLOAT> PKFD; //Follow - Start Location - Trigger Radius
-        OptSubRecord<GENPKPT> PKPT; //PKPT ,, Struct
-        OptSubRecord<GENPKW3> PKW3; //PKW3 ,, Struct
-        OptSubRecord<GENPTD2> PTD2; //PTD2 ,, Struct
-        OptSubRecord<GENPUID> PUID; //Use Item Marker
-        OptSubRecord<GENPKAM> PKAM; //Ambush Marker
-        OptSubRecord<GENPKDD> PKDD; //PKDD ,, Struct
-        OptSubRecord<GENPOBA> POBA; //OnBegin Marker
-        OptSubRecord<GENPOEA> POEA; //OnEnd Marker
-        OptSubRecord<GENPOCA> POCA; //OnChange Marker
+        OptSubRecord<PACKPKPT> PKPT; //Patrol Flags
+        OptSubRecord<PACKPKW3> PKW3; //Use Weapon Data
+        OptSubRecord<PACKPTDT> PTD2; //Target 2
+        //OptSubRecord<GENPUID> PUID; //Use Item Marker (Empty)
+        //OptSubRecord<GENPKAM> PKAM; //Ambush Marker (Empty)
+        OptSubRecord<PACKPKDD> PKDD; //PKDD ,, Struct
+        OptSubRecord<PACKPLDT> PLD2b; //Target 2 (again??)
+        OptSubRecord<PACKSCRI> POBA; //OnBegin
+        OptSubRecord<PACKSCRI> POEA; //OnEnd
+        OptSubRecord<PACKSCRI> POCA; //OnChange
 
         PACKRecord(unsigned char *_recData=NULL);
         PACKRecord(PACKRecord *srcRecord);
         ~PACKRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
+
+        //Do flags manually
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

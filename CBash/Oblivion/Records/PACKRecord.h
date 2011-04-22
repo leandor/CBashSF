@@ -57,7 +57,7 @@ class PACKRecord : public Record
             SINT8   month, day;
             UINT8   date;
             SINT8   time;
-            SINT32 duration;
+            SINT32  duration;
 
             PACKPSDT();
             ~PACKPSDT();
