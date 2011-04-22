@@ -29,7 +29,7 @@ class DEHYRecord : public Record //Dehydration Stage
     {
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
+        OptSubRecord<SURVDATA> DATA; //Data
 
         DEHYRecord(unsigned char *_recData=NULL);
         DEHYRecord(DEHYRecord *srcRecord);

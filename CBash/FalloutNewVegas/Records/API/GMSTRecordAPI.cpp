@@ -58,8 +58,26 @@ UINT32 GMSTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 }
         case 6: //edid Editor ID
             return ISTRING_FIELD;
-        case 7: //data
-            return ISTRING_FIELD;
+        case 7: //value
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return STRING_OR_FLOAT32_OR_SINT32_FIELD;
+                case 2: //WhichType
+                    switch(DATA.format)
+                        {
+                        case 's':
+                            return STRING_FIELD;
+                        case 'i':
+                            return SINT32_FIELD;
+                        case 'f':
+                            return FLOAT32_FIELD;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                default:
+                    return UNKNOWN_FIELD;
+                }
         default:
             return UNKNOWN_FIELD;
         }
@@ -83,8 +101,18 @@ void * GMSTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return NULL;
         case 6: //edid Editor ID
             return EDID.value;
-        case 7: //data
-            return DATA.value;
+        case 7: //value
+            switch(DATA.format)
+                {
+                case 's':
+                    return DATA.s;
+                case 'i':
+                    return &DATA.i;
+                case 'f':
+                    return &DATA.f;
+                default:
+                    return NULL;
+                }
         default:
             return NULL;
         }
@@ -117,8 +145,24 @@ bool GMSTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 6: //edid Editor ID
             EDID.Copy((STRING)FieldValue);
             break;
-        case 7: //data
-            DATA.Copy((STRING)FieldValue);
+        case 7: //value
+            switch(DATA.format)
+                {
+                case 's':
+                    delete []DATA.s;
+                    ArraySize = (UINT32)strlen((STRING)FieldValue) + 1;
+                    DATA.s = new char[ArraySize];
+                    strcpy_s(DATA.s, ArraySize, (STRING)FieldValue);
+                    break;
+                case 'i':
+                    DATA.i = *(SINT32 *)FieldValue;
+                    break;
+                case 'f':
+                    DATA.f = *(FLOAT32 *)FieldValue;
+                    break;
+                default:
+                    break;
+                }
             break;
         default:
             break;
@@ -146,9 +190,29 @@ void GMSTRecord::DeleteField(FIELD_IDENTIFIERS)
         case 6: //edid Editor ID
             EDID.Unload();
             return;
-        case 7: //data
-            DATA.Unload();
-            return;
+        case 7: //value
+            switch(DATA.format)
+                {
+                case 's':
+                    delete []DATA.s;
+                    if(defaultDATA.s != NULL)
+                        {
+                        ArraySize = (UINT32)strlen(defaultDATA.s) + 1;
+                        DATA.s = new char[ArraySize];
+                        strcpy_s(DATA.s, ArraySize, defaultDATA.s);
+                        }
+                    else
+                        DATA.s = defaultDATA.s;
+                    return;
+                case 'i':
+                    DATA.i = defaultDATA.i;
+                    return;
+                case 'f':
+                    DATA.f = defaultDATA.f;
+                    return;
+                default:
+                    return;
+                }
         default:
             return;
         }

@@ -27,9 +27,23 @@ namespace FNV
 {
 class IPDSRecord : public Record //Impact DataSet
     {
+    private:
+        struct IPDSDATA
+            {
+            FORMID  stone, dirt, grass, glass, metal, wood,
+                    organic, cloth, water, hollowMetal, organicBug,
+                    organicGlow;
+
+            IPDSDATA();
+            ~IPDSDATA();
+
+            bool operator ==(const IPDSDATA &other) const;
+            bool operator !=(const IPDSDATA &other) const;
+            };
+
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
+        OptSubRecord<IPDSDATA> DATA; //Data
 
         IPDSRecord(unsigned char *_recData=NULL);
         IPDSRecord(IPDSRecord *srcRecord);

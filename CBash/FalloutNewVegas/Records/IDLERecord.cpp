@@ -83,6 +83,33 @@ bool IDLERecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+bool IDLERecord::IsNoAttacking()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsNoAttacking) != 0;
+    }
+
+void IDLERecord::IsNoAttacking(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsNoAttacking;
+    else
+        Dummy->flags &= ~fIsNoAttacking;
+    }
+
+bool IDLERecord::IsFlagMask(UINT8 Mask, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    }
+
+void IDLERecord::SetFlagMask(UINT8 Mask)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
 UINT32 IDLERecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())

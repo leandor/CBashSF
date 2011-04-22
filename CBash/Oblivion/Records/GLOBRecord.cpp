@@ -22,27 +22,6 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "GLOBRecord.h"
 
-GLOBRecord::GLOBFNAM::GLOBFNAM():
-    format('f')
-    {
-    //
-    }
-
-GLOBRecord::GLOBFNAM::~GLOBFNAM()
-    {
-    //
-    }
-
-bool GLOBRecord::GLOBFNAM::operator ==(const GLOBFNAM &other) const
-    {
-    return (format == other.format);
-    }
-
-bool GLOBRecord::GLOBFNAM::operator !=(const GLOBFNAM &other) const
-    {
-    return !(*this == other);
-    }
-
 GLOBRecord::GLOBRecord(unsigned char *_recData):
     Record(_recData)
     {

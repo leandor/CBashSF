@@ -78,6 +78,90 @@ bool ENCHRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+bool ENCHRecord::IsNoAutoCalc()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsNoAutoCalc) != 0;
+    }
+
+void ENCHRecord::IsNoAutoCalc(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsNoAutoCalc;
+    else
+        Dummy->flags &= ~fIsNoAutoCalc;
+    }
+
+bool ENCHRecord::IsHideEffect()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsHideEffect) != 0;
+    }
+
+void ENCHRecord::IsHideEffect(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsHideEffect;
+    else
+        Dummy->flags &= ~fIsHideEffect;
+    }
+
+bool ENCHRecord::IsFlagMask(UINT8 Mask, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    }
+
+void ENCHRecord::SetFlagMask(UINT8 Mask)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
+bool ENCHRecord::IsWeapon()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eWeapon);
+    }
+
+void ENCHRecord::IsWeapon(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eWeapon;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool ENCHRecord::IsApparel()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eApparel);
+    }
+
+void ENCHRecord::IsApparel(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eApparel;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool ENCHRecord::IsType(UINT32 Type, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    }
+
+void ENCHRecord::SetType(UINT32 Type)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
 UINT32 ENCHRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())

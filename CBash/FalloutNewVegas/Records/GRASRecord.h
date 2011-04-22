@@ -27,6 +27,29 @@ namespace FNV
 {
 class GRASRecord : public Record //Grass
     {
+    private:
+        struct GRASDATA
+            {
+            UINT8   density, minSlope, maxSlope, unused1;
+            UINT16  waterDistance;
+            UINT8   unused2[2];
+            UINT32  waterOp;
+            FLOAT32 posRange, heightRange, colorRange, wavePeriod;
+            UINT8   flags, unused3[3];
+
+            GRASDATA();
+            ~GRASDATA();
+
+            bool operator ==(const GRASDATA &other) const;
+            bool operator !=(const GRASDATA &other) const;
+            };
+
+        enum flagsFlags
+            {
+            fIsVLighting = 0x00000001,
+            fIsUScaling  = 0x00000002,
+            fIsFitSlope  = 0x00000004
+            };
     public:
         StringRecord EDID; //Editor ID
         OptSubRecord<GENOBND> OBND; //Object Bounds
@@ -38,6 +61,15 @@ class GRASRecord : public Record //Grass
         ~GRASRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
+
+        bool   IsVLighting();
+        void   IsVLighting(bool value);
+        bool   IsUScaling();
+        void   IsUScaling(bool value);
+        bool   IsFitSlope();
+        void   IsFitSlope(bool value);
+        bool   IsFlagMask(UINT8 Mask, bool Exact=false);
+        void   SetFlagMask(UINT8 Mask);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

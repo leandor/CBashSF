@@ -27,6 +27,42 @@ namespace FNV
 {
 class EXPLRecord : public Record //Explosion
     {
+    private:
+        struct EXPLDATA
+            {
+            FLOAT32 force, damage, radius;
+            FORMID  light, sound1;
+            UINT32  flags;
+            FLOAT32 ISRadius;
+            FORMID  impactDataSet, sound2;
+            FLOAT32 radLevel, radTime, radRadius;
+            UINT32  soundLevel;
+
+            EXPLDATA();
+            ~EXPLDATA();
+
+            bool operator ==(const EXPLDATA &other) const;
+            bool operator !=(const EXPLDATA &other) const;
+            };
+
+        enum flagsFlags
+            {
+            fIsUnknown1                   = 0x00000001,
+            fIsAlwaysUsesWorldOrientation = 0x00000002,
+            fIsAlwaysKnockDown            = 0x00000004,
+            fIsFormulaKnockDown           = 0x00000008,
+            fIsIgnoreLOS                  = 0x00000010,
+            fIsPushExplosionSourceRefOnly = 0x00000020,
+            fIsIgnoreImageSpaceSwap       = 0x00000040
+            };
+
+        enum soundLevelTypes
+            {
+            eLoud = 0,
+            eNormal,
+            eSilent
+            };
+
     public:
         StringRecord EDID; //Editor ID
         OptSubRecord<GENOBND> OBND; //Object Bounds
@@ -34,7 +70,7 @@ class EXPLRecord : public Record //Explosion
         OptSubRecord<FNVMODEL> MODL; //Model
         OptSubRecord<GENFID> EITM; //Object Effect
         OptSubRecord<GENFID> MNAM; //Image Space Modifier
-        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
+        OptSubRecord<EXPLDATA> DATA; //Data
         OptSubRecord<GENFID> INAM; //Placed Impact Object
 
         EXPLRecord(unsigned char *_recData=NULL);
@@ -42,6 +78,32 @@ class EXPLRecord : public Record //Explosion
         ~EXPLRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
+
+        bool   IsUnknown1();
+        void   IsUnknown1(bool value);
+        bool   IsAlwaysUsesWorldOrientation();
+        void   IsAlwaysUsesWorldOrientation(bool value);
+        bool   IsAlwaysKnockDown();
+        void   IsAlwaysKnockDown(bool value);
+        bool   IsFormulaKnockDown();
+        void   IsFormulaKnockDown(bool value);
+        bool   IsIgnoreLOS();
+        void   IsIgnoreLOS(bool value);
+        bool   IsPushExplosionSourceRefOnly();
+        void   IsPushExplosionSourceRefOnly(bool value);
+        bool   IsIgnoreImageSpaceSwap();
+        void   IsIgnoreImageSpaceSwap(bool value);
+        bool   IsFlagMask(UINT32 Mask, bool Exact=false);
+        void   SetFlagMask(UINT32 Mask);
+
+        bool   IsLoud();
+        void   IsLoud(bool value);
+        bool   IsNormal();
+        void   IsNormal(bool value);
+        bool   IsSilent();
+        void   IsSilent(bool value);
+        bool   IsSoundLevelType(UINT8 Type, bool Exact=false);
+        void   SetSoundLevelType(UINT8 Type);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

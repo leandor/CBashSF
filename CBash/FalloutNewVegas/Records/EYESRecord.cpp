@@ -68,6 +68,63 @@ bool EYESRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+bool EYESRecord::IsPlayable()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsPlayable) != 0;
+    }
+
+void EYESRecord::IsPlayable(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsPlayable;
+    else
+        Dummy->flags &= ~fIsPlayable;
+    }
+
+bool EYESRecord::IsNotMale()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsNotMale) != 0;
+    }
+
+void EYESRecord::IsNotMale(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsNotMale;
+    else
+        Dummy->flags &= ~fIsNotMale;
+    }
+
+bool EYESRecord::IsNotFemale()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsNotFemale) != 0;
+    }
+
+void EYESRecord::IsNotFemale(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsNotFemale;
+    else
+        Dummy->flags &= ~fIsNotFemale;
+    }
+
+bool EYESRecord::IsFlagMask(UINT8 Mask, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    }
+
+void EYESRecord::SetFlagMask(UINT8 Mask)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
 UINT32 EYESRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())

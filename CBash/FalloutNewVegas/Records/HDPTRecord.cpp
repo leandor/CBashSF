@@ -81,6 +81,33 @@ bool HDPTRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+bool HDPTRecord::IsPlayable()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsPlayable) != 0;
+    }
+
+void HDPTRecord::IsPlayable(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsPlayable;
+    else
+        Dummy->flags &= ~fIsPlayable;
+    }
+
+bool HDPTRecord::IsFlagMask(UINT8 Mask, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    }
+
+void HDPTRecord::SetFlagMask(UINT8 Mask)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
 UINT32 HDPTRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())

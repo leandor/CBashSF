@@ -25,18 +25,6 @@ GPL License and Copyright Notice ============================================
 
 class GLOBRecord : public Record
     {
-    private:
-        struct GLOBFNAM
-            {
-            UINT8   format;
-
-            GLOBFNAM();
-            ~GLOBFNAM();
-
-            bool operator ==(const GLOBFNAM &other) const;
-            bool operator !=(const GLOBFNAM &other) const;
-            };
-
     public:
         StringRecord EDID;
         ReqSubRecord<GLOBFNAM> FNAM;

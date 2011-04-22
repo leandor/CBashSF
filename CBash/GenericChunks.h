@@ -1106,6 +1106,18 @@ struct GENXCLP
     bool operator !=(const GENXCLP &other) const;
     };
 
+
+struct GLOBFNAM
+    {
+    UINT8   format;
+
+    GLOBFNAM();
+    ~GLOBFNAM();
+
+    bool operator ==(const GLOBFNAM &other) const;
+    bool operator !=(const GLOBFNAM &other) const;
+    };
+
 //Unfilled
 struct FNVXOWN
     {
@@ -1511,4 +1523,17 @@ struct FNVCNTO
 
     bool operator ==(const FNVCNTO &other) const;
     bool operator !=(const FNVCNTO &other) const;
+    };
+
+
+struct SURVDATA // Data
+    {
+    UINT32  threshold; // Trigger Threshold
+    FORMID  actorEffect; // Actor Effect
+
+    SURVDATA();
+    ~SURVDATA();
+
+    bool operator ==(const SURVDATA &other) const;
+    bool operator !=(const SURVDATA &other) const;
     };

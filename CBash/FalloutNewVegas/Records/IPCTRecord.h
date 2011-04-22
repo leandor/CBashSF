@@ -27,10 +27,37 @@ namespace FNV
 {
 class IPCTRecord : public Record //Impact
     {
+    private:
+        struct IPCTDATA
+            {
+            FLOAT32 duration; // Effect - Duration
+            UINT32  orientation; // Effect - Orientation
+            FLOAT32 angleThreshold, placementRadius; // Angle Threshold, Placement Radius
+            UINT32  soundLevel, flags; // Sound Level, Flags
+
+            IPCTDATA();
+            ~IPCTDATA();
+
+            bool operator ==(const IPCTDATA &other) const;
+            bool operator !=(const IPCTDATA &other) const;
+            };
+
+        enum flagsFlags
+            {
+            fIsNoDecalData = 0x00000001
+            };
+
+        enum soundLevelTypes
+            {
+            eLoud = 0,
+            eNormal,
+            eSilent
+            };
+
     public:
         StringRecord EDID; //Editor ID
         OptSubRecord<FNVMODEL> MODL; //Model
-        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
+        OptSubRecord<IPCTDATA> DATA; //Data
         OptSubRecord<GENDODT> DODT; //Decal Data
         OptSubRecord<GENFID> DNAM; //Texture Set
         OptSubRecord<GENFID> SNAM; //Sound 1
@@ -41,6 +68,20 @@ class IPCTRecord : public Record //Impact
         ~IPCTRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
+
+        bool   IsNoDecalData();
+        void   IsNoDecalData(bool value);
+        bool   IsFlagMask(UINT32 Mask, bool Exact=false);
+        void   SetFlagMask(UINT32 Mask);
+
+        bool   IsLoud();
+        void   IsLoud(bool value);
+        bool   IsNormal();
+        void   IsNormal(bool value);
+        bool   IsSilent();
+        void   IsSilent(bool value);
+        bool   IsSoundLevelType(UINT8 Type, bool Exact=false);
+        void   SetSoundLevelType(UINT8 Type);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

@@ -32,12 +32,12 @@ class KEYMRecord : public Record //Key
         OptSubRecord<GENOBND> OBND; //Object Bounds
         StringRecord FULL; //Name
         OptSubRecord<FNVMODEL> MODL; //Model
-        OptSubRecord<GENICON> ICON; //Large Icon Filename
+        OptSubRecord<GENICON> ICON; //Icon Filenames
         OptSubRecord<GENFID> SCRI; //Script
         OptSubRecord<GENDESTRUCT> Destructable; //Destructable
         OptSubRecord<GENFID> YNAM; //Sound - Pick Up
         OptSubRecord<GENFID> ZNAM; //Sound - Drop
-        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
+        OptSubRecord<GENVALUEWEIGHT> DATA; //Data
         OptSubRecord<GENFID> RNAM; //Sound - Random/Looping
 
         KEYMRecord(unsigned char *_recData=NULL);

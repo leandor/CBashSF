@@ -102,6 +102,78 @@ bool DOORRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+bool DOORRecord::IsAutomatic()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsAutomatic) != 0;
+    }
+
+void DOORRecord::IsAutomatic(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsAutomatic;
+    else
+        Dummy->flags &= ~fIsAutomatic;
+    }
+
+bool DOORRecord::IsHidden()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsHidden) != 0;
+    }
+
+void DOORRecord::IsHidden(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsHidden;
+    else
+        Dummy->flags &= ~fIsHidden;
+    }
+
+bool DOORRecord::IsMinimalUse()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsMinimalUse) != 0;
+    }
+
+void DOORRecord::IsMinimalUse(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsMinimalUse;
+    else
+        Dummy->flags &= ~fIsMinimalUse;
+    }
+
+bool DOORRecord::IsSlidingDoor()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsSlidingDoor) != 0;
+    }
+
+void DOORRecord::IsSlidingDoor(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsSlidingDoor;
+    else
+        Dummy->flags &= ~fIsSlidingDoor;
+    }
+
+bool DOORRecord::IsFlagMask(UINT8 Mask, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    }
+
+void DOORRecord::SetFlagMask(UINT8 Mask)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
 UINT32 DOORRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())

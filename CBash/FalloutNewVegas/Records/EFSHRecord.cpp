@@ -71,6 +71,98 @@ bool EFSHRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+
+
+bool EFSHRecord::IsNoMemShader()
+    {
+    return (DATA.value.flags & fIsNoMemShader) != 0;
+    }
+
+void EFSHRecord::IsNoMemShader(bool value)
+    {
+    DATA.value.flags = value ? (DATA.value.flags | fIsNoMemShader) : (DATA.value.flags & ~fIsNoMemShader);
+    }
+
+bool EFSHRecord::IsNoMembraneShader()
+    {
+    return (DATA.value.flags & fIsNoMemShader) != 0;
+    }
+
+void EFSHRecord::IsNoMembraneShader(bool value)
+    {
+    DATA.value.flags = value ? (DATA.value.flags | fIsNoMemShader) : (DATA.value.flags & ~fIsNoMemShader);
+    }
+
+bool EFSHRecord::IsNoPartShader()
+    {
+    return (DATA.value.flags & fIsNoPartShader) != 0;
+    }
+
+void EFSHRecord::IsNoPartShader(bool value)
+    {
+    DATA.value.flags = value ? (DATA.value.flags | fIsNoPartShader) : (DATA.value.flags & ~fIsNoPartShader);
+    }
+
+bool EFSHRecord::IsNoParticleShader()
+    {
+    return (DATA.value.flags & fIsNoPartShader) != 0;
+    }
+
+void EFSHRecord::IsNoParticleShader(bool value)
+    {
+    DATA.value.flags = value ? (DATA.value.flags | fIsNoPartShader) : (DATA.value.flags & ~fIsNoPartShader);
+    }
+
+bool EFSHRecord::IsEdgeInverse()
+    {
+    return (DATA.value.flags & fIsEdgeInverse) != 0;
+    }
+
+void EFSHRecord::IsEdgeInverse(bool value)
+    {
+    DATA.value.flags = value ? (DATA.value.flags | fIsEdgeInverse) : (DATA.value.flags & ~fIsEdgeInverse);
+    }
+
+bool EFSHRecord::IsEdgeEffectInverse()
+    {
+    return (DATA.value.flags & fIsEdgeInverse) != 0;
+    }
+
+void EFSHRecord::IsEdgeEffectInverse(bool value)
+    {
+    DATA.value.flags = value ? (DATA.value.flags | fIsEdgeInverse) : (DATA.value.flags & ~fIsEdgeInverse);
+    }
+
+bool EFSHRecord::IsMemSkinOnly()
+    {
+    return (DATA.value.flags & fIsMemSkinOnly) != 0;
+    }
+
+void EFSHRecord::IsMemSkinOnly(bool value)
+    {
+    DATA.value.flags = value ? (DATA.value.flags | fIsMemSkinOnly) : (DATA.value.flags & ~fIsMemSkinOnly);
+    }
+
+bool EFSHRecord::IsMembraneShaderSkinOnly()
+    {
+    return (DATA.value.flags & fIsMemSkinOnly) != 0;
+    }
+
+void EFSHRecord::IsMembraneShaderSkinOnly(bool value)
+    {
+    DATA.value.flags = value ? (DATA.value.flags | fIsMemSkinOnly) : (DATA.value.flags & ~fIsMemSkinOnly);
+    }
+
+bool EFSHRecord::IsFlagMask(UINT8 Mask, bool Exact)
+    {
+    return Exact ? ((DATA.value.flags & Mask) == Mask) : ((DATA.value.flags & Mask) != 0);
+    }
+
+void EFSHRecord::SetFlagMask(UINT8 Mask)
+    {
+    DATA.value.flags = Mask;
+    }
+
 UINT32 EFSHRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())

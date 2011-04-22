@@ -27,15 +27,69 @@ namespace FNV
 {
 class IMGSRecord : public Record //Image Space
     {
+    private:
+        struct IMGSDNAM
+            {
+            //HDR
+            FLOAT32 hdrEyeAdaptSpeed, hdrBlurRadius, hdrBlurPasses,
+                    hdrEmissiveMult, hdrTargetLUM, hdrUpperLUMClamp,
+                    hdrBrightScale, hdrBrightClamp, hdrLUMRampNoTex,
+                    hdrLUMRampMin, hdrLUMRampMax, hdrSunlightDimmer,
+                    hdrGrassDimmer, hdrTreeDimmer, hdrSkinDimmer;
+
+            //Bloom
+            FLOAT32 bloomBlurRadius, bloomAlphaMultInterior, bloomAlphaMultExterior;
+
+            //Get Hit
+            FLOAT32 hitBlurRadius, hitBlurDampingConstant, hitDampingConstant;
+
+            //Night Eye
+            FLOAT32 neRed, neGreen, neBlue, neBrightness;
+
+            //Cinematic
+            FLOAT32 saturation, contrastAvgLUMValue, contrastValue,
+                    brightnessValue, cineRed, cineGreen, cineBlue,
+                    cineValue;
+
+            UINT8   unused1[4], unused2[4], unused3[4], unused4[4];
+            UINT8   flags, unused5[3];
+
+            IMGSDNAM();
+            ~IMGSDNAM();
+
+            bool operator ==(const IMGSDNAM &other) const;
+            bool operator !=(const IMGSDNAM &other) const;
+            };
+
+        enum flagsFlags
+            {
+            fIsSaturation = 0x00000001,
+            fIsContrast   = 0x00000002,
+            fIsTint       = 0x00000004,
+            fIsBrightness = 0x00000008
+            };
+
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENDNAM> DNAM; //DNAM ,, Struct
+        OptSubRecord<IMGSDNAM> DNAM; //IMGS Data
 
         IMGSRecord(unsigned char *_recData=NULL);
         IMGSRecord(IMGSRecord *srcRecord);
         ~IMGSRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
+
+        bool   IsSaturation();
+        void   IsSaturation(bool value);
+        bool   IsContrast();
+        void   IsContrast(bool value);
+        bool   IsTint();
+        void   IsTint(bool value);
+        bool   IsBrightness();
+        void   IsBrightness(bool value);
+        bool   IsFlagMask(UINT8 Mask, bool Exact=false);
+        void   SetFlagMask(UINT8 Mask);
+
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

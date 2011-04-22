@@ -2395,3 +2395,24 @@ bool GENXCLP::operator !=(const GENXCLP &other) const
     {
     return !(*this == other);
     }
+
+GLOBFNAM::GLOBFNAM():
+    format('f')
+    {
+    //
+    }
+
+GLOBFNAM::~GLOBFNAM()
+    {
+    //
+    }
+
+bool GLOBFNAM::operator ==(const GLOBFNAM &other) const
+    {
+    return (format == other.format);
+    }
+
+bool GLOBFNAM::operator !=(const GLOBFNAM &other) const
+    {
+    return !(*this == other);
+    }

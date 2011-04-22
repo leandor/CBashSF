@@ -79,6 +79,82 @@ bool HAIRRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+bool HAIRRecord::IsPlayable()
+    {
+    return (DATA.value.value & fIsPlayable) != 0;
+    }
+
+void HAIRRecord::IsPlayable(bool value)
+    {
+    DATA.value.value = value ? (DATA.value.value | fIsPlayable) : (DATA.value.value & ~fIsPlayable);
+    }
+
+bool HAIRRecord::IsNotMale()
+    {
+    return (DATA.value.value & fIsNotMale) != 0;
+    }
+
+void HAIRRecord::IsNotMale(bool value)
+    {
+    DATA.value.value = value ? (DATA.value.value | fIsNotMale) : (DATA.value.value & ~fIsNotMale);
+    }
+
+bool HAIRRecord::IsMale()
+    {
+    return !IsNotMale();
+    }
+
+void HAIRRecord::IsMale(bool value)
+    {
+    if(value)
+        IsNotMale(false);
+    else
+        IsNotMale(true);
+    }
+
+bool HAIRRecord::IsNotFemale()
+    {
+    return (DATA.value.value & fIsNotFemale) != 0;
+    }
+
+void HAIRRecord::IsNotFemale(bool value)
+    {
+    DATA.value.value = value ? (DATA.value.value | fIsNotFemale) : (DATA.value.value & ~fIsNotFemale);
+    }
+
+bool HAIRRecord::IsFemale()
+    {
+    return !IsNotFemale();
+    }
+
+void HAIRRecord::IsFemale(bool value)
+    {
+    if(value)
+        IsNotFemale(false);
+    else
+        IsNotFemale(true);
+    }
+
+bool HAIRRecord::IsFixedColor()
+    {
+    return (DATA.value.value & fIsFixedColor) != 0;
+    }
+
+void HAIRRecord::IsFixedColor(bool value)
+    {
+    DATA.value.value = value ? (DATA.value.value | fIsFixedColor) : (DATA.value.value & ~fIsFixedColor);
+    }
+
+bool HAIRRecord::IsFlagMask(UINT8 Mask, bool Exact)
+    {
+    return Exact ? ((DATA.value.value & Mask) == Mask) : ((DATA.value.value & Mask) != 0);
+    }
+
+void HAIRRecord::SetFlagMask(UINT8 Mask)
+    {
+    DATA.value.value = Mask;
+    }
+
 UINT32 HAIRRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())

@@ -68,6 +68,48 @@ bool ECZNRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+bool ECZNRecord::IsNeverResets()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsNeverResets) != 0;
+    }
+
+void ECZNRecord::IsNeverResets(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsNeverResets;
+    else
+        Dummy->flags &= ~fIsNeverResets;
+    }
+
+bool ECZNRecord::IsMatchPCBelowMinLevel()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsMatchPCBelowMinLevel) != 0;
+    }
+
+void ECZNRecord::IsMatchPCBelowMinLevel(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsMatchPCBelowMinLevel;
+    else
+        Dummy->flags &= ~fIsMatchPCBelowMinLevel;
+    }
+
+bool ECZNRecord::IsFlagMask(UINT8 Mask, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    }
+
+void ECZNRecord::SetFlagMask(UINT8 Mask)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
 UINT32 ECZNRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())

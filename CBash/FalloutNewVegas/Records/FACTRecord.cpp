@@ -82,6 +82,108 @@ bool FACTRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+bool FACTRecord::IsHiddenFromPC()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsHiddenFromPC) != 0;
+    }
+
+void FACTRecord::IsHiddenFromPC(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsHiddenFromPC;
+    else
+        Dummy->flags &= ~fIsHiddenFromPC;
+    }
+
+bool FACTRecord::IsEvil()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsEvil) != 0;
+    }
+
+void FACTRecord::IsEvil(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsEvil;
+    else
+        Dummy->flags &= ~fIsEvil;
+    }
+
+bool FACTRecord::IsSpecialCombat()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsSpecialCombat) != 0;
+    }
+
+void FACTRecord::IsSpecialCombat(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsSpecialCombat;
+    else
+        Dummy->flags &= ~fIsSpecialCombat;
+    }
+
+bool FACTRecord::IsTrackCrime()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsTrackCrime) != 0;
+    }
+
+void FACTRecord::IsTrackCrime(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsTrackCrime;
+    else
+        Dummy->flags &= ~fIsTrackCrime;
+    }
+
+bool FACTRecord::IsAllowSell()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsAllowSell) != 0;
+    }
+
+void FACTRecord::IsAllowSell(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsAllowSell;
+    else
+        Dummy->flags &= ~fIsAllowSell;
+    }
+
+bool FACTRecord::IsSpecialCombat()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsSpecialCombat) != 0;
+    }
+
+void FACTRecord::IsSpecialCombat(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsSpecialCombat;
+    else
+        Dummy->flags &= ~fIsSpecialCombat;
+    }
+
+bool FACTRecord::IsFlagMask(UINT16 Mask, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    }
+
+void FACTRecord::SetFlagMask(UINT16 Mask)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
 UINT32 FACTRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())

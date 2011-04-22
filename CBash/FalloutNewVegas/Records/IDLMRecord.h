@@ -27,19 +27,44 @@ namespace FNV
 {
 class IDLMRecord : public Record //Idle Marker
     {
+    private:
+        struct IDLMIDLC
+            {
+            UINT8   count, unused1[3]; // Animation Count, Unused
+
+            IDLMIDLC();
+            ~IDLMIDLC();
+
+            bool operator ==(const IDLMIDLC &other) const;
+            bool operator !=(const IDLMIDLC &other) const;
+            };
+
+        enum flagsFlags
+            {
+            fIsRunInSequence = 0x00000001,
+            fIsDoOnce        = 0x00000004
+            };
+
     public:
         StringRecord EDID; //Editor ID
         OptSubRecord<GENOBND> OBND; //Object Bounds
         OptSubRecord<GENU8> IDLF; //Flags
-        OptSubRecord<GENIDLC> IDLC; //IDLC ,, Struct
+        OptSubRecord<IDLMIDLC> IDLC; //Data
         OptSubRecord<GENFLOAT> IDLT; //Idle Timer Setting
-        OptSubRecord<GENIDLA> IDLA; //Animations
+        std::vector<FORMID> IDLA; //Animations
 
         IDLMRecord(unsigned char *_recData=NULL);
         IDLMRecord(IDLMRecord *srcRecord);
         ~IDLMRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
+
+        bool   IsRunInSequence();
+        void   IsRunInSequence(bool value);
+        bool   IsDoOnce();
+        void   IsDoOnce(bool value);
+        bool   IsFlagMask(UINT8 Mask, bool Exact=false);
+        void   SetFlagMask(UINT8 Mask);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

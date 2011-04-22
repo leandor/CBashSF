@@ -90,6 +90,180 @@ bool EXPLRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+bool EXPLRecord::IsUnknown1()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsUnknown1) != 0;
+    }
+
+void EXPLRecord::IsUnknown1(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsUnknown1;
+    else
+        Dummy->flags &= ~fIsUnknown1;
+    }
+
+bool EXPLRecord::IsAlwaysUsesWorldOrientation()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsAlwaysUsesWorldOrientation) != 0;
+    }
+
+void EXPLRecord::IsAlwaysUsesWorldOrientation(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsAlwaysUsesWorldOrientation;
+    else
+        Dummy->flags &= ~fIsAlwaysUsesWorldOrientation;
+    }
+
+bool EXPLRecord::IsAlwaysKnockDown()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsAlwaysKnockDown) != 0;
+    }
+
+void EXPLRecord::IsAlwaysKnockDown(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsAlwaysKnockDown;
+    else
+        Dummy->flags &= ~fIsAlwaysKnockDown;
+    }
+
+bool EXPLRecord::IsFormulaKnockDown()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsFormulaKnockDown) != 0;
+    }
+
+void EXPLRecord::IsFormulaKnockDown(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsFormulaKnockDown;
+    else
+        Dummy->flags &= ~fIsFormulaKnockDown;
+    }
+
+bool EXPLRecord::IsIgnoreLOS()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsIgnoreLOS) != 0;
+    }
+
+void EXPLRecord::IsIgnoreLOS(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsIgnoreLOS;
+    else
+        Dummy->flags &= ~fIsIgnoreLOS;
+    }
+
+bool EXPLRecord::IsPushExplosionSourceRefOnly()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsPushExplosionSourceRefOnly) != 0;
+    }
+
+void EXPLRecord::IsPushExplosionSourceRefOnly(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsPushExplosionSourceRefOnly;
+    else
+        Dummy->flags &= ~fIsPushExplosionSourceRefOnly;
+    }
+
+bool EXPLRecord::IsIgnoreImageSpaceSwap()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsIgnoreImageSpaceSwap) != 0;
+    }
+
+void EXPLRecord::IsIgnoreImageSpaceSwap(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsIgnoreImageSpaceSwap;
+    else
+        Dummy->flags &= ~fIsIgnoreImageSpaceSwap;
+    }
+
+bool EXPLRecord::IsFlagMask(UINT32 Mask, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    }
+
+void EXPLRecord::SetFlagMask(UINT32 Mask)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
+bool EXPLRecord::IsLoud()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eLoud);
+    }
+
+void EXPLRecord::IsLoud(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eLoud;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool EXPLRecord::IsNormal()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eNormal);
+    }
+
+void EXPLRecord::IsNormal(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eNormal;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool EXPLRecord::IsSilent()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eSilent);
+    }
+
+void EXPLRecord::IsSilent(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eSilent;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool EXPLRecord::IsSoundLevelType(UINT8 Type, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    }
+
+void EXPLRecord::SetSoundLevelType(UINT8 Type)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
 UINT32 EXPLRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())

@@ -66,6 +66,78 @@ bool IMGSRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+bool IMGSRecord::IsSaturation()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsSaturation) != 0;
+    }
+
+void IMGSRecord::IsSaturation(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsSaturation;
+    else
+        Dummy->flags &= ~fIsSaturation;
+    }
+
+bool IMGSRecord::IsContrast()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsContrast) != 0;
+    }
+
+void IMGSRecord::IsContrast(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsContrast;
+    else
+        Dummy->flags &= ~fIsContrast;
+    }
+
+bool IMGSRecord::IsTint()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsTint) != 0;
+    }
+
+void IMGSRecord::IsTint(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsTint;
+    else
+        Dummy->flags &= ~fIsTint;
+    }
+
+bool IMGSRecord::IsBrightness()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsBrightness) != 0;
+    }
+
+void IMGSRecord::IsBrightness(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsBrightness;
+    else
+        Dummy->flags &= ~fIsBrightness;
+    }
+
+bool IMGSRecord::IsFlagMask(UINT8 Mask, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    }
+
+void IMGSRecord::SetFlagMask(UINT8 Mask)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
 UINT32 IMGSRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())

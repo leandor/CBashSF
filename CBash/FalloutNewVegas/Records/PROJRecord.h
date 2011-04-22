@@ -27,6 +27,13 @@ namespace FNV
 {
 class PROJRecord : public Record //Projectile
     {
+    private:
+        enum soundLevelTypes
+            {
+            eLoud = 0,
+            eNormal,
+            eSilent
+            };
     public:
         StringRecord EDID; //Editor ID
         OptSubRecord<GENOBND> OBND; //Object Bounds

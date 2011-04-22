@@ -87,6 +87,90 @@ bool IPCTRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+bool IPCTRecord::IsNoDecalData()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsNoDecalData) != 0;
+    }
+
+void IPCTRecord::IsNoDecalData(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsNoDecalData;
+    else
+        Dummy->flags &= ~fIsNoDecalData;
+    }
+
+bool IPCTRecord::IsFlagMask(UINT32 Mask, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    }
+
+void IPCTRecord::SetFlagMask(UINT32 Mask)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
+bool IPCTRecord::IsLoud()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eLoud);
+    }
+
+void IPCTRecord::IsLoud(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eLoud;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool IPCTRecord::IsNormal()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eNormal);
+    }
+
+void IPCTRecord::IsNormal(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eNormal;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool IPCTRecord::IsSilent()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eSilent);
+    }
+
+void IPCTRecord::IsSilent(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eSilent;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool IPCTRecord::IsSoundLevelType(UINT8 Type, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    }
+
+void IPCTRecord::SetSoundLevelType(UINT8 Type)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
 UINT32 IPCTRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())

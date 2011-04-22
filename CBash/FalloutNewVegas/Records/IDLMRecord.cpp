@@ -72,6 +72,48 @@ bool IDLMRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+bool IDLMRecord::IsRunInSequence()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsRunInSequence) != 0;
+    }
+
+void IDLMRecord::IsRunInSequence(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsRunInSequence;
+    else
+        Dummy->flags &= ~fIsRunInSequence;
+    }
+
+bool IDLMRecord::IsDoOnce()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsDoOnce) != 0;
+    }
+
+void IDLMRecord::IsDoOnce(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsDoOnce;
+    else
+        Dummy->flags &= ~fIsDoOnce;
+    }
+
+bool IDLMRecord::Is0FlagMask(UINT8 Mask, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    }
+
+void IDLMRecord::Set0FlagMask(UINT8 Mask)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
 UINT32 IDLMRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())

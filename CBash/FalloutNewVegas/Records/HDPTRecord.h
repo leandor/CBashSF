@@ -27,18 +27,28 @@ namespace FNV
 {
 class HDPTRecord : public Record //Head Part
     {
+    private:
+        enum flagsFlags
+            {
+            fIsPlayable = 0x00000001
+            };
     public:
         StringRecord EDID; //Editor ID
         StringRecord FULL; //Name
         OptSubRecord<FNVMODEL> MODL; //Model
         OptSubRecord<GENU8> DATA; //Flags
-        OptSubRecord<GENFID> HNAM; //Part
+        std::vector<FORMID> HNAM; //Parts
 
         HDPTRecord(unsigned char *_recData=NULL);
         HDPTRecord(HDPTRecord *srcRecord);
         ~HDPTRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
+
+        bool   IsPlayable();
+        void   IsPlayable(bool value);
+        bool   IsFlagMask(UINT8 Mask, bool Exact=false);
+        void   SetFlagMask(UINT8 Mask);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

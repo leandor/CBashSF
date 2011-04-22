@@ -24,6 +24,33 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
+bool DEBRRecord::DEBRModel::IsHasCollisionData()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsHasCollisionData) != 0;
+    }
+
+void DEBRRecord::DEBRModel::IsHasCollisionData(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsHasCollisionData;
+    else
+        Dummy->flags &= ~fIsHasCollisionData;
+    }
+
+bool DEBRRecord::DEBRModel::IsFlagMask(UINT8 Mask, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    }
+
+void DEBRRecord::DEBRModel::SetFlagMask(UINT8 Mask)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
 DEBRRecord::DEBRRecord(unsigned char *_recData):
     Record(_recData)
     {

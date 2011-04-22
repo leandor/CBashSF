@@ -27,6 +27,26 @@ namespace FNV
 {
 class ECZNRecord : public Record //Encounter Zone
     {
+    private:
+        struct ECZNDATA // Data
+            {
+            FORMID  owner; // Owner
+            SINT8   rank, minLevel ;// Rank, Minimum Level
+            UINT8   flags, unused1; // Flags, Unused
+
+            ECZNDATA();
+            ~ECZNDATA();
+
+            bool operator ==(const ECZNDATA &other) const;
+            bool operator !=(const ECZNDATA &other) const;
+            };
+
+        enum flagsFlags
+            {
+            fIsNeverResets          = 0x01,
+            fIsMatchPCBelowMinLevel = 0x02
+            };
+
     public:
         StringRecord EDID; //Editor ID
         OptSubRecord<GENDATA> DATA; //DATA ,, Struct
@@ -36,6 +56,13 @@ class ECZNRecord : public Record //Encounter Zone
         ~ECZNRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
+
+        bool   IsNeverResets();
+        void   IsNeverResets(bool value);
+        bool   IsMatchPCBelowMinLevel();
+        void   IsMatchPCBelowMinLevel(bool value);
+        bool   IsFlagMask(UINT8 Mask, bool Exact=false);
+        void   SetFlagMask(UINT8 Mask);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

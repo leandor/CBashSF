@@ -27,18 +27,42 @@ namespace FNV
 {
 class IDLERecord : public Record //Idle Animation
     {
+    private:
+        struct IDLEDATA
+            {
+            UINT8   animGroupSection, minLooping, maxLooping, unused1;
+            SINT16  replayDelay;
+            UINT8   flags, unused2;
+
+            IDLEDATA();
+            ~IDLEDATA();
+
+            bool operator ==(const IDLEDATA &other) const;
+            bool operator !=(const IDLEDATA &other) const;
+            };
+
+        enum flagsFlags
+            {
+            fIsNoAttacking = 0x00000001
+            };
+
     public:
         StringRecord EDID; //Editor ID
         OptSubRecord<FNVMODEL> MODL; //Model
-        OptSubRecord<GENCTDA> CTDA; //Conditions
-        OptSubRecord<GENANAM> ANAM; //Related Idle Animations
-        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
+        std::vector<ReqSubRecord<FNVCTDA> *> CTDA; //Conditions
+        std::vector<FORMID> ANAM; //Related Idle Animations
+        OptSubRecord<IDLEDATA> DATA; //Data
 
         IDLERecord(unsigned char *_recData=NULL);
         IDLERecord(IDLERecord *srcRecord);
         ~IDLERecord();
 
         bool   VisitFormIDs(FormIDOp &op);
+
+        bool   IsNoAttacking();
+        void   IsNoAttacking(bool value);
+        bool   IsFlagMask(UINT8 Mask, bool Exact=false);
+        void   SetFlagMask(UINT8 Mask);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

@@ -27,13 +27,36 @@ namespace FNV
 {
 class FACTRecord : public Record //Faction
     {
+    private:
+        struct FACTRNAM // Rank
+            {
+            SINT32  RNAM; //Rank#
+            StringRecord MNAM, FNAM, INAM; // Male, Female, Insignia (Unused)
+
+            FACTRNAM();
+            ~FACTRNAM();
+
+            bool operator ==(const FACTRNAM &other) const;
+            bool operator !=(const FACTRNAM &other) const;
+            };
+
+        enum flagsFlags
+            {
+            fIsHiddenFromPC  = 0x0001,
+            fIsEvil          = 0x0002,
+            fIsSpecialCombat = 0x0004,
+            fIsTrackCrime    = 0x0100,
+            fIsAllowSell     = 0x0200,
+            fIsSpecialCombat = 0x0400
+            };
+
     public:
         StringRecord EDID; //Editor ID
         StringRecord FULL; //Name
         OptSubRecord<GENXNAM> XNAM; //Relation
-        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
+        OptSubRecord<GENU16> DATA; //Data
         OptSubRecord<GENFLOAT> CNAM; //Unused
-        OptSubRecord<GENRNAM> RNAM; //Rank#
+        std::vector<ReqSubRecord<FACTRNAM> *> RNAM; // Ranks
         OptSubRecord<GENFID> WMI1; //Reputation
 
         FACTRecord(unsigned char *_recData=NULL);
@@ -41,6 +64,21 @@ class FACTRecord : public Record //Faction
         ~FACTRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
+
+        bool   IsHiddenFromPC();
+        void   IsHiddenFromPC(bool value);
+        bool   IsEvil();
+        void   IsEvil(bool value);
+        bool   IsSpecialCombat();
+        void   IsSpecialCombat(bool value);
+        bool   IsTrackCrime();
+        void   IsTrackCrime(bool value);
+        bool   IsAllowSell();
+        void   IsAllowSell(bool value);
+        bool   IsSpecialCombat();
+        void   IsSpecialCombat(bool value);
+        bool   IsFlagMask(UINT16 Mask, bool Exact=false);
+        void   SetFlagMask(UINT16 Mask);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

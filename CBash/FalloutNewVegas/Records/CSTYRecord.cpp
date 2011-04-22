@@ -68,6 +68,195 @@ bool CSTYRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+bool CSTYRecord::IsUseChanceForAttack()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsUseChanceForAttack) != 0;
+    }
+
+void CSTYRecord::IsUseChanceForAttack(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsUseChanceForAttack;
+    else
+        Dummy->flags &= ~fIsUseChanceForAttack;
+    }
+
+bool CSTYRecord::IsMeleeAlertOK()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsMeleeAlertOK) != 0;
+    }
+
+void CSTYRecord::IsMeleeAlertOK(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsMeleeAlertOK;
+    else
+        Dummy->flags &= ~fIsMeleeAlertOK;
+    }
+
+bool CSTYRecord::IsFleeForSurvival()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsFleeForSurvival) != 0;
+    }
+
+void CSTYRecord::IsFleeForSurvival(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsFleeForSurvival;
+    else
+        Dummy->flags &= ~fIsFleeForSurvival;
+    }
+
+bool CSTYRecord::IsIgnoreThreats()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsIgnoreThreats) != 0;
+    }
+
+void CSTYRecord::IsIgnoreThreats(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsIgnoreThreats;
+    else
+        Dummy->flags &= ~fIsIgnoreThreats;
+    }
+
+bool CSTYRecord::IsIgnoreDamagingSelf=()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsIgnoreDamagingSelf=) != 0;
+    }
+
+void CSTYRecord::IsIgnoreDamagingSelf=(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsIgnoreDamagingSelf=;
+    else
+        Dummy->flags &= ~fIsIgnoreDamagingSelf=;
+    }
+
+bool CSTYRecord::IsIgnoreDamagingGroup=()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsIgnoreDamagingGroup=) != 0;
+    }
+
+void CSTYRecord::IsIgnoreDamagingGroup=(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsIgnoreDamagingGroup=;
+    else
+        Dummy->flags &= ~fIsIgnoreDamagingGroup=;
+    }
+
+bool CSTYRecord::IsIgnoreDamagingSpectator()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsIgnoreDamagingSpectator) != 0;
+    }
+
+void CSTYRecord::IsIgnoreDamagingSpectator(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsIgnoreDamagingSpectator;
+    else
+        Dummy->flags &= ~fIsIgnoreDamagingSpectator;
+    }
+
+bool CSTYRecord::IsNoUseStealthboy()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsNoUseStealthboy) != 0;
+    }
+
+void CSTYRecord::IsNoUseStealthboy(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsNoUseStealthboy;
+    else
+        Dummy->flags &= ~fIsNoUseStealthboy;
+    }
+
+bool CSTYRecord::IsFlagMask(UINT16 Mask, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    }
+
+void CSTYRecord::SetFlagMask(UINT16 Mask)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
+bool CSTYRecord::IsNone()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eNone);
+    }
+
+void CSTYRecord::IsNone(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eNone;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool CSTYRecord::IsMeleeOnly()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eMeleeOnly);
+    }
+
+void CSTYRecord::IsMeleeOnly(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eMeleeOnly;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool CSTYRecord::IsRangedOnly()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eRangedOnly);
+    }
+
+void CSTYRecord::IsRangedOnly(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eRangedOnly;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool CSTYRecord::IsType(UINT32 Type, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    }
+
+void CSTYRecord::SetType(UINT32 Type)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
 UINT32 CSTYRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())

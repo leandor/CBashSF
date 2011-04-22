@@ -27,17 +27,55 @@ namespace FNV
 {
 class ENCHRecord : public Record //Object Effect
     {
+    private:
+        struct ENCHENIT
+            {
+            UINT32 itemType;
+            UINT8  unused1[4], unused2[4], flags, unused1[3];
+
+            ENCHENIT();
+            ~ENCHENIT();
+
+            bool operator ==(const ENCHENIT &other) const;
+            bool operator !=(const ENCHENIT &other) const;
+            };
+
+        enum flagsFlags
+            {
+            fIsNoAutoCalc = 0x00000001,
+            fIsHideEffect = 0x00000004
+            };
+
+        enum eItemType
+            {
+            eWeapon  = 2,
+            eApparel = 3
+            };
     public:
         StringRecord EDID; //Editor ID
         StringRecord FULL; //Name
-        OptSubRecord<GENENIT> ENIT; //ENIT ,, Struct
-        OptSubRecord<GENEFID> EFID; //Base Effect
+        OptSubRecord<ENCHENIT> ENIT; //Effect Data
+        std::vector<FNVEffect *> Effects; //Effects
 
         ENCHRecord(unsigned char *_recData=NULL);
         ENCHRecord(ENCHRecord *srcRecord);
         ~ENCHRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
+
+        bool   IsNoAutoCalc();
+        void   IsNoAutoCalc(bool value);
+        bool   IsHideEffect();
+        void   IsHideEffect(bool value);
+        bool   IsFlagMask(UINT8 Mask, bool Exact=false);
+        void   SetFlagMask(UINT8 Mask);
+
+        bool   IsWeapon();
+        void   IsWeapon(bool value);
+        bool   IsApparel();
+        void   IsApparel(bool value);
+        bool   IsType(UINT32 Type, bool Exact=false);
+        void   SetType(UINT32 Type);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

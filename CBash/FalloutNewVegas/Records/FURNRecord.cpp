@@ -93,6 +93,354 @@ bool FURNRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+bool FURNRecord::IsAnim01()
+    {
+    return (MNAM.value.value & fIsAnim01) != 0;
+    }
+
+void FURNRecord::IsAnim01(bool value)
+    {
+    MNAM.value.value = value ? (MNAM.value.value | fIsAnim01) : (MNAM.value.value & ~fIsAnim01);
+    }
+
+bool FURNRecord::IsAnim02()
+    {
+    return (MNAM.value.value & fIsAnim02) != 0;
+    }
+
+void FURNRecord::IsAnim02(bool value)
+    {
+    MNAM.value.value = value ? (MNAM.value.value | fIsAnim02) : (MNAM.value.value & ~fIsAnim02);
+    }
+
+bool FURNRecord::IsAnim03()
+    {
+    return (MNAM.value.value & fIsAnim03) != 0;
+    }
+
+void FURNRecord::IsAnim03(bool value)
+    {
+    MNAM.value.value = value ? (MNAM.value.value | fIsAnim03) : (MNAM.value.value & ~fIsAnim03);
+    }
+
+bool FURNRecord::IsAnim04()
+    {
+    return (MNAM.value.value & fIsAnim04) != 0;
+    }
+
+void FURNRecord::IsAnim04(bool value)
+    {
+    MNAM.value.value = value ? (MNAM.value.value | fIsAnim04) : (MNAM.value.value & ~fIsAnim04);
+    }
+
+bool FURNRecord::IsAnim05()
+    {
+    return (MNAM.value.value & fIsAnim05) != 0;
+    }
+
+void FURNRecord::IsAnim05(bool value)
+    {
+    MNAM.value.value = value ? (MNAM.value.value | fIsAnim05) : (MNAM.value.value & ~fIsAnim05);
+    }
+
+bool FURNRecord::IsAnim06()
+    {
+    return (MNAM.value.value & fIsAnim06) != 0;
+    }
+
+void FURNRecord::IsAnim06(bool value)
+    {
+    MNAM.value.value = value ? (MNAM.value.value | fIsAnim06) : (MNAM.value.value & ~fIsAnim06);
+    }
+
+bool FURNRecord::IsAnim07()
+    {
+    return (MNAM.value.value & fIsAnim07) != 0;
+    }
+
+void FURNRecord::IsAnim07(bool value)
+    {
+    MNAM.value.value = value ? (MNAM.value.value | fIsAnim07) : (MNAM.value.value & ~fIsAnim07);
+    }
+
+bool FURNRecord::IsAnim08()
+    {
+    return (MNAM.value.value & fIsAnim08) != 0;
+    }
+
+void FURNRecord::IsAnim08(bool value)
+    {
+    MNAM.value.value = value ? (MNAM.value.value | fIsAnim08) : (MNAM.value.value & ~fIsAnim08);
+    }
+
+bool FURNRecord::IsAnim09()
+    {
+    return (MNAM.value.value & fIsAnim09) != 0;
+    }
+
+void FURNRecord::IsAnim09(bool value)
+    {
+    MNAM.value.value = value ? (MNAM.value.value | fIsAnim09) : (MNAM.value.value & ~fIsAnim09);
+    }
+
+bool FURNRecord::IsAnim10()
+    {
+    return (MNAM.value.value & fIsAnim10) != 0;
+    }
+
+void FURNRecord::IsAnim10(bool value)
+    {
+    MNAM.value.value = value ? (MNAM.value.value | fIsAnim10) : (MNAM.value.value & ~fIsAnim10);
+    }
+
+bool FURNRecord::IsAnim11()
+    {
+    return (MNAM.value.value & fIsAnim11) != 0;
+    }
+
+void FURNRecord::IsAnim11(bool value)
+    {
+    MNAM.value.value = value ? (MNAM.value.value | fIsAnim11) : (MNAM.value.value & ~fIsAnim11);
+    }
+
+bool FURNRecord::IsAnim12()
+    {
+    return (MNAM.value.value & fIsAnim12) != 0;
+    }
+
+void FURNRecord::IsAnim12(bool value)
+    {
+    MNAM.value.value = value ? (MNAM.value.value | fIsAnim12) : (MNAM.value.value & ~fIsAnim12);
+    }
+
+bool FURNRecord::IsAnim13()
+    {
+    return (MNAM.value.value & fIsAnim13) != 0;
+    }
+
+void FURNRecord::IsAnim13(bool value)
+    {
+    MNAM.value.value = value ? (MNAM.value.value | fIsAnim13) : (MNAM.value.value & ~fIsAnim13);
+    }
+
+bool FURNRecord::IsAnim14()
+    {
+    return (MNAM.value.value & fIsAnim14) != 0;
+    }
+
+void FURNRecord::IsAnim14(bool value)
+    {
+    MNAM.value.value = value ? (MNAM.value.value | fIsAnim14) : (MNAM.value.value & ~fIsAnim14);
+    }
+
+bool FURNRecord::IsAnim15()
+    {
+    return (MNAM.value.value & fIsAnim15) != 0;
+    }
+
+void FURNRecord::IsAnim15(bool value)
+    {
+    MNAM.value.value = value ? (MNAM.value.value | fIsAnim15) : (MNAM.value.value & ~fIsAnim15);
+    }
+
+bool FURNRecord::IsAnim16()
+    {
+    return (MNAM.value.value & fIsAnim16) != 0;
+    }
+
+void FURNRecord::IsAnim16(bool value)
+    {
+    MNAM.value.value = value ? (MNAM.value.value | fIsAnim16) : (MNAM.value.value & ~fIsAnim16);
+    }
+
+bool FURNRecord::IsAnim17()
+    {
+    return (MNAM.value.value & fIsAnim17) != 0;
+    }
+
+void FURNRecord::IsAnim17(bool value)
+    {
+    MNAM.value.value = value ? (MNAM.value.value | fIsAnim17) : (MNAM.value.value & ~fIsAnim17);
+    }
+
+bool FURNRecord::IsAnim18()
+    {
+    return (MNAM.value.value & fIsAnim18) != 0;
+    }
+
+void FURNRecord::IsAnim18(bool value)
+    {
+    MNAM.value.value = value ? (MNAM.value.value | fIsAnim18) : (MNAM.value.value & ~fIsAnim18);
+    }
+
+bool FURNRecord::IsAnim19()
+    {
+    return (MNAM.value.value & fIsAnim19) != 0;
+    }
+
+void FURNRecord::IsAnim19(bool value)
+    {
+    MNAM.value.value = value ? (MNAM.value.value | fIsAnim19) : (MNAM.value.value & ~fIsAnim19);
+    }
+
+bool FURNRecord::IsAnim20()
+    {
+    return (MNAM.value.value & fIsAnim20) != 0;
+    }
+
+void FURNRecord::IsAnim20(bool value)
+    {
+    MNAM.value.value = value ? (MNAM.value.value | fIsAnim20) : (MNAM.value.value & ~fIsAnim20);
+    }
+
+bool FURNRecord::IsAnim21()
+    {
+    return (MNAM.value.value & fIsAnim21) != 0;
+    }
+
+void FURNRecord::IsAnim21(bool value)
+    {
+    MNAM.value.value = value ? (MNAM.value.value | fIsAnim21) : (MNAM.value.value & ~fIsAnim21);
+    }
+
+bool FURNRecord::IsAnim22()
+    {
+    return (MNAM.value.value & fIsAnim22) != 0;
+    }
+
+void FURNRecord::IsAnim22(bool value)
+    {
+    MNAM.value.value = value ? (MNAM.value.value | fIsAnim22) : (MNAM.value.value & ~fIsAnim22);
+    }
+
+bool FURNRecord::IsAnim23()
+    {
+    return (MNAM.value.value & fIsAnim23) != 0;
+    }
+
+void FURNRecord::IsAnim23(bool value)
+    {
+    MNAM.value.value = value ? (MNAM.value.value | fIsAnim23) : (MNAM.value.value & ~fIsAnim23);
+    }
+
+bool FURNRecord::IsAnim24()
+    {
+    return (MNAM.value.value & fIsAnim24) != 0;
+    }
+
+void FURNRecord::IsAnim24(bool value)
+    {
+    MNAM.value.value = value ? (MNAM.value.value | fIsAnim24) : (MNAM.value.value & ~fIsAnim24);
+    }
+
+bool FURNRecord::IsAnim25()
+    {
+    return (MNAM.value.value & fIsAnim25) != 0;
+    }
+
+void FURNRecord::IsAnim25(bool value)
+    {
+    MNAM.value.value = value ? (MNAM.value.value | fIsAnim25) : (MNAM.value.value & ~fIsAnim25);
+    }
+
+bool FURNRecord::IsAnim26()
+    {
+    return (MNAM.value.value & fIsAnim26) != 0;
+    }
+
+void FURNRecord::IsAnim26(bool value)
+    {
+    MNAM.value.value = value ? (MNAM.value.value | fIsAnim26) : (MNAM.value.value & ~fIsAnim26);
+    }
+
+bool FURNRecord::IsAnim27()
+    {
+    return (MNAM.value.value & fIsAnim27) != 0;
+    }
+
+void FURNRecord::IsAnim27(bool value)
+    {
+    MNAM.value.value = value ? (MNAM.value.value | fIsAnim27) : (MNAM.value.value & ~fIsAnim27);
+    }
+
+bool FURNRecord::IsAnim28()
+    {
+    return (MNAM.value.value & fIsAnim28) != 0;
+    }
+
+void FURNRecord::IsAnim28(bool value)
+    {
+    MNAM.value.value = value ? (MNAM.value.value | fIsAnim28) : (MNAM.value.value & ~fIsAnim28);
+    }
+
+bool FURNRecord::IsAnim29()
+    {
+    return (MNAM.value.value & fIsAnim29) != 0;
+    }
+
+void FURNRecord::IsAnim29(bool value)
+    {
+    MNAM.value.value = value ? (MNAM.value.value | fIsAnim29) : (MNAM.value.value & ~fIsAnim29);
+    }
+
+bool FURNRecord::IsAnim30()
+    {
+    return (MNAM.value.value & fIsAnim30) != 0;
+    }
+
+void FURNRecord::IsAnim30(bool value)
+    {
+    MNAM.value.value = value ? (MNAM.value.value | fIsAnim30) : (MNAM.value.value & ~fIsAnim30);
+    }
+
+bool FURNRecord::IsSitAnim()
+    {
+    return (MNAM.value.value & fIsSitAnim) != 0;
+    }
+
+void FURNRecord::IsSitAnim(bool value)
+    {
+    if(value)
+        {
+        MNAM.value.value &= ~fIsSleepAnim;
+        MNAM.value.value |= fIsSitAnim;
+        }
+    else
+        {
+        MNAM.value.value &= ~fIsSitAnim;
+        MNAM.value.value |= fIsSleepAnim;
+        }
+    }
+
+bool FURNRecord::IsSleepAnim()
+    {
+    return (MNAM.value.value & fIsSleepAnim) != 0;
+    }
+
+void FURNRecord::IsSleepAnim(bool value)
+    {
+    if(value)
+        {
+        MNAM.value.value &= ~fIsSitAnim;
+        MNAM.value.value |= fIsSleepAnim;
+        }
+    else
+        {
+        MNAM.value.value &= ~fIsSleepAnim;
+        MNAM.value.value |= fIsSitAnim;
+        }
+    }
+
+bool FURNRecord::IsFlagMask(UINT32 Mask, bool Exact)
+    {
+    return Exact ? ((MNAM.value.value & Mask) == Mask) : ((MNAM.value.value & Mask) != 0);
+    }
+
+void FURNRecord::SetFlagMask(UINT32 Mask)
+    {
+    MNAM.value.value = Mask;
+    }
+
 UINT32 FURNRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())

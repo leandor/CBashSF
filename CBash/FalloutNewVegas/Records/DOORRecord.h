@@ -27,6 +27,15 @@ namespace FNV
 {
 class DOORRecord : public Record //Door
     {
+    private:
+        enum flagsFlags
+            {
+            fIsAutomatic   = 0x00000002,
+            fIsHidden      = 0x00000004,
+            fIsMinimalUse  = 0x00000008,
+            fIsSlidingDoor = 0x00000010
+            };
+
     public:
         StringRecord EDID; //Editor ID
         OptSubRecord<GENOBND> OBND; //Object Bounds
@@ -44,6 +53,17 @@ class DOORRecord : public Record //Door
         ~DOORRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
+
+        bool   IsAutomatic();
+        void   IsAutomatic(bool value);
+        bool   IsHidden();
+        void   IsHidden(bool value);
+        bool   IsMinimalUse();
+        void   IsMinimalUse(bool value);
+        bool   IsSlidingDoor();
+        void   IsSlidingDoor(bool value);
+        bool   IsFlagMask(UINT8 Mask, bool Exact=false);
+        void   SetFlagMask(UINT8 Mask);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

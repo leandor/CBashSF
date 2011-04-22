@@ -27,6 +27,50 @@ namespace FNV
 {
 class EFSHRecord : public Record //Effect Shader
     {
+    private:
+        struct EFSHDATA
+            {
+            UINT8   flags, unused1[3];
+            UINT32  memSBlend, memBlendOp, memZFunc;
+            GENCLR  fill;
+            FLOAT32 fillAIn, fillAFull, fillAOut, fillAPRatio, fillAAmp,
+                    fillAFreq, fillAnimSpdU, fillAnimSpdV, edgeEffOff;
+            GENCLR  edgeEff;
+            FLOAT32 edgeEffAIn, edgeEffAFull, edgeEffAOut, edgeEffAPRatio, edgeEffAAmp,
+                    edgeEffAFreq,  fillAFRatio, edgeEffAFRatio;
+            UINT32  memDBlend, partSBlend, partBlendOp, partZFunc, partDBlend;
+            FLOAT32 partBUp, partBFull, partBDown, partBFRatio, partBPRatio, partLTime,
+                    partLDelta, partNSpd, partNAcc, partVel1, partVel2, partVel3,
+                    partAcc1, partAcc2, partAcc3, partKey1, partKey2, partKey1Time,
+                    partKey2Time;
+            GENCLR  key1;
+            GENCLR  key2;
+            GENCLR  key3;
+            FLOAT32 key1A, key2A, key3A, key1Time, key2Time, key3Time;
+            FLOAT32 partInitSpd, partInitRot, partInitRotDelta, partRotSpd, partRotDelta;
+            FORMID  addon;
+            FLOAT32 holesSTime, holesETime, holesSValue, holesEValue, edgeWidth;
+            GENCLR  edge;
+            FLOAT32 explWindSpd;
+            UINT32  textCountU, textCountV;
+            FLOAT32 addonFITime, addonFOTime, addonScaleStart, addonScaleEnd,
+                    addonScaleInTime, addonScaleOutTime;
+
+            EFSHDATA();
+            ~EFSHDATA();
+
+            bool operator ==(const EFSHDATA &other) const;
+            bool operator !=(const EFSHDATA &other) const;
+            };
+
+        enum flagsFlags
+            {
+            fIsNoMemShader  = 0x00000001,
+            fIsNoPartShader = 0x00000008,
+            fIsEdgeInverse  = 0x00000010,
+            fIsMemSkinOnly  = 0x00000020
+            };
+
     public:
         StringRecord EDID; //Editor ID
         StringRecord ICON; //Fill Texture
@@ -39,6 +83,25 @@ class EFSHRecord : public Record //Effect Shader
         ~EFSHRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
+
+        bool   IsNoMemShader();
+        void   IsNoMemShader(bool value);
+        bool   IsNoMembraneShader();
+        void   IsNoMembraneShader(bool value);
+        bool   IsNoPartShader();
+        void   IsNoPartShader(bool value);
+        bool   IsNoParticleShader();
+        void   IsNoParticleShader(bool value);
+        bool   IsEdgeInverse();
+        void   IsEdgeInverse(bool value);
+        bool   IsEdgeEffectInverse();
+        void   IsEdgeEffectInverse(bool value);
+        bool   IsMemSkinOnly();
+        void   IsMemSkinOnly(bool value);
+        bool   IsMembraneShaderSkinOnly();
+        void   IsMembraneShaderSkinOnly(bool value);
+        bool   IsFlagMask(UINT8 Mask, bool Exact=false);
+        void   SetFlagMask(UINT8 Mask);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

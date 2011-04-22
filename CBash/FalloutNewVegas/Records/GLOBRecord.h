@@ -29,7 +29,7 @@ class GLOBRecord : public Record //Global
     {
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENU8> FNAM; //Type
+        OptSubRecord<GLOBFNAM> FNAM; //Type
         OptSubRecord<GENFLOAT> FLTV; //Value
 
         GLOBRecord(unsigned char *_recData=NULL);

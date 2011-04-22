@@ -29,7 +29,7 @@ class DOBJRecord : public Record //Default Object Manager
     {
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENDATA> DATA; //Default Objects
+        std::vector<FORMID> DATA; //Default Objects
 
         DOBJRecord(unsigned char *_recData=NULL);
         DOBJRecord(DOBJRecord *srcRecord);

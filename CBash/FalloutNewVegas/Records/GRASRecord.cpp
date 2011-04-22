@@ -24,6 +24,47 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
+GRASRecord::GRASDATA::GRASDATA():
+    density(0),
+    minSlope(0),
+    maxSlope(0),
+    unused1(0xCD),
+    waterDistance(0),
+    waterOp(0),
+    posRange(0.0f),
+    heightRange(0.0f),
+    colorRange(0.0f),
+    wavePeriod(0.0f),
+    flags(0)
+    {
+    memset(&unused2, 0xCD, 2);
+    memset(&unused3, 0xCD, 3);
+    }
+
+GRASRecord::GRASDATA::~GRASDATA()
+    {
+    //
+    }
+
+bool GRASRecord::GRASDATA::operator ==(const GRASDATA &other) const
+    {
+    return (density == other.density &&
+            minSlope == other.minSlope &&
+            maxSlope == other.maxSlope &&
+            waterDistance == other.waterDistance &&
+            waterOp == other.waterOp &&
+            AlmostEqual(posRange,other.posRange,2) &&
+            AlmostEqual(heightRange,other.heightRange,2) &&
+            AlmostEqual(colorRange,other.colorRange,2) &&
+            AlmostEqual(wavePeriod,other.wavePeriod,2) &&
+            flags == other.flags);
+    }
+
+bool GRASRecord::GRASDATA::operator !=(const GRASDATA &other) const
+    {
+    return !(*this == other);
+    }
+
 GRASRecord::GRASRecord(unsigned char *_recData):
     Record(_recData)
     {
@@ -76,6 +117,46 @@ bool GRASRecord::VisitFormIDs(FormIDOp &op)
         op.Accept(MODL->MODS->value);
 
     return op.Stop();
+    }
+
+bool GRASRecord::IsVLighting()
+    {
+    return (DATA.value.flags & fIsVLighting) != 0;
+    }
+
+void GRASRecord::IsVLighting(bool value)
+    {
+    DATA.value.flags = value ? (DATA.value.flags | fIsVLighting) : (DATA.value.flags & ~fIsVLighting);
+    }
+
+bool GRASRecord::IsUScaling()
+    {
+    return (DATA.value.flags & fIsUScaling) != 0;
+    }
+
+void GRASRecord::IsUScaling(bool value)
+    {
+    DATA.value.flags = value ? (DATA.value.flags | fIsUScaling) : (DATA.value.flags & ~fIsUScaling);
+    }
+
+bool GRASRecord::IsFitSlope()
+    {
+    return (DATA.value.flags & fIsFitSlope) != 0;
+    }
+
+void GRASRecord::IsFitSlope(bool value)
+    {
+    DATA.value.flags = value ? (DATA.value.flags | fIsFitSlope) : (DATA.value.flags & ~fIsFitSlope);
+    }
+
+bool GRASRecord::IsFlagMask(UINT8 Mask, bool Exact)
+    {
+    return Exact ? ((DATA.value.flags & Mask) == Mask) : ((DATA.value.flags & Mask) != 0);
+    }
+
+void GRASRecord::SetFlagMask(UINT8 Mask)
+    {
+    DATA.value.flags = Mask;
     }
 
 UINT32 GRASRecord::GetSize(bool forceCalc)

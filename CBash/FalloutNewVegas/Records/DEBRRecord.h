@@ -27,10 +27,42 @@ namespace FNV
 {
 class DEBRRecord : public Record //Debris
     {
+    private:
+        struct DEBRDATA
+            {
+            UINT8   percentage;
+            STRING  MODL;
+            UINT8   flags;
+
+            DEBRDATA();
+            ~DEBRDATA();
+
+            bool operator ==(const DEBRDATA &other) const;
+            bool operator !=(const DEBRDATA &other) const;
+            };
+
+        struct DEBRModel // Model
+            {
+            ReqSubRecord<DEBRDATA> DATA; // Data
+            RawRecord MODT; //Texture Files Hashes
+
+            enum flagsFlags
+                {
+                fIsHasCollisionData = 0x00000001
+                };
+
+            bool   IsHasCollisionData();
+            void   IsHasCollisionData(bool value);
+            bool   IsFlagMask(UINT8 Mask, bool Exact=false);
+            void   SetFlagMask(UINT8 Mask);
+
+            bool   operator ==(const DEBRModel &other) const;
+            bool   operator !=(const DEBRModel &other) const;
+            };
+
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
-        RawRecord MODT; //Texture Files Hashes
+        std::vector<DEBRModel *> Models; //Models
 
         DEBRRecord(unsigned char *_recData=NULL);
         DEBRRecord(DEBRRecord *srcRecord);

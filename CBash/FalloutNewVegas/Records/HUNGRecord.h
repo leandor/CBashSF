@@ -29,7 +29,7 @@ class HUNGRecord : public Record //Hunger Stage
     {
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
+        OptSubRecord<SURVDATA> DATA; //Data
 
         HUNGRecord(unsigned char *_recData=NULL);
         HUNGRecord(HUNGRecord *srcRecord);

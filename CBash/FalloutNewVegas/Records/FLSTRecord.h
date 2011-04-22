@@ -29,7 +29,7 @@ class FLSTRecord : public Record //FormID List
     {
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENFID> LNAM; //FormID
+        std::vector<FORMID> LNAM; //FormIDs
 
         FLSTRecord(unsigned char *_recData=NULL);
         FLSTRecord(FLSTRecord *srcRecord);

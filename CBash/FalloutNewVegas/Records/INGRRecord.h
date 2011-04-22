@@ -27,23 +27,75 @@ namespace FNV
 {
 class INGRRecord : public Record //Ingredient
     {
+    private:
+        enum eEquipTypes
+            {
+            eNone    = -1,
+            eBigGuns = 0,
+            eEnergyWeapons,
+            eSmallGuns,
+            eMeleeWeapons,
+            eUnarmedWeapon,
+            eThrownWeapons,
+            eMine,
+            eBodyWear,
+            eHeadWear,
+            eHandWear,
+            eChems,
+            eStimpack,
+            eFood,
+            eAlcohol
+            };
     public:
         StringRecord EDID; //Editor ID
         OptSubRecord<GENOBND> OBND; //Object Bounds
         StringRecord FULL; //Name
         OptSubRecord<FNVMODEL> MODL; //Model
-        OptSubRecord<GENICON> ICON; //Large Icon Filename
+        OptSubRecord<GENICON> ICON; //Icon Filenames
         OptSubRecord<GENFID> SCRI; //Script
         OptSubRecord<GENS32> ETYP; //Equipment Type
         OptSubRecord<GENFLOAT> DATA; //Weight
-        OptSubRecord<GENENIT> ENIT; //ENIT ,, Struct
-        OptSubRecord<GENEFID> EFID; //Base Effect
+        OptSubRecord<FNVENIT> ENIT; //Effect Data
+        std::vector<FNVEffect *> Effects; //Effects
 
         INGRRecord(unsigned char *_recData=NULL);
         INGRRecord(INGRRecord *srcRecord);
         ~INGRRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
+
+        bool   IsNone();
+        void   IsNone(bool value);
+        bool   IsBigGuns();
+        void   IsBigGuns(bool value);
+        bool   IsEnergyWeapons();
+        void   IsEnergyWeapons(bool value);
+        bool   IsSmallGuns();
+        void   IsSmallGuns(bool value);
+        bool   IsMeleeWeapons();
+        void   IsMeleeWeapons(bool value);
+        bool   IsUnarmedWeapon();
+        void   IsUnarmedWeapon(bool value);
+        bool   IsThrownWeapons();
+        void   IsThrownWeapons(bool value);
+        bool   IsMine();
+        void   IsMine(bool value);
+        bool   IsBodyWear();
+        void   IsBodyWear(bool value);
+        bool   IsHeadWear();
+        void   IsHeadWear(bool value);
+        bool   IsHandWear();
+        void   IsHandWear(bool value);
+        bool   IsChems();
+        void   IsChems(bool value);
+        bool   IsStimpack();
+        void   IsStimpack(bool value);
+        bool   IsFood();
+        void   IsFood(bool value);
+        bool   IsAlcohol();
+        void   IsAlcohol(bool value);
+        bool   IsEquipmentType(SINT32 Type, bool Exact=false);
+        void   SetEquipmentType(SINT32 Type);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

@@ -25,17 +25,36 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class GMSTRecord : public Record //Game Setting
+class GMSTRecord : public Record
     {
+    private:
+        struct GMSTDATA
+            {
+            union
+                {
+                FLOAT32 f;
+                SINT32 i;
+                STRING s;
+                };
+            char format;
+
+            GMSTDATA(STRING _DATA);
+            GMSTDATA(SINT32 _DATA);
+            GMSTDATA(FLOAT32 _DATA);
+            GMSTDATA();
+            ~GMSTDATA();
+
+            bool operator ==(const GMSTDATA &other) const;
+            bool operator !=(const GMSTDATA &other) const;
+            };
+
     public:
         StringRecord EDID; //Editor ID
-        StringRecord DATA; //
+        GMSTDATA DATA; //Data
 
         GMSTRecord(unsigned char *_recData=NULL);
         GMSTRecord(GMSTRecord *srcRecord);
         ~GMSTRecord();
-
-        bool   VisitFormIDs(FormIDOp &op);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);
@@ -45,6 +64,7 @@ class GMSTRecord : public Record //Game Setting
         UINT32 GetSize(bool forceCalc=false);
         UINT32 GetType();
         STRING GetStrType();
+        bool   IsKeyedByEditorID();
 
         SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
         SINT32 Unload();

@@ -101,6 +101,243 @@ bool INGRRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+bool INGRRecord::IsNone()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eNone);
+    }
+
+void INGRRecord::IsNone(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eNone;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool INGRRecord::IsBigGuns()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eBigGuns);
+    }
+
+void INGRRecord::IsBigGuns(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eBigGuns;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool INGRRecord::IsEnergyWeapons()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eEnergyWeapons);
+    }
+
+void INGRRecord::IsEnergyWeapons(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eEnergyWeapons;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool INGRRecord::IsSmallGuns()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eSmallGuns);
+    }
+
+void INGRRecord::IsSmallGuns(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eSmallGuns;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool INGRRecord::IsMeleeWeapons()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eMeleeWeapons);
+    }
+
+void INGRRecord::IsMeleeWeapons(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eMeleeWeapons;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool INGRRecord::IsUnarmedWeapon()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eUnarmedWeapon);
+    }
+
+void INGRRecord::IsUnarmedWeapon(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eUnarmedWeapon;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool INGRRecord::IsThrownWeapons()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eThrownWeapons);
+    }
+
+void INGRRecord::IsThrownWeapons(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eThrownWeapons;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool INGRRecord::IsMine()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eMine);
+    }
+
+void INGRRecord::IsMine(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eMine;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool INGRRecord::IsBodyWear()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eBodyWear);
+    }
+
+void INGRRecord::IsBodyWear(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eBodyWear;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool INGRRecord::IsHeadWear()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eHeadWear);
+    }
+
+void INGRRecord::IsHeadWear(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eHeadWear;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool INGRRecord::IsHandWear()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eHandWear);
+    }
+
+void INGRRecord::IsHandWear(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eHandWear;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool INGRRecord::IsChems()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eChems);
+    }
+
+void INGRRecord::IsChems(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eChems;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool INGRRecord::IsStimpack()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eStimpack);
+    }
+
+void INGRRecord::IsStimpack(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eStimpack;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool INGRRecord::IsFood()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eFood);
+    }
+
+void INGRRecord::IsFood(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eFood;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool INGRRecord::IsAlcohol()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eAlcohol);
+    }
+
+void INGRRecord::IsAlcohol(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eAlcohol;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool INGRRecord::IsEquipmentType(UINT32 Type, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    }
+
+void INGRRecord::SetEquipmentType(UINT32 Type)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
 UINT32 INGRRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())

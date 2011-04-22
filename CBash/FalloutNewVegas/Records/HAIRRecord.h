@@ -27,6 +27,14 @@ namespace FNV
 {
 class HAIRRecord : public Record //Hair
     {
+    private:
+        enum flagsFlags
+            {
+            fIsPlayable   = 0x00000001,
+            fIsNotMale    = 0x00000002,
+            fIsNotFemale  = 0x00000004,
+            fIsFixedColor = 0x00000008
+            };
     public:
         StringRecord EDID; //Editor ID
         StringRecord FULL; //Name
@@ -39,6 +47,21 @@ class HAIRRecord : public Record //Hair
         ~HAIRRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
+
+        bool   IsPlayable();
+        void   IsPlayable(bool value);
+        bool   IsNotMale();
+        void   IsNotMale(bool value);
+        bool   IsMale();
+        void   IsMale(bool value);
+        bool   IsNotFemale();
+        void   IsNotFemale(bool value);
+        bool   IsFemale();
+        void   IsFemale(bool value);
+        bool   IsFixedColor();
+        void   IsFixedColor(bool value);
+        bool   IsFlagMask(UINT8 Mask, bool Exact=false);
+        void   SetFlagMask(UINT8 Mask);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);
