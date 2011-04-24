@@ -69,7 +69,7 @@ bool sortMod(ModFile *lhs, ModFile *rhs)
 Collection::Collection(STRING const &ModsPath, UINT32 _CollectionType):
     ModsDir(NULL),
     IsLoaded(false),
-    CollectionType((collectionType)_CollectionType)
+    CollectionType((whichGameTypes)_CollectionType)
     {
     ModsDir = new char[strlen(ModsPath)+1];
     strcpy_s(ModsDir, strlen(ModsPath)+1, ModsPath);
@@ -104,18 +104,18 @@ SINT32 Collection::AddMod(STRING const &_FileName, ModFlags &flags)
 
     switch(CollectionType)
         {
-        case eTES4:
+        case eIsOblivion:
             ModFiles.push_back(new TES4File(FileName, ModName, flags.GetFlags()));
+            ModFiles.back()->TES4.whichGame = eIsOblivion;
             break;
-        case eFO3:
+        case eIsFallout3:
             printf("Unimplemented\n");
             delete []ModName;
             throw 1;
             break;
-        case eFNV:
-            printf("Unimplemented\n");
-            delete []ModName;
-            throw 1;
+        case eIsFalloutNewVegas:
+            ModFiles.push_back(new FNVFile(FileName, ModName, flags.GetFlags()));
+            ModFiles.back()->TES4.whichGame = eIsFalloutNewVegas;
             break;
         default:
             delete []ModName;

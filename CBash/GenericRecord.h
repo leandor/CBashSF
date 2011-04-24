@@ -75,10 +75,19 @@ class RecordProcessor
         const ModFlags &Flags;
 
         RecordProcessor(_FileHandler &_ReadHandler, FormIDHandlerClass &_FormIDHandler, RecordOp &_reader, const ModFlags &_Flags, boost::unordered_set<UINT32> &_UsedFormIDs);
-        ~RecordProcessor();
+        virtual ~RecordProcessor();
+
+        virtual bool operator()(Record *&curRecord);
+        void IsEmpty(bool value);
+    };
+
+class FNVRecordProcessor : public RecordProcessor
+    {
+    public:
+        FNVRecordProcessor(_FileHandler &_ReadHandler, FormIDHandlerClass &_FormIDHandler, RecordOp &_reader, const ModFlags &_Flags, boost::unordered_set<UINT32> &_UsedFormIDs);
+        ~FNVRecordProcessor();
 
         bool operator()(Record *&curRecord);
-        void IsEmpty(bool value);
     };
 
 class Record
@@ -104,43 +113,6 @@ class Record
             fIsCantWait             = 0x00080000
             };
 
-/*        enum headerFlags
-            {
-            fIsESM                              = 0x00000001,
-            fIsTaken                            = 0x00000002, //From OBSE, unconfirmed, requires fIsDeleted also be set
-            fUnknown1                           = 0x00000004,
-            fUnknown2                           = 0x00000008,
-            fUnknown3                           = 0x00000010,
-            fIsDeleted                          = 0x00000020,
-            fIsBorderRegion                     = 0x00000040, //Has Tree LOD / Constant / Hidden From Local Map (FNV)
-            fIsTurnOffFire                      = 0x00000080,
-            fIsInaccessible                     = 0x00000100, // (FNV)
-            fIsCastsShadows                     = 0x00000200, //On Local Map / Motion Blur (FNV)
-            fIsQuestOrPersistent                = 0x00000400,
-            fIsInitiallyDisabled                = 0x00000800,
-            fIsIgnored                          = 0x00001000,
-            fIsNoVoiceFilter                    = 0x00002000, // (FNV)
-            fIsTemporary                        = 0x00004000, //From OBSE, unconfirmed
-            fIsVisibleWhenDistant               = 0x00008000,
-            fIsRandomAnimStartOrHighPriorityLOD = 0x00010000, // (FNV)
-            fIsDangerousOrOffLimits             = 0x00020000, // Radio Station (Talking Activator) (FNV)
-            fIsCompressed                       = 0x00040000,
-            fIsCantWait                         = 0x00080000, // Platform Specific Texture (FNV)
-            fUnknown4                           = 0x00100000,
-            fUnknown5                           = 0x00200000,
-            fUnknown6                           = 0x00400000,
-            fUnknown7                           = 0x00800000,
-            fUnknown8                           = 0x01000000,
-            fIsObstacleOrNoAIAcquire            = 0x02000000, // (FNV)
-            fIsNavMeshFilter                    = 0x03000000, //? (FNV)
-            //fIsNavMeshBoundBox                = 0x04000000, //? (FNV)
-            fIsNavMeshBoundBox                  = 0x08000000, // (FNV)
-            fIsNonPipboyOrAutoReflected         = 0x10000000, // (FNV)
-            fIsChildUsableOrAutoRefracted       = 0x20000000, // (FNV)
-            fIsNavMeshGround                    = 0x40000000, // (FNV)
-            fUnknown9                           = 0x80000000
-            };
-*/
         enum cBashRecordFlags
             {
             _fIsLoaded = 0x80000000 //Not an actual flag. Used only by CBash internally. Won't be written.
@@ -179,7 +151,7 @@ class Record
         bool Read();
         bool IsValid(FormIDResolver &expander);
         //FormIDResolver& GetCorrectExpander(std::vector<FormIDResolver *> &Expanders, FormIDResolver &defaultResolver);
-        UINT32 Write(_FileHandler &SaveHandler, const bool &bMastersChanged, FormIDResolver &expander, FormIDResolver &collapser, std::vector<FormIDResolver *> &Expanders);
+        virtual UINT32 Write(_FileHandler &SaveHandler, const bool &bMastersChanged, FormIDResolver &expander, FormIDResolver &collapser, std::vector<FormIDResolver *> &Expanders);
 
         bool IsDeleted() const;
         void IsDeleted(bool value);
@@ -222,4 +194,54 @@ class Record
         bool IsLoaded();
         void IsLoaded(bool value);
         bool IsChanged(bool value=false);
+    };
+
+class FNVRecord : public Record
+    {
+    protected:
+        enum FNVHeaderFlags
+            {
+            fIsESM                              = 0x00000001,
+            fIsTaken                            = 0x00000002, //From OBSE, unconfirmed, requires fIsDeleted also be set
+            fUnknown1                           = 0x00000004,
+            fUnknown2                           = 0x00000008,
+            fUnknown3                           = 0x00000010,
+            fIsDeleted                          = 0x00000020,
+            fIsBorderRegion                     = 0x00000040, //Has Tree LOD / Constant / Hidden From Local Map (FNV)
+            fIsTurnOffFire                      = 0x00000080,
+            fIsInaccessible                     = 0x00000100, // (FNV)
+            fIsCastsShadows                     = 0x00000200, //On Local Map / Motion Blur (FNV)
+            fIsQuestOrPersistent                = 0x00000400,
+            fIsInitiallyDisabled                = 0x00000800,
+            fIsIgnored                          = 0x00001000,
+            fIsNoVoiceFilter                    = 0x00002000, // (FNV)
+            fIsTemporary                        = 0x00004000, //From OBSE, unconfirmed
+            fIsVisibleWhenDistant               = 0x00008000,
+            fIsRandomAnimStartOrHighPriorityLOD = 0x00010000, // (FNV)
+            fIsDangerousOrOffLimits             = 0x00020000, // Radio Station (Talking Activator) (FNV)
+            fIsCompressed                       = 0x00040000,
+            fIsCantWait                         = 0x00080000, // Platform Specific Texture (FNV)
+            fUnknown4                           = 0x00100000,
+            fUnknown5                           = 0x00200000,
+            fUnknown6                           = 0x00400000,
+            fUnknown7                           = 0x00800000,
+            fUnknown8                           = 0x01000000,
+            fIsObstacleOrNoAIAcquire            = 0x02000000, // (FNV)
+            fIsNavMeshFilter                    = 0x03000000, //? (FNV)
+            //fIsNavMeshBoundBox                = 0x04000000, //? (FNV)
+            fIsNavMeshBoundBox                  = 0x08000000, // (FNV)
+            fIsNonPipboyOrAutoReflected         = 0x10000000, // (FNV)
+            fIsChildUsableOrAutoRefracted       = 0x20000000, // (FNV)
+            fIsNavMeshGround                    = 0x40000000, // (FNV)
+            fUnknown9                           = 0x80000000
+            };
+
+    public:
+        UINT16 formVersion; //FNV
+        UINT8  versionControl2[2]; //FNV
+
+        FNVRecord(unsigned char *_recData=NULL);
+        virtual ~FNVRecord();
+
+        UINT32 Write(_FileHandler &SaveHandler, const bool &bMastersChanged, FormIDResolver &expander, FormIDResolver &collapser, std::vector<FormIDResolver *> &Expanders);
     };

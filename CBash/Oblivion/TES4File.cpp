@@ -977,12 +977,14 @@ SINT32 TES4File::CleanMasters(std::vector<FormIDResolver *> &Expanders)
     //TempHandler.CreateFormIDLookup(FormIDHandler.ExpandedIndex);
     std::vector<UINT32> ToRemove;
     ToRemove.reserve(TES4.MAST.size());
+    Record * topRecord = &TES4;
 
     for(UINT32 p = 0; p < (UINT8)TES4.MAST.size();++p)
         {
         RecordMasterChecker checker(FormIDHandler, Expanders, p);
 
         //printf("Checking: %s\n", TES4.MAST[p].value);
+        if(checker.Accept(topRecord)) continue;
         if(GMST.VisitRecords(NULL, checker, false)) continue;
         if(GLOB.VisitRecords(NULL, checker, false)) continue;
         if(CLAS.VisitRecords(NULL, checker, false)) continue;
@@ -1139,8 +1141,10 @@ void TES4File::VisitAllRecords(RecordOp &op)
     {
     if(Flags.IsNoLoad)
         return;
+    Record * topRecord = &TES4;
 
     //This visits every record and subrecord
+    op.Accept(topRecord);
     GMST.VisitRecords(NULL, op, true);
     GLOB.VisitRecords(NULL, op, true);
     CLAS.VisitRecords(NULL, op, true);
@@ -1204,10 +1208,14 @@ void TES4File::VisitRecords(const UINT32 &TopRecordType, const UINT32 &RecordTyp
     {
     if(Flags.IsNoLoad)
         return;
+    Record * topRecord = &TES4;
 
     //This visits only the top records specified.
     switch(TopRecordType)
         {
+        case '4SET':
+            op.Accept(topRecord);
+            break;
         case 'TSMG':
             GMST.VisitRecords(RecordType, op, DeepVisit);
             break;

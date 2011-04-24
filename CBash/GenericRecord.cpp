@@ -169,6 +169,58 @@ void RecordProcessor::IsEmpty(bool value)
     FormIDHandler.IsEmpty = value;
     }
 
+FNVRecordProcessor::FNVRecordProcessor(_FileHandler &_ReadHandler, FormIDHandlerClass &_FormIDHandler, RecordOp &_reader, const ModFlags &_Flags, boost::unordered_set<UINT32> &_UsedFormIDs):
+    RecordProcessor(_ReadHandler,_FormIDHandler, _reader, _Flags, _UsedFormIDs)
+    {
+    //
+    }
+
+FNVRecordProcessor::~FNVRecordProcessor()
+    {
+    //
+    }
+
+bool FNVRecordProcessor::operator()(Record *&curRecord)
+    {
+    ReadHandler.read(&curRecord->flags, 4);
+    ReadHandler.read(&curRecord->formID, 4);
+    ReadHandler.read(&curRecord->flagsUnk, 4); //VersionControl1
+    ReadHandler.read(&((FNVRecord *)curRecord)->formVersion, 2);
+    ReadHandler.read(&((FNVRecord *)curRecord)->versionControl2[0], 2);
+    expander.Accept(curRecord->formID);
+    curRecord->IsLoaded(false); //just incase the chosen flags were in use, clear them
+
+    //Testing Messages
+    //if(curRecord->IsLoaded())
+    //    printf("_fIsLoaded Flag used!!!! %s - %08X\n", curRecord->GetStrType(), curRecord->formID);
+    //if((curRecord->flags & 0x4000) != 0)
+    //    printf("0x4000 used: %08X!!!!\n", curRecord->formID);
+
+    if(IsSkipNewRecords && FormIDHandler.IsNewRecord(curRecord->formID))
+        {
+        delete curRecord;
+        return false;
+        }
+
+    //Make sure the formID is unique within the mod
+    if(UsedFormIDs.insert(curRecord->formID).second == true)
+        {
+        reader.Accept(curRecord);
+        //Threads.schedule(boost::bind(&RecordReader::Accept, reader, (Record **)&curRecord));
+        if(IsTrackNewTypes && curRecord->GetType() != 'TSMG' && curRecord->GetType() != 'FEGM' && FormIDHandler.IsNewRecord(curRecord->formID))
+            FormIDHandler.NewTypes.insert(curRecord->GetType());
+        return true;
+        }
+    else
+        {
+        if(!IsAddMasters) //Can cause any new records to be given a duplicate ID
+            printf("Record skipped with duplicate formID: %08X\n", curRecord->formID);
+        delete curRecord;
+        return false;
+        }
+    return true;
+    }
+
 Record::Record(unsigned char *_recData):
     flags(0),
     formID(0),
@@ -658,4 +710,128 @@ bool Record::IsChanged(bool value)
     if(value)
         recData = NULL;
     return recData == NULL;
+    }
+
+FNVRecord::FNVRecord(unsigned char *_recData):
+    Record(_recData),
+    formVersion(0)
+    {
+    memset(&versionControl2[0], 0x00, 2);
+    }
+
+FNVRecord::~FNVRecord()
+    {
+    //
+    }
+
+UINT32 FNVRecord::Write(_FileHandler &SaveHandler, const bool &bMastersChanged, FormIDResolver &expander, FormIDResolver &collapser, std::vector<FormIDResolver *> &Expanders)
+    {
+    UINT32 recSize = 0;
+    UINT32 recType = GetType();
+    collapser.Accept(formID);
+
+    if(!IsChanged())
+        {
+        if(bMastersChanged)
+            {
+            //if masters have changed, all formIDs have to be updated...
+            //so the record can't just be written as is.
+            if(Read())
+                {
+                //if(expander.IsValid(recData)) //optimization disabled for testing
+                //    VisitFormIDs(expander);
+                //printf("Looking for correct expander\n");
+                SINT32 index = -1;
+                for(UINT32 x = 0; x < Expanders.size(); ++x)
+                    if(IsValid(*Expanders[x]))
+                        {
+                        //if(index != -1)
+                        //    {
+                        //    printf("Multiple 'Correct' expanders found (%08X)! Using last one found (likely incorrect unless lucky)\n", formID);
+                        //    printf("  %i:   %08X, %08X, %08X\n", index, Expanders[index]->FileStart, recData, Expanders[index]->FileEnd);
+                        //    printf("  %i:   %08X, %08X, %08X\n", x, Expanders[x]->FileStart, recData, Expanders[x]->FileEnd);
+                        //    printf("Expanders:\n");
+                        //    for(UINT32 z = 0; z < Expanders.size(); ++z)
+                        //        printf("  %i of %i:   %08X, %08X\n", z, Expanders.size(), Expanders[z]->FileStart, Expanders[z]->FileEnd);
+                        //    }
+                        index = x;
+                        break;
+                        }
+                if(index == -1)
+                    {
+                    printf("Unable to find the correct expander!\n");
+                    VisitFormIDs(expander);
+                    }
+                else
+                    VisitFormIDs(*Expanders[index]);
+                }
+            }
+        else
+            {
+            //if masters have not changed, the record can just be written from the read buffer
+            recSize = GetSize();
+
+            IsLoaded(false);
+            SaveHandler.write(&recType, 4);
+            SaveHandler.write(&recSize, 4);
+            SaveHandler.write(&flags, 4);
+            SaveHandler.write(&formID, 4);
+            SaveHandler.write(&flagsUnk, 4);
+            SaveHandler.write(&formVersion, 2);
+            SaveHandler.write(&versionControl2[0], 2);
+            IsLoaded(true);
+            SaveHandler.write(recData, recSize);
+            Unload();
+            return recSize + 24;
+            }
+        }
+    recSize = IsDeleted() ? 0 : GetSize(true);
+
+    IsLoaded(false);
+    SaveHandler.write(&recType, 4);
+    SaveHandler.write(&recSize, 4);
+    SaveHandler.write(&flags, 4);
+    SaveHandler.write(&formID, 4);
+    SaveHandler.write(&flagsUnk, 4);
+    SaveHandler.write(&formVersion, 2);
+    SaveHandler.write(&versionControl2[0], 2);
+    IsLoaded(true);
+
+    VisitFormIDs(collapser);
+
+    if(!IsDeleted())
+        {
+        //IsCompressed(true); //Test code
+        if(IsCompressed())
+            {
+            //printf("Compressed: %08X\n", formID);
+            UINT32 recStart = SaveHandler.tell();
+            UINT32 compSize = compressBound(recSize);
+            unsigned char *compBuffer = new unsigned char[compSize + 4];
+            SaveHandler.reserveBuffer(compSize + 4);
+            WriteRecord(SaveHandler);
+            memcpy(compBuffer, &recSize, 4);
+            if(SaveHandler.IsCached(recStart) && ((SaveHandler.UnusedCache() + recSize) >= compSize))
+                compress2(compBuffer + 4, &compSize, SaveHandler.getBuffer(recStart), recSize, 6);
+            else
+                {
+                SaveHandler.flush();
+                printf("Not in cache, written improperly!\n  Size: %u\n", recSize);
+                return recSize + 24;
+                }
+            SaveHandler.set_used((compSize + 4) - recSize);
+            recSize = compSize + 4;
+            SaveHandler.writeAt(recStart - 20, &recSize, 4);
+            SaveHandler.writeAt(recStart, compBuffer, recSize);
+            delete []compBuffer;
+            }
+        else
+            WriteRecord(SaveHandler);
+        }
+    expander.Accept(formID);
+    if(IsChanged())
+        VisitFormIDs(expander);
+    else
+        Unload();
+    return recSize + 24;
     }

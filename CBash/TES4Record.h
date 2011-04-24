@@ -20,12 +20,12 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #pragma once
-#include "..\..\Common.h"
-#include "..\..\GenericRecord.h"
+#include "Common.h"
+#include "GenericRecord.h"
 
-namespace FNV
-{
-class TES4Record : public Record //Main File Header
+//This record is a hybrid of all possible versions (TES4, FO3, FNV)
+
+class TES4Record : public Record
     {
     private:
         struct TES4HEDR
@@ -40,23 +40,21 @@ class TES4Record : public Record //Main File Header
             bool operator !=(const TES4HEDR &other) const;
             };
 
-        struct TES4DATA //Placeholder for writing. Otherwise not used.
-            {
-            UINT32 unk1, unk2;
-
-            TES4DATA();
-            ~TES4DATA();
-            };
-
     public:
+        whichGameTypes whichGame;
         ReqSubRecord<TES4HEDR> HEDR; //Header
         RawRecord OFST; //Unknown
         RawRecord DELE; //Unknown
         StringRecord CNAM; //Author
         StringRecord SNAM; //Description
         std::vector<StringRecord> MAST; //Master Files
+
+        //FNV Specific
         std::vector<FORMID> ONAM; //Overridden Forms
         RawRecord SCRN; //Screenshot
+        //Part of FNVRecord
+        UINT16 formVersion; //FNV
+        UINT8  versionControl2[2]; //FNV
 
         TES4Record(unsigned char *_recData=NULL);
         TES4Record(TES4Record *srcRecord);
@@ -83,4 +81,3 @@ class TES4Record : public Record //Main File Header
         bool operator ==(const TES4Record &other) const;
         bool operator !=(const TES4Record &other) const;
     };
-}

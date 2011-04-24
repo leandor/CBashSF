@@ -288,6 +288,14 @@
 			<Filter
 				Name="Record Definitions"
 				>
+				<File
+					RelativePath=".\TES4Record.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\TES4RecordAPI.cpp"
+					>
+				</File>
 				<Filter
 					Name="Oblivion"
 					>
@@ -492,10 +500,6 @@
 						</File>
 						<File
 							RelativePath=".\Oblivion\Records\STATRecord.cpp"
-							>
-						</File>
-						<File
-							RelativePath=".\Oblivion\Records\TES4Record.cpp"
 							>
 						</File>
 						<File
@@ -1065,10 +1069,6 @@
 							>
 						</File>
 						<File
-							RelativePath=".\Oblivion\Records\API\TES4RecordAPI.cpp"
-							>
-						</File>
-						<File
 							RelativePath=".\Oblivion\Records\API\TREERecordAPI.cpp"
 							>
 						</File>
@@ -1104,6 +1104,37 @@
 					<Filter
 						Name="Simple"
 						>
+						<File
+							RelativePath=".\FalloutNewVegas\Records\GMSTRecord.cpp"
+							>
+							<FileConfiguration
+								Name="Debug|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="Release|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="FullDebug|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
+						</File>
 					</Filter>
 					<Filter
 						Name="API"
@@ -1160,6 +1191,10 @@
 			<Filter
 				Name="Record Definitions"
 				>
+				<File
+					RelativePath=".\TES4Record.h"
+					>
+				</File>
 				<Filter
 					Name="Oblivion"
 					>
@@ -1408,10 +1443,6 @@
 						</File>
 						<File
 							RelativePath=".\Oblivion\Records\STATRecord.h"
-							>
-						</File>
-						<File
-							RelativePath=".\Oblivion\Records\TES4Record.h"
 							>
 						</File>
 						<File
@@ -1856,10 +1887,6 @@
 						</File>
 						<File
 							RelativePath=".\FalloutNewVegas\Records\TERMRecord.h"
-							>
-						</File>
-						<File
-							RelativePath=".\FalloutNewVegas\Records\TES4Record.h"
 							>
 						</File>
 						<File

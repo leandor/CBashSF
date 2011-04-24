@@ -58,6 +58,14 @@ GPL License and Copyright Notice ============================================
     };
 #endif
 
+
+enum whichGameTypes {
+    eIsOblivion = 0,
+    eIsFallout3,
+    eIsFalloutNewVegas,
+    eIsUnknown
+    };
+
 enum API_FieldTypes {
     UNKNOWN_FIELD = 0,
     MISSING_FIELD,

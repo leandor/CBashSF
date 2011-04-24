@@ -19,8 +19,8 @@ GPL License and Copyright Notice ============================================
  CBash copyright (C) 2010 Waruddar
 =============================================================================
 */
-#include "..\..\..\Common.h"
-#include "..\TES4Record.h"
+#include "Common.h"
+#include "TES4Record.h"
 
 UINT32 TES4Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {

@@ -1527,5 +1527,111 @@ class GRUPRecords<WRLDRecord>
 
             return formCount;
             }
+    };
 
+template<class T>
+class FNVGRUPRecords
+    {
+    public:
+        UINT32 stamp, unknown;
+        bool SkimmedGRUP;
+        std::vector<Record *> Records;
+        FNVGRUPRecords():stamp(134671), SkimmedGRUP(false) {}
+        ~FNVGRUPRecords()
+            {
+            for(UINT32 p = 0;p < Records.size(); p++)
+                delete Records[p];
+            }
+
+        bool Skim(_FileHandler &ReadHandler, const UINT32 &gSize, RecordProcessor &processor, RecordOp &indexer)
+            {
+            if(SkimmedGRUP || gSize == 0)
+                return false;
+            SkimmedGRUP = true;
+            Record * curRecord = NULL;
+            //UINT32 recordType = 0;
+            UINT32 gEnd = ReadHandler.tell() + gSize - 24;
+            UINT32 recordSize = 0;
+
+            while(ReadHandler.tell() < gEnd){
+                curRecord = new T(ReadHandler.getBuffer(ReadHandler.tell()) + 24);
+                ReadHandler.set_used(4); //ReadHandler.read(&recordType, 4);
+                ReadHandler.read(&recordSize, 4);
+                if(processor(curRecord))
+                    {
+                    indexer.Accept(curRecord);
+                    Records.push_back(curRecord);
+                    }
+                ReadHandler.set_used(recordSize);
+                };
+            if(Records.size())
+                processor.IsEmpty(false);
+            return true;
+            }
+        bool VisitRecords(const UINT32 &RecordType, RecordOp &op, bool DeepVisit)
+            {
+            Record * curRecord = NULL;
+
+            bool stop = false;
+
+            if(RecordType != NULL && Records.size() > 0 && Records[0]->GetType() != RecordType)
+                return false;
+            for(UINT32 p = 0; p < Records.size(); p++)
+                {
+                curRecord = Records[p];
+                if(RecordType == NULL || RecordType == curRecord->GetType())
+                    {
+                    stop = op.Accept(curRecord);
+                    if(curRecord == NULL)
+                        {
+                        Records.erase(Records.begin() + p);
+                        --p;
+                        }
+                    if(stop)
+                        return stop;
+                    }
+
+                if(DeepVisit)
+                    {
+                    stop = curRecord->VisitSubRecords(RecordType, op);
+                    if(stop)
+                        return stop;
+                    }
+                }
+            return stop;
+            }
+        UINT32 WriteGRUP(UINT32 TopLabel, _FileHandler &SaveHandler, std::vector<FormIDResolver *> &Expanders, FormIDResolver &expander, FormIDResolver &collapser, const bool &bMastersChanged, bool CloseMod)
+            {
+            UINT32 numRecords = (UINT32)Records.size();
+            if(numRecords == 0)
+                return 0;
+            UINT32 type = 'PURG';
+            UINT32 gType = eTop;
+            UINT32 TopSize = 0;
+            UINT32 formCount = 0;
+
+            //Top GRUP Header
+            SaveHandler.write(&type, 4);
+            UINT32 TopSizePos = SaveHandler.tell();
+            SaveHandler.set_used(4); //Placeholder: will be overwritten with correct value later.
+            //SaveHandler.write(&TopSize, 4);
+            SaveHandler.write(&TopLabel, 4);
+            SaveHandler.write(&gType, 4);
+            SaveHandler.write(&stamp, 4);
+            SaveHandler.write(&unknown, 4);
+            ++formCount;
+            TopSize = 24;
+
+            formCount += numRecords;
+            for(UINT32 p = 0; p < numRecords; p++)
+                {
+                TopSize += Records[p]->Write(SaveHandler, bMastersChanged, expander, collapser, Expanders);
+                if(CloseMod)
+                    delete Records[p];
+                }
+            SaveHandler.writeAt(TopSizePos, &TopSize, 4);
+            if(CloseMod)
+                Records.clear();
+            return formCount;
+            }
     };

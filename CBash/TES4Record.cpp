@@ -19,7 +19,7 @@ GPL License and Copyright Notice ============================================
  CBash copyright (C) 2010 Waruddar
 =============================================================================
 */
-#include "..\..\Common.h"
+#include "Common.h"
 #include "TES4Record.h"
 
 TES4Record::TES4HEDR::TES4HEDR(FLOAT32 _version, UINT32 _numRecords, UINT32 _nextObject):
@@ -47,22 +47,11 @@ bool TES4Record::TES4HEDR::operator !=(const TES4HEDR &other) const
     return !(*this == other);
     }
 
-TES4Record::TES4DATA::TES4DATA():
-    unk1(0),
-    unk2(0)
-    {
-    //
-    }
-
-TES4Record::TES4DATA::~TES4DATA()
-    {
-    //
-    }
-
 TES4Record::TES4Record(unsigned char *_recData):
-    Record(_recData)
+    Record(_recData),
+    formVersion(0)
     {
-    //
+    memset(&versionControl2[0], 0x00, 2);
     }
 
 TES4Record::TES4Record(TES4Record *srcRecord):
@@ -74,6 +63,9 @@ TES4Record::TES4Record(TES4Record *srcRecord):
     flags = srcRecord->flags;
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
+    formVersion = srcRecord->formVersion;
+    versionControl2[0] = srcRecord->versionControl2[0];
+    versionControl2[1] = srcRecord->versionControl2[1];
 
     if(!srcRecord->IsChanged())
         {
@@ -89,12 +81,25 @@ TES4Record::TES4Record(TES4Record *srcRecord):
     CNAM = srcRecord->CNAM;
     SNAM = srcRecord->SNAM;
     MAST = srcRecord->MAST;
+    ONAM = srcRecord->ONAM;
+    SCRN = srcRecord->SCRN;
     return;
     }
 
 TES4Record::~TES4Record()
     {
     //
+    }
+
+bool TES4Record::VisitFormIDs(FormIDOp &op)
+    {
+    if(!IsLoaded())
+        return false;
+
+    for(UINT32 x = 0; x < ONAM.size(); x++)
+        op.Accept(ONAM[x]);
+
+    return op.Stop();
     }
 
 bool TES4Record::IsESM()
@@ -117,42 +122,99 @@ UINT32 TES4Record::GetSize(bool forceCalc)
     UINT32 cSize = 0;
     UINT32 TotSize = 0;
 
-    if(HEDR.IsLoaded())
-        TotSize += HEDR.GetSize() + 6;
-
-    if(OFST.IsLoaded())
+    switch(whichGame)
         {
-        cSize = OFST.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+        case eIsOblivion:
+            if(HEDR.IsLoaded())
+                TotSize += HEDR.GetSize() + 6;
 
-    if(DELE.IsLoaded())
-        {
-        cSize = DELE.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+            if(OFST.IsLoaded())
+                {
+                cSize = OFST.GetSize();
+                if(cSize > 65535) cSize += 10;
+                TotSize += cSize += 6;
+                }
 
-    if(CNAM.IsLoaded())
-        {
-        cSize = CNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+            if(DELE.IsLoaded())
+                {
+                cSize = DELE.GetSize();
+                if(cSize > 65535) cSize += 10;
+                TotSize += cSize += 6;
+                }
 
-    if(SNAM.IsLoaded())
-        {
-        cSize = SNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
+            if(CNAM.IsLoaded())
+                {
+                cSize = CNAM.GetSize();
+                if(cSize > 65535) cSize += 10;
+                TotSize += cSize += 6;
+                }
 
-    for(UINT32 p = 0; p < MAST.size(); p++)
-        {
-        cSize = MAST[p].GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 20;//accounts for associated DATA element, subTypes and sizes
+            if(SNAM.IsLoaded())
+                {
+                cSize = SNAM.GetSize();
+                if(cSize > 65535) cSize += 10;
+                TotSize += cSize += 6;
+                }
+
+            for(UINT32 p = 0; p < MAST.size(); p++)
+                {
+                cSize = MAST[p].GetSize();
+                if(cSize > 65535) cSize += 10;
+                TotSize += cSize += 20;//accounts for associated DATA element, subTypes and sizes
+                }
+            break;
+        case eIsFallout3:
+            return 0;
+
+        case eIsFalloutNewVegas:
+            if(HEDR.IsLoaded())
+                TotSize += HEDR.GetSize() + 6;
+
+            if(OFST.IsLoaded())
+                {
+                cSize = OFST.GetSize();
+                if(cSize > 65535) cSize += 10;
+                TotSize += cSize += 6;
+                }
+
+            if(DELE.IsLoaded())
+                {
+                cSize = DELE.GetSize();
+                if(cSize > 65535) cSize += 10;
+                TotSize += cSize += 6;
+                }
+
+            if(CNAM.IsLoaded())
+                {
+                cSize = CNAM.GetSize();
+                if(cSize > 65535) cSize += 10;
+                TotSize += cSize += 6;
+                }
+
+            if(SNAM.IsLoaded())
+                {
+                cSize = SNAM.GetSize();
+                if(cSize > 65535) cSize += 10;
+                TotSize += cSize += 6;
+                }
+
+            for(UINT32 p = 0; p < MAST.size(); p++)
+                {
+                cSize = MAST[p].GetSize();
+                if(cSize > 65535) cSize += 10;
+                TotSize += cSize += 20;//accounts for associated DATA element, subTypes and sizes
+                }
+
+            if(ONAM.size())
+                TotSize += ONAM.size() * sizeof(FORMID) + 6;
+
+            if(SCRN.IsLoaded())
+                {
+                cSize = SCRN.GetSize();
+                if(cSize > 65535) cSize += 10;
+                TotSize += cSize += 6;
+                }
+            break;
         }
 
     return TotSize;
@@ -219,6 +281,23 @@ SINT32 TES4Record::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             case 'ELED':
                 DELE.Read(buffer, subSize, curPos);
                 break;
+            case 'MANO':
+                if(subSize % sizeof(FORMID) == 0)
+                    {
+                    if(subSize == 0)
+                        break;
+                    ONAM.resize(subSize / sizeof(FORMID));
+                    _readBuffer(&ONAM[0], buffer, subSize, curPos);
+                    }
+                else
+                    {
+                    printf("  Unrecognized ONAM size: %i\n", subSize);
+                    curPos += subSize;
+                    }
+                break;
+            case 'NRCS':
+                SCRN.Read(buffer, subSize, curPos);
+                break;
             default:
                 #ifdef CBASH_USE_LOGGING
                     BOOST_LOG_SEV(lg, critical) << "TES4: Unknown subType = " << ((char *)&subType)[0] << ((char *)&subType)[1] << ((char *)&subType)[2] << ((char *)&subType)[3];
@@ -245,22 +324,45 @@ SINT32 TES4Record::Unload()
 
 SINT32 TES4Record::WriteRecord(_FileHandler &SaveHandler)
     {
-    TES4DATA DATA;
-
-    SaveHandler.writeSubRecord('RDEH', &HEDR.value, sizeof(TES4HEDR));
-    if(OFST.IsLoaded())
-        SaveHandler.writeSubRecord('TSFO', OFST.value, OFST.GetSize());
-    if(DELE.IsLoaded())
-        SaveHandler.writeSubRecord('ELED', DELE.value, DELE.GetSize());
-    if(CNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANC', CNAM.value, CNAM.GetSize());
-    if(SNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANS', SNAM.value, SNAM.GetSize());
-    for(UINT32 p = 0; p < MAST.size(); p++)
+    UINT8 DATA[8] = {0};
+    switch(whichGame)
         {
-        SaveHandler.writeSubRecord('TSAM', MAST[p].value, MAST[p].GetSize());
-        SaveHandler.writeSubRecord('ATAD', &DATA, sizeof(TES4DATA));
+        case eIsOblivion:
+            SaveHandler.writeSubRecord('RDEH', &HEDR.value, sizeof(TES4HEDR));
+            if(OFST.IsLoaded())
+                SaveHandler.writeSubRecord('TSFO', OFST.value, OFST.GetSize());
+            if(DELE.IsLoaded())
+                SaveHandler.writeSubRecord('ELED', DELE.value, DELE.GetSize());
+            if(CNAM.IsLoaded())
+                SaveHandler.writeSubRecord('MANC', CNAM.value, CNAM.GetSize());
+            if(SNAM.IsLoaded())
+                SaveHandler.writeSubRecord('MANS', SNAM.value, SNAM.GetSize());
+            for(UINT32 p = 0; p < MAST.size(); p++)
+                {
+                SaveHandler.writeSubRecord('TSAM', MAST[p].value, MAST[p].GetSize());
+                SaveHandler.writeSubRecord('ATAD', &DATA[0], sizeof(DATA));
+                }
+            break;
+        case eIsFallout3:
+            return -1;
+        case eIsFalloutNewVegas:
+            SaveHandler.writeSubRecord('RDEH', &HEDR.value, sizeof(TES4HEDR));
+            if(OFST.IsLoaded())
+                SaveHandler.writeSubRecord('TSFO', OFST.value, OFST.GetSize());
+            if(DELE.IsLoaded())
+                SaveHandler.writeSubRecord('ELED', DELE.value, DELE.GetSize());
+            if(CNAM.IsLoaded())
+                SaveHandler.writeSubRecord('MANC', CNAM.value, CNAM.GetSize());
+            if(SNAM.IsLoaded())
+                SaveHandler.writeSubRecord('MANS', SNAM.value, SNAM.GetSize());
+            for(UINT32 p = 0; p < MAST.size(); p++)
+                {
+                SaveHandler.writeSubRecord('TSAM', MAST[p].value, MAST[p].GetSize());
+                SaveHandler.writeSubRecord('ATAD', &DATA[0], sizeof(DATA));
+                }
+            break;
         }
+
     return -1;
     }
 
@@ -270,7 +372,12 @@ bool TES4Record::operator ==(const TES4Record &other) const
         DELE == other.DELE &&
         CNAM.equals(other.CNAM) &&
         SNAM.equals(other.SNAM) &&
-        MAST.size() == other.MAST.size())
+        formVersion == other.formVersion &&
+        versionControl2[0] == other.versionControl2[0] &&
+        versionControl2[1] == other.versionControl2[1] &&
+        SCRN == other.SCRN &&
+        MAST.size() == other.MAST.size() &&
+        ONAM.size() == other.ONAM.size())
         {
         //Record order kinda sorta but doesn't really matter on masters, so equality testing is easy
         //The order determines the mod index of all formIDs in the mod file
@@ -279,6 +386,12 @@ bool TES4Record::operator ==(const TES4Record &other) const
         //The ordering has no effect on load order in game or in the editor
         for(UINT32 x = 0; x < MAST.size(); ++x)
             if(!(MAST[x].equalsi(other.MAST[x])))
+                return false;
+        //Record order probably doesn't matter on overrides, so equality testing isn't easy
+        //The proper solution would be to make a set of each vector and compare that instead
+        //Fix-up later
+        for(UINT32 x = 0; x < ONAM.size(); ++x)
+            if(ONAM[x] != other.ONAM[x])
                 return false;
         return true;
         }

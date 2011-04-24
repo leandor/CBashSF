@@ -51,6 +51,8 @@ SINT32 FNVFile::LoadTES4()
     ReadHandler.read(&TES4.flags, 4);
     ReadHandler.read(&TES4.formID, 4);
     ReadHandler.read(&TES4.flagsUnk, 4);
+    ReadHandler.read(&TES4.formVersion, 2);
+    ReadHandler.read(&TES4.versionControl2[0], 2);
     if(TES4.IsLoaded())
         printf("_fIsLoaded Flag used!!!!: %08X\n", TES4.flags);
 
@@ -70,6 +72,7 @@ SINT32 FNVFile::LoadTES4()
 SINT32 FNVFile::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders)
     {
     enum IgTopRecords {
+        eIgGMST = 0x54535D47
         };
     if(!ReadHandler.IsOpen() || Flags.LoadedGRUPs)
         return 0;
@@ -82,10 +85,10 @@ SINT32 FNVFile::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders
     RecordReader fullReader(FormIDHandler, Expanders);
     RecordOp skipReader;
 
-    RecordProcessor processor_min(ReadHandler, FormIDHandler, skipReader, Flags, UsedFormIDs);
-    RecordProcessor processor_full(ReadHandler, FormIDHandler, fullReader, Flags, UsedFormIDs);
+    FNVRecordProcessor processor_min(ReadHandler, FormIDHandler, skipReader, Flags, UsedFormIDs);
+    FNVRecordProcessor processor_full(ReadHandler, FormIDHandler, fullReader, Flags, UsedFormIDs);
 
-    RecordProcessor &processor = Flags.IsFullLoad ? processor_full : processor_min;
+    FNVRecordProcessor &processor = Flags.IsFullLoad ? processor_full : processor_min;
 
     while(!ReadHandler.eof()){
         ReadHandler.set_used(4); //Skip "GRUP"
@@ -95,6 +98,12 @@ SINT32 FNVFile::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders
         //printf("%c%c%c%c\n", ((char *)&GRUPLabel)[0], ((char *)&GRUPLabel)[1], ((char *)&GRUPLabel)[2], ((char *)&GRUPLabel)[3]);
         switch(GRUPLabel)
             {
+            case eIgGMST:
+            case 'TSMG':
+                ReadHandler.read(&GMST.stamp, 4);
+                ReadHandler.read(&GMST.unknown, 4);
+                GMST.Skim(ReadHandler, GRUPSize, processor_full, indexer);
+                break;
             //ADD DEFINITIONS HERE
 
             default:
@@ -132,6 +141,8 @@ UINT32 FNVFile::GetNumRecords(const UINT32 &RecordType)
     return 0; //Not Implemented
     switch(RecordType)
         {
+        case 'TSMG':
+            return (UINT32)GMST.Records.size();
         default:
             printf("Error counting records: %c%c%c%c\n", ((char *)&RecordType)[0], ((char *)&RecordType)[1], ((char *)&RecordType)[2], ((char *)&RecordType)[3]);
             break;
@@ -149,6 +160,19 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
 
     switch(RecordType)
         {
+        case 'TSMG':
+            if(RecordEditorID == NULL && SourceRecord == NULL)
+                return NULL;
+
+            GMST.Records.push_back(new FNV::GMSTRecord((FNV::GMSTRecord *)SourceRecord));
+            newRecord = GMST.Records.back();
+
+            if(RecordEditorID != NULL)
+                {
+                ((FNV::GMSTRecord *)newRecord)->EDID.Copy(RecordEditorID);
+                ((FNV::GMSTRecord *)newRecord)->DATA.format = ((FNV::GMSTRecord *)newRecord)->EDID.value[0];
+                }
+            break;
         //case 'BOLG':
         //    GLOB.Records.push_back(new GLOBRecord((GLOBRecord *)SourceRecord));
         //    newRecord = GLOB.Records.back();
@@ -172,12 +196,15 @@ SINT32 FNVFile::CleanMasters(std::vector<FormIDResolver *> &Expanders)
     //TempHandler.CreateFormIDLookup(FormIDHandler.ExpandedIndex);
     std::vector<UINT32> ToRemove;
     ToRemove.reserve(TES4.MAST.size());
+    Record * topRecord = &TES4;
 
     for(UINT32 p = 0; p < (UINT8)TES4.MAST.size();++p)
         {
         RecordMasterChecker checker(FormIDHandler, Expanders, p);
 
         //printf("Checking: %s\n", TES4.MAST[p].value);
+        if(checker.Accept(topRecord)) continue;
+        if(GMST.VisitRecords(NULL, checker, false)) continue;
 
         //printf("ToRemove: %s\n", TES4.MAST[p].value);
         ToRemove.push_back(p);
@@ -211,6 +238,7 @@ SINT32 FNVFile::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expa
     TES4.Write(SaveHandler, bMastersChanged, expander, collapser, Expanders);
 
     //ADD DEFINITIONS HERE
+    formCount += GMST.WriteGRUP('TSMG', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
 
 
     //update formCount. Cheaper to go back and write it at the end than to calculate it before any writing.
@@ -228,6 +256,9 @@ void FNVFile::VisitAllRecords(RecordOp &op)
     return; //Not Implemented
 
     //This visits every record and subrecord
+    Record * topRecord = &TES4;
+    op.Accept(topRecord);
+    GMST.VisitRecords(NULL, op, true);
 
     return;
     }
@@ -239,8 +270,15 @@ void FNVFile::VisitRecords(const UINT32 &TopRecordType, const UINT32 &RecordType
     return; //Not Implemented
 
     //This visits only the top records specified.
+    Record * topRecord = &TES4;
     switch(TopRecordType)
         {
+        case '4SET':
+            op.Accept(topRecord);
+            break;
+        case 'TSMG':
+            GMST.VisitRecords(RecordType, op, DeepVisit);
+            break;
 
         default:
             printf("Error visiting records: %i\n", RecordType);

@@ -25,17 +25,21 @@ GPL License and Copyright Notice ============================================
 #include "../ModFile.h"
 #include "../GenericRecord.h"
 #include "../GRUPRecord.h"
+#include "Records/GMSTRecord.h"
 
 class FNVFile : public ModFile
     {
     public:
+        FNVGRUPRecords<FNV::GMSTRecord> GMST;
 
         FNVFile(STRING FileName, STRING ModName, const UINT32 _flags);
         ~FNVFile();
 
+        Record * GetTES4();
         SINT32   LoadTES4();
         SINT32   Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders);
         UINT32   GetNumRecords(const UINT32 &RecordType);
+        STRING   GetMasterName(UINT8 &CollapsedIndex);
         Record * CreateRecord(const UINT32 &RecordType, STRING const &RecordEditorID, Record *&SourceRecord, Record *&ParentRecord, CreateRecordOptions &options);
         SINT32   CleanMasters(std::vector<FormIDResolver *> &Expanders);
         SINT32   Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expanders, bool CloseMod);

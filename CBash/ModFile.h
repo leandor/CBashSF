@@ -24,7 +24,7 @@ GPL License and Copyright Notice ============================================
 #include "Common.h"
 #include "GenericRecord.h"
 #include "GRUPRecord.h"
-#include "Oblivion/Records/TES4Record.h" //Is shared across all mod types
+#include "TES4Record.h" //Is shared across all mod types
 
 class ModFile
     {

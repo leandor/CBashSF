@@ -82,13 +82,13 @@ bool GMSTRecord::GMSTDATA::operator !=(const GMSTDATA &other) const
     }
 
 GMSTRecord::GMSTRecord(unsigned char *_recData):
-    Record(_recData)
+    FNVRecord(_recData)
     {
     //
     }
 
 GMSTRecord::GMSTRecord(GMSTRecord *srcRecord):
-    Record()
+    FNVRecord()
     {
     if(srcRecord == NULL)
         return;

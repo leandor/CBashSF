@@ -4953,8 +4953,11 @@ class ObModFile(object):
 
 class ObCollection:
     """Collection of esm/esp's."""
-    def __init__(self, CollectionID=None, ModsPath="."):
-        self._CollectionID = CollectionID or _CCreateCollection(str(ModsPath), 0) #Oblivion collection type hardcoded for now
+    def __init__(self, CollectionID=None, ModsPath=".", CollectionType=0):
+        #CollectionType == 0, Oblivion
+        #CollectionType == 1, Fallout 3
+        #CollectionType == 2, Fallout New Vegas
+        self._CollectionID = CollectionID or _CCreateCollection(str(ModsPath), CollectionType) #Oblivion collection type hardcoded for now
         self._ModIndex = -1
         self.LoadOrderMods = []
         self.AllMods = []

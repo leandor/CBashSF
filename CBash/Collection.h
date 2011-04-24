@@ -23,6 +23,7 @@ GPL License and Copyright Notice ============================================
 // Collection.h
 #include "ModFile.h"
 #include "Oblivion/TES4File.h"
+#include "FalloutNewVegas/FNVFile.h"
 #include <vector>
 #include <map>
 #include "Visitors.h"
@@ -32,14 +33,8 @@ class Collection
     private:
         STRING ModsDir;
         bool IsLoaded;
-        enum collectionType
-            {
-            eTES4,
-            eFO3,
-            eFNV,
-            eUnknownCollection
-            } CollectionType;
 
+        whichGameTypes CollectionType;
     public:
         std::vector<ModFile *> ModFiles;
         std::vector<ModFile *> LoadOrder255;
