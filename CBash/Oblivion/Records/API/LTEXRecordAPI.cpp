@@ -38,8 +38,8 @@ UINT32 LTEXRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
             return ISTRING_FIELD;
         case 5: //iconPath
             return ISTRING_FIELD;
-        case 6: //flags
-            return UINT8_FLAG_FIELD;
+        case 6: //types
+            return UINT8_TYPE_FIELD;
         case 7: //friction
             return UINT8_FIELD;
         case 8: //restitution
@@ -75,8 +75,8 @@ void * LTEXRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return EDID.value;
         case 5: //iconPath
             return ICON.value;
-        case 6: //flags
-            return &HNAM.value.flags;
+        case 6: //types
+            return &HNAM.value.types;
         case 7: //friction
             return &HNAM.value.friction;
         case 8: //restitution
@@ -107,8 +107,8 @@ bool LTEXRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 5: //iconPath
             ICON.Copy((STRING)FieldValue);
             break;
-        case 6: //flags
-            SetFlagMask(*(UINT8 *)FieldValue);
+        case 6: //types
+            SetType(*(UINT8 *)FieldValue);
             break;
         case 7: //friction
             HNAM.Load();
@@ -151,8 +151,8 @@ void LTEXRecord::DeleteField(FIELD_IDENTIFIERS)
         case 5: //iconPath
             ICON.Unload();
             return;
-        case 6: //flags
-            HNAM.value.flags = defaultHNAM.flags;
+        case 6: //types
+            HNAM.value.types = defaultHNAM.types;
             return;
         case 7: //friction
             HNAM.value.friction = defaultHNAM.friction;

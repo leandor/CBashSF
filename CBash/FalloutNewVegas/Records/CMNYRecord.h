@@ -33,9 +33,9 @@ class CMNYRecord : public Record //Caravan Money
         StringRecord FULL; //Name
         OptSubRecord<FNVMODEL> MODL; //Model
         OptSubRecord<GENICON> ICON; //Large Icon Filename
-        OptSubRecord<GENFID> YNAM; //Sound - Pick Up
-        OptSubRecord<GENFID> ZNAM; //Sound - Drop
-        OptSubRecord<GENU32> DATA; //Absolute Value
+        OptSimpleSubRecord<FORMID> YNAM; //Sound - Pick Up
+        OptSimpleSubRecord<FORMID> ZNAM; //Sound - Drop
+        OptSimpleSubRecord<UINT32> DATA; //Absolute Value
 
         CMNYRecord(unsigned char *_recData=NULL);
         CMNYRecord(CMNYRecord *srcRecord);

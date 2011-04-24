@@ -1125,6 +1125,14 @@
 							>
 						</File>
 						<File
+							RelativePath=".\FalloutNewVegas\Records\NAVIRecord.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\FalloutNewVegas\Records\NAVMRecord.cpp"
+							>
+						</File>
+						<File
 							RelativePath=".\FalloutNewVegas\Records\PGRERecord.cpp"
 							>
 						</File>
@@ -2255,14 +2263,6 @@
 						</File>
 						<File
 							RelativePath=".\FalloutNewVegas\Records\MUSCRecord.cpp"
-							>
-						</File>
-						<File
-							RelativePath=".\FalloutNewVegas\Records\NAVIRecord.cpp"
-							>
-						</File>
-						<File
-							RelativePath=".\FalloutNewVegas\Records\NAVMRecord.cpp"
 							>
 						</File>
 						<File
@@ -4993,6 +4993,14 @@
 							>
 						</File>
 						<File
+							RelativePath=".\FalloutNewVegas\Records\NAVIRecord.h"
+							>
+						</File>
+						<File
+							RelativePath=".\FalloutNewVegas\Records\NAVMRecord.h"
+							>
+						</File>
+						<File
 							RelativePath=".\FalloutNewVegas\Records\PGRERecord.h"
 							>
 						</File>
@@ -5286,14 +5294,6 @@
 						</File>
 						<File
 							RelativePath=".\FalloutNewVegas\Records\MUSCRecord.h"
-							>
-						</File>
-						<File
-							RelativePath=".\FalloutNewVegas\Records\NAVIRecord.h"
-							>
-						</File>
-						<File
-							RelativePath=".\FalloutNewVegas\Records\NAVMRecord.h"
 							>
 						</File>
 						<File

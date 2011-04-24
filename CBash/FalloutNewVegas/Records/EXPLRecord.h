@@ -68,10 +68,10 @@ class EXPLRecord : public Record //Explosion
         OptSubRecord<GENOBND> OBND; //Object Bounds
         StringRecord FULL; //Name
         OptSubRecord<FNVMODEL> MODL; //Model
-        OptSubRecord<GENFID> EITM; //Object Effect
-        OptSubRecord<GENFID> MNAM; //Image Space Modifier
+        OptSimpleSubRecord<FORMID> EITM; //Object Effect
+        OptSimpleSubRecord<FORMID> MNAM; //Image Space Modifier
         OptSubRecord<EXPLDATA> DATA; //Data
-        OptSubRecord<GENFID> INAM; //Placed Impact Object
+        OptSimpleSubRecord<FORMID> INAM; //Placed Impact Object
 
         EXPLRecord(unsigned char *_recData=NULL);
         EXPLRecord(EXPLRecord *srcRecord);

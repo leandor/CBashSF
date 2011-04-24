@@ -59,9 +59,9 @@ class IPCTRecord : public Record //Impact
         OptSubRecord<FNVMODEL> MODL; //Model
         OptSubRecord<IPCTDATA> DATA; //Data
         OptSubRecord<GENDODT> DODT; //Decal Data
-        OptSubRecord<GENFID> DNAM; //Texture Set
-        OptSubRecord<GENFID> SNAM; //Sound 1
-        OptSubRecord<GENFID> NAM1; //Sound 2
+        OptSimpleSubRecord<FORMID> DNAM; //Texture Set
+        OptSimpleSubRecord<FORMID> SNAM; //Sound 1
+        OptSimpleSubRecord<FORMID> NAM1; //Sound 2
 
         IPCTRecord(unsigned char *_recData=NULL);
         IPCTRecord(IPCTRecord *srcRecord);

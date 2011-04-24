@@ -33,8 +33,8 @@ class MSTTRecord : public Record //Moveable Static
         StringRecord FULL; //Name
         OptSubRecord<FNVMODEL> MODL; //Model
         OptSubRecord<GENDESTRUCT> Destructable; //Destructable
-        OptSubRecord<GENDATA> DATA; //Unknown
-        OptSubRecord<GENFID> SNAM; //Sound
+        RawRecord DATA; //Unknown
+        OptSimpleSubRecord<FORMID> SNAM; //Sound
 
         MSTTRecord(unsigned char *_recData=NULL);
         MSTTRecord(MSTTRecord *srcRecord);

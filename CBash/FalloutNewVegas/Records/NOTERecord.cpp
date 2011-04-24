@@ -99,6 +99,78 @@ bool NOTERecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+bool NOTERecord::IsSound()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eSound=0);
+    }
+
+void NOTERecord::IsSound(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eSound=0;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool NOTERecord::IsText()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eText);
+    }
+
+void NOTERecord::IsText(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eText;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool NOTERecord::IsImage()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eImage);
+    }
+
+void NOTERecord::IsImage(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eImage;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool NOTERecord::IsVoice()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eVoice);
+    }
+
+void NOTERecord::IsVoice(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eVoice;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool NOTERecord::IsType(UINT8 Type, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    }
+
+void NOTERecord::SetType(UINT8 Type)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
 UINT32 NOTERecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())

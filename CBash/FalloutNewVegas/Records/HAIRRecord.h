@@ -40,7 +40,7 @@ class HAIRRecord : public Record //Hair
         StringRecord FULL; //Name
         OptSubRecord<FNVMODEL> MODL; //Model
         StringRecord ICON; //Texture
-        OptSubRecord<GENU8> DATA; //Flags
+        OptSimpleSubRecord<UINT8> DATA; //Flags
 
         HAIRRecord(unsigned char *_recData=NULL);
         HAIRRecord(HAIRRecord *srcRecord);

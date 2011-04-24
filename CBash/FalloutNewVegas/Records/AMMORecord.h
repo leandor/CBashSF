@@ -70,10 +70,10 @@ class AMMORecord : public Record //Ammunition
         StringRecord FULL; //Name
         OptSubRecord<FNVMODEL> MODL; //Model
         OptSubRecord<GENICON> ICON; //Large Icon Filename
-        OptSubRecord<GENFID> SCRI; //Script
+        OptSimpleSubRecord<FORMID> SCRI; //Script
         OptSubRecord<GENDESTRUCT> Destructable; //Destructable
-        OptSubRecord<GENFID> YNAM; //Sound - Pick Up
-        OptSubRecord<GENFID> ZNAM; //Sound - Drop
+        OptSimpleSubRecord<FORMID> YNAM; //Sound - Pick Up
+        OptSimpleSubRecord<FORMID> ZNAM; //Sound - Drop
         OptSubRecord<AMMODATA> DATA; //Ammo Data
         OptSubRecord<AMMODAT2> DAT2; //Extra Ammo Data
         StringRecord ONAM; //Short Name

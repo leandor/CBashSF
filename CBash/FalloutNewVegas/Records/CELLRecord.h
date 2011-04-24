@@ -40,26 +40,10 @@ class CELLRecord : public Record //Cell
             bool operator !=(const CELLXCLC &other) const;
             };
 
-        struct CELLXCLL
-            {
-            GENCLR  ambient; //Ambient Color
-            GENCLR  directional; //Directional Color
-            GENCLR  fog; //Fog Color
-            FLOAT32 fogNear, fogFar; //Fog Near, Fog Far
-            SINT32  directionalXY, directionalZ; //Directional Rotation XY, Directional Rotation Z
-            FLOAT32 directionalFade, fogClip, fogPower; //Directional Fade, Fog Clip Dist, Fog Power
-
-            CELLXCLL();
-            ~CELLXCLL();
-
-            bool operator ==(const CELLXCLL &other) const;
-            bool operator !=(const CELLXCLL &other) const;
-            };
-
         struct CELLLTMP //Light Template
             {
-            OptSubRecord<GENFID> LTMP; //Template
-            OptSubRecord<GENU32> LNAM; //Inherit Flags
+            OptSimpleSubRecord<FORMID> LTMP; //Template
+            OptSimpleSubRecord<UINT32> LNAM; //Inherit Flags
 
             enum flagsFlags
                 {
@@ -133,23 +117,23 @@ class CELLRecord : public Record //Cell
     public:
         StringRecord EDID; //Editor ID
         StringRecord FULL; //Name
-        OptSubRecord<GENU8> DATA; //Flags
+        OptSimpleSubRecord<UINT8> DATA; //Flags
         OptSubRecord<CELLXCLC> XCLC; //Grid
-        OptSubRecord<CELLXCLL> XCLL; //Lighting
+        OptSubRecord<FNVLIGHT> XCLL; //Lighting
         std::vector<StringRecord> IMPF; //Footstep Materials
         OptSubRecord<CELLLTMP> LTMP; //Light Template
         OptSubRecord<CELLXCLW> XCLW; //Water Height
         StringRecord XNAM; //Water Noise Texture
         std::vector<FORMID> XCLR; //Regions
-        OptSubRecord<GENFID> XCIM; //Image Space
+        OptSimpleSubRecord<FORMID> XCIM; //Image Space
         RawRecord XCET; //Unknown
-        OptSubRecord<GENFID> XEZN; //Encounter Zone
-        OptSubRecord<GENFID> XCCM; //Climate
-        OptSubRecord<GENFID> XCWT; //Water
+        OptSimpleSubRecord<FORMID> XEZN; //Encounter Zone
+        OptSimpleSubRecord<FORMID> XCCM; //Climate
+        OptSimpleSubRecord<FORMID> XCWT; //Water
         OptSubRecord<FNVXOWN> Ownership; //Owner
-        OptSubRecord<GENFID> XCAS; //Acoustic Space
+        OptSimpleSubRecord<FORMID> XCAS; //Acoustic Space
         RawRecord XCMT; //Unused
-        OptSubRecord<GENFID> XCMO; //Music Type
+        OptSimpleSubRecord<FORMID> XCMO; //Music Type
         std::vector<Record *> ACHR;
         std::vector<Record *> ACRE;
         std::vector<Record *> REFR;

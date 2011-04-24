@@ -30,8 +30,8 @@ class DIALRecord : public Record //Dialog Topic
     private:
         struct DIALUNK
             {
-            OptSubRecord<GENFID> INFC; //Unknown
-            OptSubRecord<GENS32> INFX; //Unknown
+            OptSimpleSubRecord<FORMID> INFC; //Unknown
+            OptSimpleSubRecord<SINT32> INFX; //Unknown
 
             bool operator ==(const DIALUNK &other) const;
             bool operator !=(const DIALUNK &other) const;
@@ -39,7 +39,7 @@ class DIALRecord : public Record //Dialog Topic
 
         struct DIALQSTI
             {
-            OptSubRecord<GENFID> QSTI; //Quest
+            OptSimpleSubRecord<FORMID> QSTI; //Quest
             std::vector<DIALUNK *> Unknown; //Unknown
 
             bool operator ==(const DIALQSTI &other) const;
@@ -48,7 +48,7 @@ class DIALRecord : public Record //Dialog Topic
 
         struct DIALQSTR
             {
-            OptSubRecord<GENFID> QSTR; //Quest
+            OptSimpleSubRecord<FORMID> QSTR; //Quest
             std::vector<DIALUNK *> Unknown; //Unknown
 
             bool operator ==(const DIALQSTR &other) const;
@@ -89,7 +89,7 @@ class DIALRecord : public Record //Dialog Topic
         std::vector<ReqSubRecord<DIALQSTI> *> QSTI; //Added Quests
         std::vector<ReqSubRecord<DIALQSTR> *> QSTR; //Removed Quests
         StringRecord FULL; //Name
-        OptSubRecord<GENFLOAT> PNAM; //Priority
+        OptSimpleSubRecord<FLOAT32> PNAM; //Priority
         StringRecord TDUM; //Unknown
         OptSubRecord<DIALDATA> DATA; //Dialog Data
         std::vector<Record *> INFO;

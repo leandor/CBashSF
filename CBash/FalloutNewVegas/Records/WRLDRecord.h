@@ -52,22 +52,22 @@ class WRLDRecord : public Record //Worldspace
     public:
         StringRecord EDID; //Editor ID
         StringRecord FULL; //Name
-        OptSubRecord<GENFID> XEZN; //Encounter Zone
-        OptSubRecord<GENFID> WNAM; //Worldspace
-        OptSubRecord<GENU16> PNAM; //PNAM
-        OptSubRecord<GENFID> CNAM; //Climate
-        OptSubRecord<GENFID> NAM2; //Water
-        OptSubRecord<GENFID> NAM3; //LOD Water Type
-        OptSubRecord<GENFLOAT> NAM4; //LOD Water Height
+        OptSimpleSubRecord<FORMID> XEZN; //Encounter Zone
+        OptSimpleSubRecord<FORMID> WNAM; //Worldspace
+        OptSimpleSubRecord<UINT16> PNAM; //PNAM
+        OptSimpleSubRecord<FORMID> CNAM; //Climate
+        OptSimpleSubRecord<FORMID> NAM2; //Water
+        OptSimpleSubRecord<FORMID> NAM3; //LOD Water Type
+        OptSimpleSubRecord<FLOAT32> NAM4; //LOD Water Height
         OptSubRecord<GENDNAM> DNAM; //Land Data
         OptSubRecord<GENICON> ICON; //Icon Filenames
         OptSubRecord<GENMNAM> MNAM; //Map Data
         OptSubRecord<GENONAM> ONAM; //World Map Offset Data
-        OptSubRecord<GENFID> INAM; //Image Space
-        OptSubRecord<GENU8> DATA; //Flags
+        OptSimpleSubRecord<FORMID> INAM; //Image Space
+        OptSimpleSubRecord<UINT8> DATA; //Flags
         OptSubRecord<GENNAM> NAM0; //Min Object Bounds
         OptSubRecord<GENNAM> NAM9; //Max Object Bounds
-        OptSubRecord<GENFID> ZNAM; //Music
+        OptSimpleSubRecord<FORMID> ZNAM; //Music
         StringRecord NNAM; //Canopy Shadow
         StringRecord XNAM; //Water Noise Texture
         std::vector<ReqSubRecord<GENIMPS> *> IMPS; //Swapped Impact

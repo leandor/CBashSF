@@ -85,8 +85,8 @@ class IMADRecord : public Record //Image Space Modifier
         RawRecord _53_IAD; //Unknown
         RawRecord _14_IAD; //Unknown
         RawRecord _54_IAD; //Unknown
-        OptSubRecord<GENFID> RDSD; //Sound - Intro
-        OptSubRecord<GENFID> RDSI; //Sound - Outro
+        OptSimpleSubRecord<FORMID> RDSD; //Sound - Intro
+        OptSimpleSubRecord<FORMID> RDSI; //Sound - Outro
 
         IMADRecord(unsigned char *_recData=NULL);
         IMADRecord(IMADRecord *srcRecord);

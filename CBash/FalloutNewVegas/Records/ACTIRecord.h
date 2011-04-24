@@ -32,13 +32,13 @@ class ACTIRecord : public Record //Activator
         OptSubRecord<GENOBND> OBND; //Object Bounds
         StringRecord FULL; //Name
         OptSubRecord<FNVMODEL> MODL; //Model
-        OptSubRecord<GENFID> SCRI; //Script
+        OptSimpleSubRecord<FORMID> SCRI; //Script
         OptSubRecord<GENDESTRUCT> Destructable; //Destructable
-        OptSubRecord<GENFID> SNAM; //Sound - Looping
-        OptSubRecord<GENFID> VNAM; //Sound - Activation
-        OptSubRecord<GENFID> INAM; //Radio Template
-        OptSubRecord<GENFID> RNAM; //Radio Station
-        OptSubRecord<GENFID> WNAM; //Water Type
+        OptSimpleSubRecord<FORMID> SNAM; //Sound - Looping
+        OptSimpleSubRecord<FORMID> VNAM; //Sound - Activation
+        OptSimpleSubRecord<FORMID> INAM; //Radio Template
+        OptSimpleSubRecord<FORMID> RNAM; //Radio Station
+        OptSimpleSubRecord<FORMID> WNAM; //Water Type
         StringRecord XATO; //Activation Prompt
 
         ACTIRecord(unsigned char *_recData=NULL);

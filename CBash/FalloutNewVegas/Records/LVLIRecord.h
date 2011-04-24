@@ -27,13 +27,20 @@ namespace FNV
 {
 class LVLIRecord : public Record //Leveled Item
     {
+    private:
+        enum flagsFlags
+            {
+            fCalcFromAllLevels    = 0x00000001,
+            fCalcForEachItem      = 0x00000002,
+            fUseAll = 0x00000004
+            };
+
     public:
         StringRecord EDID; //Editor ID
         OptSubRecord<GENOBND> OBND; //Object Bounds
-        OptSubRecord<GENU8> LVLD; //Chance none
-        OptSubRecord<GENU8> LVLF; //Flags
-        OptSubRecord<GENLVLO> LVLO; //LVLO ,, Struct
-        OptSubRecord<GENCOED> COED; //Extra Data
+        OptSimpleSubRecord<UINT8> LVLD; //Chance none
+        OptSimpleSubRecord<UINT8> LVLF; //Flags
+        std::vector<ReqSubRecord<FNVLVLO> *> Entries; //Leveled List Entries
         OptSubRecord<FNVMODEL> MODL; //Model
 
         LVLIRecord(unsigned char *_recData=NULL);
@@ -41,6 +48,15 @@ class LVLIRecord : public Record //Leveled Item
         ~LVLIRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
+
+        bool   IsCalcFromAllLevels();
+        void   IsCalcFromAllLevels(bool value);
+        bool   IsCalcForEachItem();
+        void   IsCalcForEachItem(bool value);
+        bool   IsUseAll();
+        void   IsUseAll(bool value);
+        bool   IsFlagMask(UINT8 Mask, bool Exact=false);
+        void   SetFlagMask(UINT8 Mask);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

@@ -55,7 +55,7 @@ class BOOKRecord : public Record //Book
         StringRecord FULL; //Name
         OptSubRecord<FNVMODEL> MODL; //Model
         OptSubRecord<GENICON> ICON; //Large Icon Filename
-        OptSubRecord<GENFID> SCRI; //Script
+        OptSimpleSubRecord<FORMID> SCRI; //Script
         StringRecord DESC; //Description
         OptSubRecord<GENDESTRUCT> Destructable; //Destructable
         OptSubRecord<BOOKDATA> DATA; //Data

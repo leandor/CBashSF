@@ -54,10 +54,10 @@ class FACTRecord : public Record //Faction
         StringRecord EDID; //Editor ID
         StringRecord FULL; //Name
         OptSubRecord<GENXNAM> XNAM; //Relation
-        OptSubRecord<GENU16> DATA; //Data
-        OptSubRecord<GENFLOAT> CNAM; //Unused
+        OptSimpleSubRecord<UINT16> DATA; //Data
+        OptSimpleSubRecord<FLOAT32> CNAM; //Unused
         std::vector<ReqSubRecord<FACTRNAM> *> RNAM; // Ranks
-        OptSubRecord<GENFID> WMI1; //Reputation
+        OptSimpleSubRecord<FORMID> WMI1; //Reputation
 
         FACTRecord(unsigned char *_recData=NULL);
         FACTRecord(FACTRecord *srcRecord);

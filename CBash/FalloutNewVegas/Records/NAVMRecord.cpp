@@ -24,6 +24,498 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
+bool NAVMRecord::NAVMNVTR::IsTriangle0External()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsTriangle0External) != 0;
+    }
+
+void NAVMRecord::NAVMNVTR::IsTriangle0External(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsTriangle0External;
+    else
+        Dummy->flags &= ~fIsTriangle0External;
+    }
+
+bool NAVMRecord::NAVMNVTR::IsTriangle1External()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsTriangle1External) != 0;
+    }
+
+void NAVMRecord::NAVMNVTR::IsTriangle1External(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsTriangle1External;
+    else
+        Dummy->flags &= ~fIsTriangle1External;
+    }
+
+bool NAVMRecord::NAVMNVTR::IsTriangle2External()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsTriangle2External) != 0;
+    }
+
+void NAVMRecord::NAVMNVTR::IsTriangle2External(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsTriangle2External;
+    else
+        Dummy->flags &= ~fIsTriangle2External;
+    }
+
+bool NAVMRecord::NAVMNVTR::IsUnknown4()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsUnknown4) != 0;
+    }
+
+void NAVMRecord::NAVMNVTR::IsUnknown4(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsUnknown4;
+    else
+        Dummy->flags &= ~fIsUnknown4;
+    }
+
+bool NAVMRecord::NAVMNVTR::IsUnknown5()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsUnknown5) != 0;
+    }
+
+void NAVMRecord::NAVMNVTR::IsUnknown5(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsUnknown5;
+    else
+        Dummy->flags &= ~fIsUnknown5;
+    }
+
+bool NAVMRecord::NAVMNVTR::IsUnknown6()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsUnknown6) != 0;
+    }
+
+void NAVMRecord::NAVMNVTR::IsUnknown6(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsUnknown6;
+    else
+        Dummy->flags &= ~fIsUnknown6;
+    }
+
+bool NAVMRecord::NAVMNVTR::IsUnknown7()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsUnknown7) != 0;
+    }
+
+void NAVMRecord::NAVMNVTR::IsUnknown7(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsUnknown7;
+    else
+        Dummy->flags &= ~fIsUnknown7;
+    }
+
+bool NAVMRecord::NAVMNVTR::IsUnknown8()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsUnknown8) != 0;
+    }
+
+void NAVMRecord::NAVMNVTR::IsUnknown8(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsUnknown8;
+    else
+        Dummy->flags &= ~fIsUnknown8;
+    }
+
+bool NAVMRecord::NAVMNVTR::IsUnknown9()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsUnknown9) != 0;
+    }
+
+void NAVMRecord::NAVMNVTR::IsUnknown9(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsUnknown9;
+    else
+        Dummy->flags &= ~fIsUnknown9;
+    }
+
+bool NAVMRecord::NAVMNVTR::IsUnknown10()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsUnknown10) != 0;
+    }
+
+void NAVMRecord::NAVMNVTR::IsUnknown10(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsUnknown10;
+    else
+        Dummy->flags &= ~fIsUnknown10;
+    }
+
+bool NAVMRecord::NAVMNVTR::IsUnknown11()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsUnknown11) != 0;
+    }
+
+void NAVMRecord::NAVMNVTR::IsUnknown11(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsUnknown11;
+    else
+        Dummy->flags &= ~fIsUnknown11;
+    }
+
+bool NAVMRecord::NAVMNVTR::IsUnknown12()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsUnknown12) != 0;
+    }
+
+void NAVMRecord::NAVMNVTR::IsUnknown12(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsUnknown12;
+    else
+        Dummy->flags &= ~fIsUnknown12;
+    }
+
+bool NAVMRecord::NAVMNVTR::IsUnknown13()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsUnknown13) != 0;
+    }
+
+void NAVMRecord::NAVMNVTR::IsUnknown13(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsUnknown13;
+    else
+        Dummy->flags &= ~fIsUnknown13;
+    }
+
+bool NAVMRecord::NAVMNVTR::IsUnknown14()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsUnknown14) != 0;
+    }
+
+void NAVMRecord::NAVMNVTR::IsUnknown14(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsUnknown14;
+    else
+        Dummy->flags &= ~fIsUnknown14;
+    }
+
+bool NAVMRecord::NAVMNVTR::IsUnknown15()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsUnknown15) != 0;
+    }
+
+void NAVMRecord::NAVMNVTR::IsUnknown15(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsUnknown15;
+    else
+        Dummy->flags &= ~fIsUnknown15;
+    }
+
+bool NAVMRecord::NAVMNVTR::IsUnknown16()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsUnknown16) != 0;
+    }
+
+void NAVMRecord::NAVMNVTR::IsUnknown16(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsUnknown16;
+    else
+        Dummy->flags &= ~fIsUnknown16;
+    }
+
+bool NAVMRecord::NAVMNVTR::IsUnknown17()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsUnknown17) != 0;
+    }
+
+void NAVMRecord::NAVMNVTR::IsUnknown17(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsUnknown17;
+    else
+        Dummy->flags &= ~fIsUnknown17;
+    }
+
+bool NAVMRecord::NAVMNVTR::IsUnknown18()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsUnknown18) != 0;
+    }
+
+void NAVMRecord::NAVMNVTR::IsUnknown18(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsUnknown18;
+    else
+        Dummy->flags &= ~fIsUnknown18;
+    }
+
+bool NAVMRecord::NAVMNVTR::IsUnknown19()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsUnknown19) != 0;
+    }
+
+void NAVMRecord::NAVMNVTR::IsUnknown19(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsUnknown19;
+    else
+        Dummy->flags &= ~fIsUnknown19;
+    }
+
+bool NAVMRecord::NAVMNVTR::IsUnknown20()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsUnknown20) != 0;
+    }
+
+void NAVMRecord::NAVMNVTR::IsUnknown20(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsUnknown20;
+    else
+        Dummy->flags &= ~fIsUnknown20;
+    }
+
+bool NAVMRecord::NAVMNVTR::IsUnknown21()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsUnknown21) != 0;
+    }
+
+void NAVMRecord::NAVMNVTR::IsUnknown21(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsUnknown21;
+    else
+        Dummy->flags &= ~fIsUnknown21;
+    }
+
+bool NAVMRecord::NAVMNVTR::IsUnknown22()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsUnknown22) != 0;
+    }
+
+void NAVMRecord::NAVMNVTR::IsUnknown22(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsUnknown22;
+    else
+        Dummy->flags &= ~fIsUnknown22;
+    }
+
+bool NAVMRecord::NAVMNVTR::IsUnknown23()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsUnknown23) != 0;
+    }
+
+void NAVMRecord::NAVMNVTR::IsUnknown23(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsUnknown23;
+    else
+        Dummy->flags &= ~fIsUnknown23;
+    }
+
+bool NAVMRecord::NAVMNVTR::IsUnknown24()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsUnknown24) != 0;
+    }
+
+void NAVMRecord::NAVMNVTR::IsUnknown24(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsUnknown24;
+    else
+        Dummy->flags &= ~fIsUnknown24;
+    }
+
+bool NAVMRecord::NAVMNVTR::IsUnknown25()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsUnknown25) != 0;
+    }
+
+void NAVMRecord::NAVMNVTR::IsUnknown25(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsUnknown25;
+    else
+        Dummy->flags &= ~fIsUnknown25;
+    }
+
+bool NAVMRecord::NAVMNVTR::IsUnknown26()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsUnknown26) != 0;
+    }
+
+void NAVMRecord::NAVMNVTR::IsUnknown26(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsUnknown26;
+    else
+        Dummy->flags &= ~fIsUnknown26;
+    }
+
+bool NAVMRecord::NAVMNVTR::IsUnknown27()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsUnknown27) != 0;
+    }
+
+void NAVMRecord::NAVMNVTR::IsUnknown27(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsUnknown27;
+    else
+        Dummy->flags &= ~fIsUnknown27;
+    }
+
+bool NAVMRecord::NAVMNVTR::IsUnknown28()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsUnknown28) != 0;
+    }
+
+void NAVMRecord::NAVMNVTR::IsUnknown28(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsUnknown28;
+    else
+        Dummy->flags &= ~fIsUnknown28;
+    }
+
+bool NAVMRecord::NAVMNVTR::IsUnknown29()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsUnknown29) != 0;
+    }
+
+void NAVMRecord::NAVMNVTR::IsUnknown29(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsUnknown29;
+    else
+        Dummy->flags &= ~fIsUnknown29;
+    }
+
+bool NAVMRecord::NAVMNVTR::IsUnknown30()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsUnknown30) != 0;
+    }
+
+void NAVMRecord::NAVMNVTR::IsUnknown30(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsUnknown30;
+    else
+        Dummy->flags &= ~fIsUnknown30;
+    }
+
+bool NAVMRecord::NAVMNVTR::IsUnknown31()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsUnknown31) != 0;
+    }
+
+void NAVMRecord::NAVMNVTR::IsUnknown31(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsUnknown31;
+    else
+        Dummy->flags &= ~fIsUnknown31;
+    }
+
+bool NAVMRecord::NAVMNVTR::IsUnknown32()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsUnknown32) != 0;
+    }
+
+void NAVMRecord::NAVMNVTR::IsUnknown32(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsUnknown32;
+    else
+        Dummy->flags &= ~fIsUnknown32;
+    }
+
+bool NAVMRecord::NAVMNVTR::IsFlagMask(UINT32 Mask, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    }
+
+void NAVMRecord::NAVMNVTR::SetFlagMask(UINT32 Mask)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
 NAVMRecord::NAVMRecord(unsigned char *_recData):
     Record(_recData)
     {

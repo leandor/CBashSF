@@ -156,7 +156,7 @@ class CREARecord : public Record //Creature
             fIsNoShadow        = 0x00080000,
             fIsNoVATSMelee     = 0x00100000,
             fIsAllowPCDialogue = 0x00200000,
-            fIsCantOpenDoords  = 0x00400000,
+            fIsCantOpenDoors  = 0x00400000,
             fIsImmobile        = 0x00800000,
             fIsTiltFrontBack   = 0x01000000,
             fIsTiltLeftRight   = 0x02000000,
@@ -383,34 +383,34 @@ class CREARecord : public Record //Creature
         StringRecord FULL; //Name
         OptSubRecord<FNVMODEL> MODL; //Model
         std::vector<FORMID> SPLO; //Actor Effects
-        OptSubRecord<GENFID> EITM; //Unarmed Attack Effect
-        OptSubRecord<GENU16> EAMT; //Unarmed Attack Animation
+        OptSimpleSubRecord<FORMID> EITM; //Unarmed Attack Effect
+        OptSimpleSubRecord<UINT16> EAMT; //Unarmed Attack Animation
         std::vector<StringRecord> NIFZ; //Model List
         RawRecord NIFT; //Texture Files Hashes
         OptSubRecord<FNVACBS> ACBS; // Configuration
         std::vector<ReqSubRecord<GENSNAM> *> SNAM; //Factions
-        OptSubRecord<GENFID> INAM; //Death item
-        OptSubRecord<GENFID> VTCK; //Voice
-        OptSubRecord<GENFID> TPLT; //Template
+        OptSimpleSubRecord<FORMID> INAM; //Death item
+        OptSimpleSubRecord<FORMID> VTCK; //Voice
+        OptSimpleSubRecord<FORMID> TPLT; //Template
         OptSubRecord<GENDESTRUCT> Destructable; //Destructable
-        OptSubRecord<GENFID> SCRI; //Script
+        OptSimpleSubRecord<FORMID> SCRI; //Script
         std::vector<FNVCNTO *> CNTO;  //Items
-        OptSubRecord<GENAIDT> AIDT; //AI Data
+        OptSubRecord<FNVAIDT> AIDT; //AI Data
         std::vector<FORMID> PKID; //Packages
         std::vector<StringRecord> KFFZ; //Animations
         OptSubRecord<CREADATA> DATA; //Data
-        OptSubRecord<GENU8> RNAM; //Attack reach
-        OptSubRecord<GENFID> ZNAM; //Combat Style
-        OptSubRecord<GENFID> PNAM; //Body Part Data
-        OptSubRecord<GENFLOAT> TNAM; //Turning Speed
+        OptSimpleSubRecord<UINT8> RNAM; //Attack reach
+        OptSimpleSubRecord<FORMID> ZNAM; //Combat Style
+        OptSimpleSubRecord<FORMID> PNAM; //Body Part Data
+        OptSimpleSubRecord<FLOAT32> TNAM; //Turning Speed
         OptSubRecord<GENXSCL> BNAM; //Base Scale
-        OptSubRecord<GENFLOAT> WNAM; //Foot Weight
-        OptSubRecord<GENU32> NAM4; //Impact Material Type
-        OptSubRecord<GENU32> NAM5; //Sound Level
-        OptSubRecord<GENFID> CSCR; //Inherits Sounds from
+        OptSimpleSubRecord<FLOAT32> WNAM; //Foot Weight
+        OptSimpleSubRecord<UINT32> NAM4; //Impact Material Type
+        OptSimpleSubRecord<UINT32> NAM5; //Sound Level
+        OptSimpleSubRecord<FORMID> CSCR; //Inherits Sounds from
         std::vector<CREASound *> Sounds; //Sound Types
-        OptSubRecord<GENFID> CNAM; //Impact Dataset
-        OptSubRecord<GENFID> LNAM; //Melee Weapon List
+        OptSimpleSubRecord<FORMID> CNAM; //Impact Dataset
+        OptSimpleSubRecord<FORMID> LNAM; //Melee Weapon List
 
         CREARecord(unsigned char *_recData=NULL);
         CREARecord(CREARecord *srcRecord);
@@ -456,8 +456,8 @@ class CREARecord : public Record //Creature
         void   IsNoVATSMelee(bool value);
         bool   IsAllowPCDialogue();
         void   IsAllowPCDialogue(bool value);
-        bool   IsCantOpenDoords();
-        void   IsCantOpenDoords(bool value);
+        bool   IsCantOpenDoors();
+        void   IsCantOpenDoors(bool value);
         bool   IsImmobile();
         void   IsImmobile(bool value);
         bool   IsTiltFrontBack();

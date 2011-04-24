@@ -30,7 +30,7 @@ class RCCTRecord : public Record //Recipe Category
     public:
         StringRecord EDID; //Editor ID
         StringRecord FULL; //Name
-        OptSubRecord<GENU8> DATA; //Flags
+        OptSimpleSubRecord<UINT8> DATA; //Flags
 
         RCCTRecord(unsigned char *_recData=NULL);
         RCCTRecord(RCCTRecord *srcRecord);

@@ -60,7 +60,7 @@ class FormIDResolver : public FormIDOp
         bool AcceptMGEF(UINT32 &curMgefCode);
         bool IsValid(const unsigned char * const _SrcBuf);
     };
-
+/*
 struct GENU8
     {
     UINT8  value;
@@ -140,6 +140,7 @@ struct GENFLOAT
 
 typedef GENU32 GENFID;
 typedef GENU32 GENEFID;
+*/
 
 struct GENXNAM
     {
@@ -1525,6 +1526,18 @@ struct FNVCNTO
     bool operator !=(const FNVCNTO &other) const;
     };
 
+struct FNVLVLO
+    {
+    ReqSubRecord<LVLLVLO> LVLO;
+    OptSubRecord<GENCOED> COED;
+
+    bool IsGlobal();
+    bool IsRank();
+    bool IsUnused();
+
+    bool operator ==(const FNVLVLO &other) const;
+    bool operator !=(const FNVLVLO &other) const;
+    };
 
 struct SURVDATA // Data
     {
@@ -1536,4 +1549,20 @@ struct SURVDATA // Data
 
     bool operator ==(const SURVDATA &other) const;
     bool operator !=(const SURVDATA &other) const;
+    };
+
+struct FNVLIGHT
+    {
+    GENCLR  ambient; //Ambient Color
+    GENCLR  directional; //Directional Color
+    GENCLR  fog; //Fog Color
+    FLOAT32 fogNear, fogFar; //Fog Near, Fog Far
+    SINT32  directionalXY, directionalZ; //Directional Rotation XY, Directional Rotation Z
+    FLOAT32 directionalFade, fogClip, fogPower; //Directional Fade, Fog Clip Dist, Fog Power
+
+    FNVLIGHT();
+    ~FNVLIGHT();
+
+    bool operator ==(const FNVLIGHT &other) const;
+    bool operator !=(const FNVLIGHT &other) const;
     };

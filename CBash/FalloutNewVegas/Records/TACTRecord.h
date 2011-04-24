@@ -32,11 +32,11 @@ class TACTRecord : public Record //Talking Activator
         OptSubRecord<GENOBND> OBND; //Object Bounds
         StringRecord FULL; //Name
         OptSubRecord<FNVMODEL> MODL; //Model
-        OptSubRecord<GENFID> SCRI; //Script
+        OptSimpleSubRecord<FORMID> SCRI; //Script
         OptSubRecord<GENDESTRUCT> Destructable; //Destructable
-        OptSubRecord<GENFID> SNAM; //Looping Sound
-        OptSubRecord<GENFID> VNAM; //Voice Type
-        OptSubRecord<GENFID> INAM; //Radio Template
+        OptSimpleSubRecord<FORMID> SNAM; //Looping Sound
+        OptSimpleSubRecord<FORMID> VNAM; //Voice Type
+        OptSimpleSubRecord<FORMID> INAM; //Radio Template
 
         TACTRecord(unsigned char *_recData=NULL);
         TACTRecord(TACTRecord *srcRecord);

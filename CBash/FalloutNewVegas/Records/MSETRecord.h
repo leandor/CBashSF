@@ -27,35 +27,54 @@ namespace FNV
 {
 class MSETRecord : public Record //Media Set
     {
+    private:
+        enum typeTypes
+            {
+            eNone = -1,
+            eBattle = 0,
+            eLocation,
+            eDungeon,
+            eIncidential
+            };
+
+        enum flagsFlags
+            {
+            fIsDayOuter = 0x01,
+            fIsDayMiddle = 0x02,
+            fIsDayInner = 0x04,
+            fIsNightOuter = 0x08,
+            fIsNightMiddle = 0x10,
+            fIsNightInner = 0x20
+            };
     public:
         StringRecord EDID; //Editor ID
         StringRecord FULL; //Name
-        OptSubRecord<GENU32> NAM1; //Type
+        OptSimpleSubRecord<UINT32> NAM1; //Type
         StringRecord NAM2; //Loop (B) / Battle (D) / Day Outer (L)
         StringRecord NAM3; //Explore (D) / Day Middle (L)
         StringRecord NAM4; //Suspense (D) / Day Inner (L)
         StringRecord NAM5; //Night Outer (L)
         StringRecord NAM6; //Night Middle (L)
         StringRecord NAM7; //Night Inner (L)
-        OptSubRecord<GENFLOAT> NAM8; //Loop dB (B) / Battle dB (D) / Day Outer dB (L)
-        OptSubRecord<GENFLOAT> NAM9; //Explore dB (D) / Day Middle dB (L)
-        OptSubRecord<GENFLOAT> NAM0; //Suspense dB (D) / Day Inner dB (L)
-        OptSubRecord<GENFLOAT> ANAM; //Night Outer dB (L)
-        OptSubRecord<GENFLOAT> BNAM; //Night Middle dB (L)
-        OptSubRecord<GENFLOAT> CNAM; //Night Inner dB (L)
-        OptSubRecord<GENFLOAT> JNAM; //Day Outer Boundary % (L)
-        OptSubRecord<GENFLOAT> KNAM; //Day Middle Boundary % (L)
-        OptSubRecord<GENFLOAT> LNAM; //Day Inner Boundary % (L)
-        OptSubRecord<GENFLOAT> MNAM; //Night Outer Boundary % (L)
-        OptSubRecord<GENFLOAT> NNAM; //Night Middle Boundary % (L)
-        OptSubRecord<GENFLOAT> ONAM; //Night Inner Boundary % (L)
-        OptSubRecord<GENU8> PNAM; //Enable Flags
-        OptSubRecord<GENFLOAT> DNAM; //Wait Time (B) / Minimum Time On (D,L) / Daytime Min (I)
-        OptSubRecord<GENFLOAT> ENAM; //Loop Fade Out (B) / Looping/Random Crossfade Overlap (D,L) / Nighttime Min (I)
-        OptSubRecord<GENFLOAT> FNAM; //Recovery Time (B) / Layer Crossfade Time (D,L) / Daytime Max (I)
-        OptSubRecord<GENFLOAT> GNAM; //Nighttime Max (I)
-        OptSubRecord<GENFID> HNAM; //Intro (B,D) / Daytime (I)
-        OptSubRecord<GENFID> INAM; //Outro (B,D) / Nighttime (I)
+        OptSimpleSubRecord<FLOAT32> NAM8; //Loop dB (B) / Battle dB (D) / Day Outer dB (L)
+        OptSimpleSubRecord<FLOAT32> NAM9; //Explore dB (D) / Day Middle dB (L)
+        OptSimpleSubRecord<FLOAT32> NAM0; //Suspense dB (D) / Day Inner dB (L)
+        OptSimpleSubRecord<FLOAT32> ANAM; //Night Outer dB (L)
+        OptSimpleSubRecord<FLOAT32> BNAM; //Night Middle dB (L)
+        OptSimpleSubRecord<FLOAT32> CNAM; //Night Inner dB (L)
+        OptSimpleSubRecord<FLOAT32> JNAM; //Day Outer Boundary % (L)
+        OptSimpleSubRecord<FLOAT32> KNAM; //Day Middle Boundary % (L)
+        OptSimpleSubRecord<FLOAT32> LNAM; //Day Inner Boundary % (L)
+        OptSimpleSubRecord<FLOAT32> MNAM; //Night Outer Boundary % (L)
+        OptSimpleSubRecord<FLOAT32> NNAM; //Night Middle Boundary % (L)
+        OptSimpleSubRecord<FLOAT32> ONAM; //Night Inner Boundary % (L)
+        OptSimpleSubRecord<UINT8> PNAM; //Enable Flags
+        OptSimpleSubRecord<FLOAT32> DNAM; //Wait Time (B) / Minimum Time On (D,L) / Daytime Min (I)
+        OptSimpleSubRecord<FLOAT32> ENAM; //Loop Fade Out (B) / Looping/Random Crossfade Overlap (D,L) / Nighttime Min (I)
+        OptSimpleSubRecord<FLOAT32> FNAM; //Recovery Time (B) / Layer Crossfade Time (D,L) / Daytime Max (I)
+        OptSimpleSubRecord<FLOAT32> GNAM; //Nighttime Max (I)
+        OptSimpleSubRecord<FORMID> HNAM; //Intro (B,D) / Daytime (I)
+        OptSimpleSubRecord<FORMID> INAM; //Outro (B,D) / Nighttime (I)
         RawRecord DATA; //Unknown
 
         MSETRecord(unsigned char *_recData=NULL);
@@ -63,6 +82,34 @@ class MSETRecord : public Record //Media Set
         ~MSETRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
+
+        bool   IsDayOuter();
+        void   IsDayOuter(bool value);
+        bool   IsDayMiddle();
+        void   IsDayMiddle(bool value);
+        bool   IsDayInner();
+        void   IsDayInner(bool value);
+        bool   IsNightOuter();
+        void   IsNightOuter(bool value);
+        bool   IsNightMiddle();
+        void   IsNightMiddle(bool value);
+        bool   IsNightInner();
+        void   IsNightInner(bool value);
+        bool   IsFlagMask(UINT8 Mask, bool Exact=false);
+        void   SetFlagMask(UINT8 Mask);
+
+        bool   IsNone();
+        void   IsNone(bool value);
+        bool   IsBattle();
+        void   IsBattle(bool value);
+        bool   IsLocation();
+        void   IsLocation(bool value);
+        bool   IsDungeon();
+        void   IsDungeon(bool value);
+        bool   IsIncidential();
+        void   IsIncidential(bool value);
+        bool   IsType(UINT32 Type, bool Exact=false);
+        void   SetType(UINT32 Type);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

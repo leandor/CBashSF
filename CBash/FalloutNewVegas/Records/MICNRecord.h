@@ -29,7 +29,7 @@ class MICNRecord : public Record //Menu Icon
     {
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENICON> ICON; //Large Icon Filename
+        OptSubRecord<GENICON> ICON; //Icon Filenames
 
         MICNRecord(unsigned char *_recData=NULL);
         MICNRecord(MICNRecord *srcRecord);

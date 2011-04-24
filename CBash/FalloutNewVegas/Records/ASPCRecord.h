@@ -71,15 +71,15 @@ class ASPCRecord : public Record //Acoustic Space
     public:
         StringRecord EDID; //Editor ID
         OptSubRecord<GENOBND> OBND; //Object Bounds
-        OptSubRecord<GENFID> DawnSNAM; //Dawn / Default Loop
-        OptSubRecord<GENFID> AfternoonSNAM; //Afternoon
-        OptSubRecord<GENFID> DuskSNAM; //Dusk
-        OptSubRecord<GENFID> NightSNAM; //Night
-        OptSubRecord<GENFID> WallaSNAM; //Walla
-        OptSubRecord<GENU32> WNAM; //Walla Trigger Count
-        OptSubRecord<GENFID> RDAT; //Use Sound from Region (Interiors Only)
-        OptSubRecord<GENU32> ANAM; //Environment Type
-        OptSubRecord<GENU32> INAM; //Is Interior
+        OptSimpleSubRecord<FORMID> DawnSNAM; //Dawn / Default Loop
+        OptSimpleSubRecord<FORMID> AfternoonSNAM; //Afternoon
+        OptSimpleSubRecord<FORMID> DuskSNAM; //Dusk
+        OptSimpleSubRecord<FORMID> NightSNAM; //Night
+        OptSimpleSubRecord<FORMID> WallaSNAM; //Walla
+        OptSimpleSubRecord<UINT32> WNAM; //Walla Trigger Count
+        OptSimpleSubRecord<FORMID> RDAT; //Use Sound from Region (Interiors Only)
+        OptSimpleSubRecord<UINT32> ANAM; //Environment Type
+        OptSimpleSubRecord<UINT32> INAM; //Is Interior
 
         ASPCRecord(unsigned char *_recData=NULL);
         ASPCRecord(ASPCRecord *srcRecord);

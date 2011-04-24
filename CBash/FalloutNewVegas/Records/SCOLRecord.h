@@ -31,7 +31,7 @@ class SCOLRecord : public Record //Static Collection
         StringRecord EDID; //Editor ID
         OptSubRecord<GENOBND> OBND; //Object Bounds
         OptSubRecord<FNVMODEL> MODL; //Model
-        OptSubRecord<GENFID> ONAM; //Static
+        OptSimpleSubRecord<FORMID> ONAM; //Static
         OptSubRecord<GENDATA> DATA; //DATA ,, Struct
 
         SCOLRecord(unsigned char *_recData=NULL);

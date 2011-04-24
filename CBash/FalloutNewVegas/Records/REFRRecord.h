@@ -144,12 +144,12 @@ class REFRRecord : public Record //Placed Object
     public:
         StringRecord EDID; //Editor ID
         RawRecord RCLR; //Unused Linked Reference Color (Old Format?)
-        OptSubRecord<GENFID> NAME; //Base
-        OptSubRecord<GENFID> XEZN; //Encounter Zone
+        OptSimpleSubRecord<FORMID> NAME; //Base
+        OptSimpleSubRecord<FORMID> XEZN; //Encounter Zone
         RawRecord XRGD; //Ragdoll Data
         RawRecord XRGB; //Ragdoll Biped Data
         OptSubRecord<GENXPRM> XPRM; //Primitive
-        OptSubRecord<GENU32> XTRI; //Collision Layer
+        OptSimpleSubRecord<UINT32> XTRI; //Collision Layer
         //OptSubRecord<GENXMBP> XMBP; //MultiBound Primitive Marker (Empty)
         OptSubRecord<GENXMBO> XMBO; //BoundHalfExtents
         OptSubRecord<GENXTEL> XTEL; //Teleport Destination
@@ -157,35 +157,35 @@ class REFRRecord : public Record //Placed Object
         OptSubRecord<GENMMRK> MMRK; //Audio Data
         RawRecord XSRF; //Unknown
         RawRecord XSRD; //Unknown
-        OptSubRecord<GENFID> XTRG; //Target
-        OptSubRecord<GENS32> XLCM; //Level Modifier
+        OptSimpleSubRecord<FORMID> XTRG; //Target
+        OptSimpleSubRecord<SINT32> XLCM; //Level Modifier
         OptSubRecord<GENPATROL> Patrol; //Patrol Data
         OptSubRecord<GENXRDO> XRDO; //Radio Data
         OptSubRecord<FNVXOWN> Ownership; //Owner
         OptSubRecord<FNVXLOC> XLOC; //Lock Data
-        OptSubRecord<GENS32> XCNT; //Count
-        OptSubRecord<GENFLOAT> XRDS; //Radius
-        OptSubRecord<GENFLOAT> XHLP; //Health
-        OptSubRecord<GENFLOAT> XRAD; //Radiation
-        OptSubRecord<GENFLOAT> XCHG; //Charge
+        OptSimpleSubRecord<SINT32> XCNT; //Count
+        OptSimpleSubRecord<FLOAT32> XRDS; //Radius
+        OptSimpleSubRecord<FLOAT32> XHLP; //Health
+        OptSimpleSubRecord<FLOAT32> XRAD; //Radiation
+        OptSimpleSubRecord<FLOAT32> XCHG; //Charge
         OptSubRecord<GENAMMO> Ammo; //Ammo
         std::vector<ReqSubRecord<GENXPWR> *> Reflections; //Reflected/Refracted By
         std::vector<FORMID> XLTW; //Lit Water
         std::vector<ReqSubRecord<GENXDCR> *> Decals; //Linked Decals
-        OptSubRecord<GENFID> XLKR; //Linked Reference
+        OptSimpleSubRecord<FORMID> XLKR; //Linked Reference
         OptSubRecord<GENXCLP> XCLP; //Linked Reference Color
         OptSubRecord<GENACTPARENT> ActivateParents; //Activate Parents
         StringRecord XATO; //Activation Prompt
         OptSubRecord<GENXESP> XESP; //Enable Parent
-        OptSubRecord<GENFID> XEMI; //Emittance
-        OptSubRecord<GENFID> XMBR; //MultiBound Reference
-        OptSubRecord<GENU32> XACT; //Action Flag
+        OptSimpleSubRecord<FORMID> XEMI; //Emittance
+        OptSimpleSubRecord<FORMID> XMBR; //MultiBound Reference
+        OptSimpleSubRecord<UINT32> XACT; //Action Flag
         //OptSubRecord<GENONAM> ONAM; //Open by Default (Empty)
         //OptSubRecord<GENXIBS> XIBS; //Ignored By Sandbox (Empty)
         OptSubRecord<GENXNDP> XNDP; //Navigation Door Link
         std::vector<FORMID> XPOD; //Portal Data
         OptSubRecord<GENPOSITION> XPTL; //Portal Data
-        OptSubRecord<GENU8> XSED; //SpeedTree Seed
+        OptSimpleSubRecord<UINT8> XSED; //SpeedTree Seed
         OptSubRecord<GENROOM> Room; //Room Data
         OptSubRecord<GENPOSITION> XOCP; //Occlusion Plane Data
         std::vector<FORMID> XORD; //Linked Occlusion Planes (4 only?)

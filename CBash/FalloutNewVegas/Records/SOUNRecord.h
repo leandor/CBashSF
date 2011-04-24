@@ -31,12 +31,12 @@ class SOUNRecord : public Record //Sound
         StringRecord EDID; //Editor ID
         OptSubRecord<GENOBND> OBND; //Object Bounds
         StringRecord FNAM; //Sound Filename
-        OptSubRecord<GENU8> RNAM; //Random Chance %
+        OptSimpleSubRecord<UINT8> RNAM; //Random Chance %
         OptSubRecord<GENSNDD> SNDD; //SNDD ,, Struct
         OptSubRecord<GENSNDX> SNDX; //SNDX ,, Struct
         OptSubRecord<GENANAM> ANAM; //Attenuation Curve
-        OptSubRecord<GENS16> GNAM; //Reverb Attenuation Control
-        OptSubRecord<GENS32> HNAM; //Priority
+        OptSimpleSubRecord<SINT16> GNAM; //Reverb Attenuation Control
+        OptSimpleSubRecord<SINT32> HNAM; //Priority
 
         SOUNRecord(unsigned char *_recData=NULL);
         SOUNRecord(SOUNRecord *srcRecord);

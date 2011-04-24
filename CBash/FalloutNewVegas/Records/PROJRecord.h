@@ -85,7 +85,7 @@ class PROJRecord : public Record //Projectile
         OptSubRecord<PROJDATA> DATA; //Data
         StringRecord NAM1; //Model Filename
         RawRecord NAM2; //Texture Files Hashes
-        OptSubRecord<GENU32> VNAM; //Sound Level
+        OptSimpleSubRecord<UINT32> VNAM; //Sound Level
 
         PROJRecord(unsigned char *_recData=NULL);
         PROJRecord(PROJRecord *srcRecord);

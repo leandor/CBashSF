@@ -27,25 +27,45 @@ namespace FNV
 {
 class NOTERecord : public Record //Note
     {
+    private:
+        enum noteTypeTypes
+            {
+            eSound=0,
+            eText,
+            eImage,
+            eVoice
+            };
     public:
         StringRecord EDID; //Editor ID
         OptSubRecord<GENOBND> OBND; //Object Bounds
         StringRecord FULL; //Name
         OptSubRecord<FNVMODEL> MODL; //Model
-        OptSubRecord<GENICON> ICON; //Large Icon Filename
-        OptSubRecord<GENFID> YNAM; //Sound - Pick Up
-        OptSubRecord<GENFID> ZNAM; //Sound - Drop
-        OptSubRecord<GENU8> DATA; //Type
-        OptSubRecord<GENFID> ONAM; //Quest
+        OptSubRecord<GENICON> ICON; //Icon Filenames
+        OptSimpleSubRecord<FORMID> YNAM; //Sound - Pick Up
+        OptSimpleSubRecord<FORMID> ZNAM; //Sound - Drop
+        OptSimpleSubRecord<UINT8> DATA; //Type
+        std::vector<FORMID> ONAM; //Quests
         StringRecord XNAM; //Texture
-        StringRecord TNAM; //Text
-        OptSubRecord<GENFID> SNAM; //Sound
+        StringRecord TNAM; //Text if DATA.value != eVoice
+        OptSimpleSubRecord<FORMID> TNAMAlt; //Topic if DATA.value == eVoice
+        OptSimpleSubRecord<FORMID> SNAM; //Sound if DATA.value != eVoice or NPC if DATA.value == eVoice
 
         NOTERecord(unsigned char *_recData=NULL);
         NOTERecord(NOTERecord *srcRecord);
         ~NOTERecord();
 
         bool   VisitFormIDs(FormIDOp &op);
+
+        bool   IsSound();
+        void   IsSound(bool value);
+        bool   IsText();
+        void   IsText(bool value);
+        bool   IsImage();
+        void   IsImage(bool value);
+        bool   IsVoice();
+        void   IsVoice(bool value);
+        bool   IsType(UINT8 Type, bool Exact=false);
+        void   SetType(UINT8 Type);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

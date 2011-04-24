@@ -36,7 +36,7 @@ class HDPTRecord : public Record //Head Part
         StringRecord EDID; //Editor ID
         StringRecord FULL; //Name
         OptSubRecord<FNVMODEL> MODL; //Model
-        OptSubRecord<GENU8> DATA; //Flags
+        OptSimpleSubRecord<UINT8> DATA; //Flags
         std::vector<FORMID> HNAM; //Parts
 
         HDPTRecord(unsigned char *_recData=NULL);

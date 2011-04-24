@@ -33,9 +33,9 @@ class COBJRecord : public Record //Constructible Object
         StringRecord FULL; //Name
         OptSubRecord<FNVMODEL> MODL; //Model
         OptSubRecord<GENICON> ICON; //Icon Filenames
-        OptSubRecord<GENFID> SCRI; //Script
-        OptSubRecord<GENFID> YNAM; //Sound - Pick Up
-        OptSubRecord<GENFID> ZNAM; //Sound - Drop
+        OptSimpleSubRecord<FORMID> SCRI; //Script
+        OptSimpleSubRecord<FORMID> YNAM; //Sound - Pick Up
+        OptSimpleSubRecord<FORMID> ZNAM; //Sound - Drop
         OptSubRecord<GENVALUEWEIGHT> DATA; //Data
 
         COBJRecord(unsigned char *_recData=NULL);

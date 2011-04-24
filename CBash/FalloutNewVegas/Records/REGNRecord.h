@@ -31,17 +31,17 @@ class REGNRecord : public Record //Region
         StringRecord EDID; //Editor ID
         OptSubRecord<GENICON> ICON; //Large Icon Filename
         OptSubRecord<GENRCLR> RCLR; //RCLR ,, Struct
-        OptSubRecord<GENFID> WNAM; //Worldspace
-        OptSubRecord<GENU32> RPLI; //Edge Fall-off
+        OptSimpleSubRecord<FORMID> WNAM; //Worldspace
+        OptSimpleSubRecord<UINT32> RPLI; //Edge Fall-off
         OptSubRecord<GENRPLD> RPLD; //RPLD ,, Struct
         OptSubRecord<GENRDAT> RDAT; //RDAT ,, Struct
         OptSubRecord<GENRDOT> RDOT; //RDOT ,, Struct
         StringRecord RDMP; //Map Name
         OptSubRecord<GENRDGS> RDGS; //RDGS ,, Struct
-        OptSubRecord<GENU32> RDMD; //Music Type
-        OptSubRecord<GENFID> RDMO; //Music
-        OptSubRecord<GENFID> RDSI; //Incidental MediaSet
-        OptSubRecord<GENFID> RDSB; //Battle MediaSet
+        OptSimpleSubRecord<UINT32> RDMD; //Music Type
+        OptSimpleSubRecord<FORMID> RDMO; //Music
+        OptSimpleSubRecord<FORMID> RDSI; //Incidental MediaSet
+        OptSimpleSubRecord<FORMID> RDSB; //Battle MediaSet
         OptSubRecord<GENRDSD> RDSD; //RDSD ,, Struct
         OptSubRecord<GENRDWT> RDWT; //RDWT ,, Struct
         OptSubRecord<GENRDID> RDID; //Imposters

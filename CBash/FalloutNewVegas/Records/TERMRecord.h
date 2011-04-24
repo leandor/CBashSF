@@ -32,15 +32,15 @@ class TERMRecord : public Record //Terminal
         OptSubRecord<GENOBND> OBND; //Object Bounds
         StringRecord FULL; //Name
         OptSubRecord<FNVMODEL> MODL; //Model
-        OptSubRecord<GENFID> SCRI; //Script
+        OptSimpleSubRecord<FORMID> SCRI; //Script
         OptSubRecord<GENDESTRUCT> Destructable; //Destructable
         StringRecord DESC; //Description
-        OptSubRecord<GENFID> SNAM; //Sound - Looping
-        OptSubRecord<GENFID> PNAM; //Password Note
+        OptSimpleSubRecord<FORMID> SNAM; //Sound - Looping
+        OptSimpleSubRecord<FORMID> PNAM; //Password Note
         OptSubRecord<GENDNAM> DNAM; //DNAM ,, Struct
         OptSubRecord<GENITXT> ITXT; //Item Text
-        OptSubRecord<GENFID> INAM; //Display Note
-        OptSubRecord<GENFID> TNAM; //Sub Menu
+        OptSimpleSubRecord<FORMID> INAM; //Display Note
+        OptSimpleSubRecord<FORMID> TNAM; //Sub Menu
         OptSubRecord<GENSCHR> SCHR; //Basic Script Data
         OptSubRecord<GENCTDA> CTDA; //Conditions
 

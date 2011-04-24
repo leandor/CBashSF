@@ -29,17 +29,17 @@ class QUSTRecord : public Record //Quest
     {
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENFID> SCRI; //Script
+        OptSimpleSubRecord<FORMID> SCRI; //Script
         StringRecord FULL; //Name
         OptSubRecord<GENICON> ICON; //Large Icon Filename
         OptSubRecord<GENDATA> DATA; //DATA ,, Struct
         OptSubRecord<GENCTDA> CTDA; //Conditions
-        OptSubRecord<GENS16> INDX; //Stage Index
-        OptSubRecord<GENU8> QSDT; //Stage Flags
+        OptSimpleSubRecord<SINT16> INDX; //Stage Index
+        OptSimpleSubRecord<UINT8> QSDT; //Stage Flags
         StringRecord CNAM; //Log Entry
         OptSubRecord<GENSCHR> SCHR; //Basic Script Data
-        OptSubRecord<GENFID> NAM0; //Next Quest
-        OptSubRecord<GENS32> QOBJ; //Objective Index
+        OptSimpleSubRecord<FORMID> NAM0; //Next Quest
+        OptSimpleSubRecord<SINT32> QOBJ; //Objective Index
         StringRecord NNAM; //Description
         OptSubRecord<GENQSTA> QSTA; //QSTA ,, Struct
 

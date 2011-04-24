@@ -242,15 +242,15 @@ class PACKRecord : public Record //Package
         OptSubRecord<PACKPSDT> PSDT; //Schedule
         OptSubRecord<PACKPTDT> PTDT; //Target 1
         std::vector<ReqSubRecord<FNVCTDA> *> CTDA; //Conditions
-        OptSubRecord<GENU8> IDLF; //Idle Animation Flags
+        OptSimpleSubRecord<UINT8> IDLF; //Idle Animation Flags
         OptSubRecord<PACKIDLC> IDLC; //Idle Animation Count
-        OptSubRecord<GENFLOAT> IDLT; //Idle Timer Setting
+        OptSimpleSubRecord<FLOAT32> IDLT; //Idle Timer Setting
         std::vector<FORMID> IDLA; //Animations
         RawRecord IDLB; //Unused
         //OptSubRecord<GENPKED> PKED; //Eat Marker (Empty)
-        OptSubRecord<GENU32> PKE2; //Escort Distance
-        OptSubRecord<GENFID> CNAM; //Combat Style
-        OptSubRecord<GENFLOAT> PKFD; //Follow - Start Location - Trigger Radius
+        OptSimpleSubRecord<UINT32> PKE2; //Escort Distance
+        OptSimpleSubRecord<FORMID> CNAM; //Combat Style
+        OptSimpleSubRecord<FLOAT32> PKFD; //Follow - Start Location - Trigger Radius
         OptSubRecord<PACKPKPT> PKPT; //Patrol Flags
         OptSubRecord<PACKPKW3> PKW3; //Use Weapon Data
         OptSubRecord<PACKPTDT> PTD2; //Target 2

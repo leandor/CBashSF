@@ -31,12 +31,12 @@ class WATRRecord : public Record //Water
         StringRecord EDID; //Editor ID
         StringRecord FULL; //Name
         StringRecord NNAM; //Noise Map
-        OptSubRecord<GENU8> ANAM; //Opacity
-        OptSubRecord<GENU8> FNAM; //Flags
+        OptSimpleSubRecord<UINT8> ANAM; //Opacity
+        OptSimpleSubRecord<UINT8> FNAM; //Flags
         StringRecord MNAM; //Material ID
-        OptSubRecord<GENFID> SNAM; //Sound
-        OptSubRecord<GENFID> XNAM; //Actor Effect
-        OptSubRecord<GENU16> DATA; //Damage
+        OptSimpleSubRecord<FORMID> SNAM; //Sound
+        OptSimpleSubRecord<FORMID> XNAM; //Actor Effect
+        OptSimpleSubRecord<UINT16> DATA; //Damage
         OptSubRecord<GENDNAM> DNAM; //DNAM ,, Struct
         OptSubRecord<GENGNAM> GNAM; //GNAM ,, Struct
 

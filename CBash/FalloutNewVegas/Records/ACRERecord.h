@@ -35,25 +35,25 @@ class ACRERecord : public Record //Placed Creature
             };
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENFID> NAME; //Base
-        OptSubRecord<GENFID> XEZN; //Encounter Zone
+        OptSimpleSubRecord<FORMID> NAME; //Base
+        OptSimpleSubRecord<FORMID> XEZN; //Encounter Zone
         RawRecord XRGD; //Ragdoll Data
         RawRecord XRGB; //Ragdoll Biped Data
         OptSubRecord<GENPATROL> Patrol; //Patrol Data
-        OptSubRecord<GENS32> XLCM; //Level Modifier
+        OptSimpleSubRecord<SINT32> XLCM; //Level Modifier
         OptSubRecord<FNVXOWN> Ownership; //Owner
-        OptSubRecord<GENFID> XMRC; //Merchant Container
-        OptSubRecord<GENS32> XCNT; //Count
-        OptSubRecord<GENFLOAT> XRDS; //Radius
-        OptSubRecord<GENFLOAT> XHLP; //Health
+        OptSimpleSubRecord<FORMID> XMRC; //Merchant Container
+        OptSimpleSubRecord<SINT32> XCNT; //Count
+        OptSimpleSubRecord<FLOAT32> XRDS; //Radius
+        OptSimpleSubRecord<FLOAT32> XHLP; //Health
         std::vector<ReqSubRecord<GENXDCR> *> Decals; //Linked Decals
-        OptSubRecord<GENFID> XLKR; //Linked Reference
+        OptSimpleSubRecord<FORMID> XLKR; //Linked Reference
         OptSubRecord<GENXCLP> XCLP; //Linked Reference Color
         OptSubRecord<GENACTPARENT> ActivateParents; //Activate Parents
         StringRecord XATO; //Activation Prompt
         OptSubRecord<GENXESP> XESP; //Enable Parent
-        OptSubRecord<GENFID> XEMI; //Emittance
-        OptSubRecord<GENFID> XMBR; //MultiBound Reference
+        OptSimpleSubRecord<FORMID> XEMI; //Emittance
+        OptSimpleSubRecord<FORMID> XMBR; //MultiBound Reference
         //OptSubRecord<GENXIBS> XIBS; //Ignored By Sandbox (Empty)
         OptSubRecord<GENXSCL> XSCL; //Scale
         OptSubRecord<GENPOSDATA> DATA; //Position/Rotation

@@ -52,13 +52,13 @@ class CONTRecord : public Record //Container
         OptSubRecord<GENOBND> OBND; //Object Bounds
         StringRecord FULL; //Name
         OptSubRecord<FNVMODEL> MODL; //Model
-        OptSubRecord<GENFID> SCRI; //Script
+        OptSimpleSubRecord<FORMID> SCRI; //Script
         std::vector<FNVCNTO *> CNTO;  //Items
         OptSubRecord<GENDESTRUCT> Destructable; //Destructable
         OptSubRecord<CONTDATA> DATA; //DATA ,, Struct
-        OptSubRecord<GENFID> SNAM; //Sound - Open
-        OptSubRecord<GENFID> QNAM; //Sound - Close
-        OptSubRecord<GENFID> RNAM; //Sound - Random/Looping
+        OptSimpleSubRecord<FORMID> SNAM; //Sound - Open
+        OptSimpleSubRecord<FORMID> QNAM; //Sound - Close
+        OptSimpleSubRecord<FORMID> RNAM; //Sound - Random/Looping
 
         CONTRecord(unsigned char *_recData=NULL);
         CONTRecord(CONTRecord *srcRecord);

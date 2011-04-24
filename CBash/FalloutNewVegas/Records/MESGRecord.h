@@ -27,25 +27,39 @@ namespace FNV
 {
 class MESGRecord : public Record //Message
     {
+    private:
+        struct MESGButton
+            {
+            StringRecord ITXT; //Text
+            std::vector<ReqSubRecord<FNVCTDA> *> CTDA; //Conditions
+
+            bool operator ==(const MESGButton &other) const;
+            bool operator !=(const MESGButton &other) const;
+            };
+
+        enum flagsFlags
+            {
+            fIsMessageBox  = 0x00000001,
+            fIsAutoDisplay = 0x00000002
+            };
     public:
         StringRecord EDID; //Editor ID
         StringRecord DESC; //Description
         StringRecord FULL; //Name
-        OptSubRecord<GENFID> INAM; //Icon
-        OptSubRecord<GENNAM> NAM0; //Unused
-        OptSubRecord<GENNAM1> NAM1; //Unused
-        OptSubRecord<GENNAM2> NAM2; //Unused
-        OptSubRecord<GENNAM3> NAM3; //Unused
-        OptSubRecord<GENNAM4> NAM4; //Unused
-        OptSubRecord<GENNAM5> NAM5; //Unused
-        OptSubRecord<GENNAM6> NAM6; //Unused
-        OptSubRecord<GENNAM7> NAM7; //Unused
-        OptSubRecord<GENNAM8> NAM8; //Unused
-        OptSubRecord<GENNAM> NAM9; //Unused
-        OptSubRecord<GENU32> DNAM; //Flags
-        OptSubRecord<GENU32> TNAM; //Display Time
-        StringRecord ITXT; //Button Text
-        OptSubRecord<GENCTDA> CTDA; //Conditions
+        OptSimpleSubRecord<FORMID> INAM; //Icon
+        //OptSubRecord<GENNAM> NAM0; //Unused (Empty)
+        //OptSubRecord<GENNAM1> NAM1; //Unused (Empty)
+        //OptSubRecord<GENNAM2> NAM2; //Unused (Empty)
+        //OptSubRecord<GENNAM3> NAM3; //Unused (Empty)
+        //OptSubRecord<GENNAM4> NAM4; //Unused (Empty)
+        //OptSubRecord<GENNAM5> NAM5; //Unused (Empty)
+        //OptSubRecord<GENNAM6> NAM6; //Unused (Empty)
+        //OptSubRecord<GENNAM7> NAM7; //Unused (Empty)
+        //OptSubRecord<GENNAM8> NAM8; //Unused (Empty)
+        //OptSubRecord<GENNAM> NAM9; //Unused (Empty)
+        OptSimpleSubRecord<UINT32> DNAM; //Flags
+        OptSimpleSubRecord<UINT32> TNAM; //Display Time
+        std::vector<MESGButton *> Buttons; //Menu Buttons
 
         MESGRecord(unsigned char *_recData=NULL);
         MESGRecord(MESGRecord *srcRecord);

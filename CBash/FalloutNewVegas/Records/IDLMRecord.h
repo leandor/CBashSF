@@ -48,9 +48,9 @@ class IDLMRecord : public Record //Idle Marker
     public:
         StringRecord EDID; //Editor ID
         OptSubRecord<GENOBND> OBND; //Object Bounds
-        OptSubRecord<GENU8> IDLF; //Flags
+        OptSimpleSubRecord<UINT8> IDLF; //Flags
         OptSubRecord<IDLMIDLC> IDLC; //Data
-        OptSubRecord<GENFLOAT> IDLT; //Idle Timer Setting
+        OptSimpleSubRecord<FLOAT32> IDLT; //Idle Timer Setting
         std::vector<FORMID> IDLA; //Animations
 
         IDLMRecord(unsigned char *_recData=NULL);

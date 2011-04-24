@@ -27,12 +27,25 @@ namespace FNV
 {
 class LSCRRecord : public Record //Load Screen
     {
+    private:
+        struct LSCRLNAM // Location
+            {
+            FORMID  direct, indirect;
+            SINT16  gridY, gridX;
+
+            LSCRLNAM();
+            ~LSCRLNAM();
+
+            bool operator ==(const LSCRLNAM &other) const;
+            bool operator !=(const LSCRLNAM &other) const;
+            };
+
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENICON> ICON; //Large Icon Filename
+        OptSubRecord<GENICON> ICON; //Icon Filenames
         StringRecord DESC; //Description
-        OptSubRecord<GENLNAM> LNAM; //LNAM ,, Struct
-        OptSubRecord<GENFID> WMI1; //Load Screen Type
+        std::vector<ReqSubRecord<LSCRLNAM> *> LNAM; // Locations
+        OptSimpleSubRecord<FORMID> WMI1; //Load Screen Type
 
         LSCRRecord(unsigned char *_recData=NULL);
         LSCRRecord(LSCRRecord *srcRecord);

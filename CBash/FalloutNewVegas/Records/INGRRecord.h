@@ -52,9 +52,9 @@ class INGRRecord : public Record //Ingredient
         StringRecord FULL; //Name
         OptSubRecord<FNVMODEL> MODL; //Model
         OptSubRecord<GENICON> ICON; //Icon Filenames
-        OptSubRecord<GENFID> SCRI; //Script
-        OptSubRecord<GENS32> ETYP; //Equipment Type
-        OptSubRecord<GENFLOAT> DATA; //Weight
+        OptSimpleSubRecord<FORMID> SCRI; //Script
+        OptSimpleSubRecord<SINT32> ETYP; //Equipment Type
+        OptSimpleSubRecord<FLOAT32> DATA; //Weight
         OptSubRecord<FNVENIT> ENIT; //Effect Data
         std::vector<FNVEffect *> Effects; //Effects
 

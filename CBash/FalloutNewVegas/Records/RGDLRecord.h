@@ -29,10 +29,10 @@ class RGDLRecord : public Record //Ragdoll
     {
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENU32> NVER; //Version
+        OptSimpleSubRecord<UINT32> NVER; //Version
         OptSubRecord<GENDATA> DATA; //DATA ,, Struct
-        OptSubRecord<GENFID> XNAM; //Actor Base
-        OptSubRecord<GENFID> TNAM; //Body Part Data
+        OptSimpleSubRecord<FORMID> XNAM; //Actor Base
+        OptSimpleSubRecord<FORMID> TNAM; //Body Part Data
         OptSubRecord<GENRAFD> RAFD; //RAFD ,, Struct
         OptSubRecord<GENRAFB> RAFB; //Feedback Dynamic Bones
         OptSubRecord<GENRAPS> RAPS; //RAPS ,, Struct

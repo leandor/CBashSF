@@ -208,27 +208,6 @@ bool GENS32::operator !=(const GENS32 &other) const
     return !(*this == other);
     }
 
-GENFLOAT::GENFLOAT():
-    value(0.0f)
-    {
-    //
-    }
-
-GENFLOAT::~GENFLOAT()
-    {
-    //
-    }
-
-bool GENFLOAT::operator ==(const GENFLOAT &other) const
-    {
-    return (AlmostEqual(value,other.value,2));
-    }
-
-bool GENFLOAT::operator !=(const GENFLOAT &other) const
-    {
-    return !(*this == other);
-    }
-
 GENXNAM::GENXNAM():
     faction(0),
     mod(0)

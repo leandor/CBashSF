@@ -481,6 +481,105 @@ class RawRecord
 
 //Base record field. Vestigial.
 //Used when it isn't known if the record is required or optional.
+//Should only be used with simple data types that should be initialized to 0 (int, float, etc) and not structs
+template<class T>
+struct SimpleSubRecord
+    {
+    T value;
+    bool isLoaded;
+
+    SimpleSubRecord();
+    ~SimpleSubRecord();
+
+    UINT32 GetSize() const;
+
+    bool IsLoaded() const;
+    void Load();
+    void Unload();
+
+    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos);
+
+    bool operator ==(const SimpleSubRecord<T> &other) const;
+    bool operator !=(const SimpleSubRecord<T> &other) const;
+    };
+    
+//Used for subrecords that are required
+//Even if not actually loaded from disk, they are always considered loaded even if they're explicitly unloaded.
+//Unloading them simply resets the values to default.
+//Should only be used with simple data types that should be initialized to 0 (int, float, etc) and not structs
+template<class T>
+struct ReqSimpleSubRecord
+    {
+    T value;
+
+    ReqSimpleSubRecord();
+    ~ReqSimpleSubRecord();
+
+    UINT32 GetSize() const;
+
+    bool IsLoaded() const;
+    void Load();
+    void Unload();
+
+    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos);
+
+    bool operator ==(const ReqSimpleSubRecord<T> &other) const;
+    bool operator !=(const ReqSimpleSubRecord<T> &other) const;
+    };
+    
+//Used for subrecords that are optional
+//Even if loaded, they are considered unloaded if they're equal to their defaults
+//Should only be used with simple data types that should be initialized to 0 (int, float, etc) and not structs
+template<class T>
+struct OptSimpleSubRecord
+    {
+    T value;
+
+    OptSimpleSubRecord();
+    ~OptSimpleSubRecord();
+
+    UINT32 GetSize() const;
+
+    bool IsLoaded() const;
+    void Load();
+    void Unload();
+
+    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos);
+
+    OptSimpleSubRecord<T>& operator = (const OptSimpleSubRecord<T> &rhs);
+    bool operator ==(const OptSimpleSubRecord<T> &other) const;
+    bool operator !=(const OptSimpleSubRecord<T> &other) const;
+    };
+    
+//Identical to OptSimpleSubRecord except for IsLoaded
+//Once loaded, they are always considered loaded unless they're explicitly unloaded.
+//They don't compare to the default value to see if they're
+// still considered loaded.
+//Should only be used with simple data types that should be initialized to 0 (int, float, etc) and not structs
+template<class T>
+struct SemiOptSimpleSubRecord
+    {
+    T *value;
+
+    SemiOptSimpleSubRecord();
+    ~SemiOptSimpleSubRecord();
+
+    UINT32 GetSize() const;
+
+    bool IsLoaded() const;
+    void Load();
+    void Unload();
+
+    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos);
+
+    T *operator->() const;
+    SemiOptSimpleSubRecord<T>& operator = (const SemiOptSimpleSubRecord<T> &rhs);
+    bool operator ==(const SemiOptSimpleSubRecord<T> &other) const;
+    bool operator !=(const SemiOptSimpleSubRecord<T> &other) const;
+    };
+
+//Base record field. Vestigial.
+//Used when it isn't known if the record is required or optional.
 template<class T>
 struct SubRecord
     {

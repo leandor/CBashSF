@@ -43,8 +43,8 @@ class ADDNRecord : public Record //Addon Node
         StringRecord EDID; //Editor ID
         OptSubRecord<GENOBND> OBND; //Object Bounds
         OptSubRecord<FNVMODEL> MODL; //Model
-        OptSubRecord<GENS32> DATA; //Node Index
-        OptSubRecord<GENFID> SNAM; //Sound
+        OptSimpleSubRecord<SINT32> DATA; //Node Index
+        OptSimpleSubRecord<FORMID> SNAM; //Sound
         OptSubRecord<ADDNDNAM> DNAM; //Data
 
         ADDNRecord(unsigned char *_recData=NULL);

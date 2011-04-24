@@ -79,7 +79,7 @@ class PERKRecord : public Record //Perk
 
         struct PERKCondition // Perk Condition
             {
-            OptSubRecord<GENS8> PRKC; //Run On
+            OptSimpleSubRecord<SINT8> PRKC; //Run On
             std::vector<ReqSubRecord<FNVCTDA> *> CTDA; //Conditions
 
             bool   operator ==(const PERKCondition &other) const;
@@ -119,10 +119,10 @@ class PERKRecord : public Record //Perk
             OptSubRecord<PRKEDATA> DATA; //Effect Data
             std::vector<PERKConditions *> Conditions; // Perk Conditions
 
-            OptSubRecord<GENU8> EPFT; //Type
+            OptSimpleSubRecord<UINT8> EPFT; //Type
             OptSubRecord<PERKEPFD> EPFD; //Data
             StringRecord EPF2; //Button Label
-            OptSubRecord<GENU16> EPF3; //Script Flags
+            OptSimpleSubRecord<UINT16> EPF3; //Script Flags
             OptSubRecord<GENSCRIPT> Script; //Basic Script
             //OptSubRecord<GENPRKF> PRKF; //End Marker
 

@@ -63,8 +63,8 @@ class INFORecord : public Record //Dialog response
             StringRecord NAM1; //Response Text
             StringRecord NAM2; //Script Notes
             StringRecord NAM3; //Edits
-            OptSubRecord<GENFID> SNAM; //Speaker Animation
-            OptSubRecord<GENFID> LNAM; //Listener Animation
+            OptSimpleSubRecord<FORMID> SNAM; //Speaker Animation
+            OptSimpleSubRecord<FORMID> LNAM; //Listener Animation
 
             enum eEmotionType
                 {
@@ -159,9 +159,9 @@ class INFORecord : public Record //Dialog response
             };
     public:
         OptSubRecord<INFODATA> DATA; //INFO Data
-        OptSubRecord<GENFID> QSTI; //Quest
-        OptSubRecord<GENFID> TPIC; //Topic
-        OptSubRecord<GENFID> PNAM; //Previous INFO
+        OptSimpleSubRecord<FORMID> QSTI; //Quest
+        OptSimpleSubRecord<FORMID> TPIC; //Topic
+        OptSimpleSubRecord<FORMID> PNAM; //Previous INFO
         std::vector<FORMID> NAME; //Topics
         std::vector<INFOResponse *> Responses; //Responses
         std::vector<ReqSubRecord<FNVCTDA> *> CTDA; //Conditions
@@ -172,11 +172,11 @@ class INFORecord : public Record //Dialog response
         OptSubRecord<GENMINSCRIPT> Script;
         OptSubRecord<GENMINSCRIPT> NextScript;
 
-        OptSubRecord<GENFID> SNDD; //Unused
+        OptSimpleSubRecord<FORMID> SNDD; //Unused
         StringRecord RNAM; //Prompt
-        OptSubRecord<GENFID> ANAM; //Speaker
-        OptSubRecord<GENFID> KNAM; //ActorValue/Perk
-        OptSubRecord<GENU32> DNAM; //Speech Challenge
+        OptSimpleSubRecord<FORMID> ANAM; //Speaker
+        OptSimpleSubRecord<FORMID> KNAM; //ActorValue/Perk
+        OptSimpleSubRecord<UINT32> DNAM; //Speech Challenge
 
         INFORecord(unsigned char *_recData=NULL);
         INFORecord(INFORecord *srcRecord);

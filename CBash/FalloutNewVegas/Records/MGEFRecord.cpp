@@ -87,6 +87,645 @@ bool MGEFRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+bool MGEFRecord::IsHostile()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsHostile) != 0;
+    }
+
+void MGEFRecord::IsHostile(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsHostile;
+    else
+        Dummy->flags &= ~fIsHostile;
+    }
+
+bool MGEFRecord::IsRecover()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsRecover) != 0;
+    }
+
+void MGEFRecord::IsRecover(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsRecover;
+    else
+        Dummy->flags &= ~fIsRecover;
+    }
+
+bool MGEFRecord::IsDetrimental()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsDetrimental) != 0;
+    }
+
+void MGEFRecord::IsDetrimental(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsDetrimental;
+    else
+        Dummy->flags &= ~fIsDetrimental;
+    }
+
+bool MGEFRecord::IsSelf()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsSelf) != 0;
+    }
+
+void MGEFRecord::IsSelf(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsSelf;
+    else
+        Dummy->flags &= ~fIsSelf;
+    }
+
+bool MGEFRecord::IsTouch()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsTouch) != 0;
+    }
+
+void MGEFRecord::IsTouch(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsTouch;
+    else
+        Dummy->flags &= ~fIsTouch;
+    }
+
+bool MGEFRecord::IsTarget()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsTarget) != 0;
+    }
+
+void MGEFRecord::IsTarget(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsTarget;
+    else
+        Dummy->flags &= ~fIsTarget;
+    }
+
+bool MGEFRecord::IsNoDuration()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsNoDuration) != 0;
+    }
+
+void MGEFRecord::IsNoDuration(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsNoDuration;
+    else
+        Dummy->flags &= ~fIsNoDuration;
+    }
+
+bool MGEFRecord::IsNoMagnitude()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsNoMagnitude) != 0;
+    }
+
+void MGEFRecord::IsNoMagnitude(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsNoMagnitude;
+    else
+        Dummy->flags &= ~fIsNoMagnitude;
+    }
+
+bool MGEFRecord::IsNoArea()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsNoArea) != 0;
+    }
+
+void MGEFRecord::IsNoArea(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsNoArea;
+    else
+        Dummy->flags &= ~fIsNoArea;
+    }
+
+bool MGEFRecord::IsFXPersist()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsFXPersist) != 0;
+    }
+
+void MGEFRecord::IsFXPersist(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsFXPersist;
+    else
+        Dummy->flags &= ~fIsFXPersist;
+    }
+
+bool MGEFRecord::IsGoryVisuals()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsGoryVisuals) != 0;
+    }
+
+void MGEFRecord::IsGoryVisuals(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsGoryVisuals;
+    else
+        Dummy->flags &= ~fIsGoryVisuals;
+    }
+
+bool MGEFRecord::IsDisplayNameOnly()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsDisplayNameOnly) != 0;
+    }
+
+void MGEFRecord::IsDisplayNameOnly(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsDisplayNameOnly;
+    else
+        Dummy->flags &= ~fIsDisplayNameOnly;
+    }
+
+bool MGEFRecord::IsRadioBroadcast()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsRadioBroadcast) != 0;
+    }
+
+void MGEFRecord::IsRadioBroadcast(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsRadioBroadcast;
+    else
+        Dummy->flags &= ~fIsRadioBroadcast;
+    }
+
+bool MGEFRecord::IsUseSkill()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsUseSkill) != 0;
+    }
+
+void MGEFRecord::IsUseSkill(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsUseSkill;
+    else
+        Dummy->flags &= ~fIsUseSkill;
+    }
+
+bool MGEFRecord::IsUseAttr()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsUseAttr) != 0;
+    }
+
+void MGEFRecord::IsUseAttr(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsUseAttr;
+    else
+        Dummy->flags &= ~fIsUseAttr;
+    }
+
+bool MGEFRecord::IsPainless()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsPainless) != 0;
+    }
+
+void MGEFRecord::IsPainless(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsPainless;
+    else
+        Dummy->flags &= ~fIsPainless;
+    }
+
+bool MGEFRecord::IsSprayType()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsSprayType) != 0;
+    }
+
+void MGEFRecord::IsSprayType(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsSprayType;
+    else
+        Dummy->flags &= ~fIsSprayType;
+    }
+
+bool MGEFRecord::IsBoltType()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsBoltType) != 0;
+    }
+
+void MGEFRecord::IsBoltType(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsBoltType;
+    else
+        Dummy->flags &= ~fIsBoltType;
+    }
+
+bool MGEFRecord::IsFogType()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsFogType) != 0;
+    }
+
+void MGEFRecord::IsFogType(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsFogType;
+    else
+        Dummy->flags &= ~fIsFogType;
+    }
+
+bool MGEFRecord::IsNoHitEffect()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsNoHitEffect) != 0;
+    }
+
+void MGEFRecord::IsNoHitEffect(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsNoHitEffect;
+    else
+        Dummy->flags &= ~fIsNoHitEffect;
+    }
+
+bool MGEFRecord::IsPersistOnDeath()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsPersistOnDeath) != 0;
+    }
+
+void MGEFRecord::IsPersistOnDeath(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsPersistOnDeath;
+    else
+        Dummy->flags &= ~fIsPersistOnDeath;
+    }
+
+bool MGEFRecord::IsUnknown1()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsUnknown1) != 0;
+    }
+
+void MGEFRecord::IsUnknown1(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsUnknown1;
+    else
+        Dummy->flags &= ~fIsUnknown1;
+    }
+
+bool MGEFRecord::IsFlagMask(UINT32 Mask, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    }
+
+void MGEFRecord::SetFlagMask(UINT32 Mask)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
+bool MGEFRecord::IsValueModifier()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eValueModifier);
+    }
+
+void MGEFRecord::IsValueModifier(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eValueModifier;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool MGEFRecord::IsScript()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eScript);
+    }
+
+void MGEFRecord::IsScript(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eScript;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool MGEFRecord::IsDispel()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eDispel);
+    }
+
+void MGEFRecord::IsDispel(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eDispel;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool MGEFRecord::IsCureDisease()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eCureDisease);
+    }
+
+void MGEFRecord::IsCureDisease(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eCureDisease;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool MGEFRecord::IsInvisibility()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eInvisibility);
+    }
+
+void MGEFRecord::IsInvisibility(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eInvisibility;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool MGEFRecord::IsChameleon()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eChameleon);
+    }
+
+void MGEFRecord::IsChameleon(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eChameleon;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool MGEFRecord::IsLight()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eLight);
+    }
+
+void MGEFRecord::IsLight(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eLight;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool MGEFRecord::IsLock()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eLock);
+    }
+
+void MGEFRecord::IsLock(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eLock;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool MGEFRecord::IsOpen()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eOpen);
+    }
+
+void MGEFRecord::IsOpen(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eOpen;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool MGEFRecord::IsBoundItem()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eBoundItem);
+    }
+
+void MGEFRecord::IsBoundItem(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eBoundItem;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool MGEFRecord::IsSummonCreature()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eSummonCreature);
+    }
+
+void MGEFRecord::IsSummonCreature(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eSummonCreature;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool MGEFRecord::IsParalysis()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eParalysis);
+    }
+
+void MGEFRecord::IsParalysis(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eParalysis;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool MGEFRecord::IsCureParalysis()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eCureParalysis);
+    }
+
+void MGEFRecord::IsCureParalysis(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eCureParalysis;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool MGEFRecord::IsCureAddiction()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eCureAddiction);
+    }
+
+void MGEFRecord::IsCureAddiction(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eCureAddiction;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool MGEFRecord::IsCurePoison()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eCurePoison);
+    }
+
+void MGEFRecord::IsCurePoison(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eCurePoison;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool MGEFRecord::IsConcussion()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eConcussion);
+    }
+
+void MGEFRecord::IsConcussion(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eConcussion;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool MGEFRecord::IsValueAndParts()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eValueAndParts);
+    }
+
+void MGEFRecord::IsValueAndParts(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eValueAndParts;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool MGEFRecord::IsLimbCondition()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eLimbCondition);
+    }
+
+void MGEFRecord::IsLimbCondition(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eLimbCondition;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool MGEFRecord::IsTurbo()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eTurbo);
+    }
+
+void MGEFRecord::IsTurbo(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eTurbo;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool MGEFRecord::IsType(UINT32 Type, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    }
+
+void MGEFRecord::SetType(UINT32 Type)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
 UINT32 MGEFRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())

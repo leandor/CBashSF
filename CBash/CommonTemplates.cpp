@@ -1,11 +1,294 @@
 #include "Common.h"
 
+
+    
+template<class T> SimpleSubRecord<T>::SimpleSubRecord():
+    isLoaded(false),
+    value(0)
+    {
+    //
+    }
+
+template<class T> SimpleSubRecord<T>::~SimpleSubRecord()
+    {
+    //
+    }
+
+template<class T> UINT32 SimpleSubRecord<T>::GetSize() const
+    {
+    return sizeof(T);
+    }
+
+template<class T> bool SimpleSubRecord<T>::IsLoaded() const
+    {
+    return (isLoaded && value != 0);
+    }
+
+template<class T> void SimpleSubRecord<T>::Load()
+    {
+    isLoaded = true;
+    }
+
+template<class T> void SimpleSubRecord<T>::Unload()
+    {
+    value = 0;
+    isLoaded = false;
+    }
+
+template<class T> bool SimpleSubRecord<T>::Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+    {
+    if(isLoaded)
+        {
+        curPos += subSize;
+        return false;
+        }
+    if(subSize > sizeof(T))
+        {
+        printf("Rec? subSize:%u, sizeof:%u\n", subSize, sizeof(T));
+        memcpy(&value, buffer + curPos, sizeof(T));
+        }
+    else
+        memcpy(&value, buffer + curPos, subSize);
+    isLoaded = true;
+    //size = subSize;
+    curPos += subSize;
+    return true;
+    }
+
+template<class T> bool SimpleSubRecord<T>::operator ==(const SimpleSubRecord<T> &other) const
+    {
+    return (isLoaded == other.isLoaded &&
+            value == other.value);
+    }
+
+template<class T> bool SimpleSubRecord<T>::operator !=(const SimpleSubRecord<T> &other) const
+    {
+    return !(*this == other);
+    }
+    
+template<class T> ReqSimpleSubRecord<T>::ReqSimpleSubRecord():
+    value(0)
+    {
+    //
+    }
+
+template<class T> ReqSimpleSubRecord<T>::~ReqSimpleSubRecord()
+    {
+    //
+    }
+
+template<class T> UINT32 ReqSimpleSubRecord<T>::GetSize() const
+    {
+    return sizeof(T);
+    }
+
+template<class T> bool ReqSimpleSubRecord<T>::IsLoaded() const
+    {
+    return true;
+    }
+
+template<class T> void ReqSimpleSubRecord<T>::Load()
+    {
+    //
+    }
+
+template<class T> void ReqSimpleSubRecord<T>::Unload()
+    {
+    value = 0;
+    }
+
+template<class T> bool ReqSimpleSubRecord<T>::Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+    {
+    if(subSize > sizeof(T))
+        {
+        printf("Req? subSize:%u, sizeof:%u\n", subSize, sizeof(T));
+        memcpy(&value, buffer + curPos, sizeof(T));
+        }
+    else
+        memcpy(&value, buffer + curPos, subSize);
+    //size = subSize;
+    curPos += subSize;
+    return true;
+    }
+
+template<class T> bool ReqSimpleSubRecord<T>::operator ==(const ReqSimpleSubRecord<T> &other) const
+    {
+    return (value == other.value);
+    }
+
+template<class T> bool ReqSimpleSubRecord<T>::operator !=(const ReqSimpleSubRecord<T> &other) const
+    {
+    return !(*this == other);
+    }
+
+template<class T> OptSimpleSubRecord<T>::OptSimpleSubRecord():
+    value(0)
+    {
+    //
+    }
+
+template<class T> OptSimpleSubRecord<T>::~OptSimpleSubRecord()
+    {
+    Unload();
+    }
+
+template<class T> UINT32 OptSimpleSubRecord<T>::GetSize() const
+    {
+    return sizeof(T);
+    }
+
+template<class T> bool OptSimpleSubRecord<T>::IsLoaded() const
+    {
+    return (value != 0);
+    }
+
+template<class T> void OptSimpleSubRecord<T>::Load()
+    {
+    //
+    }
+
+template<class T> void OptSimpleSubRecord<T>::Unload()
+    {
+    value = 0;
+    }
+
+template<class T> bool OptSimpleSubRecord<T>::Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+    {
+    if(value != 0)
+        {
+        curPos += subSize;
+        return false;
+        }
+    if(subSize > sizeof(T))
+        {
+        printf("Opt? subSize:%u, sizeof:%u\n", subSize, sizeof(T));
+        memcpy(&value, buffer + curPos, sizeof(T));
+        }
+    else
+        memcpy(&value, buffer + curPos, subSize);
+    curPos += subSize;
+    return true;
+    }
+
+template<class T> OptSimpleSubRecord<T>& OptSimpleSubRecord<T>::operator = (const OptSimpleSubRecord<T> &rhs)
+    {
+    if(this != &rhs)
+        value = rhs.value;
+    return *this;
+    }
+
+template<class T> bool OptSimpleSubRecord<T>::operator ==(const OptSimpleSubRecord<T> &other) const
+    {
+    return value == other.value;
+    }
+
+template<class T> bool OptSimpleSubRecord<T>::operator !=(const OptSimpleSubRecord<T> &other) const
+    {
+    return value != other.value;
+    }
+    
+template<class T> SemiOptSimpleSubRecord<T>::SemiOptSimpleSubRecord():
+    value(NULL)
+    {
+    //
+    }
+
+template<class T> SemiOptSimpleSubRecord<T>::~SemiOptSimpleSubRecord()
+    {
+    Unload();
+    }
+
+template<class T> UINT32 SemiOptSimpleSubRecord<T>::GetSize() const
+    {
+    return sizeof(T);
+    }
+
+template<class T> bool SemiOptSimpleSubRecord<T>::IsLoaded() const
+    {
+    return (value != NULL);
+    }
+
+template<class T> void SemiOptSimpleSubRecord<T>::Load()
+    {
+    if(value == NULL)
+        value = new T(0);
+    }
+
+template<class T> void SemiOptSimpleSubRecord<T>::Unload()
+    {
+    delete value;
+    value = NULL;
+    }
+
+template<class T> bool SemiOptSimpleSubRecord<T>::Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+    {
+    if(value != NULL)
+        {
+        curPos += subSize;
+        return false;
+        }
+    value = new T(0);
+    if(subSize > sizeof(T))
+        {
+        printf("Opt? subSize:%u, sizeof:%u\n", subSize, sizeof(T));
+        memcpy(value, buffer + curPos, sizeof(T));
+        }
+    else
+        memcpy(value, buffer + curPos, subSize);
+    curPos += subSize;
+    return true;
+    }
+
+template<class T> T * SemiOptSimpleSubRecord<T>::operator->() const
+    {
+    return value;
+    }
+
+template<class T> SemiOptSimpleSubRecord<T>& SemiOptSimpleSubRecord<T>::operator = (const SemiOptSimpleSubRecord<T> &rhs)
+    {
+    if(this != &rhs)
+        if(rhs.value != NULL)
+            {
+            if(value == NULL)
+                {
+                value = new T(0);
+                }
+            else
+                value->~T();
+            *value = *rhs.value;
+            }
+        else
+            {
+            delete value;
+            value = NULL;
+            }
+    return *this;
+    }
+
+template<class T> bool SemiOptSimpleSubRecord<T>::operator ==(const SemiOptSimpleSubRecord<T> &other) const
+    {
+    if(!IsLoaded())
+        {
+        if(!other.IsLoaded())
+            return true;
+        }
+    else if(other.IsLoaded() && *value == *other.value)
+        return true;
+    return false;
+    }
+
+template<class T> bool SemiOptSimpleSubRecord<T>::operator !=(const SemiOptSimpleSubRecord<T> &other) const
+    {
+    return !(*this == other);
+    }
+
 template<class T> SubRecord<T>::SubRecord():
     isLoaded(false),
     value()
     {
     //
     }
+
 template<class T> SubRecord<T>::~SubRecord()
     {
     //

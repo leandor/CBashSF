@@ -27,15 +27,60 @@ namespace FNV
 {
 class LSCTRecord : public Record //Load Screen Type
     {
+    private:
+        struct LSCTDATA
+            {
+            UINT32  screenType; //Type
+            //Data 1
+            UINT32  x, y, width, height;
+            FLOAT32 orientation;
+            UINT32  font1;
+            FLOAT32 font1Red, font1Green, font1Blue;
+            UINT32  alignmentType;
+            UINT8   unknown1[20];
+            //Data 2
+            UINT32  font2;
+            FLOAT32 font2Red, font2Green, font2Blue;
+            UINT8   unknown2[4];
+            UINT32  stats;
+
+            LSCTDATA();
+            ~LSCTDATA();
+
+            bool operator ==(const LSCTDATA &other) const;
+            bool operator !=(const LSCTDATA &other) const;
+            };
+
+        enum eScreenTypeTypes
+            {
+            eNone  = 0,
+            eXPProgress    = 1,
+            eObjective  = 2,
+            eTip     = 3,
+            eStats      = 4
+            };
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
+        OptSubRecord<LSCTDATA> DATA; //Data
 
         LSCTRecord(unsigned char *_recData=NULL);
         LSCTRecord(LSCTRecord *srcRecord);
         ~LSCTRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
+
+        bool   IsNone();
+        void   IsNone(bool value);
+        bool   IsXPProgress();
+        void   IsXPProgress(bool value);
+        bool   IsObjective();
+        void   IsObjective(bool value);
+        bool   IsTip();
+        void   IsTip(bool value);
+        bool   IsStats();
+        void   IsStats(bool value);
+        bool   IsType(UINT32 Type, bool Exact=false);
+        void   SetType(UINT32 Type);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

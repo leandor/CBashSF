@@ -29,7 +29,7 @@ class VTYPRecord : public Record //Voice Type
     {
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENU8> DNAM; //Flags
+        OptSimpleSubRecord<UINT8> DNAM; //Flags
 
         VTYPRecord(unsigned char *_recData=NULL);
         VTYPRecord(VTYPRecord *srcRecord);

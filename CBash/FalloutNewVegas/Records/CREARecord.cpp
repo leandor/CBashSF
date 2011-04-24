@@ -781,19 +781,19 @@ void CREARecord::IsAllowPCDialogue(bool value)
         Dummy->flags &= ~fIsAllowPCDialogue;
     }
 
-bool CREARecord::IsCantOpenDoords()
+bool CREARecord::IsCantOpenDoors()
     {
     if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsCantOpenDoords) != 0;
+    return (Dummy->flags & fIsCantOpenDoors) != 0;
     }
 
-void CREARecord::IsCantOpenDoords(bool value)
+void CREARecord::IsCantOpenDoors(bool value)
     {
     if(!Dummy.IsLoaded()) return;
     if(value)
-        Dummy->flags |= fIsCantOpenDoords;
+        Dummy->flags |= fIsCantOpenDoors;
     else
-        Dummy->flags &= ~fIsCantOpenDoords;
+        Dummy->flags &= ~fIsCantOpenDoors;
     }
 
 bool CREARecord::IsImmobile()

@@ -41,12 +41,12 @@ class DOORRecord : public Record //Door
         OptSubRecord<GENOBND> OBND; //Object Bounds
         StringRecord FULL; //Name
         OptSubRecord<FNVMODEL> MODL; //Model
-        OptSubRecord<GENFID> SCRI; //Script
+        OptSimpleSubRecord<FORMID> SCRI; //Script
         OptSubRecord<GENDESTRUCT> Destructable; //Destructable
-        OptSubRecord<GENFID> SNAM; //Sound - Open
-        OptSubRecord<GENFID> ANAM; //Sound - Close
-        OptSubRecord<GENFID> BNAM; //Sound - Looping
-        OptSubRecord<GENU8> FNAM; //Flags
+        OptSimpleSubRecord<FORMID> SNAM; //Sound - Open
+        OptSimpleSubRecord<FORMID> ANAM; //Sound - Close
+        OptSimpleSubRecord<FORMID> BNAM; //Sound - Looping
+        OptSimpleSubRecord<UINT8> FNAM; //Flags
 
         DOORRecord(unsigned char *_recData=NULL);
         DOORRecord(DOORRecord *srcRecord);

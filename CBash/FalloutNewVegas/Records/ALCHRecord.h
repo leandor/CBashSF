@@ -52,12 +52,12 @@ class ALCHRecord : public Record //Ingestible
         StringRecord FULL; //Name
         OptSubRecord<FNVMODEL> MODL; //Model
         OptSubRecord<GENICON> ICON; //Large Icon Filename
-        OptSubRecord<GENFID> SCRI; //Script
+        OptSimpleSubRecord<FORMID> SCRI; //Script
         OptSubRecord<GENDESTRUCT> Destructable; //Destructable
-        OptSubRecord<GENFID> YNAM; //Sound - Pick Up
-        OptSubRecord<GENFID> ZNAM; //Sound - Drop
-        OptSubRecord<GENS32> ETYP; //Equipment Type
-        OptSubRecord<GENFLOAT> DATA; //Weight
+        OptSimpleSubRecord<FORMID> YNAM; //Sound - Pick Up
+        OptSimpleSubRecord<FORMID> ZNAM; //Sound - Drop
+        OptSimpleSubRecord<SINT32> ETYP; //Equipment Type
+        OptSimpleSubRecord<FLOAT32> DATA; //Weight
         OptSubRecord<FNVENIT> ENIT; //Effect Data
         std::vector<FNVEffect *> Effects; //Effects
 

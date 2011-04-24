@@ -31,8 +31,8 @@ class STATRecord : public Record //Static
         StringRecord EDID; //Editor ID
         OptSubRecord<GENOBND> OBND; //Object Bounds
         OptSubRecord<FNVMODEL> MODL; //Model
-        OptSubRecord<GENS8> BRUS; //Passthrough Sound
-        OptSubRecord<GENFID> RNAM; //Sound - Looping/Random
+        OptSimpleSubRecord<SINT8> BRUS; //Passthrough Sound
+        OptSimpleSubRecord<FORMID> RNAM; //Sound - Looping/Random
 
         STATRecord(unsigned char *_recData=NULL);
         STATRecord(STATRecord *srcRecord);

@@ -32,9 +32,9 @@ class RCPERecord : public Record //Recipe
         StringRecord FULL; //Name
         OptSubRecord<GENCTDA> CTDA; //Conditions
         OptSubRecord<GENDATA> DATA; //DATA ,, Struct
-        OptSubRecord<GENFID> RCIL; //Item
-        OptSubRecord<GENU32> RCQY; //Quantity
-        OptSubRecord<GENFID> RCOD; //Item
+        OptSimpleSubRecord<FORMID> RCIL; //Item
+        OptSimpleSubRecord<UINT32> RCQY; //Quantity
+        OptSimpleSubRecord<FORMID> RCOD; //Item
 
         RCPERecord(unsigned char *_recData=NULL);
         RCPERecord(RCPERecord *srcRecord);

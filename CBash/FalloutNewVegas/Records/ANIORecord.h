@@ -30,7 +30,7 @@ class ANIORecord : public Record //Animated Object
     public:
         StringRecord EDID; //Editor ID
         OptSubRecord<FNVMODEL> MODL; //Model Filename
-        OptSubRecord<GENFID> DATA; //Animation
+        OptSimpleSubRecord<FORMID> DATA; //Animation
 
         ANIORecord(unsigned char *_recData=NULL);
         ANIORecord(ANIORecord *srcRecord);

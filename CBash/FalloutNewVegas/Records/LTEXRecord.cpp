@@ -79,6 +79,498 @@ bool LTEXRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+bool LTEXRecord::IsStone()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eStone);
+    }
+
+void LTEXRecord::IsStone(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eStone;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool LTEXRecord::IsCloth()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eCloth);
+    }
+
+void LTEXRecord::IsCloth(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eCloth;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool LTEXRecord::IsDirt()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eDirt);
+    }
+
+void LTEXRecord::IsDirt(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eDirt;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool LTEXRecord::IsGlass()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eGlass);
+    }
+
+void LTEXRecord::IsGlass(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eGlass;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool LTEXRecord::IsGrass()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eGrass);
+    }
+
+void LTEXRecord::IsGrass(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eGrass;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool LTEXRecord::IsMetal()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eMetal);
+    }
+
+void LTEXRecord::IsMetal(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eMetal;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool LTEXRecord::IsOrganic()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eOrganic);
+    }
+
+void LTEXRecord::IsOrganic(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eOrganic;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool LTEXRecord::IsSkin()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eSkin);
+    }
+
+void LTEXRecord::IsSkin(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eSkin;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool LTEXRecord::IsWater()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eWater);
+    }
+
+void LTEXRecord::IsWater(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eWater;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool LTEXRecord::IsWood()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eWood);
+    }
+
+void LTEXRecord::IsWood(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eWood;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool LTEXRecord::IsHeavyStone()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eHeavyStone);
+    }
+
+void LTEXRecord::IsHeavyStone(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eHeavyStone;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool LTEXRecord::IsHeavyMetal()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eHeavyMetal);
+    }
+
+void LTEXRecord::IsHeavyMetal(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eHeavyMetal;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool LTEXRecord::IsHeavyWood()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eHeavyWood);
+    }
+
+void LTEXRecord::IsHeavyWood(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eHeavyWood;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool LTEXRecord::IsChain()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eChain);
+    }
+
+void LTEXRecord::IsChain(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eChain;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool LTEXRecord::IsSnow()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eSnow);
+    }
+
+void LTEXRecord::IsSnow(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eSnow;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool LTEXRecord::IsElevator()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eElevator);
+    }
+
+void LTEXRecord::IsElevator(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eElevator;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool LTEXRecord::IsHollowMetal()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eHollowMetal);
+    }
+
+void LTEXRecord::IsHollowMetal(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eHollowMetal;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool LTEXRecord::IsSheetMetal()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eSheetMetal);
+    }
+
+void LTEXRecord::IsSheetMetal(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eSheetMetal;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool LTEXRecord::IsSand()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eSand);
+    }
+
+void LTEXRecord::IsSand(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eSand;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool LTEXRecord::IsBrokenConcrete()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eBrokenConcrete);
+    }
+
+void LTEXRecord::IsBrokenConcrete(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eBrokenConcrete;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool LTEXRecord::IsVehicleBody()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eVehicleBody);
+    }
+
+void LTEXRecord::IsVehicleBody(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eVehicleBody;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool LTEXRecord::IsVehiclePartSolid()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eVehiclePartSolid);
+    }
+
+void LTEXRecord::IsVehiclePartSolid(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eVehiclePartSolid;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool LTEXRecord::IsVehiclePartHollow()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eVehiclePartHollow);
+    }
+
+void LTEXRecord::IsVehiclePartHollow(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eVehiclePartHollow;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool LTEXRecord::IsBarrel()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eBarrel);
+    }
+
+void LTEXRecord::IsBarrel(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eBarrel;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool LTEXRecord::IsBottle()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eBottle);
+    }
+
+void LTEXRecord::IsBottle(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eBottle;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool LTEXRecord::IsSodaCan()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eSodaCan);
+    }
+
+void LTEXRecord::IsSodaCan(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eSodaCan;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool LTEXRecord::IsPistol()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == ePistol);
+    }
+
+void LTEXRecord::IsPistol(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = ePistol;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool LTEXRecord::IsRifle()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eRifle);
+    }
+
+void LTEXRecord::IsRifle(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eRifle;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool LTEXRecord::IsShoppingCart()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eShoppingCart);
+    }
+
+void LTEXRecord::IsShoppingCart(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eShoppingCart;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool LTEXRecord::IsLunchBox()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eLunchBox);
+    }
+
+void LTEXRecord::IsLunchBox(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eLunchBox;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool LTEXRecord::IsBabyRattle()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eBabyRattle);
+    }
+
+void LTEXRecord::IsBabyRattle(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eBabyRattle;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool LTEXRecord::IsRubberBall()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eRubberBall);
+    }
+
+void LTEXRecord::IsRubberBall(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eRubberBall;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool LTEXRecord::Is0Type(UINT8 Type, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    }
+
+void LTEXRecord::Set0Type(UINT8 Type)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
 UINT32 LTEXRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())

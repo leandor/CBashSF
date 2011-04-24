@@ -29,7 +29,7 @@ class LGTMRecord : public Record //Lighting Template
     {
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
+        OptSubRecord<FNVLIGHT> DATA; //Lighting Data
 
         LGTMRecord(unsigned char *_recData=NULL);
         LGTMRecord(LGTMRecord *srcRecord);

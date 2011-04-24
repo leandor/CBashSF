@@ -34,8 +34,8 @@ class CHIPRecord : public Record //Casino Chip
         OptSubRecord<FNVMODEL> MODL; //Model
         OptSubRecord<GENICON> ICON; //Icon Filenames
         OptSubRecord<GENDESTRUCT> Destructable; //Destructable
-        OptSubRecord<GENFID> YNAM; //Sound - Pick Up
-        OptSubRecord<GENFID> ZNAM; //Sound - Drop
+        OptSimpleSubRecord<FORMID> YNAM; //Sound - Pick Up
+        OptSimpleSubRecord<FORMID> ZNAM; //Sound - Drop
 
         CHIPRecord(unsigned char *_recData=NULL);
         CHIPRecord(CHIPRecord *srcRecord);

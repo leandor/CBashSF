@@ -43,14 +43,14 @@ class CCRDRecord : public Record //Caravan Card
         StringRecord FULL; //Name
         OptSubRecord<FNVMODEL> MODL; //Model
         OptSubRecord<GENICON> ICON; //Icon Filenames
-        OptSubRecord<GENFID> SCRI; //Script
-        OptSubRecord<GENFID> YNAM; //Sound - Pick Up
-        OptSubRecord<GENFID> ZNAM; //Sound - Drop
+        OptSimpleSubRecord<FORMID> SCRI; //Script
+        OptSimpleSubRecord<FORMID> YNAM; //Sound - Pick Up
+        OptSimpleSubRecord<FORMID> ZNAM; //Sound - Drop
         StringRecord TX00; //Face High Res Image
         StringRecord TX01; //Back High Res Image
-        OptSubRecord<GENU32> INTV1; //Card Suit
-        OptSubRecord<GENU32> INTV2; //Card Value
-        OptSubRecord<GENU32> DATA; //Value
+        OptSimpleSubRecord<UINT32> INTV1; //Card Suit
+        OptSimpleSubRecord<UINT32> INTV2; //Card Value
+        OptSimpleSubRecord<UINT32> DATA; //Value
 
         CCRDRecord(unsigned char *_recData=NULL);
         CCRDRecord(CCRDRecord *srcRecord);

@@ -39,7 +39,7 @@ class EYESRecord : public Record //Eyes
         StringRecord EDID; //Editor ID
         StringRecord FULL; //Name
         StringRecord ICON; //Texture
-        OptSubRecord<GENU8> DATA; //Flags
+        OptSimpleSubRecord<UINT8> DATA; //Flags
 
         EYESRecord(unsigned char *_recData=NULL);
         EYESRecord(EYESRecord *srcRecord);

@@ -97,6 +97,195 @@ bool MSETRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+bool MSETRecord::IsDayOuter()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsDayOuter) != 0;
+    }
+
+void MSETRecord::IsDayOuter(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsDayOuter;
+    else
+        Dummy->flags &= ~fIsDayOuter;
+    }
+
+bool MSETRecord::IsDayMiddle()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsDayMiddle) != 0;
+    }
+
+void MSETRecord::IsDayMiddle(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsDayMiddle;
+    else
+        Dummy->flags &= ~fIsDayMiddle;
+    }
+
+bool MSETRecord::IsDayInner()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsDayInner) != 0;
+    }
+
+void MSETRecord::IsDayInner(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsDayInner;
+    else
+        Dummy->flags &= ~fIsDayInner;
+    }
+
+bool MSETRecord::IsNightOuter()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsNightOuter) != 0;
+    }
+
+void MSETRecord::IsNightOuter(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsNightOuter;
+    else
+        Dummy->flags &= ~fIsNightOuter;
+    }
+
+bool MSETRecord::IsNightMiddle()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsNightMiddle) != 0;
+    }
+
+void MSETRecord::IsNightMiddle(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsNightMiddle;
+    else
+        Dummy->flags &= ~fIsNightMiddle;
+    }
+
+bool MSETRecord::IsNightInner()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsNightInner) != 0;
+    }
+
+void MSETRecord::IsNightInner(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsNightInner;
+    else
+        Dummy->flags &= ~fIsNightInner;
+    }
+
+bool MSETRecord::IsFlagMask(UINT8 Mask, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    }
+
+void MSETRecord::SetFlagMask(UINT8 Mask)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
+bool MSETRecord::IsNone()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eNone);
+    }
+
+void MSETRecord::IsNone(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eNone;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool MSETRecord::IsBattle()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eBattle);
+    }
+
+void MSETRecord::IsBattle(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eBattle;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool MSETRecord::IsLocation()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eLocation);
+    }
+
+void MSETRecord::IsLocation(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eLocation;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool MSETRecord::IsDungeon()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eDungeon);
+    }
+
+void MSETRecord::IsDungeon(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eDungeon;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool MSETRecord::IsIncidential()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eIncidential);
+    }
+
+void MSETRecord::IsIncidential(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eIncidential;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool MSETRecord::IsType(UINT32 Type, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    }
+
+void MSETRecord::SetType(UINT32 Type)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
 UINT32 MSETRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())

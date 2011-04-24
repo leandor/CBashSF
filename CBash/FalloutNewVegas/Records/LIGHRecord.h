@@ -27,22 +27,79 @@ namespace FNV
 {
 class LIGHRecord : public Record //Light
     {
+    private:
+        struct LIGHDATA
+            {
+            SINT32  duration;
+            UINT32  radius;
+            GENCLR  color;
+            UINT32  flags;
+            FLOAT32 falloff, fov;
+            UINT32  value;
+            FLOAT32 weight;
+
+            LIGHDATA();
+            ~LIGHDATA();
+
+            bool operator ==(const LIGHDATA &other) const;
+            bool operator !=(const LIGHDATA &other) const;
+            };
+
+        enum flagsFlags
+            {
+            fIsDynamic      = 0x00000001,
+            fIsCanTake      = 0x00000002,
+            fIsNegative     = 0x00000004,
+            fIsFlickers     = 0x00000008,
+            fIsOffByDefault = 0x00000020,
+            fIsFlickerSlow  = 0x00000040,
+            fIsPulse        = 0x00000080,
+            fIsPulseSlow    = 0x00000100,
+            fIsSpotLight    = 0x00000200,
+            fIsSpotShadow   = 0x00000400
+            };
+
     public:
         StringRecord EDID; //Editor ID
         OptSubRecord<GENOBND> OBND; //Object Bounds
         OptSubRecord<FNVMODEL> MODL; //Model
-        OptSubRecord<GENFID> SCRI; //Script
+        OptSimpleSubRecord<FORMID> SCRI; //Script
         StringRecord FULL; //Name
-        OptSubRecord<GENICON> ICON; //Large Icon Filename
-        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
-        OptSubRecord<GENFLOAT> FNAM; //Fade value
-        OptSubRecord<GENFID> SNAM; //Sound
+        OptSubRecord<GENICON> ICON; //Icon Filenames
+        OptSubRecord<LIGHDATA> DATA; //Data
+        OptSimpleSubRecord<FLOAT32> FNAM; //Fade value
+        OptSimpleSubRecord<FORMID> SNAM; //Sound
 
         LIGHRecord(unsigned char *_recData=NULL);
         LIGHRecord(LIGHRecord *srcRecord);
         ~LIGHRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
+
+        bool   IsDynamic();
+        void   IsDynamic(bool value);
+        bool   IsCanTake();
+        void   IsCanTake(bool value);
+        bool   IsTakeable();
+        void   IsTakeable(bool value);
+        bool   IsNegative();
+        void   IsNegative(bool value);
+        bool   IsFlickers();
+        void   IsFlickers(bool value);
+        bool   IsOffByDefault();
+        void   IsOffByDefault(bool value);
+        bool   IsFlickerSlow();
+        void   IsFlickerSlow(bool value);
+        bool   IsPulse();
+        void   IsPulse(bool value);
+        bool   IsPulseSlow();
+        void   IsPulseSlow(bool value);
+        bool   IsSpotLight();
+        void   IsSpotLight(bool value);
+        bool   IsSpotShadow();
+        void   IsSpotShadow(bool value);
+        bool   IsFlagMask(UINT32 Mask, bool Exact=false);
+        void   SetFlagMask(UINT32 Mask);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

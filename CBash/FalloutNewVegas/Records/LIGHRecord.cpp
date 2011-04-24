@@ -92,6 +92,126 @@ bool LIGHRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+bool LIGHRecord::IsDynamic()
+    {
+    return (DATA.value.flags & fIsDynamic) != 0;
+    }
+
+void LIGHRecord::IsDynamic(bool value)
+    {
+    DATA.value.flags = value ? (DATA.value.flags | fIsDynamic) : (DATA.value.flags & ~fIsDynamic);
+    }
+
+bool LIGHRecord::IsCanTake()
+    {
+    return (DATA.value.flags & fIsCanTake) != 0;
+    }
+
+void LIGHRecord::IsCanTake(bool value)
+    {
+    DATA.value.flags = value ? (DATA.value.flags | fIsCanTake) : (DATA.value.flags & ~fIsCanTake);
+    }
+
+bool LIGHRecord::IsTakeable()
+    {
+    return (DATA.value.flags & fIsCanTake) != 0;
+    }
+
+void LIGHRecord::IsTakeable(bool value)
+    {
+    DATA.value.flags = value ? (DATA.value.flags | fIsCanTake) : (DATA.value.flags & ~fIsCanTake);
+    }
+
+bool LIGHRecord::IsNegative()
+    {
+    return (DATA.value.flags & fIsNegative) != 0;
+    }
+
+void LIGHRecord::IsNegative(bool value)
+    {
+    DATA.value.flags = value ? (DATA.value.flags | fIsNegative) : (DATA.value.flags & ~fIsNegative);
+    }
+
+bool LIGHRecord::IsFlickers()
+    {
+    return (DATA.value.flags & fIsFlickers) != 0;
+    }
+
+void LIGHRecord::IsFlickers(bool value)
+    {
+    DATA.value.flags = value ? (DATA.value.flags | fIsFlickers) : (DATA.value.flags & ~fIsFlickers);
+    }
+
+bool LIGHRecord::IsOffByDefault()
+    {
+    return (DATA.value.flags & fIsOffByDefault) != 0;
+    }
+
+void LIGHRecord::IsOffByDefault(bool value)
+    {
+    DATA.value.flags = value ? (DATA.value.flags | fIsOffByDefault) : (DATA.value.flags & ~fIsOffByDefault);
+    }
+
+bool LIGHRecord::IsFlickerSlow()
+    {
+    return (DATA.value.flags & fIsFlickerSlow) != 0;
+    }
+
+void LIGHRecord::IsFlickerSlow(bool value)
+    {
+    DATA.value.flags = value ? (DATA.value.flags | fIsFlickerSlow) : (DATA.value.flags & ~fIsFlickerSlow);
+    }
+
+bool LIGHRecord::IsPulse()
+    {
+    return (DATA.value.flags & fIsPulse) != 0;
+    }
+
+void LIGHRecord::IsPulse(bool value)
+    {
+    DATA.value.flags = value ? (DATA.value.flags | fIsPulse) : (DATA.value.flags & ~fIsPulse);
+    }
+
+bool LIGHRecord::IsPulseSlow()
+    {
+    return (DATA.value.flags & fIsPulseSlow) != 0;
+    }
+
+void LIGHRecord::IsPulseSlow(bool value)
+    {
+    DATA.value.flags = value ? (DATA.value.flags | fIsPulseSlow) : (DATA.value.flags & ~fIsPulseSlow);
+    }
+
+bool LIGHRecord::IsSpotLight()
+    {
+    return (DATA.value.flags & fIsSpotLight) != 0;
+    }
+
+void LIGHRecord::IsSpotLight(bool value)
+    {
+    DATA.value.flags = value ? (DATA.value.flags | fIsSpotLight) : (DATA.value.flags & ~fIsSpotLight);
+    }
+
+bool LIGHRecord::IsSpotShadow()
+    {
+    return (DATA.value.flags & fIsSpotShadow) != 0;
+    }
+
+void LIGHRecord::IsSpotShadow(bool value)
+    {
+    DATA.value.flags = value ? (DATA.value.flags | fIsSpotShadow) : (DATA.value.flags & ~fIsSpotShadow);
+    }
+
+bool LIGHRecord::IsFlagMask(UINT32 Mask, bool Exact)
+    {
+    return Exact ? ((DATA.value.flags & Mask) == Mask) : ((DATA.value.flags & Mask) != 0);
+    }
+
+void LIGHRecord::SetFlagMask(UINT32 Mask)
+    {
+    DATA.value.flags = Mask;
+    }
+
 UINT32 LIGHRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())

@@ -40,42 +40,42 @@ class WEAPRecord : public Record //Weapon
         StringRecord FULL; //Name
         OptSubRecord<FNVMODEL> MODL; //Model
         OptSubRecord<GENICON> ICON; //Large Icon Filename
-        OptSubRecord<GENFID> SCRI; //Script
-        OptSubRecord<GENFID> EITM; //Object Effect
-        OptSubRecord<GENS16> EAMT; //Enchantment Charge Amount
-        OptSubRecord<GENFID> NAM0; //Ammo
+        OptSimpleSubRecord<FORMID> SCRI; //Script
+        OptSimpleSubRecord<FORMID> EITM; //Object Effect
+        OptSimpleSubRecord<SINT16> EAMT; //Enchantment Charge Amount
+        OptSimpleSubRecord<FORMID> NAM0; //Ammo
         OptSubRecord<GENDESTRUCT> Destructable; //Destructable
-        OptSubRecord<GENFID> REPL; //Repair List
-        OptSubRecord<GENS32> ETYP; //Equipment Type
-        OptSubRecord<GENFID> BIPL; //Biped Model List
-        OptSubRecord<GENFID> YNAM; //Sound - Pick Up
-        OptSubRecord<GENFID> ZNAM; //Sound - Drop
+        OptSimpleSubRecord<FORMID> REPL; //Repair List
+        OptSimpleSubRecord<SINT32> ETYP; //Equipment Type
+        OptSimpleSubRecord<FORMID> BIPL; //Biped Model List
+        OptSimpleSubRecord<FORMID> YNAM; //Sound - Pick Up
+        OptSimpleSubRecord<FORMID> ZNAM; //Sound - Drop
         OptSubRecord<GENMOD2> MOD2; //Model Filename
         OptSubRecord<GENMOD3> MOD3; //Model Filename
-        OptSubRecord<GENFID> EFSD; //Scope Effect
+        OptSimpleSubRecord<FORMID> EFSD; //Scope Effect
         OptSubRecord<GENMOD4> MOD4; //Model Filename
         StringRecord VANM; //VATS Attack Name
         StringRecord NNAM; //Embedded Weapon Node
         OptSubRecord<GENMWD1> MWD1; //Mod 1
-        OptSubRecord<GENFID> INAM; //Impact DataSet
-        OptSubRecord<GENFID> WNAM; //1st Person Model
+        OptSimpleSubRecord<FORMID> INAM; //Impact DataSet
+        OptSimpleSubRecord<FORMID> WNAM; //1st Person Model
         OptSubRecord<GENWNM1> WNM1; //Mod 1
         OptSubRecord<GENWMI1> WMI1; //Mod 1
-        OptSubRecord<GENFID> SNAM; //Sound - Gun - Shoot Dist
-        OptSubRecord<GENFID> XNAM; //Sound - Gun - Shoot 2D
-        OptSubRecord<GENFID> NAM7; //Sound - Gun - Shoot 3D Looping
-        OptSubRecord<GENFID> TNAM; //Sound - Melee - Swing / Gun - No Ammo
-        OptSubRecord<GENFID> NAM6; //Sound - Block
-        OptSubRecord<GENFID> UNAM; //Sound - Idle
-        OptSubRecord<GENFID> NAM9; //Sound - Equip
-        OptSubRecord<GENFID> NAM8; //Sound - Unequip
-        OptSubRecord<GENFID> WMS1; //Sound - Mod 1 - Shoot Dist
-        OptSubRecord<GENFID> WMS2; //Sound - Mod 1 - Shoot 2D
+        OptSimpleSubRecord<FORMID> SNAM; //Sound - Gun - Shoot Dist
+        OptSimpleSubRecord<FORMID> XNAM; //Sound - Gun - Shoot 2D
+        OptSimpleSubRecord<FORMID> NAM7; //Sound - Gun - Shoot 3D Looping
+        OptSimpleSubRecord<FORMID> TNAM; //Sound - Melee - Swing / Gun - No Ammo
+        OptSimpleSubRecord<FORMID> NAM6; //Sound - Block
+        OptSimpleSubRecord<FORMID> UNAM; //Sound - Idle
+        OptSimpleSubRecord<FORMID> NAM9; //Sound - Equip
+        OptSimpleSubRecord<FORMID> NAM8; //Sound - Unequip
+        OptSimpleSubRecord<FORMID> WMS1; //Sound - Mod 1 - Shoot Dist
+        OptSimpleSubRecord<FORMID> WMS2; //Sound - Mod 1 - Shoot 2D
         OptSubRecord<GENDATA> DATA; //DATA ,, Struct
         OptSubRecord<GENDNAM> DNAM; //DNAM ,, Struct
         OptSubRecord<GENCRDT> CRDT; //CRDT ,, Struct
         OptSubRecord<GENVATS> VATS; //VATS ,, Struct
-        OptSubRecord<GENU32> VNAM; //Sound Level
+        OptSimpleSubRecord<UINT32> VNAM; //Sound Level
 
         WEAPRecord(unsigned char *_recData=NULL);
         WEAPRecord(WEAPRecord *srcRecord);

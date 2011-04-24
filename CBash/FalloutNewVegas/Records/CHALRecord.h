@@ -65,11 +65,11 @@ class CHALRecord : public Record //Challenge
     public:
         StringRecord EDID; //Editor ID
         StringRecord FULL; //Name
-        OptSubRecord<GENFID> SCRI; //Script
+        OptSimpleSubRecord<FORMID> SCRI; //Script
         StringRecord DESC; //Description
         OptSubRecord<CHALDATA> DATA; //Data
-        OptSubRecord<GENFID> SNAM; //(depends on type)
-        OptSubRecord<GENFID> XNAM; //(depends on type)
+        OptSimpleSubRecord<FORMID> SNAM; //(depends on type)
+        OptSimpleSubRecord<FORMID> XNAM; //(depends on type)
 
         CHALRecord(unsigned char *_recData=NULL);
         CHALRecord(CHALRecord *srcRecord);

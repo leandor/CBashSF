@@ -95,7 +95,7 @@ class ARMARecord : public Record //Armor Addon
         OptSubRecord<FNVWORLDMODEL> MOD4; //Female World Model
         StringRecord ICO2; //Female icon filename
         StringRecord MIC2; //Female mico filename
-        OptSubRecord<GENS32> ETYP; //Equipment Type
+        OptSimpleSubRecord<SINT32> ETYP; //Equipment Type
         OptSubRecord<FNVEQUIPDATA> DATA; //Equipment Data
         OptSubRecord<FNVEQUIPDNAM> DNAM; //Extra Equipment Data
 

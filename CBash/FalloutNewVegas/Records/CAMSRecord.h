@@ -76,7 +76,7 @@ class CAMSRecord : public Record //Camera Shot
         StringRecord EDID; //Editor ID
         OptSubRecord<FNVMODEL> MODL; //Model
         OptSubRecord<CAMSDATA> DATA; //Data
-        OptSubRecord<GENFID> MNAM; //Image Space Modifier
+        OptSimpleSubRecord<FORMID> MNAM; //Image Space Modifier
 
         CAMSRecord(unsigned char *_recData=NULL);
         CAMSRecord(CAMSRecord *srcRecord);

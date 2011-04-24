@@ -29,7 +29,7 @@ class LTEXRecord : public Record
     private:
         struct LTEXHNAM
             {
-            UINT8   flags, friction, restitution;
+            UINT8   types, friction, restitution;
 
             LTEXHNAM();
             ~LTEXHNAM();
@@ -38,23 +38,23 @@ class LTEXRecord : public Record
             bool operator !=(const LTEXHNAM &other) const;
             };
 
-        enum flagsFlags
+        enum typesTypes
             {
-            fIsStone      = 0x00000001,
-            fIsCloth      = 0x00000002,
-            fIsDirt       = 0x00000004,
-            fIsGlass      = 0x00000008,
-            fIsGrass      = 0x00000010,
-            fIsMetal      = 0x00000020,
-            fIsOrganic    = 0x00000040,
-            fIsSkin       = 0x00000080,
-            fIsWater      = 0x00000100,
-            fIsWood       = 0x00000200,
-            fIsHeavyStone = 0x00000400,
-            fIsHeavyMetal = 0x00000800,
-            fIsHeavyWood  = 0x00001000,
-            fIsChain      = 0x00002000,
-            fIsSnow       = 0x00004000
+            eStone      = 0,
+            eCloth,
+            eDirt,
+            eGlass,
+            eGrass,
+            eMetal,
+            eOrganic,
+            eSkin,
+            eWater,
+            eWood,
+            eHeavyStone,
+            eHeavyMetal,
+            eHeavyWood,
+            eChain,
+            eSnow
             };
 
     public:
@@ -100,8 +100,8 @@ class LTEXRecord : public Record
         void   IsChain(bool value);
         bool   IsSnow();
         void   IsSnow(bool value);
-        bool   IsFlagMask(UINT8 Mask, bool Exact=false);
-        void   SetFlagMask(UINT8 Mask);
+        bool   IsType(UINT8 Type);
+        void   SetType(UINT8 Type);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

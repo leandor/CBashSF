@@ -66,6 +66,93 @@ bool LSCTRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+bool LSCTRecord::IsNone()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eNone);
+    }
+
+void LSCTRecord::IsNone(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eNone;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool LSCTRecord::IsXPProgress()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eXPProgress);
+    }
+
+void LSCTRecord::IsXPProgress(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eXPProgress;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool LSCTRecord::IsObjective()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eObjective);
+    }
+
+void LSCTRecord::IsObjective(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eObjective;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool LSCTRecord::IsTip()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eTip);
+    }
+
+void LSCTRecord::IsTip(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eTip;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool LSCTRecord::IsStats()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eStats);
+    }
+
+void LSCTRecord::IsStats(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eStats;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool LSCTRecord::IsType(UINT32 Type, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    }
+
+void LSCTRecord::SetType(UINT32 Type)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
 UINT32 LSCTRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())

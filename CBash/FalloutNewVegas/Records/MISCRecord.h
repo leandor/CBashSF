@@ -32,13 +32,13 @@ class MISCRecord : public Record //Misc. Item
         OptSubRecord<GENOBND> OBND; //Object Bounds
         StringRecord FULL; //Name
         OptSubRecord<FNVMODEL> MODL; //Model
-        OptSubRecord<GENICON> ICON; //Large Icon Filename
-        OptSubRecord<GENFID> SCRI; //Script
+        OptSubRecord<GENICON> ICON; //Icon Filenames
+        OptSimpleSubRecord<FORMID> SCRI; //Script
         OptSubRecord<GENDESTRUCT> Destructable; //Destructable
-        OptSubRecord<GENFID> YNAM; //Sound - Pick Up
-        OptSubRecord<GENFID> ZNAM; //Sound - Drop
-        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
-        OptSubRecord<GENFID> RNAM; //Sound - Random/Looping
+        OptSimpleSubRecord<FORMID> YNAM; //Sound - Pick Up
+        OptSimpleSubRecord<FORMID> ZNAM; //Sound - Drop
+        OptSubRecord<GENVALUEWEIGHT> DATA; //Data
+        OptSimpleSubRecord<FORMID> RNAM; //Sound - Random/Looping
 
         MISCRecord(unsigned char *_recData=NULL);
         MISCRecord(MISCRecord *srcRecord);

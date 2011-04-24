@@ -38,7 +38,7 @@ class CPTHRecord : public Record //Camera Path
         StringRecord EDID; //Editor ID
         std::vector<ReqSubRecord<FNVCTDA> *> CTDA; //Conditions
         std::vector<FORMID> ANAM; //Related Camera Paths
-        OptSubRecord<GENU8> DATA; //Camera Zoom
+        OptSimpleSubRecord<UINT8> DATA; //Camera Zoom
         std::vector<FORMID> SNAM; //Camera Shots
 
         CPTHRecord(unsigned char *_recData=NULL);

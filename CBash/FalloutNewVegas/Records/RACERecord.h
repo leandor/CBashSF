@@ -33,18 +33,18 @@ class RACERecord : public Record //Race
         StringRecord DESC; //Description
         OptSubRecord<GENXNAM> XNAM; //Relation
         OptSubRecord<GENDATA> DATA; //DATA ,, Struct
-        OptSubRecord<GENFID> ONAM; //Older
-        OptSubRecord<GENFID> YNAM; //Younger
+        OptSimpleSubRecord<FORMID> ONAM; //Older
+        OptSimpleSubRecord<FORMID> YNAM; //Younger
         OptSubRecord<GENNAM2> NAM2; //Unknown Marker
         OptSubRecord<GENVTCK> VTCK; //Voices
         OptSubRecord<GENDNAM> DNAM; //Default Hair Styles
         OptSubRecord<GENCNAM> CNAM; //Default Hair Colors
-        OptSubRecord<GENFLOAT> PNAM; //FaceGen - Main clamp
-        OptSubRecord<GENFLOAT> UNAM; //FaceGen - Face clamp
+        OptSimpleSubRecord<FLOAT32> PNAM; //FaceGen - Main clamp
+        OptSimpleSubRecord<FLOAT32> UNAM; //FaceGen - Face clamp
         RawRecord ATTR; //Unknown
         OptSubRecord<GENNAM> NAM0; //Head Data Marker
         OptSubRecord<GENMNAM> MNAM; //Male Data Marker
-        OptSubRecord<GENU32> INDX; //Index
+        OptSimpleSubRecord<UINT32> INDX; //Index
         OptSubRecord<FNVMODEL> MODL; //Model
         OptSubRecord<GENICON> ICON; //Large Icon Filename
         OptSubRecord<GENFNAM> FNAM; //Female Data Marker

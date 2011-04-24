@@ -155,7 +155,7 @@ class BPTDRecord : public Record //Body Part Data
         StringRecord EDID; //Editor ID
         OptSubRecord<FNVMODEL> MODL; //Model
         std::vector<ReqSubRecord<BPTDPart> *> Parts; // Body Parts
-        OptSubRecord<GENFID> RAGA; //Ragdoll
+        OptSimpleSubRecord<FORMID> RAGA; //Ragdoll
 
         BPTDRecord(unsigned char *_recData=NULL);
         BPTDRecord(BPTDRecord *srcRecord);

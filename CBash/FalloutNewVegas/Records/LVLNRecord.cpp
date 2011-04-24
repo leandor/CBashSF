@@ -85,6 +85,56 @@ bool LVLNRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+bool LVLNRecord::IsCalcFromAllLevels()
+    {
+    return LVLF.IsLoaded() ? (LVLF->value & fCalcFromAllLevels) != 0 : false;
+    }
+
+void LVLNRecord::IsCalcFromAllLevels(bool value)
+    {
+    if(!LVLF.IsLoaded()) return;
+    LVLF->value = value ? (LVLF->value | fCalcFromAllLevels) : (LVLF->value & ~fCalcFromAllLevels);
+    }
+
+bool LVLNRecord::IsCalcForEachItem()
+    {
+    return LVLF.IsLoaded() ? (LVLF->value & fCalcForEachItem) != 0 : false;
+    }
+
+void LVLNRecord::IsCalcForEachItem(bool value)
+    {
+    if(!LVLF.IsLoaded()) return;
+    LVLF->value = value ? (LVLF->value | fCalcForEachItem) : (LVLF->value & ~fCalcForEachItem);
+    }
+
+bool LVLNRecord::IsUseAll()
+    {
+    return LVLF.IsLoaded() ? (LVLF->value & fUseAll) != 0 : false;
+    }
+
+void LVLNRecord::IsUseAll(bool value)
+    {
+    if(!LVLF.IsLoaded()) return;
+    LVLF->value = value ? (LVLF->value | fUseAll) : (LVLF->value & ~fUseAll);
+    }
+
+bool LVLNRecord::IsFlagMask(UINT8 Mask, bool Exact)
+    {
+    if(!LVLF.IsLoaded()) return false;
+    return Exact ? ((LVLF->value & Mask) == Mask) : ((LVLF->value & Mask) != 0);
+    }
+
+void LVLNRecord::SetFlagMask(UINT8 Mask)
+    {
+    if(Mask)
+        {
+        LVLF.Load();
+        LVLF->value = Mask;
+        }
+    else
+        LVLF.Unload();
+    }
+
 UINT32 LVLNRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())

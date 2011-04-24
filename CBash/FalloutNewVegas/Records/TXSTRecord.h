@@ -32,7 +32,7 @@ class TXSTRecord : public Record //Texture Set
         OptSubRecord<GENOBND> OBND; //Object Bounds
         OptSubRecord<GENTX00> TX00; //Base Image / Transparency
         OptSubRecord<GENDODT> DODT; //Decal Data
-        OptSubRecord<GENU16> DNAM; //Flags
+        OptSimpleSubRecord<UINT16> DNAM; //Flags
 
         TXSTRecord(unsigned char *_recData=NULL);
         TXSTRecord(TXSTRecord *srcRecord);

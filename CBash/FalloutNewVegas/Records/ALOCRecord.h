@@ -33,17 +33,17 @@ class ALOCRecord : public Record //Media Location Controller
         RawRecord NAM1; //Flags and Enums, messily combined
         RawRecord NAM2; //Unknown
         RawRecord NAM3; //Unknown
-        OptSubRecord<GENFLOAT> NAM4; //Location Delay
-        OptSubRecord<GENU32> NAM5; //Day Start
-        OptSubRecord<GENU32> NAM6; //Night Start
-        OptSubRecord<GENFLOAT> NAM7; //Retrigger Delay
+        OptSimpleSubRecord<FLOAT32> NAM4; //Location Delay
+        OptSimpleSubRecord<UINT32> NAM5; //Day Start
+        OptSimpleSubRecord<UINT32> NAM6; //Night Start
+        OptSimpleSubRecord<FLOAT32> NAM7; //Retrigger Delay
         std::vector<FORMID> HNAM; //Neutral Media Sets
         std::vector<FORMID> ZNAM; //Ally Media Sets
         std::vector<FORMID> XNAM; //Friend Media Sets
         std::vector<FORMID> YNAM; //Enemy Media Sets
         std::vector<FORMID> LNAM; //Location Media Sets
         std::vector<FORMID> GNAM; //Battle Media Sets
-        OptSubRecord<GENFID> RNAM; //Conditional Faction
+        OptSimpleSubRecord<FORMID> RNAM; //Conditional Faction
         RawRecord FNAM; //Unknown
 
         ALOCRecord(unsigned char *_recData=NULL);

@@ -130,8 +130,8 @@ class ARMORecord : public Record //Armor
         StringRecord EDID; //Editor ID
         OptSubRecord<GENOBND> OBND; //Object Bounds
         StringRecord FULL; //Name
-        OptSubRecord<GENFID> SCRI; //Script
-        OptSubRecord<GENFID> EITM; //Object Effect
+        OptSimpleSubRecord<FORMID> SCRI; //Script
+        OptSimpleSubRecord<FORMID> EITM; //Object Effect
         OptSubRecord<GENBMDT> BMDT; //Biped Data
         OptSubRecord<FNVBIPEDMODEL> MODL; //Male Biped Model
         OptSubRecord<FNVWORLDMODEL> MOD2; //Male World Model
@@ -142,16 +142,16 @@ class ARMORecord : public Record //Armor
         StringRecord ICO2; //Female icon filename
         StringRecord MIC2; //Female mico filename
         StringRecord BMCT; //Ragdoll Constraint Template
-        OptSubRecord<GENFID> REPL; //Repair List
-        OptSubRecord<GENFID> BIPL; //Biped Model List
-        OptSubRecord<GENS32> ETYP; //Equipment Type
-        OptSubRecord<GENFID> YNAM; //Sound - Pick Up
-        OptSubRecord<GENFID> ZNAM; //Sound - Drop
+        OptSimpleSubRecord<FORMID> REPL; //Repair List
+        OptSimpleSubRecord<FORMID> BIPL; //Biped Model List
+        OptSimpleSubRecord<SINT32> ETYP; //Equipment Type
+        OptSimpleSubRecord<FORMID> YNAM; //Sound - Pick Up
+        OptSimpleSubRecord<FORMID> ZNAM; //Sound - Drop
         OptSubRecord<FNVEQUIPDATA> DATA; //Equipment Data
         OptSubRecord<FNVEQUIPDNAM> DNAM; //Extra Equipment Data
-        OptSubRecord<GENU32> BNAM; //Overrides Animation Sounds
+        OptSimpleSubRecord<UINT32> BNAM; //Overrides Animation Sounds
         std::vector<ReqSubRecord<FNVSNAM> *> Sounds; //Animation Sounds
-        OptSubRecord<GENFID> TNAM; //Animation Sounds Template
+        OptSimpleSubRecord<FORMID> TNAM; //Animation Sounds Template
 
         ARMORecord(unsigned char *_recData=NULL);
         ARMORecord(ARMORecord *srcRecord);

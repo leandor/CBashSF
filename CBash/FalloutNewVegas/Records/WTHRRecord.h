@@ -29,12 +29,12 @@ class WTHRRecord : public Record //Weather
     {
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENFID> 0IAD; //Sunrise Image Space Modifier
-        OptSubRecord<GENFID> 1IAD; //Day Image Space Modifier
-        OptSubRecord<GENFID> 2IAD; //Sunset Image Space Modifier
-        OptSubRecord<GENFID> 3IAD; //Night Image Space Modifier
-        OptSubRecord<GENFID> 4IAD; //Unknown
-        OptSubRecord<GENFID> 5IAD; //Unknown
+        OptSimpleSubRecord<FORMID> 0IAD; //Sunrise Image Space Modifier
+        OptSimpleSubRecord<FORMID> 1IAD; //Day Image Space Modifier
+        OptSimpleSubRecord<FORMID> 2IAD; //Sunset Image Space Modifier
+        OptSimpleSubRecord<FORMID> 3IAD; //Night Image Space Modifier
+        OptSimpleSubRecord<FORMID> 4IAD; //Unknown
+        OptSimpleSubRecord<FORMID> 5IAD; //Unknown
         StringRecord DNAM; //Cloud Textures - Layer 0
         StringRecord CNAM; //Cloud Textures - Layer 1
         StringRecord ANAM; //Cloud Textures - Layer 2

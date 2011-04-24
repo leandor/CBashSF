@@ -27,11 +27,39 @@ namespace FNV
 {
 class NAVIRecord : public Record //Navigation Mesh Info Map
     {
+    private:
+        struct NAVINVMI
+            {
+            UINT8   unknown1[4];
+            FORMID  mesh, location;
+            SINT16  xGrid, yGrid;
+            //UINT8   unknown2;
+
+            NAVINVMI();
+            ~NAVINVMI();
+
+            bool operator ==(const NAVINVMI &other) const;
+            bool operator !=(const NAVINVMI &other) const;
+            };
+
+        struct NAVINVCI
+            {
+            FORMID  unknown1;
+            std::vector<FORMID> unknown2;
+            std::vector<FORMID> unknown3;
+            std::vector<FORMID> doors;
+
+            NAVINVCI();
+            ~NAVINVCI();
+
+            bool operator ==(const NAVINVCI &other) const;
+            bool operator !=(const NAVINVCI &other) const;
+            };
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENU32> NVER; //Version
-        OptSubRecord<GENNVMI> NVMI; //NVMI ,, Struct
-        OptSubRecord<GENNVCI> NVCI; //NVCI ,, Struct
+        OptSimpleSubRecord<UINT32> NVER; //Version
+        std::vector<NAVINVMI> NVMI; //Unknown
+        std::vector<NAVINVCI> NVCI; //Unknown
 
         NAVIRecord(unsigned char *_recData=NULL);
         NAVIRecord(NAVIRecord *srcRecord);

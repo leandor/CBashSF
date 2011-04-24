@@ -29,7 +29,7 @@ class LSCRRecord : public Record
     private:
         struct LSCRLNAM
             {
-            UINT32  direct, indirect;
+            FORMID  direct, indirect;
             SINT16  gridY, gridX;
 
             LSCRLNAM();
