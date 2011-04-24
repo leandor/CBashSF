@@ -66,6 +66,48 @@ bool VTYPRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+bool VTYPRecord::IsAllowDefaultDialog()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsAllowDefaultDialog) != 0;
+    }
+
+void VTYPRecord::IsAllowDefaultDialog(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsAllowDefaultDialog;
+    else
+        Dummy->flags &= ~fIsAllowDefaultDialog;
+    }
+
+bool VTYPRecord::IsFemale()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsFemale) != 0;
+    }
+
+void VTYPRecord::IsFemale(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsFemale;
+    else
+        Dummy->flags &= ~fIsFemale;
+    }
+
+bool VTYPRecord::IsFlagMask(UINT8 Mask, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    }
+
+void VTYPRecord::SetFlagMask(UINT8 Mask)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
 UINT32 VTYPRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())

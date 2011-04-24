@@ -221,8 +221,6 @@ UINT32 INFORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
         case 15: //unused1
-            if(!Script.IsLoaded())
-                return UNKNOWN_FIELD;
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -233,32 +231,26 @@ UINT32 INFORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
         case 16: //numRefs
-            return Script.IsLoaded() ? UINT32_FIELD : UNKNOWN_FIELD;
+            return UINT32_FIELD;
         case 17: //compiledSize
-            return Script.IsLoaded() ? UINT32_FIELD : UNKNOWN_FIELD;
+            return UINT32_FIELD;
         case 18: //lastIndex
-            return Script.IsLoaded() ? UINT32_FIELD : UNKNOWN_FIELD;
+            return UINT32_FIELD;
         case 19: //scriptType
-            return Script.IsLoaded() ? UINT32_FIELD : UNKNOWN_FIELD;
+            return UINT32_FIELD;
         case 20: //compiled_p
-            if(!Script.IsLoaded())
-                return UNKNOWN_FIELD;
-
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
                     return UINT8_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return Script->SCDA.GetSize();
+                    return SCDA.GetSize();
                 default:
                     return UNKNOWN_FIELD;
                 }
         case 21: //scriptText
-            return Script.IsLoaded() ? ISTRING_FIELD : UNKNOWN_FIELD;
+            return ISTRING_FIELD;
         case 22: //references
-            if(!Script.IsLoaded())
-                return UNKNOWN_FIELD;
-
             if(ListFieldID == 0) //references
                 {
                 switch(WhichAttribute)
@@ -266,13 +258,13 @@ UINT32 INFORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return FORMID_OR_UINT32_ARRAY_FIELD;
                     case 1: //fieldSize
-                        return (UINT32)Script->SCR_.size();
+                        return (UINT32)SCR_.size();
                     default:
                         return UNKNOWN_FIELD;
                     }
                 }
 
-            if(ListIndex >= Script->SCR_.size())
+            if(ListIndex >= SCR_.size())
                 return UNKNOWN_FIELD;
 
             switch(ListFieldID)
@@ -283,7 +275,7 @@ UINT32 INFORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                         case 0: //fieldType
                             return FORMID_OR_UINT32_FIELD;
                         case 2: //WhichType
-                            return (Script->SCR_[ListIndex]->value.isSCRO ? FORMID_FIELD : UINT32_FIELD);
+                            return (SCR_[ListIndex]->value.isSCRO ? FORMID_FIELD : UINT32_FIELD);
                         default:
                             return UNKNOWN_FIELD;
                         }
@@ -378,25 +370,24 @@ void * INFORecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             *FieldValues = TCLF.size() ? &TCLF[0] : NULL;
             return NULL;
         case 15: //unused1
-            *FieldValues = Script.IsLoaded() ? &Script->SCHR.value.unused1[0] : NULL;
+            *FieldValues = &SCHR.value.unused1[0];
             return NULL;
         case 16: //numRefs
-            return Script.IsLoaded() ? &Script->SCHR.value.numRefs : NULL;
+            return &SCHR.value.numRefs;
         case 17: //compiledSize
-            return Script.IsLoaded() ? &Script->SCHR.value.compiledSize : NULL;
+            return &SCHR.value.compiledSize;
         case 18: //lastIndex
-            return Script.IsLoaded() ? &Script->SCHR.value.lastIndex : NULL;
+            return &SCHR.value.lastIndex;
         case 19: //scriptType
-            return Script.IsLoaded() ? &Script->SCHR.value.scriptType : NULL;
+            return &SCHR.value.scriptType;
         case 20: //compiled_p
-            *FieldValues = Script.IsLoaded() ? Script->SCDA.value : NULL;
+            *FieldValues = SCDA.value;
             return NULL;
         case 21: //scriptText
-            return Script.IsLoaded() ? Script->SCTX.value : NULL;
+            return SCTX.value;
         case 22: //references
-            if(Script.IsLoaded())
-                for(UINT32 x = 0; x < Script->SCR_.size(); ++x)
-                    ((FORMIDARRAY)FieldValues)[x] = Script->SCR_[x]->value.reference;
+            for(UINT32 x = 0; x < SCR_.size(); ++x)
+                ((FORMIDARRAY)FieldValues)[x] = SCR_[x]->value.reference;
             return NULL;
         default:
             return NULL;
@@ -565,64 +556,56 @@ bool INFORecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 15: //unused1
             if(ArraySize != 4)
                 break;
-            Script.Load();
-            Script->SCHR.value.unused1[0] = ((UINT8ARRAY)FieldValue)[0];
-            Script->SCHR.value.unused1[1] = ((UINT8ARRAY)FieldValue)[1];
-            Script->SCHR.value.unused1[2] = ((UINT8ARRAY)FieldValue)[2];
-            Script->SCHR.value.unused1[3] = ((UINT8ARRAY)FieldValue)[3];
+            SCHR.value.unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+            SCHR.value.unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+            SCHR.value.unused1[2] = ((UINT8ARRAY)FieldValue)[2];
+            SCHR.value.unused1[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 16: //numRefs
-            Script.Load();
-            Script->SCHR.value.numRefs = *(UINT32 *)FieldValue;
+            SCHR.value.numRefs = *(UINT32 *)FieldValue;
             break;
         case 17: //compiledSize
-            Script.Load();
-            Script->SCHR.value.compiledSize = *(UINT32 *)FieldValue;
+            SCHR.value.compiledSize = *(UINT32 *)FieldValue;
             break;
         case 18: //lastIndex
-            Script.Load();
-            Script->SCHR.value.lastIndex = *(UINT32 *)FieldValue;
+            SCHR.value.lastIndex = *(UINT32 *)FieldValue;
             break;
         case 19: //scriptType
-            Script.Load();
-            Script->SCHR.value.scriptType = *(UINT32 *)FieldValue;
+            SCHR.value.scriptType = *(UINT32 *)FieldValue;
             break;
         case 20: //compiled_p
-            Script.Load();
-            Script->SCDA.Copy(((UINT8ARRAY)FieldValue), ArraySize);
+            SCDA.Copy(((UINT8ARRAY)FieldValue), ArraySize);
             break;
         case 21: //scriptText
-            Script.Load();
-            Script->SCTX.Copy((STRING)FieldValue);
+            SCTX.Copy((STRING)FieldValue);
             break;
         case 22: //references
-            Script.Load();
             if(ListFieldID == 0) //referencesSize
                 {
-                ArraySize -= (UINT32)Script->SCR_.size();
+                ArraySize -= (UINT32)SCR_.size();
                 while((SINT32)ArraySize > 0)
                     {
-                    Script->SCR_.push_back(new ReqSubRecord<GENSCR_>);
+                    SCR_.push_back(new ReqSubRecord<GENSCR_>);
                     --ArraySize;
                     }
                 while((SINT32)ArraySize < 0)
                     {
-                    delete Script->SCR_.back();
-                    Script->SCR_.pop_back();
+                    delete SCR_.back();
+                    SCR_.pop_back();
                     ++ArraySize;
                     }
                 return false;
                 }
 
-            if(ListIndex >= Script->SCR_.size())
+            if(ListIndex >= SCR_.size())
                 break;
 
             switch(ListFieldID)
                 {
                 case 1: //reference
                     //Borrowing ArraySize to flag if the new value is a formID
-                    Script->SCR_[ListIndex]->value.reference = *(UINT32 *)FieldValue;
-                    Script->SCR_[ListIndex]->value.isSCRO = ArraySize ? true : false;
+                    SCR_[ListIndex]->value.reference = *(UINT32 *)FieldValue;
+                    SCR_[ListIndex]->value.isSCRO = ArraySize ? true : false;
                     return ArraySize != 0;
                 default:
                     break;
@@ -638,10 +621,10 @@ void INFORecord::DeleteField(FIELD_IDENTIFIERS)
     {
     INFODATA defaultDATA;
     GENSCHR defaultSCHR;
-    GENSCR_ defaultSCR_;
 
     INFOTRDT defaultTRDT;
     GENCTDA defaultCTDA;
+    GENSCR_ defaultSCR_;
 
     switch(FieldID)
         {
@@ -766,61 +749,49 @@ void INFORecord::DeleteField(FIELD_IDENTIFIERS)
             TCLF.clear();
             return;
         case 15: //unused1
-            if(Script.IsLoaded())
-                {
-                Script->SCHR.value.unused1[0] = defaultSCHR.unused1[0];
-                Script->SCHR.value.unused1[1] = defaultSCHR.unused1[1];
-                Script->SCHR.value.unused1[2] = defaultSCHR.unused1[2];
-                Script->SCHR.value.unused1[3] = defaultSCHR.unused1[3];
-                }
+            SCHR.value.unused1[0] = defaultSCHR.unused1[0];
+            SCHR.value.unused1[1] = defaultSCHR.unused1[1];
+            SCHR.value.unused1[2] = defaultSCHR.unused1[2];
+            SCHR.value.unused1[3] = defaultSCHR.unused1[3];
             return;
         case 16: //numRefs
-            if(Script.IsLoaded())
-                Script->SCHR.value.numRefs = defaultSCHR.numRefs;
+            SCHR.value.numRefs = defaultSCHR.numRefs;
             return;
         case 17: //compiledSize
-            if(Script.IsLoaded())
-                Script->SCHR.value.compiledSize = defaultSCHR.compiledSize;
+            SCHR.value.compiledSize = defaultSCHR.compiledSize;
             return;
         case 18: //lastIndex
-            if(Script.IsLoaded())
-                Script->SCHR.value.lastIndex = defaultSCHR.lastIndex;
+            SCHR.value.lastIndex = defaultSCHR.lastIndex;
             return;
         case 19: //scriptType
-            if(Script.IsLoaded())
-                Script->SCHR.value.scriptType = defaultSCHR.scriptType;
+            SCHR.value.scriptType = defaultSCHR.scriptType;
             return;
         case 20: //compiled_p
-            if(Script.IsLoaded())
-                Script->SCDA.Unload();
+            SCDA.Unload();
             return;
         case 21: //scriptText
-            if(Script.IsLoaded())
-                Script->SCTX.Unload();
+            SCTX.Unload();
             return;
         case 22: //references
-            if(Script.IsLoaded())
+            if(ListFieldID == 0) //references
                 {
-                if(ListFieldID == 0) //references
-                    {
-                    for(UINT32 x = 0; x < (UINT32)Script->SCR_.size(); x++)
-                        delete Script->SCR_[x];
-                    Script->SCR_.clear();
-                    return;
-                    }
+                for(UINT32 x = 0; x < (UINT32)SCR_.size(); x++)
+                    delete SCR_[x];
+                SCR_.clear();
+                return;
+                }
 
-                if(ListIndex >= Script->SCR_.size())
-                    return;
+            if(ListIndex >= SCR_.size())
+                return;
 
-                switch(ListFieldID)
-                    {
-                    case 1: //reference
-                        Script->SCR_[ListIndex]->value.reference = defaultSCR_.reference;
-                        Script->SCR_[ListIndex]->value.isSCRO = defaultSCR_.isSCRO;
-                        return;
-                    default:
-                        return;
-                    }
+            switch(ListFieldID)
+                {
+                case 1: //reference
+                    SCR_[ListIndex]->value.reference = defaultSCR_.reference;
+                    SCR_[ListIndex]->value.isSCRO = defaultSCR_.isSCRO;
+                    return;
+                default:
+                    return;
                 }
         default:
             return;

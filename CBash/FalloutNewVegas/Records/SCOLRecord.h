@@ -27,12 +27,34 @@ namespace FNV
 {
 class SCOLRecord : public Record //Static Collection
     {
+    private:
+        struct SCOLDATA //Placement
+            {
+            FLOAT32 posX, posY, posZ, rotX, rotY, rotZ, scale;
+
+            SCOLDATA();
+            ~SCOLDATA();
+
+            bool operator ==(const SCOLDATA &other) const;
+            bool operator !=(const SCOLDATA &other) const;
+            };
+
+        struct SCOLPart // Part
+            {
+            OptSimpleSubRecord<FORMID> ONAM; //Static
+            std::vector<ReqSubRecord<SCOLDATA> *> DATA; //Placements
+
+            SCOLPart();
+            ~SCOLPart();
+
+            bool operator ==(const SCOLPart &other) const;
+            bool operator !=(const SCOLPart &other) const;
+            };
     public:
         StringRecord EDID; //Editor ID
         OptSubRecord<GENOBND> OBND; //Object Bounds
         OptSubRecord<FNVMODEL> MODL; //Model
-        OptSimpleSubRecord<FORMID> ONAM; //Static
-        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
+        std::vector<SCOLPart *> Parts; //Parts
 
         SCOLRecord(unsigned char *_recData=NULL);
         SCOLRecord(SCOLRecord *srcRecord);

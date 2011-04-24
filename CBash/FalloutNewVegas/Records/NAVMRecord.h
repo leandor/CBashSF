@@ -62,35 +62,35 @@ class NAVMRecord : public Record //Navigation Mesh
                 fIsTriangle0External = 0x00000001,
                 fIsTriangle1External = 0x00000002,
                 fIsTriangle2External = 0x00000004,
-                fIsUnknown4 = 0x00000008,
-                fIsUnknown5 = 0x00000010,
-                fIsUnknown6 = 0x00000020,
-                fIsUnknown7 = 0x00000040,
-                fIsUnknown8 = 0x00000080,
-                fIsUnknown9 = 0x00000100,
-                fIsUnknown10 = 0x00000200,
-                fIsUnknown11 = 0x00000400,
-                fIsUnknown12 = 0x00000800,
-                fIsUnknown13 = 0x00001000,
-                fIsUnknown14 = 0x00002000,
-                fIsUnknown15 = 0x00004000,
-                fIsUnknown16 = 0x00008000,
-                fIsUnknown17 = 0x00010000,
-                fIsUnknown18 = 0x00020000,
-                fIsUnknown19 = 0x00040000,
-                fIsUnknown20 = 0x00080000,
-                fIsUnknown21 = 0x00100000,
-                fIsUnknown22 = 0x00200000,
-                fIsUnknown23 = 0x00400000,
-                fIsUnknown24 = 0x00800000,
-                fIsUnknown25 = 0x01000000,
-                fIsUnknown26 = 0x02000000,
-                fIsUnknown27 = 0x04000000,
-                fIsUnknown28 = 0x08000000,
-                fIsUnknown29 = 0x10000000,
-                fIsUnknown30 = 0x20000000,
-                fIsUnknown31 = 0x40000000,
-                fIsUnknown32 = 0x80000000
+                fIsUnknown4          = 0x00000008,
+                fIsUnknown5          = 0x00000010,
+                fIsUnknown6          = 0x00000020,
+                fIsUnknown7          = 0x00000040,
+                fIsUnknown8          = 0x00000080,
+                fIsUnknown9          = 0x00000100,
+                fIsUnknown10         = 0x00000200,
+                fIsUnknown11         = 0x00000400,
+                fIsUnknown12         = 0x00000800,
+                fIsUnknown13         = 0x00001000,
+                fIsUnknown14         = 0x00002000,
+                fIsUnknown15         = 0x00004000,
+                fIsUnknown16         = 0x00008000,
+                fIsUnknown17         = 0x00010000,
+                fIsUnknown18         = 0x00020000,
+                fIsUnknown19         = 0x00040000,
+                fIsUnknown20         = 0x00080000,
+                fIsUnknown21         = 0x00100000,
+                fIsUnknown22         = 0x00200000,
+                fIsUnknown23         = 0x00400000,
+                fIsUnknown24         = 0x00800000,
+                fIsUnknown25         = 0x01000000,
+                fIsUnknown26         = 0x02000000,
+                fIsUnknown27         = 0x04000000,
+                fIsUnknown28         = 0x08000000,
+                fIsUnknown29         = 0x10000000,
+                fIsUnknown30         = 0x20000000,
+                fIsUnknown31         = 0x40000000,
+                fIsUnknown32         = 0x80000000
                 };
 
             NAVMNVTR();
@@ -192,7 +192,7 @@ class NAVMRecord : public Record //Navigation Mesh
             bool operator ==(const NAVMNVEX &other) const;
             bool operator !=(const NAVMNVEX &other) const;
             };
-        
+
     public:
         StringRecord EDID; //Editor ID
         OptSimpleSubRecord<UINT32> NVER; //Version

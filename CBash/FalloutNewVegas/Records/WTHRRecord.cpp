@@ -108,6 +108,167 @@ bool WTHRRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+bool WTHRRecord::IsPleasant()
+    {
+    return (DATA.value.weatherType & ePleasant) != 0;
+    }
+
+void WTHRRecord::IsPleasant(bool value)
+    {
+    if(value)
+        {
+        DATA.value.weatherType |= ePleasant;
+        DATA.value.weatherType &= ~eCloudy;
+        DATA.value.weatherType &= ~eRainy;
+        DATA.value.weatherType &= ~eSnow;
+        }
+    else if(IsPleasant())
+        {
+        DATA.value.weatherType &= ~ePleasant;
+        DATA.value.weatherType &= ~eCloudy;
+        DATA.value.weatherType &= ~eRainy;
+        DATA.value.weatherType &= ~eSnow;
+        }
+    }
+
+bool WTHRRecord::IsCloudy()
+    {
+    return (DATA.value.weatherType & eCloudy) != 0;
+    }
+
+void WTHRRecord::IsCloudy(bool value)
+    {
+    if(value)
+        {
+        DATA.value.weatherType &= ~ePleasant;
+        DATA.value.weatherType |= eCloudy;
+        DATA.value.weatherType &= ~eRainy;
+        DATA.value.weatherType &= ~eSnow;
+        }
+    else if(IsCloudy())
+        {
+        DATA.value.weatherType &= ~ePleasant;
+        DATA.value.weatherType &= ~eCloudy;
+        DATA.value.weatherType &= ~eRainy;
+        DATA.value.weatherType &= ~eSnow;
+        }
+    }
+
+bool WTHRRecord::IsRainy()
+    {
+    return (DATA.value.weatherType & eRainy) != 0;
+    }
+
+void WTHRRecord::IsRainy(bool value)
+    {
+    if(value)
+        {
+        DATA.value.weatherType &= ~ePleasant;
+        DATA.value.weatherType &= ~eCloudy;
+        DATA.value.weatherType |= eRainy;
+        DATA.value.weatherType &= ~eSnow;
+        }
+    else if(IsRainy())
+        {
+        DATA.value.weatherType &= ~ePleasant;
+        DATA.value.weatherType &= ~eCloudy;
+        DATA.value.weatherType &= ~eRainy;
+        DATA.value.weatherType &= ~eSnow;
+        }
+    }
+
+bool WTHRRecord::IsSnow()
+    {
+    return (DATA.value.weatherType & eSnow) != 0;
+    }
+
+void WTHRRecord::IsSnow(bool value)
+    {
+    if(value)
+        {
+        DATA.value.weatherType &= ~ePleasant;
+        DATA.value.weatherType &= ~eCloudy;
+        DATA.value.weatherType &= ~eRainy;
+        DATA.value.weatherType |= eSnow;
+        }
+    else if(IsSnow())
+        {
+        DATA.value.weatherType &= ~ePleasant;
+        DATA.value.weatherType &= ~eCloudy;
+        DATA.value.weatherType &= ~eRainy;
+        DATA.value.weatherType &= ~eSnow;
+        }
+    }
+
+bool WTHRRecord::IsNone()
+    {
+    return IsPleasant() == false && IsCloudy() == false && IsRainy() == false && IsSnow() == false;
+    }
+
+void WTHRRecord::IsNone(bool value)
+    {
+    if(value)
+        {
+        DATA.value.weatherType &= ~ePleasant;
+        DATA.value.weatherType &= ~eCloudy;
+        DATA.value.weatherType &= ~eRainy;
+        DATA.value.weatherType &= ~eSnow;
+        }
+    else if(IsNone())
+        {
+        DATA.value.weatherType |= ePleasant;
+        DATA.value.weatherType &= ~eCloudy;
+        DATA.value.weatherType &= ~eRainy;
+        DATA.value.weatherType &= ~eSnow;
+        }
+    }
+
+bool WTHRRecord::IsUnk1()
+    {
+    return (DATA.value.weatherType & fUnk1) != 0;
+    }
+
+void WTHRRecord::IsUnk1(bool value)
+    {
+    if(value)
+        DATA.value.weatherType |= fUnk1;
+    else
+        DATA.value.weatherType &= ~fUnk1;
+    }
+
+bool WTHRRecord::IsUnk2()
+    {
+    return (DATA.value.weatherType & fUnk2) != 0;
+    }
+
+void WTHRRecord::IsUnk2(bool value)
+    {
+    if(value)
+        DATA.value.weatherType |= fUnk2;
+    else
+        DATA.value.weatherType &= ~fUnk2;
+    }
+
+bool WTHRRecord::IsType(UINT8 Type)
+    {
+    return (DATA.value.weatherType == Type);
+    }
+
+void WTHRRecord::SetType(UINT8 Type)
+    {
+    DATA.value.weatherType = Type;
+    }
+
+bool WTHRRecord::IsFlagMask(UINT8 Mask, bool Exact)
+    {
+    return Exact ? ((DATA.value.weatherType & Mask) == Mask) : ((DATA.value.weatherType & Mask) != 0);
+    }
+
+void WTHRRecord::SetFlagMask(UINT8 Mask)
+    {
+    DATA.value.weatherType = Mask;
+    }
+
 UINT32 WTHRRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())

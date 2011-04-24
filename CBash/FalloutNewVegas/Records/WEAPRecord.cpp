@@ -246,6 +246,2553 @@ bool WEAPRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+bool WEAPRecord::IsNotNormalWeapon()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsNotNormalWeapon) != 0;
+    }
+
+void WEAPRecord::IsNotNormalWeapon(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsNotNormalWeapon;
+    else
+        Dummy->flags &= ~fIsNotNormalWeapon;
+    }
+
+bool WEAPRecord::IsAutomatic()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsAutomatic) != 0;
+    }
+
+void WEAPRecord::IsAutomatic(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsAutomatic;
+    else
+        Dummy->flags &= ~fIsAutomatic;
+    }
+
+bool WEAPRecord::IsHasScope()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsHasScope) != 0;
+    }
+
+void WEAPRecord::IsHasScope(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsHasScope;
+    else
+        Dummy->flags &= ~fIsHasScope;
+    }
+
+bool WEAPRecord::IsCantDrop()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsCantDrop) != 0;
+    }
+
+void WEAPRecord::IsCantDrop(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsCantDrop;
+    else
+        Dummy->flags &= ~fIsCantDrop;
+    }
+
+bool WEAPRecord::IsHideBackpack()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsHideBackpack) != 0;
+    }
+
+void WEAPRecord::IsHideBackpack(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsHideBackpack;
+    else
+        Dummy->flags &= ~fIsHideBackpack;
+    }
+
+bool WEAPRecord::IsEmbeddedWeapon()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsEmbeddedWeapon) != 0;
+    }
+
+void WEAPRecord::IsEmbeddedWeapon(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsEmbeddedWeapon;
+    else
+        Dummy->flags &= ~fIsEmbeddedWeapon;
+    }
+
+bool WEAPRecord::IsDontUse1stPersonISAnimations()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsDontUse1stPersonISAnimations) != 0;
+    }
+
+void WEAPRecord::IsDontUse1stPersonISAnimations(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsDontUse1stPersonISAnimations;
+    else
+        Dummy->flags &= ~fIsDontUse1stPersonISAnimations;
+    }
+
+bool WEAPRecord::IsNonPlayable()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsNonPlayable) != 0;
+    }
+
+void WEAPRecord::IsNonPlayable(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsNonPlayable;
+    else
+        Dummy->flags &= ~fIsNonPlayable;
+    }
+
+bool WEAPRecord::IsFlagMask(UINT8 Mask, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    }
+
+void WEAPRecord::SetFlagMask(UINT8 Mask)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
+bool WEAPRecord::IsPlayerOnly()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsPlayerOnly) != 0;
+    }
+
+void WEAPRecord::IsPlayerOnly(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsPlayerOnly;
+    else
+        Dummy->flags &= ~fIsPlayerOnly;
+    }
+
+bool WEAPRecord::IsNPCsUseAmmo()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsNPCsUseAmmo) != 0;
+    }
+
+void WEAPRecord::IsNPCsUseAmmo(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsNPCsUseAmmo;
+    else
+        Dummy->flags &= ~fIsNPCsUseAmmo;
+    }
+
+bool WEAPRecord::IsNoJamAfterReload()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsNoJamAfterReload) != 0;
+    }
+
+void WEAPRecord::IsNoJamAfterReload(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsNoJamAfterReload;
+    else
+        Dummy->flags &= ~fIsNoJamAfterReload;
+    }
+
+bool WEAPRecord::IsOverrideActionPoints()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsOverrideActionPoints) != 0;
+    }
+
+void WEAPRecord::IsOverrideActionPoints(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsOverrideActionPoints;
+    else
+        Dummy->flags &= ~fIsOverrideActionPoints;
+    }
+
+bool WEAPRecord::IsMinorCrime()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsMinorCrime) != 0;
+    }
+
+void WEAPRecord::IsMinorCrime(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsMinorCrime;
+    else
+        Dummy->flags &= ~fIsMinorCrime;
+    }
+
+bool WEAPRecord::IsRangeFixed()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsRangeFixed) != 0;
+    }
+
+void WEAPRecord::IsRangeFixed(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsRangeFixed;
+    else
+        Dummy->flags &= ~fIsRangeFixed;
+    }
+
+bool WEAPRecord::IsNotUsedInNormalCombat()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsNotUsedInNormalCombat) != 0;
+    }
+
+void WEAPRecord::IsNotUsedInNormalCombat(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsNotUsedInNormalCombat;
+    else
+        Dummy->flags &= ~fIsNotUsedInNormalCombat;
+    }
+
+bool WEAPRecord::IsOverrideDamageToWeaponMult()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsOverrideDamageToWeaponMult) != 0;
+    }
+
+void WEAPRecord::IsOverrideDamageToWeaponMult(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsOverrideDamageToWeaponMult;
+    else
+        Dummy->flags &= ~fIsOverrideDamageToWeaponMult;
+    }
+
+bool WEAPRecord::IsDontUse3rdPersonISAnimations()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsDontUse3rdPersonISAnimations) != 0;
+    }
+
+void WEAPRecord::IsDontUse3rdPersonISAnimations(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsDontUse3rdPersonISAnimations;
+    else
+        Dummy->flags &= ~fIsDontUse3rdPersonISAnimations;
+    }
+
+bool WEAPRecord::IsShortBurst()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsShortBurst) != 0;
+    }
+
+void WEAPRecord::IsShortBurst(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsShortBurst;
+    else
+        Dummy->flags &= ~fIsShortBurst;
+    }
+
+bool WEAPRecord::IsRumbleAlternate()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsRumbleAlternate) != 0;
+    }
+
+void WEAPRecord::IsRumbleAlternate(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsRumbleAlternate;
+    else
+        Dummy->flags &= ~fIsRumbleAlternate;
+    }
+
+bool WEAPRecord::IsLongBurst()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsLongBurst) != 0;
+    }
+
+void WEAPRecord::IsLongBurst(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsLongBurst;
+    else
+        Dummy->flags &= ~fIsLongBurst;
+    }
+
+bool WEAPRecord::IsScopeHasNightVision()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsScopeHasNightVision) != 0;
+    }
+
+void WEAPRecord::IsScopeHasNightVision(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsScopeHasNightVision;
+    else
+        Dummy->flags &= ~fIsScopeHasNightVision;
+    }
+
+bool WEAPRecord::IsScopeFromMod()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsScopeFromMod) != 0;
+    }
+
+void WEAPRecord::IsScopeFromMod(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsScopeFromMod;
+    else
+        Dummy->flags &= ~fIsScopeFromMod;
+    }
+
+bool WEAPRecord::IsAdvFlagMask(UINT32 Mask, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    }
+
+void WEAPRecord::SetAdvFlagMask(UINT32 Mask)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
+bool WEAPRecord::IsCritOnDeath()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsOnDeath) != 0;
+    }
+
+void WEAPRecord::IsCritOnDeath(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsOnDeath;
+    else
+        Dummy->flags &= ~fIsOnDeath;
+    }
+
+bool WEAPRecord::IsCritFlagMask(UINT32 Mask, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    }
+
+void WEAPRecord::SetCritFlagMask(UINT32 Mask)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
+bool WEAPRecord::IsNone()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eNone);
+    }
+
+void WEAPRecord::IsNone(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eNone;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsBigGuns()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eBigGuns);
+    }
+
+void WEAPRecord::IsBigGuns(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eBigGuns;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsEnergyWeapons()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eEnergyWeapons);
+    }
+
+void WEAPRecord::IsEnergyWeapons(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eEnergyWeapons;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsSmallGuns()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eSmallGuns);
+    }
+
+void WEAPRecord::IsSmallGuns(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eSmallGuns;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsMeleeWeapons()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eMeleeWeapons);
+    }
+
+void WEAPRecord::IsMeleeWeapons(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eMeleeWeapons;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsUnarmedWeapon()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eUnarmedWeapon);
+    }
+
+void WEAPRecord::IsUnarmedWeapon(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eUnarmedWeapon;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsThrownWeapons()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eThrownWeapons);
+    }
+
+void WEAPRecord::IsThrownWeapons(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eThrownWeapons;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsMine()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eMine);
+    }
+
+void WEAPRecord::IsMine(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eMine;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsBodyWear()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eBodyWear);
+    }
+
+void WEAPRecord::IsBodyWear(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eBodyWear;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsHeadWear()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eHeadWear);
+    }
+
+void WEAPRecord::IsHeadWear(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eHeadWear;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsHandWear()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eHandWear);
+    }
+
+void WEAPRecord::IsHandWear(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eHandWear;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsChems()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eChems);
+    }
+
+void WEAPRecord::IsChems(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eChems;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsStimpack()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eStimpack);
+    }
+
+void WEAPRecord::IsStimpack(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eStimpack;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsFood()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eFood);
+    }
+
+void WEAPRecord::IsFood(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eFood;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsAlcohol()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eAlcohol);
+    }
+
+void WEAPRecord::IsAlcohol(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eAlcohol;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsEquipmentType(SINT32 Type, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    }
+
+void WEAPRecord::SetEquipmentType(SINT32 Type)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
+bool WEAPRecord::IsHand2Hand()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eHand2Hand);
+    }
+
+void WEAPRecord::IsHand2Hand(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eHand2Hand;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsMelee1Hand()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eMelee1Hand);
+    }
+
+void WEAPRecord::IsMelee1Hand(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eMelee1Hand;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsMelee2Hand()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eMelee2Hand);
+    }
+
+void WEAPRecord::IsMelee2Hand(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eMelee2Hand;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsPistolBallistic1Hand()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == ePistolBallistic1Hand);
+    }
+
+void WEAPRecord::IsPistolBallistic1Hand(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = ePistolBallistic1Hand;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsPistolEnergy1Hand()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == ePistolEnergy1Hand);
+    }
+
+void WEAPRecord::IsPistolEnergy1Hand(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = ePistolEnergy1Hand;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsRifleBallistic2Hand()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eRifleBallistic2Hand);
+    }
+
+void WEAPRecord::IsRifleBallistic2Hand(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eRifleBallistic2Hand;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsRifleAutomatic2Hand()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eRifleAutomatic2Hand);
+    }
+
+void WEAPRecord::IsRifleAutomatic2Hand(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eRifleAutomatic2Hand;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsRifleEnergy2Hand()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eRifleEnergy2Hand);
+    }
+
+void WEAPRecord::IsRifleEnergy2Hand(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eRifleEnergy2Hand;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsHandle2Hand()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eHandle2Hand);
+    }
+
+void WEAPRecord::IsHandle2Hand(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eHandle2Hand;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsLauncher2Hand()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eLauncher2Hand);
+    }
+
+void WEAPRecord::IsLauncher2Hand(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eLauncher2Hand;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsGrenadeThrow1Hand()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eGrenadeThrow1Hand);
+    }
+
+void WEAPRecord::IsGrenadeThrow1Hand(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eGrenadeThrow1Hand;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsLandMine1Hand()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eLandMine1Hand);
+    }
+
+void WEAPRecord::IsLandMine1Hand(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eLandMine1Hand;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsMineDrop1Hand()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eMineDrop1Hand);
+    }
+
+void WEAPRecord::IsMineDrop1Hand(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eMineDrop1Hand;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsThrown1Hand()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eThrown1Hand);
+    }
+
+void WEAPRecord::IsThrown1Hand(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eThrown1Hand;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsType(UINT8 Type, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    }
+
+void WEAPRecord::SetType(UINT8 Type)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
+bool WEAPRecord::IsGripHandGrip1()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eHandGrip1);
+    }
+
+void WEAPRecord::IsGripHandGrip1(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eHandGrip1;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsGripHandGrip2()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eHandGrip2);
+    }
+
+void WEAPRecord::IsGripHandGrip2(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eHandGrip2;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsGripHandGrip3()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eHandGrip3);
+    }
+
+void WEAPRecord::IsGripHandGrip3(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eHandGrip3;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsGripHandGrip4()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eHandGrip4);
+    }
+
+void WEAPRecord::IsGripHandGrip4(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eHandGrip4;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsGripHandGrip5()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eHandGrip5);
+    }
+
+void WEAPRecord::IsGripHandGrip5(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eHandGrip5;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsGripHandGrip6()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eHandGrip6);
+    }
+
+void WEAPRecord::IsGripHandGrip6(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eHandGrip6;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsGripDefault()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eDefault);
+    }
+
+void WEAPRecord::IsGripDefault(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eDefault;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsGripType(UINT8 Type, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    }
+
+void WEAPRecord::SetGripType(UINT8 Type)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
+bool WEAPRecord::IsReloadAnimReloadA()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eReloadA);
+    }
+
+void WEAPRecord::IsReloadAnimReloadA(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eReloadA;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsReloadAnimReloadB()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eReloadB);
+    }
+
+void WEAPRecord::IsReloadAnimReloadB(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eReloadB;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsReloadAnimReloadC()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eReloadC);
+    }
+
+void WEAPRecord::IsReloadAnimReloadC(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eReloadC;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsReloadAnimReloadD()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eReloadD);
+    }
+
+void WEAPRecord::IsReloadAnimReloadD(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eReloadD;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsReloadAnimReloadE()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eReloadE);
+    }
+
+void WEAPRecord::IsReloadAnimReloadE(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eReloadE;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsReloadAnimReloadF()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eReloadF);
+    }
+
+void WEAPRecord::IsReloadAnimReloadF(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eReloadF;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsReloadAnimReloadG()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eReloadG);
+    }
+
+void WEAPRecord::IsReloadAnimReloadG(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eReloadG;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsReloadAnimReloadH()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eReloadH);
+    }
+
+void WEAPRecord::IsReloadAnimReloadH(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eReloadH;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsReloadAnimReloadI()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eReloadI);
+    }
+
+void WEAPRecord::IsReloadAnimReloadI(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eReloadI;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsReloadAnimReloadJ()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eReloadJ);
+    }
+
+void WEAPRecord::IsReloadAnimReloadJ(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eReloadJ;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsReloadAnimReloadK()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eReloadK);
+    }
+
+void WEAPRecord::IsReloadAnimReloadK(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eReloadK;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsReloadAnimReloadL()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eReloadL);
+    }
+
+void WEAPRecord::IsReloadAnimReloadL(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eReloadL;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsReloadAnimReloadM()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eReloadM);
+    }
+
+void WEAPRecord::IsReloadAnimReloadM(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eReloadM;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsReloadAnimReloadN()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eReloadN);
+    }
+
+void WEAPRecord::IsReloadAnimReloadN(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eReloadN;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsReloadAnimReloadO()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eReloadO);
+    }
+
+void WEAPRecord::IsReloadAnimReloadO(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eReloadO;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsReloadAnimReloadP()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eReloadP);
+    }
+
+void WEAPRecord::IsReloadAnimReloadP(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eReloadP;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsReloadAnimReloadQ()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eReloadQ);
+    }
+
+void WEAPRecord::IsReloadAnimReloadQ(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eReloadQ;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsReloadAnimReloadR()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eReloadR);
+    }
+
+void WEAPRecord::IsReloadAnimReloadR(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eReloadR;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsReloadAnimReloadS()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eReloadS);
+    }
+
+void WEAPRecord::IsReloadAnimReloadS(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eReloadS;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsReloadAnimReloadW()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eReloadW);
+    }
+
+void WEAPRecord::IsReloadAnimReloadW(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eReloadW;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsReloadAnimReloadX()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eReloadX);
+    }
+
+void WEAPRecord::IsReloadAnimReloadX(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eReloadX;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsReloadAnimReloadY()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eReloadY);
+    }
+
+void WEAPRecord::IsReloadAnimReloadY(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eReloadY;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsReloadAnimReloadZ()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eReloadZ);
+    }
+
+void WEAPRecord::IsReloadAnimReloadZ(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eReloadZ;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsReloadAnimType(UINT8 Type, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    }
+
+void WEAPRecord::SetReloadAnimType(UINT8 Type)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
+bool WEAPRecord::IsAttackLeft()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eAttackLeft);
+    }
+
+void WEAPRecord::IsAttackLeft(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eAttackLeft;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsAttackRight()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eAttackRight);
+    }
+
+void WEAPRecord::IsAttackRight(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eAttackRight;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsAttack3()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eAttack3);
+    }
+
+void WEAPRecord::IsAttack3(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eAttack3;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsAttack4()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eAttack4);
+    }
+
+void WEAPRecord::IsAttack4(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eAttack4;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsAttack5()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eAttack5);
+    }
+
+void WEAPRecord::IsAttack5(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eAttack5;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsAttack6()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eAttack6);
+    }
+
+void WEAPRecord::IsAttack6(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eAttack6;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsAttack7()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eAttack7);
+    }
+
+void WEAPRecord::IsAttack7(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eAttack7;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsAttack8()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eAttack8);
+    }
+
+void WEAPRecord::IsAttack8(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eAttack8;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsAttack9()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eAttack9);
+    }
+
+void WEAPRecord::IsAttack9(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eAttack9;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsAttackLoop()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eAttackLoop);
+    }
+
+void WEAPRecord::IsAttackLoop(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eAttackLoop;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsAttackSpin()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eAttackSpin);
+    }
+
+void WEAPRecord::IsAttackSpin(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eAttackSpin;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsAttackSpin2()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eAttackSpin2);
+    }
+
+void WEAPRecord::IsAttackSpin2(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eAttackSpin2;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsAttackThrow()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eAttackThrow);
+    }
+
+void WEAPRecord::IsAttackThrow(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eAttackThrow;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsAttackThrow2()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eAttackThrow2);
+    }
+
+void WEAPRecord::IsAttackThrow2(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eAttackThrow2;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsAttackThrow3()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eAttackThrow3);
+    }
+
+void WEAPRecord::IsAttackThrow3(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eAttackThrow3;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsAttackThrow4()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eAttackThrow4);
+    }
+
+void WEAPRecord::IsAttackThrow4(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eAttackThrow4;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsAttackThrow5()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eAttackThrow5);
+    }
+
+void WEAPRecord::IsAttackThrow5(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eAttackThrow5;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsAttackThrow6()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eAttackThrow6);
+    }
+
+void WEAPRecord::IsAttackThrow6(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eAttackThrow6;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsAttackThrow7()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eAttackThrow7);
+    }
+
+void WEAPRecord::IsAttackThrow7(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eAttackThrow7;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsAttackThrow8()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eAttackThrow8);
+    }
+
+void WEAPRecord::IsAttackThrow8(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eAttackThrow8;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::AttackIsPlaceMine()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == ePlaceMine);
+    }
+
+void WEAPRecord::IsAttackPlaceMine(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = ePlaceMine;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsAttackPlaceMine2()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == ePlaceMine2);
+    }
+
+void WEAPRecord::IsAttackPlaceMine2(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = ePlaceMine2;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsAttackDefault()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eDefault);
+    }
+
+void WEAPRecord::IsAttackDefault(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eDefault;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsAttackType(UINT8 Type, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    }
+
+void WEAPRecord::SetAttackType(UINT8 Type)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
+bool WEAPRecord::IsEmbeddedAVPerception()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == ePerception);
+    }
+
+void WEAPRecord::IsEmbeddedAVPerception(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = ePerception;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsEmbeddedAVEndurance()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eEndurance);
+    }
+
+void WEAPRecord::IsEmbeddedAVEndurance(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eEndurance;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsEmbeddedAVLeftAttack()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eLeftAttack);
+    }
+
+void WEAPRecord::IsEmbeddedAVLeftAttack(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eLeftAttack;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsEmbeddedAVRightAttack()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eRightAttack);
+    }
+
+void WEAPRecord::IsEmbeddedAVRightAttack(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eRightAttack;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsEmbeddedAVLeftMobility()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eLeftMobility);
+    }
+
+void WEAPRecord::IsEmbeddedAVLeftMobility(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eLeftMobility;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsEmbeddedAVRightMobilty()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eRightMobilty);
+    }
+
+void WEAPRecord::IsEmbeddedAVRightMobilty(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eRightMobilty;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsEmbeddedAVBrain()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eBrain);
+    }
+
+void WEAPRecord::IsEmbeddedAVBrain(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eBrain;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsEmbeddedAVType(UINT8 Type, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    }
+
+void WEAPRecord::SetEmbeddedAVType(UINT8 Type)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
+bool WEAPRecord::IsOnHitNormalFormulaBehavior()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eNormalFormulaBehavior);
+    }
+
+void WEAPRecord::IsOnHitNormalFormulaBehavior(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eNormalFormulaBehavior;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsOnHitDismemberOnly()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eDismemberOnly);
+    }
+
+void WEAPRecord::IsOnHitDismemberOnly(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eDismemberOnly;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsOnHitExplodeOnly()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eExplodeOnly);
+    }
+
+void WEAPRecord::IsOnHitExplodeOnly(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eExplodeOnly;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsOnHitNoDismemberExplode()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eNoDismemberExplode);
+    }
+
+void WEAPRecord::IsOnHitNoDismemberExplode(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eNoDismemberExplode;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsOnHitType(UINT32 Type, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    }
+
+void WEAPRecord::SetOnHitType(UINT32 Type)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
+bool WEAPRecord::IsRumbleConstant()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eConstant);
+    }
+
+void WEAPRecord::IsRumbleConstant(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eConstant;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsRumbleSquare()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eSquare);
+    }
+
+void WEAPRecord::IsRumbleSquare(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eSquare;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsRumbleTriangle()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eTriangle);
+    }
+
+void WEAPRecord::IsRumbleTriangle(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eTriangle;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsRumbleSawtooth()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eSawtooth);
+    }
+
+void WEAPRecord::IsRumbleSawtooth(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eSawtooth;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsRumbleType(UINT32 Type, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    }
+
+void WEAPRecord::SetRumbleType(UINT32 Type)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
+bool WEAPRecord::IsPowerAttackAnimOverrideUnknown0()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eUnknown0);
+    }
+
+void WEAPRecord::IsPowerAttackAnimOverrideUnknown0(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eUnknown0;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsPowerAttackAnimOverrideAttackCustom1Power()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eAttackCustom1Power);
+    }
+
+void WEAPRecord::IsPowerAttackAnimOverrideAttackCustom1Power(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eAttackCustom1Power;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsPowerAttackAnimOverrideAttackCustom2Power()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eAttackCustom2Power);
+    }
+
+void WEAPRecord::IsPowerAttackAnimOverrideAttackCustom2Power(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eAttackCustom2Power;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsPowerAttackAnimOverrideAttackCustom3Power()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eAttackCustom3Power);
+    }
+
+void WEAPRecord::IsPowerAttackAnimOverrideAttackCustom3Power(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eAttackCustom3Power;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsPowerAttackAnimOverrideAttackCustom4Power()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eAttackCustom4Power);
+    }
+
+void WEAPRecord::IsPowerAttackAnimOverrideAttackCustom4Power(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eAttackCustom4Power;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsPowerAttackAnimOverrideAttackCustom5Power()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eAttackCustom5Power);
+    }
+
+void WEAPRecord::IsPowerAttackAnimOverrideAttackCustom5Power(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eAttackCustom5Power;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsPowerAttackAnimOverrideDefault()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eDefault);
+    }
+
+void WEAPRecord::IsPowerAttackAnimOverrideDefault(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eDefault;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsPowerAttackAnimOverrideType(UINT32 Type, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    }
+
+void WEAPRecord::SetPowerAttackAnimOverrideType(UINT32 Type)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
+bool WEAPRecord::IsReloadAnimModReloadA()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eReloadA);
+    }
+
+void WEAPRecord::IsReloadAnimModReloadA(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eReloadA;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsReloadAnimModReloadB()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eReloadB);
+    }
+
+void WEAPRecord::IsReloadAnimModReloadB(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eReloadB;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsReloadAnimModReloadC()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eReloadC);
+    }
+
+void WEAPRecord::IsReloadAnimModReloadC(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eReloadC;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsReloadAnimModReloadD()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eReloadD);
+    }
+
+void WEAPRecord::IsReloadAnimModReloadD(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eReloadD;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsReloadAnimModReloadE()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eReloadE);
+    }
+
+void WEAPRecord::IsReloadAnimModReloadE(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eReloadE;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsReloadAnimModReloadF()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eReloadF);
+    }
+
+void WEAPRecord::IsReloadAnimModReloadF(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eReloadF;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsReloadAnimModReloadG()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eReloadG);
+    }
+
+void WEAPRecord::IsReloadAnimModReloadG(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eReloadG;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsReloadAnimModReloadH()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eReloadH);
+    }
+
+void WEAPRecord::IsReloadAnimModReloadH(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eReloadH;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsReloadAnimModReloadI()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eReloadI);
+    }
+
+void WEAPRecord::IsReloadAnimModReloadI(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eReloadI;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsReloadAnimModReloadJ()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eReloadJ);
+    }
+
+void WEAPRecord::IsReloadAnimModReloadJ(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eReloadJ;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsReloadAnimModReloadK()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eReloadK);
+    }
+
+void WEAPRecord::IsReloadAnimModReloadK(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eReloadK;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsReloadAnimModReloadL()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eReloadL);
+    }
+
+void WEAPRecord::IsReloadAnimModReloadL(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eReloadL;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsReloadAnimModReloadM()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eReloadM);
+    }
+
+void WEAPRecord::IsReloadAnimModReloadM(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eReloadM;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsReloadAnimModReloadN()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eReloadN);
+    }
+
+void WEAPRecord::IsReloadAnimModReloadN(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eReloadN;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsReloadAnimModReloadO()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eReloadO);
+    }
+
+void WEAPRecord::IsReloadAnimModReloadO(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eReloadO;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsReloadAnimModReloadP()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eReloadP);
+    }
+
+void WEAPRecord::IsReloadAnimModReloadP(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eReloadP;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsReloadAnimModReloadQ()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eReloadQ);
+    }
+
+void WEAPRecord::IsReloadAnimModReloadQ(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eReloadQ;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsReloadAnimModReloadR()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eReloadR);
+    }
+
+void WEAPRecord::IsReloadAnimModReloadR(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eReloadR;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsReloadAnimModReloadS()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eReloadS);
+    }
+
+void WEAPRecord::IsReloadAnimModReloadS(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eReloadS;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsReloadAnimModReloadW()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eReloadW);
+    }
+
+void WEAPRecord::IsReloadAnimModReloadW(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eReloadW;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsReloadAnimModReloadX()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eReloadX);
+    }
+
+void WEAPRecord::IsReloadAnimModReloadX(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eReloadX;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsReloadAnimModReloadY()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eReloadY);
+    }
+
+void WEAPRecord::IsReloadAnimModReloadY(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eReloadY;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsReloadAnimModReloadZ()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eReloadZ);
+    }
+
+void WEAPRecord::IsReloadAnimModReloadZ(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eReloadZ;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsReloadAnimModType(UINT8 Type, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    }
+
+void WEAPRecord::SetReloadAnimModType(UINT8 Type)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
+bool WEAPRecord::IsVATSNotSilent()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eIsNotSilent);
+    }
+
+void WEAPRecord::IsVATSNotSilent(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eIsNotSilent;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsVATSSilent()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eIsSilent);
+    }
+
+void WEAPRecord::IsVATSSilent(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eIsSilent;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsVATSSilenceType(UINT8 Type, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    }
+
+void WEAPRecord::SetVATSSilenceType(UINT8 Type)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
+bool WEAPRecord::IsVATSModNotRequired()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eIsNotModRequired);
+    }
+
+void WEAPRecord::IsVATSModNotRequired(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eIsNotModRequired;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsVATSModRequired()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eIsModRequired);
+    }
+
+void WEAPRecord::IsVATSModRequired(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eIsModRequired;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsVATSModType(UINT8 Type, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    }
+
+void WEAPRecord::SetVATSModType(UINT8 Type)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
+bool WEAPRecord::IsLoud()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eLoud);
+    }
+
+void WEAPRecord::IsLoud(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eLoud;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsNormal()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eNormal);
+    }
+
+void WEAPRecord::IsNormal(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eNormal;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsSilent()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eSilent);
+    }
+
+void WEAPRecord::IsSilent(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eSilent;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool WEAPRecord::IsSoundLevelType(UINT8 Type, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    }
+
+void WEAPRecord::SetSoundLevelType(UINT8 Type)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
 UINT32 WEAPRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())

@@ -77,6 +77,243 @@ bool RGDLRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+bool RGDLRecord::IsDisableOnMove()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsDisableOnMove) != 0;
+    }
+
+void RGDLRecord::IsDisableOnMove(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsDisableOnMove;
+    else
+        Dummy->flags &= ~fIsDisableOnMove;
+    }
+
+bool RGDLRecord::IsFlagMask(UINT8 Mask, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    }
+
+void RGDLRecord::SetFlagMask(UINT8 Mask)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
+bool RGDLRecord::IsNoFeedback()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eNoFeedback);
+    }
+
+void RGDLRecord::IsNoFeedback(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eNoFeedback;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool RGDLRecord::IsFeedback()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eFeedback);
+    }
+
+void RGDLRecord::IsFeedback(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eFeedback;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool RGDLRecord::IsFeedbackType(UINT8 Type, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    }
+
+void RGDLRecord::SetFeedbackType(UINT8 Type)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
+bool RGDLRecord::IsNoFootIK()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eNoFootIK);
+    }
+
+void RGDLRecord::IsNoFootIK(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eNoFootIK;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool RGDLRecord::IsFootIK()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eFootIK);
+    }
+
+void RGDLRecord::IsFootIK(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eFootIK;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool RGDLRecord::IsFootType(UINT8 Type, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    }
+
+void RGDLRecord::SetFootType(UINT8 Type)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
+bool RGDLRecord::IsNoLookIK()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eNoLookIK);
+    }
+
+void RGDLRecord::IsNoLookIK(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eNoLookIK;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool RGDLRecord::IsLookIK()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eLookIK);
+    }
+
+void RGDLRecord::IsLookIK(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eLookIK;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool RGDLRecord::IsLookType(UINT8 Type, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    }
+
+void RGDLRecord::SetLookType(UINT8 Type)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
+bool RGDLRecord::IsNoGrabIK()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eNoGrabIK);
+    }
+
+void RGDLRecord::IsNoGrabIK(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eNoGrabIK;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool RGDLRecord::IsGrabIK()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eGrabIK);
+    }
+
+void RGDLRecord::IsGrabIK(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eGrabIK;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool RGDLRecord::IsGrabType(UINT8 Type, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    }
+
+void RGDLRecord::SetGrabType(UINT8 Type)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
+bool RGDLRecord::IsNoMatchPose()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eNoMatchPose);
+    }
+
+void RGDLRecord::IsNoMatchPose(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eNoMatchPose;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool RGDLRecord::IsMatchPose()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eMatchPose);
+    }
+
+void RGDLRecord::IsMatchPose(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eMatchPose;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool RGDLRecord::IsMatchType(UINT8 Type, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    }
+
+void RGDLRecord::SetMatchType(UINT8 Type)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
 UINT32 RGDLRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())

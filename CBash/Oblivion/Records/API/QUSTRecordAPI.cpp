@@ -273,8 +273,6 @@ UINT32 QUSTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                         case 3: //text
                             return STRING_FIELD;
                         case 4: //unused1
-                            if(!Stages[ListIndex]->Entries[ListX2Index]->Script.IsLoaded())
-                                return UNKNOWN_FIELD;
                             switch(WhichAttribute)
                                 {
                                 case 0: //fieldType
@@ -285,32 +283,26 @@ UINT32 QUSTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                                     return UNKNOWN_FIELD;
                                 }
                         case 5: //numRefs
-                            return Stages[ListIndex]->Entries[ListX2Index]->Script.IsLoaded() ? UINT32_FIELD : UNKNOWN_FIELD;
+                            return UINT32_FIELD;
                         case 6: //compiledSize
-                            return Stages[ListIndex]->Entries[ListX2Index]->Script.IsLoaded() ? UINT32_FIELD : UNKNOWN_FIELD;
+                            return UINT32_FIELD;
                         case 7: //lastIndex
-                            return Stages[ListIndex]->Entries[ListX2Index]->Script.IsLoaded() ? UINT32_FIELD : UNKNOWN_FIELD;
+                            return UINT32_FIELD;
                         case 8: //scriptType
-                            return Stages[ListIndex]->Entries[ListX2Index]->Script.IsLoaded() ? UINT32_FIELD : UNKNOWN_FIELD;
+                            return UINT32_FIELD;
                         case 9: //compiled_p
-                            if(!Stages[ListIndex]->Entries[ListX2Index]->Script.IsLoaded())
-                                return UNKNOWN_FIELD;
-
                             switch(WhichAttribute)
                                 {
                                 case 0: //fieldType
                                     return UINT8_ARRAY_FIELD;
                                 case 1: //fieldSize
-                                    return Stages[ListIndex]->Entries[ListX2Index]->Script->SCDA.GetSize();
+                                    return Stages[ListIndex]->Entries[ListX2Index]->SCDA.GetSize();
                                 default:
                                     return UNKNOWN_FIELD;
                                 }
                         case 10: //scriptText
-                            return Stages[ListIndex]->Entries[ListX2Index]->Script.IsLoaded() ? ISTRING_FIELD : UNKNOWN_FIELD;
+                            return ISTRING_FIELD;
                         case 11: //references
-                            if(!Stages[ListIndex]->Entries[ListX2Index]->Script.IsLoaded())
-                                return UNKNOWN_FIELD;
-
                             if(ListX3FieldID == 0) //references
                                 {
                                 switch(WhichAttribute)
@@ -318,13 +310,13 @@ UINT32 QUSTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                                     case 0: //fieldType
                                         return FORMID_OR_UINT32_ARRAY_FIELD;
                                     case 1: //fieldSize
-                                        return (UINT32)Stages[ListIndex]->Entries[ListX2Index]->Script->SCR_.size();
+                                        return (UINT32)Stages[ListIndex]->Entries[ListX2Index]->SCR_.size();
                                     default:
                                         return UNKNOWN_FIELD;
                                     }
                                 }
 
-                            if(ListX3Index >= Stages[ListIndex]->Entries[ListX2Index]->Script->SCR_.size())
+                            if(ListX3Index >= Stages[ListIndex]->Entries[ListX2Index]->SCR_.size())
                                 return UNKNOWN_FIELD;
 
                             switch(ListX3FieldID)
@@ -335,7 +327,7 @@ UINT32 QUSTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                                         case 0: //fieldType
                                             return FORMID_OR_UINT32_FIELD;
                                         case 2: //WhichType
-                                            return (Stages[ListIndex]->Entries[ListX2Index]->Script->SCR_[ListX3Index]->value.isSCRO ? FORMID_FIELD : UINT32_FIELD);
+                                            return (Stages[ListIndex]->Entries[ListX2Index]->SCR_[ListX3Index]->value.isSCRO ? FORMID_FIELD : UINT32_FIELD);
                                         default:
                                             return UNKNOWN_FIELD;
                                         }
@@ -572,25 +564,24 @@ void * QUSTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                         case 3: //text
                             return Stages[ListIndex]->Entries[ListX2Index]->CNAM.value;
                         case 4: //unused1
-                            *FieldValues = Stages[ListIndex]->Entries[ListX2Index]->Script.IsLoaded() ? &Stages[ListIndex]->Entries[ListX2Index]->Script->SCHR.value.unused1[0] : NULL;
+                            *FieldValues = &Stages[ListIndex]->Entries[ListX2Index]->SCHR.value.unused1[0];
                             return NULL;
                         case 5: //numRefs
-                            return Stages[ListIndex]->Entries[ListX2Index]->Script.IsLoaded() ? &Stages[ListIndex]->Entries[ListX2Index]->Script->SCHR.value.numRefs : NULL;
+                            return &Stages[ListIndex]->Entries[ListX2Index]->SCHR.value.numRefs;
                         case 6: //compiledSize
-                            return Stages[ListIndex]->Entries[ListX2Index]->Script.IsLoaded() ? &Stages[ListIndex]->Entries[ListX2Index]->Script->SCHR.value.compiledSize : NULL;
+                            return &Stages[ListIndex]->Entries[ListX2Index]->SCHR.value.compiledSize;
                         case 7: //lastIndex
-                            return Stages[ListIndex]->Entries[ListX2Index]->Script.IsLoaded() ? &Stages[ListIndex]->Entries[ListX2Index]->Script->SCHR.value.lastIndex : NULL;
+                            return &Stages[ListIndex]->Entries[ListX2Index]->SCHR.value.lastIndex;
                         case 8: //scriptType
-                            return Stages[ListIndex]->Entries[ListX2Index]->Script.IsLoaded() ? &Stages[ListIndex]->Entries[ListX2Index]->Script->SCHR.value.scriptType : NULL;
+                            return &Stages[ListIndex]->Entries[ListX2Index]->SCHR.value.scriptType;
                         case 9: //compiled_p
-                            *FieldValues = Stages[ListIndex]->Entries[ListX2Index]->Script.IsLoaded() ? Stages[ListIndex]->Entries[ListX2Index]->Script->SCDA.value : NULL;
+                            *FieldValues = Stages[ListIndex]->Entries[ListX2Index]->SCDA.value;
                             return NULL;
                         case 10: //scriptText
-                            return Stages[ListIndex]->Entries[ListX2Index]->Script.IsLoaded() ? Stages[ListIndex]->Entries[ListX2Index]->Script->SCTX.value : NULL;
+                            return Stages[ListIndex]->Entries[ListX2Index]->SCTX.value;
                         case 11: //references
-                            if(Stages[ListIndex]->Entries[ListX2Index]->Script.IsLoaded())
-                                for(UINT32 x = 0; x < Stages[ListIndex]->Entries[ListX2Index]->Script->SCR_.size(); ++x)
-                                    ((FORMIDARRAY)FieldValues)[x] = Stages[ListIndex]->Entries[ListX2Index]->Script->SCR_[x]->value.reference;
+                            for(UINT32 x = 0; x < Stages[ListIndex]->Entries[ListX2Index]->SCR_.size(); ++x)
+                                ((FORMIDARRAY)FieldValues)[x] = Stages[ListIndex]->Entries[ListX2Index]->SCR_[x]->value.reference;
                             return NULL;
                         default:
                             return NULL;
@@ -845,64 +836,56 @@ bool QUSTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                         case 4: //unused1
                             if(ArraySize != 4)
                                 break;
-                            Stages[ListIndex]->Entries[ListX2Index]->Script.Load();
-                            Stages[ListIndex]->Entries[ListX2Index]->Script->SCHR.value.unused1[0] = ((UINT8ARRAY)FieldValue)[0];
-                            Stages[ListIndex]->Entries[ListX2Index]->Script->SCHR.value.unused1[1] = ((UINT8ARRAY)FieldValue)[1];
-                            Stages[ListIndex]->Entries[ListX2Index]->Script->SCHR.value.unused1[2] = ((UINT8ARRAY)FieldValue)[2];
-                            Stages[ListIndex]->Entries[ListX2Index]->Script->SCHR.value.unused1[3] = ((UINT8ARRAY)FieldValue)[3];
+                            Stages[ListIndex]->Entries[ListX2Index]->SCHR.value.unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+                            Stages[ListIndex]->Entries[ListX2Index]->SCHR.value.unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+                            Stages[ListIndex]->Entries[ListX2Index]->SCHR.value.unused1[2] = ((UINT8ARRAY)FieldValue)[2];
+                            Stages[ListIndex]->Entries[ListX2Index]->SCHR.value.unused1[3] = ((UINT8ARRAY)FieldValue)[3];
                             break;
                         case 5: //numRefs
-                            Stages[ListIndex]->Entries[ListX2Index]->Script.Load();
-                            Stages[ListIndex]->Entries[ListX2Index]->Script->SCHR.value.numRefs = *(UINT32 *)FieldValue;
+                            Stages[ListIndex]->Entries[ListX2Index]->SCHR.value.numRefs = *(UINT32 *)FieldValue;
                             break;
                         case 6: //compiledSize
-                            Stages[ListIndex]->Entries[ListX2Index]->Script.Load();
-                            Stages[ListIndex]->Entries[ListX2Index]->Script->SCHR.value.compiledSize = *(UINT32 *)FieldValue;
+                            Stages[ListIndex]->Entries[ListX2Index]->SCHR.value.compiledSize = *(UINT32 *)FieldValue;
                             break;
                         case 7: //lastIndex
-                            Stages[ListIndex]->Entries[ListX2Index]->Script.Load();
-                            Stages[ListIndex]->Entries[ListX2Index]->Script->SCHR.value.lastIndex = *(UINT32 *)FieldValue;
+                            Stages[ListIndex]->Entries[ListX2Index]->SCHR.value.lastIndex = *(UINT32 *)FieldValue;
                             break;
                         case 8: //scriptType
-                            Stages[ListIndex]->Entries[ListX2Index]->Script.Load();
-                            Stages[ListIndex]->Entries[ListX2Index]->Script->SCHR.value.scriptType = *(UINT32 *)FieldValue;
+                            Stages[ListIndex]->Entries[ListX2Index]->SCHR.value.scriptType = *(UINT32 *)FieldValue;
                             break;
                         case 9: //compiled_p
-                            Stages[ListIndex]->Entries[ListX2Index]->Script.Load();
-                            Stages[ListIndex]->Entries[ListX2Index]->Script->SCDA.Copy((UINT8ARRAY)FieldValue, ArraySize);
+                            Stages[ListIndex]->Entries[ListX2Index]->SCDA.Copy((UINT8ARRAY)FieldValue, ArraySize);
                             break;
                         case 10: //scriptText
-                            Stages[ListIndex]->Entries[ListX2Index]->Script.Load();
-                            Stages[ListIndex]->Entries[ListX2Index]->Script->SCTX.Copy((STRING)FieldValue);
+                            Stages[ListIndex]->Entries[ListX2Index]->SCTX.Copy((STRING)FieldValue);
                             break;
                         case 11: //references
-                            Stages[ListIndex]->Entries[ListX2Index]->Script.Load();
                             if(ListX3FieldID == 0) //referencesSize
                                 {
-                                ArraySize -= (UINT32)Stages[ListIndex]->Entries[ListX2Index]->Script->SCR_.size();
+                                ArraySize -= (UINT32)Stages[ListIndex]->Entries[ListX2Index]->SCR_.size();
                                 while((SINT32)ArraySize > 0)
                                     {
-                                    Stages[ListIndex]->Entries[ListX2Index]->Script->SCR_.push_back(new ReqSubRecord<GENSCR_>);
+                                    Stages[ListIndex]->Entries[ListX2Index]->SCR_.push_back(new ReqSubRecord<GENSCR_>);
                                     --ArraySize;
                                     }
                                 while((SINT32)ArraySize < 0)
                                     {
-                                    delete Stages[ListIndex]->Entries[ListX2Index]->Script->SCR_.back();
-                                    Stages[ListIndex]->Entries[ListX2Index]->Script->SCR_.pop_back();
+                                    delete Stages[ListIndex]->Entries[ListX2Index]->SCR_.back();
+                                    Stages[ListIndex]->Entries[ListX2Index]->SCR_.pop_back();
                                     ++ArraySize;
                                     }
                                 return false;
                                 }
 
-                            if(ListX3Index >= Stages[ListIndex]->Entries[ListX2Index]->Script->SCR_.size())
+                            if(ListX3Index >= Stages[ListIndex]->Entries[ListX2Index]->SCR_.size())
                                 break;
 
                             switch(ListX3FieldID)
                                 {
                                 case 1: //reference
                                     //Borrowing ArraySize to flag if the new value is a formID
-                                    Stages[ListIndex]->Entries[ListX2Index]->Script->SCR_[ListX3Index]->value.reference = *(UINT32 *)FieldValue;
-                                    Stages[ListIndex]->Entries[ListX2Index]->Script->SCR_[ListX3Index]->value.isSCRO = ArraySize ? true : false;
+                                    Stages[ListIndex]->Entries[ListX2Index]->SCR_[ListX3Index]->value.reference = *(UINT32 *)FieldValue;
+                                    Stages[ListIndex]->Entries[ListX2Index]->SCR_[ListX3Index]->value.isSCRO = ArraySize ? true : false;
                                     return ArraySize != 0;
                                 default:
                                     break;
@@ -1027,6 +1010,7 @@ void QUSTRecord::DeleteField(FIELD_IDENTIFIERS)
     QUSTQSTA defaultQSTA;
 
     GENSCHR defaultSCHR;
+
     GENSCR_ defaultSCR_;
 
     switch(FieldID)
@@ -1179,61 +1163,49 @@ void QUSTRecord::DeleteField(FIELD_IDENTIFIERS)
                             Stages[ListIndex]->Entries[ListX2Index]->CNAM.Unload();
                             return;
                         case 4: //unused1
-                            if(Stages[ListIndex]->Entries[ListX2Index]->Script.IsLoaded())
-                                {
-                                Stages[ListIndex]->Entries[ListX2Index]->Script->SCHR.value.unused1[0] = defaultSCHR.unused1[0];
-                                Stages[ListIndex]->Entries[ListX2Index]->Script->SCHR.value.unused1[1] = defaultSCHR.unused1[1];
-                                Stages[ListIndex]->Entries[ListX2Index]->Script->SCHR.value.unused1[2] = defaultSCHR.unused1[2];
-                                Stages[ListIndex]->Entries[ListX2Index]->Script->SCHR.value.unused1[3] = defaultSCHR.unused1[3];
-                                }
+                            Stages[ListIndex]->Entries[ListX2Index]->SCHR.value.unused1[0] = defaultSCHR.unused1[0];
+                            Stages[ListIndex]->Entries[ListX2Index]->SCHR.value.unused1[1] = defaultSCHR.unused1[1];
+                            Stages[ListIndex]->Entries[ListX2Index]->SCHR.value.unused1[2] = defaultSCHR.unused1[2];
+                            Stages[ListIndex]->Entries[ListX2Index]->SCHR.value.unused1[3] = defaultSCHR.unused1[3];
                             return;
                         case 5: //numRefs
-                            if(Stages[ListIndex]->Entries[ListX2Index]->Script.IsLoaded())
-                                Stages[ListIndex]->Entries[ListX2Index]->Script->SCHR.value.numRefs = defaultSCHR.numRefs;
+                            Stages[ListIndex]->Entries[ListX2Index]->SCHR.value.numRefs = defaultSCHR.numRefs;
                             return;
                         case 6: //compiledSize
-                            if(Stages[ListIndex]->Entries[ListX2Index]->Script.IsLoaded())
-                                Stages[ListIndex]->Entries[ListX2Index]->Script->SCHR.value.compiledSize = defaultSCHR.compiledSize;
+                            Stages[ListIndex]->Entries[ListX2Index]->SCHR.value.compiledSize = defaultSCHR.compiledSize;
                             return;
                         case 7: //lastIndex
-                            if(Stages[ListIndex]->Entries[ListX2Index]->Script.IsLoaded())
-                                Stages[ListIndex]->Entries[ListX2Index]->Script->SCHR.value.lastIndex = defaultSCHR.lastIndex;
+                            Stages[ListIndex]->Entries[ListX2Index]->SCHR.value.lastIndex = defaultSCHR.lastIndex;
                             return;
                         case 8: //scriptType
-                            if(Stages[ListIndex]->Entries[ListX2Index]->Script.IsLoaded())
-                                Stages[ListIndex]->Entries[ListX2Index]->Script->SCHR.value.scriptType = defaultSCHR.scriptType;
+                            Stages[ListIndex]->Entries[ListX2Index]->SCHR.value.scriptType = defaultSCHR.scriptType;
                             return;
                         case 9: //compiled_p
-                            if(Stages[ListIndex]->Entries[ListX2Index]->Script.IsLoaded())
-                                Stages[ListIndex]->Entries[ListX2Index]->Script->SCDA.Unload();
+                            Stages[ListIndex]->Entries[ListX2Index]->SCDA.Unload();
                             return;
                         case 10: //scriptText
-                            if(Stages[ListIndex]->Entries[ListX2Index]->Script.IsLoaded())
-                                Stages[ListIndex]->Entries[ListX2Index]->Script->SCTX.Unload();
+                            Stages[ListIndex]->Entries[ListX2Index]->SCTX.Unload();
                             return;
                         case 11: //references
-                            if(Stages[ListIndex]->Entries[ListX2Index]->Script.IsLoaded())
+                            if(ListX3FieldID == 0) //references
                                 {
-                                if(ListX3FieldID == 0) //references
-                                    {
-                                    for(UINT32 x = 0; x < (UINT32)Stages[ListIndex]->Entries[ListX2Index]->Script->SCR_.size(); x++)
-                                        delete Stages[ListIndex]->Entries[ListX2Index]->Script->SCR_[x];
-                                    Stages[ListIndex]->Entries[ListX2Index]->Script->SCR_.clear();
-                                    return;
-                                    }
+                                for(UINT32 x = 0; x < (UINT32)Stages[ListIndex]->Entries[ListX2Index]->SCR_.size(); x++)
+                                    delete Stages[ListIndex]->Entries[ListX2Index]->SCR_[x];
+                                Stages[ListIndex]->Entries[ListX2Index]->SCR_.clear();
+                                return;
+                                }
 
-                                if(ListX3Index >= Stages[ListIndex]->Entries[ListX2Index]->Script->SCR_.size())
-                                    return;
+                            if(ListX3Index >= Stages[ListIndex]->Entries[ListX2Index]->SCR_.size())
+                                return;
 
-                                switch(ListX3FieldID)
-                                    {
-                                    case 1: //reference
-                                        Stages[ListIndex]->Entries[ListX2Index]->Script->SCR_[ListX3Index]->value.reference = defaultSCR_.reference;
-                                        Stages[ListIndex]->Entries[ListX2Index]->Script->SCR_[ListX3Index]->value.isSCRO = defaultSCR_.isSCRO;
-                                        return;
-                                    default:
-                                        return;
-                                    }
+                            switch(ListX3FieldID)
+                                {
+                                case 1: //reference
+                                    Stages[ListIndex]->Entries[ListX2Index]->SCR_[ListX3Index]->value.reference = defaultSCR_.reference;
+                                    Stages[ListIndex]->Entries[ListX2Index]->SCR_[ListX3Index]->value.isSCRO = defaultSCR_.isSCRO;
+                                    return;
+                                default:
+                                    return;
                                 }
                         default:
                             return;

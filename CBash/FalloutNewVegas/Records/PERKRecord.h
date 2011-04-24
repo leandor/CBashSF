@@ -123,7 +123,11 @@ class PERKRecord : public Record //Perk
             OptSubRecord<PERKEPFD> EPFD; //Data
             StringRecord EPF2; //Button Label
             OptSimpleSubRecord<UINT16> EPF3; //Script Flags
-            OptSubRecord<GENSCRIPT> Script; //Basic Script
+            ReqSubRecord<FNVSCHR> SCHR;
+            RawRecord SCDA;
+            NonNullStringRecord SCTX;
+            std::vector<GENVARS *> VARS;
+            std::vector<ReqSubRecord<GENSCR_> *> SCR_;
             //OptSubRecord<GENPRKF> PRKF; //End Marker
 
             enum epf3Flags
@@ -135,6 +139,11 @@ class PERKRecord : public Record //Perk
             void   IsRunImmediately(bool value);
             bool   IsFlagMask(UINT16 Mask, bool Exact=false);
             void   SetFlagMask(UINT16 Mask);
+
+            bool IsScriptEnabled();
+            void IsScriptEnabled(bool value);
+            bool IsScriptFlagMask(UINT16 Mask, bool Exact=false);
+            void SetScriptFlagMask(UINT16 Mask);
 
             bool   operator ==(const PERKEffect &other) const;
             bool   operator !=(const PERKEffect &other) const;

@@ -29,7 +29,7 @@ class SLPDRecord : public Record //Sleep Deprivation Stage
     {
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
+        OptSubRecord<SURVDATA> DATA; //Data
 
         SLPDRecord(unsigned char *_recData=NULL);
         SLPDRecord(SLPDRecord *srcRecord);

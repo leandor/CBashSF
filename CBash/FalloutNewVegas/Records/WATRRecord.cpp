@@ -81,6 +81,55 @@ bool WATRRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+bool WATRRecord::IsCausesDmg()
+    {
+    return (FNAM.value.value & fIsCausesDamage) != 0;
+    }
+
+void WATRRecord::IsCausesDmg(bool value)
+    {
+    if(value)
+        FNAM.value.value |= fIsCausesDamage;
+    else
+        FNAM.value.value &= ~fIsCausesDamage;
+    }
+
+bool WATRRecord::IsCausesDamage()
+    {
+    return (FNAM.value.value & fIsCausesDamage) != 0;
+    }
+
+void WATRRecord::IsCausesDamage(bool value)
+    {
+    if(value)
+        FNAM.value.value |= fIsCausesDamage;
+    else
+        FNAM.value.value &= ~fIsCausesDamage;
+    }
+
+bool WATRRecord::IsReflective()
+    {
+    return (FNAM.value.value & fIsReflective) != 0;
+    }
+
+void WATRRecord::IsReflective(bool value)
+    {
+    if(value)
+        FNAM.value.value |= fIsReflective;
+    else
+        FNAM.value.value &= ~fIsReflective;
+    }
+
+bool WATRRecord::IsFlagMask(UINT8 Mask, bool Exact)
+    {
+    return Exact ? ((FNAM.value.value & Mask) == Mask) : ((FNAM.value.value & Mask) != 0);
+    }
+
+void WATRRecord::SetFlagMask(UINT8 Mask)
+    {
+    FNAM.value.value = Mask;
+    }
+
 UINT32 WATRRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())

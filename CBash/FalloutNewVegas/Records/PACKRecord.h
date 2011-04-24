@@ -140,8 +140,17 @@ class PACKRecord : public Record //Package
         struct PACKSCRI // Script
             {
             ReqSubRecord<GENFID> INAM; // Idle
-            OptSubRecord<GENSCRIPT> Script; // Script
+            ReqSubRecord<FNVSCHR> SCHR;
+            RawRecord SCDA;
+            NonNullStringRecord SCTX;
+            std::vector<GENVARS *> VARS;
+            std::vector<ReqSubRecord<GENSCR_> *> SCR_;
             ReqSubRecord<GENFID> TNAM; // Topic
+
+            bool IsScriptEnabled();
+            void IsScriptEnabled(bool value);
+            bool IsScriptFlagMask(UINT16 Mask, bool Exact=false);
+            void SetScriptFlagMask(UINT16 Mask);
 
             bool   operator ==(const PACKSCRI &other) const;
             bool   operator !=(const PACKSCRI &other) const;

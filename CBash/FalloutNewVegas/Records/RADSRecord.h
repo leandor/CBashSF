@@ -29,7 +29,7 @@ class RADSRecord : public Record //Radiation Stage
     {
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
+        OptSubRecord<SURVDATA> DATA; //Data
 
         RADSRecord(unsigned char *_recData=NULL);
         RADSRecord(RADSRecord *srcRecord);

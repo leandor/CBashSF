@@ -30,7 +30,7 @@ class MSETRecord : public Record //Media Set
     private:
         enum typeTypes
             {
-            eNone = -1,
+            eNone   = -1,
             eBattle = 0,
             eLocation,
             eDungeon,
@@ -39,12 +39,12 @@ class MSETRecord : public Record //Media Set
 
         enum flagsFlags
             {
-            fIsDayOuter = 0x01,
-            fIsDayMiddle = 0x02,
-            fIsDayInner = 0x04,
-            fIsNightOuter = 0x08,
+            fIsDayOuter    = 0x01,
+            fIsDayMiddle   = 0x02,
+            fIsDayInner    = 0x04,
+            fIsNightOuter  = 0x08,
             fIsNightMiddle = 0x10,
-            fIsNightInner = 0x20
+            fIsNightInner  = 0x20
             };
     public:
         StringRecord EDID; //Editor ID

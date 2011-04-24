@@ -24,6 +24,32 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
+bool PACKRecord::PACKSCRI::IsScriptEnabled()
+    {
+    return (SCHR.value.flags & fIsEnabled) != 0;
+    }
+
+void PACKRecord::PACKSCRI::IsScriptEnabled(bool value)
+    {
+    if(value)
+        SCHR.value.flags |= fIsEnabled;
+    else
+        SCHR.value.flags &= ~fIsEnabled;
+    }
+
+bool PACKRecord::PACKSCRI::IsScriptFlagMask(UINT16 Mask, bool Exact)
+    {
+    if(Exact)
+        return (SCHR.value.flags & Mask) == Mask;
+    else
+        return (SCHR.value.flags & Mask) != 0;
+    }
+
+void PACKRecord::PACKSCRI::SetScriptFlagMask(UINT16 Mask)
+    {
+    SCHR.value.flags = Mask;
+    }
+
 PACKRecord::PACKRecord(unsigned char *_recData):
     Record(_recData)
     {

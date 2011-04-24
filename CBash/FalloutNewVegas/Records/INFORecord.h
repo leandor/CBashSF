@@ -169,8 +169,8 @@ class INFORecord : public Record //Dialog response
         std::vector<FORMID> TCLT; //Choices
         std::vector<FORMID> TCLF; //Link From
         std::vector<FORMID> TCFU; //Unknown
-        OptSubRecord<GENMINSCRIPT> Script;
-        OptSubRecord<GENMINSCRIPT> NextScript;
+        OptSubRecord<FNVMINSCRIPT> Script;
+        OptSubRecord<FNVMINSCRIPT> NextScript;
 
         OptSimpleSubRecord<FORMID> SNDD; //Unused
         StringRecord RNAM; //Prompt

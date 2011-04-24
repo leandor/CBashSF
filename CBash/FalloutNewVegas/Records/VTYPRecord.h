@@ -27,6 +27,13 @@ namespace FNV
 {
 class VTYPRecord : public Record //Voice Type
     {
+    private:
+        enum flagsFlags
+            {
+            fIsAllowDefaultDialog = 0x01,
+            fIsFemale             = 0x02
+            };
+
     public:
         StringRecord EDID; //Editor ID
         OptSimpleSubRecord<UINT8> DNAM; //Flags
@@ -36,6 +43,13 @@ class VTYPRecord : public Record //Voice Type
         ~VTYPRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
+
+        bool   IsAllowDefaultDialog();
+        void   IsAllowDefaultDialog(bool value);
+        bool   IsFemale();
+        void   IsFemale(bool value);
+        bool   IsFlagMask(UINT8 Mask, bool Exact=false);
+        void   SetFlagMask(UINT8 Mask);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

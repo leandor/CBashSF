@@ -1,7 +1,7 @@
 #include "Common.h"
 
 
-    
+
 template<class T> SimpleSubRecord<T>::SimpleSubRecord():
     isLoaded(false),
     value(0)
@@ -65,7 +65,7 @@ template<class T> bool SimpleSubRecord<T>::operator !=(const SimpleSubRecord<T> 
     {
     return !(*this == other);
     }
-    
+
 template<class T> ReqSimpleSubRecord<T>::ReqSimpleSubRecord():
     value(0)
     {
@@ -186,7 +186,7 @@ template<class T> bool OptSimpleSubRecord<T>::operator !=(const OptSimpleSubReco
     {
     return value != other.value;
     }
-    
+
 template<class T> SemiOptSimpleSubRecord<T>::SemiOptSimpleSubRecord():
     value(NULL)
     {

@@ -27,15 +27,35 @@ namespace FNV
 {
 class TES4Record : public Record //Main File Header
     {
+    private:
+        struct TES4HEDR
+            {
+            FLOAT32 version;
+            UINT32  numRecords, nextObject;
+
+            TES4HEDR(FLOAT32 _version=0.8f, UINT32 _numRecords=0, UINT32 _nextObject=END_HARDCODED_IDS);
+            ~TES4HEDR();
+
+            bool operator ==(const TES4HEDR &other) const;
+            bool operator !=(const TES4HEDR &other) const;
+            };
+
+        struct TES4DATA //Placeholder for writing. Otherwise not used.
+            {
+            UINT32 unk1, unk2;
+
+            TES4DATA();
+            ~TES4DATA();
+            };
+
     public:
-        OptSubRecord<GENHEDR> HEDR; //HEDR ,, Struct
+        ReqSubRecord<TES4HEDR> HEDR; //Header
         RawRecord OFST; //Unknown
         RawRecord DELE; //Unknown
         StringRecord CNAM; //Author
         StringRecord SNAM; //Description
-        StringRecord MAST; //Filename
-        OptSubRecord<GENDATA> DATA; //Unused
-        OptSubRecord<GENONAM> ONAM; //Overriden Forms
+        std::vector<StringRecord> MAST; //Master Files
+        std::vector<FORMID> ONAM; //Overridden Forms
         RawRecord SCRN; //Screenshot
 
         TES4Record(unsigned char *_recData=NULL);
@@ -43,6 +63,9 @@ class TES4Record : public Record //Main File Header
         ~TES4Record();
 
         bool   VisitFormIDs(FormIDOp &op);
+
+        bool IsESM();
+        void IsESM(bool value);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

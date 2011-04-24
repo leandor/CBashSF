@@ -40,7 +40,7 @@ class LTEXRecord : public Record
 
         enum typesTypes
             {
-            eStone      = 0,
+            eStone = 0,
             eCloth,
             eDirt,
             eGlass,

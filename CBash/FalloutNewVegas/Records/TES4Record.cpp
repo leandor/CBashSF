@@ -24,6 +24,44 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
+
+TES4Record::TES4HEDR::TES4HEDR(FLOAT32 _version, UINT32 _numRecords, UINT32 _nextObject):
+    version(_version),
+    numRecords(_numRecords),
+    nextObject(_nextObject)
+    {
+    //
+    }
+
+TES4Record::TES4HEDR::~TES4HEDR()
+    {
+    //
+    }
+
+bool TES4Record::TES4HEDR::operator ==(const TES4HEDR &other) const
+    {
+    return (AlmostEqual(version,other.version,2) &&
+            numRecords == other.numRecords &&
+            nextObject == other.nextObject);
+    }
+
+bool TES4Record::TES4HEDR::operator !=(const TES4HEDR &other) const
+    {
+    return !(*this == other);
+    }
+
+TES4Record::TES4DATA::TES4DATA():
+    unk1(0),
+    unk2(0)
+    {
+    //
+    }
+
+TES4Record::TES4DATA::~TES4DATA()
+    {
+    //
+    }
+
 TES4Record::TES4Record(unsigned char *_recData):
     Record(_recData)
     {
@@ -53,7 +91,6 @@ TES4Record::TES4Record(TES4Record *srcRecord):
     CNAM = srcRecord->CNAM;
     SNAM = srcRecord->SNAM;
     MAST = srcRecord->MAST;
-    DATA = srcRecord->DATA;
     ONAM = srcRecord->ONAM;
     SCRN = srcRecord->SCRN;
     return;
@@ -73,6 +110,18 @@ bool TES4Record::VisitFormIDs(FormIDOp &op)
     //    op.Accept(ONAM->value);
 
     return op.Stop();
+    }
+
+bool TES4Record::IsESM()
+    {
+    if(!IsLoaded()) return false;
+    return (flags & fIsESM) != 0;
+    }
+
+void TES4Record::IsESM(bool value)
+    {
+    if(!IsLoaded()) return;
+    flags = value ? (flags | fIsESM) : (flags & ~fIsESM);
     }
 
 UINT32 TES4Record::GetSize(bool forceCalc)
@@ -114,15 +163,12 @@ UINT32 TES4Record::GetSize(bool forceCalc)
         TotSize += cSize += 6;
         }
 
-    if(MAST.IsLoaded())
+    for(UINT32 p = 0; p < MAST.size(); p++)
         {
-        cSize = MAST.GetSize();
+        cSize = MAST[p].GetSize();
         if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
+        TotSize += cSize += 20;//accounts for associated DATA element, subTypes and sizes
         }
-
-    if(DATA.IsLoaded())
-        TotSize += DATA.GetSize() + 6;
 
     if(ONAM.IsLoaded())
         TotSize += ONAM.GetSize() + 6;
@@ -210,17 +256,7 @@ SINT32 TES4Record::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
 
 SINT32 TES4Record::Unload()
     {
-    IsChanged(false);
-    IsLoaded(false);
-    HEDR.Unload();
-    OFST.Unload();
-    DELE.Unload();
-    CNAM.Unload();
-    SNAM.Unload();
-    MAST.Unload();
-    DATA.Unload();
-    ONAM.Unload();
-    SCRN.Unload();
+    //TES4 should never be unloaded, so do nothing
     return 1;
     }
 
@@ -241,8 +277,11 @@ SINT32 TES4Record::WriteRecord(_FileHandler &SaveHandler)
     if(SNAM.IsLoaded())
         SaveHandler.writeSubRecord('MANS', SNAM.value, SNAM.GetSize());
 
-    if(MAST.IsLoaded())
-        SaveHandler.writeSubRecord('TSAM', MAST.value, MAST.GetSize());
+    for(UINT32 p = 0; p < MAST.size(); p++)
+        {
+        SaveHandler.writeSubRecord('TSAM', MAST[p].value, MAST[p].GetSize());
+        SaveHandler.writeSubRecord('ATAD', &DATA, sizeof(TES4DATA));
+        }
 
     if(DATA.IsLoaded())
         SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
@@ -258,15 +297,34 @@ SINT32 TES4Record::WriteRecord(_FileHandler &SaveHandler)
 
 bool TES4Record::operator ==(const TES4Record &other) const
     {
-    return (HEDR == other.HEDR &&
-            OFST == other.OFST &&
-            DELE == other.DELE &&
-            CNAM.equalsi(other.CNAM) &&
-            SNAM.equalsi(other.SNAM) &&
-            MAST.equalsi(other.MAST) &&
-            DATA == other.DATA &&
-            ONAM == other.ONAM &&
-            SCRN == other.SCRN);
+    if(OFST == other.OFST &&
+        DELE == other.DELE &&
+        CNAM.equals(other.CNAM) &&
+        SNAM.equals(other.SNAM) &&
+        SCRN == other.SCRN &&
+        MAST.size() == other.MAST.size() &&
+        ONAM.size() == other.ONAM.size())
+        {
+        //Record order kinda sorta but doesn't really matter on masters, so equality testing is easy
+        //The order determines the mod index of all formIDs in the mod file
+        //If both records have the same masters in the same orders, the formIDs will have the same master indexing
+        //If both records have the same masters in different orders, the formIDs will have different indexing but be logically equivalent
+        //The ordering has no effect on load order in game or in the editor
+        for(UINT32 x = 0; x < MAST.size(); ++x)
+            if(!(MAST[x].equalsi(other.MAST[x])))
+                return false;
+
+        //Record order probably doesn't matter on overrides, so equality testing isn't easy
+        //The proper solution would be to make a set of each vector and compare them
+        //Fix-up later
+        for(UINT32 x = 0; x < ONAM.size(); ++x)
+            if(ONAM[x] != other.ONAM[x])
+                return false;
+
+        return true;
+        }
+
+    return false;
     }
 
 bool TES4Record::operator !=(const TES4Record &other) const

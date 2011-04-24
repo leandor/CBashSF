@@ -27,14 +27,39 @@ namespace FNV
 {
 class TREERecord : public Record //Tree
     {
+    private:
+        struct TREECNAM
+            {
+            FLOAT32 curvature, minAngle, maxAngle, branchDim, leafDim;
+            SINT32  shadowRadius;
+            FLOAT32 rockSpeed, rustleSpeed;
+
+            TREECNAM();
+            ~TREECNAM();
+
+            bool operator ==(const TREECNAM &other) const;
+            bool operator !=(const TREECNAM &other) const;
+            };
+
+        struct TREEBNAM
+            {
+            FLOAT32 widthBill, heightBill;
+
+            TREEBNAM();
+            ~TREEBNAM();
+
+            bool operator ==(const TREEBNAM &other) const;
+            bool operator !=(const TREEBNAM &other) const;
+            };
+
     public:
         StringRecord EDID; //Editor ID
         OptSubRecord<GENOBND> OBND; //Object Bounds
         OptSubRecord<FNVMODEL> MODL; //Model
-        OptSubRecord<GENICON> ICON; //Large Icon Filename
-        OptSubRecord<GENSNAM> SNAM; //SpeedTree Seeds
-        OptSubRecord<GENCNAM> CNAM; //CNAM ,, Struct
-        OptSubRecord<GENBNAM> BNAM; //BNAM ,, Struct
+        OptSubRecord<GENICON> ICON; //Icon Filenames
+        std::vector<UINT32> SNAM; //SpeedTree Seeds
+        OptSubRecord<TREECNAM> CNAM; //Tree Data
+        OptSubRecord<TREEBNAM> BNAM; //Billboard Dimensions
 
         TREERecord(unsigned char *_recData=NULL);
         TREERecord(TREERecord *srcRecord);

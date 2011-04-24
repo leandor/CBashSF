@@ -29,13 +29,22 @@ class SCPTRecord : public Record //Script
     {
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENSCHR> SCHR; //Basic Script Data
+        ReqSubRecord<FNVSCHR> SCHR;
+        RawRecord SCDA;
+        NonNullStringRecord SCTX;
+        std::vector<GENVARS *> VARS;
+        std::vector<ReqSubRecord<GENSCR_> *> SCR_;
 
         SCPTRecord(unsigned char *_recData=NULL);
         SCPTRecord(SCPTRecord *srcRecord);
         ~SCPTRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
+
+        bool IsScriptEnabled();
+        void IsScriptEnabled(bool value);
+        bool IsScriptFlagMask(UINT16 Mask, bool Exact=false);
+        void SetScriptFlagMask(UINT16 Mask);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

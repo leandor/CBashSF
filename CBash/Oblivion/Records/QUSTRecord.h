@@ -43,7 +43,10 @@ class QUSTRecord : public Record
             ReqSubRecord<GENU8> QSDT;
             std::vector<ReqSubRecord<GENCTDA> *> CTDA;
             StringRecord CNAM;
-            OptSubRecord<GENMINSCRIPT> Script;
+            ReqSubRecord<GENSCHR> SCHR;
+            RawRecord SCDA;
+            NonNullStringRecord SCTX;
+            std::vector<ReqSubRecord<GENSCR_> *> SCR_;
 
             enum entriesFlags
                 {

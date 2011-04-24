@@ -103,6 +103,32 @@ bool QUSTRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+bool QUSTRecord::IsScriptEnabled()
+    {
+    return (SCHR.value.flags & fIsEnabled) != 0;
+    }
+
+void QUSTRecord::IsScriptEnabled(bool value)
+    {
+    if(value)
+        SCHR.value.flags |= fIsEnabled;
+    else
+        SCHR.value.flags &= ~fIsEnabled;
+    }
+
+bool QUSTRecord::IsScriptFlagMask(UINT16 Mask, bool Exact)
+    {
+    if(Exact)
+        return (SCHR.value.flags & Mask) == Mask;
+    else
+        return (SCHR.value.flags & Mask) != 0;
+    }
+
+void QUSTRecord::SetScriptFlagMask(UINT16 Mask)
+    {
+    SCHR.value.flags = Mask;
+    }
+
 UINT32 QUSTRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())

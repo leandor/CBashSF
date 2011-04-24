@@ -238,10 +238,15 @@ INFORecord::INFORecord(INFORecord *srcRecord):
     for(UINT32 x = 0; x < srcRecord->TCLF.size(); x++)
         TCLF[x] = srcRecord->TCLF[x];
     //SCHD = srcRecord->SCHD;
-    if(srcRecord->Script.IsLoaded())
+    SCHR = srcRecord->SCHR;
+    SCDA = srcRecord->SCDA;
+    SCTX = srcRecord->SCTX;
+    SCR_.clear();
+    SCR_.resize(srcRecord->SCR_.size());
+    for(UINT32 x = 0; x < srcRecord->SCR_.size(); x++)
         {
-        Script.Load();
-        Script->Copy(*srcRecord->Script.value);
+        SCR_[x] = new ReqSubRecord<GENSCR_>;
+        *SCR_[x] = *srcRecord->SCR_[x];
         }
     return;
     }
@@ -252,6 +257,8 @@ INFORecord::~INFORecord()
         delete Responses[x];
     for(UINT32 x = 0; x < CTDA.size(); x++)
         delete CTDA[x];
+    for(UINT32 x = 0; x < SCR_.size(); x++)
+        delete SCR_[x];
     }
 
 bool INFORecord::VisitFormIDs(FormIDOp &op)
@@ -288,9 +295,9 @@ bool INFORecord::VisitFormIDs(FormIDOp &op)
         op.Accept(TCLT[x]);
     for(UINT32 x = 0; x < TCLF.size(); x++)
         op.Accept(TCLF[x]);
-
-    if(Script.IsLoaded())
-        Script->VisitFormIDs(op);
+    for(UINT32 x = 0; x < SCR_.size(); x++)
+        if(SCR_[x]->value.isSCRO)
+            op.Accept(SCR_[x]->value.reference);
 
     return op.Stop();
     }
@@ -532,8 +539,24 @@ UINT32 INFORecord::GetSize(bool forceCalc)
     //if(SCHD.IsLoaded())
     //    cSize += SCHD.GetSize() + 6;
 
-    if(Script.IsLoaded())
-        TotSize += Script->GetSize();
+    if(SCHR.IsLoaded())
+        TotSize += SCHR.GetSize() + 6;
+
+    if(SCDA.IsLoaded())
+        {
+        cSize = SCDA.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(SCTX.IsLoaded())
+        {
+        cSize = SCTX.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    TotSize += (sizeof(UINT32) + 6) * (UINT32)SCR_.size();
 
     return TotSize;
     }
@@ -623,28 +646,23 @@ SINT32 INFORecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 curPos += subSize;
                 break;
             case 'RHCS': //SCHDs are also larger than SCHRs, so the end will be truncated.
-                Script.Load();
-                Script->SCHR.Read(buffer, subSize, curPos);
+                SCHR.Read(buffer, subSize, curPos);
                 break;
             case 'ADCS':
-                Script.Load();
-                Script->SCDA.Read(buffer, subSize, curPos);
+                SCDA.Read(buffer, subSize, curPos);
                 break;
             case 'XTCS':
-                Script.Load();
-                Script->SCTX.Read(buffer, subSize, curPos);
+                SCTX.Read(buffer, subSize, curPos);
                 break;
             case 'VRCS':
-                Script.Load();
-                Script->SCR_.push_back(new ReqSubRecord<GENSCR_>);
-                Script->SCR_.back()->Read(buffer, subSize, curPos);
-                Script->SCR_.back()->value.isSCRO = false;
+                SCR_.push_back(new ReqSubRecord<GENSCR_>);
+                SCR_.back()->Read(buffer, subSize, curPos);
+                SCR_.back()->value.isSCRO = false;
                 break;
             case 'ORCS':
-                Script.Load();
-                Script->SCR_.push_back(new ReqSubRecord<GENSCR_>);
-                Script->SCR_.back()->Read(buffer, subSize, curPos);
-                Script->SCR_.back()->value.isSCRO = true;
+                SCR_.push_back(new ReqSubRecord<GENSCR_>);
+                SCR_.back()->Read(buffer, subSize, curPos);
+                SCR_.back()->value.isSCRO = true;
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
@@ -681,7 +699,13 @@ SINT32 INFORecord::Unload()
     TCLF.clear();
 
     //SCHD.Unload();
-    Script.Unload();
+    SCHR.Unload();
+    SCDA.Unload();
+    SCTX.Unload();
+
+    for(UINT32 x = 0; x < SCR_.size(); x++)
+        delete SCR_[x];
+    SCR_.clear();
     return 1;
     }
 
@@ -731,8 +755,18 @@ SINT32 INFORecord::WriteRecord(_FileHandler &SaveHandler)
         SaveHandler.writeSubRecord('FLCT', &TCLF[p], sizeof(UINT32));
     //if(SCHD.IsLoaded())
     //    SaveHandler.writeSubRecord('DHCS', SCHD.value, SCHD.GetSize());
-    if(Script.IsLoaded())
-        Script->writeSubRecords(SaveHandler);
+    if(SCHR.IsLoaded())
+        SaveHandler.writeSubRecord('RHCS', &SCHR.value, SCHR.GetSize());
+    if(SCDA.IsLoaded())
+        SaveHandler.writeSubRecord('ADCS', SCDA.value, SCDA.GetSize());
+    if(SCTX.IsLoaded())
+        SaveHandler.writeSubRecord('XTCS', SCTX.value, SCTX.GetSize());
+    for(UINT32 p = 0; p < SCR_.size(); p++)
+        if(SCR_[p]->IsLoaded())
+            if(SCR_[p]->value.isSCRO)
+                SaveHandler.writeSubRecord('ORCS', &SCR_[p]->value.reference, sizeof(UINT32));
+            else
+                SaveHandler.writeSubRecord('VRCS', &SCR_[p]->value.reference, sizeof(UINT32));
     return -1;
     }
 
@@ -742,12 +776,15 @@ bool INFORecord::operator ==(const INFORecord &other) const
         QSTI == other.QSTI &&
         TPIC == other.TPIC &&
         PNAM == other.PNAM &&
-        Script == other.Script &&
+        SCHR == other.SCHR &&
+        SCDA == other.SCDA &&
+        SCTX.equalsi(other.SCTX) &&
         NAME.size() == other.NAME.size() &&
         Responses.size() == other.Responses.size() &&
         CTDA.size() == other.CTDA.size() &&
         TCLT.size() == other.TCLT.size() &&
-        TCLF.size() == other.TCLF.size())
+        TCLF.size() == other.TCLF.size() &&
+        SCR_.size() == other.SCR_.size())
         {
         //Not sure if record order matters on add topics, so equality testing is a guess
         //Fix-up later
@@ -778,6 +815,10 @@ bool INFORecord::operator ==(const INFORecord &other) const
             if(TCLF[x] != other.TCLF[x])
                 return false;
 
+        //Record order matters on references, so equality testing is easy
+        for(UINT32 x = 0; x < SCR_.size(); ++x)
+            if(*SCR_[x] != *other.SCR_[x])
+                return false;
         return true;
         }
 

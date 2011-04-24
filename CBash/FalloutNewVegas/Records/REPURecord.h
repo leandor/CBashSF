@@ -30,7 +30,7 @@ class REPURecord : public Record //Reputation
     public:
         StringRecord EDID; //Editor ID
         StringRecord FULL; //Name
-        OptSubRecord<GENICON> ICON; //Large Icon Filename
+        OptSubRecord<GENICON> ICON; //Icon Filenames
         OptSimpleSubRecord<FLOAT32> DATA; //Value
 
         REPURecord(unsigned char *_recData=NULL);

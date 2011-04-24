@@ -67,6 +67,33 @@ bool RCCTRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+bool RCCTRecord::IsSubcategory()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsSubcategory) != 0;
+    }
+
+void RCCTRecord::IsSubcategory(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsSubcategory;
+    else
+        Dummy->flags &= ~fIsSubcategory;
+    }
+
+bool RCCTRecord::IsFlagMask(UINT8 Mask, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    }
+
+void RCCTRecord::SetFlagMask(UINT8 Mask)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
 UINT32 RCCTRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())

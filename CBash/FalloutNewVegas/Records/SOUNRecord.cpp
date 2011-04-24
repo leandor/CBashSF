@@ -73,6 +73,213 @@ bool SOUNRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+bool SOUNRecord::IsRandomFrequencyShift()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsRandomFrequencyShift) != 0;
+    }
+
+void SOUNRecord::IsRandomFrequencyShift(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsRandomFrequencyShift;
+    else
+        Dummy->flags &= ~fIsRandomFrequencyShift;
+    }
+
+bool SOUNRecord::IsPlayAtRandom()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsPlayAtRandom) != 0;
+    }
+
+void SOUNRecord::IsPlayAtRandom(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsPlayAtRandom;
+    else
+        Dummy->flags &= ~fIsPlayAtRandom;
+    }
+
+bool SOUNRecord::IsEnvironmentIgnored()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsEnvironmentIgnored) != 0;
+    }
+
+void SOUNRecord::IsEnvironmentIgnored(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsEnvironmentIgnored;
+    else
+        Dummy->flags &= ~fIsEnvironmentIgnored;
+    }
+
+bool SOUNRecord::IsRandomLocation()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsRandomLocation) != 0;
+    }
+
+void SOUNRecord::IsRandomLocation(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsRandomLocation;
+    else
+        Dummy->flags &= ~fIsRandomLocation;
+    }
+
+bool SOUNRecord::IsLoop()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsLoop) != 0;
+    }
+
+void SOUNRecord::IsLoop(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsLoop;
+    else
+        Dummy->flags &= ~fIsLoop;
+    }
+
+bool SOUNRecord::IsMenuSound()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsMenuSound) != 0;
+    }
+
+void SOUNRecord::IsMenuSound(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsMenuSound;
+    else
+        Dummy->flags &= ~fIsMenuSound;
+    }
+
+bool SOUNRecord::Is2D()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIs2D) != 0;
+    }
+
+void SOUNRecord::Is2D(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIs2D;
+    else
+        Dummy->flags &= ~fIs2D;
+    }
+
+bool SOUNRecord::Is360LFE()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIs360LFE) != 0;
+    }
+
+void SOUNRecord::Is360LFE(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIs360LFE;
+    else
+        Dummy->flags &= ~fIs360LFE;
+    }
+
+bool SOUNRecord::IsDialogueSound()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsDialogueSound) != 0;
+    }
+
+void SOUNRecord::IsDialogueSound(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsDialogueSound;
+    else
+        Dummy->flags &= ~fIsDialogueSound;
+    }
+
+bool SOUNRecord::IsEnvelopeFast()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsEnvelopeFast) != 0;
+    }
+
+void SOUNRecord::IsEnvelopeFast(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsEnvelopeFast;
+    else
+        Dummy->flags &= ~fIsEnvelopeFast;
+    }
+
+bool SOUNRecord::IsEnvelopeSlow()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsEnvelopeSlow) != 0;
+    }
+
+void SOUNRecord::IsEnvelopeSlow(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsEnvelopeSlow;
+    else
+        Dummy->flags &= ~fIsEnvelopeSlow;
+    }
+
+bool SOUNRecord::Is2DRadius()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIs2DRadius) != 0;
+    }
+
+void SOUNRecord::Is2DRadius(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIs2DRadius;
+    else
+        Dummy->flags &= ~fIs2DRadius;
+    }
+
+bool SOUNRecord::IsMuteWhenSubmerged()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsMuteWhenSubmerged) != 0;
+    }
+
+void SOUNRecord::IsMuteWhenSubmerged(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsMuteWhenSubmerged;
+    else
+        Dummy->flags &= ~fIsMuteWhenSubmerged;
+    }
+
+bool SOUNRecord::IsFlagMask(UINT32 Mask, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    }
+
+void SOUNRecord::SetFlagMask(UINT32 Mask)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
 UINT32 SOUNRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())

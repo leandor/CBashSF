@@ -37,7 +37,7 @@ class QUSTRecord : public Record //Quest
         OptSimpleSubRecord<SINT16> INDX; //Stage Index
         OptSimpleSubRecord<UINT8> QSDT; //Stage Flags
         StringRecord CNAM; //Log Entry
-        OptSubRecord<GENSCHR> SCHR; //Basic Script Data
+        OptSubRecord<FNVSCHR> SCHR; //Basic Script Data
         OptSimpleSubRecord<FORMID> NAM0; //Next Quest
         OptSimpleSubRecord<SINT32> QOBJ; //Objective Index
         StringRecord NNAM; //Description
@@ -48,6 +48,11 @@ class QUSTRecord : public Record //Quest
         ~QUSTRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
+
+        bool IsScriptEnabled();
+        void IsScriptEnabled(bool value);
+        bool IsScriptFlagMask(UINT16 Mask, bool Exact=false);
+        void SetScriptFlagMask(UINT16 Mask);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

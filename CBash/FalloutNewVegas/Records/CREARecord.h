@@ -156,7 +156,7 @@ class CREARecord : public Record //Creature
             fIsNoShadow        = 0x00080000,
             fIsNoVATSMelee     = 0x00100000,
             fIsAllowPCDialogue = 0x00200000,
-            fIsCantOpenDoors  = 0x00400000,
+            fIsCantOpenDoors   = 0x00400000,
             fIsImmobile        = 0x00800000,
             fIsTiltFrontBack   = 0x01000000,
             fIsTiltLeftRight   = 0x02000000,

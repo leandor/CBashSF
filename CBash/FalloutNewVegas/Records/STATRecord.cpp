@@ -81,6 +81,183 @@ bool STATRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+bool STATRecord::IsNone()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eNone);
+    }
+
+void STATRecord::IsNone(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eNone;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool STATRecord::IsBushA()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eBushA);
+    }
+
+void STATRecord::IsBushA(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eBushA;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool STATRecord::IsBushB()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eBushB);
+    }
+
+void STATRecord::IsBushB(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eBushB;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool STATRecord::IsBushC()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eBushC);
+    }
+
+void STATRecord::IsBushC(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eBushC;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool STATRecord::IsBushD()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eBushD);
+    }
+
+void STATRecord::IsBushD(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eBushD;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool STATRecord::IsBushE()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eBushE);
+    }
+
+void STATRecord::IsBushE(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eBushE;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool STATRecord::IsBushF()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eBushF);
+    }
+
+void STATRecord::IsBushF(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eBushF;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool STATRecord::IsBushG()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eBushG);
+    }
+
+void STATRecord::IsBushG(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eBushG;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool STATRecord::IsBushH()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eBushH);
+    }
+
+void STATRecord::IsBushH(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eBushH;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool STATRecord::IsBushI()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eBushI);
+    }
+
+void STATRecord::IsBushI(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eBushI;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool STATRecord::IsBushJ()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eBushJ);
+    }
+
+void STATRecord::IsBushJ(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eBushJ;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool STATRecord::IsType(SINT8 Type, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    }
+
+void STATRecord::SetType(SINT8 Type)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
 UINT32 STATRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())

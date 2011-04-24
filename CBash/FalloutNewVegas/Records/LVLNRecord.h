@@ -30,9 +30,9 @@ class LVLNRecord : public Record //Leveled NPC
     private:
         enum flagsFlags
             {
-            fCalcFromAllLevels    = 0x00000001,
-            fCalcForEachItem      = 0x00000002,
-            fUseAll = 0x00000004
+            fCalcFromAllLevels = 0x00000001,
+            fCalcForEachItem   = 0x00000002,
+            fUseAll            = 0x00000004
             };
 
     public:

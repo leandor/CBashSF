@@ -30,7 +30,7 @@ class NOTERecord : public Record //Note
     private:
         enum noteTypeTypes
             {
-            eSound=0,
+            eSound = 0,
             eText,
             eImage,
             eVoice

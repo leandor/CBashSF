@@ -45,13 +45,13 @@ class NPC_Record : public Record //Non-Player Character
 
         struct NPC_DNAM // Skill Data
             {
-            UINT8   barter, bigGuns, energy, explosives, 
-                    lockpick, medicine, melee, repair, 
-                    science, guns, sneak, speech, 
+            UINT8   barter, bigGuns, energy, explosives,
+                    lockpick, medicine, melee, repair,
+                    science, guns, sneak, speech,
                     survival, unarmed; // Big Guns is obsolete for FNV
-            UINT8   barterBoost, bigGunsBoost, energyBoost, explosivesBoost, 
-                    lockpickBoost, medicineBoost, meleeBoost, repairBoost, 
-                    scienceBoost, gunsBoost, sneakBoost, speechBoost, 
+            UINT8   barterBoost, bigGunsBoost, energyBoost, explosivesBoost,
+                    lockpickBoost, medicineBoost, meleeBoost, repairBoost,
+                    scienceBoost, gunsBoost, sneakBoost, speechBoost,
                     survivalBoost, unarmedBoost; // Big Guns is obsolete for FNV
 
             NPC_DNAM();
@@ -63,35 +63,35 @@ class NPC_Record : public Record //Non-Player Character
 
         enum flagsFlags
             {
-            fIsFemale           = 0x00000001,
-            fIsEssential       = 0x00000002,
+            fIsFemale            = 0x00000001,
+            fIsEssential         = 0x00000002,
             fIsCharGenFacePreset = 0x00000004,
-            fIsRespawn         = 0x00000008,
-            fIsAutoCalcStats          = 0x00000010,
+            fIsRespawn           = 0x00000008,
+            fIsAutoCalcStats     = 0x00000010,
             //fIsFlies           = 0x00000020, // CREA only?
             //fIsWalks           = 0x00000040, // CREA only?
-            fIsPCLevelOffset   = 0x00000080,
-            fIsUseTemplate        = 0x00000100,
-            fIsNoLowLevel      = 0x00000200,
-            fIsNoBloodSpray    = 0x00000800,
-            fIsNoBloodDecal    = 0x00001000,
-            //fIsSummonable    = 0x00004000, //OBSE
+            fIsPCLevelOffset     = 0x00000080,
+            fIsUseTemplate       = 0x00000100,
+            fIsNoLowLevel        = 0x00000200,
+            fIsNoBloodSpray      = 0x00000800,
+            fIsNoBloodDecal      = 0x00001000,
+            //fIsSummonable      = 0x00004000, //OBSE
             //fIsNoHead          = 0x00008000, // CREA only?
             //fIsNoRightArm      = 0x00010000, // CREA only?
             //fIsNoLeftArm       = 0x00020000, // CREA only?
             //fIsNoCombatInWater = 0x00040000, // CREA only?
             //fIsNoShadow        = 0x00080000, // CREA only?
-            fIsNoVATSMelee     = 0x00100000,
+            fIsNoVATSMelee       = 0x00100000,
             //fIsAllowPCDialogue = 0x00200000, // CREA only?
-            fIsCanBeAllRaces  = 0x00400000,
-            fIsAutoCalcService        = 0x00800000,
+            fIsCanBeAllRaces     = 0x00400000,
+            fIsAutoCalcService   = 0x00800000,
             //fIsTiltFrontBack   = 0x01000000, // CREA only?
             //fIsTiltLeftRight   = 0x02000000, // CREA only?
-            fIsNoKnockdowns    = 0x03000000, //3?
-            fIsNotPushable     = 0x08000000,
+            fIsNoKnockdowns      = 0x03000000, //3?
+            fIsNotPushable       = 0x08000000,
             //fIsAllowPickpocket = 0x10000000, // CREA only?
             //fIsGhost           = 0x20000000, // CREA only?
-            fIsNoHeadTracking  = 0x40000000
+            fIsNoHeadTracking    = 0x40000000
             //fIsInvulnerable    = 0x80000000 // CREA only?
             };
 

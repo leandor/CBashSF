@@ -55,6 +55,8 @@ QUSTRecord::QUSTEntry::~QUSTEntry()
     {
     for(UINT32 x = 0; x < CTDA.size(); x++)
         delete CTDA[x];
+    for(UINT32 x = 0; x < SCR_.size(); x++)
+        delete SCR_[x];
     }
 
 bool QUSTRecord::QUSTEntry::IsCompletes()
@@ -81,13 +83,22 @@ bool QUSTRecord::QUSTEntry::operator ==(const QUSTEntry &other) const
     {
     if(QSDT == other.QSDT &&
         CNAM.equals(other.CNAM) &&
-        Script == other.Script &&
-        CTDA.size() == other.CTDA.size())
+        SCHR == other.SCHR &&
+        SCDA == other.SCDA &&
+        SCTX.equalsi(other.SCTX) &&
+        CTDA.size() == other.CTDA.size() &&
+        SCR_.size() == other.SCR_.size())
         {
         //Record order matters on conditions, so equality testing is easy
         for(UINT32 x = 0; x < CTDA.size(); ++x)
             if(*CTDA[x] != *other.CTDA[x])
                 return false;
+
+        //Record order matters on references, so equality testing is easy
+        for(UINT32 x = 0; x < SCR_.size(); ++x)
+            if(*SCR_[x] != *other.SCR_[x])
+                return false;
+
         return true;
         }
 
@@ -259,10 +270,14 @@ QUSTRecord::QUSTRecord(QUSTRecord *srcRecord):
                 *Stages[x]->Entries[y]->CTDA[p] = *srcRecord->Stages[x]->Entries[y]->CTDA[p];
                 }
             Stages[x]->Entries[y]->CNAM = srcRecord->Stages[x]->Entries[y]->CNAM;
-            if(srcRecord->Stages[x]->Entries[y]->Script.IsLoaded())
+            Stages[x]->Entries[y]->SCHR = srcRecord->Stages[x]->Entries[y]->SCHR;
+            Stages[x]->Entries[y]->SCDA = srcRecord->Stages[x]->Entries[y]->SCDA;
+            Stages[x]->Entries[y]->SCTX = srcRecord->Stages[x]->Entries[y]->SCTX;
+            Stages[x]->Entries[y]->SCR_.resize(srcRecord->Stages[x]->Entries[y]->SCR_.size());
+            for(UINT32 p = 0; p < srcRecord->Stages[x]->Entries[y]->SCR_.size(); p++)
                 {
-                Stages[x]->Entries[y]->Script.Load();
-                Stages[x]->Entries[y]->Script->Copy(*srcRecord->Stages[x]->Entries[y]->Script.value);
+                Stages[x]->Entries[y]->SCR_[p] = new ReqSubRecord<GENSCR_>;
+                *Stages[x]->Entries[y]->SCR_[p] = *srcRecord->Stages[x]->Entries[y]->SCR_[p];
                 }
             }
         }
@@ -336,8 +351,9 @@ bool QUSTRecord::VisitFormIDs(FormIDOp &op)
                 else
                     printf("Warning: QUSTRecord Stage %08X uses an unknown function (%d)!\n", formID, Stages[x]->Entries[y]->CTDA[p]->value.ifunc);
                 }
-            if(Stages[x]->Entries[y]->Script.IsLoaded())
-                Stages[x]->Entries[y]->Script->VisitFormIDs(op);
+            for(UINT32 p = 0; p < Stages[x]->Entries[y]->SCR_.size(); p++)
+                if(Stages[x]->Entries[y]->SCR_[p]->value.isSCRO)
+                    op.Accept(Stages[x]->Entries[y]->SCR_[p]->value.reference);
             }
         }
 
@@ -476,8 +492,24 @@ UINT32 QUSTRecord::GetSize(bool forceCalc)
                 TotSize += cSize += 6;
                 }
 
-            if(Stages[p]->Entries[x]->Script.IsLoaded())
-                TotSize += Stages[p]->Entries[x]->Script->GetSize();
+            if(Stages[p]->Entries[x]->SCHR.IsLoaded())
+                TotSize += Stages[p]->Entries[x]->SCHR.GetSize() + 6;
+
+            if(Stages[p]->Entries[x]->SCDA.IsLoaded())
+                {
+                cSize = Stages[p]->Entries[x]->SCDA.GetSize();
+                if(cSize > 65535) cSize += 10;
+                TotSize += cSize += 6;
+                }
+
+            if(Stages[p]->Entries[x]->SCTX.IsLoaded())
+                {
+                cSize = Stages[p]->Entries[x]->SCTX.GetSize();
+                if(cSize > 65535) cSize += 10;
+                TotSize += cSize += 6;
+                }
+
+            TotSize += (sizeof(UINT32) + 6) * (UINT32)Stages[p]->Entries[x]->SCR_.size();
             }
         }
 
@@ -598,8 +630,7 @@ SINT32 QUSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
 
                 if(Stages.back()->Entries.size() == 0)
                     Stages.back()->Entries.push_back(new QUSTEntry);
-                Stages.back()->Entries.back()->Script.Load();
-                Stages.back()->Entries.back()->Script->SCHR.Read(buffer, subSize, curPos);
+                Stages.back()->Entries.back()->SCHR.Read(buffer, subSize, curPos);
                 break;
             case 'ADCS':
                 if(Stages.size() == 0)
@@ -607,8 +638,7 @@ SINT32 QUSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
 
                 if(Stages.back()->Entries.size() == 0)
                     Stages.back()->Entries.push_back(new QUSTEntry);
-                Stages.back()->Entries.back()->Script.Load();
-                Stages.back()->Entries.back()->Script->SCDA.Read(buffer, subSize, curPos);
+                Stages.back()->Entries.back()->SCDA.Read(buffer, subSize, curPos);
                 break;
             case 'XTCS':
                 if(Stages.size() == 0)
@@ -616,8 +646,7 @@ SINT32 QUSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
 
                 if(Stages.back()->Entries.size() == 0)
                     Stages.back()->Entries.push_back(new QUSTEntry);
-                Stages.back()->Entries.back()->Script.Load();
-                Stages.back()->Entries.back()->Script->SCTX.Read(buffer, subSize, curPos);
+                Stages.back()->Entries.back()->SCTX.Read(buffer, subSize, curPos);
                 break;
             case 'VRCS':
                 if(Stages.size() == 0)
@@ -625,10 +654,9 @@ SINT32 QUSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
 
                 if(Stages.back()->Entries.size() == 0)
                     Stages.back()->Entries.push_back(new QUSTEntry);
-                Stages.back()->Entries.back()->Script.Load();
-                Stages.back()->Entries.back()->Script->SCR_.push_back(new ReqSubRecord<GENSCR_>);
-                Stages.back()->Entries.back()->Script->SCR_.back()->Read(buffer, subSize, curPos);
-                Stages.back()->Entries.back()->Script->SCR_.back()->value.isSCRO = false;
+                Stages.back()->Entries.back()->SCR_.push_back(new ReqSubRecord<GENSCR_>);
+                Stages.back()->Entries.back()->SCR_.back()->Read(buffer, subSize, curPos);
+                Stages.back()->Entries.back()->SCR_.back()->value.isSCRO = false;
                 break;
             case 'ORCS':
                 if(Stages.size() == 0)
@@ -636,10 +664,9 @@ SINT32 QUSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
 
                 if(Stages.back()->Entries.size() == 0)
                     Stages.back()->Entries.push_back(new QUSTEntry);
-                Stages.back()->Entries.back()->Script.Load();
-                Stages.back()->Entries.back()->Script->SCR_.push_back(new ReqSubRecord<GENSCR_>);
-                Stages.back()->Entries.back()->Script->SCR_.back()->Read(buffer, subSize, curPos);
-                Stages.back()->Entries.back()->Script->SCR_.back()->value.isSCRO = true;
+                Stages.back()->Entries.back()->SCR_.push_back(new ReqSubRecord<GENSCR_>);
+                Stages.back()->Entries.back()->SCR_.back()->Read(buffer, subSize, curPos);
+                Stages.back()->Entries.back()->SCR_.back()->value.isSCRO = true;
                 break;
             case 'ATSQ':
                 Targets.push_back(new QUSTTarget);
@@ -735,9 +762,19 @@ SINT32 QUSTRecord::WriteRecord(_FileHandler &SaveHandler)
                         }
                     if(Stages[p]->Entries[x]->CNAM.IsLoaded())
                         SaveHandler.writeSubRecord('MANC', Stages[p]->Entries[x]->CNAM.value, Stages[p]->Entries[x]->CNAM.GetSize());
-
-                    if(Stages[p]->Entries[x]->Script.IsLoaded())
-                        Stages[p]->Entries[x]->Script->writeSubRecords(SaveHandler);
+                    if(Stages[p]->Entries[x]->SCHR.IsLoaded())
+                        SaveHandler.writeSubRecord('RHCS', &Stages[p]->Entries[x]->SCHR.value, Stages[p]->Entries[x]->SCHR.GetSize());
+                    if(Stages[p]->Entries[x]->SCDA.IsLoaded())
+                        SaveHandler.writeSubRecord('ADCS', Stages[p]->Entries[x]->SCDA.value, Stages[p]->Entries[x]->SCDA.GetSize());
+                    if(Stages[p]->Entries[x]->SCTX.IsLoaded())
+                        SaveHandler.writeSubRecord('XTCS', Stages[p]->Entries[x]->SCTX.value, Stages[p]->Entries[x]->SCTX.GetSize());
+                    if(Stages[p]->Entries[x]->SCR_.size())
+                        for(UINT32 y = 0; y < Stages[p]->Entries[x]->SCR_.size(); y++)
+                            if(Stages[p]->Entries[x]->SCR_[y]->IsLoaded())
+                                if(Stages[p]->Entries[x]->SCR_[y]->value.isSCRO)
+                                    SaveHandler.writeSubRecord('ORCS', &Stages[p]->Entries[x]->SCR_[y]->value.reference, sizeof(UINT32));
+                                else
+                                    SaveHandler.writeSubRecord('VRCS', &Stages[p]->Entries[x]->SCR_[y]->value.reference, sizeof(UINT32));
                     }
             }
     if(Targets.size())

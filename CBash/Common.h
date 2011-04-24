@@ -502,7 +502,7 @@ struct SimpleSubRecord
     bool operator ==(const SimpleSubRecord<T> &other) const;
     bool operator !=(const SimpleSubRecord<T> &other) const;
     };
-    
+
 //Used for subrecords that are required
 //Even if not actually loaded from disk, they are always considered loaded even if they're explicitly unloaded.
 //Unloading them simply resets the values to default.
@@ -526,7 +526,7 @@ struct ReqSimpleSubRecord
     bool operator ==(const ReqSimpleSubRecord<T> &other) const;
     bool operator !=(const ReqSimpleSubRecord<T> &other) const;
     };
-    
+
 //Used for subrecords that are optional
 //Even if loaded, they are considered unloaded if they're equal to their defaults
 //Should only be used with simple data types that should be initialized to 0 (int, float, etc) and not structs
@@ -550,7 +550,7 @@ struct OptSimpleSubRecord
     bool operator ==(const OptSimpleSubRecord<T> &other) const;
     bool operator !=(const OptSimpleSubRecord<T> &other) const;
     };
-    
+
 //Identical to OptSimpleSubRecord except for IsLoaded
 //Once loaded, they are always considered loaded unless they're explicitly unloaded.
 //They don't compare to the default value to see if they're

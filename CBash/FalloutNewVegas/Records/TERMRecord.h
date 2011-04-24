@@ -27,6 +27,86 @@ namespace FNV
 {
 class TERMRecord : public Record //Terminal
     {
+    private:
+        struct TERMDNAM
+            {
+            UINT8   difficultyType, flags, serverType, unused1;
+
+            TERMDNAM();
+            ~TERMDNAM();
+
+            bool operator ==(const TERMDNAM &other) const;
+            bool operator !=(const TERMDNAM &other) const;
+            };
+
+        struct TERMMenu
+            {
+            StringRecord ITXT; //Text
+            StringRecord RNAM; //Result Text
+            OptSimpleSubRecord<UINT8> ANAM; //Flags
+            OptSimpleSubRecord<FORMID> INAM; //Display Note
+            OptSimpleSubRecord<FORMID> TNAM; //Sub Menu
+            ReqSubRecord<FNVSCHR> SCHR;
+            RawRecord SCDA;
+            NonNullStringRecord SCTX;
+            std::vector<GENVARS *> VARS;
+            std::vector<ReqSubRecord<GENSCR_> *> SCR_;
+            std::vector<ReqSubRecord<FNVCTDA> *> CTDA; //Conditions
+
+            enum flagFlags
+                {
+                fIsAddNote     = 0x01,
+                fIsForceRedraw = 0x02
+                };
+
+            bool   IsAddNote();
+            void   IsAddNote(bool value);
+            bool   IsForceRedraw();
+            void   IsForceRedraw(bool value);
+            bool   IsFlagMask(UINT8 Mask, bool Exact=false);
+            void   SetFlagMask(UINT8 Mask);
+
+            bool IsScriptEnabled();
+            void IsScriptEnabled(bool value);
+            bool IsScriptFlagMask(UINT16 Mask, bool Exact=false);
+            void SetScriptFlagMask(UINT16 Mask);
+
+            bool operator ==(const TERMMenus &other) const;
+            bool operator !=(const TERMMenus &other) const;
+            };
+
+        enum difficultyTypes
+            {
+            eVeryEasy = 0,
+            eEasy,
+            eAverage,
+            eHard,
+            eVeryHard,
+            eRequiresKey
+            };
+
+        enum flagsFlags
+            {
+            fIsLeveled                            = 0x01,
+            fIsUnlocked                           = 0x02,
+            fIsAlternateColors                    = 0x04,
+            fIsHideWelcomeTextWhenDisplayingImage = 0x08
+            };
+
+        enum serverTypes
+            {
+            eServer1 = 0,
+            eServer2,
+            eServer3,
+            eServer4,
+            eServer5,
+            eServer6,
+            eServer7,
+            eServer8,
+            eServer9,
+            eServer10
+            };
+
     public:
         StringRecord EDID; //Editor ID
         OptSubRecord<GENOBND> OBND; //Object Bounds
@@ -37,18 +117,63 @@ class TERMRecord : public Record //Terminal
         StringRecord DESC; //Description
         OptSimpleSubRecord<FORMID> SNAM; //Sound - Looping
         OptSimpleSubRecord<FORMID> PNAM; //Password Note
-        OptSubRecord<GENDNAM> DNAM; //DNAM ,, Struct
-        OptSubRecord<GENITXT> ITXT; //Item Text
-        OptSimpleSubRecord<FORMID> INAM; //Display Note
-        OptSimpleSubRecord<FORMID> TNAM; //Sub Menu
-        OptSubRecord<GENSCHR> SCHR; //Basic Script Data
-        OptSubRecord<GENCTDA> CTDA; //Conditions
+        OptSubRecord<TERMDNAM> DNAM; //Data
+        std::vector<TERMMenu *> Menus; // Menu Items;
 
         TERMRecord(unsigned char *_recData=NULL);
         TERMRecord(TERMRecord *srcRecord);
         ~TERMRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
+
+        bool   IsLeveled();
+        void   IsLeveled(bool value);
+        bool   IsUnlocked();
+        void   IsUnlocked(bool value);
+        bool   IsAlternateColors();
+        void   IsAlternateColors(bool value);
+        bool   IsHideWelcomeTextWhenDisplayingImage();
+        void   IsHideWelcomeTextWhenDisplayingImage(bool value);
+        bool   IsFlagMask(UINT8 Mask, bool Exact=false);
+        void   SetFlagMask(UINT8 Mask);
+
+        bool   IsVeryEasy();
+        void   IsVeryEasy(bool value);
+        bool   IsEasy();
+        void   IsEasy(bool value);
+        bool   IsAverage();
+        void   IsAverage(bool value);
+        bool   IsHard();
+        void   IsHard(bool value);
+        bool   IsVeryHard();
+        void   IsVeryHard(bool value);
+        bool   IsRequiresKey();
+        void   IsRequiresKey(bool value);
+        bool   IsLockType(UINT8 Type, bool Exact=false);
+        void   SetLockType(UINT8 Type);
+
+        bool   IsServer1();
+        void   IsServer1(bool value);
+        bool   IsServer2();
+        void   IsServer2(bool value);
+        bool   IsServer3();
+        void   IsServer3(bool value);
+        bool   IsServer4();
+        void   IsServer4(bool value);
+        bool   IsServer5();
+        void   IsServer5(bool value);
+        bool   IsServer6();
+        void   IsServer6(bool value);
+        bool   IsServer7();
+        void   IsServer7(bool value);
+        bool   IsServer8();
+        void   IsServer8(bool value);
+        bool   IsServer9();
+        void   IsServer9(bool value);
+        bool   IsServer10();
+        void   IsServer10(bool value);
+        bool   IsServerType(UINT8 Type, bool Exact=false);
+        void   SetServerType(UINT8 Type);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

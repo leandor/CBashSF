@@ -257,6 +257,35 @@ bool GENSCHR::operator !=(const GENSCHR &other) const
     return !(*this == other);
     }
 
+FNVSCHR::FNVSCHR():
+    numRefs(0),
+    compiledSize(0),
+    lastIndex(0),
+    scriptType(0),
+    flags(0)
+    {
+    memset(&unused1, 0x00, 4);
+    }
+
+FNVSCHR::~FNVSCHR()
+    {
+    //
+    }
+
+bool FNVSCHR::operator ==(const FNVSCHR &other) const
+    {
+    return (numRefs == other.numRefs &&
+            compiledSize == other.compiledSize &&
+            lastIndex == other.lastIndex &&
+            scriptType == other.scriptType &&
+            flags == other.flags);
+    }
+
+bool FNVSCHR::operator !=(const FNVSCHR &other) const
+    {
+    return !(*this == other);
+    }
+
 GENSCR_::GENSCR_():
     reference(0),
     isSCRO(false)
@@ -335,250 +364,54 @@ bool GENSCR_::operator !=(const GENSCR_ &other) const
     return !(*this == other);
     }
 
-GENSCRIPT::GENSCRIPT()
+FNVMINSCRIPT::FNVMINSCRIPT()
     {
     //
     }
 
-GENSCRIPT::~GENSCRIPT()
-    {
-    for(UINT32 x = 0; x < VARS.size(); x++)
-        delete VARS[x];
-    for(UINT32 x = 0; x < SCR_.size(); x++)
-        delete SCR_[x];
-    }
-
-void GENSCRIPT::Copy(GENSCRIPT &rhs)
-    {
-    SCHR = rhs.SCHR;
-    SCDA = rhs.SCDA;
-    SCTX = rhs.SCTX;
-    VARS.resize(rhs.VARS.size());
-    for(UINT32 x = 0; x < rhs.VARS.size(); x++)
-        {
-        VARS[x] = new GENVARS;
-        VARS[x]->SLSD = rhs.VARS[x]->SLSD;
-        VARS[x]->SCVR = rhs.VARS[x]->SCVR;
-        }
-
-    SCR_.resize(rhs.SCR_.size());
-    for(UINT32 x = 0; x < rhs.SCR_.size(); x++)
-        {
-        SCR_[x] = new ReqSubRecord<GENSCR_>;
-        *SCR_[x] = *rhs.SCR_[x];
-        }
-    }
-
-bool GENSCRIPT::IsType(UINT32 Type)
-    {
-    return SCHR.value.scriptType == Type;
-    }
-
-void GENSCRIPT::SetType(UINT32 Type)
-    {
-    SCHR.value.scriptType = Type;
-    }
-
-bool GENSCRIPT::VisitFormIDs(FormIDOp &op)
-    {
-    for(UINT32 x = 0; x < SCR_.size(); x++)
-        if(SCR_[x]->value.isSCRO)
-            op.Accept(SCR_[x]->value.reference);
-
-    return op.Stop();
-    }
-
-UINT32 GENSCRIPT::GetSize()
-    {
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(SCHR.IsLoaded())
-        TotSize += SCHR.GetSize() + 6;
-
-    if(SCDA.IsLoaded())
-        {
-        cSize = SCDA.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(SCTX.IsLoaded())
-        {
-        cSize = SCTX.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    for(UINT32 p = 0; p < VARS.size(); p++)
-        {
-        if(VARS[p]->SLSD.IsLoaded())
-            TotSize += VARS[p]->SLSD.GetSize() + 6;
-
-        if(VARS[p]->SCVR.IsLoaded())
-            {
-            cSize = VARS[p]->SCVR.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        }
-
-    TotSize += (sizeof(UINT32) + 6) * (UINT32)SCR_.size();
-
-    return TotSize;
-    }
-
-void GENSCRIPT::writeSubRecords(_FileHandler &SaveHandler)
-    {
-    if(SCHR.IsLoaded())
-        {
-        SCHR.value.compiledSize = SCDA.GetSize(); //Just to ensure that the value is correct
-        SaveHandler.writeSubRecord('RHCS', &SCHR.value, SCHR.GetSize());
-        }
-    if(SCDA.IsLoaded())
-        SaveHandler.writeSubRecord('ADCS', SCDA.value, SCDA.GetSize());
-    if(SCTX.IsLoaded())
-        SaveHandler.writeSubRecord('XTCS', SCTX.value, SCTX.GetSize());
-    for(UINT32 p = 0; p < VARS.size(); p++)
-        {
-        if(VARS[p]->SLSD.IsLoaded())
-            SaveHandler.writeSubRecord('DSLS', &VARS[p]->SLSD.value, VARS[p]->SLSD.GetSize());
-        if(VARS[p]->SCVR.IsLoaded())
-            SaveHandler.writeSubRecord('RVCS', VARS[p]->SCVR.value, VARS[p]->SCVR.GetSize());
-        }
-
-    for(UINT32 p = 0; p < SCR_.size(); p++)
-        if(SCR_[p]->IsLoaded())
-            if(SCR_[p]->value.isSCRO)
-                SaveHandler.writeSubRecord('ORCS', &SCR_[p]->value.reference, sizeof(UINT32));
-            else
-                SaveHandler.writeSubRecord('VRCS', &SCR_[p]->value.reference, sizeof(UINT32));
-    }
-
-bool GENSCRIPT::operator ==(const GENSCRIPT &other) const
-    {
-    if(SCHR == other.SCHR &&
-        SCDA == other.SCDA &&
-        SCTX.equalsi(other.SCTX) &&
-        VARS.size() == other.VARS.size() &&
-        SCR_.size() == other.SCR_.size())
-        {
-        //Record order doesn't matter on vars, so equality testing isn't easy
-        //Instead, they're keyed by var index (SLSD.value.index)
-        //The proper solution would be to see if each indexed var matches the other
-        //But they're usually ordered, so the lazy approach is to not bother
-        //Fix-up later
-        for(UINT32 x = 0; x < VARS.size(); ++x)
-            if(*VARS[x] != *other.VARS[x])
-                return false;
-
-        //Record order matters on references, so equality testing is easy
-        for(UINT32 x = 0; x < SCR_.size(); ++x)
-            if(*SCR_[x] != *other.SCR_[x])
-                return false;
-        return true;
-        }
-
-    return false;
-    }
-
-bool GENSCRIPT::operator !=(const GENSCRIPT &other) const
-    {
-    return !(*this == other);
-    }
-
-GENMINSCRIPT::GENMINSCRIPT()
-    {
-    //
-    }
-
-GENMINSCRIPT::~GENMINSCRIPT()
+FNVMINSCRIPT::~FNVMINSCRIPT()
     {
     for(UINT32 x = 0; x < SCR_.size(); x++)
         delete SCR_[x];
     }
 
-void GENMINSCRIPT::Copy(GENMINSCRIPT &rhs)
+bool FNVMINSCRIPT::IsScriptEnabled()
     {
-    SCHR = rhs.SCHR;
-    SCDA = rhs.SCDA;
-    SCTX = rhs.SCTX;
-
-    SCR_.resize(rhs.SCR_.size());
-    for(UINT32 x = 0; x < rhs.SCR_.size(); x++)
-        {
-        SCR_[x] = new ReqSubRecord<GENSCR_>;
-        *SCR_[x] = *rhs.SCR_[x];
-        }
+    return (SCHR.value.flags & fIsEnabled) != 0;
     }
 
-bool GENMINSCRIPT::IsType(UINT32 Type)
+void FNVMINSCRIPT::IsScriptEnabled(bool value)
+    {
+    if(value)
+        SCHR.value.flags |= fIsEnabled;
+    else
+        SCHR.value.flags &= ~fIsEnabled;
+    }
+
+bool FNVMINSCRIPT::IsScriptFlagMask(UINT16 Mask, bool Exact)
+    {
+    if(Exact)
+        return (SCHR.value.flags & Mask) == Mask;
+    else
+        return (SCHR.value.flags & Mask) != 0;
+    }
+
+void FNVMINSCRIPT::SetScriptFlagMask(UINT16 Mask)
+    {
+    SCHR.value.flags = Mask;
+    }
+
+bool FNVMINSCRIPT::IsType(UINT32 Type)
     {
     return SCHR.value.scriptType == Type;
     }
 
-void GENMINSCRIPT::SetType(UINT32 Type)
+void FNVMINSCRIPT::SetType(UINT32 Type)
     {
     SCHR.value.scriptType = Type;
     }
 
-bool GENMINSCRIPT::VisitFormIDs(FormIDOp &op)
-    {
-    for(UINT32 x = 0; x < SCR_.size(); x++)
-        if(SCR_[x]->value.isSCRO)
-            op.Accept(SCR_[x]->value.reference);
-
-    return op.Stop();
-    }
-
-UINT32 GENMINSCRIPT::GetSize()
-    {
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(SCHR.IsLoaded())
-        TotSize += SCHR.GetSize() + 6;
-
-    if(SCDA.IsLoaded())
-        {
-        cSize = SCDA.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(SCTX.IsLoaded())
-        {
-        cSize = SCTX.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    TotSize += (sizeof(UINT32) + 6) * (UINT32)SCR_.size();
-
-    return TotSize;
-    }
-
-void GENMINSCRIPT::writeSubRecords(_FileHandler &SaveHandler)
-    {
-    if(SCHR.IsLoaded())
-        {
-        SCHR.value.compiledSize = SCDA.GetSize(); //Just to ensure that the value is correct
-        SaveHandler.writeSubRecord('RHCS', &SCHR.value, SCHR.GetSize());
-        }
-    if(SCDA.IsLoaded())
-        SaveHandler.writeSubRecord('ADCS', SCDA.value, SCDA.GetSize());
-    if(SCTX.IsLoaded())
-        SaveHandler.writeSubRecord('XTCS', SCTX.value, SCTX.GetSize());
-
-    for(UINT32 p = 0; p < SCR_.size(); p++)
-        if(SCR_[p]->IsLoaded())
-            if(SCR_[p]->value.isSCRO)
-                SaveHandler.writeSubRecord('ORCS', &SCR_[p]->value.reference, sizeof(UINT32));
-            else
-                SaveHandler.writeSubRecord('VRCS', &SCR_[p]->value.reference, sizeof(UINT32));
-    }
-
-bool GENMINSCRIPT::operator ==(const GENMINSCRIPT &other) const
+bool FNVMINSCRIPT::operator ==(const FNVMINSCRIPT &other) const
     {
     if(SCHR == other.SCHR &&
         SCDA == other.SCDA &&
@@ -595,7 +428,7 @@ bool GENMINSCRIPT::operator ==(const GENMINSCRIPT &other) const
     return false;
     }
 
-bool GENMINSCRIPT::operator !=(const GENMINSCRIPT &other) const
+bool FNVMINSCRIPT::operator !=(const FNVMINSCRIPT &other) const
     {
     return !(*this == other);
     }
@@ -2351,6 +2184,32 @@ void GENDODT::SetFlagMask(UINT8 Mask)
     flags = Mask;
     }
 
+bool GENPATROL::IsScriptEnabled()
+    {
+    return (SCHR.value.flags & fIsEnabled) != 0;
+    }
+
+void GENPATROL::IsScriptEnabled(bool value)
+    {
+    if(value)
+        SCHR.value.flags |= fIsEnabled;
+    else
+        SCHR.value.flags &= ~fIsEnabled;
+    }
+
+bool GENPATROL::IsScriptFlagMask(UINT16 Mask, bool Exact)
+    {
+    if(Exact)
+        return (SCHR.value.flags & Mask) == Mask;
+    else
+        return (SCHR.value.flags & Mask) != 0;
+    }
+
+void GENPATROL::SetScriptFlagMask(UINT16 Mask)
+    {
+    SCHR.value.flags = Mask;
+    }
+
 bool GENPATROL::operator ==(const GENPATROL &other) const
     {
     return (XPRD == other.XPRD &&
@@ -2394,4 +2253,66 @@ bool GLOBFNAM::operator ==(const GLOBFNAM &other) const
 bool GLOBFNAM::operator !=(const GLOBFNAM &other) const
     {
     return !(*this == other);
+    }
+
+bool FNVXNAM::IsNeutral()
+    {
+    return groupReactionType == eNeutral;
+    }
+
+void FNVXNAM::IsNeutral(bool value)
+    {
+    if(value)
+        groupReactionType = eNeutral;
+    else
+        groupReactionType = eEnemy;
+    }
+
+bool FNVXNAM::IsEnemy()
+    {
+    return groupReactionType == eEnemy;
+    }
+
+void FNVXNAM::IsEnemy(bool value)
+    {
+    if(value)
+        groupReactionType = eEnemy;
+    else
+        groupReactionType = eNeutral;
+    }
+
+bool FNVXNAM::IsAlly()
+    {
+    return groupReactionType == eAlly;
+    }
+
+void FNVXNAM::IsAlly(bool value)
+    {
+    if(value)
+        groupReactionType = eAlly;
+    else
+        groupReactionType = eNeutral;
+    }
+
+bool FNVXNAM::IsFriend()
+    {
+    return groupReactionType == eFriend;
+    }
+
+void FNVXNAM::IsFriend(bool value)
+    {
+    if(value)
+        groupReactionType = eFriend;
+    else
+        groupReactionType = eNeutral;
+    }
+
+bool FNVXNAM::IsType(UINT32 Type)
+    {
+    return groupReactionType == Type;
+    }
+
+void FNVXNAM::SetType(UINT32 Type)
+    {
+    groupReactionType = Mask;
     }

@@ -27,10 +27,22 @@ namespace FNV
 {
 class TXSTRecord : public Record //Texture Set
     {
+    private:
+        enum flagsFlags
+            {
+            fIsNoSpecularMap = 0x00000001
+            };
+
     public:
         StringRecord EDID; //Editor ID
         OptSubRecord<GENOBND> OBND; //Object Bounds
-        OptSubRecord<GENTX00> TX00; //Base Image / Transparency
+        //Textures (RGB/A)
+        StringRecord TX00; //Base Image / Transparency
+        StringRecord TX01; //Normal Map / Specular
+        StringRecord TX02; //Environment Map Mask / ?
+        StringRecord TX03; //Glow Map / Unused
+        StringRecord TX04; //Parallax Map / Unused
+        StringRecord TX05; //Environment Map / Unused
         OptSubRecord<GENDODT> DODT; //Decal Data
         OptSimpleSubRecord<UINT16> DNAM; //Flags
 
@@ -39,6 +51,12 @@ class TXSTRecord : public Record //Texture Set
         ~TXSTRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
+
+        bool   IsNoSpecularMap();
+        void   IsNoSpecularMap(bool value);
+        bool   IsFlagMask(UINT16 Mask, bool Exact=false);
+        void   SetFlagMask(UINT16 Mask);
+
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

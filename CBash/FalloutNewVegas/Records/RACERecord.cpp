@@ -124,6 +124,48 @@ bool RACERecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+bool RACERecord::IsPlayable()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsPlayable) != 0;
+    }
+
+void RACERecord::IsPlayable(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsPlayable;
+    else
+        Dummy->flags &= ~fIsPlayable;
+    }
+
+bool RACERecord::IsChild()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsChild) != 0;
+    }
+
+void RACERecord::IsChild(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsChild;
+    else
+        Dummy->flags &= ~fIsChild;
+    }
+
+bool RACERecord::IsFlagMask(UINT32 Mask, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    }
+
+void RACERecord::SetFlagMask(UINT32 Mask)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
 UINT32 RACERecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())

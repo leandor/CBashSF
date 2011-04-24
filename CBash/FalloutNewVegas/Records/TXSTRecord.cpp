@@ -49,16 +49,14 @@ TXSTRecord::TXSTRecord(TXSTRecord *srcRecord):
 
     EDID = srcRecord->EDID;
     OBND = srcRecord->OBND;
-    if(srcRecord->TX00.IsLoaded())
-        {
-        TX00.Load();
-        TX00->TX00 = srcRecord->TX00->TX00;
-        TX00->TX01 = srcRecord->TX00->TX01;
-        TX00->TX02 = srcRecord->TX00->TX02;
-        TX00->TX03 = srcRecord->TX00->TX03;
-        TX00->TX04 = srcRecord->TX00->TX04;
-        TX00->TX05 = srcRecord->TX00->TX05;
-        }
+
+    TX00 = srcRecord->TX00;
+    TX01 = srcRecord->TX01;
+    TX02 = srcRecord->TX02;
+    TX03 = srcRecord->TX03;
+    TX04 = srcRecord->TX04;
+    TX05 = srcRecord->TX05;
+
     DODT = srcRecord->DODT;
     DNAM = srcRecord->DNAM;
     return;
@@ -76,6 +74,29 @@ bool TXSTRecord::VisitFormIDs(FormIDOp &op)
 
 
     return op.Stop();
+    }
+
+bool TXSTRecord::IsNoSpecularMap()
+    {
+    return DNAM.IsLoaded() ? (DNAM.value.value & fIsNoSpecularMap) != 0 : false;
+    }
+
+void TXSTRecord::IsNoSpecularMap(bool value)
+    {
+    if(!DNAM.IsLoaded()) return;
+    DNAM.value.value = value ? (DNAM.value.value | fIsNoSpecularMap) : (DNAM.value.value & ~fIsNoSpecularMap);
+    }
+
+bool TXSTRecord::IsFlagMask(UINT16 Mask, bool Exact)
+    {
+    if(!DNAM.IsLoaded()) return false;
+    return Exact ? ((DNAM.value.value & Mask) == Mask) : ((DNAM.value.value & Mask) != 0);
+    }
+
+void TXSTRecord::SetFlagMask(UINT16 Mask)
+    {
+    DNAM.Load();
+    DNAM.value.value = Mask;
     }
 
 UINT32 TXSTRecord::GetSize(bool forceCalc)
@@ -98,42 +119,44 @@ UINT32 TXSTRecord::GetSize(bool forceCalc)
 
     if(TX00.IsLoaded())
         {
-        if(TX00->TX00.IsLoaded())
-            {
-            cSize = TX00->TX00.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(TX00->TX01.IsLoaded())
-            {
-            cSize = TX00->TX01.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(TX00->TX02.IsLoaded())
-            {
-            cSize = TX00->TX02.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(TX00->TX03.IsLoaded())
-            {
-            cSize = TX00->TX03.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(TX00->TX04.IsLoaded())
-            {
-            cSize = TX00->TX04.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(TX00->TX05.IsLoaded())
-            {
-            cSize = TX00->TX05.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
+        cSize = TX00.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(TX01.IsLoaded())
+        {
+        cSize = TX01.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(TX02.IsLoaded())
+        {
+        cSize = TX02.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(TX03.IsLoaded())
+        {
+        cSize = TX03.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(TX04.IsLoaded())
+        {
+        cSize = TX04.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(TX05.IsLoaded())
+        {
+        cSize = TX05.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
         }
 
     if(DODT.IsLoaded())
@@ -184,28 +207,22 @@ SINT32 TXSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 OBND.Read(buffer, subSize, curPos);
                 break;
             case '00XT':
-                TX00.Load();
-                TX00->TX00.Read(buffer, subSize, curPos);
+                TX00.Read(buffer, subSize, curPos);
                 break;
             case '10XT':
-                TX00.Load();
-                TX00->TX01.Read(buffer, subSize, curPos);
+                TX01.Read(buffer, subSize, curPos);
                 break;
             case '20XT':
-                TX00.Load();
-                TX00->TX02.Read(buffer, subSize, curPos);
+                TX02.Read(buffer, subSize, curPos);
                 break;
             case '30XT':
-                TX00.Load();
-                TX00->TX03.Read(buffer, subSize, curPos);
+                TX03.Read(buffer, subSize, curPos);
                 break;
             case '40XT':
-                TX00.Load();
-                TX00->TX04.Read(buffer, subSize, curPos);
+                TX04.Read(buffer, subSize, curPos);
                 break;
             case '50XT':
-                TX00.Load();
-                TX00->TX05.Read(buffer, subSize, curPos);
+                TX05.Read(buffer, subSize, curPos);
                 break;
             case 'TDOD':
                 DODT.Read(buffer, subSize, curPos);
@@ -232,6 +249,11 @@ SINT32 TXSTRecord::Unload()
     EDID.Unload();
     OBND.Unload();
     TX00.Unload();
+    TX01.Unload();
+    TX02.Unload();
+    TX03.Unload();
+    TX04.Unload();
+    TX05.Unload();
     DODT.Unload();
     DNAM.Unload();
     return 1;
@@ -246,43 +268,44 @@ SINT32 TXSTRecord::WriteRecord(_FileHandler &SaveHandler)
         SaveHandler.writeSubRecord('DNBO', OBND.value, OBND.GetSize());
 
     if(TX00.IsLoaded())
-        {
-        if(TX00->TX00.IsLoaded())
-            SaveHandler.writeSubRecord('00XT', TX00->TX00.value, TX00->TX00.GetSize());
+        SaveHandler.writeSubRecord('00XT', TX00.value, TX00.GetSize());
 
-        if(TX00->TX01.IsLoaded())
-            SaveHandler.writeSubRecord('10XT', TX00->TX01.value, TX00->TX01.GetSize());
+    if(TX01.IsLoaded())
+        SaveHandler.writeSubRecord('10XT', TX01.value, TX01.GetSize());
 
-        if(TX00->TX02.IsLoaded())
-            SaveHandler.writeSubRecord('20XT', TX00->TX02.value, TX00->TX02.GetSize());
+    if(TX02.IsLoaded())
+        SaveHandler.writeSubRecord('20XT', TX02.value, TX02.GetSize());
 
-        if(TX00->TX03.IsLoaded())
-            SaveHandler.writeSubRecord('30XT', TX00->TX03.value, TX00->TX03.GetSize());
+    if(TX03.IsLoaded())
+        SaveHandler.writeSubRecord('30XT', TX03.value, TX03.GetSize());
 
-        if(TX00->TX04.IsLoaded())
-            SaveHandler.writeSubRecord('40XT', TX00->TX04.value, TX00->TX04.GetSize());
+    if(TX04.IsLoaded())
+        SaveHandler.writeSubRecord('40XT', TX04.value, TX04.GetSize());
 
-        if(TX00->TX05.IsLoaded())
-            SaveHandler.writeSubRecord('50XT', TX00->TX05.value, TX00->TX05.GetSize());
-
-        }
+    if(TX05.IsLoaded())
+        SaveHandler.writeSubRecord('50XT', TX05.value, TX05.GetSize());
 
     if(DODT.IsLoaded())
         SaveHandler.writeSubRecord('TDOD', DODT.value, DODT.GetSize());
 
     if(DNAM.IsLoaded())
         SaveHandler.writeSubRecord('MAND', DNAM.value, DNAM.GetSize());
-
     return -1;
     }
 
 bool TXSTRecord::operator ==(const TXSTRecord &other) const
     {
-    return (EDID.equalsi(other.EDID) &&
-            OBND == other.OBND &&
-            TX00 == other.TX00 &&
+    return (OBND == other.OBND &&
             DODT == other.DODT &&
-            DNAM == other.DNAM);
+            DNAM == other.DNAM &&
+            EDID.equalsi(other.EDID) &&
+            TX00.equalsi(other.TX00) &&
+            TX01.equalsi(other.TX01) &&
+            TX02.equalsi(other.TX02) &&
+            TX03.equalsi(other.TX03) &&
+            TX04.equalsi(other.TX04) &&
+            TX05.equalsi(other.TX05)
+            );
     }
 
 bool TXSTRecord::operator !=(const TXSTRecord &other) const

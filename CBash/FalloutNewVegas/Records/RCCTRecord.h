@@ -27,6 +27,12 @@ namespace FNV
 {
 class RCCTRecord : public Record //Recipe Category
     {
+    private:
+        enum flagsFlags
+            {
+            fIsSubcategory = 0x01 // ?
+            };
+
     public:
         StringRecord EDID; //Editor ID
         StringRecord FULL; //Name
@@ -37,6 +43,11 @@ class RCCTRecord : public Record //Recipe Category
         ~RCCTRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
+
+        bool   IsSubcategory();
+        void   IsSubcategory(bool value);
+        bool   IsFlagMask(UINT8 Mask, bool Exact=false);
+        void   SetFlagMask(UINT8 Mask);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

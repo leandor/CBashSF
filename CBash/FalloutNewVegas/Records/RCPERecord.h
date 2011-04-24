@@ -27,14 +27,23 @@ namespace FNV
 {
 class RCPERecord : public Record //Recipe
     {
+    private:
+        struct RCPEItem
+            {
+            OptSimpleSubRecord<FORMID> item; //RCIL or RCOD
+            OptSimpleSubRecord<UINT32> RCQY; //Quantity
+
+            bool operator ==(const RCPEItem &other) const;
+            bool operator !=(const RCPEItem &other) const;
+            };
+
     public:
         StringRecord EDID; //Editor ID
         StringRecord FULL; //Name
-        OptSubRecord<GENCTDA> CTDA; //Conditions
-        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
-        OptSimpleSubRecord<FORMID> RCIL; //Item
-        OptSimpleSubRecord<UINT32> RCQY; //Quantity
-        OptSimpleSubRecord<FORMID> RCOD; //Item
+        std::vector<ReqSubRecord<FNVCTDA> *> CTDA; //Conditions
+        OptSubRecord<RCPEDATA> DATA; //Data
+        std::vector<RCPEItem *> Ingredients; // Ingredients
+        std::vector<RCPEItem *> Outputs; // Outputs
 
         RCPERecord(unsigned char *_recData=NULL);
         RCPERecord(RCPERecord *srcRecord);

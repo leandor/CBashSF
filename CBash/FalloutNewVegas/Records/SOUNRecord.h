@@ -27,22 +27,88 @@ namespace FNV
 {
 class SOUNRecord : public Record //Sound
     {
+    private:
+        struct SOUNSNDD
+            {
+            UINT8   minDistance, maxDistance;
+            SINT8   freqAdjustment;
+            UINT8   unused1;
+            UINT32  flags;
+            SINT16  staticAtten;
+            UINT8   stopTime, startTime;
+            //Below are only on SNDX, and not the SNDD
+            SINT16  attenCurve[5], reverb;
+            SINT32  priority, x, y;
+
+            SOUNSNDD();
+            ~SOUNSNDD();
+
+            bool operator ==(const SOUNSNDD &other) const;
+            bool operator !=(const SOUNSNDD &other) const;
+            };
+
+        enum flagsFlags
+            {
+            fIsRandomFrequencyShift = 0x00000001,
+            fIsPlayAtRandom         = 0x00000002,
+            fIsEnvironmentIgnored   = 0x00000004,
+            fIsRandomLocation       = 0x00000008,
+            fIsLoop                 = 0x00000010,
+            fIsMenuSound            = 0x00000020,
+            fIs2D                   = 0x00000040,
+            fIs360LFE               = 0x00000080,
+            fIsDialogueSound        = 0x00000100,
+            fIsEnvelopeFast         = 0x00000200,
+            fIsEnvelopeSlow         = 0x00000400,
+            fIs2DRadius             = 0x00000800,
+            fIsMuteWhenSubmerged    = 0x00001000
+            };
+
     public:
         StringRecord EDID; //Editor ID
         OptSubRecord<GENOBND> OBND; //Object Bounds
         StringRecord FNAM; //Sound Filename
         OptSimpleSubRecord<UINT8> RNAM; //Random Chance %
-        OptSubRecord<GENSNDD> SNDD; //SNDD ,, Struct
-        OptSubRecord<GENSNDX> SNDX; //SNDX ,, Struct
-        OptSubRecord<GENANAM> ANAM; //Attenuation Curve
-        OptSimpleSubRecord<SINT16> GNAM; //Reverb Attenuation Control
-        OptSimpleSubRecord<SINT32> HNAM; //Priority
+        ReqSubRecord<SOUNSNDD> SNDD; // Sound Data (May be SNDX format, so auto-update on read)
+
+        //OptSubRecord<GENANAM> ANAM; //Attenuation Curve (Read into SNDD, and write out from that)
+        //OptSimpleSubRecord<SINT16> GNAM; //Reverb Attenuation Control (Read into SNDD, and write out from that)
+        //OptSimpleSubRecord<SINT32> HNAM; //Priority (Read into SNDD, and write out from that)
 
         SOUNRecord(unsigned char *_recData=NULL);
         SOUNRecord(SOUNRecord *srcRecord);
         ~SOUNRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
+
+        bool   IsRandomFrequencyShift();
+        void   IsRandomFrequencyShift(bool value);
+        bool   IsPlayAtRandom();
+        void   IsPlayAtRandom(bool value);
+        bool   IsEnvironmentIgnored();
+        void   IsEnvironmentIgnored(bool value);
+        bool   IsRandomLocation();
+        void   IsRandomLocation(bool value);
+        bool   IsLoop();
+        void   IsLoop(bool value);
+        bool   IsMenuSound();
+        void   IsMenuSound(bool value);
+        bool   Is2D();
+        void   Is2D(bool value);
+        bool   Is360LFE();
+        void   Is360LFE(bool value);
+        bool   IsDialogueSound();
+        void   IsDialogueSound(bool value);
+        bool   IsEnvelopeFast();
+        void   IsEnvelopeFast(bool value);
+        bool   IsEnvelopeSlow();
+        void   IsEnvelopeSlow(bool value);
+        bool   Is2DRadius();
+        void   Is2DRadius(bool value);
+        bool   IsMuteWhenSubmerged();
+        void   IsMuteWhenSubmerged(bool value);
+        bool   IsFlagMask(UINT32 Mask, bool Exact=false);
+        void   SetFlagMask(UINT32 Mask);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

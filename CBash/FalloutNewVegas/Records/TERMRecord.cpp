@@ -24,6 +24,74 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
+bool TERMRecord::TERMMenu::IsAddNote()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsAddNote) != 0;
+    }
+
+void TERMRecord::TERMMenu::IsAddNote(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsAddNote;
+    else
+        Dummy->flags &= ~fIsAddNote;
+    }
+
+bool TERMRecord::TERMMenu::IsForceRedraw()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsForceRedraw) != 0;
+    }
+
+void TERMRecord::TERMMenu::IsForceRedraw(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsForceRedraw;
+    else
+        Dummy->flags &= ~fIsForceRedraw;
+    }
+
+bool TERMRecord::TERMMenu::IsFlagMask(UINT8 Mask, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    }
+
+void TERMRecord::TERMMenu::SetFlagMask(UINT8 Mask)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
+bool TERMRecord::TERMMenu::IsScriptEnabled()
+    {
+    return (SCHR.value.flags & fIsEnabled) != 0;
+    }
+
+void TERMRecord::TERMMenu::IsScriptEnabled(bool value)
+    {
+    if(value)
+        SCHR.value.flags |= fIsEnabled;
+    else
+        SCHR.value.flags &= ~fIsEnabled;
+    }
+
+bool TERMRecord::TERMMenu::IsScriptFlagMask(UINT16 Mask, bool Exact)
+    {
+    if(Exact)
+        return (SCHR.value.flags & Mask) == Mask;
+    else
+        return (SCHR.value.flags & Mask) != 0;
+    }
+
+void TERMRecord::TERMMenu::SetScriptFlagMask(UINT16 Mask)
+    {
+    SCHR.value.flags = Mask;
+    }
+
 TERMRecord::TERMRecord(unsigned char *_recData):
     Record(_recData)
     {
@@ -127,6 +195,342 @@ bool TERMRecord::VisitFormIDs(FormIDOp &op)
     //    op.Accept(CTDA->value);
 
     return op.Stop();
+    }
+
+bool TERMRecord::IsLeveled()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsLeveled) != 0;
+    }
+
+void TERMRecord::IsLeveled(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsLeveled;
+    else
+        Dummy->flags &= ~fIsLeveled;
+    }
+
+bool TERMRecord::IsUnlocked()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsUnlocked) != 0;
+    }
+
+void TERMRecord::IsUnlocked(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsUnlocked;
+    else
+        Dummy->flags &= ~fIsUnlocked;
+    }
+
+bool TERMRecord::IsAlternateColors()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsAlternateColors) != 0;
+    }
+
+void TERMRecord::IsAlternateColors(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsAlternateColors;
+    else
+        Dummy->flags &= ~fIsAlternateColors;
+    }
+
+bool TERMRecord::IsHideWelcomeTextWhenDisplayingImage()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->flags & fIsHideWelcomeTextWhenDisplayingImage) != 0;
+    }
+
+void TERMRecord::IsHideWelcomeTextWhenDisplayingImage(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags |= fIsHideWelcomeTextWhenDisplayingImage;
+    else
+        Dummy->flags &= ~fIsHideWelcomeTextWhenDisplayingImage;
+    }
+
+bool TERMRecord::IsFlagMask(UINT8 Mask, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    }
+
+void TERMRecord::SetFlagMask(UINT8 Mask)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
+bool TERMRecord::IsVeryEasy()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eVeryEasy);
+    }
+
+void TERMRecord::IsVeryEasy(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eVeryEasy;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool TERMRecord::IsEasy()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eEasy);
+    }
+
+void TERMRecord::IsEasy(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eEasy;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool TERMRecord::IsAverage()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eAverage);
+    }
+
+void TERMRecord::IsAverage(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eAverage;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool TERMRecord::IsHard()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eHard);
+    }
+
+void TERMRecord::IsHard(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eHard;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool TERMRecord::IsVeryHard()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eVeryHard);
+    }
+
+void TERMRecord::IsVeryHard(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eVeryHard;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool TERMRecord::IsRequiresKey()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eRequiresKey);
+    }
+
+void TERMRecord::IsRequiresKey(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eRequiresKey;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool TERMRecord::IsLockType(UINT8 Type, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    }
+
+void TERMRecord::SetLockType(UINT8 Type)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
+    }
+
+bool TERMRecord::IsServer1()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eServer1);
+    }
+
+void TERMRecord::IsServer1(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eServer1;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool TERMRecord::IsServer2()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eServer2);
+    }
+
+void TERMRecord::IsServer2(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eServer2;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool TERMRecord::IsServer3()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eServer3);
+    }
+
+void TERMRecord::IsServer3(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eServer3;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool TERMRecord::IsServer4()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eServer4);
+    }
+
+void TERMRecord::IsServer4(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eServer4;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool TERMRecord::IsServer5()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eServer5);
+    }
+
+void TERMRecord::IsServer5(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eServer5;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool TERMRecord::IsServer6()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eServer6);
+    }
+
+void TERMRecord::IsServer6(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eServer6;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool TERMRecord::IsServer7()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eServer7);
+    }
+
+void TERMRecord::IsServer7(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eServer7;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool TERMRecord::IsServer8()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eServer8);
+    }
+
+void TERMRecord::IsServer8(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eServer8;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool TERMRecord::IsServer9()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eServer9);
+    }
+
+void TERMRecord::IsServer9(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eServer9;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool TERMRecord::IsServer10()
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return (Dummy->type == eServer10);
+    }
+
+void TERMRecord::IsServer10(bool value)
+    {
+    if(!Dummy.IsLoaded()) return;
+    if(value)
+        Dummy->flags = eServer10;
+    else
+        Dummy->flags = eDummyDefault;
+    }
+
+bool TERMRecord::IsServerType(UINT8 Type, bool Exact)
+    {
+    if(!Dummy.IsLoaded()) return false;
+    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    }
+
+void TERMRecord::SetServerType(UINT8 Type)
+    {
+    Dummy.Load();
+    Dummy->flags = Mask;
     }
 
 UINT32 TERMRecord::GetSize(bool forceCalc)

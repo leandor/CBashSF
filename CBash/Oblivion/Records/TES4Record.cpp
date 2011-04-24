@@ -224,6 +224,11 @@ SINT32 TES4Record::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     BOOST_LOG_SEV(lg, critical) << "TES4: Unknown subType = " << ((char *)&subType)[0] << ((char *)&subType)[1] << ((char *)&subType)[2] << ((char *)&subType)[3];
                     BOOST_LOG_SEV(lg, critical) << "      Size = " << subSize;
                     BOOST_LOG_SEV(lg, critical) << "      CurPos = " << curPos - 6;
+                #else
+                    //printf("FileName = %s\n", FileName);
+                    printf("  TES4: %08X - Unknown subType = %04x\n", formID, subType);
+                    printf("  Size = %i\n", subSize);
+                    printf("  CurPos = %04x\n\n", curPos - 6);
                 #endif
                 curPos = recSize;
                 break;

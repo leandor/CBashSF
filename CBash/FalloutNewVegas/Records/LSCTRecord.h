@@ -53,10 +53,10 @@ class LSCTRecord : public Record //Load Screen Type
 
         enum eScreenTypeTypes
             {
-            eNone  = 0,
-            eXPProgress    = 1,
+            eNone       = 0,
+            eXPProgress = 1,
             eObjective  = 2,
-            eTip     = 3,
+            eTip        = 3,
             eStats      = 4
             };
     public:

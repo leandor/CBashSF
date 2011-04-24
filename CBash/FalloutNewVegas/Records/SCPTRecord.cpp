@@ -78,6 +78,32 @@ bool SCPTRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+bool SCPTRecord::IsScriptEnabled()
+    {
+    return (SCHR.value.flags & fIsEnabled) != 0;
+    }
+
+void SCPTRecord::IsScriptEnabled(bool value)
+    {
+    if(value)
+        SCHR.value.flags |= fIsEnabled;
+    else
+        SCHR.value.flags &= ~fIsEnabled;
+    }
+
+bool SCPTRecord::IsScriptFlagMask(UINT16 Mask, bool Exact)
+    {
+    if(Exact)
+        return (SCHR.value.flags & Mask) == Mask;
+    else
+        return (SCHR.value.flags & Mask) != 0;
+    }
+
+void SCPTRecord::SetScriptFlagMask(UINT16 Mask)
+    {
+    SCHR.value.flags = Mask;
+    }
+
 UINT32 SCPTRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())

@@ -53,7 +53,7 @@ class FACTRecord : public Record //Faction
     public:
         StringRecord EDID; //Editor ID
         StringRecord FULL; //Name
-        OptSubRecord<GENXNAM> XNAM; //Relation
+        std::vector<ReqSubRecord<FNVXNAM> *> XNAM;  //Relations
         OptSimpleSubRecord<UINT16> DATA; //Data
         OptSimpleSubRecord<FLOAT32> CNAM; //Unused
         std::vector<ReqSubRecord<FACTRNAM> *> RNAM; // Ranks

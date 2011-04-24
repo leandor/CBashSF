@@ -209,51 +209,45 @@ struct GENVARS
     bool operator !=(const GENVARS &other) const;
     };
 
-struct GENSCRIPT
+struct FNVSCHR
     {
-    ReqSubRecord<GENSCHR> SCHR;
+    UINT8   unused1[4];
+    UINT32  numRefs, compiledSize, lastIndex;
+    UINT16  scriptType, flags;
+
+    FNVSCHR();
+    ~FNVSCHR();
+
+    bool operator ==(const FNVSCHR &other) const;
+    bool operator !=(const FNVSCHR &other) const;
+    };
+
+struct FNVMINSCRIPT
+    {
+    ReqSubRecord<FNVSCHR> SCHR;
     RawRecord SCDA;
     NonNullStringRecord SCTX;
     std::vector<GENVARS *> VARS;
     std::vector<ReqSubRecord<GENSCR_> *> SCR_;
 
-    GENSCRIPT();
-    ~GENSCRIPT();
+    enum schrFlags
+        {
+        fIsEnabled = 0x0001
+        };
 
-    void Copy(GENSCRIPT &rhs);
+    FNVMINSCRIPT();
+    ~FNVMINSCRIPT();
 
-    bool   IsType(UINT32 Type);
-    void   SetType(UINT32 Type);
-
-    bool   VisitFormIDs(FormIDOp &op);
-    UINT32 GetSize();
-    void writeSubRecords(_FileHandler &SaveHandler);
-
-    bool operator ==(const GENSCRIPT &other) const;
-    bool operator !=(const GENSCRIPT &other) const;
-    };
-
-struct GENMINSCRIPT
-    {
-    ReqSubRecord<GENSCHR> SCHR;
-    RawRecord SCDA;
-    NonNullStringRecord SCTX;
-    std::vector<ReqSubRecord<GENSCR_> *> SCR_;
-
-    GENMINSCRIPT();
-    ~GENMINSCRIPT();
-
-    void Copy(GENMINSCRIPT &rhs);
+    bool IsScriptEnabled();
+    void IsScriptEnabled(bool value);
+    bool IsScriptFlagMask(UINT16 Mask, bool Exact=false);
+    void SetScriptFlagMask(UINT16 Mask);
 
     bool   IsType(UINT32 Type);
     void   SetType(UINT32 Type);
 
-    bool   VisitFormIDs(FormIDOp &op);
-    UINT32 GetSize();
-    void writeSubRecords(_FileHandler &SaveHandler);
-
-    bool operator ==(const GENMINSCRIPT &other) const;
-    bool operator !=(const GENMINSCRIPT &other) const;
+    bool operator ==(const FNVMINSCRIPT &other) const;
+    bool operator !=(const FNVMINSCRIPT &other) const;
     };
 
 struct GENEFIT
@@ -401,8 +395,8 @@ struct GENEffect
 
     bool IsHostile();
     void IsHostile(bool value);
-    bool IsFlagMask(UINT8   Mask, bool Exact=false);
-    void SetFlagMask(UINT8   Mask);
+    bool IsFlagMask(UINT8 Mask, bool Exact=false);
+    void SetFlagMask(UINT8 Mask);
 
     bool IsRangeSelf();
     void IsRangeSelf(bool value);
@@ -410,8 +404,8 @@ struct GENEffect
     void IsRangeTouch(bool value);
     bool IsRangeTarget();
     void IsRangeTarget(bool value);
-    bool IsRange(UINT32  Mask);
-    void SetRange(UINT32  Mask);
+    bool IsRange(UINT32 Mask);
+    void SetRange(UINT32 Mask);
 
     bool OBME_IsUsingHostileOverride();
     void OBME_IsUsingHostileOverride(bool value);
@@ -1091,8 +1085,17 @@ struct GENPATROL
     {
     ReqSubRecord<GENFLOAT> XPRD; //Idle Time
     ReqSubRecord<GENFID> INAM; //Idle
-    OptSubRecord<GENSCRIPT> Script; //Script
+    ReqSubRecord<FNVSCHR> SCHR;
+    RawRecord SCDA;
+    NonNullStringRecord SCTX;
+    std::vector<GENVARS *> VARS;
+    std::vector<ReqSubRecord<GENSCR_> *> SCR_;
     ReqSubRecord<GENFID> TNAM; //Topic
+
+    bool IsScriptEnabled();
+    void IsScriptEnabled(bool value);
+    bool IsScriptFlagMask(UINT16 Mask, bool Exact=false);
+    void SetScriptFlagMask(UINT16 Mask);
 
     bool operator ==(const GENPATROL &other) const;
     bool operator !=(const GENPATROL &other) const;
@@ -1565,4 +1568,36 @@ struct FNVLIGHT
 
     bool operator ==(const FNVLIGHT &other) const;
     bool operator !=(const FNVLIGHT &other) const;
+    };
+
+struct FNVXNAM
+    {
+    FORMID  faction;
+    SINT32  mod;
+    UINT32  groupReactionType;
+
+    enum groupReactionTypes
+        {
+        eNeutral = 0,
+        eEnemy,
+        eAlly,
+        eFriend,
+        };
+
+    FNVXNAM();
+    ~FNVXNAM();
+
+    bool   IsNeutral();
+    void   IsNeutral(bool value);
+    bool   IsEnemy();
+    void   IsEnemy(bool value);
+    bool   IsAlly();
+    void   IsAlly(bool value);
+    bool   IsFriend();
+    void   IsFriend(bool value);
+    bool   IsType(UINT32 Type, bool Exact=false);
+    void   SetType(UINT32 Type);
+
+    bool operator ==(const FNVXNAM &other) const;
+    bool operator !=(const FNVXNAM &other) const;
     };

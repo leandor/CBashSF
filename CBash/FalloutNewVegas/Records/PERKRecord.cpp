@@ -51,6 +51,32 @@ void PERKRecord::PERKEffect::SetFlagMask(UINT16 Mask)
     Dummy->flags = Mask;
     }
 
+bool PERKRecord::PERKEffect::IsScriptEnabled()
+    {
+    return (SCHR.value.flags & fIsEnabled) != 0;
+    }
+
+void PERKRecord::PERKEffect::IsScriptEnabled(bool value)
+    {
+    if(value)
+        SCHR.value.flags |= fIsEnabled;
+    else
+        SCHR.value.flags &= ~fIsEnabled;
+    }
+
+bool PERKRecord::PERKEffect::IsScriptFlagMask(UINT16 Mask, bool Exact)
+    {
+    if(Exact)
+        return (SCHR.value.flags & Mask) == Mask;
+    else
+        return (SCHR.value.flags & Mask) != 0;
+    }
+
+void PERKRecord::PERKEffect::SetScriptFlagMask(UINT16 Mask)
+    {
+    SCHR.value.flags = Mask;
+    }
+
 PERKRecord::PERKRecord(unsigned char *_recData):
     Record(_recData)
     {

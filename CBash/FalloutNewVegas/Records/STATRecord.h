@@ -27,6 +27,22 @@ namespace FNV
 {
 class STATRecord : public Record //Static
     {
+    private:
+        enum passthroughTypes
+            {
+            eNone  = -1,
+            eBushA = 0,
+            eBushB,
+            eBushC,
+            eBushD,
+            eBushE,
+            eBushF,
+            eBushG,
+            eBushH,
+            eBushI,
+            eBushJ
+            };
+
     public:
         StringRecord EDID; //Editor ID
         OptSubRecord<GENOBND> OBND; //Object Bounds
@@ -39,6 +55,31 @@ class STATRecord : public Record //Static
         ~STATRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
+
+        bool   IsNone();
+        void   IsNone(bool value);
+        bool   IsBushA();
+        void   IsBushA(bool value);
+        bool   IsBushB();
+        void   IsBushB(bool value);
+        bool   IsBushC();
+        void   IsBushC(bool value);
+        bool   IsBushD();
+        void   IsBushD(bool value);
+        bool   IsBushE();
+        void   IsBushE(bool value);
+        bool   IsBushF();
+        void   IsBushF(bool value);
+        bool   IsBushG();
+        void   IsBushG(bool value);
+        bool   IsBushH();
+        void   IsBushH(bool value);
+        bool   IsBushI();
+        void   IsBushI(bool value);
+        bool   IsBushJ();
+        void   IsBushJ(bool value);
+        bool   IsType(SINT8 Type, bool Exact=false);
+        void   SetType(SINT8 Type);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);
