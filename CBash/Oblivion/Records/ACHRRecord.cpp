@@ -73,14 +73,15 @@ bool ACHRRecord::VisitFormIDs(FormIDOp &op)
     if(!IsLoaded())
         return false;
 
-    op.Accept(NAME.value.value);
+    op.Accept(NAME.value);
     if(XPCI.IsLoaded() && XPCI->XPCI.IsLoaded())
-        op.Accept(XPCI->XPCI->value);
+        op.Accept(XPCI->XPCI.value);
     if(XESP.IsLoaded())
         op.Accept(XESP->parent);
     if(XMRC.IsLoaded())
-        op.Accept(XMRC->value);
-    op.Accept(XHRS.value.value);
+        op.Accept(XMRC.value);
+    if(XHRS.IsLoaded())
+        op.Accept(XHRS.value);
 
     return op.Stop();
     }
@@ -279,7 +280,7 @@ SINT32 ACHRRecord::WriteRecord(_FileHandler &SaveHandler)
 
     if(XPCI.IsLoaded() && XPCI->XPCI.IsLoaded())
         {
-        SaveHandler.writeSubRecord('ICPX', XPCI->XPCI.value, XPCI->XPCI.GetSize());
+        SaveHandler.writeSubRecord('ICPX', &XPCI->XPCI.value, XPCI->XPCI.GetSize());
         if(XPCI->FULL.IsLoaded())
             SaveHandler.writeSubRecord('LLUF', XPCI->FULL.value, XPCI->FULL.GetSize());
         else
@@ -293,7 +294,7 @@ SINT32 ACHRRecord::WriteRecord(_FileHandler &SaveHandler)
         SaveHandler.writeSubRecord('PSEX', XESP.value, XESP.GetSize());
 
     if(XMRC.IsLoaded())
-        SaveHandler.writeSubRecord('CRMX', XMRC.value, XMRC.GetSize());
+        SaveHandler.writeSubRecord('CRMX', &XMRC.value, XMRC.GetSize());
 
     if(XHRS.IsLoaded())
         SaveHandler.writeSubRecord('SRHX', &XHRS.value, XHRS.GetSize());

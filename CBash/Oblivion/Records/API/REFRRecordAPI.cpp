@@ -194,7 +194,7 @@ void * REFRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 4: //eid
             return EDID.value;
         case 5: //base
-            return &NAME.value.value;
+            return &NAME.value;
         case 6: //destination
             return XTEL.IsLoaded() ? &XTEL->destinationFid : NULL;
         case 7: //destinationPosX
@@ -225,11 +225,11 @@ void * REFRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             *FieldValues = XLOC.IsLoaded() ? &XLOC->unused3[0] : NULL;
             return NULL;
         case 19: //owner
-            return Ownership.IsLoaded() ? &Ownership->XOWN.value.value : NULL;
+            return Ownership.IsLoaded() ? &Ownership->XOWN.value : NULL;
         case 20: //rank
-            return (Ownership.IsLoaded() && Ownership->XRNK.IsLoaded()) ? &Ownership->XRNK->value : NULL;
+            return Ownership.IsLoaded() ? Ownership->XRNK.value : NULL;
         case 21: //globalVariable
-            return (Ownership.IsLoaded() && Ownership->XGLB.IsLoaded()) ? &Ownership->XGLB->value : NULL;
+            return (Ownership.IsLoaded() && Ownership->XGLB.IsLoaded()) ? &Ownership->XGLB.value : NULL;
         case 22: //parent
             return XESP.IsLoaded() ? &XESP->parent : NULL;
         case 23: //parentFlags
@@ -238,7 +238,7 @@ void * REFRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             *FieldValues = XESP.IsLoaded() ? &XESP->unused1[0] : NULL;
             return NULL;
         case 25: //target
-            return XTRG.IsLoaded() ? &XTRG->value : NULL;
+            return XTRG.IsLoaded() ? &XTRG.value : NULL;
         case 26: //seed
             if(XSED.IsLoaded())
                 {
@@ -254,23 +254,23 @@ void * REFRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 29: //lod3
             return XLOD.IsLoaded() ? &XLOD->lod3 : NULL;
         case 30: //charge
-            return XCHG.IsLoaded() ? &XCHG->value : NULL;
+            return XCHG.IsLoaded() ? &XCHG.value : NULL;
         case 31: //health
-            return XHLT.IsLoaded() ? &XHLT->value : NULL;
+            return XHLT.IsLoaded() ? &XHLT.value : NULL;
         case 32: //unknownXPCIFormID
-            return (XPCI.IsLoaded() && XPCI->XPCI.IsLoaded()) ? &XPCI->XPCI->value : NULL;
+            return (XPCI.IsLoaded() && XPCI->XPCI.IsLoaded()) ? &XPCI->XPCI.value : NULL;
         case 33: //unknownXPCIString
             return XPCI.IsLoaded() ? XPCI->FULL.value : NULL;
         case 34: //levelMod
-            return XLCM.IsLoaded() ? &XLCM->value : NULL;
+            return XLCM.IsLoaded() ? &XLCM.value : NULL;
         case 35: //unknownXRTMFormID
-            return XRTM.IsLoaded() ? &XRTM->value : NULL;
+            return XRTM.IsLoaded() ? &XRTM.value : NULL;
         case 36: //actionFlags
-            return XACT.IsLoaded() ? &XACT->value : NULL;
+            return XACT.IsLoaded() ? &XACT.value : NULL;
         case 37: //count
-            return XCNT.IsLoaded() ? &XCNT->value : NULL;
+            return XCNT.IsLoaded() ? &XCNT.value : NULL;
         case 38: //markerFlags
-            return Marker.IsLoaded() ? &Marker->FNAM.value.value : NULL;
+            return Marker.IsLoaded() ? &Marker->FNAM.value : NULL;
         case 39: //markerName
             return Marker.IsLoaded() ? Marker->FULL.value : NULL;
         case 40: //markerType
@@ -281,7 +281,7 @@ void * REFRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 42: //scale
             return XSCL.IsLoaded() ? &XSCL->scale : NULL;
         case 43: //soulType
-            return XSOL.IsLoaded() ? &XSOL->value : NULL;
+            return XSOL.IsLoaded() ? &XSOL.value : NULL;
         case 44: //posX
             return &DATA.value.posX;
         case 45: //posY
@@ -313,7 +313,7 @@ bool REFRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             EDID.Copy((STRING)FieldValue);
             break;
         case 5: //base
-            NAME.value.value = *(FORMID *)FieldValue;
+            NAME.value = *(FORMID *)FieldValue;
             return true;
         case 6: //destination
             XTEL.Load();
@@ -381,17 +381,16 @@ bool REFRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             break;
         case 19: //owner
             Ownership.Load();
-            Ownership->XOWN.value.value = *(FORMID *)FieldValue;
+            Ownership->XOWN.value = *(FORMID *)FieldValue;
             return true;
         case 20: //rank
             Ownership.Load();
             Ownership->XRNK.Load();
-            Ownership->XRNK->value = *(SINT32 *)FieldValue;
+            *Ownership->XRNK.value = *(SINT32 *)FieldValue;
             break;
         case 21: //globalVariable
             Ownership.Load();
-            Ownership->XGLB.Load();
-            Ownership->XGLB->value = *(FORMID *)FieldValue;
+            Ownership->XGLB.value = *(FORMID *)FieldValue;
             return true;
         case 22: //parent
             XESP.Load();
@@ -409,8 +408,7 @@ bool REFRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             XESP->unused1[2] = ((UINT8ARRAY)FieldValue)[2];
             break;
         case 25: //target
-            XTRG.Load();
-            XTRG->value = *(FORMID *)FieldValue;
+            XTRG.value = *(FORMID *)FieldValue;
             return true;
         case 26: //seed
             XSED.Load();
@@ -439,36 +437,30 @@ bool REFRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             XLOD->lod3 = *(FLOAT32 *)FieldValue;
             break;
         case 30: //charge
-            XCHG.Load();
-            XCHG->value = *(FLOAT32 *)FieldValue;
+            XCHG.value = *(FLOAT32 *)FieldValue;
             break;
         case 31: //health
-            XHLT.Load();
-            XHLT->value = *(SINT32 *)FieldValue;
+            XHLT.value = *(SINT32 *)FieldValue;
             break;
         case 32: //unknownXPCIFormID
             XPCI.Load();
-            XPCI->XPCI.Load();
-            XPCI->XPCI->value = *(FORMID *)FieldValue;
+            XPCI->XPCI.value = *(FORMID *)FieldValue;
             return true;
         case 33: //unknownXPCIString
             XPCI.Load();
             XPCI->FULL.Copy((STRING)FieldValue);
             break;
         case 34: //levelMod
-            XLCM.Load();
-            XLCM->value = *(SINT32 *)FieldValue;
+            XLCM.value = *(SINT32 *)FieldValue;
             break;
         case 35: //unknownXRTMFormID
-            XRTM.Load();
-            XRTM->value = *(FORMID *)FieldValue;
+            XRTM.value = *(FORMID *)FieldValue;
             return true;
         case 36: //actionFlags
             SetActionFlagMask(*(UINT32 *)FieldValue);
             break;
         case 37: //count
-            XCNT.Load();
-            XCNT->value = *(SINT32 *)FieldValue;
+            XCNT.value = *(SINT32 *)FieldValue;
             break;
         case 38: //markerFlags
             SetMapFlagMask(*(UINT8 *)FieldValue);

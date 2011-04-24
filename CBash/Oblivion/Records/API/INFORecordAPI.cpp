@@ -304,11 +304,11 @@ void * INFORecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 6: //flags
             return &DATA.value.flags;
         case 7: //quest
-            return &QSTI.value.value;
+            return &QSTI.value;
         case 8: //topic
-            return (TPIC.IsLoaded() ? &TPIC->value : NULL);
+            return TPIC.IsLoaded() ? &TPIC.value : NULL;
         case 9: //prevInfo
-            return (PNAM.IsLoaded() ? &PNAM->value : NULL);
+            return PNAM.value;
         case 10: //addTopics
             *FieldValues = NAME.size() ? &NAME[0] : NULL;
             return NULL;
@@ -414,15 +414,14 @@ bool INFORecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             SetFlagMask(*(UINT8 *)FieldValue);
             break;
         case 7: //quest
-            QSTI.value.value = *(FORMID *)FieldValue;
+            QSTI.value = *(FORMID *)FieldValue;
             return true;
         case 8: //topic
-            TPIC.Load();
-            TPIC->value = *(FORMID *)FieldValue;
+            TPIC.value = *(FORMID *)FieldValue;
             return true;
         case 9: //prevInfo
             PNAM.Load();
-            PNAM->value = *(FORMID *)FieldValue;
+            *PNAM.value = *(FORMID *)FieldValue;
             return true;
         case 10: //addTopics
             NAME.resize(ArraySize);

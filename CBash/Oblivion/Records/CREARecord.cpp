@@ -74,142 +74,142 @@ bool CREARecord::CREADATA::operator !=(const CREADATA &other) const
 
 bool CREARecord::CREASound::IsLeftFoot()
     {
-    return (CSDT.value.value == eLeftFoot);
+    return (CSDT.value == eLeftFoot);
     }
 
 void CREARecord::CREASound::IsLeftFoot(bool value)
     {
     if(value)
-        CSDT.value.value = eLeftFoot;
+        CSDT.value = eLeftFoot;
     else if(IsLeftFoot())
-        CSDT.value.value = eRightFoot;
+        CSDT.value = eRightFoot;
     }
 
 bool CREARecord::CREASound::IsRightFoot()
     {
-    return (CSDT.value.value == eRightFoot);
+    return (CSDT.value == eRightFoot);
     }
 
 void CREARecord::CREASound::IsRightFoot(bool value)
     {
     if(value)
-        CSDT.value.value = eRightFoot;
+        CSDT.value = eRightFoot;
     else if(IsRightFoot())
-        CSDT.value.value = eLeftFoot;
+        CSDT.value = eLeftFoot;
     }
 
 bool CREARecord::CREASound::IsLeftBackFoot()
     {
-    return (CSDT.value.value == eLeftBackFoot);
+    return (CSDT.value == eLeftBackFoot);
     }
 
 void CREARecord::CREASound::IsLeftBackFoot(bool value)
     {
     if(value)
-        CSDT.value.value = eLeftBackFoot;
+        CSDT.value = eLeftBackFoot;
     else if(IsLeftBackFoot())
-        CSDT.value.value = eLeftFoot;
+        CSDT.value = eLeftFoot;
     }
 
 bool CREARecord::CREASound::IsRightBackFoot()
     {
-    return (CSDT.value.value == eRightBackFoot);
+    return (CSDT.value == eRightBackFoot);
     }
 
 void CREARecord::CREASound::IsRightBackFoot(bool value)
     {
     if(value)
-        CSDT.value.value = eRightBackFoot;
+        CSDT.value = eRightBackFoot;
     else if(IsRightBackFoot())
-        CSDT.value.value = eLeftFoot;
+        CSDT.value = eLeftFoot;
     }
 
 bool CREARecord::CREASound::IsIdle()
     {
-    return (CSDT.value.value == eIdle);
+    return (CSDT.value == eIdle);
     }
 
 void CREARecord::CREASound::IsIdle(bool value)
     {
     if(value)
-        CSDT.value.value = eIdle;
+        CSDT.value = eIdle;
     else if(IsIdle())
-        CSDT.value.value = eLeftFoot;
+        CSDT.value = eLeftFoot;
     }
 
 bool CREARecord::CREASound::IsAware()
     {
-    return (CSDT.value.value == eAware);
+    return (CSDT.value == eAware);
     }
 
 void CREARecord::CREASound::IsAware(bool value)
     {
     if(value)
-        CSDT.value.value = eAware;
+        CSDT.value = eAware;
     else if(IsAware())
-        CSDT.value.value = eLeftFoot;
+        CSDT.value = eLeftFoot;
     }
 
 bool CREARecord::CREASound::IsAttack()
     {
-    return (CSDT.value.value == eAttack);
+    return (CSDT.value == eAttack);
     }
 
 void CREARecord::CREASound::IsAttack(bool value)
     {
     if(value)
-        CSDT.value.value = eAttack;
+        CSDT.value = eAttack;
     else if(IsAttack())
-        CSDT.value.value = eLeftFoot;
+        CSDT.value = eLeftFoot;
     }
 
 bool CREARecord::CREASound::IsHit()
     {
-    return (CSDT.value.value == eHit);
+    return (CSDT.value == eHit);
     }
 
 void CREARecord::CREASound::IsHit(bool value)
     {
     if(value)
-        CSDT.value.value = eHit;
+        CSDT.value = eHit;
     else if(IsHit())
-        CSDT.value.value = eLeftFoot;
+        CSDT.value = eLeftFoot;
     }
 
 bool CREARecord::CREASound::IsDeath()
     {
-    return (CSDT.value.value == eDeath);
+    return (CSDT.value == eDeath);
     }
 
 void CREARecord::CREASound::IsDeath(bool value)
     {
     if(value)
-        CSDT.value.value = eDeath;
+        CSDT.value = eDeath;
     else if(IsDeath())
-        CSDT.value.value = eLeftFoot;
+        CSDT.value = eLeftFoot;
     }
 
 bool CREARecord::CREASound::IsWeapon()
     {
-    return (CSDT.value.value == eWeapon);
+    return (CSDT.value == eWeapon);
     }
 
 void CREARecord::CREASound::IsWeapon(bool value)
     {
     if(value)
-        CSDT.value.value = eWeapon;
+        CSDT.value = eWeapon;
     else if(IsWeapon())
-        CSDT.value.value = eLeftFoot;
+        CSDT.value = eLeftFoot;
     }
 
 bool CREARecord::CREASound::IsType(UINT32 Type)
     {
-    return (CSDT.value.value == Type);
+    return (CSDT.value == Type);
     }
 
 void CREARecord::CREASound::SetType(UINT32 Type)
     {
-    CSDT.value.value = Type;
+    CSDT.value = Type;
     }
 
 bool CREARecord::CREASound::operator ==(const CREASound &other) const
@@ -331,19 +331,19 @@ bool CREARecord::VisitFormIDs(FormIDOp &op)
     for(UINT32 x = 0; x < SNAM.size(); x++)
         op.Accept(SNAM[x]->value.faction);
     if(INAM.IsLoaded())
-        op.Accept(INAM->value);
+        op.Accept(INAM.value);
     if(SCRI.IsLoaded())
-        op.Accept(SCRI->value);
+        op.Accept(SCRI.value);
     for(UINT32 x = 0; x < CNTO.size(); x++)
         op.Accept(CNTO[x]->value.item);
     for(UINT32 x = 0; x < PKID.size(); x++)
         op.Accept(PKID[x]);
     if(ZNAM.IsLoaded())
-        op.Accept(ZNAM->value);
+        op.Accept(ZNAM.value);
     if(CSCR.IsLoaded())
-        op.Accept(CSCR->value);
+        op.Accept(CSCR.value);
     for(UINT32 x = 0; x < Sounds.size(); x++)
-        op.Accept(Sounds[x]->CSDI.value.value);
+        op.Accept(Sounds[x]->CSDI.value);
 
     return op.Stop();
     }
@@ -1346,10 +1346,10 @@ SINT32 CREARecord::WriteRecord(_FileHandler &SaveHandler)
             SaveHandler.writeSubRecord('MANS', &SNAM[p]->value, SNAM[p]->GetSize());
 
     if(INAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANI', INAM.value, INAM.GetSize());
+        SaveHandler.writeSubRecord('MANI', &INAM.value, INAM.GetSize());
 
     if(SCRI.IsLoaded())
-        SaveHandler.writeSubRecord('IRCS', SCRI.value, SCRI.GetSize());
+        SaveHandler.writeSubRecord('IRCS', &SCRI.value, SCRI.GetSize());
 
     for(UINT32 p = 0; p < CNTO.size(); p++)
         if(CNTO[p]->IsLoaded())
@@ -1383,7 +1383,7 @@ SINT32 CREARecord::WriteRecord(_FileHandler &SaveHandler)
         SaveHandler.writeSubRecord('MANR', &RNAM.value, RNAM.GetSize());
 
     if(ZNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANZ', ZNAM.value, ZNAM.GetSize());
+        SaveHandler.writeSubRecord('MANZ', &ZNAM.value, ZNAM.GetSize());
 
     if(TNAM.IsLoaded())
         SaveHandler.writeSubRecord('MANT', &TNAM.value, TNAM.GetSize());
@@ -1395,7 +1395,7 @@ SINT32 CREARecord::WriteRecord(_FileHandler &SaveHandler)
         SaveHandler.writeSubRecord('MANW', &WNAM.value, WNAM.GetSize());
 
     if(CSCR.IsLoaded())
-        SaveHandler.writeSubRecord('RCSC', CSCR.value, CSCR.GetSize());
+        SaveHandler.writeSubRecord('RCSC', &CSCR.value, CSCR.GetSize());
 
     if(NAM0.IsLoaded())
         SaveHandler.writeSubRecord('0MAN', NAM0.value, NAM0.GetSize());

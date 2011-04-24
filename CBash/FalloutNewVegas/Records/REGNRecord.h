@@ -41,7 +41,7 @@ class REGNRecord : public Record //Region
 
         struct REGNArea
             {
-            ReqSubRecord<GENU32> RPLI; // Edge Fall-off
+            ReqSimpleSubRecord<UINT32> RPLI; // Edge Fall-off
             std::vector<REGNRPLD> RPLD; // Region Point List Data
 
             bool operator ==(const REGNArea &other) const;
@@ -173,7 +173,7 @@ class REGNRecord : public Record //Region
             std::vector<REGNRDOT> RDOT; // Objects
             StringRecord RDMP; //Map Name
             std::vector<REGNRDGS> RDGS; // Grasses
-            SemiOptSubRecord<GENU32> RDMD; // Music Type
+            SemiOptSimpleSubRecord<UINT32> RDMD; // Music Type
             OptSimpleSubRecord<FORMID> RDMO; //Music
             OptSimpleSubRecord<FORMID> RDSI; //Incidental MediaSet
             std::vector<FORMID> RDSB; //Battle MediaSets

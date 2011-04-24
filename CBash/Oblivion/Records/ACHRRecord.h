@@ -33,12 +33,12 @@ class ACHRRecord : public Record
 
     public:
         StringRecord EDID;
-        ReqSubRecord<GENFID> NAME;
+        ReqSimpleSubRecord<FORMID> NAME;
         OptSubRecord<GENXPCI> XPCI;
         OptSubRecord<GENXLOD> XLOD;
         OptSubRecord<GENXESP> XESP;
-        OptSubRecord<GENFID> XMRC;
-        SubRecord<GENFID> XHRS;
+        OptSimpleSubRecord<FORMID> XMRC;
+        SimpleSubRecord<FORMID> XHRS;
         RawRecord XRGD;
         OptSubRecord<GENXSCL> XSCL;
         ReqSubRecord<GENPOSDATA> DATA;

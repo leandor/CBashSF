@@ -31,7 +31,7 @@ class MISCRecord : public Record
         StringRecord FULL;
         OptSubRecord<GENMODEL> MODL;
         StringRecord ICON;
-        OptSubRecord<GENFID> SCRI;
+        OptSimpleSubRecord<FORMID> SCRI;
         ReqSubRecord<GENVALUEWEIGHT> DATA;
 
         MISCRecord(unsigned char *_recData=NULL);

@@ -60,12 +60,12 @@ class LIGHRecord : public Record
     public:
         StringRecord EDID;
         OptSubRecord<GENMODEL> MODL;
-        OptSubRecord<GENFID> SCRI;
+        OptSimpleSubRecord<FORMID> SCRI;
         StringRecord FULL;
         StringRecord ICON;
         ReqSubRecord<LIGHDATA> DATA;
-        OptSubRecord<GENFLOAT> FNAM;
-        OptSubRecord<GENFID> SNAM;
+        OptSimpleSubRecord<FLOAT32> FNAM;
+        OptSimpleSubRecord<FORMID> SNAM;
 
         LIGHRecord(unsigned char *_recData=NULL);
         LIGHRecord(LIGHRecord *srcRecord);

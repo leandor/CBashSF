@@ -114,11 +114,11 @@ void * WRLDRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 5: //full
             return FULL.value;
         case 6: //parent
-            return WNAM.IsLoaded() ? &WNAM->value : NULL;
+            return WNAM.IsLoaded() ? &WNAM.value : NULL;
         case 7: //climate
-            return CNAM.IsLoaded() ? &CNAM->value : NULL;
+            return CNAM.IsLoaded() ? &CNAM.value : NULL;
         case 8: //water
-            return NAM2.IsLoaded() ? &NAM2->value : NULL;
+            return NAM2.IsLoaded() ? &NAM2.value : NULL;
         case 9: //mapPath
             return ICON.value;
         case 10: //dimX
@@ -134,7 +134,7 @@ void * WRLDRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 15: //SECellY
             return MNAM.IsLoaded() ? &MNAM->SECellY : NULL;
         case 16: //flags
-            return &DATA.value.value;
+            return &DATA.value;
         case 17: //xMinObjBounds
             return &NAM0.value.x;
         case 18: //yMinObjBounds
@@ -144,7 +144,7 @@ void * WRLDRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 20: //yMaxObjBounds
             return &NAM9.value.y;
         case 21: //soundType
-            return SNAM.IsLoaded() ? &SNAM->value : NULL;
+            return SNAM.IsLoaded() ? &SNAM.value : NULL;
         case 22: //ofst_p
             *FieldValues = OFST.value;
             return NULL;
@@ -178,16 +178,13 @@ bool WRLDRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             FULL.Copy((STRING)FieldValue);
             break;
         case 6: //parent
-            WNAM.Load();
-            WNAM->value = *(FORMID *)FieldValue;
+            WNAM.value = *(FORMID *)FieldValue;
             return true;
         case 7: //climate
-            CNAM.Load();
-            CNAM->value = *(FORMID *)FieldValue;
+            CNAM.value = *(FORMID *)FieldValue;
             return true;
         case 8: //water
-            NAM2.Load();
-            NAM2->value = *(FORMID *)FieldValue;
+            NAM2.value = *(FORMID *)FieldValue;
             return true;
         case 9: //mapPath
             ICON.Copy((STRING)FieldValue);
@@ -217,7 +214,7 @@ bool WRLDRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             MNAM->SECellY = *(SINT16 *)FieldValue;
             break;
         case 16: //flags
-            DATA.value.value = *(UINT8 *)FieldValue;
+            DATA.value = *(UINT8 *)FieldValue;
             break;
         case 17: //xMinObjBounds
             NAM0.value.x = *(FLOAT32 *)FieldValue;

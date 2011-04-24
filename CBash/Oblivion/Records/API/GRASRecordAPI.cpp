@@ -120,7 +120,7 @@ void * GRASRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 5: //modPath
             return MODL.IsLoaded() ? MODL->MODL.value : NULL;
         case 6: //modb
-            return MODL.IsLoaded() ? &MODL->MODB.value.value : NULL;
+            return MODL.IsLoaded() ? &MODL->MODB.value : NULL;
         case 7: //modt_p
             *FieldValues = MODL.IsLoaded() ? MODL->MODT.value : NULL;
             return NULL;
@@ -177,7 +177,7 @@ bool GRASRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             break;
         case 6: //modb
             MODL.Load();
-            MODL->MODB.value.value = *(FLOAT32 *)FieldValue;
+            MODL->MODB.value = *(FLOAT32 *)FieldValue;
             break;
         case 7: //modt_p
             MODL.Load();

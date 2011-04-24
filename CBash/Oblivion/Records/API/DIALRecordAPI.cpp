@@ -96,7 +96,7 @@ void * DIALRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 7: //full
             return FULL.value;
         case 8: //dialType
-            return &DATA.value.value;
+            return &DATA.value;
         case 9: //INFO
             for(UINT32 p = 0;p < (UINT32)INFO.size();++p)
                 ((RECORDIDARRAY)FieldValues)[p] = INFO[p];

@@ -39,11 +39,11 @@ class DOORRecord : public Record
         StringRecord EDID;
         StringRecord FULL;
         OptSubRecord<GENMODEL> MODL;
-        OptSubRecord<GENFID> SCRI;
-        OptSubRecord<GENFID> SNAM;
-        OptSubRecord<GENFID> ANAM;
-        OptSubRecord<GENFID> BNAM;
-        ReqSubRecord<GENU8> FNAM;
+        OptSimpleSubRecord<FORMID> SCRI;
+        OptSimpleSubRecord<FORMID> SNAM;
+        OptSimpleSubRecord<FORMID> ANAM;
+        OptSimpleSubRecord<FORMID> BNAM;
+        ReqSimpleSubRecord<UINT8> FNAM;
         std::vector<FORMID> TNAM;
 
         DOORRecord(unsigned char *_recData=NULL);

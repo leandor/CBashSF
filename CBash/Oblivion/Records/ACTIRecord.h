@@ -29,8 +29,8 @@ class ACTIRecord : public Record
         StringRecord EDID;
         StringRecord FULL;
         OptSubRecord<GENMODEL> MODL;
-        OptSubRecord<GENFID> SCRI;
-        OptSubRecord<GENFID> SNAM;
+        OptSimpleSubRecord<FORMID> SCRI;
+        OptSimpleSubRecord<FORMID> SNAM;
 
         ACTIRecord(unsigned char *_recData=NULL);
         ACTIRecord(ACTIRecord *srcRecord);

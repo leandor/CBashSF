@@ -268,11 +268,11 @@ bool INFORecord::VisitFormIDs(FormIDOp &op)
 
     FunctionArguments CTDAFunction;
     Function_Arguments_Iterator curCTDAFunction;
-    op.Accept(QSTI.value.value);
+    op.Accept(QSTI.value);
     if(TPIC.IsLoaded())
-        op.Accept(TPIC->value);
+        op.Accept(TPIC.value);
     if(PNAM.IsLoaded())
-        op.Accept(PNAM->value);
+        op.Accept(*PNAM.value);
     for(UINT32 x = 0; x < NAME.size(); x++)
         op.Accept(NAME[x]);
     for(UINT32 x = 0; x < CTDA.size(); x++)
@@ -719,7 +719,7 @@ SINT32 INFORecord::WriteRecord(_FileHandler &SaveHandler)
     if(QSTI.IsLoaded())
         SaveHandler.writeSubRecord('ITSQ', &QSTI.value, QSTI.GetSize());
     if(TPIC.IsLoaded())
-        SaveHandler.writeSubRecord('CIPT', TPIC.value, TPIC.GetSize());
+        SaveHandler.writeSubRecord('CIPT', &TPIC.value, TPIC.GetSize());
     if(PNAM.IsLoaded())
         SaveHandler.writeSubRecord('MANP', PNAM.value, PNAM.GetSize());
     for(UINT32 p = 0; p < NAME.size(); p++)

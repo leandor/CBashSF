@@ -182,7 +182,7 @@ bool WATRRecord::VisitFormIDs(FormIDOp &op)
         return false;
 
     if(SNAM.IsLoaded())
-        op.Accept(SNAM->value);
+        op.Accept(SNAM.value);
     if(GNAM.IsLoaded())
         {
         op.Accept(GNAM->dayWater);
@@ -195,51 +195,51 @@ bool WATRRecord::VisitFormIDs(FormIDOp &op)
 
 bool WATRRecord::IsCausesDmg()
     {
-    return (FNAM.value.value & fIsCausesDamage) != 0;
+    return (FNAM.value & fIsCausesDamage) != 0;
     }
 
 void WATRRecord::IsCausesDmg(bool value)
     {
     if(value)
-        FNAM.value.value |= fIsCausesDamage;
+        FNAM.value |= fIsCausesDamage;
     else
-        FNAM.value.value &= ~fIsCausesDamage;
+        FNAM.value &= ~fIsCausesDamage;
     }
 
 bool WATRRecord::IsCausesDamage()
     {
-    return (FNAM.value.value & fIsCausesDamage) != 0;
+    return (FNAM.value & fIsCausesDamage) != 0;
     }
 
 void WATRRecord::IsCausesDamage(bool value)
     {
     if(value)
-        FNAM.value.value |= fIsCausesDamage;
+        FNAM.value |= fIsCausesDamage;
     else
-        FNAM.value.value &= ~fIsCausesDamage;
+        FNAM.value &= ~fIsCausesDamage;
     }
 
 bool WATRRecord::IsReflective()
     {
-    return (FNAM.value.value & fIsReflective) != 0;
+    return (FNAM.value & fIsReflective) != 0;
     }
 
 void WATRRecord::IsReflective(bool value)
     {
     if(value)
-        FNAM.value.value |= fIsReflective;
+        FNAM.value |= fIsReflective;
     else
-        FNAM.value.value &= ~fIsReflective;
+        FNAM.value &= ~fIsReflective;
     }
 
 bool WATRRecord::IsFlagMask(UINT8 Mask, bool Exact)
     {
-    return Exact ? ((FNAM.value.value & Mask) == Mask) : ((FNAM.value.value & Mask) != 0);
+    return Exact ? ((FNAM.value & Mask) == Mask) : ((FNAM.value & Mask) != 0);
     }
 
 void WATRRecord::SetFlagMask(UINT8 Mask)
     {
-    FNAM.value.value = Mask;
+    FNAM.value = Mask;
     }
 
 UINT32 WATRRecord::GetSize(bool forceCalc)
@@ -385,7 +385,7 @@ SINT32 WATRRecord::WriteRecord(_FileHandler &SaveHandler)
     if(MNAM.IsLoaded())
         SaveHandler.writeSubRecord('MANM', MNAM.value, MNAM.GetSize());
     if(SNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANS', SNAM.value, SNAM.GetSize());
+        SaveHandler.writeSubRecord('MANS', &SNAM.value, SNAM.GetSize());
     if(DATA.IsLoaded())
         SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
     if(GNAM.IsLoaded())

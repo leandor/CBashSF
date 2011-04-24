@@ -38,8 +38,8 @@ class ALCHRecord : public Record
         StringRecord FULL;
         OptSubRecord<GENMODEL> MODL;
         StringRecord ICON;
-        OptSubRecord<GENFID> SCRI;
-        ReqSubRecord<GENFLOAT> DATA;
+        OptSimpleSubRecord<FORMID> SCRI;
+        ReqSimpleSubRecord<FLOAT32> DATA;
         ReqSubRecord<GENENIT> ENIT;
         std::vector<GENEffect *> Effects;
         OptSubRecord<OBMEMAGIC> OBME;

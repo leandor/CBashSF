@@ -52,9 +52,9 @@ class SLGMRecord : public Record
         StringRecord FULL;
         OptSubRecord<GENMODEL> MODL;
         StringRecord ICON;
-        OptSubRecord<GENFID> SCRI;
+        OptSimpleSubRecord<FORMID> SCRI;
         ReqSubRecord<GENVALUEWEIGHT> DATA;
-        ReqSubRecord<GENU8> SOUL;
+        ReqSimpleSubRecord<UINT8> SOUL;
         ReqSubRecord<SLGMSLCP> SLCP;
 
         SLGMRecord(unsigned char *_recData=NULL);

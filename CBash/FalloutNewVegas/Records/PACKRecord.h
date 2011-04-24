@@ -139,13 +139,18 @@ class PACKRecord : public Record //Package
 
         struct PACKSCRI // Script
             {
-            ReqSubRecord<GENFID> INAM; // Idle
+            ReqSimpleSubRecord<FORMID> INAM; // Idle
             ReqSubRecord<FNVSCHR> SCHR;
             RawRecord SCDA;
             NonNullStringRecord SCTX;
             std::vector<GENVARS *> VARS;
             std::vector<ReqSubRecord<GENSCR_> *> SCR_;
-            ReqSubRecord<GENFID> TNAM; // Topic
+            ReqSimpleSubRecord<FORMID> TNAM; // Topic
+
+            enum schrFlags
+                {
+                fIsEnabled = 0x0001
+                };
 
             bool IsScriptEnabled();
             void IsScriptEnabled(bool value);

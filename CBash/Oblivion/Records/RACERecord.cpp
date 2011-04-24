@@ -1388,9 +1388,9 @@ SINT32 RACERecord::WriteRecord(_FileHandler &SaveHandler)
     if(CNAM.IsLoaded())
         SaveHandler.writeSubRecord('MANC', &CNAM.value, CNAM.GetSize());
     if(PNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANP', PNAM.value, PNAM.GetSize());
+        SaveHandler.writeSubRecord('MANP', &PNAM.value, PNAM.GetSize());
     if(UNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANU', UNAM.value, UNAM.GetSize());
+        SaveHandler.writeSubRecord('MANU', &UNAM.value, UNAM.GetSize());
     if(ATTR.IsLoaded())
         SaveHandler.writeSubRecord('RTTA', &ATTR.value, ATTR.GetSize());
 

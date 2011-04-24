@@ -71,7 +71,7 @@ class PGRDRecord : public Record
             };
 
     public:
-        ReqSubRecord<GENU16> DATA;
+        ReqSimpleSubRecord<UINT16> DATA;
         std::vector<GENPGRP> PGRP;
         RawRecord PGAG;
         RawRecord PGRR;

@@ -78,9 +78,9 @@ class WATRRecord : public Record
         StringRecord EDID;
         StringRecord TNAM;
         ReqSubRecord<WATRANAM> ANAM;
-        ReqSubRecord<GENU8> FNAM;
+        ReqSimpleSubRecord<UINT8> FNAM;
         StringRecord MNAM;
-        OptSubRecord<GENFID> SNAM;
+        OptSimpleSubRecord<FORMID> SNAM;
         SemiOptSubRecord<WATRDATA> DATA;
         SemiOptSubRecord<WATRGNAM> GNAM;
 

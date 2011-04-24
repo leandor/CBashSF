@@ -77,13 +77,13 @@ bool DOORRecord::VisitFormIDs(FormIDOp &op)
         return false;
 
     if(SCRI.IsLoaded())
-        op.Accept(SCRI->value);
+        op.Accept(SCRI.value);
     if(SNAM.IsLoaded())
-        op.Accept(SNAM->value);
+        op.Accept(SNAM.value);
     if(ANAM.IsLoaded())
-        op.Accept(ANAM->value);
+        op.Accept(ANAM.value);
     if(BNAM.IsLoaded())
-        op.Accept(BNAM->value);
+        op.Accept(BNAM.value);
     for(UINT32 x = 0; x < TNAM.size(); x++)
         op.Accept(TNAM[x]);
 
@@ -92,52 +92,52 @@ bool DOORRecord::VisitFormIDs(FormIDOp &op)
 
 bool DOORRecord::IsOblivionGate()
     {
-    return (FNAM.value.value & fIsOblivionGate) != 0;
+    return (FNAM.value & fIsOblivionGate) != 0;
     }
 
 void DOORRecord::IsOblivionGate(bool value)
     {
-    FNAM.value.value = value ? (FNAM.value.value | fIsOblivionGate) : (FNAM.value.value & ~fIsOblivionGate);
+    FNAM.value = value ? (FNAM.value | fIsOblivionGate) : (FNAM.value & ~fIsOblivionGate);
     }
 
 bool DOORRecord::IsAutomatic()
     {
-    return (FNAM.value.value & fIsAutomatic) != 0;
+    return (FNAM.value & fIsAutomatic) != 0;
     }
 
 void DOORRecord::IsAutomatic(bool value)
     {
-    FNAM.value.value = value ? (FNAM.value.value | fIsAutomatic) : (FNAM.value.value & ~fIsAutomatic);
+    FNAM.value = value ? (FNAM.value | fIsAutomatic) : (FNAM.value & ~fIsAutomatic);
     }
 
 bool DOORRecord::IsHidden()
     {
-    return (FNAM.value.value & fIsHidden) != 0;
+    return (FNAM.value & fIsHidden) != 0;
     }
 
 void DOORRecord::IsHidden(bool value)
     {
-    FNAM.value.value = value ? (FNAM.value.value | fIsHidden) : (FNAM.value.value & ~fIsHidden);
+    FNAM.value = value ? (FNAM.value | fIsHidden) : (FNAM.value & ~fIsHidden);
     }
 
 bool DOORRecord::IsMinimalUse()
     {
-    return (FNAM.value.value & fIsMinimalUse) != 0;
+    return (FNAM.value & fIsMinimalUse) != 0;
     }
 
 void DOORRecord::IsMinimalUse(bool value)
     {
-    FNAM.value.value = value ? (FNAM.value.value | fIsMinimalUse) : (FNAM.value.value & ~fIsMinimalUse);
+    FNAM.value = value ? (FNAM.value | fIsMinimalUse) : (FNAM.value & ~fIsMinimalUse);
     }
 
 bool DOORRecord::IsFlagMask(UINT8 Mask, bool Exact)
     {
-    return Exact ? ((FNAM.value.value & Mask) == Mask) : ((FNAM.value.value & Mask) != 0);
+    return Exact ? ((FNAM.value & Mask) == Mask) : ((FNAM.value & Mask) != 0);
     }
 
 void DOORRecord::SetFlagMask(UINT8 Mask)
     {
-    FNAM.value.value = Mask;
+    FNAM.value = Mask;
     }
 
 UINT32 DOORRecord::GetSize(bool forceCalc)
@@ -313,13 +313,13 @@ SINT32 DOORRecord::WriteRecord(_FileHandler &SaveHandler)
             SaveHandler.writeSubRecord('TDOM', MODL->MODT.value, MODL->MODT.GetSize());
         }
     if(SCRI.IsLoaded())
-        SaveHandler.writeSubRecord('IRCS', SCRI.value, SCRI.GetSize());
+        SaveHandler.writeSubRecord('IRCS', &SCRI.value, SCRI.GetSize());
     if(SNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANS', SNAM.value, SNAM.GetSize());
+        SaveHandler.writeSubRecord('MANS', &SNAM.value, SNAM.GetSize());
     if(ANAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANA', ANAM.value, ANAM.GetSize());
+        SaveHandler.writeSubRecord('MANA', &ANAM.value, ANAM.GetSize());
     if(BNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANB', BNAM.value, BNAM.GetSize());
+        SaveHandler.writeSubRecord('MANB', &BNAM.value, BNAM.GetSize());
     if(FNAM.IsLoaded())
         SaveHandler.writeSubRecord('MANF', &FNAM.value, FNAM.GetSize());
     for(UINT32 p = 0; p < TNAM.size(); p++)

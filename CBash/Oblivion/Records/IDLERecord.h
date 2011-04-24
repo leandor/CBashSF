@@ -58,7 +58,7 @@ class IDLERecord : public Record
         StringRecord EDID;
         OptSubRecord<GENMODEL> MODL;
         std::vector<ReqSubRecord<GENCTDA> *> CTDA;
-        ReqSubRecord<GENU8> ANAM;
+        ReqSimpleSubRecord<UINT8> ANAM;
         ReqSubRecord<IDLEDATA> DATA;
 
         IDLERecord(unsigned char *_recData=NULL);

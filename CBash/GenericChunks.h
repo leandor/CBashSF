@@ -318,7 +318,7 @@ struct OBMEEffect
 
 struct GENEffect
     {
-    ReqSubRecord<GENEFID> EFID;
+    ReqSimpleSubRecord<UINT32> EFID;
     ReqSubRecord<GENEFIT> EFIT;
     OptSubRecord<GENSCIT> SCIT;
     StringRecord FULL;
@@ -652,7 +652,7 @@ struct GENCLR
 
 struct GENMODEL
     {
-    ReqSubRecord<GENFLOAT> MODB;
+    ReqSimpleSubRecord<FLOAT32> MODB;
     StringRecord MODL;
     RawRecord MODT;
 
@@ -662,9 +662,9 @@ struct GENMODEL
 
 struct GENXOWN
     {
-    ReqSubRecord<GENFID> XOWN;
-    SemiOptSubRecord<GENS32> XRNK;
-    OptSubRecord<GENFID> XGLB;
+    ReqSimpleSubRecord<FORMID> XOWN;
+    SemiOptSimpleSubRecord<SINT32> XRNK;
+    OptSimpleSubRecord<FORMID> XGLB;
 
     bool operator ==(const GENXOWN &other) const;
     bool operator !=(const GENXOWN &other) const;
@@ -672,7 +672,7 @@ struct GENXOWN
 
 struct GENXPCI
     {
-    OptSubRecord<GENFID> XPCI;
+    OptSimpleSubRecord<FORMID> XPCI;
     StringRecord FULL;
 
     bool operator ==(const GENXPCI &other) const;
@@ -882,10 +882,10 @@ struct GENXTEL
 
 struct GENXMRK
     {
-    ReqSubRecord<GENU8> FNAM; //Flags
+    ReqSimpleSubRecord<UINT8> FNAM; //Flags
     StringRecord FULL; //Name
     ReqSubRecord<GENTNAM> TNAM; //Type
-    OptSubRecord<GENFID> WMI1; //Reputation
+    OptSimpleSubRecord<FORMID> WMI1; //Reputation
 
     bool operator ==(const GENXMRK &other) const;
     bool operator !=(const GENXMRK &other) const;
@@ -894,10 +894,10 @@ struct GENXMRK
 struct GENMMRK
     {
     RawRecord FULL; //Unknown
-    OptSubRecord<GENFID> CNAM; //Audio Location
+    OptSimpleSubRecord<FORMID> CNAM; //Audio Location
     RawRecord BNAM; //Unknown
-    OptSubRecord<GENFLOAT> MNAM; //Unknown
-    OptSubRecord<GENFLOAT> NNAM; //Unknown
+    OptSimpleSubRecord<FLOAT32> MNAM; //Unknown
+    OptSimpleSubRecord<FLOAT32> NNAM; //Unknown
 
     bool operator ==(const GENXMRK &other) const;
     bool operator !=(const GENXMRK &other) const;
@@ -919,8 +919,8 @@ struct GENXRDO
 
 struct GENAMMO
     {
-    OptSubRecord<GENFID> XAMT; //Type
-    OptSubRecord<GENS32> XAMC; //Count
+    OptSimpleSubRecord<FORMID> XAMT; //Type
+    OptSimpleSubRecord<SINT32> XAMC; //Count
 
     bool operator ==(const GENAMMO &other) const;
     bool operator !=(const GENAMMO &other) const;
@@ -928,8 +928,8 @@ struct GENAMMO
 
 struct GENXPWR
     {
-    OptSubRecord<GENFID> XAMT; //Reference
-    OptSubRecord<GENU32> XAMC; //Flags
+    OptSimpleSubRecord<FORMID> XAMT; //Reference
+    OptSimpleSubRecord<UINT32> XAMC; //Flags
 
     bool operator ==(const GENXPWR &other) const;
     bool operator !=(const GENXPWR &other) const;
@@ -938,7 +938,7 @@ struct GENXPWR
 struct GENXDCR
     {
     FORMID reference; //Reference
-    //Unknown? OptSubRecord<GENS32> XAMC; //Count
+    //Unknown? OptSimpleSubRecord<SINT32> XAMC; //Count
 
     GENXDCR();
     ~GENXDCR();
@@ -970,7 +970,7 @@ struct GENXAPR
 
 struct GENACTPARENT
     {
-    OptSubRecord<GENU8> XAPD; //Flags
+    OptSimpleSubRecord<UINT8> XAPD; //Flags
     std::vector<ReqSubRecord<GENXAPR> *> XAPR; //Activate Parent Refs
 
     enum flagsFlags
@@ -1083,14 +1083,19 @@ struct GENDODT
 
 struct GENPATROL
     {
-    ReqSubRecord<GENFLOAT> XPRD; //Idle Time
-    ReqSubRecord<GENFID> INAM; //Idle
+    ReqSimpleSubRecord<FLOAT32> XPRD; //Idle Time
+    ReqSimpleSubRecord<FORMID> INAM; //Idle
     ReqSubRecord<FNVSCHR> SCHR;
     RawRecord SCDA;
     NonNullStringRecord SCTX;
     std::vector<GENVARS *> VARS;
     std::vector<ReqSubRecord<GENSCR_> *> SCR_;
-    ReqSubRecord<GENFID> TNAM; //Topic
+    ReqSimpleSubRecord<FORMID> TNAM; //Topic
+
+    enum schrFlags
+        {
+        fIsEnabled = 0x0001
+        };
 
     bool IsScriptEnabled();
     void IsScriptEnabled(bool value);
@@ -1100,16 +1105,6 @@ struct GENPATROL
     bool operator ==(const GENPATROL &other) const;
     bool operator !=(const GENPATROL &other) const;
     };
-
-struct GENXCLP
-    {
-    GENCLR start;
-    GENCLR end;
-
-    bool operator ==(const GENXCLP &other) const;
-    bool operator !=(const GENXCLP &other) const;
-    };
-
 
 struct GLOBFNAM
     {
@@ -1125,24 +1120,11 @@ struct GLOBFNAM
 //Unfilled
 struct FNVXOWN
     {
-    ReqSubRecord<GENFID> XOWN;
-    SemiOptSubRecord<GENS32> XRNK; //Faction Rank
+    ReqSimpleSubRecord<FORMID> XOWN;
+    SemiOptSimpleSubRecord<SINT32> XRNK; //Faction Rank
 
     bool operator ==(const FNVXOWN &other) const;
     bool operator !=(const FNVXOWN &other) const;
-    };
-
-struct FNVXLOC
-    {
-    UINT8   level, unused1[3];
-    FORMID  key;
-    UINT8   flags, unused2[3], unknown[8];
-
-    FNVXLOC();
-    ~FNVXLOC();
-
-    bool operator ==(const FNVXLOC &other) const;
-    bool operator !=(const FNVXLOC &other) const;
     };
 
 struct FNVXLOC
@@ -1174,10 +1156,10 @@ struct FNVMODS //Alternate Texture
 struct FNVMODEL
     {
     StringRecord MODL; //Model Filename
-    OptSubRecord<GENFLOAT> MODB; //Bound Radius (Unknown?)
+    OptSimpleSubRecord<FLOAT32> MODB; //Bound Radius (Unknown?)
     RawRecord MODT; //Texture Files Hashes
     std::vector<FNVMODS *> MODS; //Alternate Textures
-    OptSubRecord<GENU8> MODD; //FaceGen Model Flags
+    OptSimpleSubRecord<UINT8> MODD; //FaceGen Model Flags
 
     enum moddFlags
         {
@@ -1207,7 +1189,7 @@ struct FNVBIPEDMODEL
     StringRecord MODL; //Model Filename
     RawRecord MODT; //Texture Files Hashes
     std::vector<FNVMODS *> MODS; //Alternate Textures
-    OptSubRecord<GENU8> MODD; //FaceGen Model Flags
+    OptSimpleSubRecord<UINT8> MODD; //FaceGen Model Flags
 
     enum moddFlags
         {
@@ -1293,6 +1275,20 @@ struct GENDEST //Destructable Header
 
     bool operator ==(const GENDEST &other) const;
     bool operator !=(const GENDEST &other) const;
+    };
+
+struct DESTDSTD //Destruction Stage Data
+    {
+    UINT8   health, index, stage, flags; //Health, Index, Damage Stage, Flags
+    SINT32  dps; //Self Damage per Second
+    FORMID  explosion, debris;
+    SINT32  debrisCount;
+
+    DESTDSTD();
+    ~DESTDSTD();
+
+    bool operator ==(const DESTDSTD &other) const;
+    bool operator !=(const DESTDSTD &other) const;
     };
 
 struct DESTMODEL
@@ -1403,18 +1399,18 @@ struct FNVCTDA //Condition
     bool IsFlagMask(UINT8 Mask, bool Exact=false);
     void SetFlagMask(UINT8 Mask);
 
-    bool   IsRunOnSubject();
-    void   IsRunOnSubject(bool value);
-    bool   IsRunOnTarget();
-    void   IsRunOnTarget(bool value);
-    bool   IsRunOnReference();
-    void   IsRunOnReference(bool value);
-    bool   IsRunOnCombatTarget();
-    void   IsRunOnCombatTarget(bool value);
-    bool   IsRunOnLinkedReference();
-    void   IsRunOnLinkedReference(bool value);
-    bool   IsRunOnType(UINT8 Type, bool Exact=false);
-    void   SetRunOnType(UINT8 Type);
+    bool   IsResultOnSubject();
+    void   IsResultOnSubject(bool value);
+    bool   IsResultOnTarget();
+    void   IsResultOnTarget(bool value);
+    bool   IsResultOnReference();
+    void   IsResultOnReference(bool value);
+    bool   IsResultOnCombatTarget();
+    void   IsResultOnCombatTarget(bool value);
+    bool   IsResultOnLinkedReference();
+    void   IsResultOnLinkedReference(bool value);
+    bool   IsResultOnType(UINT8 Type, bool Exact=false);
+    void   SetResultOnType(UINT8 Type);
     };
 
 struct FNVENIT //Effect Data
@@ -1447,7 +1443,7 @@ struct FNVEFIT
 
 struct FNVEffect
     {
-    ReqSubRecord<GENEFID> EFID; //Effect ID
+    ReqSimpleSubRecord<UINT32> EFID; //Effect ID
     ReqSubRecord<FNVEFIT> EFIT; //Effect Data
     std::vector<ReqSubRecord<FNVCTDA> *> CTDA; //Conditions
 
@@ -1595,7 +1591,7 @@ struct FNVXNAM
     void   IsAlly(bool value);
     bool   IsFriend();
     void   IsFriend(bool value);
-    bool   IsType(UINT32 Type, bool Exact=false);
+    bool   IsType(UINT32 Type);
     void   SetType(UINT32 Type);
 
     bool operator ==(const FNVXNAM &other) const;

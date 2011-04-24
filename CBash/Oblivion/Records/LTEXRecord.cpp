@@ -24,7 +24,7 @@ GPL License and Copyright Notice ============================================
 #include <vector>
 
 LTEXRecord::LTEXHNAM::LTEXHNAM():
-    flags(0),
+    types(0),
     friction(0),
     restitution(0)
     {
@@ -38,7 +38,7 @@ LTEXRecord::LTEXHNAM::~LTEXHNAM()
 
 bool LTEXRecord::LTEXHNAM::operator ==(const LTEXHNAM &other) const
     {
-    return (flags == other.flags &&
+    return (types == other.types &&
             friction == other.friction &&
             restitution == other.restitution);
     }
@@ -322,13 +322,13 @@ void LTEXRecord::IsSnow(bool value)
         HNAM.value.types = eStone;
     }
 
-bool LTEXRecord::IsType(UINT32 Type)
+bool LTEXRecord::IsType(UINT8 Type)
     {
     HNAM.Load();
     return (HNAM.value.types == Type);
     }
 
-void LTEXRecord::SetType(UINT32 Type)
+void LTEXRecord::SetType(UINT8 Type)
     {
     HNAM.Load();
     HNAM.value.types = Type;

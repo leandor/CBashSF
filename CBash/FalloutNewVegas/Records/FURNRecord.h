@@ -71,7 +71,7 @@ class FURNRecord : public Record //Furniture
         OptSubRecord<FNVMODEL> MODL; //Model
         OptSimpleSubRecord<FORMID> SCRI; //Script
         OptSubRecord<GENDESTRUCT> Destructable; //Destructable
-        ReqSubRecord<GENU32> MNAM; //Marker Flags
+        ReqSimpleSubRecord<UINT32> MNAM; //Marker Flags
 
         FURNRecord(unsigned char *_recData=NULL);
         FURNRecord(FURNRecord *srcRecord);

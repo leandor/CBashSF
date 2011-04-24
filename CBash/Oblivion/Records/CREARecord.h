@@ -44,9 +44,9 @@ class CREARecord : public Record
 
         struct CREASound
             {
-            ReqSubRecord<GENU32> CSDT;
-            ReqSubRecord<GENFID> CSDI;
-            ReqSubRecord<GENU8> CSDC;
+            ReqSimpleSubRecord<UINT32> CSDT;
+            ReqSimpleSubRecord<FORMID> CSDI;
+            ReqSimpleSubRecord<UINT8> CSDC;
 
             enum eSoundType
                 {
@@ -158,19 +158,19 @@ class CREARecord : public Record
         RawRecord NIFT;
         ReqSubRecord<GENACBS> ACBS;
         std::vector<ReqSubRecord<GENSNAM> *> SNAM;
-        OptSubRecord<GENFID> INAM;
-        OptSubRecord<GENFID> SCRI;
+        OptSimpleSubRecord<FORMID> INAM;
+        OptSimpleSubRecord<FORMID> SCRI;
         std::vector<ReqSubRecord<GENCNTO> *> CNTO;
         ReqSubRecord<GENAIDT> AIDT;
         std::vector<FORMID> PKID;
         std::vector<StringRecord> KFFZ;
         ReqSubRecord<CREADATA> DATA;
-        ReqSubRecord<GENU8> RNAM;
-        OptSubRecord<GENFID> ZNAM;
-        ReqSubRecord<GENFLOAT> TNAM;
-        ReqSubRecord<GENFLOAT> BNAM;
-        ReqSubRecord<GENFLOAT> WNAM;
-        OptSubRecord<GENFID> CSCR;
+        ReqSimpleSubRecord<UINT8> RNAM;
+        OptSimpleSubRecord<FORMID> ZNAM;
+        ReqSimpleSubRecord<FLOAT32> TNAM;
+        ReqSimpleSubRecord<FLOAT32> BNAM;
+        ReqSimpleSubRecord<FLOAT32> WNAM;
+        OptSimpleSubRecord<FORMID> CSCR;
         StringRecord NAM0;
         StringRecord NAM1;
         std::vector<CREASound *> Sounds;

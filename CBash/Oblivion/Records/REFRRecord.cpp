@@ -186,7 +186,7 @@ bool REFRRecord::VisitFormIDs(FormIDOp &op)
     if(!IsLoaded())
         return false;
 
-    op.Accept(NAME.value.value);
+    op.Accept(NAME.value);
     if(XTEL.IsLoaded())
         op.Accept(XTEL->destinationFid);
     if(XLOC.IsLoaded())
@@ -194,18 +194,18 @@ bool REFRRecord::VisitFormIDs(FormIDOp &op)
     if(Ownership.IsLoaded())
         {
         if(Ownership->XOWN.IsLoaded())
-            op.Accept(Ownership->XOWN.value.value);
+            op.Accept(Ownership->XOWN.value);
         if(Ownership->XGLB.IsLoaded())
-            op.Accept(Ownership->XGLB->value);
+            op.Accept(Ownership->XGLB.value);
         }
     if(XESP.IsLoaded())
         op.Accept(XESP->parent);
     if(XTRG.IsLoaded())
-        op.Accept(XTRG->value);
+        op.Accept(XTRG.value);
     if(XPCI.IsLoaded() && XPCI->XPCI.IsLoaded())
-        op.Accept(XPCI->XPCI->value);
+        op.Accept(XPCI->XPCI.value);
     if(XRTM.IsLoaded())
-        op.Accept(XRTM->value);
+        op.Accept(XRTM.value);
 
     return op.Stop();
     }
@@ -240,115 +240,105 @@ void REFRRecord::SetParentFlagMask(UINT8 Mask)
 bool REFRRecord::IsVisible()
     {
     if(!Marker.IsLoaded()) return false;
-    return (Marker->FNAM.value.value & fVisible) != 0;
+    return (Marker->FNAM.value & fVisible) != 0;
     }
 
 void REFRRecord::IsVisible(bool value)
     {
     if(!Marker.IsLoaded()) return;
     if(value)
-        Marker->FNAM.value.value |= fVisible;
+        Marker->FNAM.value |= fVisible;
     else
-        Marker->FNAM.value.value &= ~fVisible;
+        Marker->FNAM.value &= ~fVisible;
     }
 
 bool REFRRecord::IsCanTravelTo()
     {
     if(!Marker.IsLoaded()) return false;
-    return (Marker->FNAM.value.value & fCanTravelTo) != 0;
+    return (Marker->FNAM.value & fCanTravelTo) != 0;
     }
 
 void REFRRecord::IsCanTravelTo(bool value)
     {
     if(!Marker.IsLoaded()) return;
     if(value)
-        Marker->FNAM.value.value |= fCanTravelTo;
+        Marker->FNAM.value |= fCanTravelTo;
     else
-        Marker->FNAM.value.value &= ~fCanTravelTo;
+        Marker->FNAM.value &= ~fCanTravelTo;
     }
 
 bool REFRRecord::IsMapFlagMask(UINT8 Mask, bool Exact)
     {
     if(!Marker.IsLoaded()) return false;
-    return Exact ? ((Marker->FNAM.value.value & Mask) == Mask) : ((Marker->FNAM.value.value & Mask) != 0);
+    return Exact ? ((Marker->FNAM.value & Mask) == Mask) : ((Marker->FNAM.value & Mask) != 0);
     }
 
 void REFRRecord::SetMapFlagMask(UINT8 Mask)
     {
     Marker.Load();
-    Marker->FNAM.value.value = Mask;
+    Marker->FNAM.value = Mask;
     }
 
 bool REFRRecord::IsUseDefault()
     {
-    if(!XACT.IsLoaded()) return false;
-    return (XACT->value & fUseDefault) != 0;
+    return (XACT.value & fUseDefault) != 0;
     }
 
 void REFRRecord::IsUseDefault(bool value)
     {
-    if(!XACT.IsLoaded()) return;
     if(value)
-        XACT->value |= fUseDefault;
+        XACT.value |= fUseDefault;
     else
-        XACT->value &= ~fUseDefault;
+        XACT.value &= ~fUseDefault;
     }
 
 bool REFRRecord::IsActivate()
     {
-    if(!XACT.IsLoaded()) return false;
-    return (XACT->value & fActivate) != 0;
+    return (XACT.value & fActivate) != 0;
     }
 
 void REFRRecord::IsActivate(bool value)
     {
-    if(!XACT.IsLoaded()) return;
     if(value)
-        XACT->value |= fActivate;
+        XACT.value |= fActivate;
     else
-        XACT->value &= ~fActivate;
+        XACT.value &= ~fActivate;
     }
 
 bool REFRRecord::IsOpen()
     {
-    if(!XACT.IsLoaded()) return false;
-    return (XACT->value & fOpen) != 0;
+    return (XACT.value & fOpen) != 0;
     }
 
 void REFRRecord::IsOpen(bool value)
     {
-    if(!XACT.IsLoaded()) return;
     if(value)
-        XACT->value |= fOpen;
+        XACT.value |= fOpen;
     else
-        XACT->value &= ~fOpen;
+        XACT.value &= ~fOpen;
     }
 
 bool REFRRecord::IsOpenByDefault()
     {
-    if(!XACT.IsLoaded()) return false;
-    return (XACT->value & fOpenByDefault) != 0;
+    return (XACT.value & fOpenByDefault) != 0;
     }
 
 void REFRRecord::IsOpenByDefault(bool value)
     {
-    if(!XACT.IsLoaded()) return;
     if(value)
-        XACT->value |= fOpenByDefault;
+        XACT.value |= fOpenByDefault;
     else
-        XACT->value &= ~fOpenByDefault;
+        XACT.value &= ~fOpenByDefault;
     }
 
 bool REFRRecord::IsActionFlagMask(UINT32 Mask, bool Exact)
     {
-    if(!XACT.IsLoaded()) return false;
-    return Exact ? ((XACT->value & Mask) == Mask) : ((XACT->value & Mask) != 0);
+    return Exact ? ((XACT.value & Mask) == Mask) : ((XACT.value & Mask) != 0);
     }
 
 void REFRRecord::SetActionFlagMask(UINT32 Mask)
     {
-    XACT.Load();
-    XACT->value = Mask;
+    XACT.value = Mask;
     }
 
 bool REFRRecord::IsLeveledLock()
@@ -587,104 +577,90 @@ void REFRRecord::SetMarkerType(UINT8 Type)
 
 bool REFRRecord::IsNoSoul()
     {
-    if(!XSOL.IsLoaded()) return true;
-    return (XSOL->value == eNone);
+    return (XSOL.value == eNone);
     }
 
 void REFRRecord::IsNoSoul(bool value)
     {
-    if(!XSOL.IsLoaded()) return;
     if(value)
-        XSOL->value = eNone;
+        XSOL.value = eNone;
     else if(IsNoSoul())
-        XSOL->value = ePetty;
+        XSOL.value = ePetty;
     }
 
 bool REFRRecord::IsPettySoul()
     {
-    if(!XSOL.IsLoaded()) return false;
-    return (XSOL->value == ePetty);
+    return (XSOL.value == ePetty);
     }
 
 void REFRRecord::IsPettySoul(bool value)
     {
-    if(!XSOL.IsLoaded()) return;
     if(value)
-        XSOL->value = ePetty;
+        XSOL.value = ePetty;
     else if(IsPettySoul())
-        XSOL->value = eNone;
+        XSOL.value = eNone;
     }
 
 bool REFRRecord::IsLesserSoul()
     {
-    if(!XSOL.IsLoaded()) return false;
-    return (XSOL->value == eLesser);
+    return (XSOL.value == eLesser);
     }
 
 void REFRRecord::IsLesserSoul(bool value)
     {
-    if(!XSOL.IsLoaded()) return;
     if(value)
-        XSOL->value = eLesser;
+        XSOL.value = eLesser;
     else if(IsLesserSoul())
-        XSOL->value = eNone;
+        XSOL.value = eNone;
     }
 
 bool REFRRecord::IsCommonSoul()
     {
-    if(!XSOL.IsLoaded()) return false;
-    return (XSOL->value == eCommon);
+    return (XSOL.value == eCommon);
     }
 
 void REFRRecord::IsCommonSoul(bool value)
     {
-    if(!XSOL.IsLoaded()) return;
     if(value)
-        XSOL->value = eCommon;
+        XSOL.value = eCommon;
     else if(IsCommonSoul())
-        XSOL->value = eNone;
+        XSOL.value = eNone;
     }
 
 bool REFRRecord::IsGreaterSoul()
     {
-    if(!XSOL.IsLoaded()) return false;
-    return (XSOL->value == eGreater);
+    return (XSOL.value == eGreater);
     }
 
 void REFRRecord::IsGreaterSoul(bool value)
     {
-    if(!XSOL.IsLoaded()) return;
     if(value)
-        XSOL->value = eGreater;
+        XSOL.value = eGreater;
     else if(IsGreaterSoul())
-        XSOL->value = eNone;
+        XSOL.value = eNone;
     }
 
 bool REFRRecord::IsGrandSoul()
     {
-    if(!XSOL.IsLoaded()) return false;
-    return (XSOL->value == eGrand);
+    return (XSOL.value == eGrand);
     }
 
 void REFRRecord::IsGrandSoul(bool value)
     {
-    if(!XSOL.IsLoaded()) return;
     if(value)
-        XSOL->value = eGrand;
+        XSOL.value = eGrand;
     else if(IsGrandSoul())
-        XSOL->value = eNone;
+        XSOL.value = eNone;
     }
 
 bool REFRRecord::IsSoul(UINT8 Type)
     {
-    if(!XSOL.IsLoaded()) return false;
-    return (XSOL->value == Type);
+    return (XSOL.value == Type);
     }
 
 void REFRRecord::SetSoul(UINT8 Type)
     {
-    XSOL.Load();
-    XSOL->value = Type;
+    XSOL.value = Type;
     }
 
 UINT32 REFRRecord::GetSize(bool forceCalc)
@@ -1033,14 +1009,14 @@ SINT32 REFRRecord::WriteRecord(_FileHandler &SaveHandler)
         if(Ownership->XRNK.IsLoaded())
             SaveHandler.writeSubRecord('KNRX', Ownership->XRNK.value, Ownership->XRNK.GetSize());
         if(Ownership->XGLB.IsLoaded())
-            SaveHandler.writeSubRecord('BLGX', Ownership->XGLB.value, Ownership->XGLB.GetSize());
+            SaveHandler.writeSubRecord('BLGX', &Ownership->XGLB.value, Ownership->XGLB.GetSize());
         }
 
     if(XESP.IsLoaded())
         SaveHandler.writeSubRecord('PSEX', XESP.value, XESP.GetSize());
 
     if(XTRG.IsLoaded())
-        SaveHandler.writeSubRecord('GRTX', XTRG.value, XTRG.GetSize());
+        SaveHandler.writeSubRecord('GRTX', &XTRG.value, XTRG.GetSize());
 
     if(XSED.IsLoaded())
         if(XSED->isOffset)
@@ -1052,14 +1028,14 @@ SINT32 REFRRecord::WriteRecord(_FileHandler &SaveHandler)
         SaveHandler.writeSubRecord('DOLX', XLOD.value, XLOD.GetSize());
 
     if(XCHG.IsLoaded())
-        SaveHandler.writeSubRecord('GHCX', XCHG.value, XCHG.GetSize());
+        SaveHandler.writeSubRecord('GHCX', &XCHG.value, XCHG.GetSize());
 
     if(XHLT.IsLoaded())
-        SaveHandler.writeSubRecord('TLHX', XHLT.value, XHLT.GetSize());
+        SaveHandler.writeSubRecord('TLHX', &XHLT.value, XHLT.GetSize());
 
     if(XPCI.IsLoaded() && XPCI->XPCI.IsLoaded())
         {
-        SaveHandler.writeSubRecord('ICPX', XPCI->XPCI.value, XPCI->XPCI.GetSize());
+        SaveHandler.writeSubRecord('ICPX', &XPCI->XPCI.value, XPCI->XPCI.GetSize());
         if(XPCI->FULL.IsLoaded())
             SaveHandler.writeSubRecord('LLUF', XPCI->FULL.value, XPCI->FULL.GetSize());
         else
@@ -1067,16 +1043,16 @@ SINT32 REFRRecord::WriteRecord(_FileHandler &SaveHandler)
         }
 
     if(XLCM.IsLoaded())
-        SaveHandler.writeSubRecord('MCLX', XLCM.value, XLCM.GetSize());
+        SaveHandler.writeSubRecord('MCLX', &XLCM.value, XLCM.GetSize());
 
     if(XRTM.IsLoaded())
-        SaveHandler.writeSubRecord('MTRX', XRTM.value, XRTM.GetSize());
+        SaveHandler.writeSubRecord('MTRX', &XRTM.value, XRTM.GetSize());
 
     if(XACT.IsLoaded())
-        SaveHandler.writeSubRecord('TCAX', XACT.value, XACT.GetSize());
+        SaveHandler.writeSubRecord('TCAX', &XACT.value, XACT.GetSize());
 
     if(XCNT.IsLoaded())
-        SaveHandler.writeSubRecord('TNCX', XCNT.value, XCNT.GetSize());
+        SaveHandler.writeSubRecord('TNCX', &XCNT.value, XCNT.GetSize());
 
     if(Marker.IsLoaded())
         {
@@ -1096,7 +1072,7 @@ SINT32 REFRRecord::WriteRecord(_FileHandler &SaveHandler)
         SaveHandler.writeSubRecord('LCSX', XSCL.value, XSCL.GetSize());
 
     if(XSOL.IsLoaded())
-        SaveHandler.writeSubRecord('LOSX', XSOL.value, XSOL.GetSize());
+        SaveHandler.writeSubRecord('LOSX', &XSOL.value, XSOL.GetSize());
 
     if(DATA.IsLoaded())
         SaveHandler.writeSubRecord('ATAD', &DATA.value, DATA.GetSize());

@@ -108,9 +108,9 @@ void * ACHRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 4: //eid
             return EDID.value;
         case 5: //base
-            return &NAME.value.value;
+            return &NAME.value;
         case 6: //unknownXPCIFormID
-            return (XPCI.IsLoaded() && XPCI->XPCI.IsLoaded()) ? &XPCI->XPCI->value : NULL;
+            return (XPCI.IsLoaded() && XPCI->XPCI.IsLoaded()) ? &XPCI->XPCI.value : NULL;
         case 7: //unknownXPCIString
             return XPCI.IsLoaded() ? XPCI->FULL.value : NULL;
         case 8: //lod1
@@ -127,9 +127,9 @@ void * ACHRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             *FieldValues = XESP.IsLoaded() ? &XESP->unused1[0] : NULL;
             return NULL;
         case 14: //merchantContainer
-            return XMRC.IsLoaded() ? &XMRC->value : NULL;
+            return XMRC.IsLoaded() ? &XMRC.value : NULL;
         case 15: //horse
-            return &XHRS.value.value;
+            return XHRS.IsLoaded() ? &XHRS.value : NULL;
         case 16: //xrgd_p
             *FieldValues = XRGD.value;
             return NULL;
@@ -166,12 +166,11 @@ bool ACHRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             EDID.Copy((STRING)FieldValue);
             break;
         case 5: //base
-            NAME.value.value = *(FORMID *)FieldValue;
+            NAME.value = *(FORMID *)FieldValue;
             return true;
         case 6: //unknownXPCIFormID
             XPCI.Load();
-            XPCI->XPCI.Load();
-            XPCI->XPCI->value = *(FORMID *)FieldValue;
+            XPCI->XPCI.value = *(FORMID *)FieldValue;
             return true;
         case 7: //unknownXPCIString
             XPCI.Load();
@@ -205,12 +204,11 @@ bool ACHRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             XESP->unused1[2] = ((UINT8 *)FieldValue)[2];
             break;
         case 14: //merchantContainer
-            XMRC.Load();
-            XMRC->value = *(FORMID *)FieldValue;
+            XMRC.value = *(FORMID *)FieldValue;
             return true;
         case 15: //horse
             XHRS.Load();
-            XHRS.value.value = *(FORMID *)FieldValue;
+            XHRS.value = *(FORMID *)FieldValue;
             return true;
         case 16: //xrgd_p
             XRGD.Copy((UINT8ARRAY)FieldValue, ArraySize);

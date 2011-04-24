@@ -72,13 +72,13 @@ bool ACRERecord::VisitFormIDs(FormIDOp &op)
     if(!IsLoaded())
         return false;
 
-    op.Accept(NAME.value.value);
+    op.Accept(NAME.value);
     if(Ownership.IsLoaded())
         {
         if(Ownership->XOWN.IsLoaded())
-            op.Accept(Ownership->XOWN.value.value);
+            op.Accept(Ownership->XOWN.value);
         if(Ownership->XGLB.IsLoaded())
-            op.Accept(Ownership->XGLB->value);
+            op.Accept(Ownership->XGLB.value);
         }
     if(XESP.IsLoaded())
         op.Accept(XESP->parent);
@@ -269,7 +269,7 @@ SINT32 ACRERecord::WriteRecord(_FileHandler &SaveHandler)
         if(Ownership->XRNK.IsLoaded())
             SaveHandler.writeSubRecord('KNRX', Ownership->XRNK.value, Ownership->XRNK.GetSize());
         if(Ownership->XGLB.IsLoaded())
-            SaveHandler.writeSubRecord('BLGX', Ownership->XGLB.value, Ownership->XGLB.GetSize());
+            SaveHandler.writeSubRecord('BLGX', &Ownership->XGLB.value, Ownership->XGLB.GetSize());
         }
 
     if(XLOD.IsLoaded())

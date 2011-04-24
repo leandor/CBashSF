@@ -361,7 +361,7 @@ void * REGNRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             *FieldValues = &RCLR.value.unused1;
             return NULL;
         case 10: //worldspace
-            return &WNAM.value.value;
+            return WNAM.IsLoaded() ? &WNAM.value : NULL;
         case 11: //areas
             if(ListIndex >= Areas.size())
                 return NULL;
@@ -369,7 +369,7 @@ void * REGNRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             switch(ListFieldID)
                 {
                 case 1: //edgeFalloff
-                    return &Areas[ListIndex]->RPLI.value.value;
+                    return &Areas[ListIndex]->RPLI.value;
                 case 2: //points
                     if(ListX2Index >= Areas[ListIndex]->RPLD.size())
                         return NULL;
@@ -473,7 +473,7 @@ void * REGNRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                             return NULL;
                         }
                 case 9: //musicType
-                    return Entries[ListIndex]->RDMD.IsLoaded() ? &Entries[ListIndex]->RDMD->value : NULL;
+                    return Entries[ListIndex]->RDMD.value;
                 case 10: //sounds
                     if(ListX2Index >= Entries[ListIndex]->RDSD.size())
                         return NULL;
@@ -539,7 +539,8 @@ bool REGNRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             RCLR.value.unused1 = ((UINT8ARRAY)FieldValue)[0];
             break;
         case 10: //worldspace
-            WNAM.value.value = *(FORMID *)FieldValue;
+            WNAM.Load();
+            WNAM.value = *(FORMID *)FieldValue;
             return true;
         case 11: //areas
             if(ListFieldID == 0) //areasSize
@@ -565,7 +566,7 @@ bool REGNRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             switch(ListFieldID)
                 {
                 case 1: //edgeFalloff
-                    Areas[ListIndex]->RPLI.value.value = *(UINT32 *)FieldValue;
+                    Areas[ListIndex]->RPLI.value = *(UINT32 *)FieldValue;
                     break;
                 case 2: //points
                     if(ListX2FieldID == 0) //pointsSize

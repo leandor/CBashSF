@@ -64,7 +64,7 @@ void * EYESRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 6: //iconPath
             return ICON.value;
         case 7: //flags
-            return &DATA.value.value;
+            return &DATA.value;
         default:
             return NULL;
         }

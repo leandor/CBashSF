@@ -27,6 +27,11 @@ namespace FNV
 {
 class QUSTRecord : public Record //Quest
     {
+    private:
+        enum schrFlags
+            {
+            fIsEnabled = 0x0001
+            };
     public:
         StringRecord EDID; //Editor ID
         OptSimpleSubRecord<FORMID> SCRI; //Script

@@ -58,22 +58,22 @@ EYESRecord::~EYESRecord()
 
 bool EYESRecord::IsPlayable()
     {
-    return (DATA.value.value & fIsPlayable) != 0;
+    return (DATA.value & fIsPlayable) != 0;
     }
 
 void EYESRecord::IsPlayable(bool value)
     {
-    DATA.value.value = value ? (DATA.value.value | fIsPlayable) : (DATA.value.value & ~fIsPlayable);
+    DATA.value = value ? (DATA.value | fIsPlayable) : (DATA.value & ~fIsPlayable);
     }
 
 bool EYESRecord::IsFlagMask(UINT8 Mask, bool Exact)
     {
-    return Exact ? ((DATA.value.value & Mask) == Mask) : ((DATA.value.value & Mask) != 0);
+    return Exact ? ((DATA.value & Mask) == Mask) : ((DATA.value & Mask) != 0);
     }
 
 void EYESRecord::SetFlagMask(UINT8 Mask)
     {
-    DATA.value.value = Mask;
+    DATA.value = Mask;
     }
 
 UINT32 EYESRecord::GetSize(bool forceCalc)

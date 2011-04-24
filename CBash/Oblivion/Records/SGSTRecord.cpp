@@ -119,14 +119,14 @@ bool SGSTRecord::VisitFormIDs(FormIDOp &op)
         return false;
 
     if(SCRI.IsLoaded())
-        op.Accept(SCRI->value);
+        op.Accept(SCRI.value);
 
     for(UINT32 x = 0; x < Effects.size(); x++)
         {
         if(Effects[x]->OBME.IsLoaded())
             {
-            if(Effects[x]->EFID.value.value >= 0x80000000)
-                op.AcceptMGEF(Effects[x]->EFID.value.value);
+            if(Effects[x]->EFID.value >= 0x80000000)
+                op.AcceptMGEF(Effects[x]->EFID.value);
 
             if(Effects[x]->EFIT.value.name >= 0x80000000)
                 op.AcceptMGEF(Effects[x]->EFIT.value.name);
@@ -470,7 +470,7 @@ SINT32 SGSTRecord::WriteRecord(_FileHandler &SaveHandler)
     if(ICON.IsLoaded())
         SaveHandler.writeSubRecord('NOCI', ICON.value, ICON.GetSize());
     if(SCRI.IsLoaded())
-        SaveHandler.writeSubRecord('IRCS', SCRI.value, SCRI.GetSize());
+        SaveHandler.writeSubRecord('IRCS', &SCRI.value, SCRI.GetSize());
     if(Effects.size())
         for(UINT32 p = 0; p < Effects.size(); p++)
             {

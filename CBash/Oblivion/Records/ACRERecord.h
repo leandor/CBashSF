@@ -33,7 +33,7 @@ class ACRERecord : public Record
 
     public:
         StringRecord EDID;
-        ReqSubRecord<GENFID> NAME;
+        ReqSimpleSubRecord<FORMID> NAME;
         OptSubRecord<GENXOWN> Ownership;
         OptSubRecord<GENXLOD> XLOD;
         OptSubRecord<GENXESP> XESP;

@@ -129,157 +129,157 @@ bool IDLERecord::VisitFormIDs(FormIDOp &op)
 
 bool IDLERecord::IsLowerBody()
     {
-    return ((ANAM.value.value & 0x0F) == eLowerBody);
+    return ((ANAM.value & 0x0F) == eLowerBody);
     }
 
 void IDLERecord::IsLowerBody(bool value)
     {
     if(value)
         {
-        ANAM.value.value &= 0xF0;
-        ANAM.value.value |= eLowerBody;
+        ANAM.value &= 0xF0;
+        ANAM.value |= eLowerBody;
         }
     else if(IsLowerBody())
         {
-        ANAM.value.value &= 0xF0;
-        ANAM.value.value |= eLeftArm;
+        ANAM.value &= 0xF0;
+        ANAM.value |= eLeftArm;
         }
     }
 
 bool IDLERecord::IsLeftArm()
     {
-    return ((ANAM.value.value & 0x0F) == eLeftArm);
+    return ((ANAM.value & 0x0F) == eLeftArm);
     }
 
 void IDLERecord::IsLeftArm(bool value)
     {
     if(value)
         {
-        ANAM.value.value &= 0xF0;
-        ANAM.value.value |= eLeftArm;
+        ANAM.value &= 0xF0;
+        ANAM.value |= eLeftArm;
         }
     else if(IsLeftArm())
         {
-        ANAM.value.value &= 0xF0;
-        ANAM.value.value |= eLowerBody;
+        ANAM.value &= 0xF0;
+        ANAM.value |= eLowerBody;
         }
     }
 
 bool IDLERecord::IsLeftHand()
     {
-    return ((ANAM.value.value & 0x0F) == eLeftHand);
+    return ((ANAM.value & 0x0F) == eLeftHand);
     }
 
 void IDLERecord::IsLeftHand(bool value)
     {
     if(value)
         {
-        ANAM.value.value &= 0xF0;
-        ANAM.value.value |= eLeftHand;
+        ANAM.value &= 0xF0;
+        ANAM.value |= eLeftHand;
         }
     else if(IsLeftHand())
         {
-        ANAM.value.value &= 0xF0;
-        ANAM.value.value |= eLowerBody;
+        ANAM.value &= 0xF0;
+        ANAM.value |= eLowerBody;
         }
     }
 
 bool IDLERecord::IsRightArm()
     {
-    return ((ANAM.value.value & 0x0F) == eRightArm);
+    return ((ANAM.value & 0x0F) == eRightArm);
     }
 
 void IDLERecord::IsRightArm(bool value)
     {
     if(value)
         {
-        ANAM.value.value &= 0xF0;
-        ANAM.value.value |= eRightArm;
+        ANAM.value &= 0xF0;
+        ANAM.value |= eRightArm;
         }
     else if(IsRightArm())
         {
-        ANAM.value.value &= 0xF0;
-        ANAM.value.value |= eLowerBody;
+        ANAM.value &= 0xF0;
+        ANAM.value |= eLowerBody;
         }
     }
 
 bool IDLERecord::IsSpecialIdle()
     {
-    return ((ANAM.value.value & 0x0F) == eSpecialIdle);
+    return ((ANAM.value & 0x0F) == eSpecialIdle);
     }
 
 void IDLERecord::IsSpecialIdle(bool value)
     {
     if(value)
         {
-        ANAM.value.value &= 0xF0;
-        ANAM.value.value |= eSpecialIdle;
+        ANAM.value &= 0xF0;
+        ANAM.value |= eSpecialIdle;
         }
     else if(IsLeftArm())
         {
-        ANAM.value.value &= 0xF0;
-        ANAM.value.value |= eLowerBody;
+        ANAM.value &= 0xF0;
+        ANAM.value |= eLowerBody;
         }
     }
 
 bool IDLERecord::IsWholeBody()
     {
-    return ((ANAM.value.value & 0x0F) == eWholeBody);
+    return ((ANAM.value & 0x0F) == eWholeBody);
     }
 
 void IDLERecord::IsWholeBody(bool value)
     {
     if(value)
         {
-        ANAM.value.value &= 0xF0;
-        ANAM.value.value |= eWholeBody;
+        ANAM.value &= 0xF0;
+        ANAM.value |= eWholeBody;
         }
     else if(IsWholeBody())
         {
-        ANAM.value.value &= 0xF0;
-        ANAM.value.value |= eLowerBody;
+        ANAM.value &= 0xF0;
+        ANAM.value |= eLowerBody;
         }
     }
 
 bool IDLERecord::IsUpperBody()
     {
-    return ((ANAM.value.value & 0x0F) == eUpperBody);
+    return ((ANAM.value & 0x0F) == eUpperBody);
     }
 
 void IDLERecord::IsUpperBody(bool value)
     {
     if(value)
         {
-        ANAM.value.value &= 0xF0;
-        ANAM.value.value |= eUpperBody;
+        ANAM.value &= 0xF0;
+        ANAM.value |= eUpperBody;
         }
     else if(IsUpperBody())
         {
-        ANAM.value.value &= 0xF0;
-        ANAM.value.value |= eLowerBody;
+        ANAM.value &= 0xF0;
+        ANAM.value |= eLowerBody;
         }
     }
 
 bool IDLERecord::IsType(UINT8 Type)
     {
-    return ((ANAM.value.value & 0x0F) == (Type & 0x0F));
+    return ((ANAM.value & 0x0F) == (Type & 0x0F));
     }
 
 void IDLERecord::SetType(UINT8 Type)
     {
     Type &= 0x0F;
-    ANAM.value.value &= 0xF0;
-    ANAM.value.value |= Type;
+    ANAM.value &= 0xF0;
+    ANAM.value |= Type;
     }
 
 bool IDLERecord::IsNotReturnFile()
     {
-    return (ANAM.value.value & fIsNotReturnFile) != 0;
+    return (ANAM.value & fIsNotReturnFile) != 0;
     }
 
 void IDLERecord::IsNotReturnFile(bool value)
     {
-    ANAM.value.value = value ? (ANAM.value.value | fIsNotReturnFile) : (ANAM.value.value & ~fIsNotReturnFile);
+    ANAM.value = value ? (ANAM.value | fIsNotReturnFile) : (ANAM.value & ~fIsNotReturnFile);
     }
 
 bool IDLERecord::IsReturnFile()
@@ -297,14 +297,14 @@ void IDLERecord::IsReturnFile(bool value)
 
 bool IDLERecord::IsFlagMask(UINT8 Mask, bool Exact)
     {
-    return Exact ? (((ANAM.value.value & 0xF0) & (Mask & 0xF0)) == Mask) : (((ANAM.value.value & 0xF0) & (Mask & 0xF0)) != 0);
+    return Exact ? (((ANAM.value & 0xF0) & (Mask & 0xF0)) == Mask) : (((ANAM.value & 0xF0) & (Mask & 0xF0)) != 0);
     }
 
 void IDLERecord::SetFlagMask(UINT8 Mask)
     {
     Mask &= 0xF0;
-    ANAM.value.value &= 0x0F;
-    ANAM.value.value |= Mask;
+    ANAM.value &= 0x0F;
+    ANAM.value |= Mask;
     }
 
 UINT32 IDLERecord::GetSize(bool forceCalc)

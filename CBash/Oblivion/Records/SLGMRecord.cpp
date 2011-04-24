@@ -93,97 +93,97 @@ bool SLGMRecord::VisitFormIDs(FormIDOp &op)
         return false;
 
     if(SCRI.IsLoaded())
-        op.Accept(SCRI->value);
+        op.Accept(SCRI.value);
 
     return op.Stop();
     }
 
 bool SLGMRecord::IsNoSoul()
     {
-    return (SOUL.value.value == eNone);
+    return (SOUL.value == eNone);
     }
 
 void SLGMRecord::IsNoSoul(bool value)
     {
     if(value)
-        SOUL.value.value = eNone;
+        SOUL.value = eNone;
     else if(IsNoSoul())
-        SOUL.value.value = ePetty;
+        SOUL.value = ePetty;
     }
 
 bool SLGMRecord::IsPettySoul()
     {
-    return (SOUL.value.value == ePetty);
+    return (SOUL.value == ePetty);
     }
 
 void SLGMRecord::IsPettySoul(bool value)
     {
     if(value)
-        SOUL.value.value = ePetty;
+        SOUL.value = ePetty;
     else if(IsPettySoul())
-        SOUL.value.value = eNone;
+        SOUL.value = eNone;
     }
 
 bool SLGMRecord::IsLesserSoul()
     {
-    return (SOUL.value.value == eLesser);
+    return (SOUL.value == eLesser);
     }
 
 void SLGMRecord::IsLesserSoul(bool value)
     {
     if(value)
-        SOUL.value.value = eLesser;
+        SOUL.value = eLesser;
     else if(IsLesserSoul())
-        SOUL.value.value = eNone;
+        SOUL.value = eNone;
     }
 
 bool SLGMRecord::IsCommonSoul()
     {
-    return (SOUL.value.value == eCommon);
+    return (SOUL.value == eCommon);
     }
 
 void SLGMRecord::IsCommonSoul(bool value)
     {
     if(value)
-        SOUL.value.value = eCommon;
+        SOUL.value = eCommon;
     else if(IsCommonSoul())
-        SOUL.value.value = eNone;
+        SOUL.value = eNone;
     }
 
 bool SLGMRecord::IsGreaterSoul()
     {
-    return (SOUL.value.value == eGreater);
+    return (SOUL.value == eGreater);
     }
 
 void SLGMRecord::IsGreaterSoul(bool value)
     {
     if(value)
-        SOUL.value.value = eGreater;
+        SOUL.value = eGreater;
     else if(IsGreaterSoul())
-        SOUL.value.value = eNone;
+        SOUL.value = eNone;
     }
 
 bool SLGMRecord::IsGrandSoul()
     {
-    return (SOUL.value.value == eGrand);
+    return (SOUL.value == eGrand);
     }
 
 void SLGMRecord::IsGrandSoul(bool value)
     {
     if(value)
-        SOUL.value.value = eGrand;
+        SOUL.value = eGrand;
     else if(IsGrandSoul())
-        SOUL.value.value = eNone;
+        SOUL.value = eNone;
     }
 
 bool SLGMRecord::IsSoul(UINT8 Type)
     {
-    return (SOUL.value.value == Type);
+    return (SOUL.value == Type);
     }
 
 void SLGMRecord::SetSoul(UINT8 Type)
     {
-    SOUL.value.value = Type;
+    SOUL.value = Type;
     }
 
 
@@ -445,7 +445,7 @@ SINT32 SLGMRecord::WriteRecord(_FileHandler &SaveHandler)
     if(ICON.IsLoaded())
         SaveHandler.writeSubRecord('NOCI', ICON.value, ICON.GetSize());
     if(SCRI.IsLoaded())
-        SaveHandler.writeSubRecord('IRCS', SCRI.value, SCRI.GetSize());
+        SaveHandler.writeSubRecord('IRCS', &SCRI.value, SCRI.GetSize());
     if(DATA.IsLoaded())
         SaveHandler.writeSubRecord('ATAD', &DATA.value, DATA.GetSize());
     if(SOUL.IsLoaded())

@@ -94,20 +94,20 @@ void * DOORRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 6: //modPath
             return MODL.IsLoaded() ? MODL->MODL.value : NULL;
         case 7: //modb
-            return MODL.IsLoaded() ? &MODL->MODB.value.value : NULL;
+            return MODL.IsLoaded() ? &MODL->MODB.value : NULL;
         case 8: //modt_p
             *FieldValues = MODL.IsLoaded() ? MODL->MODT.value : NULL;
             return NULL;
         case 9: //script
-            return SCRI.IsLoaded() ? &SCRI->value : NULL;
+            return SCRI.IsLoaded() ? &SCRI.value : NULL;
         case 10: //soundOpen
-            return SNAM.IsLoaded() ? &SNAM->value : NULL;
+            return SNAM.IsLoaded() ? &SNAM.value : NULL;
         case 11: //soundClose
-            return ANAM.IsLoaded() ? &ANAM->value : NULL;
+            return ANAM.IsLoaded() ? &ANAM.value : NULL;
         case 12: //soundLoop
-            return BNAM.IsLoaded() ? &BNAM->value : NULL;
+            return BNAM.IsLoaded() ? &BNAM.value : NULL;
         case 13: //flags
-            return &FNAM.value.value;
+            return &FNAM.value;
         case 14: //destinations
             *FieldValues = TNAM.size() ? &TNAM[0] : NULL;
             return NULL;
@@ -138,27 +138,23 @@ bool DOORRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             break;
         case 7: //modb
             MODL.Load();
-            MODL->MODB.value.value = *(FLOAT32 *)FieldValue;
+            MODL->MODB.value = *(FLOAT32 *)FieldValue;
             break;
         case 8: //modt_p
             MODL.Load();
             MODL->MODT.Copy((UINT8ARRAY)FieldValue, ArraySize);
             break;
         case 9: //script
-            SCRI.Load();
-            SCRI->value = *(FORMID *)FieldValue;
+            SCRI.value = *(FORMID *)FieldValue;
             return true;
         case 10: //soundOpen
-            SNAM.Load();
-            SNAM->value = *(FORMID *)FieldValue;
+            SNAM.value = *(FORMID *)FieldValue;
             return true;
         case 11: //soundClose
-            ANAM.Load();
-            ANAM->value = *(FORMID *)FieldValue;
+            ANAM.value = *(FORMID *)FieldValue;
             return true;
         case 12: //soundLoop
-            BNAM.Load();
-            BNAM->value = *(FORMID *)FieldValue;
+            BNAM.value = *(FORMID *)FieldValue;
             return true;
         case 13: //flags
             SetFlagMask(*(UINT8 *)FieldValue);

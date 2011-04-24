@@ -69,7 +69,7 @@ class REFRRecord : public Record
 
         struct REFRMAPMARKER
             {
-            ReqSubRecord<GENU8> FNAM;
+            ReqSimpleSubRecord<UINT8> FNAM;
             StringRecord FULL;
             ReqSubRecord<GENTNAM> TNAM;
 
@@ -130,25 +130,25 @@ class REFRRecord : public Record
 
     public:
         StringRecord EDID;
-        ReqSubRecord<GENFID> NAME;
+        ReqSimpleSubRecord<FORMID> NAME;
         OptSubRecord<REFRXTEL> XTEL;
         SemiOptSubRecord<REFRXLOC> XLOC;
         OptSubRecord<GENXOWN> Ownership;
         OptSubRecord<GENXESP> XESP;
-        OptSubRecord<GENFID> XTRG;
+        OptSimpleSubRecord<FORMID> XTRG;
         SemiOptSubRecord<REFRXSED> XSED;
         OptSubRecord<GENXLOD> XLOD;
-        OptSubRecord<GENFLOAT> XCHG;
-        OptSubRecord<GENS32> XHLT;
+        OptSimpleSubRecord<FLOAT32> XCHG;
+        OptSimpleSubRecord<SINT32> XHLT;
         OptSubRecord<GENXPCI> XPCI;
-        OptSubRecord<GENS32> XLCM;
-        OptSubRecord<GENFID> XRTM;
-        OptSubRecord<GENU32> XACT;
-        OptSubRecord<GENS32> XCNT;
+        OptSimpleSubRecord<SINT32> XLCM;
+        OptSimpleSubRecord<FORMID> XRTM;
+        OptSimpleSubRecord<UINT32> XACT;
+        OptSimpleSubRecord<SINT32> XCNT;
         OptSubRecord<REFRMAPMARKER> Marker;
         //bool ONAM; //Open by Default, empty marker, written whenever fOpenByDefault is true
         OptSubRecord<GENXSCL> XSCL;
-        OptSubRecord<GENU8> XSOL;
+        OptSimpleSubRecord<UINT8> XSOL;
         ReqSubRecord<GENPOSDATA> DATA;
 
         REFRRecord(unsigned char *_recData=NULL);

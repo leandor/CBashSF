@@ -82,132 +82,6 @@ bool FormIDResolver::AcceptMGEF(UINT32 &curMgefCode)
     return stop;
     }
 
-GENU8::GENU8():
-    value(0)
-    {
-    //
-    }
-
-GENU8::~GENU8()
-    {
-    //
-    }
-
-bool GENU8::operator ==(const GENU8 &other) const
-    {
-    return (value == other.value);
-    }
-
-bool GENU8::operator !=(const GENU8 &other) const
-    {
-    return !(*this == other);
-    }
-
-GENU16::GENU16():
-    value(0)
-    {
-    //
-    }
-
-GENU16::~GENU16()
-    {
-    //
-    }
-
-bool GENU16::operator ==(const GENU16 &other) const
-    {
-    return (value == other.value);
-    }
-
-bool GENU16::operator !=(const GENU16 &other) const
-    {
-    return !(*this == other);
-    }
-
-GENU32::GENU32():
-    value(0)
-    {
-    //
-    }
-
-GENU32::~GENU32()
-    {
-    //
-    }
-
-bool GENU32::operator ==(const GENU32 &other) const
-    {
-    return (value == other.value);
-    }
-
-bool GENU32::operator !=(const GENU32 &other) const
-    {
-    return !(*this == other);
-    }
-
-GENS8::GENS8():
-    value(0)
-    {
-    //
-    }
-
-GENS8::~GENS8()
-    {
-    //
-    }
-
-bool GENS8::operator ==(const GENS8 &other) const
-    {
-    return (value == other.value);
-    }
-
-bool GENS8::operator !=(const GENS8 &other) const
-    {
-    return !(*this == other);
-    }
-
-GENS16::GENS16():
-    value(0)
-    {
-    //
-    }
-
-GENS16::~GENS16()
-    {
-    //
-    }
-
-bool GENS16::operator ==(const GENS16 &other) const
-    {
-    return (value == other.value);
-    }
-
-bool GENS16::operator !=(const GENS16 &other) const
-    {
-    return !(*this == other);
-    }
-
-GENS32::GENS32():
-    value(0)
-    {
-    //
-    }
-
-GENS32::~GENS32()
-    {
-    //
-    }
-
-bool GENS32::operator ==(const GENS32 &other) const
-    {
-    return (value == other.value);
-    }
-
-bool GENS32::operator !=(const GENS32 &other) const
-    {
-    return !(*this == other);
-    }
-
 GENXNAM::GENXNAM():
     faction(0),
     mod(0)
@@ -2212,12 +2086,32 @@ void GENPATROL::SetScriptFlagMask(UINT16 Mask)
 
 bool GENPATROL::operator ==(const GENPATROL &other) const
     {
-    return (XPRD == other.XPRD &&
-            Script == other.Script &&
-            INAM == other.INAM &&
-            TNAM == other.TNAM);
-    }
+    if(XPRD == other.XPRD &&
+        SCHR == other.SCHR &&
+        INAM == other.INAM &&
+        TNAM == other.TNAM &&
+        SCDA == other.SCDA &&
+        SCTX.equalsi(other.SCTX) &&
+        VARS.size() == other.VARS.size() &&
+        SCR_.size() == other.SCR_.size())
+        {
+        //Record order doesn't matter on vars, so equality testing isn't easy
+        //Instead, they're keyed by var index (SLSD.value.index)
+        //The proper solution would be to see if each indexed var matches the other
+        //But they're usually ordered, so the lazy approach is to not bother
+        //Fix-up later
+        for(UINT32 x = 0; x < VARS.size(); ++x)
+            if(*VARS[x] != *other.VARS[x])
+                return false;
 
+        //Record order matters on references, so equality testing is easy
+        for(UINT32 x = 0; x < SCR_.size(); ++x)
+            if(*SCR_[x] != *other.SCR_[x])
+                return false;
+        return true;
+        }
+    return false;
+    }
 bool GENPATROL::operator !=(const GENPATROL &other) const
     {
     return !(*this == other);
@@ -2314,5 +2208,5 @@ bool FNVXNAM::IsType(UINT32 Type)
 
 void FNVXNAM::SetType(UINT32 Type)
     {
-    groupReactionType = Mask;
+    groupReactionType = Type;
     }

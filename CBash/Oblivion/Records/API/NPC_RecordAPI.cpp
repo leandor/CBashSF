@@ -338,7 +338,7 @@ void * NPC_Record::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 6: //modPath
             return MODL.IsLoaded() ? MODL->MODL.value : NULL;
         case 7: //modb
-            return MODL.IsLoaded() ? &MODL->MODB.value.value : NULL;
+            return MODL.IsLoaded() ? &MODL->MODB.value : NULL;
         case 8: //modt_p
             *FieldValues = MODL.IsLoaded() ? MODL->MODT.value : NULL;
             return NULL;
@@ -377,14 +377,14 @@ void * NPC_Record::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                     return NULL;
                 }
         case 17: //deathItem
-            return INAM.IsLoaded() ? &INAM->value : NULL;
+            return INAM.IsLoaded() ? &INAM.value : NULL;
         case 18: //race
-            return RNAM.IsLoaded() ? &RNAM->value : NULL;
+            return RNAM.IsLoaded() ? &RNAM.value : NULL;
         case 19: //spells
             *FieldValues = SPLO.size() ? &SPLO[0] : NULL;
             return NULL;
         case 20: //script
-            return SCRI.IsLoaded() ? &SCRI->value : NULL;
+            return SCRI.IsLoaded() ? &SCRI.value : NULL;
         case 21: //items
             if(ListIndex >= CNTO.size())
                 return NULL;
@@ -423,7 +423,7 @@ void * NPC_Record::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 FieldValues[p] = KFFZ[p].value;
             return NULL;
         case 32: //iclass
-            return &CNAM.value.value;
+            return &CNAM.value;
         case 33: //armorer
             return &DATA.value.armorer;
         case 34: //athletics
@@ -488,11 +488,11 @@ void * NPC_Record::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 63: //luck
             return &DATA.value.luck;
         case 64: //hair
-            return HNAM.IsLoaded() ? &HNAM->value : NULL;
+            return HNAM.IsLoaded() ? &HNAM.value : NULL;
         case 65: //hairLength
-            return LNAM.IsLoaded() ? &LNAM->value : NULL;
+            return LNAM.IsLoaded() ? LNAM.value : NULL;
         case 66: //eye
-            return ENAM.IsLoaded() ? &ENAM->value : NULL;
+            return ENAM.IsLoaded() ? &ENAM.value : NULL;
         case 67: //hairRed
             return &HCLR.value.red;
         case 68: //hairGreen
@@ -503,7 +503,7 @@ void * NPC_Record::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             *FieldValues = &HCLR.value.unused1;
             return NULL;
         case 71: //combatStyle
-            return ZNAM.IsLoaded() ? &ZNAM->value : NULL;
+            return ZNAM.IsLoaded() ? &ZNAM.value : NULL;
         case 72: //fggs_p
             *FieldValues = FGGS.value;
             return NULL;
@@ -514,7 +514,7 @@ void * NPC_Record::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             *FieldValues = FGTS.value;
             return NULL;
         case 75: //fnam
-            return &FNAM.value.value;
+            return &FNAM.value;
         default:
             return NULL;
         }
@@ -542,7 +542,7 @@ bool NPC_Record::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             break;
         case 7: //modb
             MODL.Load();
-            MODL->MODB.value.value = *(FLOAT32 *)FieldValue;
+            MODL->MODB.value = *(FLOAT32 *)FieldValue;
             break;
         case 8: //modt_p
             MODL.Load();
@@ -610,12 +610,10 @@ bool NPC_Record::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                 }
             break;
         case 17: //deathItem
-            INAM.Load();
-            INAM->value = *(FORMID *)FieldValue;
+            INAM.value = *(FORMID *)FieldValue;
             return true;
         case 18: //race
-            RNAM.Load();
-            RNAM->value = *(FORMID *)FieldValue;
+            RNAM.value = *(FORMID *)FieldValue;
             return true;
         case 19: //spells
             SPLO.resize(ArraySize);
@@ -623,8 +621,7 @@ bool NPC_Record::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                 SPLO[x] = ((FORMIDARRAY)FieldValue)[x];
             return true;
         case 20: //script
-            SCRI.Load();
-            SCRI->value = *(FORMID *)FieldValue;
+            SCRI.value = *(FORMID *)FieldValue;
             return true;
         case 21: //items
             if(ListFieldID == 0) //itemsSize
@@ -698,7 +695,7 @@ bool NPC_Record::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                     KFFZ[x].Copy((STRING)((STRINGARRAY)FieldValue)[x]);
             break;
         case 32: //iclass
-            CNAM.value.value = *(FORMID *)FieldValue;
+            CNAM.value = *(FORMID *)FieldValue;
             return true;
         case 33: //armorer
             DATA.value.armorer = *(UINT8 *)FieldValue;
@@ -797,16 +794,14 @@ bool NPC_Record::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             DATA.value.luck = *(UINT8 *)FieldValue;
             break;
         case 64: //hair
-            HNAM.Load();
-            HNAM->value = *(FORMID *)FieldValue;
+            HNAM.value = *(FORMID *)FieldValue;
             return true;
         case 65: //hairLength
             LNAM.Load();
-            LNAM->value = *(FLOAT32 *)FieldValue;
+            *LNAM.value = *(FLOAT32 *)FieldValue;
             break;
         case 66: //eye
-            ENAM.Load();
-            ENAM->value = *(FORMID *)FieldValue;
+            ENAM.value = *(FORMID *)FieldValue;
             return true;
         case 67: //hairRed
             HCLR.value.red = *(UINT8 *)FieldValue;
@@ -823,8 +818,7 @@ bool NPC_Record::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             HCLR.value.unused1 = ((UINT8ARRAY)FieldValue)[0];
             break;
         case 71: //combatStyle
-            ZNAM.Load();
-            ZNAM->value = *(FORMID *)FieldValue;
+            ZNAM.value = *(FORMID *)FieldValue;
             return true;
         case 72: //fggs_p
             if(ArraySize != 200)
@@ -842,7 +836,7 @@ bool NPC_Record::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             FGTS.Copy((UINT8ARRAY)FieldValue, ArraySize);
             break;
         case 75: //fnam
-            FNAM.value.value = *(UINT16 *)FieldValue;
+            FNAM.value = *(UINT16 *)FieldValue;
             break;
         default:
             break;
@@ -856,7 +850,6 @@ void NPC_Record::DeleteField(FIELD_IDENTIFIERS)
     GENACBS defaultACBS;
     NPC_DATA defaultDATA;
     GENCLR defaultHCLR;
-    GENU16 defaultFNAM;
 
     GENSNAM defaultSNAM;
     GENCNTO defaultCNTO;
@@ -1133,7 +1126,7 @@ void NPC_Record::DeleteField(FIELD_IDENTIFIERS)
             FGTS.Unload();
             return;
         case 75: //fnam
-            FNAM.value.value = defaultFNAM.value;
+            FNAM.Unload();
             return;
         default:
             return;

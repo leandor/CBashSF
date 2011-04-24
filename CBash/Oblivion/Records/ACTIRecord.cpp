@@ -70,9 +70,9 @@ bool ACTIRecord::VisitFormIDs(FormIDOp &op)
         return false;
 
     if(SCRI.IsLoaded())
-        op.Accept(SCRI->value);
+        op.Accept(SCRI.value);
     if(SNAM.IsLoaded())
-        op.Accept(SNAM->value);
+        op.Accept(SNAM.value);
 
     return op.Stop();
     }
@@ -220,9 +220,9 @@ SINT32 ACTIRecord::WriteRecord(_FileHandler &SaveHandler)
             SaveHandler.writeSubRecord('TDOM', MODL->MODT.value, MODL->MODT.GetSize());
         }
     if(SCRI.IsLoaded())
-        SaveHandler.writeSubRecord('IRCS', SCRI.value, SCRI.GetSize());
+        SaveHandler.writeSubRecord('IRCS', &SCRI.value, SCRI.GetSize());
     if(SNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANS', SNAM.value, SNAM.GetSize());
+        SaveHandler.writeSubRecord('MANS', &SNAM.value, SNAM.GetSize());
     return -1;
     }
 

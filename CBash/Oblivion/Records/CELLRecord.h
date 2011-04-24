@@ -93,15 +93,15 @@ class CELLRecord : public Record
     public:
         StringRecord EDID;
         StringRecord FULL;
-        ReqSubRecord<GENU8> DATA;
+        ReqSimpleSubRecord<UINT8> DATA;
         SemiOptSubRecord<CELLXCLL> XCLL;
-        SubRecord<GENU8> XCMT;
+        SimpleSubRecord<UINT8> XCMT;
         OptSubRecord<GENXOWN> Ownership;
-        SubRecord<GENFID> XCCM;
+        SimpleSubRecord<FORMID> XCCM;
         SubRecord<CELLXCLW> XCLW;
         std::vector<FORMID> XCLR;
         SemiOptSubRecord<CELLXCLC> XCLC;
-        SubRecord<GENFID> XCWT;
+        SimpleSubRecord<FORMID> XCWT;
         std::vector<Record *> ACHR;
         std::vector<Record *> ACRE;
         std::vector<Record *> REFR;

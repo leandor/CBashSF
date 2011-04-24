@@ -37,8 +37,8 @@ class LVSPRecord : public Record
 
     public:
         StringRecord EDID;
-        ReqSubRecord<GENU8> LVLD;
-        SemiOptSubRecord<GENU8> LVLF;
+        ReqSimpleSubRecord<UINT8> LVLD;
+        SemiOptSimpleSubRecord<UINT8> LVLF;
         std::vector<ReqSubRecord<LVLLVLO> *> Entries;
 
         LVSPRecord(unsigned char *_recData=NULL);

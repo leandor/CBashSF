@@ -101,7 +101,7 @@ bool AMMORecord::VisitFormIDs(FormIDOp &op)
         return false;
 
     if(ENAM.IsLoaded())
-        op.Accept(ENAM->value);
+        op.Accept(ENAM.value);
 
     return op.Stop();
     }
@@ -325,9 +325,9 @@ SINT32 AMMORecord::WriteRecord(_FileHandler &SaveHandler)
     if(ICON.IsLoaded())
         SaveHandler.writeSubRecord('NOCI', ICON.value, ICON.GetSize());
     if(ENAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANE', ENAM.value, ENAM.GetSize());
+        SaveHandler.writeSubRecord('MANE', &ENAM.value, ENAM.GetSize());
     if(ANAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANA', ANAM.value, ANAM.GetSize());
+        SaveHandler.writeSubRecord('MANA', &ANAM.value, ANAM.GetSize());
     if(DATA.IsLoaded())
         SaveHandler.writeSubRecord('ATAD', &DATA.value, DATA.GetSize());
     return -1;

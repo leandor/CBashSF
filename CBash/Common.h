@@ -488,19 +488,154 @@ struct SimpleSubRecord
     T value;
     bool isLoaded;
 
-    SimpleSubRecord();
-    ~SimpleSubRecord();
+    SimpleSubRecord():
+        isLoaded(false),
+        value(0)
+        {
+        //
+        }
+    ~SimpleSubRecord()
+        {
+        //
+        }
 
-    UINT32 GetSize() const;
+    UINT32 GetSize() const
+        {
+        return sizeof(T);
+        }
 
-    bool IsLoaded() const;
-    void Load();
-    void Unload();
+    bool IsLoaded() const
+        {
+        return (isLoaded && value != 0);
+        }
+    void Load()
+        {
+        isLoaded = true;
+        }
+    void Unload()
+        {
+        value = 0;
+        isLoaded = false;
+        }
 
-    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos);
+    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+        {
+        if(isLoaded)
+            {
+            curPos += subSize;
+            return false;
+            }
+        if(subSize > sizeof(T))
+            {
+            printf("Rec? subSize:%u, sizeof:%u\n", subSize, sizeof(T));
+            memcpy(&value, buffer + curPos, sizeof(T));
+            }
+        else
+            memcpy(&value, buffer + curPos, subSize);
+        isLoaded = true;
+        //size = subSize;
+        curPos += subSize;
+        return true;
+        }
 
-    bool operator ==(const SimpleSubRecord<T> &other) const;
-    bool operator !=(const SimpleSubRecord<T> &other) const;
+    SimpleSubRecord<T>& operator = (const SimpleSubRecord<T> &rhs)
+        {
+        if(this != &rhs)
+            {
+            isLoaded = rhs.isLoaded;
+            value = rhs.value;
+            }
+        return *this;
+        }
+    bool operator ==(const SimpleSubRecord<T> &other) const
+        {
+        return (isLoaded == other.isLoaded &&
+                value == other.value);
+        }
+    bool operator !=(const SimpleSubRecord<T> &other) const
+        {
+        return !(*this == other);
+        }
+    };
+
+template<>
+struct SimpleSubRecord<FLOAT32>
+    {
+    FLOAT32 value;
+    bool isLoaded;
+
+    SimpleSubRecord():
+        isLoaded(false),
+        value(0.0f)
+        {
+        //
+        }
+    ~SimpleSubRecord()
+        {
+        //
+        }
+
+    UINT32 GetSize() const
+        {
+        return sizeof(FLOAT32);
+        }
+
+    bool IsLoaded() const
+        {
+        return (isLoaded && !AlmostEqual(value, 0.0f, 2));
+        }
+
+    void Load()
+        {
+        isLoaded = true;
+        }
+
+    void Unload()
+        {
+        value = 0.0f;
+        isLoaded = false;
+        }
+
+    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+        {
+        if(isLoaded)
+            {
+            curPos += subSize;
+            return false;
+            }
+        if(subSize > sizeof(FLOAT32))
+            {
+            printf("Rec? subSize:%u, sizeof:%u\n", subSize, sizeof(FLOAT32));
+            memcpy(&value, buffer + curPos, sizeof(FLOAT32));
+            }
+        else
+            memcpy(&value, buffer + curPos, subSize);
+        isLoaded = true;
+        //size = subSize;
+        curPos += subSize;
+        return true;
+        }
+
+    SimpleSubRecord<FLOAT32>& operator = (const SimpleSubRecord<FLOAT32> &rhs)
+        {
+        if(this != &rhs)
+            {
+            isLoaded = rhs.isLoaded;
+            value = rhs.value;
+            }
+        return *this;
+        }
+
+    bool operator ==(const SimpleSubRecord<FLOAT32> &other) const
+        {
+        return (isLoaded == other.isLoaded &&
+                AlmostEqual(value, other.value, 2));
+        }
+
+    bool operator !=(const SimpleSubRecord<FLOAT32> &other) const
+        {
+        return !(*this == other);
+        }
     };
 
 //Used for subrecords that are required
@@ -512,21 +647,126 @@ struct ReqSimpleSubRecord
     {
     T value;
 
-    ReqSimpleSubRecord();
-    ~ReqSimpleSubRecord();
+    ReqSimpleSubRecord():
+        value(0)
+        {
+        //
+        }
+    ~ReqSimpleSubRecord()
+        {
+        //
+        }
 
-    UINT32 GetSize() const;
+    UINT32 GetSize() const
+        {
+        return sizeof(T);
+        }
 
-    bool IsLoaded() const;
-    void Load();
-    void Unload();
+    bool IsLoaded() const
+        {
+        return true;
+        }
+    void Load()
+        {
+        //
+        }
+    void Unload()
+        {
+        value = 0;
+        }
 
-    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos);
+    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+        {
+        if(subSize > sizeof(T))
+            {
+            printf("Req? subSize:%u, sizeof:%u\n", subSize, sizeof(T));
+            memcpy(&value, buffer + curPos, sizeof(T));
+            }
+        else
+            memcpy(&value, buffer + curPos, subSize);
+        //size = subSize;
+        curPos += subSize;
+        return true;
+        }
 
-    bool operator ==(const ReqSimpleSubRecord<T> &other) const;
-    bool operator !=(const ReqSimpleSubRecord<T> &other) const;
+    ReqSimpleSubRecord<T>& operator = (const ReqSimpleSubRecord<T> &rhs)
+        {
+        if(this != &rhs)
+            value = rhs.value;
+        return *this;
+        }
+    bool operator ==(const ReqSimpleSubRecord<T> &other) const
+        {
+        return (value == other.value);
+        }
+    bool operator !=(const ReqSimpleSubRecord<T> &other) const
+        {
+        return !(*this == other);
+        }
     };
 
+template<>
+struct ReqSimpleSubRecord<FLOAT32>
+    {
+    FLOAT32 value;
+
+    ReqSimpleSubRecord():
+        value(0.0f)
+        {
+        //
+        }
+    ~ReqSimpleSubRecord()
+        {
+        //
+        }
+
+    UINT32 GetSize() const
+        {
+        return sizeof(FLOAT32);
+        }
+
+    bool IsLoaded() const
+        {
+        return true;
+        }
+    void Load()
+        {
+        //
+        }
+    void Unload()
+        {
+        value = 0.0f;
+        }
+
+    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+        {
+        if(subSize > sizeof(FLOAT32))
+            {
+            printf("Req? subSize:%u, sizeof:%u\n", subSize, sizeof(FLOAT32));
+            memcpy(&value, buffer + curPos, sizeof(FLOAT32));
+            }
+        else
+            memcpy(&value, buffer + curPos, subSize);
+        //size = subSize;
+        curPos += subSize;
+        return true;
+        }
+
+    ReqSimpleSubRecord<FLOAT32>& operator = (const ReqSimpleSubRecord<FLOAT32> &rhs)
+        {
+        if(this != &rhs)
+            value = rhs.value;
+        return *this;
+        }
+    bool operator ==(const ReqSimpleSubRecord<FLOAT32> &other) const
+        {
+        return (AlmostEqual(value, other.value, 2));
+        }
+    bool operator !=(const ReqSimpleSubRecord<FLOAT32> &other) const
+        {
+        return !(*this == other);
+        }
+    };
 //Used for subrecords that are optional
 //Even if loaded, they are considered unloaded if they're equal to their defaults
 //Should only be used with simple data types that should be initialized to 0 (int, float, etc) and not structs
@@ -535,22 +775,132 @@ struct OptSimpleSubRecord
     {
     T value;
 
-    OptSimpleSubRecord();
-    ~OptSimpleSubRecord();
+    OptSimpleSubRecord():
+        value(0)
+        {
+        //
+        }
+    ~OptSimpleSubRecord()
+        {
+        Unload();
+        }
+    UINT32 GetSize() const
+        {
+        return sizeof(T);
+        }
+    bool IsLoaded() const
+        {
+        return (value != 0);
+        }
+    void Load()
+        {
+        //
+        }
+    void Unload()
+        {
+        value = 0;
+        }
 
-    UINT32 GetSize() const;
+    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+        {
+        if(value != 0)
+            {
+            curPos += subSize;
+            return false;
+            }
+        if(subSize > sizeof(T))
+            {
+            printf("Opt? subSize:%u, sizeof:%u\n", subSize, sizeof(T));
+            memcpy(&value, buffer + curPos, sizeof(T));
+            }
+        else
+            memcpy(&value, buffer + curPos, subSize);
+        curPos += subSize;
+        return true;
+        }
 
-    bool IsLoaded() const;
-    void Load();
-    void Unload();
-
-    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos);
-
-    OptSimpleSubRecord<T>& operator = (const OptSimpleSubRecord<T> &rhs);
-    bool operator ==(const OptSimpleSubRecord<T> &other) const;
-    bool operator !=(const OptSimpleSubRecord<T> &other) const;
+    OptSimpleSubRecord<T>& operator = (const OptSimpleSubRecord<T> &rhs)
+        {
+        if(this != &rhs)
+            value = rhs.value;
+        return *this;
+        }
+    bool operator ==(const OptSimpleSubRecord<T> &other) const
+        {
+        return value == other.value;
+        }
+    bool operator !=(const OptSimpleSubRecord<T> &other) const
+        {
+        return value != other.value;
+        }
     };
 
+template<>
+struct OptSimpleSubRecord<FLOAT32>
+    {
+    FLOAT32 value;
+
+    OptSimpleSubRecord():
+        value(0.0f)
+        {
+        //
+        }
+    ~OptSimpleSubRecord()
+        {
+        Unload();
+        }
+
+    UINT32 GetSize() const
+        {
+        return sizeof(FLOAT32);
+        }
+
+    bool IsLoaded() const
+        {
+        return !(AlmostEqual(value, 0.0f, 2));
+        }
+    void Load()
+        {
+        //
+        }
+    void Unload()
+        {
+        value = 0.0f;
+        }
+
+    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+        {
+        if(!(AlmostEqual(value, 0.0f, 2)))
+            {
+            curPos += subSize;
+            return false;
+            }
+        if(subSize > sizeof(FLOAT32))
+            {
+            printf("Opt? subSize:%u, sizeof:%u\n", subSize, sizeof(FLOAT32));
+            memcpy(&value, buffer + curPos, sizeof(FLOAT32));
+            }
+        else
+            memcpy(&value, buffer + curPos, subSize);
+        curPos += subSize;
+        return true;
+        }
+
+    OptSimpleSubRecord<FLOAT32>& operator = (const OptSimpleSubRecord<FLOAT32> &rhs)
+        {
+        if(this != &rhs)
+            value = rhs.value;
+        return *this;
+        }
+    bool operator ==(const OptSimpleSubRecord<FLOAT32> &other) const
+        {
+        return AlmostEqual(value, other.value, 2);
+        }
+    bool operator !=(const OptSimpleSubRecord<FLOAT32> &other) const
+        {
+        return !(AlmostEqual(value, other.value, 2));
+        }
+    };
 //Identical to OptSimpleSubRecord except for IsLoaded
 //Once loaded, they are always considered loaded unless they're explicitly unloaded.
 //They don't compare to the default value to see if they're
@@ -561,21 +911,175 @@ struct SemiOptSimpleSubRecord
     {
     T *value;
 
-    SemiOptSimpleSubRecord();
-    ~SemiOptSimpleSubRecord();
+    SemiOptSimpleSubRecord():
+        value(NULL)
+        {
+        //
+        }
+    ~SemiOptSimpleSubRecord()
+        {
+        Unload();
+        }
 
-    UINT32 GetSize() const;
+    UINT32 GetSize() const
+        {
+        return sizeof(T);
+        }
 
-    bool IsLoaded() const;
-    void Load();
-    void Unload();
+    bool IsLoaded() const
+        {
+        return (value != NULL);
+        }
+    void Load()
+        {
+        if(value == NULL)
+            value = new T(0);
+        }
+    void Unload()
+        {
+        delete value;
+        value = NULL;
+        }
 
-    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos);
+    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+        {
+        if(value != NULL)
+            {
+            curPos += subSize;
+            return false;
+            }
+        value = new T(0);
+        if(subSize > sizeof(T))
+            {
+            printf("Opt? subSize:%u, sizeof:%u\n", subSize, sizeof(T));
+            memcpy(value, buffer + curPos, sizeof(T));
+            }
+        else
+            memcpy(value, buffer + curPos, subSize);
+        curPos += subSize;
+        return true;
+        }
 
-    T *operator->() const;
-    SemiOptSimpleSubRecord<T>& operator = (const SemiOptSimpleSubRecord<T> &rhs);
-    bool operator ==(const SemiOptSimpleSubRecord<T> &other) const;
-    bool operator !=(const SemiOptSimpleSubRecord<T> &other) const;
+    SemiOptSimpleSubRecord<T>& operator = (const SemiOptSimpleSubRecord<T> &rhs)
+        {
+        if(this != &rhs)
+            if(rhs.value != NULL)
+                {
+                if(value == NULL)
+                    value = new T(0);
+                else
+                    value->~T();
+                *value = *rhs.value;
+                }
+            else
+                {
+                delete value;
+                value = NULL;
+                }
+        return *this;
+        }
+    bool operator ==(const SemiOptSimpleSubRecord<T> &other) const
+        {
+        if(!IsLoaded())
+            {
+            if(!other.IsLoaded())
+                return true;
+            }
+        else if(other.IsLoaded() && *value == *other.value)
+            return true;
+        return false;
+        }
+    bool operator !=(const SemiOptSimpleSubRecord<T> &other) const
+        {
+        return !(*this == other);
+        }
+    };
+
+template<>
+struct SemiOptSimpleSubRecord<FLOAT32>
+    {
+    FLOAT32 *value;
+
+    SemiOptSimpleSubRecord():
+        value(NULL)
+        {
+        //
+        }
+    ~SemiOptSimpleSubRecord()
+        {
+        Unload();
+        }
+
+    UINT32 GetSize() const
+        {
+        return sizeof(FLOAT32);
+        }
+
+    bool IsLoaded() const
+        {
+        return (value != NULL);
+        }
+    void Load()
+        {
+        if(value == NULL)
+            value = new FLOAT32(0.0f);
+        }
+    void Unload()
+        {
+        delete value;
+        value = NULL;
+        }
+
+    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+        {
+        if(value != NULL)
+            {
+            curPos += subSize;
+            return false;
+            }
+        value = new FLOAT32(0.0f);
+        if(subSize > sizeof(FLOAT32))
+            {
+            printf("Opt? subSize:%u, sizeof:%u\n", subSize, sizeof(FLOAT32));
+            memcpy(value, buffer + curPos, sizeof(FLOAT32));
+            }
+        else
+            memcpy(value, buffer + curPos, subSize);
+        curPos += subSize;
+        return true;
+        }
+
+    SemiOptSimpleSubRecord<FLOAT32>& operator = (const SemiOptSimpleSubRecord<FLOAT32> &rhs)
+        {
+        if(this != &rhs)
+            if(rhs.value != NULL)
+                {
+                if(value == NULL)
+                    value = new FLOAT32(0.0f);
+                *value = *rhs.value;
+                }
+            else
+                {
+                delete value;
+                value = NULL;
+                }
+        return *this;
+        }
+    bool operator ==(const SemiOptSimpleSubRecord<FLOAT32> &other) const
+        {
+        if(!IsLoaded())
+            {
+            if(!other.IsLoaded())
+                return true;
+            }
+        else if(other.IsLoaded() && AlmostEqual(*value, *other.value, 2))
+            return true;
+        return false;
+        }
+    bool operator !=(const SemiOptSimpleSubRecord<FLOAT32> &other) const
+        {
+        return !(*this == other);
+        }
     };
 
 //Base record field. Vestigial.
@@ -586,20 +1090,72 @@ struct SubRecord
     T value;
     bool isLoaded;
 
-    SubRecord();
-    ~SubRecord();
+    SubRecord():
+        isLoaded(false),
+        value()
+        {
+        //
+        }
+    ~SubRecord()
+        {
+        //
+        }
 
-    UINT32 GetSize() const;
+    UINT32 GetSize() const
+        {
+        return sizeof(T);
+        }
 
-    bool IsLoaded() const;
-    void Load();
-    void Unload();
+    bool IsLoaded() const
+        {
+        T defaultValue;
+        return (isLoaded && value != defaultValue);
+        }
+    void Load()
+        {
+        isLoaded = true;
+        }
+    void Unload()
+        {
+        T newValue;
+        value.~T();
+        value = newValue;
+        isLoaded = false;
+        }
 
-    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos);
+    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+        {
+        if(isLoaded)
+            {
+            curPos += subSize;
+            return false;
+            }
+        if(subSize > sizeof(T))
+            {
+            printf("Rec? subSize:%u, sizeof:%u\n", subSize, sizeof(T));
+            memcpy(&value, buffer + curPos, sizeof(T));
+            }
+        else
+            memcpy(&value, buffer + curPos, subSize);
+        isLoaded = true;
+        //size = subSize;
+        curPos += subSize;
+        return true;
+        }
 
-    T *operator->() const;
-    bool operator ==(const SubRecord<T> &other) const;
-    bool operator !=(const SubRecord<T> &other) const;
+    T *operator->() const
+        {
+        return &value;
+        }
+    bool operator ==(const SubRecord<T> &other) const
+        {
+        return (value == other.value &&
+                isLoaded == other.isLoaded);
+        }
+    bool operator !=(const SubRecord<T> &other) const
+        {
+        return !(*this == other);
+        }
     };
 
 //Used for subrecords that are required
@@ -610,20 +1166,62 @@ struct ReqSubRecord
     {
     T value;
 
-    ReqSubRecord();
-    ~ReqSubRecord();
+    ReqSubRecord():
+        value()
+        {
+        //
+        }
+    ~ReqSubRecord()
+        {
+        //
+        }
 
-    UINT32 GetSize() const;
+    UINT32 GetSize() const
+        {
+        return sizeof(T);
+        }
 
-    bool IsLoaded() const;
-    void Load();
-    void Unload();
+    bool IsLoaded() const
+        {
+        return true;
+        }
+    void Load()
+        {
+        //
+        }
+    void Unload()
+        {
+        T newValue;
+        value.~T();
+        value = newValue;
+        }
 
-    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos);
+    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+        {
+        if(subSize > sizeof(T))
+            {
+            printf("Req? subSize:%u, sizeof:%u\n", subSize, sizeof(T));
+            memcpy(&value, buffer + curPos, sizeof(T));
+            }
+        else
+            memcpy(&value, buffer + curPos, subSize);
+        //size = subSize;
+        curPos += subSize;
+        return true;
+        }
 
-    T *operator->() const;
-    bool operator ==(const ReqSubRecord<T> &other) const;
-    bool operator !=(const ReqSubRecord<T> &other) const;
+    T *operator->() const
+        {
+        return &value;
+        }
+    bool operator ==(const ReqSubRecord<T> &other) const
+        {
+        return (value == other.value);
+        }
+    bool operator !=(const ReqSubRecord<T> &other) const
+        {
+        return !(*this == other);
+        }
     };
 
 //Used for subrecords that are optional
@@ -633,21 +1231,95 @@ struct OptSubRecord
     {
     T *value;
 
-    OptSubRecord();
-    ~OptSubRecord();
+    OptSubRecord():
+        value(NULL)
+        {
+        //
+        }
+    ~OptSubRecord()
+        {
+        Unload();
+        }
 
-    UINT32 GetSize() const;
+    UINT32 GetSize() const
+        {
+        return sizeof(T);
+        }
 
-    bool IsLoaded() const;
-    void Load();
-    void Unload();
+    bool IsLoaded() const
+        {
+        T defaultValue;
+        return (value != NULL && *value != defaultValue);
+        }
+    void Load()
+        {
+        if(value == NULL)
+            value = new T();
+        }
+    void Unload()
+        {
+        delete value;
+        value = NULL;
+        }
 
-    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos);
+    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+        {
+        if(value != NULL)
+            {
+            curPos += subSize;
+            return false;
+            }
+        value = new T();
+        if(subSize > sizeof(T))
+            {
+            printf("Opt? subSize:%u, sizeof:%u\n", subSize, sizeof(T));
+            memcpy(value, buffer + curPos, sizeof(T));
+            }
+        else
+            memcpy(value, buffer + curPos, subSize);
+        curPos += subSize;
+        return true;
+        }
 
-    T *operator->() const;
-    OptSubRecord<T>& operator = (const OptSubRecord<T> &rhs);
-    bool operator ==(const OptSubRecord<T> &other) const;
-    bool operator !=(const OptSubRecord<T> &other) const;
+    T *operator->() const
+        {
+        return value;
+        }
+    OptSubRecord<T>& operator = (const OptSubRecord<T> &rhs)
+        {
+        if(this != &rhs)
+            if(rhs.value != NULL)
+                {
+                if(value == NULL)
+                    {
+                    value = new T();
+                    }
+                else
+                    value->~T();
+                *value = *rhs.value;
+                }
+            else
+                {
+                delete value;
+                value = NULL;
+                }
+        return *this;
+        }
+    bool operator ==(const OptSubRecord<T> &other) const
+        {
+        if(!IsLoaded())
+            {
+            if(!other.IsLoaded())
+                return true;
+            }
+        else if(other.IsLoaded() && *value == *other.value)
+            return true;
+        return false;
+        }
+    bool operator !=(const OptSubRecord<T> &other) const
+        {
+        return !(*this == other);
+        }
     };
 
 //Identical to OptSubRecord except for IsLoaded
@@ -659,21 +1331,94 @@ struct SemiOptSubRecord
     {
     T *value;
 
-    SemiOptSubRecord();
-    ~SemiOptSubRecord();
+    SemiOptSubRecord():
+        value(NULL)
+        {
+        //
+        }
+    ~SemiOptSubRecord()
+        {
+        Unload();
+        }
 
-    UINT32 GetSize() const;
+    UINT32 GetSize() const
+        {
+        return sizeof(T);
+        }
 
-    bool IsLoaded() const;
-    void Load();
-    void Unload();
+    bool IsLoaded() const
+        {
+        return (value != NULL);
+        }
+    void Load()
+        {
+        if(value == NULL)
+            value = new T();
+        }
+    void Unload()
+        {
+        delete value;
+        value = NULL;
+        }
 
-    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos);
+    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+        {
+        if(value != NULL)
+            {
+            curPos += subSize;
+            return false;
+            }
+        value = new T();
+        if(subSize > sizeof(T))
+            {
+            printf("Opt? subSize:%u, sizeof:%u\n", subSize, sizeof(T));
+            memcpy(value, buffer + curPos, sizeof(T));
+            }
+        else
+            memcpy(value, buffer + curPos, subSize);
+        curPos += subSize;
+        return true;
+        }
 
-    T *operator->() const;
-    SemiOptSubRecord<T>& operator = (const SemiOptSubRecord<T> &rhs);
-    bool operator ==(const SemiOptSubRecord<T> &other) const;
-    bool operator !=(const SemiOptSubRecord<T> &other) const;
+    T *operator->() const
+        {
+        return value;
+        }
+    SemiOptSubRecord<T>& operator = (const SemiOptSubRecord<T> &rhs)
+        {
+        if(this != &rhs)
+            if(rhs.value != NULL)
+                {
+                if(value == NULL)
+                    {
+                    value = new T();
+                    }
+                else
+                    value->~T();
+                *value = *rhs.value;
+                }
+            else
+                {
+                delete value;
+                value = NULL;
+                }
+        return *this;
+        }
+    bool operator ==(const SemiOptSubRecord<T> &other) const
+        {
+        if(!IsLoaded())
+            {
+            if(!other.IsLoaded())
+                return true;
+            }
+        else if(other.IsLoaded() && *value == *other.value)
+            return true;
+        return false;
+        }
+    bool operator !=(const SemiOptSubRecord<T> &other) const
+        {
+        return !(*this == other);
+        }
     };
 
 //Hack to support OBMEEFIX
@@ -684,24 +1429,106 @@ struct OBMEEFIXSubRecord
     {
     T *value;
 
-    OBMEEFIXSubRecord();
-    ~OBMEEFIXSubRecord();
+    OBMEEFIXSubRecord():
+        value(NULL)
+        {
+        //
+        }
+    ~OBMEEFIXSubRecord()
+        {
+        Unload();
+        }
 
-    UINT32 GetSize() const;
+    UINT32 GetSize() const
+        {
+        return sizeof(T);
+        }
 
-    bool IsLoaded();
-    bool Internal_IsLoaded() const;
-    void Load();
-    void Unload();
+    bool IsLoaded()
+        {
+        if(value == NULL)
+            return false;
+        if(value->efixOverrides == 0)
+            {
+            Unload();
+            return false;
+            }
+        T defaultValue;
+        return (*value != defaultValue);
+        }
+    bool Internal_IsLoaded() const
+        {
+        T defaultValue;
+        return (value != NULL && *value != defaultValue);
+        }
+    void Load()
+        {
+        if(value == NULL)
+            value = new T();
+        }
+    void Unload()
+        {
+        delete value;
+        value = NULL;
+        }
 
-    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos);
+    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+        {
+        if(value != NULL)
+            {
+            curPos += subSize;
+            return false;
+            }
+        value = new T();
+        if(subSize > sizeof(T))
+            {
+            printf("Opt? subSize:%u, sizeof:%u\n", subSize, sizeof(T));
+            memcpy(value, buffer + curPos, sizeof(T));
+            }
+        else
+            memcpy(value, buffer + curPos, subSize);
+        curPos += subSize;
+        return true;
+        }
 
-    T *operator->() const;
-    OBMEEFIXSubRecord<T>& operator = (const OBMEEFIXSubRecord<T> &rhs);
-    bool operator ==(const OBMEEFIXSubRecord<T> &other) const;
-    bool operator !=(const OBMEEFIXSubRecord<T> &other) const;
+    T *operator->() const
+        {
+        return value;
+        }
+
+    OBMEEFIXSubRecord<T>& operator = (const OBMEEFIXSubRecord<T> &rhs)
+        {
+        if(this != &rhs)
+            if(rhs.value != NULL)
+                {
+                if(value == NULL)
+                    value = new T();
+                else
+                    value->~T();
+                *value = *rhs.value;
+                }
+            else
+                {
+                delete value;
+                value = NULL;
+                }
+        return *this;
+        }
+
+    bool operator ==(const OBMEEFIXSubRecord<T> &other) const
+        {
+        if(!Internal_IsLoaded())
+            {
+            if(!other.Internal_IsLoaded())
+                return true;
+            }
+        else if(other.Internal_IsLoaded() && *value == *other.value)
+            return true;
+        return false;
+        }
+
+    bool operator !=(const OBMEEFIXSubRecord<T> &other) const
+        {
+        return !(*this == other);
+        }
     };
-
-//Cheap trick to separate the template methods into a separate file
-//Notice that the file is NOT part of the project
-#include "CommonTemplates.cpp"

@@ -484,7 +484,7 @@ void * QUSTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 4: //eid
             return EDID.value;
         case 5: //script
-            return SCRI.IsLoaded() ? &SCRI->value : NULL;
+            return SCRI.IsLoaded() ? &SCRI.value : NULL;
         case 6: //full
             return FULL.value;
         case 7: //iconPath
@@ -525,7 +525,7 @@ void * QUSTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             switch(ListFieldID)
                 {
                 case 1: //stage
-                    return &Stages[ListIndex]->INDX.value.value;
+                    return &Stages[ListIndex]->INDX.value;
                 case 2: //entries
                     if(ListX2Index >= Stages[ListIndex]->Entries.size())
                         {
@@ -535,7 +535,7 @@ void * QUSTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                     switch(ListX2FieldID)
                         {
                         case 1: //flags
-                            return &Stages[ListIndex]->Entries[ListX2Index]->QSDT.value.value;
+                            return &Stages[ListIndex]->Entries[ListX2Index]->QSDT.value;
                         case 2: //conditions
                             if(ListX3Index >= Stages[ListIndex]->Entries[ListX2Index]->CTDA.size())
                                 return NULL;
@@ -649,8 +649,7 @@ bool QUSTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             EDID.Copy((STRING)FieldValue);
             break;
         case 5: //script
-            SCRI.Load();
-            SCRI->value = *(FORMID *)FieldValue;
+            SCRI.value = *(FORMID *)FieldValue;
             return true;
         case 6: //full
             FULL.Copy((STRING)FieldValue);
@@ -745,7 +744,7 @@ bool QUSTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             switch(ListFieldID)
                 {
                 case 1: //stage
-                    Stages[ListIndex]->INDX.value.value = *(UINT16 *)FieldValue;
+                    Stages[ListIndex]->INDX.value = *(UINT16 *)FieldValue;
                     break;
                 case 2: //entries
                     if(ListX2FieldID == 0) //entriesSize

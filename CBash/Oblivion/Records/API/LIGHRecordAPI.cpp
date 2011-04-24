@@ -110,12 +110,12 @@ void * LIGHRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 5: //modPath
             return MODL.IsLoaded() ? MODL->MODL.value : NULL;
         case 6: //modb
-            return MODL.IsLoaded() ? &MODL->MODB.value.value : NULL;
+            return MODL.IsLoaded() ? &MODL->MODB.value : NULL;
         case 7: //modt_p
             *FieldValues = MODL.IsLoaded() ? MODL->MODT.value : NULL;
             return NULL;
         case 8: //script
-            return SCRI.IsLoaded() ? &SCRI->value : NULL;
+            return SCRI.IsLoaded() ? &SCRI.value : NULL;
         case 9: //full
             return FULL.value;
         case 10: //iconPath
@@ -144,9 +144,9 @@ void * LIGHRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 21: //weight
             return &DATA.value.weight;
         case 22: //fade
-            return FNAM.IsLoaded() ? &FNAM->value : NULL;
+            return FNAM.IsLoaded() ? &FNAM.value : NULL;
         case 23: //sound
-            return SNAM.IsLoaded() ? &SNAM->value : NULL;
+            return SNAM.IsLoaded() ? &SNAM.value : NULL;
         default:
             return NULL;
         }
@@ -171,15 +171,14 @@ bool LIGHRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             break;
         case 6: //modb
             MODL.Load();
-            MODL->MODB.value.value = *(FLOAT32 *)FieldValue;
+            MODL->MODB.value = *(FLOAT32 *)FieldValue;
             break;
         case 7: //modt_p
             MODL.Load();
             MODL->MODT.Copy((UINT8ARRAY)FieldValue, ArraySize);
             break;
         case 8: //script
-            SCRI.Load();
-            SCRI->value = *(FORMID *)FieldValue;
+            SCRI.value = *(FORMID *)FieldValue;
             return true;
         case 9: //full
             FULL.Copy((STRING)FieldValue);
@@ -223,12 +222,10 @@ bool LIGHRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             DATA.value.weight = *(FLOAT32 *)FieldValue;
             break;
         case 22: //fade
-            FNAM.Load();
-            FNAM->value = *(FLOAT32 *)FieldValue;
+            FNAM.value = *(FLOAT32 *)FieldValue;
             break;
-        case 23: //sound
-            SNAM.Load();
-            SNAM->value = *(FORMID *)FieldValue;
+        case 23: //sound.
+            SNAM.value = *(FORMID *)FieldValue;
             return true;
         default:
             break;

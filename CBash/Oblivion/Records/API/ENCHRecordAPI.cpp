@@ -84,7 +84,7 @@ UINT32 ENCHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                         case 2: //WhichType
                             if(Effects[ListIndex]->OBME.IsLoaded())
                                 {
-                                if(Effects[ListIndex]->EFID.value.value >= 0x80000000)
+                                if(Effects[ListIndex]->EFID.value >= 0x80000000)
                                     return RESOLVED_MGEFCODE_FIELD;
                                 return STATIC_MGEFCODE_FIELD;
                                 }
@@ -336,7 +336,7 @@ void * ENCHRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 {
                 case 1: //name0, both are always the same value, so return one and set both
                 case 2: //name
-                    return &Effects[ListIndex]->EFID.value.value;
+                    return &Effects[ListIndex]->EFID.value;
                 case 3: //magnitude
                     return &Effects[ListIndex]->EFIT.value.magnitude;
                 case 4: //area
@@ -472,7 +472,7 @@ bool ENCHRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                 {
                 case 1: //name0, both are always the same value, so return one and set both
                 case 2: //name
-                    Effects[ListIndex]->EFID.value.value = *(MGEFCODE_OR_UINT32 *)FieldValue;
+                    Effects[ListIndex]->EFID.value = *(MGEFCODE_OR_UINT32 *)FieldValue;
                     Effects[ListIndex]->EFIT.value.name = *(MGEFCODE_OR_UINT32 *)FieldValue;
                     return true;
                 case 3: //magnitude

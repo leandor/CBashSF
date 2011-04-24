@@ -104,13 +104,13 @@ bool CONTRecord::VisitFormIDs(FormIDOp &op)
         return false;
 
     if(SCRI.IsLoaded())
-        op.Accept(SCRI->value);
+        op.Accept(SCRI.value);
     for(UINT32 x = 0; x < CNTO.size(); x++)
         op.Accept(CNTO[x]->value.item);
     if(SNAM.IsLoaded())
-        op.Accept(SNAM->value);
+        op.Accept(SNAM.value);
     if(QNAM.IsLoaded())
-        op.Accept(QNAM->value);
+        op.Accept(QNAM.value);
 
     return op.Stop();
     }
@@ -307,7 +307,7 @@ SINT32 CONTRecord::WriteRecord(_FileHandler &SaveHandler)
             SaveHandler.writeSubRecord('TDOM', MODL->MODT.value, MODL->MODT.GetSize());
         }
     if(SCRI.IsLoaded())
-        SaveHandler.writeSubRecord('IRCS', SCRI.value, SCRI.GetSize());
+        SaveHandler.writeSubRecord('IRCS', &SCRI.value, SCRI.GetSize());
     if(CNTO.size())
         for(UINT32 p = 0; p < CNTO.size(); p++)
             if(CNTO[p]->IsLoaded())
@@ -315,9 +315,9 @@ SINT32 CONTRecord::WriteRecord(_FileHandler &SaveHandler)
     if(DATA.IsLoaded())
         SaveHandler.writeSubRecord('ATAD', &DATA.value, DATA.GetSize());
     if(SNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANS', SNAM.value, SNAM.GetSize());
+        SaveHandler.writeSubRecord('MANS', &SNAM.value, SNAM.GetSize());
     if(QNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANQ', QNAM.value, QNAM.GetSize());
+        SaveHandler.writeSubRecord('MANQ', &QNAM.value, QNAM.GetSize());
     return -1;
     }
 

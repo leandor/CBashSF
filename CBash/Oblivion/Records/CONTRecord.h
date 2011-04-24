@@ -51,11 +51,11 @@ class CONTRecord : public Record
         StringRecord EDID;
         StringRecord FULL;
         OptSubRecord<GENMODEL> MODL;
-        OptSubRecord<GENFID> SCRI;
+        OptSimpleSubRecord<FORMID> SCRI;
         std::vector<ReqSubRecord<GENCNTO> *> CNTO;
         ReqSubRecord<CONTDATA> DATA;
-        OptSubRecord<GENFID> SNAM;
-        OptSubRecord<GENFID> QNAM;
+        OptSimpleSubRecord<FORMID> SNAM;
+        OptSimpleSubRecord<FORMID> QNAM;
 
         CONTRecord(unsigned char *_recData=NULL);
         CONTRecord(CONTRecord *srcRecord);

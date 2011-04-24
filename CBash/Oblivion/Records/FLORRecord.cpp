@@ -98,9 +98,9 @@ bool FLORRecord::VisitFormIDs(FormIDOp &op)
         return false;
 
     if(SCRI.IsLoaded())
-        op.Accept(SCRI->value);
+        op.Accept(SCRI.value);
     if(PFIG.IsLoaded())
-        op.Accept(PFIG.value.value);
+        op.Accept(PFIG.value);
 
     return op.Stop();
     }
@@ -255,7 +255,7 @@ SINT32 FLORRecord::WriteRecord(_FileHandler &SaveHandler)
             SaveHandler.writeSubRecord('TDOM', MODL->MODT.value, MODL->MODT.GetSize());
         }
     if(SCRI.IsLoaded())
-        SaveHandler.writeSubRecord('IRCS', SCRI.value, SCRI.GetSize());
+        SaveHandler.writeSubRecord('IRCS', &SCRI.value, SCRI.GetSize());
     if(PFIG.IsLoaded())
         SaveHandler.writeSubRecord('GIFP', &PFIG.value, PFIG.GetSize());
     if(PFPC.IsLoaded())

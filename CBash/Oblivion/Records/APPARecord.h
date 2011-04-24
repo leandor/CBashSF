@@ -56,7 +56,7 @@ class APPARecord : public Record
         StringRecord FULL;
         OptSubRecord<GENMODEL> MODL;
         StringRecord ICON;
-        OptSubRecord<GENFID> SCRI;
+        OptSimpleSubRecord<FORMID> SCRI;
         ReqSubRecord<APPADATA> DATA;
 
         APPARecord(unsigned char *_recData=NULL);

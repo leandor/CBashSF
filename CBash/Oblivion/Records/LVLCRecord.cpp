@@ -73,9 +73,9 @@ bool LVLCRecord::VisitFormIDs(FormIDOp &op)
         return false;
 
     if(SCRI.IsLoaded())
-        op.Accept(SCRI->value);
+        op.Accept(SCRI.value);
     if(TNAM.IsLoaded())
-        op.Accept(TNAM->value);
+        op.Accept(TNAM.value);
     for(UINT32 x = 0; x < Entries.size(); x++)
         op.Accept(Entries[x]->value.listId);
 
@@ -84,41 +84,41 @@ bool LVLCRecord::VisitFormIDs(FormIDOp &op)
 
 bool LVLCRecord::IsCalcFromAllLevels()
     {
-    return LVLF.IsLoaded() ? (LVLF->value & fCalcFromAllLevels) != 0 : false;
+    return LVLF.IsLoaded() ? (*LVLF.value & fCalcFromAllLevels) != 0 : false;
     }
 
 void LVLCRecord::IsCalcFromAllLevels(bool value)
     {
-    if(!LVLF.IsLoaded()) return;
-    LVLF->value = value ? (LVLF->value | fCalcFromAllLevels) : (LVLF->value & ~fCalcFromAllLevels);
+    LVLF.Load();
+    *LVLF.value = value ? (*LVLF.value | fCalcFromAllLevels) : (*LVLF.value & ~fCalcFromAllLevels);
     }
 
 bool LVLCRecord::IsCalcForEachItem()
     {
-    return LVLF.IsLoaded() ? (LVLF->value & fCalcForEachItem) != 0 : false;
+    return LVLF.IsLoaded() ? (*LVLF.value & fCalcForEachItem) != 0 : false;
     }
 
 void LVLCRecord::IsCalcForEachItem(bool value)
     {
-    if(!LVLF.IsLoaded()) return;
-    LVLF->value = value ? (LVLF->value | fCalcForEachItem) : (LVLF->value & ~fCalcForEachItem);
+    LVLF.Load();
+    *LVLF.value = value ? (*LVLF.value | fCalcForEachItem) : (*LVLF.value & ~fCalcForEachItem);
     }
 
 bool LVLCRecord::IsUseAllSpells()
     {
-    return LVLF.IsLoaded() ? (LVLF->value & fUseAllSpells) != 0 : false;
+    return LVLF.IsLoaded() ? (*LVLF.value & fUseAllSpells) != 0 : false;
     }
 
 void LVLCRecord::IsUseAllSpells(bool value)
     {
-    if(!LVLF.IsLoaded()) return;
-    LVLF->value = value ? (LVLF->value | fUseAllSpells) : (LVLF->value & ~fUseAllSpells);
+    LVLF.Load();
+    *LVLF.value = value ? (*LVLF.value | fUseAllSpells) : (*LVLF.value & ~fUseAllSpells);
     }
 
 bool LVLCRecord::IsFlagMask(UINT8 Mask, bool Exact)
     {
-    if(!LVLF.IsLoaded()) return false;
-    return Exact ? ((LVLF->value & Mask) == Mask) : ((LVLF->value & Mask) != 0);
+    LVLF.Load();
+    return Exact ? ((*LVLF.value & Mask) == Mask) : ((*LVLF.value & Mask) != 0);
     }
 
 void LVLCRecord::SetFlagMask(UINT8 Mask)
@@ -126,7 +126,7 @@ void LVLCRecord::SetFlagMask(UINT8 Mask)
     if(Mask)
         {
         LVLF.Load();
-        LVLF->value = Mask;
+        *LVLF.value = Mask;
         }
     else
         LVLF.Unload();
@@ -204,10 +204,9 @@ SINT32 LVLCRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 break;
             case 'DLVL':
                 LVLD.Read(buffer, subSize, curPos);
-                if((LVLD.value.value & fAltCalcFromAllLevels) != 0)
+                if((LVLD.value & fAltCalcFromAllLevels) != 0)
                     {
-                    LVLD.value.value &= ~fAltCalcFromAllLevels;
-                    LVLF.Load();
+                    LVLD.value &= ~fAltCalcFromAllLevels;
                     IsCalcFromAllLevels(true);
                     }
                 break;
@@ -261,9 +260,9 @@ SINT32 LVLCRecord::WriteRecord(_FileHandler &SaveHandler)
     if(LVLF.IsLoaded())
         SaveHandler.writeSubRecord('FLVL', LVLF.value, LVLF.GetSize());
     if(SCRI.IsLoaded())
-        SaveHandler.writeSubRecord('IRCS', SCRI.value, SCRI.GetSize());
+        SaveHandler.writeSubRecord('IRCS', &SCRI.value, SCRI.GetSize());
     if(TNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANT', TNAM.value, TNAM.GetSize());
+        SaveHandler.writeSubRecord('MANT', &TNAM.value, TNAM.GetSize());
     for(UINT32 p = 0; p < Entries.size(); p++)
         if(Entries[p]->IsLoaded())
             SaveHandler.writeSubRecord('OLVL', &Entries[p]->value, Entries[p]->GetSize());

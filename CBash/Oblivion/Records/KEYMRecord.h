@@ -30,7 +30,7 @@ class KEYMRecord : public Record
         StringRecord FULL;
         OptSubRecord<GENMODEL> MODL;
         StringRecord ICON;
-        OptSubRecord<GENFID> SCRI;
+        OptSimpleSubRecord<FORMID> SCRI;
         ReqSubRecord<GENVALUEWEIGHT> DATA;
 
         KEYMRecord(unsigned char *_recData=NULL);

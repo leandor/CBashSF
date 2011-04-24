@@ -43,7 +43,7 @@ class DIALRecord : public Record
         std::vector<FORMID> QSTI;
         std::vector<FORMID> QSTR;
         StringRecord FULL;
-        ReqSubRecord<GENU8> DATA;
+        ReqSimpleSubRecord<UINT8> DATA;
         std::vector<Record *> INFO;
 
         DIALRecord(unsigned char *_recData=NULL);

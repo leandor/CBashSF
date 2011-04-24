@@ -194,16 +194,16 @@ bool NPC_Record::VisitFormIDs(FormIDOp &op)
         op.Accept(SNAM[x]->value.faction);
 
     if(INAM.IsLoaded())
-        op.Accept(INAM->value);
+        op.Accept(INAM.value);
 
     if(RNAM.IsLoaded())
-        op.Accept(RNAM->value);
+        op.Accept(RNAM.value);
 
     for(UINT32 x = 0; x < SPLO.size(); x++)
         op.Accept(SPLO[x]);
 
     if(SCRI.IsLoaded())
-        op.Accept(SCRI->value);
+        op.Accept(SCRI.value);
 
     for(UINT32 x = 0; x < CNTO.size(); x++)
         op.Accept(CNTO[x]->value.item);
@@ -212,16 +212,16 @@ bool NPC_Record::VisitFormIDs(FormIDOp &op)
         op.Accept(PKID[x]);
 
     if(CNAM.IsLoaded())
-        op.Accept(CNAM.value.value);
+        op.Accept(CNAM.value);
 
     if(HNAM.IsLoaded())
-        op.Accept(HNAM->value);
+        op.Accept(HNAM.value);
 
     if(ENAM.IsLoaded())
-        op.Accept(ENAM->value);
+        op.Accept(ENAM.value);
 
     if(ZNAM.IsLoaded())
-        op.Accept(ZNAM->value);
+        op.Accept(ZNAM.value);
 
     return op.Stop();
     }
@@ -844,13 +844,13 @@ SINT32 NPC_Record::WriteRecord(_FileHandler &SaveHandler)
         if(SNAM[p]->IsLoaded())
             SaveHandler.writeSubRecord('MANS', &SNAM[p]->value, SNAM[p]->GetSize());
     if(INAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANI', INAM.value, INAM.GetSize());
+        SaveHandler.writeSubRecord('MANI', &INAM.value, INAM.GetSize());
     if(RNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANR', RNAM.value, RNAM.GetSize());
+        SaveHandler.writeSubRecord('MANR', &RNAM.value, RNAM.GetSize());
     for(UINT32 p = 0; p < SPLO.size(); p++)
         SaveHandler.writeSubRecord('OLPS', &SPLO[p], sizeof(UINT32));
     if(SCRI.IsLoaded())
-        SaveHandler.writeSubRecord('IRCS', SCRI.value, SCRI.GetSize());
+        SaveHandler.writeSubRecord('IRCS', &SCRI.value, SCRI.GetSize());
     for(UINT32 p = 0; p < CNTO.size(); p++)
         if(CNTO[p]->IsLoaded())
             SaveHandler.writeSubRecord('OTNC', &CNTO[p]->value, sizeof(GENCNTO));
@@ -877,15 +877,15 @@ SINT32 NPC_Record::WriteRecord(_FileHandler &SaveHandler)
     if(DATA.IsLoaded())
         SaveHandler.writeSubRecord('ATAD', &DATA.value, DATA.GetSize());
     if(HNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANH', HNAM.value, HNAM.GetSize());
+        SaveHandler.writeSubRecord('MANH', &HNAM.value, HNAM.GetSize());
     if(LNAM.IsLoaded())
         SaveHandler.writeSubRecord('MANL', LNAM.value, LNAM.GetSize());
     if(ENAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANE', ENAM.value, ENAM.GetSize());
+        SaveHandler.writeSubRecord('MANE', &ENAM.value, ENAM.GetSize());
     if(HCLR.IsLoaded())
         SaveHandler.writeSubRecord('RLCH', &HCLR.value, HCLR.GetSize());
     if(ZNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANZ', ZNAM.value, ZNAM.GetSize());
+        SaveHandler.writeSubRecord('MANZ', &ZNAM.value, ZNAM.GetSize());
     if(FGGS.IsLoaded())
         SaveHandler.writeSubRecord('SGGF', FGGS.value, FGGS.GetSize());
     if(FGGA.IsLoaded())

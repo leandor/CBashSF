@@ -71,7 +71,7 @@ bool KEYMRecord::VisitFormIDs(FormIDOp &op)
         return false;
 
     if(SCRI.IsLoaded())
-        op.Accept(SCRI->value);
+        op.Accept(SCRI.value);
 
     return op.Stop();
     }
@@ -232,7 +232,7 @@ SINT32 KEYMRecord::WriteRecord(_FileHandler &SaveHandler)
     if(ICON.IsLoaded())
         SaveHandler.writeSubRecord('NOCI', ICON.value, ICON.GetSize());
     if(SCRI.IsLoaded())
-        SaveHandler.writeSubRecord('IRCS', SCRI.value, SCRI.GetSize());
+        SaveHandler.writeSubRecord('IRCS', &SCRI.value, SCRI.GetSize());
     if(DATA.IsLoaded())
         SaveHandler.writeSubRecord('ATAD', &DATA.value, DATA.GetSize());
     return -1;

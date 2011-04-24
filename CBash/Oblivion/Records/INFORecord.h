@@ -115,9 +115,9 @@ class INFORecord : public Record
     public:
         StringRecord EDID;
         ReqSubRecord<INFODATA> DATA;
-        ReqSubRecord<GENFID> QSTI;
-        OptSubRecord<GENFID> TPIC;
-        SemiOptSubRecord<GENFID> PNAM;
+        ReqSimpleSubRecord<FORMID> QSTI;
+        OptSimpleSubRecord<FORMID> TPIC;
+        SemiOptSimpleSubRecord<FORMID> PNAM;
         std::vector<FORMID> NAME;
         std::vector<INFOResponse *> Responses;
         std::vector<ReqSubRecord<GENCTDA> *> CTDA;

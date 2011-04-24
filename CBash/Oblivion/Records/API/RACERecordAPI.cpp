@@ -509,11 +509,11 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 32: //defaultHairFemale
             return DNAM.IsLoaded() ? &DNAM.value.defaultHairFemale : NULL;
         case 33: //defaultHairColor
-            return &CNAM.value.value;
+            return &CNAM.value;
         case 34: //mainClamp
-            return PNAM.IsLoaded() ? &PNAM->value : NULL;
+            return PNAM.IsLoaded() ? &PNAM.value : NULL;
         case 35: //faceClamp
-            return UNAM.IsLoaded() ? &UNAM->value : NULL;
+            return UNAM.IsLoaded() ? &UNAM.value : NULL;
         case 36: //maleStrength
             return &ATTR.value.maleStrength;
         case 37: //maleIntelligence
@@ -549,7 +549,7 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 52: //head_modPath
             return MOD0.IsLoaded() ? MOD0->MODL.value : NULL;
         case 53: //head_modb
-            return MOD0.IsLoaded() ? &MOD0->MODB.value.value : NULL;
+            return MOD0.IsLoaded() ? &MOD0->MODB.value : NULL;
         case 54: //head_iconPath
             return MOD0.IsLoaded() ? MOD0->ICON.value : NULL;
         case 55: //head_modt_p
@@ -558,7 +558,7 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 56: //maleEars_modPath
             return MOD1.IsLoaded() ? MOD1->MODL.value : NULL;
         case 57: //maleEars_modb
-            return MOD1.IsLoaded() ? &MOD1->MODB.value.value : NULL;
+            return MOD1.IsLoaded() ? &MOD1->MODB.value : NULL;
         case 58: //maleEars_iconPath
             return MOD1.IsLoaded() ? MOD1->ICON.value : NULL;
         case 59: //maleEars_modt_p
@@ -567,7 +567,7 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 60: //femaleEars_modPath
             return MOD2.IsLoaded() ? MOD2->MODL.value : NULL;
         case 61: //femaleEars_modb
-            return MOD2.IsLoaded() ? &MOD2->MODB.value.value : NULL;
+            return MOD2.IsLoaded() ? &MOD2->MODB.value : NULL;
         case 62: //femaleEars_iconPath
             return MOD2.IsLoaded() ? MOD2->ICON.value : NULL;
         case 63: //femaleEars_modt_p
@@ -576,7 +576,7 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 64: //mouth_modPath
             return MOD3.IsLoaded() ? MOD3->MODL.value : NULL;
         case 65: //mouth_modb
-            return MOD3.IsLoaded() ? &MOD3->MODB.value.value : NULL;
+            return MOD3.IsLoaded() ? &MOD3->MODB.value : NULL;
         case 66: //mouth_iconPath
             return MOD3.IsLoaded() ? MOD3->ICON.value : NULL;
         case 67: //mouth_modt_p
@@ -585,7 +585,7 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 68: //teethLower_modPath
             return MOD4.IsLoaded() ? MOD4->MODL.value : NULL;
         case 69: //teethLower_modb
-            return MOD4.IsLoaded() ? &MOD4->MODB.value.value : NULL;
+            return MOD4.IsLoaded() ? &MOD4->MODB.value : NULL;
         case 70: //teethLower_iconPath
             return MOD4.IsLoaded() ? MOD4->ICON.value : NULL;
         case 71: //teethLower_modt_p
@@ -594,7 +594,7 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 72: //teethUpper_modPath
             return MOD5.IsLoaded() ? MOD5->MODL.value : NULL;
         case 73: //teethUpper_modb
-            return MOD5.IsLoaded() ? &MOD5->MODB.value.value : NULL;
+            return MOD5.IsLoaded() ? &MOD5->MODB.value : NULL;
         case 74: //teethUpper_iconPath
             return MOD5.IsLoaded() ? MOD5->ICON.value : NULL;
         case 75: //teethUpper_modt_p
@@ -603,7 +603,7 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 76: //tongue_modPath
             return MOD6.IsLoaded() ? MOD6->MODL.value : NULL;
         case 77: //tongue_modb
-            return MOD6.IsLoaded() ? &MOD6->MODB.value.value : NULL;
+            return MOD6.IsLoaded() ? &MOD6->MODB.value : NULL;
         case 78: //tongue_iconPath
             return MOD6.IsLoaded() ? MOD6->ICON.value : NULL;
         case 79: //tongue_modt_p
@@ -612,7 +612,7 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 80: //leftEye_modPath
             return MOD7.IsLoaded() ? MOD7->MODL.value : NULL;
         case 81: //leftEye_modb
-            return MOD7.IsLoaded() ? &MOD7->MODB.value.value : NULL;
+            return MOD7.IsLoaded() ? &MOD7->MODB.value : NULL;
         case 82: //leftEye_iconPath
             return MOD7.IsLoaded() ? MOD7->ICON.value : NULL;
         case 83: //leftEye_modt_p
@@ -621,7 +621,7 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 84: //rightEye_modPath
             return MOD8.IsLoaded() ? MOD8->MODL.value : NULL;
         case 85: //rightEye_modb
-            return MOD8.IsLoaded() ? &MOD8->MODB.value.value : NULL;
+            return MOD8.IsLoaded() ? &MOD8->MODB.value : NULL;
         case 86: //rightEye_iconPath
             return MOD8.IsLoaded() ? MOD8->ICON.value : NULL;
         case 87: //rightEye_modt_p
@@ -630,7 +630,7 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 88: //maleTail_modPath
             return MMODL.IsLoaded() ? MMODL->MODL.value : NULL;
         case 89: //maleTail_modb
-            return MMODL.IsLoaded() ? &MMODL->MODB.value.value : NULL;
+            return MMODL.IsLoaded() ? &MMODL->MODB.value : NULL;
         case 90: //maleTail_modt_p
             *FieldValues = MMODL.IsLoaded() ? MMODL->MODT.value : NULL;
             return NULL;
@@ -647,7 +647,7 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 96: //femaleTail_modPath
             return FMODL.IsLoaded() ? FMODL->MODL.value : NULL;
         case 97: //femaleTail_modb
-            return FMODL.IsLoaded() ? &FMODL->MODB.value.value : NULL;
+            return FMODL.IsLoaded() ? &FMODL->MODB.value : NULL;
         case 98: //femaleTail_modt_p
             *FieldValues = FMODL.IsLoaded() ? FMODL->MODT.value : NULL;
             return NULL;
@@ -823,15 +823,13 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             DNAM.value.defaultHairFemale =  *(FORMID *)FieldValue;
             break;
         case 33: //defaultHairColor
-            CNAM.value.value = *(UINT8 *)FieldValue;
+            CNAM.value = *(UINT8 *)FieldValue;
             break;
         case 34: //mainClamp
-            PNAM.Load();
-            PNAM->value = *(FLOAT32 *)FieldValue;
+            PNAM.value = *(FLOAT32 *)FieldValue;
             break;
         case 35: //faceClamp
-            UNAM.Load();
-            UNAM->value = *(FLOAT32 *)FieldValue;
+            UNAM.value = *(FLOAT32 *)FieldValue;
             break;
         case 36: //maleStrength
             ATTR.value.maleStrength = *(UINT8 *)FieldValue;
@@ -887,7 +885,7 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             break;
         case 53: //head_modb
             MOD0.Load();
-            MOD0->MODB.value.value = *(FLOAT32 *)FieldValue;
+            MOD0->MODB.value = *(FLOAT32 *)FieldValue;
             break;
         case 54: //head_iconPath
             MOD0.Load();
@@ -903,7 +901,7 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             break;
         case 57: //maleEars_modb
             MOD1.Load();
-            MOD1->MODB.value.value = *(FLOAT32 *)FieldValue;
+            MOD1->MODB.value = *(FLOAT32 *)FieldValue;
             break;
         case 58: //maleEars_iconPath
             MOD1.Load();
@@ -919,7 +917,7 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             break;
         case 61: //femaleEars_modb
             MOD2.Load();
-            MOD2->MODB.value.value = *(FLOAT32 *)FieldValue;
+            MOD2->MODB.value = *(FLOAT32 *)FieldValue;
             break;
         case 62: //femaleEars_iconPath
             MOD2.Load();
@@ -935,7 +933,7 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             break;
         case 65: //mouth_modb
             MOD3.Load();
-            MOD3->MODB.value.value = *(FLOAT32 *)FieldValue;
+            MOD3->MODB.value = *(FLOAT32 *)FieldValue;
             break;
         case 66: //mouth_iconPath
             MOD3.Load();
@@ -951,7 +949,7 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             break;
         case 69: //teethLower_modb
             MOD4.Load();
-            MOD4->MODB.value.value = *(FLOAT32 *)FieldValue;
+            MOD4->MODB.value = *(FLOAT32 *)FieldValue;
             break;
         case 70: //teethLower_iconPath
             MOD4.Load();
@@ -967,7 +965,7 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             break;
         case 73: //teethUpper_modb
             MOD5.Load();
-            MOD5->MODB.value.value = *(FLOAT32 *)FieldValue;
+            MOD5->MODB.value = *(FLOAT32 *)FieldValue;
             break;
         case 74: //teethUpper_iconPath
             MOD5.Load();
@@ -983,7 +981,7 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             break;
         case 77: //tongue_modb
             MOD6.Load();
-            MOD6->MODB.value.value = *(FLOAT32 *)FieldValue;
+            MOD6->MODB.value = *(FLOAT32 *)FieldValue;
             break;
         case 78: //tongue_iconPath
             MOD6.Load();
@@ -999,7 +997,7 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             break;
         case 81: //leftEye_modb
             MOD7.Load();
-            MOD7->MODB.value.value = *(FLOAT32 *)FieldValue;
+            MOD7->MODB.value = *(FLOAT32 *)FieldValue;
             break;
         case 82: //leftEye_iconPath
             MOD7.Load();
@@ -1015,7 +1013,7 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             break;
         case 85: //rightEye_modb
             MOD8.Load();
-            MOD8->MODB.value.value = *(FLOAT32 *)FieldValue;
+            MOD8->MODB.value = *(FLOAT32 *)FieldValue;
             break;
         case 86: //rightEye_iconPath
             MOD8.Load();
@@ -1031,7 +1029,7 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             break;
         case 89: //maleTail_modb
             MMODL.Load();
-            MMODL->MODB.value.value = *(FLOAT32 *)FieldValue;
+            MMODL->MODB.value = *(FLOAT32 *)FieldValue;
             break;
         case 90: //maleTail_modt_p
             MMODL.Load();
@@ -1058,7 +1056,7 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             break;
         case 97: //femaleTail_modb
             FMODL.Load();
-            FMODL->MODB.value.value = *(FLOAT32 *)FieldValue;
+            FMODL->MODB.value = *(FLOAT32 *)FieldValue;
             break;
         case 98: //femaleTail_modt_p
             FMODL.Load();

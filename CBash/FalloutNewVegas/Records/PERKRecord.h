@@ -135,6 +135,11 @@ class PERKRecord : public Record //Perk
                 fIsRunImmediately = 0x0001
                 };
 
+            enum schrFlags
+                {
+                fIsEnabled = 0x0001
+                };
+
             bool   IsRunImmediately();
             void   IsRunImmediately(bool value);
             bool   IsFlagMask(UINT16 Mask, bool Exact=false);

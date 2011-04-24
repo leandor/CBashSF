@@ -123,39 +123,39 @@ bool WRLDRecord::VisitFormIDs(FormIDOp &op)
         return false;
 
     if(WNAM.IsLoaded())
-        op.Accept(WNAM->value);
+        op.Accept(WNAM.value);
     if(CNAM.IsLoaded())
-        op.Accept(CNAM->value);
+        op.Accept(CNAM.value);
     if(NAM2.IsLoaded())
-        op.Accept(NAM2->value);
+        op.Accept(NAM2.value);
 
     return op.Stop();
     }
 
 bool WRLDRecord::IsSmallWorld()
     {
-    return (DATA.value.value & fSmallWorld) != 0;
+    return (DATA.value & fSmallWorld) != 0;
     }
 
 void WRLDRecord::IsSmallWorld(bool value)
     {
     if(value)
-        DATA.value.value |= fSmallWorld;
+        DATA.value |= fSmallWorld;
     else
-        DATA.value.value &= ~fSmallWorld;
+        DATA.value &= ~fSmallWorld;
     }
 
 bool WRLDRecord::IsNoFastTravel()
     {
-    return (DATA.value.value & fNoFastTravel) != 0;
+    return (DATA.value & fNoFastTravel) != 0;
     }
 
 void WRLDRecord::IsNoFastTravel(bool value)
     {
     if(value)
-        DATA.value.value |= fNoFastTravel;
+        DATA.value |= fNoFastTravel;
     else
-        DATA.value.value &= ~fNoFastTravel;
+        DATA.value &= ~fNoFastTravel;
     }
 
 bool WRLDRecord::IsFastTravel()
@@ -170,28 +170,28 @@ void WRLDRecord::IsFastTravel(bool value)
 
 bool WRLDRecord::IsOblivionWorldspace()
     {
-    return (DATA.value.value & fOblivionWorldspace) != 0;
+    return (DATA.value & fOblivionWorldspace) != 0;
     }
 
 void WRLDRecord::IsOblivionWorldspace(bool value)
     {
     if(value)
-        DATA.value.value |= fOblivionWorldspace;
+        DATA.value |= fOblivionWorldspace;
     else
-        DATA.value.value &= ~fOblivionWorldspace;
+        DATA.value &= ~fOblivionWorldspace;
     }
 
 bool WRLDRecord::IsNoLODWater()
     {
-    return (DATA.value.value & fNoLODWater) != 0;
+    return (DATA.value & fNoLODWater) != 0;
     }
 
 void WRLDRecord::IsNoLODWater(bool value)
     {
     if(value)
-        DATA.value.value |= fNoLODWater;
+        DATA.value |= fNoLODWater;
     else
-        DATA.value.value &= ~fNoLODWater;
+        DATA.value &= ~fNoLODWater;
     }
 
 bool WRLDRecord::IsLODWater()
@@ -206,69 +206,61 @@ void WRLDRecord::IsLODWater(bool value)
 
 bool WRLDRecord::IsFlagMask(UINT8 Mask, bool Exact)
     {
-    return Exact ? ((DATA.value.value & Mask) == Mask) : ((DATA.value.value & Mask) != 0);
+    return Exact ? ((DATA.value & Mask) == Mask) : ((DATA.value & Mask) != 0);
     }
 
 void WRLDRecord::SetFlagMask(UINT8 Mask)
     {
-    DATA.value.value = Mask;
+    DATA.value = Mask;
     }
 
 bool WRLDRecord::IsDefaultMusic()
     {
-    if(!SNAM.IsLoaded()) return false;
-    return (SNAM->value == eDefault);
+    return (SNAM.value == eDefault);
     }
 
 void WRLDRecord::IsDefaultMusic(bool value)
     {
-    if(!SNAM.IsLoaded()) return;
     if(value)
-        SNAM->value = eDefault;
+        SNAM.value = eDefault;
     else if(IsDefaultMusic())
-        SNAM->value = ePublic;
+        SNAM.value = ePublic;
     }
 
 bool WRLDRecord::IsPublicMusic()
     {
-    if(!SNAM.IsLoaded()) return false;
-    return (SNAM->value == ePublic);
+    return (SNAM.value == ePublic);
     }
 
 void WRLDRecord::IsPublicMusic(bool value)
     {
-    if(!SNAM.IsLoaded()) return;
     if(value)
-        SNAM->value = ePublic;
+        SNAM.value = ePublic;
     else if(IsPublicMusic())
-        SNAM->value = eDefault;
+        SNAM.value = eDefault;
     }
 
 bool WRLDRecord::IsDungeonMusic()
     {
-    if(!SNAM.IsLoaded()) return false;
-    return (SNAM->value == eDungeon);
+    return (SNAM.value == eDungeon);
     }
 
 void WRLDRecord::IsDungeonMusic(bool value)
     {
-    if(!SNAM.IsLoaded()) return;
     if(value)
-        SNAM->value = eDungeon;
+        SNAM.value = eDungeon;
     else if(IsDungeonMusic())
-        SNAM->value = eDefault;
+        SNAM.value = eDefault;
     }
 
 bool WRLDRecord::IsMusicType(UINT32 Type)
     {
-    if(!SNAM.IsLoaded()) return false;
-    return (SNAM->value == Type);
+    return (SNAM.value == Type);
     }
 
 void WRLDRecord::SetMusicType(UINT32 Type)
     {
-    SNAM.Load();
-    SNAM->value = Type;
+    SNAM.value = Type;
     }
 
 UINT32 WRLDRecord::GetSize(bool forceCalc)
@@ -440,11 +432,11 @@ SINT32 WRLDRecord::WriteRecord(_FileHandler &SaveHandler)
     if(FULL.IsLoaded())
         SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
     if(WNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANW', WNAM.value, WNAM.GetSize());
+        SaveHandler.writeSubRecord('MANW', &WNAM.value, WNAM.GetSize());
     if(CNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANC', CNAM.value, CNAM.GetSize());
+        SaveHandler.writeSubRecord('MANC', &CNAM.value, CNAM.GetSize());
     if(NAM2.IsLoaded())
-        SaveHandler.writeSubRecord('2MAN', NAM2.value, NAM2.GetSize());
+        SaveHandler.writeSubRecord('2MAN', &NAM2.value, NAM2.GetSize());
     if(ICON.IsLoaded())
         SaveHandler.writeSubRecord('NOCI', ICON.value, ICON.GetSize());
     if(MNAM.IsLoaded())
@@ -456,7 +448,7 @@ SINT32 WRLDRecord::WriteRecord(_FileHandler &SaveHandler)
     if(NAM9.IsLoaded())
         SaveHandler.writeSubRecord('9MAN', &NAM9.value, NAM9.GetSize());
     if(SNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANS', SNAM.value, SNAM.GetSize());
+        SaveHandler.writeSubRecord('MANS', &SNAM.value, SNAM.GetSize());
     if(OFST.IsLoaded())
         SaveHandler.writeSubRecord('TSFO', OFST.value, OFST.GetSize());
     return -1;

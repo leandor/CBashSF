@@ -134,42 +134,42 @@ bool FACTRecord::VisitFormIDs(FormIDOp &op)
 
 bool FACTRecord::IsHiddenFromPC()
     {
-    return (DATA.value.value & fIsHiddenFromPC) != 0;
+    return (DATA.value & fIsHiddenFromPC) != 0;
     }
 
 void FACTRecord::IsHiddenFromPC(bool value)
     {
-    DATA.value.value = value ? (DATA.value.value | fIsHiddenFromPC) : (DATA.value.value & ~fIsHiddenFromPC);
+    DATA.value = value ? (DATA.value | fIsHiddenFromPC) : (DATA.value & ~fIsHiddenFromPC);
     }
 
 bool FACTRecord::IsEvil()
     {
-    return (DATA.value.value & fIsEvil) != 0;
+    return (DATA.value & fIsEvil) != 0;
     }
 
 void FACTRecord::IsEvil(bool value)
     {
-    DATA.value.value = value ? (DATA.value.value | fIsEvil) : (DATA.value.value & ~fIsEvil);
+    DATA.value = value ? (DATA.value | fIsEvil) : (DATA.value & ~fIsEvil);
     }
 
 bool FACTRecord::IsSpecialCombat()
     {
-    return (DATA.value.value & fIsSpecialCombat) != 0;
+    return (DATA.value & fIsSpecialCombat) != 0;
     }
 
 void FACTRecord::IsSpecialCombat(bool value)
     {
-    DATA.value.value = value ? (DATA.value.value | fIsSpecialCombat) : (DATA.value.value & ~fIsSpecialCombat);
+    DATA.value = value ? (DATA.value | fIsSpecialCombat) : (DATA.value & ~fIsSpecialCombat);
     }
 
 bool FACTRecord::IsFlagMask(UINT8 Mask, bool Exact)
     {
-    return Exact ? ((DATA.value.value & Mask) == Mask) : ((DATA.value.value & Mask) != 0);
+    return Exact ? ((DATA.value & Mask) == Mask) : ((DATA.value & Mask) != 0);
     }
 
 void FACTRecord::SetFlagMask(UINT8 Mask)
     {
-    DATA.value.value = Mask;
+    DATA.value = Mask;
     }
 
 UINT32 FACTRecord::GetSize(bool forceCalc)

@@ -40,7 +40,7 @@ class REGNRecord : public Record
 
         struct REGNArea
             {
-            ReqSubRecord<GENU32> RPLI;
+            ReqSimpleSubRecord<UINT32> RPLI;
             std::vector<REGNRPLD> RPLD;
 
             bool operator ==(const REGNArea &other) const;
@@ -172,7 +172,7 @@ class REGNRecord : public Record
             StringRecord RDMP;
             StringRecord ICON;
             std::vector<REGNRDGS> RDGS;
-            SemiOptSubRecord<GENU32> RDMD;
+            SemiOptSimpleSubRecord<UINT32> RDMD;
             std::vector<REGNRDSD> RDSD;
             std::vector<REGNRDWT> RDWT;
 
@@ -245,7 +245,7 @@ class REGNRecord : public Record
         StringRecord EDID;
         StringRecord ICON;
         ReqSubRecord<GENCLR> RCLR;
-        SubRecord<GENFID> WNAM;
+        SimpleSubRecord<FORMID> WNAM;
         std::vector<REGNArea *> Areas;
         std::vector<REGNEntry *> Entries;
 

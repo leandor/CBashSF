@@ -55,9 +55,9 @@ class BOOKRecord : public Record
         OptSubRecord<GENMODEL> MODL;
         StringRecord ICON;
         StringRecord DESC;
-        OptSubRecord<GENFID> SCRI;
-        OptSubRecord<GENFID> ENAM;
-        OptSubRecord<GENU16> ANAM;
+        OptSimpleSubRecord<FORMID> SCRI;
+        OptSimpleSubRecord<FORMID> ENAM;
+        OptSimpleSubRecord<UINT16> ANAM;
         ReqSubRecord<BOOKDATA> DATA;
 
         BOOKRecord(unsigned char *_recData=NULL);

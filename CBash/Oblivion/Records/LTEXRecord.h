@@ -61,7 +61,7 @@ class LTEXRecord : public Record
         StringRecord EDID;
         StringRecord ICON;
         SubRecord<LTEXHNAM> HNAM;
-        SubRecord<GENU8> SNAM;
+        SimpleSubRecord<UINT8> SNAM;
         std::vector<FORMID> GNAM;
 
         LTEXRecord(unsigned char *_recData=NULL);

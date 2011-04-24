@@ -61,22 +61,22 @@ QUSTRecord::QUSTEntry::~QUSTEntry()
 
 bool QUSTRecord::QUSTEntry::IsCompletes()
     {
-    return (QSDT.value.value & fIsCompletes) != 0;
+    return (QSDT.value & fIsCompletes) != 0;
     }
 
 void QUSTRecord::QUSTEntry::IsCompletes(bool value)
     {
-    QSDT.value.value = value ? (QSDT.value.value | fIsCompletes) : (QSDT.value.value & ~fIsCompletes);
+    QSDT.value = value ? (QSDT.value | fIsCompletes) : (QSDT.value & ~fIsCompletes);
     }
 
 bool QUSTRecord::QUSTEntry::IsFlagMask(UINT8 Mask, bool Exact)
     {
-    return Exact ? ((QSDT.value.value & Mask) == Mask) : ((QSDT.value.value & Mask) != 0);
+    return Exact ? ((QSDT.value & Mask) == Mask) : ((QSDT.value & Mask) != 0);
     }
 
 void QUSTRecord::QUSTEntry::SetFlagMask(UINT8 Mask)
     {
-    QSDT.value.value = Mask;
+    QSDT.value = Mask;
     }
 
 bool QUSTRecord::QUSTEntry::operator ==(const QUSTEntry &other) const
@@ -314,7 +314,7 @@ bool QUSTRecord::VisitFormIDs(FormIDOp &op)
     FunctionArguments CTDAFunction;
     Function_Arguments_Iterator curCTDAFunction;
     if(SCRI.IsLoaded())
-        op.Accept(SCRI->value);
+        op.Accept(SCRI.value);
     for(UINT32 x = 0; x < CTDA.size(); x++)
         {
         //if(CTDA[x]->value.ifunc == 214)
@@ -717,7 +717,7 @@ SINT32 QUSTRecord::WriteRecord(_FileHandler &SaveHandler)
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
     if(SCRI.IsLoaded())
-        SaveHandler.writeSubRecord('IRCS', SCRI.value, SCRI.GetSize());
+        SaveHandler.writeSubRecord('IRCS', &SCRI.value, SCRI.GetSize());
     if(FULL.IsLoaded())
         SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
     if(ICON.IsLoaded())

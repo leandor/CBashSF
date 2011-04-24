@@ -110,13 +110,13 @@ void * LVLCRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 4: //eid
             return EDID.value;
         case 5: //chanceNone
-            return &LVLD.value.value;
+            return &LVLD.value;
         case 6: //flags
-            return LVLF.IsLoaded() ? &LVLF->value : NULL;
+            return LVLF.IsLoaded() ? LVLF.value : NULL;
         case 7: //script
-            return SCRI.IsLoaded() ? &SCRI->value : NULL;
+            return SCRI.IsLoaded() ? &SCRI.value : NULL;
         case 8: //template
-            return TNAM.IsLoaded() ? &TNAM->value : NULL;
+            return TNAM.IsLoaded() ? &TNAM.value : NULL;
         case 9: //entries
             if(ListIndex >= Entries.size())
                 return NULL;
@@ -158,11 +158,10 @@ bool LVLCRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             EDID.Copy((STRING)FieldValue);
             break;
         case 5: //chanceNone
-            LVLD.value.value = *(UINT8 *)FieldValue;
-            if((LVLD.value.value & fAltCalcFromAllLevels) != 0)
+            LVLD.value = *(UINT8 *)FieldValue;
+            if((LVLD.value & fAltCalcFromAllLevels) != 0)
                 {
-                LVLD.value.value &= ~fAltCalcFromAllLevels;
-                LVLF.Load();
+                LVLD.value &= ~fAltCalcFromAllLevels;
                 IsCalcFromAllLevels(true);
                 }
             break;
@@ -170,12 +169,10 @@ bool LVLCRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             SetFlagMask(*(UINT8 *)FieldValue);
             break;
         case 7: //script
-            SCRI.Load();
-            SCRI->value = *(FORMID *)FieldValue;
+            SCRI.value = *(FORMID *)FieldValue;
             return true;
         case 8: //template
-            TNAM.Load();
-            TNAM->value = *(FORMID *)FieldValue;
+            TNAM.value = *(FORMID *)FieldValue;
             return true;
         case 9: //entries
             if(ListFieldID == 0) //entriesSize

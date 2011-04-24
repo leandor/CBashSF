@@ -105,103 +105,103 @@ bool DIALRecord::VisitFormIDs(FormIDOp &op)
 
 bool DIALRecord::IsTopic()
     {
-    return (DATA.value.value == eTopic);
+    return (DATA.value == eTopic);
     }
 
 void DIALRecord::IsTopic(bool value)
     {
     if(value)
-        DATA.value.value = eTopic;
+        DATA.value = eTopic;
     else if(IsTopic())
-        DATA.value.value = eConversation;
+        DATA.value = eConversation;
     }
 
 bool DIALRecord::IsConversation()
     {
-    return (DATA.value.value == eConversation);
+    return (DATA.value == eConversation);
     }
 
 void DIALRecord::IsConversation(bool value)
     {
     if(value)
-        DATA.value.value = eConversation;
+        DATA.value = eConversation;
     else if(IsConversation())
-        DATA.value.value = eTopic;
+        DATA.value = eTopic;
     }
 
 bool DIALRecord::IsCombat()
     {
-    return (DATA.value.value == eCombat);
+    return (DATA.value == eCombat);
     }
 
 void DIALRecord::IsCombat(bool value)
     {
     if(value)
-        DATA.value.value = eCombat;
+        DATA.value = eCombat;
     else if(IsCombat())
-        DATA.value.value = eTopic;
+        DATA.value = eTopic;
     }
 
 bool DIALRecord::IsPersuasion()
     {
-    return (DATA.value.value == ePersuasion);
+    return (DATA.value == ePersuasion);
     }
 
 void DIALRecord::IsPersuasion(bool value)
     {
     if(value)
-        DATA.value.value = ePersuasion;
+        DATA.value = ePersuasion;
     else if(IsPersuasion())
-        DATA.value.value = eTopic;
+        DATA.value = eTopic;
     }
 
 bool DIALRecord::IsDetection()
     {
-    return (DATA.value.value == eDetection);
+    return (DATA.value == eDetection);
     }
 
 void DIALRecord::IsDetection(bool value)
     {
     if(value)
-        DATA.value.value = eDetection;
+        DATA.value = eDetection;
     else if(IsDetection())
-        DATA.value.value = eTopic;
+        DATA.value = eTopic;
     }
 
 bool DIALRecord::IsService()
     {
-    return (DATA.value.value == eService);
+    return (DATA.value == eService);
     }
 
 void DIALRecord::IsService(bool value)
     {
     if(value)
-        DATA.value.value = eService;
+        DATA.value = eService;
     else if(IsService())
-        DATA.value.value = eTopic;
+        DATA.value = eTopic;
     }
 
 bool DIALRecord::IsMisc()
     {
-    return (DATA.value.value == eMisc);
+    return (DATA.value == eMisc);
     }
 
 void DIALRecord::IsMisc(bool value)
     {
     if(value)
-        DATA.value.value = eMisc;
+        DATA.value = eMisc;
     else if(IsMisc())
-        DATA.value.value = eTopic;
+        DATA.value = eTopic;
     }
 
 bool DIALRecord::IsType(UINT8 Type)
     {
-    return (DATA.value.value == Type);
+    return (DATA.value == Type);
     }
 
 void DIALRecord::SetType(UINT8 Type)
     {
-    DATA.value.value = Type;
+    DATA.value = Type;
     }
 
 UINT32 DIALRecord::GetSize(bool forceCalc)

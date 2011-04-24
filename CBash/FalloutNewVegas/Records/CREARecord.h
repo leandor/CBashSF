@@ -45,8 +45,8 @@ class CREARecord : public Record //Creature
 
         struct CREASound // Sound
             {
-            ReqSubRecord<GENFID> CSDI; // Sound
-            ReqSubRecord<GENU8> CSDC; // Sound Chance
+            ReqSimpleSubRecord<FORMID> CSDI; // Sound
+            ReqSimpleSubRecord<UINT8> CSDC; // Sound Chance
 
             bool   operator ==(const CREASound &other) const;
             bool   operator !=(const CREASound &other) const;
@@ -54,7 +54,7 @@ class CREARecord : public Record //Creature
 
         struct CREASoundType // Sound Type
             {
-            ReqSubRecord<GENU32> CSDT; //Type
+            ReqSimpleSubRecord<UINT32> CSDT; //Type
             std::vector<CREASound *> Sounds; // Sounds
 
             enum eSoundType

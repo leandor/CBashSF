@@ -100,7 +100,7 @@ UINT32 ALCHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                         case 2: //WhichType
                             if(Effects[ListIndex]->OBME.IsLoaded())
                                 {
-                                if(Effects[ListIndex]->EFID.value.value >= 0x80000000)
+                                if(Effects[ListIndex]->EFID.value >= 0x80000000)
                                     return RESOLVED_MGEFCODE_FIELD;
                                 return STATIC_MGEFCODE_FIELD;
                                 }
@@ -336,16 +336,16 @@ void * ALCHRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 6: //modPath
             return MODL.IsLoaded() ? MODL->MODL.value : NULL;
         case 7: //modb
-            return MODL.IsLoaded() ? &MODL->MODB.value.value : NULL;
+            return MODL.IsLoaded() ? &MODL->MODB.value : NULL;
         case 8: //modt_p
             *FieldValues = MODL.IsLoaded() ? MODL->MODT.value : NULL;
             return NULL;
         case 9: //iconPath
             return ICON.value;
         case 10: //script
-            return SCRI.IsLoaded() ? &SCRI->value : NULL;
+            return SCRI.IsLoaded() ? &SCRI.value : NULL;
         case 11: //weight
-            return &DATA.value.value;
+            return &DATA.value;
         case 12: //value
             return &ENIT.value.value;
         case 13: //flags
@@ -361,7 +361,7 @@ void * ALCHRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 {
                 case 1: //name0, both are always the same value, so return one and set both
                 case 2: //name
-                    return &Effects[ListIndex]->EFID.value.value;
+                    return &Effects[ListIndex]->EFID.value;
                 case 3: //magnitude
                     return &Effects[ListIndex]->EFIT.value.magnitude;
                 case 4: //area
@@ -459,7 +459,7 @@ bool ALCHRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             break;
         case 7: //modb
             MODL.Load();
-            MODL->MODB.value.value = *(FLOAT32 *)FieldValue;
+            MODL->MODB.value = *(FLOAT32 *)FieldValue;
             break;
         case 8: //modt_p
             MODL.Load();
@@ -469,11 +469,10 @@ bool ALCHRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             ICON.Copy((STRING)FieldValue);
             break;
         case 10: //script
-            SCRI.Load();
-            SCRI->value = *(FORMID *)FieldValue;
+            SCRI.value = *(FORMID *)FieldValue;
             return true;
         case 11: //weight
-            DATA.value.value = *(FLOAT32 *)FieldValue;
+            DATA.value = *(FLOAT32 *)FieldValue;
             break;
         case 12: //value
             ENIT.value.value = *(SINT32 *)FieldValue;
@@ -513,7 +512,7 @@ bool ALCHRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                 {
                 case 1: //name0, both are always the same value, so return one and set both
                 case 2: //name
-                    Effects[ListIndex]->EFID.value.value = *(MGEFCODE_OR_UINT32 *)FieldValue;
+                    Effects[ListIndex]->EFID.value = *(MGEFCODE_OR_UINT32 *)FieldValue;
                     Effects[ListIndex]->EFIT.value.name = *(MGEFCODE_OR_UINT32 *)FieldValue;
                     return true;
                 case 3: //magnitude
@@ -658,7 +657,6 @@ void ALCHRecord::DeleteField(FIELD_IDENTIFIERS)
     {
     GENENIT defaultENIT;
     MAGICOBME defaultOBME;
-    GENFLOAT defaultDATA;
 
     GENEFIT defaultEFIT;
     GENSCIT defaultSCIT;
@@ -698,7 +696,7 @@ void ALCHRecord::DeleteField(FIELD_IDENTIFIERS)
             SCRI.Unload();
             return;
         case 11: //weight
-            DATA.value.value = defaultDATA.value;
+            DATA.Unload();
             return;
         case 12: //value
             ENIT.value.value = defaultENIT.value;

@@ -92,7 +92,7 @@ void * BOOKRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 6: //modPath
             return MODL.IsLoaded() ? MODL->MODL.value : NULL;
         case 7: //modb
-            return MODL.IsLoaded() ? &MODL->MODB.value.value : NULL;
+            return MODL.IsLoaded() ? &MODL->MODB.value : NULL;
         case 8: //modt_p
             *FieldValues = MODL.IsLoaded() ? MODL->MODT.value : NULL;
             return NULL;
@@ -101,11 +101,11 @@ void * BOOKRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 10: //text
             return DESC.value;
         case 11: //script
-            return SCRI.IsLoaded() ? &SCRI->value : NULL;
+            return SCRI.IsLoaded() ? &SCRI.value : NULL;
         case 12: //enchantment
-            return ENAM.IsLoaded() ? &ENAM->value : NULL;
+            return ENAM.IsLoaded() ? &ENAM.value : NULL;
         case 13: //enchantPoints
-            return ANAM.IsLoaded() ? &ANAM->value : NULL;
+            return ANAM.IsLoaded() ? &ANAM.value : NULL;
         case 14: //flags
             return &DATA.value.flags;
         case 15: //teaches
@@ -141,7 +141,7 @@ bool BOOKRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             break;
         case 7: //modb
             MODL.Load();
-            MODL->MODB.value.value = *(FLOAT32 *)FieldValue;
+            MODL->MODB.value = *(FLOAT32 *)FieldValue;
             break;
         case 8: //modt_p
             MODL.Load();
@@ -155,16 +155,13 @@ bool BOOKRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             DESC.Copy((STRING)FieldValue);
             break;
         case 11: //script
-            SCRI.Load();
-            SCRI->value = *(FORMID *)FieldValue;
+            SCRI.value = *(FORMID *)FieldValue;
             return true;
         case 12: //enchantment
-            ENAM.Load();
-            ENAM->value = *(FORMID *)FieldValue;
+            ENAM.value = *(FORMID *)FieldValue;
             return true;
         case 13: //enchantPoints
-            ANAM.Load();
-            ANAM->value = *(UINT16 *)FieldValue;
+            ANAM.value = *(UINT16 *)FieldValue;
             break;
         case 14: //flags
             SetFlagMask(*(UINT8 *)FieldValue);

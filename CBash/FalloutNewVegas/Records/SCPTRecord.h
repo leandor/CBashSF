@@ -27,6 +27,11 @@ namespace FNV
 {
 class SCPTRecord : public Record //Script
     {
+    private:
+        enum schrFlags
+            {
+            fIsEnabled = 0x0001
+            };
     public:
         StringRecord EDID; //Editor ID
         ReqSubRecord<FNVSCHR> SCHR;

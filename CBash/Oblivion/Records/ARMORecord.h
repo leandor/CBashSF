@@ -69,10 +69,10 @@ class ARMORecord : public Record
     public:
         StringRecord EDID;
         StringRecord FULL;
-        OptSubRecord<GENFID> SCRI;
-        OptSubRecord<GENFID> ENAM;
-        OptSubRecord<GENU16> ANAM;
-        ReqSubRecord<GENU32> BMDT;
+        OptSimpleSubRecord<FORMID> SCRI;
+        OptSimpleSubRecord<FORMID> ENAM;
+        OptSimpleSubRecord<UINT16> ANAM;
+        ReqSimpleSubRecord<UINT32> BMDT;
         OptSubRecord<GENMODEL> MODL;
         OptSubRecord<GENMODEL> MOD2;
         StringRecord ICON;

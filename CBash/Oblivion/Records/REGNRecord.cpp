@@ -465,61 +465,55 @@ void REGNRecord::REGNEntry::SetType(UINT32 Type)
 
 bool REGNRecord::REGNEntry::IsDefaultMusic()
     {
-    return RDMD.IsLoaded() ? (RDMD->value == eDefault) : false;
+    return RDMD.IsLoaded() ? (*RDMD.value == eDefault) : false;
     }
 
 void REGNRecord::REGNEntry::IsDefaultMusic(bool value)
     {
-    if(!RDMD.IsLoaded())
-        return;
-
+    RDMD.Load();
     if(value)
-        RDMD->value = eDefault;
+        *RDMD.value = eDefault;
     else if(IsDefaultMusic())
-        RDMD->value = ePublic;
+        *RDMD.value = ePublic;
     }
 
 bool REGNRecord::REGNEntry::IsPublicMusic()
     {
-    return RDMD.IsLoaded() ? (RDMD->value == ePublic) : false;
+    return RDMD.IsLoaded() ? (*RDMD.value == ePublic) : false;
     }
 
 void REGNRecord::REGNEntry::IsPublicMusic(bool value)
     {
-    if(!RDMD.IsLoaded())
-        return;
-
+    RDMD.Load();
     if(value)
-        RDMD->value = ePublic;
+        *RDMD.value = ePublic;
     else if(IsPublicMusic())
-        RDMD->value = eDefault;
+        *RDMD.value = eDefault;
     }
 
 bool REGNRecord::REGNEntry::IsDungeonMusic()
     {
-    return RDMD.IsLoaded() ? (RDMD->value == eDungeon) : false;
+    return RDMD.IsLoaded() ? (*RDMD.value == eDungeon) : false;
     }
 
 void REGNRecord::REGNEntry::IsDungeonMusic(bool value)
     {
-    if(!RDMD.IsLoaded())
-        return;
-
+    RDMD.Load();
     if(value)
-        RDMD->value = eDungeon;
+        *RDMD.value = eDungeon;
     else if(IsDungeonMusic())
-        RDMD->value = eDefault;
+        *RDMD.value = eDefault;
     }
 
 bool REGNRecord::REGNEntry::IsMusicType(UINT32 Type)
     {
-    return RDMD.IsLoaded() ? (RDMD->value == Type) : false;
+    return RDMD.IsLoaded() ? (*RDMD.value == Type) : false;
     }
 
 void REGNRecord::REGNEntry::SetMusicType(UINT32 Type)
     {
     RDMD.Load();
-    RDMD->value = Type;
+    *RDMD.value = Type;
     }
 
 bool REGNRecord::REGNEntry::operator ==(const REGNEntry &other) const
@@ -637,7 +631,7 @@ bool REGNRecord::VisitFormIDs(FormIDOp &op)
         return false;
 
     if(WNAM.IsLoaded())
-        op.Accept(WNAM.value.value);
+        op.Accept(WNAM.value);
     for(UINT32 x = 0; x < Entries.size(); x++)
         {
         for(UINT32 y = 0; y < Entries[x]->RDOT.size(); y++)

@@ -59,6 +59,11 @@ class TERMRecord : public Record //Terminal
                 fIsForceRedraw = 0x02
                 };
 
+            enum schrFlags
+                {
+                fIsEnabled = 0x0001
+                };
+
             bool   IsAddNote();
             void   IsAddNote(bool value);
             bool   IsForceRedraw();

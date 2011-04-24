@@ -117,8 +117,8 @@ bool ENCHRecord::VisitFormIDs(FormIDOp &op)
         {
         if(Effects[x]->OBME.IsLoaded())
             {
-            if(Effects[x]->EFID.value.value >= 0x80000000)
-                op.AcceptMGEF(Effects[x]->EFID.value.value);
+            if(Effects[x]->EFID.value >= 0x80000000)
+                op.AcceptMGEF(Effects[x]->EFID.value);
             if(Effects[x]->EFIT.value.name >= 0x80000000)
                 op.AcceptMGEF(Effects[x]->EFIT.value.name);
             switch(Effects[x]->OBME->EFME.value.efitParamInfo)

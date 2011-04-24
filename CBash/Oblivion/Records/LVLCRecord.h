@@ -37,10 +37,10 @@ class LVLCRecord : public Record
 
     public:
         StringRecord EDID;
-        ReqSubRecord<GENU8> LVLD;
-        SemiOptSubRecord<GENU8> LVLF;
-        OptSubRecord<GENFID> SCRI;
-        OptSubRecord<GENFID> TNAM;
+        ReqSimpleSubRecord<UINT8> LVLD;
+        SemiOptSimpleSubRecord<UINT8> LVLF;
+        OptSimpleSubRecord<FORMID> SCRI;
+        OptSimpleSubRecord<FORMID> TNAM;
         std::vector<ReqSubRecord<LVLLVLO> *> Entries;
 
         LVLCRecord(unsigned char *_recData=NULL);

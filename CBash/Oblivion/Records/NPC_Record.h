@@ -88,25 +88,25 @@ class NPC_Record : public Record
         OptSubRecord<GENMODEL> MODL;
         ReqSubRecord<GENACBS> ACBS;
         std::vector<ReqSubRecord<GENSNAM> *> SNAM;
-        OptSubRecord<GENFID> INAM;
-        OptSubRecord<GENFID> RNAM;
+        OptSimpleSubRecord<FORMID> INAM;
+        OptSimpleSubRecord<FORMID> RNAM;
         std::vector<FORMID> SPLO;
-        OptSubRecord<GENFID> SCRI;
+        OptSimpleSubRecord<FORMID> SCRI;
         std::vector<ReqSubRecord<GENCNTO> *> CNTO;
         ReqSubRecord<GENAIDT> AIDT;
         std::vector<FORMID> PKID;
         std::vector<StringRecord> KFFZ;
-        ReqSubRecord<GENFID> CNAM;
+        ReqSimpleSubRecord<FORMID> CNAM;
         ReqSubRecord<NPC_DATA> DATA;
-        OptSubRecord<GENFID> HNAM;
-        SemiOptSubRecord<GENFLOAT> LNAM;
-        OptSubRecord<GENFID> ENAM;
+        OptSimpleSubRecord<FORMID> HNAM;
+        SemiOptSimpleSubRecord<FLOAT32> LNAM;
+        OptSimpleSubRecord<FORMID> ENAM;
         ReqSubRecord<GENCLR> HCLR;
-        OptSubRecord<GENFID> ZNAM;
+        OptSimpleSubRecord<FORMID> ZNAM;
         RawRecord FGGS; //FaceGen Geometry-Symmetric
         RawRecord FGGA; //FaceGen Geometry-Asymmetric
         RawRecord FGTS; //FaceGen Texture-Symmetric
-        ReqSubRecord<GENU16> FNAM;
+        ReqSimpleSubRecord<UINT16> FNAM;
 
         NPC_Record(unsigned char *_recData=NULL);
         NPC_Record(NPC_Record *srcRecord);

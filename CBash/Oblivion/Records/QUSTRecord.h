@@ -40,7 +40,7 @@ class QUSTRecord : public Record
 
         struct QUSTEntry
             {
-            ReqSubRecord<GENU8> QSDT;
+            ReqSimpleSubRecord<UINT8> QSDT;
             std::vector<ReqSubRecord<GENCTDA> *> CTDA;
             StringRecord CNAM;
             ReqSubRecord<GENSCHR> SCHR;
@@ -67,7 +67,7 @@ class QUSTRecord : public Record
 
         struct QUSTStage
             {
-            ReqSubRecord<GENU16> INDX;
+            ReqSimpleSubRecord<UINT16> INDX;
             std::vector<QUSTEntry *> Entries;
 
             QUSTStage();
@@ -120,7 +120,7 @@ class QUSTRecord : public Record
 
     public:
         StringRecord EDID;
-        OptSubRecord<GENFID> SCRI;
+        OptSimpleSubRecord<FORMID> SCRI;
         StringRecord FULL;
         StringRecord ICON;
         ReqSubRecord<QUSTDATA> DATA;

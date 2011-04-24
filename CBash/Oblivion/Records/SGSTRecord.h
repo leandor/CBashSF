@@ -48,7 +48,7 @@ class SGSTRecord : public Record
         StringRecord FULL;
         OptSubRecord<GENMODEL> MODL;
         StringRecord ICON;
-        OptSubRecord<GENFID> SCRI;
+        OptSimpleSubRecord<FORMID> SCRI;
         std::vector<GENEffect *> Effects;
         ReqSubRecord<SGSTDATA> DATA;
         OptSubRecord<OBMEMAGIC> OBME;

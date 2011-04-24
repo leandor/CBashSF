@@ -47,15 +47,15 @@ class WRLDRecord : public Record
     public:
         StringRecord EDID;
         StringRecord FULL;
-        OptSubRecord<GENFID> WNAM;
-        OptSubRecord<GENFID> CNAM;
-        OptSubRecord<GENFID> NAM2;
+        OptSimpleSubRecord<FORMID> WNAM;
+        OptSimpleSubRecord<FORMID> CNAM;
+        OptSimpleSubRecord<FORMID> NAM2;
         StringRecord ICON;
         SemiOptSubRecord<GENMNAM> MNAM;
-        ReqSubRecord<GENU8> DATA;
+        ReqSimpleSubRecord<UINT8> DATA;
         ReqSubRecord<GENNAM> NAM0;
         ReqSubRecord<GENNAM> NAM9;
-        OptSubRecord<GENU32> SNAM;
+        OptSimpleSubRecord<UINT32> SNAM;
         RawRecord OFST;
 
         Record *ROAD;

@@ -28,7 +28,7 @@ class ANIORecord : public Record
     public:
         StringRecord EDID;
         OptSubRecord<GENMODEL> MODL;
-        ReqSubRecord<GENFID> DATA;
+        ReqSimpleSubRecord<FORMID> DATA;
 
         ANIORecord(unsigned char *_recData=NULL);
         ANIORecord(ANIORecord *srcRecord);

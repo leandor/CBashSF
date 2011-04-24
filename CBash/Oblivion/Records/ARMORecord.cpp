@@ -123,221 +123,221 @@ bool ARMORecord::VisitFormIDs(FormIDOp &op)
         return false;
 
     if(SCRI.IsLoaded())
-        op.Accept(SCRI->value);
+        op.Accept(SCRI.value);
     if(ENAM.IsLoaded())
-        op.Accept(ENAM->value);
+        op.Accept(ENAM.value);
 
     return op.Stop();
     }
 
 bool ARMORecord::IsHead()
     {
-    return (BMDT.value.value & fIsHead) != 0;
+    return (BMDT.value & fIsHead) != 0;
     }
 
 void ARMORecord::IsHead(bool value)
     {
-    BMDT.value.value = value ? (BMDT.value.value | fIsHead) : (BMDT.value.value & ~fIsHead);
+    BMDT.value = value ? (BMDT.value | fIsHead) : (BMDT.value & ~fIsHead);
     }
 
 bool ARMORecord::IsHair()
     {
-    return (BMDT.value.value & fIsHair) != 0;
+    return (BMDT.value & fIsHair) != 0;
     }
 
 void ARMORecord::IsHair(bool value)
     {
-    BMDT.value.value = value ? (BMDT.value.value | fIsHair) : (BMDT.value.value & ~fIsHair);
+    BMDT.value = value ? (BMDT.value | fIsHair) : (BMDT.value & ~fIsHair);
     }
 
 bool ARMORecord::IsUpperBody()
     {
-    return (BMDT.value.value & fIsUpperBody) != 0;
+    return (BMDT.value & fIsUpperBody) != 0;
     }
 
 void ARMORecord::IsUpperBody(bool value)
     {
-    BMDT.value.value = value ? (BMDT.value.value | fIsUpperBody) : (BMDT.value.value & ~fIsUpperBody);
+    BMDT.value = value ? (BMDT.value | fIsUpperBody) : (BMDT.value & ~fIsUpperBody);
     }
 
 bool ARMORecord::IsLowerBody()
     {
-    return (BMDT.value.value & fIsLowerBody) != 0;
+    return (BMDT.value & fIsLowerBody) != 0;
     }
 
 void ARMORecord::IsLowerBody(bool value)
     {
-    BMDT.value.value = value ? (BMDT.value.value | fIsLowerBody) : (BMDT.value.value & ~fIsLowerBody);
+    BMDT.value = value ? (BMDT.value | fIsLowerBody) : (BMDT.value & ~fIsLowerBody);
     }
 
 bool ARMORecord::IsHand()
     {
-    return (BMDT.value.value & fIsHand) != 0;
+    return (BMDT.value & fIsHand) != 0;
     }
 
 void ARMORecord::IsHand(bool value)
     {
-    BMDT.value.value = value ? (BMDT.value.value | fIsHand) : (BMDT.value.value & ~fIsHand);
+    BMDT.value = value ? (BMDT.value | fIsHand) : (BMDT.value & ~fIsHand);
     }
 
 bool ARMORecord::IsFoot()
     {
-    return (BMDT.value.value & fIsFoot) != 0;
+    return (BMDT.value & fIsFoot) != 0;
     }
 
 void ARMORecord::IsFoot(bool value)
     {
-    BMDT.value.value = value ? (BMDT.value.value | fIsFoot) : (BMDT.value.value & ~fIsFoot);
+    BMDT.value = value ? (BMDT.value | fIsFoot) : (BMDT.value & ~fIsFoot);
     }
 
 bool ARMORecord::IsRightRing()
     {
-    return (BMDT.value.value & fIsRightRing) != 0;
+    return (BMDT.value & fIsRightRing) != 0;
     }
 
 void ARMORecord::IsRightRing(bool value)
     {
-    BMDT.value.value = value ? (BMDT.value.value | fIsRightRing) : (BMDT.value.value & ~fIsRightRing);
+    BMDT.value = value ? (BMDT.value | fIsRightRing) : (BMDT.value & ~fIsRightRing);
     }
 
 bool ARMORecord::IsLeftRing()
     {
-    return (BMDT.value.value & fIsLeftRing) != 0;
+    return (BMDT.value & fIsLeftRing) != 0;
     }
 
 void ARMORecord::IsLeftRing(bool value)
     {
-    BMDT.value.value = value ? (BMDT.value.value | fIsLeftRing) : (BMDT.value.value & ~fIsLeftRing);
+    BMDT.value = value ? (BMDT.value | fIsLeftRing) : (BMDT.value & ~fIsLeftRing);
     }
 
 bool ARMORecord::IsAmulet()
     {
-    return (BMDT.value.value & fIsAmulet) != 0;
+    return (BMDT.value & fIsAmulet) != 0;
     }
 
 void ARMORecord::IsAmulet(bool value)
     {
-    BMDT.value.value = value ? (BMDT.value.value | fIsAmulet) : (BMDT.value.value & ~fIsAmulet);
+    BMDT.value = value ? (BMDT.value | fIsAmulet) : (BMDT.value & ~fIsAmulet);
     }
 
 bool ARMORecord::IsWeapon()
     {
-    return (BMDT.value.value & fIsWeapon) != 0;
+    return (BMDT.value & fIsWeapon) != 0;
     }
 
 void ARMORecord::IsWeapon(bool value)
     {
-    BMDT.value.value = value ? (BMDT.value.value | fIsWeapon) : (BMDT.value.value & ~fIsWeapon);
+    BMDT.value = value ? (BMDT.value | fIsWeapon) : (BMDT.value & ~fIsWeapon);
     }
 
 bool ARMORecord::IsBackWeapon()
     {
-    return (BMDT.value.value & fIsBackWeapon) != 0;
+    return (BMDT.value & fIsBackWeapon) != 0;
     }
 
 void ARMORecord::IsBackWeapon(bool value)
     {
-    BMDT.value.value = value ? (BMDT.value.value | fIsBackWeapon) : (BMDT.value.value & ~fIsBackWeapon);
+    BMDT.value = value ? (BMDT.value | fIsBackWeapon) : (BMDT.value & ~fIsBackWeapon);
     }
 
 bool ARMORecord::IsSideWeapon()
     {
-    return (BMDT.value.value & fIsSideWeapon) != 0;
+    return (BMDT.value & fIsSideWeapon) != 0;
     }
 
 void ARMORecord::IsSideWeapon(bool value)
     {
-    BMDT.value.value = value ? (BMDT.value.value | fIsSideWeapon) : (BMDT.value.value & ~fIsSideWeapon);
+    BMDT.value = value ? (BMDT.value | fIsSideWeapon) : (BMDT.value & ~fIsSideWeapon);
     }
 
 bool ARMORecord::IsQuiver()
     {
-    return (BMDT.value.value & fIsQuiver) != 0;
+    return (BMDT.value & fIsQuiver) != 0;
     }
 
 void ARMORecord::IsQuiver(bool value)
     {
-    BMDT.value.value = value ? (BMDT.value.value | fIsQuiver) : (BMDT.value.value & ~fIsQuiver);
+    BMDT.value = value ? (BMDT.value | fIsQuiver) : (BMDT.value & ~fIsQuiver);
     }
 
 bool ARMORecord::IsShield()
     {
-    return (BMDT.value.value & fIsShield) != 0;
+    return (BMDT.value & fIsShield) != 0;
     }
 
 void ARMORecord::IsShield(bool value)
     {
-    BMDT.value.value = value ? (BMDT.value.value | fIsShield) : (BMDT.value.value & ~fIsShield);
+    BMDT.value = value ? (BMDT.value | fIsShield) : (BMDT.value & ~fIsShield);
     }
 
 bool ARMORecord::IsTorch()
     {
-    return (BMDT.value.value & fIsTorch) != 0;
+    return (BMDT.value & fIsTorch) != 0;
     }
 
 void ARMORecord::IsTorch(bool value)
     {
-    BMDT.value.value = value ? (BMDT.value.value | fIsTorch) : (BMDT.value.value & ~fIsTorch);
+    BMDT.value = value ? (BMDT.value | fIsTorch) : (BMDT.value & ~fIsTorch);
     }
 
 bool ARMORecord::IsTail()
     {
-    return (BMDT.value.value & fIsTail) != 0;
+    return (BMDT.value & fIsTail) != 0;
     }
 
 void ARMORecord::IsTail(bool value)
     {
-    BMDT.value.value = value ? (BMDT.value.value | fIsTail) : (BMDT.value.value & ~fIsTail);
+    BMDT.value = value ? (BMDT.value | fIsTail) : (BMDT.value & ~fIsTail);
     }
 
 bool ARMORecord::IsHideRings()
     {
-    return (BMDT.value.value & fIsHideRings) != 0;
+    return (BMDT.value & fIsHideRings) != 0;
     }
 
 void ARMORecord::IsHideRings(bool value)
     {
-    BMDT.value.value = value ? (BMDT.value.value | fIsHideRings) : (BMDT.value.value & ~fIsHideRings);
+    BMDT.value = value ? (BMDT.value | fIsHideRings) : (BMDT.value & ~fIsHideRings);
     }
 
 bool ARMORecord::IsHideAmulets()
     {
-    return (BMDT.value.value & fIsHideAmulets) != 0;
+    return (BMDT.value & fIsHideAmulets) != 0;
     }
 
 void ARMORecord::IsHideAmulets(bool value)
     {
-    BMDT.value.value = value ? (BMDT.value.value | fIsHideAmulets) : (BMDT.value.value & ~fIsHideAmulets);
+    BMDT.value = value ? (BMDT.value | fIsHideAmulets) : (BMDT.value & ~fIsHideAmulets);
     }
 
 bool ARMORecord::IsNonPlayable()
     {
-    return (BMDT.value.value & fIsNonPlayable) != 0;
+    return (BMDT.value & fIsNonPlayable) != 0;
     }
 
 void ARMORecord::IsNonPlayable(bool value)
     {
-    BMDT.value.value = value ? (BMDT.value.value | fIsNonPlayable) : (BMDT.value.value & ~fIsNonPlayable);
+    BMDT.value = value ? (BMDT.value | fIsNonPlayable) : (BMDT.value & ~fIsNonPlayable);
     }
 
 bool ARMORecord::IsHeavyArmor()
     {
-    return (BMDT.value.value & fIsHeavyArmor) != 0;
+    return (BMDT.value & fIsHeavyArmor) != 0;
     }
 
 void ARMORecord::IsHeavyArmor(bool value)
     {
-    BMDT.value.value = value ? (BMDT.value.value | fIsHeavyArmor) : (BMDT.value.value & ~fIsHeavyArmor);
+    BMDT.value = value ? (BMDT.value | fIsHeavyArmor) : (BMDT.value & ~fIsHeavyArmor);
     }
 
 bool ARMORecord::IsFlagMask(UINT32 Mask, bool Exact)
     {
-    return Exact ? ((BMDT.value.value & Mask) == Mask) : ((BMDT.value.value & Mask) != 0);
+    return Exact ? ((BMDT.value & Mask) == Mask) : ((BMDT.value & Mask) != 0);
     }
 
 void ARMORecord::SetFlagMask(UINT32 Mask)
     {
-    BMDT.value.value = Mask;
+    BMDT.value = Mask;
     }
 
 UINT32 ARMORecord::GetSize(bool forceCalc)
@@ -613,11 +613,11 @@ SINT32 ARMORecord::WriteRecord(_FileHandler &SaveHandler)
     if(FULL.IsLoaded())
         SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
     if(SCRI.IsLoaded())
-        SaveHandler.writeSubRecord('IRCS', SCRI.value, SCRI.GetSize());
+        SaveHandler.writeSubRecord('IRCS', &SCRI.value, SCRI.GetSize());
     if(ENAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANE', ENAM.value, ENAM.GetSize());
+        SaveHandler.writeSubRecord('MANE', &ENAM.value, ENAM.GetSize());
     if(ANAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANA', ANAM.value, ANAM.GetSize());
+        SaveHandler.writeSubRecord('MANA', &ANAM.value, ANAM.GetSize());
     if(BMDT.IsLoaded())
         SaveHandler.writeSubRecord('TDMB', &BMDT.value, BMDT.GetSize());
 

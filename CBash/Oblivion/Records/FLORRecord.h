@@ -41,8 +41,8 @@ class FLORRecord : public Record
         StringRecord EDID;
         StringRecord FULL;
         OptSubRecord<GENMODEL> MODL;
-        OptSubRecord<GENFID> SCRI;
-        SubRecord<GENFID> PFIG;
+        OptSimpleSubRecord<FORMID> SCRI;
+        SimpleSubRecord<FORMID> PFIG;
         ReqSubRecord<FLORPFPC> PFPC;
 
         FLORRecord(unsigned char *_recData=NULL);
