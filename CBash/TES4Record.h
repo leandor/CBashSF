@@ -77,6 +77,7 @@ class TES4Record : public Record
         SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
         SINT32 Unload();
         SINT32 WriteRecord(_FileHandler &SaveHandler);
+        UINT32 Write(_FileHandler &SaveHandler, const bool &bMastersChanged, FormIDResolver &expander, FormIDResolver &collapser, std::vector<FormIDResolver *> &Expanders);
 
         bool operator ==(const TES4Record &other) const;
         bool operator !=(const TES4Record &other) const;

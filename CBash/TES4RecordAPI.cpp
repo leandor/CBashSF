@@ -32,8 +32,16 @@ UINT32 TES4Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
             return UINT32_FLAG_FIELD;
         case 2: //fid
             return MISSING_FIELD;
-        case 3: //flags2
-            return UINT32_FLAG_FIELD;
+        case 3: //flags2 or versionControl1 for FNV
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;// UINT32_FLAG_FIELD; for Ob
+                case 1: //fieldSize
+                    return 4;
+                default:
+                    return UNKNOWN_FIELD;
+                }
         case 4: //eid
             return MISSING_FIELD;
         case 5: //version
@@ -78,6 +86,39 @@ UINT32 TES4Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 }
         case 13: //DATA
             return JUNK_FIELD;
+        //FNV Specific
+        case 14: //formVersion
+            return UINT16_FIELD;
+        case 15: //versionControl2
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 2;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+        case 16: //overrides
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return FORMID_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return (UINT32)ONAM.size();
+                default:
+                    return UNKNOWN_FIELD;
+                }
+        case 17: //screenshot_p
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return SCRN.GetSize();
+                default:
+                    return UNKNOWN_FIELD;
+                }
         default:
             return UNKNOWN_FIELD;
         }
@@ -90,7 +131,13 @@ void * TES4Record::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 1: //flags1
             return &flags;
         case 3: //flags2
-            return &flagsUnk;
+            if(whichGame == eIsOblivion)
+                return &flagsUnk;
+            else
+                {
+                *FieldValues = &flagsUnk;
+                return NULL;
+                }
         case 5: //version
             return &HEDR.value.version;
         case 6: //numRecords
@@ -112,6 +159,18 @@ void * TES4Record::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 FieldValues[p] = MAST[p].value;
             return NULL;
         case 13: //DATA
+            return NULL;
+        //FNV Specific
+        case 14: //formVersion
+            return &formVersion;
+        case 15: //versionControl2
+            *FieldValues = &versionControl2[0];
+            return NULL;
+        case 16: //overrides
+            *FieldValues = ONAM.size() ? &ONAM[0] : NULL;
+            return NULL;
+        case 17: //screenshot_p
+            *FieldValues = SCRN.value;
             return NULL;
         default:
             return NULL;
@@ -153,6 +212,24 @@ bool TES4Record::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             MAST.resize(ArraySize);
             for(UINT32 x = 0; x < ArraySize; x++)
                 MAST[x].Copy((STRING)((STRINGARRAY)FieldValue)[x]);
+            break;
+        //FNV Specific
+        case 14: //formVersion
+            formVersion = *(UINT16 *)FieldValue;
+            break;
+        case 15: //versionControl2
+            if(ArraySize != 2)
+                break;
+            versionControl2[0] = ((UINT8ARRAY)FieldValue)[0];
+            versionControl2[1] = ((UINT8ARRAY)FieldValue)[1];
+            break;
+        case 16: //overrides
+            ONAM.resize(ArraySize);
+            for(UINT32 x = 0; x < ArraySize; x++)
+                ONAM[x] = ((FORMIDARRAY)FieldValue)[x];
+            return true;
+        case 17: //screenshot_p
+            SCRN.Copy((UINT8ARRAY)FieldValue, ArraySize);
             break;
         default:
             break;
@@ -197,6 +274,20 @@ void TES4Record::DeleteField(FIELD_IDENTIFIERS)
             //Good chance of breaking the plugin if called. Might be better to disallow.
             //Or atleast try and fix things up on this side.
             MAST.clear();
+            return;
+        //FNV Specific
+        case 14: //formVersion
+            formVersion = 0;
+            return;
+        case 15: //versionControl2
+            versionControl2[0] = 0;
+            versionControl2[1] = 0;
+            return;
+        case 16: //overrides
+            ONAM.clear();
+            return;
+        case 17: //screenshot_p
+            SCRN.Unload();
             return;
         default:
             return;

@@ -96,6 +96,9 @@ GMSTRecord::GMSTRecord(GMSTRecord *srcRecord):
     flags = srcRecord->flags;
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
+    formVersion = srcRecord->formVersion;
+    versionControl2[0] = srcRecord->versionControl2[0];
+    versionControl2[1] = srcRecord->versionControl2[1];
     EDID = srcRecord->EDID;
 
     if(!srcRecord->IsChanged())
@@ -134,7 +137,7 @@ GMSTRecord::~GMSTRecord()
 UINT32 GMSTRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-16];
+        return *(UINT32*)&recData[-20];
 
     UINT32 cSize = 0;
     UINT32 TotSize = 0;

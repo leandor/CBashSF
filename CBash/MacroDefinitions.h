@@ -7,9 +7,9 @@
 //These require CBASH_PROFILING to be defined
 #ifdef CBASH_PROFILING
     //define or undef as desired
-    #define CBASH_CALLTIMING
-    #define CBASH_CALLCOUNT
-    #undef CBASH_TRACE
+    #undef CBASH_CALLTIMING
+    #undef CBASH_CALLCOUNT
+    #define CBASH_TRACE
 #else
     //don't touch
     #undef CBASH_CALLTIMING

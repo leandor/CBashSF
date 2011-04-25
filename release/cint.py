@@ -1554,6 +1554,295 @@ class PGRP(ListComponent):
     exportattrs = copyattrs = ['x', 'y', 'z', 'connections']
 
 #--Accessors
+#--Fallout New Vegas
+class FnvBaseRecord(object):
+    _Type = 'BASE'
+    def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
+        self._CollectionID = CollectionIndex
+        self._ModID = ModID
+        self._RecordID = RecordID
+        self._CopyFlags = CopyFlags
+        #ParentID isn't kept for most records
+
+    def __eq__(self, other):
+        if type(other) is type(self):
+            return self._RecordID == other._RecordID
+        return False
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    @property
+    def FileName(self):
+        return _CGetFileNameByID(self._CollectionID, self._ModID) or 'Missing'
+
+    @property
+    def ModName(self):
+        return _CGetModNameByID(self._CollectionID, self._ModID) or 'Missing'
+
+    @property
+    def GName(self):
+        return GPath(self.ModName)
+
+    def UnloadRecord(self):
+        _CUnloadRecord(self._CollectionID, self._ModID, self._RecordID)
+
+    def DeleteRecord(self):
+        _CDeleteRecord(self._CollectionID, self._ModID, self._RecordID, getattr(self, '_ParentID', 0))
+
+    def GetNumReferences(self, FormIDToMatch):
+        FormIDToMatch = MakeShortFid(self._CollectionID, FormIDToMatch)
+        if FormIDToMatch is None: return 0
+        return _CGetNumReferences(self._CollectionID, self._ModID, self._RecordID, FormIDToMatch)
+
+    def UpdateReferences(self, FormIDToReplace, ReplacementFormID):
+        FormIDToReplace = MakeShortFid(self._CollectionID, FormIDToReplace)
+        ReplacementFormID = MakeShortFid(self._CollectionID, ReplacementFormID)
+        if not (FormIDToReplace or ReplacementFormID): return 0
+        return _CUpdateReferences(self._CollectionID, self._ModID, self._RecordID, FormIDToReplace, ReplacementFormID)
+
+    def History(self):
+        cModIDs = (c_ulong * 257)() #just allocate enough for the max number + size
+        cRecordIDs = (c_ulong * 257)() #just allocate enough for the max number + size
+        numRecords = _CGetRecordHistory(self._CollectionID, self._ModID, self._RecordID, byref(cModIDs), byref(cRecordIDs))
+        parent = getattr(self, '_ParentID', 0)
+        return [self.__class__(self._CollectionID, cModIDs[x], cRecordIDs[x], parent, self._CopyFlags) for x in range(0, numRecords)]
+
+    def IsWinning(self, GetExtendedConflicts=False):
+        """Returns true if the record is the last to load.
+           If GetExtendedConflicts is True, scanned records will be considered.
+           More efficient than running Conflicts() and checking the first value."""
+        return _CIsRecordWinning(self._CollectionID, self._ModID, self._RecordID, c_ulong(GetExtendedConflicts))
+
+    def Conflicts(self, GetExtendedConflicts=False):
+        numRecords = _CGetNumRecordConflicts(self._CollectionID, self._RecordID, c_ulong(GetExtendedConflicts)) #gives upper bound
+        if(numRecords > 1):
+            cModIDs = (c_ulong * numRecords)()
+            cRecordIDs = (c_ulong * numRecords)()
+            numRecords = _CGetRecordConflicts(self._CollectionID, self._RecordID, byref(cModIDs), byref(cRecordIDs), c_ulong(GetExtendedConflicts))
+            parent = getattr(self, '_ParentID', 0)
+            return [self.__class__(self._CollectionID, cModIDs[x], cRecordIDs[x], parent, self._CopyFlags) for x in range(0, numRecords)]
+        return []
+
+    def ConflictDetails(self, attrs=None, GetExtendedConflicts=False):
+        conflicting = {}
+        if attrs is None:
+            attrs = self.copyattrs
+        if not attrs:
+            return conflicting
+        #recordMasters = set(ObModFile(self._CollectionID, self._ModID).TES4.masters)
+        #sort oldest to newest rather than newest to oldest
+        #conflicts = self.Conflicts(GetExtendedConflicts)
+        #Less pythonic, but optimized for better speed.
+        #Equivalent to commented out code.
+        #parentRecords = [parent for parent in conflicts if parent.ModName in recordMasters]
+        #parentRecords.reverse()
+        parentRecords = self.History()
+        if parentRecords:
+            conflicting.update([(attr,reduce(getattr, attr.split('.'), self)) for parentRecord in parentRecords for attr in attrs if reduce(getattr, attr.split('.'), self) != reduce(getattr, attr.split('.'), parentRecord)])
+        else: #is the first instance of the record
+            conflicting.update([(attr,reduce(getattr, attr.split('.'), self)) for attr in attrs])
+##        if parentRecords:
+##            for parentRecord in parentRecords:
+##                for attr in attrs:
+##                    if getattr_deep(self,attr) != getattr_deep(parentRecord,attr):
+##                        conflicting[attr] = getattr_deep(self,attr)
+##        else:
+##            for attr in attrs:
+##                conflicting[attr] = getattr_deep(self,attr)
+        return conflicting
+
+    def mergeFilter(self,modSet):
+        """This method is called by the bashed patch mod merger. The intention is
+        to allow a record to be filtered according to the specified modSet. E.g.
+        for a list record, items coming from mods not in the modSet could be
+        removed from the list."""
+        pass
+
+    def CopyAsOverride(self, target, CopyFlags=None):
+        if CopyFlags is None: CopyFlags = self._CopyFlags
+        targetID = 0
+        if hasattr(self, '_ParentID'):
+            if isinstance(target, ObModFile): targetID = self._ParentID
+            else: targetID = target._RecordID
+        ##Record Creation Flags
+        ##SetAsOverride       = 0x00000001,
+        ##SetAsWorldCell      = 0x00000002,
+        ##CopyWorldCellStatus = 0x00000004
+        #Set SetAsOverride
+        CopyFlags |= 0x00000001
+        RecordID = _CCopyRecord(self._CollectionID, self._ModID, self._RecordID, target._ModID, targetID, 0, 0, c_ulong(CopyFlags))
+        #Clear SetAsOverride
+        CopyFlags &= ~0x00000001
+        if(RecordID): return self.__class__(self._CollectionID, target._ModID, RecordID, getattr(self, '_ParentID', 0), CopyFlags)
+        return None
+
+    def CopyAsNew(self, target, RecordFormID=0, CopyFlags=None):
+        if CopyFlags is None: CopyFlags = self._CopyFlags
+        targetID = 0
+        if hasattr(self, '_ParentID'):
+            if isinstance(target, ObModFile): targetID = self._ParentID
+            else: targetID = target._RecordID
+        ##Record Creation Flags
+        ##SetAsOverride       = 0x00000001,
+        ##SetAsWorldCell      = 0x00000002,
+        ##CopyWorldCellStatus = 0x00000004
+        #Clear SetAsOverride in case it was set
+        CopyFlags &= ~0x00000001
+        RecordID = _CCopyRecord(self._CollectionID, self._ModID, self._RecordID, target._ModID, targetID, RecordFormID, 0, c_ulong(CopyFlags))
+        if(RecordID): return self.__class__(self._CollectionID, target._ModID, RecordID, getattr(self, '_ParentID', 0), CopyFlags)
+        return None
+
+    @property
+    def Parent(self):
+        ParentID = getattr(self, '_ParentID', 0)
+        if ParentID:
+            testRecord = ObBaseRecord(self._CollectionID, self._ModID, ParentID, 0, 0)
+            RecordType = type_record[testRecord.recType]
+            if RecordType:
+                return RecordType(self._CollectionID, self._ModID, ParentID, 0, 0)
+        return None
+
+    @property
+    def recType(self):
+        _CGetFieldAttribute.restype = (c_char * 4)
+        retValue = _CGetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, 0, 0, 0, 0, 0, 0, 0)
+        _CGetFieldAttribute.restype = c_ulong
+        if(retValue and retValue.value != ''): return retValue.value
+        return None
+
+    flags1 = CBashGeneric(1, c_ulong)
+
+    def get_fid(self):
+        _CGetField.restype = POINTER(c_ulong)
+        retValue = _CGetField(self._CollectionID, self._ModID, self._RecordID, 2, 0, 0, 0, 0, 0, 0, 0)
+        if(retValue): return MakeLongFid(self._CollectionID, self._ModID, retValue.contents.value)
+        return None
+    def set_fid(self, nValue):
+        if nValue is None: nValue = 0
+        else: nValue = MakeShortFid(self._CollectionID, nValue)
+        _CSetRecordIdentifiers(self._CollectionID, self._ModID, self._RecordID, nValue, self.eid or 0)
+    fid = property(get_fid, set_fid)
+
+    versionControl1 = CBashUINT8ARRAY(3, 4)
+    formVersion = CBashGeneric(5, c_ushort)
+    versionControl2 = CBashUINT8ARRAY(6, 2)
+
+    def get_eid(self):
+        _CGetField.restype = c_char_p
+        retValue = _CGetField(self._CollectionID, self._ModID, self._RecordID, 4, 0, 0, 0, 0, 0, 0, 0)
+        if(retValue): return ISTRING(retValue)
+        return None
+    def set_eid(self, nValue):
+        if nValue is None or not len(nValue): nValue = 0
+        else: nValue = str(nValue)
+        _CSetRecordIdentifiers(self._CollectionID, self._ModID, self._RecordID, MakeShortFid(self._CollectionID, self.fid or 0), nValue)
+    eid = property(get_eid, set_eid)
+
+    IsDeleted = CBashBasicFlag('flags1', 0x00000020)
+    IsHasTreeLOD = CBashBasicFlag('flags1', 0x00000040)
+    IsConstant = CBashAlias('IsHasTreeLOD')
+    IsHiddenFromLocalMap = CBashAlias('IsHasTreeLOD')
+    IsTurnOffFire = CBashBasicFlag('flags1', 0x00000080)
+    IsInaccessible = CBashBasicFlag('flags1', 0x00000100)
+    IsOnLocalMap = CBashBasicFlag('flags1', 0x00000200)
+    IsMotionBlur = CBashAlias('IsOnLocalMap')
+    IsPersistent = CBashBasicFlag('flags1', 0x00000400)
+    IsQuest = CBashAlias('IsPersistent')
+    IsQuestOrPersistent = CBashAlias('IsPersistent')
+    IsInitiallyDisabled = CBashBasicFlag('flags1', 0x00000800)
+    IsIgnored = CBashBasicFlag('flags1', 0x00001000)
+    IsNoVoiceFilter = CBashBasicFlag('flags1', 0x00002000)
+    IsVoiceFilter = CBashInvertedFlag('IsNoVoiceFilter')
+    IsVisibleWhenDistant = CBashBasicFlag('flags1', 0x00008000)
+    IsVWD = CBashAlias('IsVisibleWhenDistant')
+    IsRandomAnimStartOrHighPriorityLOD = CBashBasicFlag('flags1', 0x00010000)
+    IsRandomAnimStart = CBashAlias('IsRandomAnimStartOrHighPriorityLOD')
+    IsHighPriorityLOD = CBashAlias('IsRandomAnimStartOrHighPriorityLOD')
+    IsTalkingActivator = CBashBasicFlag('flags1', 0x00020000)
+    IsCompressed = CBashBasicFlag('flags1', 0x00040000)
+    IsPlatformSpecificTexture = CBashBasicFlag('flags1', 0x00080000)
+    IsObstacleOrNoAIAcquire = CBashBasicFlag('flags1', 0x02000000)
+    IsObstacle = CBashAlias('IsObstacleOrNoAIAcquire')
+    IsNoAIAcquire = CBashAlias('IsObstacleOrNoAIAcquire')
+    IsNavMeshFilter = CBashBasicFlag('flags1', 0x03000000) #?
+##    IsNavMeshBoundBox = CBashBasicFlag('flags1', 0x04000000) #?
+    IsNavMeshBoundBox = CBashBasicFlag('flags1', 0x08000000)
+    IsNonPipboyOrAutoReflected = CBashBasicFlag('flags1', 0x10000000)
+    IsNonPipboy = CBashAlias('IsNonPipboyOrAutoReflected')
+    IsAutoReflected = CBashAlias('IsNonPipboyOrAutoReflected')
+    IsPipboy = CBashInvertedFlag('IsNonPipboyOrAutoReflected')
+    IsChildUsableOrAutoRefracted = CBashBasicFlag('flags1', 0x20000000)
+    IsChildUsable = CBashAlias('IsChildUsableOrAutoRefracted')
+    IsAutoRefracted = CBashAlias('IsChildUsableOrAutoRefracted')
+    IsNavMeshGround = CBashBasicFlag('flags1', 0x40000000)
+    baseattrs = ['flags1', 'versionControl1', 'formVersion', 'versionControl2', 'eid']
+
+class FnvTES4Record(object):
+    _Type = 'TES4'
+    def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
+        self._CollectionID = CollectionIndex
+        self._ModID = ModID
+        self._RecordID = RecordID
+
+    def UnloadRecord(self):
+        pass
+
+    @property
+    def recType(self):
+        return self._Type
+
+    flags1 = CBashGeneric(1, c_ulong)
+    versionControl1 = CBashUINT8ARRAY(3, 4)
+    formVersion = CBashGeneric(14, c_ushort)
+    versionControl2 = CBashUINT8ARRAY(15, 2)
+    version = CBashFLOAT32(5)
+    numRecords = CBashGeneric(6, c_ulong)
+    nextObject = CBashGeneric(7, c_ulong)
+    ofst_p = CBashUINT8ARRAY(8)
+    dele_p = CBashUINT8ARRAY(9)
+    author = CBashSTRING(10)
+    description = CBashSTRING(11)
+    masters = CBashISTRINGARRAY(12)
+    DATA = CBashJunk(13)
+    overrides = CBashFORMIDARRAY(16)
+    screenshot_p = CBashUINT8ARRAY(17)
+    IsESM = CBashBasicFlag('flags1', 0x00000001)
+    exportattrs = copyattrs = ['flags1', 'versionControl1', 'formVersion', 'versionControl2', 'version', 'numRecords', 'nextObject',
+                 'author', 'description', 'masters', 'overrides', 'screenshot_p']
+    
+class FnvGMSTRecord(FnvBaseRecord):
+    _Type = 'GMST'
+    def get_value(self):
+        rFormat = _CGetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 7, 0, 0, 0, 0, 0, 0, 2)
+        if(rFormat == API_FIELDS.UNKNOWN):
+            return None
+        elif(rFormat == API_FIELDS.SINT32):
+            _CGetField.restype = POINTER(c_long)
+            retValue = _CGetField(self._CollectionID, self._ModID, self._RecordID, 7, 0, 0, 0, 0, 0, 0, 0)
+            if(retValue): return retValue.contents.value
+        elif(rFormat == API_FIELDS.FLOAT32):
+            _CGetField.restype = POINTER(c_float)
+            retValue = _CGetField(self._CollectionID, self._ModID, self._RecordID, 7, 0, 0, 0, 0, 0, 0, 0)
+            if(retValue): return round(retValue.contents.value,6)
+        elif(rFormat == API_FIELDS.STRING):
+            _CGetField.restype = c_char_p
+            return _CGetField(self._CollectionID, self._ModID, self._RecordID, 7, 0, 0, 0, 0, 0, 0, 0)
+        return None
+    def set_value(self, nValue):
+        if nValue is None: _CDeleteField(self._CollectionID, self._ModID, self._RecordID, 7, 0, 0, 0, 0, 0, 0)
+        else:
+            rFormat = _CGetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 7, 0, 0, 0, 0, 0, 0, 2)
+            if(rFormat == API_FIELDS.SINT32 and type(nValue) is int):
+                _CSetField(self._CollectionID, self._ModID, self._RecordID, 7, 0, 0, 0, 0, 0, 0, byref(c_long(nValue)), 0)
+            elif(rFormat == API_FIELDS.FLOAT32 == 10 and type(nValue) is float):
+                _CSetField(self._CollectionID, self._ModID, self._RecordID, 7, 0, 0, 0, 0, 0, 0, byref(c_float(round(nValue,6))), 0)
+            elif(rFormat == API_FIELDS.STRING and type(nValue) is str):
+                _CSetField(self._CollectionID, self._ModID, self._RecordID, 7, 0, 0, 0, 0, 0, 0, nValue, 0)
+    value = property(get_value, set_value)
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['value']
+
+#--Oblivion
 class ObBaseRecord(object):
     _Type = 'BASE'
     def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
@@ -5086,6 +5375,8 @@ type_record = dict([('BASE',ObBaseRecord),(None,None),('',None),
                     ('QUST',ObQUSTRecord),('IDLE',ObIDLERecord),('PACK',ObPACKRecord),
                     ('CSTY',ObCSTYRecord),('LSCR',ObLSCRRecord),('LVSP',ObLVSPRecord),
                     ('ANIO',ObANIORecord),('WATR',ObWATRRecord),('EFSH',ObEFSHRecord)])
+fnv_type_record = dict([('BASE',FnvBaseRecord),(None,None),('',None),
+                    ('GMST',FnvGMSTRecord),])
 
 class ObModFile(object):
     def __init__(self, CollectionIndex, ModID):
@@ -5629,11 +5920,105 @@ class ObModFile(object):
                      ("PACK", self.PACK),("CSTY", self.CSTY),("LSCR", self.LSCR),("LVSP", self.LVSP),
                      ("ANIO", self.ANIO),("WATR", self.WATR),("EFSH", self.EFSH)))
 
+class FnvModFile(object):
+    def __init__(self, CollectionIndex, ModID):
+        self._CollectionID = CollectionIndex
+        self._ModID = ModID
+
+    def __eq__(self, other):
+        if type(other) is type(self):
+            return self._CollectionID == other._CollectionID and self._ModID == other._ModID
+        return False
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    @property
+    def FileName(self):
+        return _CGetFileNameByID(self._CollectionID, self._ModID) or 'Missing'
+
+    @property
+    def ModName(self):
+        return _CGetModNameByID(self._CollectionID, self._ModID) or 'Missing'
+
+    @property
+    def GName(self):
+        return GPath(self.ModName)
+
+    def HasRecord(self, RecordIdentifier):
+        return self.LookupRecord(RecordIdentifier) is not None
+
+    def LookupRecord(self, RecordIdentifier):
+        if not RecordIdentifier: return None
+        if isinstance(RecordIdentifier, basestring):
+            _FormID = 0
+            _EditorID = RecordIdentifier
+        else:
+            _FormID = MakeShortFid(self._CollectionID, RecordIdentifier)
+            _EditorID = 0
+        if not (_EditorID or _FormID): return None
+        RecordID = _CGetRecordID(self._CollectionID, self._ModID, _FormID, _EditorID)
+        if RecordID:
+            testRecord = FnvBaseRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
+            RecordType = fnv_type_record[testRecord.recType]
+            if RecordType:
+                return RecordType(self._CollectionID, self._ModID, RecordID, 0, 0)
+        return None
+
+    def IsEmpty(self):
+        return _CIsModEmpty(self._CollectionID, self._ModID)
+
+    def GetNewRecordTypes(self):
+        numRecords = _CGetModNumTypes(self._CollectionID, self._ModID)
+        if(numRecords > 0):
+            cRecords = ((c_char * 4) * numRecords)()
+            _CGetModTypes(self._CollectionID, self._ModID, byref(cRecords))
+            return [cRecord.value for cRecord in cRecords if cRecord]
+        return []
+
+    def UpdateReferences(self, FormIDToReplace, ReplacementFormID):
+        FormIDToReplace = MakeShortFid(self._CollectionID, FormIDToReplace)
+        ReplacementFormID = MakeShortFid(self._CollectionID, ReplacementFormID)
+        if not (FormIDToReplace or ReplacementFormID): return 0
+        return _CUpdateReferences(self._CollectionID, self._ModID, 0, FormIDToReplace, ReplacementFormID)
+
+    def CleanMasters(self):
+        return _CCleanModMasters(self._CollectionID, self._ModID)
+
+    def Unload(self):
+        _CUnloadMod(self._CollectionID, self._ModID)
+
+    def save(self, CloseCollection=True):
+        return _CSaveMod(self._CollectionID, self._ModID, c_ulong(CloseCollection))
+
+    @property
+    def TES4(self):
+        RecordID = _CGetRecordID(self._CollectionID, self._ModID, 0, 0)
+        return FnvTES4Record(self._CollectionID, self._ModID, RecordID, 0, 0)
+
+    def create_GMST(self, EditorID=0, FormID=0):
+        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("GMST", POINTER(c_ulong)).contents.value, MakeShortFid(self._CollectionID, FormID), EditorID, 0, 0)
+        if(RecordID): return FnvGMSTRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
+        return None
+    GMST = CBashRECORDARRAY(FnvGMSTRecord, 'GMST', 0)
+
+    @property
+    def tops(self):
+        return dict((("GMST", self.GMST),))
+
+    @property
+    def aggregates(self):
+        return dict((("GMST", self.GMST),))
+
 class ObCollection:
     """Collection of esm/esp's."""
-    def __init__(self, CollectionID=None, ModsPath="."):
-        self._CollectionID = CollectionID or _CCreateCollection(str(ModsPath), 0) #Oblivion collection type hardcoded for now
+    def __init__(self, CollectionID=None, ModsPath=".", CollectionType=0):
+        #CollectionType == 0, Oblivion
+        #CollectionType == 1, Fallout 3
+        #CollectionType == 2, Fallout New Vegas
+        self._CollectionID = CollectionID or _CCreateCollection(str(ModsPath), CollectionType) #Oblivion collection type hardcoded for now
         self._ModIndex = -1
+        self._WhichGame = CollectionType
         self.LoadOrderMods = []
         self.AllMods = []
 
@@ -5737,13 +6122,19 @@ class ObCollection:
         if _NumModsIDs > 0:
             cModIDs = (c_ulong * _NumModsIDs)()
             _CGetLoadOrderModIDs(self._CollectionID, byref(cModIDs))
-            self.LoadOrderMods = [ObModFile(self._CollectionID, ModID) for ModID in cModIDs]
+            if self._WhichGame == 0:
+                self.LoadOrderMods = [ObModFile(self._CollectionID, ModID) for ModID in cModIDs]
+            elif self._WhichGame == 2:
+                self.LoadOrderMods = [FnvModFile(self._CollectionID, ModID) for ModID in cModIDs]
 
         _NumModsIDs = _CGetAllNumMods(self._CollectionID)
         if _NumModsIDs > 0:
             cModIDs = (c_ulong * _NumModsIDs)()
             _CGetAllModIDs(self._CollectionID, byref(cModIDs))
-            self.AllMods = [ObModFile(self._CollectionID, ModID) for ModID in cModIDs]
+            if self._WhichGame == 0:
+                self.AllMods = [ObModFile(self._CollectionID, ModID) for ModID in cModIDs]
+            elif self._WhichGame == 2:
+                self.AllMods = [FnvModFile(self._CollectionID, ModID) for ModID in cModIDs]
 
     def LookupRecord(self, RecordIdentifier):
         if not RecordIdentifier: return None
@@ -5756,8 +6147,12 @@ class ObCollection:
         if not (_FormID or _EditorID): return None
         RecordID = _CGetRecordID(self._CollectionID, self._ModID, _FormID, _EditorID)
         if RecordID:
-            testRecord = ObBaseRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
-            RecordType = type_record[testRecord.recType]
+            if self._WhichGame == 0:
+                testRecord = ObBaseRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
+                RecordType = type_record[testRecord.recType]
+            elif self._WhichGame == 2:
+                testRecord = FnvBaseRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
+                RecordType = fnv_type_record[testRecord.recType]
             if RecordType:
                 return RecordType(self._CollectionID, self._ModID, RecordID, 0, 0)
         return None
@@ -5776,7 +6171,10 @@ class ObCollection:
         ModID = _CGetModIDByName(self._CollectionID, str(ModName))
         if(ModID == -1):
             raise KeyError("ModName(%s) not found in collection (%08X)\n" % (ModName, self._CollectionID) + self.Debug_DumpModFiles())
-        return ObModFile(self._CollectionID, ModID)
+        if self._WhichGame == 0:
+            return ObModFile(self._CollectionID, ModID)
+        elif self._WhichGame == 2:
+            return FnvModFile(self._CollectionID, ModID)
 
     def UpdateReferences(self, FormIDToReplace, ReplacementFormID):
         return sum([mod.UpdateReferences(FormIDToReplace, ReplacementFormID) for mod in self.LoadOrderMods])

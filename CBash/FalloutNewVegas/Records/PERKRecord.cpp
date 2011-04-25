@@ -347,7 +347,7 @@ void PERKRecord::SetType(UINT8 Type)
 UINT32 PERKRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-16];
+        return *(UINT32*)&recData[-20];
 
     UINT32 cSize = 0;
     UINT32 TotSize = 0;

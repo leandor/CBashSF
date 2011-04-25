@@ -56,7 +56,7 @@ UINT32 IPCTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
-        case 6: //edid Editor ID
+        case 6: //eid
             return ISTRING_FIELD;
         case 7: //modl Model Filename
             return STRING_FIELD;
@@ -171,7 +171,7 @@ void * IPCTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 5: //versionControl2
             *FieldValues = &versionControl2;
             return NULL;
-        case 6: //edid Editor ID
+        case 6: //eid
             return EDID.value;
         case 7: //modl Model Filename
             return MODL.IsLoaded() ? MODL->MODL.value : NULL;
@@ -266,7 +266,7 @@ bool IPCTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             versionControl2[0] = ((UINT8 *)FieldValue)[0];
             versionControl2[1] = ((UINT8 *)FieldValue)[1];
             break;
-        case 6: //edid Editor ID
+        case 6: //eid
             EDID.Copy((STRING)FieldValue);
             break;
         case 7: //modl Model Filename
@@ -420,7 +420,7 @@ void IPCTRecord::DeleteField(FIELD_IDENTIFIERS)
             versionControl2[0] = 0;
             versionControl2[1] = 0;
             return;
-        case 6: //edid Editor ID
+        case 6: //eid
             EDID.Unload();
             return;
         case 7: //modl Model Filename

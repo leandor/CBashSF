@@ -188,14 +188,15 @@ bool FNVRecordProcessor::operator()(Record *&curRecord)
     ReadHandler.read(&((FNVRecord *)curRecord)->formVersion, 2);
     ReadHandler.read(&((FNVRecord *)curRecord)->versionControl2[0], 2);
     expander.Accept(curRecord->formID);
-    curRecord->IsLoaded(false); //just incase the chosen flags were in use, clear them
+    //printf("Read %08X\n", curRecord->formID);
 
     //Testing Messages
-    //if(curRecord->IsLoaded())
-    //    printf("_fIsLoaded Flag used!!!! %s - %08X\n", curRecord->GetStrType(), curRecord->formID);
+    if(curRecord->IsLoaded())
+        printf("_fIsLoaded Flag used!!!! %s - %08X\n", curRecord->GetStrType(), curRecord->formID);
     //if((curRecord->flags & 0x4000) != 0)
     //    printf("0x4000 used: %08X!!!!\n", curRecord->formID);
 
+    curRecord->IsLoaded(false); //just incase the chosen flags were in use, clear them
     if(IsSkipNewRecords && FormIDHandler.IsNewRecord(curRecord->formID))
         {
         delete curRecord;
@@ -292,12 +293,8 @@ bool Record::Read()
     if (IsCompressed())
         {
         unsigned char localBuffer[BUFFERSIZE];
-        unsigned char *buffer = NULL;
         UINT32 expandedRecSize = *(UINT32*)recData;
-        if(expandedRecSize >= BUFFERSIZE)
-            buffer = new unsigned char[expandedRecSize];
-        else
-            buffer = &localBuffer[0];
+        unsigned char *buffer = (expandedRecSize >= BUFFERSIZE) ? new unsigned char[expandedRecSize] : &localBuffer[0];
         uncompress(buffer, (uLongf*)&expandedRecSize, &recData[4], recSize - 4);
         ParseRecord(buffer, expandedRecSize);
         if(buffer != &localBuffer[0])
@@ -738,22 +735,10 @@ UINT32 FNVRecord::Write(_FileHandler &SaveHandler, const bool &bMastersChanged, 
             //so the record can't just be written as is.
             if(Read())
                 {
-                //if(expander.IsValid(recData)) //optimization disabled for testing
-                //    VisitFormIDs(expander);
-                //printf("Looking for correct expander\n");
                 SINT32 index = -1;
                 for(UINT32 x = 0; x < Expanders.size(); ++x)
                     if(IsValid(*Expanders[x]))
                         {
-                        //if(index != -1)
-                        //    {
-                        //    printf("Multiple 'Correct' expanders found (%08X)! Using last one found (likely incorrect unless lucky)\n", formID);
-                        //    printf("  %i:   %08X, %08X, %08X\n", index, Expanders[index]->FileStart, recData, Expanders[index]->FileEnd);
-                        //    printf("  %i:   %08X, %08X, %08X\n", x, Expanders[x]->FileStart, recData, Expanders[x]->FileEnd);
-                        //    printf("Expanders:\n");
-                        //    for(UINT32 z = 0; z < Expanders.size(); ++z)
-                        //        printf("  %i of %i:   %08X, %08X\n", z, Expanders.size(), Expanders[z]->FileStart, Expanders[z]->FileEnd);
-                        //    }
                         index = x;
                         break;
                         }

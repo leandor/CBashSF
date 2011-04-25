@@ -21,6 +21,7 @@ GPL License and Copyright Notice ============================================
 */
 #include "Common.h"
 #include "TES4Record.h"
+#include "zlib/zlib.h"
 
 TES4Record::TES4HEDR::TES4HEDR(FLOAT32 _version, UINT32 _numRecords, UINT32 _nextObject):
     version(_version),
@@ -360,10 +361,133 @@ SINT32 TES4Record::WriteRecord(_FileHandler &SaveHandler)
                 SaveHandler.writeSubRecord('TSAM', MAST[p].value, MAST[p].GetSize());
                 SaveHandler.writeSubRecord('ATAD', &DATA[0], sizeof(DATA));
                 }
+            if(ONAM.size())
+                SaveHandler.writeSubRecord('MANO', &ONAM[0], (UINT32)ONAM.size() * sizeof(FORMID));
+            if(SCRN.IsLoaded())
+                SaveHandler.writeSubRecord('NRCS', SCRN.value, SCRN.GetSize());
             break;
         }
 
     return -1;
+    }
+
+UINT32 TES4Record::Write(_FileHandler &SaveHandler, const bool &bMastersChanged, FormIDResolver &expander, FormIDResolver &collapser, std::vector<FormIDResolver *> &Expanders)
+    {
+    UINT32 recSize = 0;
+    UINT32 recType = GetType();
+    collapser.Accept(formID);
+
+    if(!IsChanged())
+        {
+        if(bMastersChanged)
+            {
+            //if masters have changed, all formIDs have to be updated...
+            //so the record can't just be written as is.
+            if(Read())
+                {
+                SINT32 index = -1;
+                for(UINT32 x = 0; x < Expanders.size(); ++x)
+                    if(IsValid(*Expanders[x]))
+                        {
+                        index = x;
+                        break;
+                        }
+                if(index == -1)
+                    {
+                    printf("Unable to find the correct expander!\n");
+                    VisitFormIDs(expander);
+                    }
+                else
+                    VisitFormIDs(*Expanders[index]);
+                }
+            }
+        else
+            {
+            //if masters have not changed, the record can just be written from the read buffer
+            recSize = GetSize();
+
+            IsLoaded(false);
+            SaveHandler.write(&recType, 4);
+            SaveHandler.write(&recSize, 4);
+            SaveHandler.write(&flags, 4);
+            SaveHandler.write(&formID, 4);
+            SaveHandler.write(&flagsUnk, 4);
+            if(whichGame == eIsFalloutNewVegas)
+                {
+                SaveHandler.write(&formVersion, 2);
+                SaveHandler.write(&versionControl2[0], 2);
+                }
+            IsLoaded(true);
+            SaveHandler.write(recData, recSize);
+            Unload();
+            if(whichGame == eIsFalloutNewVegas)
+                return recSize + 24;
+            else
+                return recSize + 20;
+            }
+        }
+    recSize = IsDeleted() ? 0 : GetSize(true);
+
+    IsLoaded(false);
+    SaveHandler.write(&recType, 4);
+    SaveHandler.write(&recSize, 4);
+    SaveHandler.write(&flags, 4);
+    SaveHandler.write(&formID, 4);
+    SaveHandler.write(&flagsUnk, 4);
+    if(whichGame == eIsFalloutNewVegas)
+        {
+        SaveHandler.write(&formVersion, 2);
+        SaveHandler.write(&versionControl2[0], 2);
+        }
+    IsLoaded(true);
+
+    VisitFormIDs(collapser);
+
+    if(!IsDeleted())
+        {
+        //IsCompressed(true); //Test code
+        if(IsCompressed())
+            {
+            //printf("Compressed: %08X\n", formID);
+            UINT32 recStart = SaveHandler.tell();
+            UINT32 compSize = compressBound(recSize);
+            unsigned char *compBuffer = new unsigned char[compSize + 4];
+            SaveHandler.reserveBuffer(compSize + 4);
+            WriteRecord(SaveHandler);
+            memcpy(compBuffer, &recSize, 4);
+            if(SaveHandler.IsCached(recStart) && ((SaveHandler.UnusedCache() + recSize) >= compSize))
+                compress2(compBuffer + 4, &compSize, SaveHandler.getBuffer(recStart), recSize, 6);
+            else
+                {
+                SaveHandler.flush();
+                printf("Not in cache, written improperly!\n  Size: %u\n", recSize);
+                if(whichGame == eIsFalloutNewVegas)
+                    return recSize + 24;
+                else
+                    return recSize + 20;
+                }
+            SaveHandler.set_used((compSize + 4) - recSize);
+            recSize = compSize + 4;
+            if(whichGame == eIsFalloutNewVegas)
+                SaveHandler.writeAt(recStart - 20, &recSize, 4);
+            else    
+                SaveHandler.writeAt(recStart - 16, &recSize, 4);
+
+            SaveHandler.writeAt(recStart, compBuffer, recSize);
+            delete []compBuffer;
+            }
+        else
+            WriteRecord(SaveHandler);
+        }
+    expander.Accept(formID);
+    if(IsChanged())
+        VisitFormIDs(expander);
+    else
+        Unload();
+    if(whichGame == eIsFalloutNewVegas)
+        return recSize + 24;
+    else    
+        return recSize + 20;
     }
 
 bool TES4Record::operator ==(const TES4Record &other) const

@@ -62,7 +62,7 @@ SINT32 FNVFile::LoadTES4()
     //TES4 is constructed when the modfile is created
     // so the info isn't available then.
     //Must make sure this mimics the read method as needed
-    TES4.ParseRecord(ReadHandler.getBuffer(20), recSize);
+    TES4.ParseRecord(ReadHandler.getBuffer(24), recSize);
     TES4.IsLoaded(true);
     TES4.IsChanged(true);
     ReadHandler.set_used(recSize);
@@ -107,27 +107,27 @@ SINT32 FNVFile::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders
             //ADD DEFINITIONS HERE
 
             default:
-                printf("FileName = %s\n", ReadHandler.getFileName());
+                //printf("FileName = %s\n", ReadHandler.getFileName());
                 if(GRUPLabel == 0 && GRUPSize == 0)
                     {
-                    printf("  Bad file structure, zeros found past end of groups\n");
+                    //printf("  Bad file structure, zeros found past end of groups\n");
                     return 1;
                     }
                 else
                     {
-                    printf("  Unimplemented GRUP = ");
-                    for(int x = 0;x < 4;x++)
-                        printf("%c", ((STRING)&GRUPLabel)[x]);
-                    printf("\n");
+                    //printf("  Unimplemented GRUP = ");
+                    //for(int x = 0;x < 4;x++)
+                    //    printf("%c", ((STRING)&GRUPLabel)[x]);
+                    //printf("\n");
                     }
                 if(GRUPSize == 0)
                     {
-                    printf("  Unable to continue loading.\n");
+                    //printf("  Unable to continue loading.\n");
                     return 1;
                     }
                 else
                     {
-                    printf("  Attempting to skip and continue loading.\n");
+                    //printf("  Attempting to skip and continue loading.\n");
                     ReadHandler.set_used(GRUPSize - 16); //Skip type (tops will all == 0)
                     }
                 break;
@@ -138,7 +138,6 @@ SINT32 FNVFile::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders
 
 UINT32 FNVFile::GetNumRecords(const UINT32 &RecordType)
     {
-    return 0; //Not Implemented
     switch(RecordType)
         {
         case 'TSMG':
@@ -154,7 +153,6 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
     {
     if(Flags.IsNoLoad)
         return NULL;
-    return NULL; //Not Implemented
 
     Record *newRecord = NULL;
 
@@ -189,7 +187,7 @@ SINT32 FNVFile::CleanMasters(std::vector<FormIDResolver *> &Expanders)
     {
     if(Flags.IsNoLoad)
         return -1;
-    return -1; //Not Implemented
+
     UINT32 cleaned = 0;
     //FormIDHandlerClass TempHandler(FileName, TES4.MAST, TES4.HEDR.value.nextObject);
     //TempHandler.SetLoadOrder(FormIDHandler.LoadOrder255);
@@ -223,7 +221,6 @@ SINT32 FNVFile::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expa
     {
     if(!Flags.IsSaveable)
         return -1;
-    return -1; //Not Implemented
 
     _FileHandler SaveHandler(SaveName, BUFFERSIZE);
     if(SaveHandler.open_ReadWrite() == -1)
@@ -240,9 +237,8 @@ SINT32 FNVFile::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expa
     //ADD DEFINITIONS HERE
     formCount += GMST.WriteGRUP('TSMG', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
 
-
     //update formCount. Cheaper to go back and write it at the end than to calculate it before any writing.
-    SaveHandler.writeAt(30, &formCount, 4);
+    SaveHandler.writeAt(34, &formCount, 4);
     SaveHandler.close();
     if(CloseMod)
         Close();
@@ -253,7 +249,6 @@ void FNVFile::VisitAllRecords(RecordOp &op)
     {
     if(Flags.IsNoLoad)
         return;
-    return; //Not Implemented
 
     //This visits every record and subrecord
     Record * topRecord = &TES4;
@@ -267,7 +262,6 @@ void FNVFile::VisitRecords(const UINT32 &TopRecordType, const UINT32 &RecordType
     {
     if(Flags.IsNoLoad)
         return;
-    return; //Not Implemented
 
     //This visits only the top records specified.
     Record * topRecord = &TES4;
