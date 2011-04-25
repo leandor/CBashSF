@@ -25,13 +25,13 @@ GPL License and Copyright Notice ============================================
 namespace FNV
 {
 RCPERecord::RCPERecord(unsigned char *_recData):
-    Record(_recData)
+    FNVRecord(_recData)
     {
     //
     }
 
 RCPERecord::RCPERecord(RCPERecord *srcRecord):
-    Record()
+    FNVRecord()
     {
     if(srcRecord == NULL)
         return;
@@ -39,6 +39,9 @@ RCPERecord::RCPERecord(RCPERecord *srcRecord):
     flags = srcRecord->flags;
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
+    formVersion = srcRecord->formVersion;
+    versionControl2[0] = srcRecord->versionControl2[0];
+    versionControl2[1] = srcRecord->versionControl2[1];
 
     if(!srcRecord->IsChanged())
         {

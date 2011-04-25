@@ -93,13 +93,13 @@ void TERMRecord::TERMMenu::SetScriptFlagMask(UINT16 Mask)
     }
 
 TERMRecord::TERMRecord(unsigned char *_recData):
-    Record(_recData)
+    FNVRecord(_recData)
     {
     //
     }
 
 TERMRecord::TERMRecord(TERMRecord *srcRecord):
-    Record()
+    FNVRecord()
     {
     if(srcRecord == NULL)
         return;
@@ -107,6 +107,9 @@ TERMRecord::TERMRecord(TERMRecord *srcRecord):
     flags = srcRecord->flags;
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
+    formVersion = srcRecord->formVersion;
+    versionControl2[0] = srcRecord->versionControl2[0];
+    versionControl2[1] = srcRecord->versionControl2[1];
 
     if(!srcRecord->IsChanged())
         {

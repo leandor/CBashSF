@@ -25,13 +25,13 @@ GPL License and Copyright Notice ============================================
 namespace FNV
 {
 LANDRecord::LANDRecord(unsigned char *_recData):
-    Record(_recData)
+    FNVRecord(_recData)
     {
     //
     }
 
 LANDRecord::LANDRecord(LANDRecord *srcRecord):
-    Record()
+    FNVRecord()
     {
     if(srcRecord == NULL)
         return;
@@ -39,6 +39,9 @@ LANDRecord::LANDRecord(LANDRecord *srcRecord):
     flags = srcRecord->flags;
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
+    formVersion = srcRecord->formVersion;
+    versionControl2[0] = srcRecord->versionControl2[0];
+    versionControl2[1] = srcRecord->versionControl2[1];
 
     if(!srcRecord->IsChanged())
         {

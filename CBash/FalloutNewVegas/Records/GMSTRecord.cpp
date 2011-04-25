@@ -232,7 +232,7 @@ SINT32 GMSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         break;
                     default:
                         //printf("FileName = %s\n", FileName);
-                        printf("  GMST: %08X - Unknown type = %c\n", formID, DATA.format);
+                        printf("  GMST: %08X - Unknown GMST format = %c\n", formID, DATA.format);
                         printf("  Size = %i\n", subSize);
                         printf("  CurPos = %04x\n\n", curPos - 6);
                         curPos = recSize;

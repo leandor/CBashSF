@@ -517,13 +517,13 @@ void NAVMRecord::NAVMNVTR::SetFlagMask(UINT32 Mask)
     }
 
 NAVMRecord::NAVMRecord(unsigned char *_recData):
-    Record(_recData)
+    FNVRecord(_recData)
     {
     //
     }
 
 NAVMRecord::NAVMRecord(NAVMRecord *srcRecord):
-    Record()
+    FNVRecord()
     {
     if(srcRecord == NULL)
         return;
@@ -531,6 +531,9 @@ NAVMRecord::NAVMRecord(NAVMRecord *srcRecord):
     flags = srcRecord->flags;
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
+    formVersion = srcRecord->formVersion;
+    versionControl2[0] = srcRecord->versionControl2[0];
+    versionControl2[1] = srcRecord->versionControl2[1];
 
     if(!srcRecord->IsChanged())
         {

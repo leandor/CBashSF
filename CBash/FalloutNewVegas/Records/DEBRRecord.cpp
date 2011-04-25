@@ -52,13 +52,13 @@ void DEBRRecord::DEBRModel::SetFlagMask(UINT8 Mask)
     }
 
 DEBRRecord::DEBRRecord(unsigned char *_recData):
-    Record(_recData)
+    FNVRecord(_recData)
     {
     //
     }
 
 DEBRRecord::DEBRRecord(DEBRRecord *srcRecord):
-    Record()
+    FNVRecord()
     {
     if(srcRecord == NULL)
         return;
@@ -66,6 +66,9 @@ DEBRRecord::DEBRRecord(DEBRRecord *srcRecord):
     flags = srcRecord->flags;
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
+    formVersion = srcRecord->formVersion;
+    versionControl2[0] = srcRecord->versionControl2[0];
+    versionControl2[1] = srcRecord->versionControl2[1];
 
     if(!srcRecord->IsChanged())
         {

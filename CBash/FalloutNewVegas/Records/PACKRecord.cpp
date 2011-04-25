@@ -51,13 +51,13 @@ void PACKRecord::PACKSCRI::SetScriptFlagMask(UINT16 Mask)
     }
 
 PACKRecord::PACKRecord(unsigned char *_recData):
-    Record(_recData)
+    FNVRecord(_recData)
     {
     //
     }
 
 PACKRecord::PACKRecord(PACKRecord *srcRecord):
-    Record()
+    FNVRecord()
     {
     if(srcRecord == NULL)
         return;
@@ -65,6 +65,9 @@ PACKRecord::PACKRecord(PACKRecord *srcRecord):
     flags = srcRecord->flags;
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
+    formVersion = srcRecord->formVersion;
+    versionControl2[0] = srcRecord->versionControl2[0];
+    versionControl2[1] = srcRecord->versionControl2[1];
 
     if(!srcRecord->IsChanged())
         {

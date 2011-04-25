@@ -172,13 +172,13 @@ void CELLRecord::CELLLTMP::Set0FlagMask(UINT8 Mask)
     }
 
 CELLRecord::CELLRecord(unsigned char *_recData):
-    Record(_recData)
+    FNVRecord(_recData)
     {
     //
     }
 
 CELLRecord::CELLRecord(CELLRecord *srcRecord):
-    Record()
+    FNVRecord()
     {
     if(srcRecord == NULL)
         return;
@@ -186,6 +186,9 @@ CELLRecord::CELLRecord(CELLRecord *srcRecord):
     flags = srcRecord->flags;
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
+    formVersion = srcRecord->formVersion;
+    versionControl2[0] = srcRecord->versionControl2[0];
+    versionControl2[1] = srcRecord->versionControl2[1];
 
     if(!srcRecord->IsChanged())
         {
