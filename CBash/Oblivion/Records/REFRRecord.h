@@ -147,7 +147,7 @@ class REFRRecord : public Record
         OptSimpleSubRecord<SINT32> XCNT;
         OptSubRecord<REFRMAPMARKER> Marker;
         //bool ONAM; //Open by Default, empty marker, written whenever fOpenByDefault is true
-        OptSubRecord<GENXSCL> XSCL;
+        OptSimpleSubRecord<FLOAT32, 1, 0> XSCL; // scale
         OptSimpleSubRecord<UINT8> XSOL;
         ReqSubRecord<GENPOSDATA> DATA;
 

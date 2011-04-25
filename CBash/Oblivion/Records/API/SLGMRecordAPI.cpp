@@ -101,7 +101,7 @@ void * SLGMRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 13: //soulType
             return &SOUL.value;
         case 14: //capacity
-            return &SLCP.value.capacity;
+            return &SLCP.value;
         default:
             return NULL;
         }

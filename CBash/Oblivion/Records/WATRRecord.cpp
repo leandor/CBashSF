@@ -22,26 +22,6 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "WATRRecord.h"
 
-WATRRecord::WATRANAM::WATRANAM():
-    opacity(75)
-    {
-    //
-    }
-
-WATRRecord::WATRANAM::~WATRANAM()
-    {
-    //
-    }
-
-bool WATRRecord::WATRANAM::operator ==(const WATRANAM &other) const
-    {
-    return (opacity == other.opacity);
-    }
-bool WATRRecord::WATRANAM::operator !=(const WATRANAM &other) const
-    {
-    return !(*this == other);
-    }
-
 WATRRecord::WATRDATA::WATRDATA():
     windVelocity(0.1f),
     windDirection(90.0f),

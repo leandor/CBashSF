@@ -176,7 +176,7 @@ void * WATRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 5: //texturePath
             return TNAM.value;
         case 6: //opacity
-            return &ANAM.value.opacity;
+            return &ANAM.value;
         case 7: //flags
             return &FNAM.value;
         case 8: //materialPath
@@ -287,7 +287,7 @@ bool WATRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             TNAM.Copy((STRING)FieldValue);
             break;
         case 6: //opacity
-            ANAM.value.opacity = *(UINT8 *)FieldValue;
+            ANAM.value = *(UINT8 *)FieldValue;
             break;
         case 7: //flags
             SetFlagMask(*(UINT8 *)FieldValue);

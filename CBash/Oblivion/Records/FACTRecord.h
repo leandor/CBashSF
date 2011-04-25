@@ -27,17 +27,6 @@ GPL License and Copyright Notice ============================================
 class FACTRecord : public Record
     {
     private:
-        struct FACTCNAM
-            {
-            FLOAT32 crimeGoldMultiplier;
-
-            FACTCNAM();
-            ~FACTCNAM();
-
-            bool operator ==(const FACTCNAM &other) const;
-            bool operator !=(const FACTCNAM &other) const;
-            };
-
         struct FACTRNAM
             {
             SINT32  RNAM;
@@ -62,7 +51,7 @@ class FACTRecord : public Record
         StringRecord FULL;
         std::vector<ReqSubRecord<GENXNAM> *> XNAM;
         ReqSimpleSubRecord<UINT8> DATA;
-        SemiOptSubRecord<FACTCNAM> CNAM;
+        SemiOptSimpleSubRecord<FLOAT32, 1, 0> CNAM; // crimeGoldMultiplier
         std::vector<ReqSubRecord<FACTRNAM> *> RNAM;
 
         FACTRecord(unsigned char *_recData=NULL);

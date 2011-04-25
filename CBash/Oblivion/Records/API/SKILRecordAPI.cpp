@@ -78,7 +78,7 @@ void * SKILRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 4: //eid
             return EDID.value;
         case 5: //skill
-            return &INDX.value.skill;
+            return &INDX.value;
         case 6: //description
             return DESC.value;
         case 7: //iconPath
@@ -120,7 +120,7 @@ bool SKILRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             EDID.Copy((STRING)FieldValue);
             break;
         case 5: //skill
-            INDX.value.skill = *(SINT32 *)FieldValue;
+            INDX.value = *(SINT32 *)FieldValue;
             break;
         case 6: //description
             DESC.Copy((STRING)FieldValue);

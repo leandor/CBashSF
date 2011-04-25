@@ -134,7 +134,7 @@ void * ACHRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             *FieldValues = XRGD.value;
             return NULL;
         case 17: //scale
-            return XSCL.IsLoaded() ? &XSCL->scale : NULL;
+            return XSCL.IsLoaded() ? &XSCL.value : NULL;
         case 18: //posX
             return &DATA.value.posX;
         case 19: //posY
@@ -215,7 +215,7 @@ bool ACHRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             break;
         case 17: //scale
             XSCL.Load();
-            XSCL->scale = *(FLOAT32 *)FieldValue;
+            XSCL.value = *(FLOAT32 *)FieldValue;
             break;
         case 18: //posX
             DATA.value.posX = *(FLOAT32 *)FieldValue;

@@ -282,7 +282,7 @@ SINT32 ACRERecord::WriteRecord(_FileHandler &SaveHandler)
         SaveHandler.writeSubRecord('DGRX', XRGD.value, XRGD.GetSize());
 
     if(XSCL.IsLoaded())
-        SaveHandler.writeSubRecord('LCSX', XSCL.value, XSCL.GetSize());
+        SaveHandler.writeSubRecord('LCSX', &XSCL.value, XSCL.GetSize());
 
     if(DATA.IsLoaded())
         SaveHandler.writeSubRecord('ATAD', &DATA.value, DATA.GetSize());

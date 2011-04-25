@@ -26,17 +26,6 @@ GPL License and Copyright Notice ============================================
 class SKILRecord : public Record
     {
     private:
-        struct SKILINDX
-            {
-            SINT32  skill;
-
-            SKILINDX();
-            ~SKILINDX();
-
-            bool operator ==(const SKILINDX &other) const;
-            bool operator !=(const SKILINDX &other) const;
-            };
-
         struct SKILDATA
             {
             SINT32  action, attribute;
@@ -52,7 +41,7 @@ class SKILRecord : public Record
 
     public:
         StringRecord EDID;
-        ReqSubRecord<SKILINDX> INDX;
+        ReqSimpleSubRecord<SINT32, 26> INDX; // skill
         StringRecord DESC;
         StringRecord ICON;
         ReqSubRecord<SKILDATA> DATA;

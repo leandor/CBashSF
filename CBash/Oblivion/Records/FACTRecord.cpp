@@ -22,27 +22,6 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "FACTRecord.h"
 
-FACTRecord::FACTCNAM::FACTCNAM():
-    crimeGoldMultiplier(1.0f)
-    {
-    //
-    }
-
-FACTRecord::FACTCNAM::~FACTCNAM()
-    {
-    //
-    }
-
-bool FACTRecord::FACTCNAM::operator ==(const FACTCNAM &other) const
-    {
-    return (AlmostEqual(crimeGoldMultiplier,other.crimeGoldMultiplier,2));
-    }
-
-bool FACTRecord::FACTCNAM::operator !=(const FACTCNAM &other) const
-    {
-    return !(*this == other);
-    }
-
 FACTRecord::FACTRNAM::FACTRNAM():
     RNAM(0)
     {

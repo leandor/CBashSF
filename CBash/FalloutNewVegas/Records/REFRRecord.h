@@ -190,7 +190,7 @@ class REFRRecord : public Record //Placed Object
         OptSubRecord<GENPOSITION> XOCP; //Occlusion Plane Data
         std::vector<FORMID> XORD; //Linked Occlusion Planes (4 only?)
         OptSubRecord<GENXLOD> XLOD; //Distant LOD Data
-        OptSubRecord<GENXSCL> XSCL; //Scale
+        OptSimpleSubRecord<FLOAT32, 1, 0> XSCL; //Scale
         OptSubRecord<GENPOSDATA> DATA; //Position/Rotation
 
         REFRRecord(unsigned char *_recData=NULL);

@@ -29,7 +29,7 @@ class CLMTRecord : public Record
     private:
         struct CLMTWLST
             {
-            UINT32  weather;
+            FORMID  weather;
             SINT32  chance;
 
             CLMTWLST();

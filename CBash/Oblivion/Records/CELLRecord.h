@@ -49,17 +49,6 @@ class CELLRecord : public Record
             bool operator !=(const CELLXCLL &other) const;
             };
 
-        struct CELLXCLW
-            {
-            FLOAT32 waterHeight;
-
-            CELLXCLW();
-            ~CELLXCLW();
-
-            bool operator ==(const CELLXCLW &other) const;
-            bool operator !=(const CELLXCLW &other) const;
-            };
-
         struct CELLXCLC
             {
             SINT32  posX, posY;
@@ -98,7 +87,7 @@ class CELLRecord : public Record
         SimpleSubRecord<UINT8> XCMT;
         OptSubRecord<GENXOWN> Ownership;
         SimpleSubRecord<FORMID> XCCM;
-        SubRecord<CELLXCLW> XCLW;
+        SimpleSubRecord<FLOAT32, -2147483648, 0> XCLW; // waterHeight
         std::vector<FORMID> XCLR;
         SemiOptSubRecord<CELLXCLC> XCLC;
         SimpleSubRecord<FORMID> XCWT;

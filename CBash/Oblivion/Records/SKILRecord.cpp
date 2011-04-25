@@ -22,27 +22,6 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "SKILRecord.h"
 
-SKILRecord::SKILINDX::SKILINDX():
-    skill(26)
-    {
-    //
-    }
-
-SKILRecord::SKILINDX::~SKILINDX()
-    {
-    //
-    }
-
-bool SKILRecord::SKILINDX::operator ==(const SKILINDX &other) const
-    {
-    return (skill == other.skill);
-    }
-
-bool SKILRecord::SKILINDX::operator !=(const SKILINDX &other) const
-    {
-    return !(*this == other);
-    }
-
 SKILRecord::SKILDATA::SKILDATA():
     action(26),
     attribute(0),

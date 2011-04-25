@@ -130,7 +130,7 @@ void * ACRERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             *FieldValues = XRGD.value;
             return NULL;
         case 16: //scale
-            return XSCL.IsLoaded() ? &XSCL->scale : NULL;
+            return XSCL.IsLoaded() ? &XSCL.value : NULL;
         case 17: //posX
             return &DATA.value.posX;
         case 18: //posY
@@ -209,7 +209,7 @@ bool ACRERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             break;
         case 16: //scale
             XSCL.Load();
-            XSCL->scale = *(FLOAT32 *)FieldValue;
+            XSCL.value = *(FLOAT32 *)FieldValue;
             break;
         case 17: //posX
             DATA.value.posX = *(FLOAT32 *)FieldValue;

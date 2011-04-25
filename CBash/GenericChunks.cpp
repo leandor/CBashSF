@@ -1715,27 +1715,6 @@ bool GENXESP::operator !=(const GENXESP &other) const
     return !(*this == other);
     }
 
-GENXSCL::GENXSCL():
-    scale(1.0f)
-    {
-    //
-    }
-
-GENXSCL::~GENXSCL()
-    {
-    //
-    }
-
-bool GENXSCL::operator ==(const GENXSCL &other) const
-    {
-    return (AlmostEqual(scale,other.scale,2));
-    }
-
-bool GENXSCL::operator !=(const GENXSCL &other) const
-    {
-    return !(*this == other);
-    }
-
 GENPOSDATA::GENPOSDATA():
     posX(0.0f),
     posY(0.0f),
@@ -2124,27 +2103,6 @@ bool GENXCLP::operator ==(const GENXCLP &other) const
     }
 
 bool GENXCLP::operator !=(const GENXCLP &other) const
-    {
-    return !(*this == other);
-    }
-
-GLOBFNAM::GLOBFNAM():
-    format('f')
-    {
-    //
-    }
-
-GLOBFNAM::~GLOBFNAM()
-    {
-    //
-    }
-
-bool GLOBFNAM::operator ==(const GLOBFNAM &other) const
-    {
-    return (format == other.format);
-    }
-
-bool GLOBFNAM::operator !=(const GLOBFNAM &other) const
     {
     return !(*this == other);
     }

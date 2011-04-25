@@ -279,7 +279,7 @@ void * REFRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             *FieldValues = Marker.IsLoaded() ? &Marker->TNAM.value.unused1 : NULL;
             return NULL;
         case 42: //scale
-            return XSCL.IsLoaded() ? &XSCL->scale : NULL;
+            return XSCL.IsLoaded() ? &XSCL.value : NULL;
         case 43: //soulType
             return XSOL.IsLoaded() ? &XSOL.value : NULL;
         case 44: //posX
@@ -480,7 +480,7 @@ bool REFRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             break;
         case 42: //scale
             XSCL.Load();
-            XSCL->scale = *(FLOAT32 *)FieldValue;
+            XSCL.value = *(FLOAT32 *)FieldValue;
             break;
         case 43: //soulType
             SetSoul(*(UINT8 *)FieldValue);

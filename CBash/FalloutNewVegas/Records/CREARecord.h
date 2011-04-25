@@ -403,7 +403,7 @@ class CREARecord : public Record //Creature
         OptSimpleSubRecord<FORMID> ZNAM; //Combat Style
         OptSimpleSubRecord<FORMID> PNAM; //Body Part Data
         OptSimpleSubRecord<FLOAT32> TNAM; //Turning Speed
-        OptSubRecord<GENXSCL> BNAM; //Base Scale
+        OptSimpleSubRecord<FLOAT32, 1, 0> BNAM; //Base Scale
         OptSimpleSubRecord<FLOAT32> WNAM; //Foot Weight
         OptSimpleSubRecord<UINT32> NAM4; //Impact Material Type
         OptSimpleSubRecord<UINT32> NAM5; //Sound Level

@@ -1069,7 +1069,7 @@ SINT32 REFRRecord::WriteRecord(_FileHandler &SaveHandler)
         SaveHandler.writeSubRecord('MANO', NULL, 0);
 
     if(XSCL.IsLoaded())
-        SaveHandler.writeSubRecord('LCSX', XSCL.value, XSCL.GetSize());
+        SaveHandler.writeSubRecord('LCSX', &XSCL.value, XSCL.GetSize());
 
     if(XSOL.IsLoaded())
         SaveHandler.writeSubRecord('LOSX', &XSOL.value, XSOL.GetSize());

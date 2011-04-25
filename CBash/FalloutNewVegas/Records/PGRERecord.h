@@ -54,7 +54,7 @@ class PGRERecord : public Record //Placed Grenade
         OptSimpleSubRecord<FORMID> XEMI; //Emittance
         OptSimpleSubRecord<FORMID> XMBR; //MultiBound Reference
         //OptSubRecord<GENXIBS> XIBS; //Ignored By Sandbox (Empty)
-        OptSubRecord<GENXSCL> XSCL; //Scale
+        OptSimpleSubRecord<FLOAT32, 1, 0> XSCL; //Scale
         OptSubRecord<GENPOSDATA> DATA; //Position/Rotation
 
         PGRERecord(unsigned char *_recData=NULL);

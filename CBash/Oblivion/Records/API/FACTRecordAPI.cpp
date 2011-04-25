@@ -133,7 +133,7 @@ void * FACTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 7: //flags
             return &DATA.value;
         case 8: //crimeGoldMultiplier
-            return CNAM.IsLoaded() ? &CNAM->crimeGoldMultiplier : NULL;
+            return CNAM.value;
         case 9: //ranks
             if(ListIndex >= RNAM.size())
                 return NULL;
@@ -210,7 +210,7 @@ bool FACTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             break;
         case 8: //crimeGoldMultiplier
             CNAM.Load();
-            CNAM->crimeGoldMultiplier = *(FLOAT32 *)FieldValue;
+            *CNAM.value = *(FLOAT32 *)FieldValue;
             break;
         case 9: //ranks
             if(ListFieldID == 0) //ranksSize

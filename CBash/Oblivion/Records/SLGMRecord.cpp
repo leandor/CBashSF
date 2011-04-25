@@ -22,27 +22,6 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "SLGMRecord.h"
 
-SLGMRecord::SLGMSLCP::SLGMSLCP():
-    capacity(1)
-    {
-    //
-    }
-
-SLGMRecord::SLGMSLCP::~SLGMSLCP()
-    {
-    //
-    }
-
-bool SLGMRecord::SLGMSLCP::operator ==(const SLGMSLCP &other) const
-    {
-    return (capacity == other.capacity);
-    }
-
-bool SLGMRecord::SLGMSLCP::operator !=(const SLGMSLCP &other) const
-    {
-    return !(*this == other);
-    }
-
 SLGMRecord::SLGMRecord(unsigned char *_recData):
     Record(_recData)
     {
@@ -189,90 +168,90 @@ void SLGMRecord::SetSoul(UINT8 Type)
 
 bool SLGMRecord::IsNoCapacity()
     {
-    return (SLCP.value.capacity == eNone);
+    return (SLCP.value== eNone);
     }
 
 void SLGMRecord::IsNoCapacity(bool value)
     {
     if(value)
-        SLCP.value.capacity = eNone;
+        SLCP.value= eNone;
     else if(IsNoCapacity())
-        SLCP.value.capacity = ePetty;
+        SLCP.value= ePetty;
     }
 
 bool SLGMRecord::IsPettyCapacity()
     {
-    return (SLCP.value.capacity == ePetty);
+    return (SLCP.value== ePetty);
     }
 
 void SLGMRecord::IsPettyCapacity(bool value)
     {
     if(value)
-        SLCP.value.capacity = ePetty;
+        SLCP.value= ePetty;
     else if(IsPettyCapacity())
-        SLCP.value.capacity = eNone;
+        SLCP.value= eNone;
     }
 
 bool SLGMRecord::IsLesserCapacity()
     {
-    return (SLCP.value.capacity == eLesser);
+    return (SLCP.value== eLesser);
     }
 
 void SLGMRecord::IsLesserCapacity(bool value)
     {
     if(value)
-        SLCP.value.capacity = eLesser;
+        SLCP.value= eLesser;
     else if(IsLesserCapacity())
-        SLCP.value.capacity = eNone;
+        SLCP.value= eNone;
     }
 
 bool SLGMRecord::IsCommonCapacity()
     {
-    return (SLCP.value.capacity == eCommon);
+    return (SLCP.value== eCommon);
     }
 
 void SLGMRecord::IsCommonCapacity(bool value)
     {
     if(value)
-        SLCP.value.capacity = eCommon;
+        SLCP.value= eCommon;
     else if(IsCommonCapacity())
-        SLCP.value.capacity = eNone;
+        SLCP.value= eNone;
     }
 
 bool SLGMRecord::IsGreaterCapacity()
     {
-    return (SLCP.value.capacity == eGreater);
+    return (SLCP.value== eGreater);
     }
 
 void SLGMRecord::IsGreaterCapacity(bool value)
     {
     if(value)
-        SLCP.value.capacity = eGreater;
+        SLCP.value= eGreater;
     else if(IsGreaterCapacity())
-        SLCP.value.capacity = eNone;
+        SLCP.value= eNone;
     }
 
 bool SLGMRecord::IsGrandCapacity()
     {
-    return (SLCP.value.capacity == eGrand);
+    return (SLCP.value== eGrand);
     }
 
 void SLGMRecord::IsGrandCapacity(bool value)
     {
     if(value)
-        SLCP.value.capacity = eGrand;
+        SLCP.value= eGrand;
     else if(IsGrandCapacity())
-        SLCP.value.capacity = eNone;
+        SLCP.value= eNone;
     }
 
 bool SLGMRecord::IsCapacity(UINT8 Type)
     {
-    return (SLCP.value.capacity == Type);
+    return (SLCP.value== Type);
     }
 
 void SLGMRecord::SetCapacity(UINT8 Type)
     {
-    SLCP.value.capacity = Type;
+    SLCP.value= Type;
     }
 
 UINT32 SLGMRecord::GetSize(bool forceCalc)

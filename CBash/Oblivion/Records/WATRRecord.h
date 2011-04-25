@@ -26,17 +26,6 @@ GPL License and Copyright Notice ============================================
 class WATRRecord : public Record
     {
     private:
-        struct WATRANAM
-            {
-            UINT8   opacity;
-
-            WATRANAM();
-            ~WATRANAM();
-
-            bool operator ==(const WATRANAM &other) const;
-            bool operator !=(const WATRANAM &other) const;
-            };
-
         struct WATRDATA
             {
             FLOAT32 windVelocity, windDirection, waveAmp, waveFreq, sunPower,
@@ -77,7 +66,7 @@ class WATRRecord : public Record
     public:
         StringRecord EDID;
         StringRecord TNAM;
-        ReqSubRecord<WATRANAM> ANAM;
+        ReqSimpleSubRecord<UINT8, 75> ANAM; // opacity
         ReqSimpleSubRecord<UINT8> FNAM;
         StringRecord MNAM;
         OptSimpleSubRecord<FORMID> SNAM;

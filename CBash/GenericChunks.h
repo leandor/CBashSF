@@ -60,87 +60,6 @@ class FormIDResolver : public FormIDOp
         bool AcceptMGEF(UINT32 &curMgefCode);
         bool IsValid(const unsigned char * const _SrcBuf);
     };
-/*
-struct GENU8
-    {
-    UINT8  value;
-
-    GENU8();
-    ~GENU8();
-
-    bool operator ==(const GENU8 &other) const;
-    bool operator !=(const GENU8 &other) const;
-    };
-
-struct GENU16
-    {
-    UINT16 value;
-
-    GENU16();
-    ~GENU16();
-
-    bool operator ==(const GENU16 &other) const;
-    bool operator !=(const GENU16 &other) const;
-    };
-
-struct GENU32
-    {
-    UINT32 value;
-
-    GENU32();
-    ~GENU32();
-
-    bool operator ==(const GENU32 &other) const;
-    bool operator !=(const GENU32 &other) const;
-    };
-
-struct GENS8
-    {
-    SINT8  value;
-
-    GENS8();
-    ~GENS8();
-
-    bool operator ==(const GENS8 &other) const;
-    bool operator !=(const GENS8 &other) const;
-    };
-
-struct GENS16
-    {
-    SINT16 value;
-
-    GENS16();
-    ~GENS16();
-
-    bool operator ==(const GENS16 &other) const;
-    bool operator !=(const GENS16 &other) const;
-    };
-
-struct GENS32
-    {
-    SINT32 value;
-
-    GENS32();
-    ~GENS32();
-
-    bool operator ==(const GENS32 &other) const;
-    bool operator !=(const GENS32 &other) const;
-    };
-
-struct GENFLOAT
-    {
-    FLOAT32 value;
-
-    GENFLOAT();
-    ~GENFLOAT();
-
-    bool operator ==(const GENFLOAT &other) const;
-    bool operator !=(const GENFLOAT &other) const;
-    };
-
-typedef GENU32 GENFID;
-typedef GENU32 GENEFID;
-*/
 
 struct GENXNAM
     {
@@ -702,17 +621,6 @@ struct GENXESP
     bool operator !=(const GENXESP &other) const;
     };
 
-struct GENXSCL
-    {
-    FLOAT32 scale;
-
-    GENXSCL();
-    ~GENXSCL();
-
-    bool operator ==(const GENXSCL &other) const;
-    bool operator !=(const GENXSCL &other) const;
-    };
-
 struct GENPOSDATA
     {
     FLOAT32 posX, posY, posZ, rotX, rotY, rotZ;
@@ -1038,9 +946,7 @@ struct GENROOM
 
 struct GENOBND
     {
-    SINT16   x;
-    SINT16   y;
-    SINT16   z;
+    SINT16   x, y, z;
 
     GENOBND();
     ~GENOBND();
@@ -1051,12 +957,9 @@ struct GENOBND
 
 struct GENDODT
     {
-    FLOAT32 minWidth, maxWidth, minHeight, maxHeight, depth, shininess;
-    FLOAT32 scale;
-    UINT8   passes;
-    UINT8   flags;
-    UINT8   unused1[2];
-    UINT8   red, green, blue, unused2;
+    FLOAT32 minWidth, maxWidth, minHeight, maxHeight,
+            depth, shininess, scale;
+    UINT8   passes, flags, unused1[2], red, green, blue, unused2;
 
     enum DODTFlags
         {
@@ -1104,17 +1007,6 @@ struct GENPATROL
 
     bool operator ==(const GENPATROL &other) const;
     bool operator !=(const GENPATROL &other) const;
-    };
-
-struct GLOBFNAM
-    {
-    UINT8   format;
-
-    GLOBFNAM();
-    ~GLOBFNAM();
-
-    bool operator ==(const GLOBFNAM &other) const;
-    bool operator !=(const GLOBFNAM &other) const;
     };
 
 //Unfilled

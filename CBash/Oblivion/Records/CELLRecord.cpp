@@ -57,27 +57,6 @@ bool CELLRecord::CELLXCLL::operator !=(const CELLXCLL &other) const
     return !(*this == other);
     }
 
-CELLRecord::CELLXCLW::CELLXCLW():
-    waterHeight(-2147483648.0f)
-    {
-    //
-    }
-
-CELLRecord::CELLXCLW::~CELLXCLW()
-    {
-    //
-    }
-
-bool CELLRecord::CELLXCLW::operator ==(const CELLXCLW &other) const
-    {
-    return (AlmostEqual(waterHeight,other.waterHeight,2));
-    }
-
-bool CELLRecord::CELLXCLW::operator !=(const CELLXCLW &other) const
-    {
-    return !(*this == other);
-    }
-
 CELLRecord::CELLXCLC::CELLXCLC():
     posX(0),
     posY(0)

@@ -255,7 +255,7 @@ void * CELLRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 29: //climate
             return XCCM.IsLoaded() ? &XCCM.value : NULL;
         case 30: //waterHeight
-            return XCLW.IsLoaded() ? &XCLW.value.waterHeight : NULL;
+            return XCLW.IsLoaded() ? &XCLW.value : NULL;
         case 31: //regions
             *FieldValues = &XCLR[0];
             return NULL;
@@ -407,7 +407,7 @@ bool CELLRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             return true;
         case 30: //waterHeight
             XCLW.Load();
-            XCLW.value.waterHeight = *(FLOAT32 *)FieldValue;
+            XCLW.value = *(FLOAT32 *)FieldValue;
             break;
         case 31: //regions
             XCLR.resize(ArraySize);

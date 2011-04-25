@@ -26,17 +26,6 @@ GPL License and Copyright Notice ============================================
 class SLGMRecord : public Record
     {
     private:
-        struct SLGMSLCP
-            {
-            UINT8   capacity;
-
-            SLGMSLCP();
-            ~SLGMSLCP();
-
-            bool operator ==(const SLGMSLCP &other) const;
-            bool operator !=(const SLGMSLCP &other) const;
-            };
-
         enum eSoulType
             {
             eNone    = 0,
@@ -55,7 +44,7 @@ class SLGMRecord : public Record
         OptSimpleSubRecord<FORMID> SCRI;
         ReqSubRecord<GENVALUEWEIGHT> DATA;
         ReqSimpleSubRecord<UINT8> SOUL;
-        ReqSubRecord<SLGMSLCP> SLCP;
+        ReqSimpleSubRecord<UINT8, 1> SLCP; // capacity
 
         SLGMRecord(unsigned char *_recData=NULL);
         SLGMRecord(SLGMRecord *srcRecord);

@@ -490,7 +490,11 @@ class RawRecord
 //Base record field. Vestigial.
 //Used when it isn't known if the record is required or optional.
 //Should only be used with simple data types that should be initialized to 0 (int, float, etc) and not structs
-template<class T>
+//exponent parameter is only used on the float specialization
+template <UINT32 power>class Compile10Pow{public:enum{result = 10 * Compile10Pow<power-1>::result};};
+template <>class Compile10Pow<0>{public:enum{result = 1};};
+
+template<class T, SINT32 significand=0, UINT32 exponent=0>
 struct SimpleSubRecord
     {
     T value;
@@ -498,7 +502,7 @@ struct SimpleSubRecord
 
     SimpleSubRecord():
         isLoaded(false),
-        value(0)
+        value(significand)
         {
         //
         }
@@ -514,7 +518,7 @@ struct SimpleSubRecord
 
     bool IsLoaded() const
         {
-        return (isLoaded && value != 0);
+        return (isLoaded && value != significand);
         }
     void Load()
         {
@@ -522,7 +526,7 @@ struct SimpleSubRecord
         }
     void Unload()
         {
-        value = 0;
+        value = significand;
         isLoaded = false;
         }
 
@@ -546,7 +550,7 @@ struct SimpleSubRecord
         return true;
         }
 
-    SimpleSubRecord<T>& operator = (const SimpleSubRecord<T> &rhs)
+    SimpleSubRecord<T, significand, exponent>& operator = (const SimpleSubRecord<T, significand, exponent> &rhs)
         {
         if(this != &rhs)
             {
@@ -555,26 +559,26 @@ struct SimpleSubRecord
             }
         return *this;
         }
-    bool operator ==(const SimpleSubRecord<T> &other) const
+    bool operator ==(const SimpleSubRecord<T, significand, exponent> &other) const
         {
         return (isLoaded == other.isLoaded &&
                 value == other.value);
         }
-    bool operator !=(const SimpleSubRecord<T> &other) const
+    bool operator !=(const SimpleSubRecord<T, significand, exponent> &other) const
         {
         return !(*this == other);
         }
     };
 
-template<>
-struct SimpleSubRecord<FLOAT32>
+template<SINT32 significand, UINT32 exponent>
+struct SimpleSubRecord<FLOAT32, significand, exponent>
     {
     FLOAT32 value;
     bool isLoaded;
 
     SimpleSubRecord():
         isLoaded(false),
-        value(0.0f)
+        value((FLOAT32)significand / Compile10Pow<exponent>::result)
         {
         //
         }
@@ -590,7 +594,7 @@ struct SimpleSubRecord<FLOAT32>
 
     bool IsLoaded() const
         {
-        return (isLoaded && !AlmostEqual(value, 0.0f, 2));
+        return (isLoaded && !AlmostEqual(value, (FLOAT32)significand / Compile10Pow<exponent>::result, 2));
         }
 
     void Load()
@@ -600,7 +604,7 @@ struct SimpleSubRecord<FLOAT32>
 
     void Unload()
         {
-        value = 0.0f;
+        value = (FLOAT32)significand / Compile10Pow<exponent>::result;
         isLoaded = false;
         }
 
@@ -624,7 +628,7 @@ struct SimpleSubRecord<FLOAT32>
         return true;
         }
 
-    SimpleSubRecord<FLOAT32>& operator = (const SimpleSubRecord<FLOAT32> &rhs)
+    SimpleSubRecord<FLOAT32, significand, exponent>& operator = (const SimpleSubRecord<FLOAT32, significand, exponent> &rhs)
         {
         if(this != &rhs)
             {
@@ -634,13 +638,13 @@ struct SimpleSubRecord<FLOAT32>
         return *this;
         }
 
-    bool operator ==(const SimpleSubRecord<FLOAT32> &other) const
+    bool operator ==(const SimpleSubRecord<FLOAT32, significand, exponent> &other) const
         {
         return (isLoaded == other.isLoaded &&
                 AlmostEqual(value, other.value, 2));
         }
 
-    bool operator !=(const SimpleSubRecord<FLOAT32> &other) const
+    bool operator !=(const SimpleSubRecord<FLOAT32, significand, exponent> &other) const
         {
         return !(*this == other);
         }
@@ -650,13 +654,14 @@ struct SimpleSubRecord<FLOAT32>
 //Even if not actually loaded from disk, they are always considered loaded even if they're explicitly unloaded.
 //Unloading them simply resets the values to default.
 //Should only be used with simple data types that should be initialized to 0 (int, float, etc) and not structs
-template<class T>
+//exponent parameter is only used on the float specialization
+template<class T, SINT32 significand=0, UINT32 exponent=0>
 struct ReqSimpleSubRecord
     {
     T value;
 
     ReqSimpleSubRecord():
-        value(0)
+        value(significand)
         {
         //
         }
@@ -680,7 +685,7 @@ struct ReqSimpleSubRecord
         }
     void Unload()
         {
-        value = 0;
+        value = significand;
         }
 
     bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
@@ -697,29 +702,29 @@ struct ReqSimpleSubRecord
         return true;
         }
 
-    ReqSimpleSubRecord<T>& operator = (const ReqSimpleSubRecord<T> &rhs)
+    ReqSimpleSubRecord<T, significand, exponent>& operator = (const ReqSimpleSubRecord<T, significand, exponent> &rhs)
         {
         if(this != &rhs)
             value = rhs.value;
         return *this;
         }
-    bool operator ==(const ReqSimpleSubRecord<T> &other) const
+    bool operator ==(const ReqSimpleSubRecord<T, significand, exponent> &other) const
         {
         return (value == other.value);
         }
-    bool operator !=(const ReqSimpleSubRecord<T> &other) const
+    bool operator !=(const ReqSimpleSubRecord<T, significand, exponent> &other) const
         {
         return !(*this == other);
         }
     };
 
-template<>
-struct ReqSimpleSubRecord<FLOAT32>
+template<SINT32 significand, UINT32 exponent>
+struct ReqSimpleSubRecord<FLOAT32, significand, exponent>
     {
     FLOAT32 value;
 
     ReqSimpleSubRecord():
-        value(0.0f)
+        value((FLOAT32)significand / Compile10Pow<exponent>::result)
         {
         //
         }
@@ -743,7 +748,7 @@ struct ReqSimpleSubRecord<FLOAT32>
         }
     void Unload()
         {
-        value = 0.0f;
+        value = (FLOAT32)significand / Compile10Pow<exponent>::result;
         }
 
     bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
@@ -760,31 +765,32 @@ struct ReqSimpleSubRecord<FLOAT32>
         return true;
         }
 
-    ReqSimpleSubRecord<FLOAT32>& operator = (const ReqSimpleSubRecord<FLOAT32> &rhs)
+    ReqSimpleSubRecord<FLOAT32, significand, exponent>& operator = (const ReqSimpleSubRecord<FLOAT32, significand, exponent> &rhs)
         {
         if(this != &rhs)
             value = rhs.value;
         return *this;
         }
-    bool operator ==(const ReqSimpleSubRecord<FLOAT32> &other) const
+    bool operator ==(const ReqSimpleSubRecord<FLOAT32, significand, exponent> &other) const
         {
         return (AlmostEqual(value, other.value, 2));
         }
-    bool operator !=(const ReqSimpleSubRecord<FLOAT32> &other) const
+    bool operator !=(const ReqSimpleSubRecord<FLOAT32, significand, exponent> &other) const
         {
         return !(*this == other);
         }
     };
 //Used for subrecords that are optional
 //Even if loaded, they are considered unloaded if they're equal to their defaults
-//Should only be used with simple data types that should be initialized to 0 (int, float, etc) and not structs
-template<class T>
+//Should only be used with simple data types (int, float, etc) and not structs
+//exponent parameter is only used on the float specialization
+template<class T, SINT32 significand=0, UINT32 exponent=0>
 struct OptSimpleSubRecord
     {
     T value;
 
     OptSimpleSubRecord():
-        value(0)
+        value(significand)
         {
         //
         }
@@ -798,7 +804,7 @@ struct OptSimpleSubRecord
         }
     bool IsLoaded() const
         {
-        return (value != 0);
+        return (value != significand);
         }
     void Load()
         {
@@ -806,12 +812,12 @@ struct OptSimpleSubRecord
         }
     void Unload()
         {
-        value = 0;
+        value = significand;
         }
 
     bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
         {
-        if(value != 0)
+        if(value != significand)
             {
             curPos += subSize;
             return false;
@@ -827,29 +833,29 @@ struct OptSimpleSubRecord
         return true;
         }
 
-    OptSimpleSubRecord<T>& operator = (const OptSimpleSubRecord<T> &rhs)
+    OptSimpleSubRecord<T, significand, exponent>& operator = (const OptSimpleSubRecord<T, significand, exponent> &rhs)
         {
         if(this != &rhs)
             value = rhs.value;
         return *this;
         }
-    bool operator ==(const OptSimpleSubRecord<T> &other) const
+    bool operator ==(const OptSimpleSubRecord<T, significand, exponent> &other) const
         {
         return value == other.value;
         }
-    bool operator !=(const OptSimpleSubRecord<T> &other) const
+    bool operator !=(const OptSimpleSubRecord<T, significand, exponent> &other) const
         {
         return value != other.value;
         }
     };
 
-template<>
-struct OptSimpleSubRecord<FLOAT32>
+template<SINT32 significand, UINT32 exponent>
+struct OptSimpleSubRecord<FLOAT32, significand, exponent>
     {
     FLOAT32 value;
 
     OptSimpleSubRecord():
-        value(0.0f)
+        value((FLOAT32)significand / Compile10Pow<exponent>::result)
         {
         //
         }
@@ -865,7 +871,7 @@ struct OptSimpleSubRecord<FLOAT32>
 
     bool IsLoaded() const
         {
-        return !(AlmostEqual(value, 0.0f, 2));
+        return !(AlmostEqual(value, (FLOAT32)significand / Compile10Pow<exponent>::result, 2));
         }
     void Load()
         {
@@ -873,12 +879,12 @@ struct OptSimpleSubRecord<FLOAT32>
         }
     void Unload()
         {
-        value = 0.0f;
+        value = (FLOAT32)significand / Compile10Pow<exponent>::result;
         }
 
     bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
         {
-        if(!(AlmostEqual(value, 0.0f, 2)))
+        if(!(AlmostEqual(value, (FLOAT32)significand / Compile10Pow<exponent>::result, 2)))
             {
             curPos += subSize;
             return false;
@@ -894,17 +900,17 @@ struct OptSimpleSubRecord<FLOAT32>
         return true;
         }
 
-    OptSimpleSubRecord<FLOAT32>& operator = (const OptSimpleSubRecord<FLOAT32> &rhs)
+    OptSimpleSubRecord<FLOAT32, significand, exponent>& operator = (const OptSimpleSubRecord<FLOAT32, significand, exponent> &rhs)
         {
         if(this != &rhs)
             value = rhs.value;
         return *this;
         }
-    bool operator ==(const OptSimpleSubRecord<FLOAT32> &other) const
+    bool operator ==(const OptSimpleSubRecord<FLOAT32, significand, exponent> &other) const
         {
         return AlmostEqual(value, other.value, 2);
         }
-    bool operator !=(const OptSimpleSubRecord<FLOAT32> &other) const
+    bool operator !=(const OptSimpleSubRecord<FLOAT32, significand, exponent> &other) const
         {
         return !(AlmostEqual(value, other.value, 2));
         }
@@ -914,7 +920,8 @@ struct OptSimpleSubRecord<FLOAT32>
 //They don't compare to the default value to see if they're
 // still considered loaded.
 //Should only be used with simple data types that should be initialized to 0 (int, float, etc) and not structs
-template<class T>
+//exponent parameter is only used on the float specialization
+template<class T, SINT32 significand=0, UINT32 exponent=0>
 struct SemiOptSimpleSubRecord
     {
     T *value;
@@ -941,7 +948,7 @@ struct SemiOptSimpleSubRecord
     void Load()
         {
         if(value == NULL)
-            value = new T(0);
+            value = new T(significand);
         }
     void Unload()
         {
@@ -956,7 +963,7 @@ struct SemiOptSimpleSubRecord
             curPos += subSize;
             return false;
             }
-        value = new T(0);
+        value = new T(significand);
         if(subSize > sizeof(T))
             {
             printf("Opt? subSize:%u, sizeof:%u\n", subSize, sizeof(T));
@@ -968,13 +975,13 @@ struct SemiOptSimpleSubRecord
         return true;
         }
 
-    SemiOptSimpleSubRecord<T>& operator = (const SemiOptSimpleSubRecord<T> &rhs)
+    SemiOptSimpleSubRecord<T, significand, exponent>& operator = (const SemiOptSimpleSubRecord<T, significand, exponent> &rhs)
         {
         if(this != &rhs)
             if(rhs.value != NULL)
                 {
                 if(value == NULL)
-                    value = new T(0);
+                    value = new T(significand);
                 else
                     value->~T();
                 *value = *rhs.value;
@@ -986,7 +993,7 @@ struct SemiOptSimpleSubRecord
                 }
         return *this;
         }
-    bool operator ==(const SemiOptSimpleSubRecord<T> &other) const
+    bool operator ==(const SemiOptSimpleSubRecord<T, significand, exponent> &other) const
         {
         if(!IsLoaded())
             {
@@ -997,14 +1004,14 @@ struct SemiOptSimpleSubRecord
             return true;
         return false;
         }
-    bool operator !=(const SemiOptSimpleSubRecord<T> &other) const
+    bool operator !=(const SemiOptSimpleSubRecord<T, significand, exponent> &other) const
         {
         return !(*this == other);
         }
     };
 
-template<>
-struct SemiOptSimpleSubRecord<FLOAT32>
+template<SINT32 significand, UINT32 exponent>
+struct SemiOptSimpleSubRecord<FLOAT32, significand, exponent>
     {
     FLOAT32 *value;
 
@@ -1030,7 +1037,7 @@ struct SemiOptSimpleSubRecord<FLOAT32>
     void Load()
         {
         if(value == NULL)
-            value = new FLOAT32(0.0f);
+            value = new FLOAT32((FLOAT32)significand / Compile10Pow<exponent>::result);
         }
     void Unload()
         {
@@ -1045,7 +1052,7 @@ struct SemiOptSimpleSubRecord<FLOAT32>
             curPos += subSize;
             return false;
             }
-        value = new FLOAT32(0.0f);
+        value = new FLOAT32((FLOAT32)significand / Compile10Pow<exponent>::result);
         if(subSize > sizeof(FLOAT32))
             {
             printf("Opt? subSize:%u, sizeof:%u\n", subSize, sizeof(FLOAT32));
@@ -1057,13 +1064,13 @@ struct SemiOptSimpleSubRecord<FLOAT32>
         return true;
         }
 
-    SemiOptSimpleSubRecord<FLOAT32>& operator = (const SemiOptSimpleSubRecord<FLOAT32> &rhs)
+    SemiOptSimpleSubRecord<FLOAT32, significand, exponent>& operator = (const SemiOptSimpleSubRecord<FLOAT32, significand, exponent> &rhs)
         {
         if(this != &rhs)
             if(rhs.value != NULL)
                 {
                 if(value == NULL)
-                    value = new FLOAT32(0.0f);
+                    value = new FLOAT32((FLOAT32)significand / Compile10Pow<exponent>::result);
                 *value = *rhs.value;
                 }
             else
@@ -1073,7 +1080,7 @@ struct SemiOptSimpleSubRecord<FLOAT32>
                 }
         return *this;
         }
-    bool operator ==(const SemiOptSimpleSubRecord<FLOAT32> &other) const
+    bool operator ==(const SemiOptSimpleSubRecord<FLOAT32, significand, exponent> &other) const
         {
         if(!IsLoaded())
             {
@@ -1084,7 +1091,7 @@ struct SemiOptSimpleSubRecord<FLOAT32>
             return true;
         return false;
         }
-    bool operator !=(const SemiOptSimpleSubRecord<FLOAT32> &other) const
+    bool operator !=(const SemiOptSimpleSubRecord<FLOAT32, significand, exponent> &other) const
         {
         return !(*this == other);
         }

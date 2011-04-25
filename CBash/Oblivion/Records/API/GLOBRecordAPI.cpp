@@ -59,7 +59,7 @@ void * GLOBRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 4: //eid
             return EDID.value;
         case 5: //format
-            return &FNAM.value.format;
+            return &FNAM.value;
         case 6: //value
             return &FLTV.value;
         default:
@@ -81,7 +81,7 @@ bool GLOBRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             EDID.Copy((STRING)FieldValue);
             break;
         case 5: //format
-            FNAM.value.format = *(SINT8 *)FieldValue;
+            FNAM.value = *(SINT8 *)FieldValue;
             break;
         case 6: //value
             FLTV.value = *(FLOAT32 *)FieldValue;

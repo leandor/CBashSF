@@ -27,7 +27,7 @@ class GLOBRecord : public Record
     {
     public:
         StringRecord EDID;
-        ReqSubRecord<GLOBFNAM> FNAM;
+        ReqSimpleSubRecord<UINT8, 'f'> FNAM;
         ReqSimpleSubRecord<FLOAT32> FLTV;
 
         GLOBRecord(unsigned char *_recData=NULL);
