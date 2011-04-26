@@ -1135,6 +1135,10 @@
 								/>
 							</FileConfiguration>
 						</File>
+						<File
+							RelativePath=".\FalloutNewVegas\Records\TXSTRecord.cpp"
+							>
+						</File>
 					</Filter>
 					<Filter
 						Name="API"
@@ -1169,6 +1173,10 @@
 									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
 								/>
 							</FileConfiguration>
+						</File>
+						<File
+							RelativePath=".\FalloutNewVegas\Records\API\TXSTRecordAPI.cpp"
+							>
 						</File>
 					</Filter>
 				</Filter>

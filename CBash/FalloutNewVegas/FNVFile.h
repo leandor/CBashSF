@@ -26,11 +26,13 @@ GPL License and Copyright Notice ============================================
 #include "../GenericRecord.h"
 #include "../GRUPRecord.h"
 #include "Records/GMSTRecord.h"
+#include "Records/TXSTRecord.h"
 
 class FNVFile : public ModFile
     {
     public:
         FNVGRUPRecords<FNV::GMSTRecord> GMST;
+        FNVGRUPRecords<FNV::TXSTRecord> TXST;
 
         FNVFile(STRING FileName, STRING ModName, const UINT32 _flags);
         ~FNVFile();

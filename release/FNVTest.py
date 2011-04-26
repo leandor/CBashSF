@@ -25,6 +25,7 @@ def regressionTests():
 
     assertTES4(Current, newMod)
     assertGMST(Current, newMod)
+    assertTXST(Current, newMod)
 ##    newMod.save()
 
 def assertTES4(Current, newMod):
@@ -202,6 +203,12 @@ def assertGMST(Current, newMod):
 
     print "GMST:Finished testing"
 
+def assertTXST(Current, newMod):
+    record = Current.LoadOrderMods[0].TXST[0]
+    print PrintFormID(record.fid)
+    printRecord(record)
+    return
+    print "TXST:Finished testing"
 
 from timeit import Timer
 

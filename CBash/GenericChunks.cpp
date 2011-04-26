@@ -1917,9 +1917,12 @@ bool GENTNAM::operator !=(const GENTNAM &other) const
 //Fallout New Vegas Chunks
 
 GENOBND::GENOBND():
-    x(0),
-    y(0),
-    z(0)
+    x1(0),
+    y1(0),
+    z1(0),
+    x2(0),
+    y2(0),
+    z2(0)
     {
     //
     }
@@ -1931,9 +1934,12 @@ GENOBND::~GENOBND()
 
 bool GENOBND::operator ==(const GENOBND &other) const
     {
-    return (x == other.x &&
-            y == other.y &&
-            z == other.z);
+    return (x1 == other.x1 &&
+            y1 == other.y1 &&
+            z1 == other.z1 &&
+            x2 == other.x2 &&
+            y2 == other.y2 &&
+            z2 == other.z2);
     }
 
 bool GENOBND::operator !=(const GENOBND &other) const
@@ -1983,58 +1989,6 @@ bool GENDODT::operator ==(const GENDODT &other) const
 bool GENDODT::operator !=(const GENDODT &other) const
     {
     return !(*this == other);
-    }
-
-bool GENDODT::IsParallax()
-    {
-    return (flags & fIsParallax) != 0;
-    }
-
-void GENDODT::IsParallax(bool value)
-    {
-    if(value)
-        flags |= fIsParallax;
-    else
-        flags &= ~fIsParallax;
-    }
-
-bool GENDODT::IsAlphaBlending()
-    {
-    return (flags & fIsAlphaBlending) != 0;
-    }
-
-void GENDODT::IsAlphaBlending(bool value)
-    {
-    if(value)
-        flags |= fIsAlphaBlending;
-    else
-        flags &= ~fIsAlphaBlending;
-    }
-
-bool GENDODT::IsAlphaTesting()
-    {
-    return (flags & fIsAlphaTesting) != 0;
-    }
-
-void GENDODT::IsAlphaTesting(bool value)
-    {
-    if(value)
-        flags |= fIsAlphaTesting;
-    else
-        flags &= ~fIsAlphaTesting;
-    }
-
-bool GENDODT::IsFlagMask(UINT8 Mask, bool Exact)
-    {
-    if(Exact)
-        return (flags & Mask) == Mask;
-    else
-        return (flags & Mask) != 0;
-    }
-
-void GENDODT::SetFlagMask(UINT8 Mask)
-    {
-    flags = Mask;
     }
 
 bool GENPATROL::IsScriptEnabled()

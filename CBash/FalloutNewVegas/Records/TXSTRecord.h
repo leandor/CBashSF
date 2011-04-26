@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class TXSTRecord : public Record //Texture Set
+class TXSTRecord : public FNVRecord //Texture Set
     {
     private:
         enum flagsFlags
@@ -33,9 +33,16 @@ class TXSTRecord : public Record //Texture Set
             fIsNoSpecularMap = 0x00000001
             };
 
+        enum DODTFlags
+            {
+            fIsParallax      = 0x00000001,
+            fIsAlphaBlending = 0x00000002,
+            fIsAlphaTesting  = 0x00000004
+            };
+
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENOBND> OBND; //Object Bounds
+        ReqSubRecord<GENOBND> OBND; //Object Bounds
         //Textures (RGB/A)
         StringRecord TX00; //Base Image / Transparency
         StringRecord TX01; //Normal Map / Specular
@@ -44,19 +51,25 @@ class TXSTRecord : public Record //Texture Set
         StringRecord TX04; //Parallax Map / Unused
         StringRecord TX05; //Environment Map / Unused
         OptSubRecord<GENDODT> DODT; //Decal Data
-        OptSimpleSubRecord<UINT16> DNAM; //Flags
+        ReqSimpleSubRecord<UINT16> DNAM; //Flags
 
         TXSTRecord(unsigned char *_recData=NULL);
         TXSTRecord(TXSTRecord *srcRecord);
         ~TXSTRecord();
-
-        bool   VisitFormIDs(FormIDOp &op);
 
         bool   IsNoSpecularMap();
         void   IsNoSpecularMap(bool value);
         bool   IsFlagMask(UINT16 Mask, bool Exact=false);
         void   SetFlagMask(UINT16 Mask);
 
+        bool   IsObjectParallax();
+        void   IsObjectParallax(bool value);
+        bool   IsObjectAlphaBlending();
+        void   IsObjectAlphaBlending(bool value);
+        bool   IsObjectAlphaTesting();
+        void   IsObjectAlphaTesting(bool value);
+        bool   IsObjectFlagMask(UINT8 Mask, bool Exact=false);
+        void   SetObjectFlagMask(UINT8 Mask);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

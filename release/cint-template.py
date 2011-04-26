@@ -1841,6 +1841,63 @@ class FnvGMSTRecord(FnvBaseRecord):
                 _CSetField(self._CollectionID, self._ModID, self._RecordID, 7, 0, 0, 0, 0, 0, 0, nValue, 0)
     value = property(get_value, set_value)
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['value']
+    
+class FnvTXSTRecord(FnvBaseRecord):
+    _Type = 'TXST'
+    SINT16_MACRO(boundX1, 7)
+    SINT16_MACRO(boundY1, 8)
+    SINT16_MACRO(boundZ1, 9)
+    SINT16_MACRO(boundX2, 7)
+    SINT16_MACRO(boundY2, 8)
+    SINT16_MACRO(boundZ2, 9)
+    ISTRING_MACRO(baseImageOrTransparency, 13)
+    ISTRING_MACRO(normalMapOrSpecular, 14)
+    ISTRING_MACRO(envMapMaskOrUnk, 15)
+    ISTRING_MACRO(glowMapOrUnused, 16)
+    ISTRING_MACRO(parallaxMapOrUnused, 17)
+    ISTRING_MACRO(envMapOrUnused, 18)
+    FLOAT32_MACRO(decalMinWidth, 19)
+    FLOAT32_MACRO(decalMaxWidth, 20)
+    FLOAT32_MACRO(decalMinHeight, 21)
+    FLOAT32_MACRO(decalMaxHeight, 22)
+    FLOAT32_MACRO(decalDepth, 23)
+    FLOAT32_MACRO(decalShininess, 24)
+    FLOAT32_MACRO(decalScale, 25)
+    UINT8_MACRO(decalPasses, 26)
+    UINT8_FLAG_MACRO(decalFlags, 27)
+    UINT8_ARRAY_MACRO(decalUnused1, 28, 2)
+    UINT8_MACRO(decalRed, 29)
+    UINT8_MACRO(decalGreen, 30)
+    UINT8_MACRO(decalBlue, 31)
+    UINT8_ARRAY_MACRO(decalUnused2, 32, 1)
+    UINT16_FLAG_MACRO(flags, 33)
+
+    BasicFlagMACRO(IsNoSpecularMap, flags, 0x00000001)
+    BasicInvertedFlagMACRO(IsSpecularMap, IsNoSpecularMap)
+
+    BasicFlagMACRO(IsObjectParallax, decalFlags, 0x00000001)
+    BasicFlagMACRO(IsObjectAlphaBlending, decalFlags, 0x00000002)
+    BasicFlagMACRO(IsObjectAlphaTesting, decalFlags, 0x00000004)
+    
+    copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                           'boundX2', 'boundY2', 'boundZ2', 'baseImageOrTransparency',
+                                           'normalMapOrSpecular', 'envMapMaskOrUnk', 'glowMapOrUnused',
+                                           'parallaxMapOrUnused', 'envMapOrUnused', 'decalMinWidth',
+                                           'decalMaxWidth', 'decalMinHeight', 'decalMaxHeight',
+                                           'decalDepth', 'decalShininess', 'decalScale',
+                                           'decalPasses', 'decalFlags', 'decalUnused1',
+                                           'decalRed', 'decalGreen', 'decalBlue',
+                                           'decalUnused2', 'flags']
+    
+    exportattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                             'boundX2', 'boundY2', 'boundZ2', 'baseImageOrTransparency',
+                                             'normalMapOrSpecular', 'envMapMaskOrUnk', 'glowMapOrUnused',
+                                             'parallaxMapOrUnused', 'envMapOrUnused', 'decalMinWidth',
+                                             'decalMaxWidth', 'decalMinHeight', 'decalMaxHeight',
+                                             'decalDepth', 'decalShininess', 'decalScale',
+                                             'decalPasses', 'decalFlags',
+                                             'decalRed', 'decalGreen', 'decalBlue',
+                                             'flags'] # 'decalUnused1','decalUnused2', 
 
 #--Oblivion
 class ObBaseRecord(object):
@@ -4978,7 +5035,7 @@ type_record = dict([('BASE',ObBaseRecord),(None,None),('',None),
                     ('CSTY',ObCSTYRecord),('LSCR',ObLSCRRecord),('LVSP',ObLVSPRecord),
                     ('ANIO',ObANIORecord),('WATR',ObWATRRecord),('EFSH',ObEFSHRecord)])
 fnv_type_record = dict([('BASE',FnvBaseRecord),(None,None),('',None),
-                    ('GMST',FnvGMSTRecord),])
+                    ('GMST',FnvGMSTRecord),('TXST',FnvTXSTRecord),])
 
 class ObModFile(object):
     def __init__(self, CollectionIndex, ModID):
@@ -5319,6 +5376,7 @@ class FnvModFile(object):
         return FnvTES4Record(self._CollectionID, self._ModID, RecordID, 0, 0)
 
     FnvModEDIDRecordsMACRO(GMST)
+    FnvModRecordsMACRO(TXST)
     @property
     def tops(self):
         return dict((("GMST", self.GMST),))

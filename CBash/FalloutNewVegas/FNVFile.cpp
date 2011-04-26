@@ -76,7 +76,8 @@ SINT32 FNVFile::LoadTES4()
 SINT32 FNVFile::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders)
     {
     enum IgTopRecords {
-        eIgGMST = 0x54535D47
+        eIgGMST = 'TSMG' | 0x00001000, //Record::fIsIgnored
+        eIgTXST = 'TSXT' | 0x00001000 
         };
     if(Flags.IsIgnoreExisting || !ReadHandler.IsOpen() || Flags.LoadedGRUPs)
         {
@@ -117,6 +118,12 @@ SINT32 FNVFile::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders
                 ReadHandler.read(&GMST.unknown, 4);
                 GMST.Skim(ReadHandler, GRUPSize, processor_full, indexer);
                 break;
+            //case eIgTXST: //Same as normal
+            case 'TSXT':
+                ReadHandler.read(&TXST.stamp, 4);
+                ReadHandler.read(&TXST.unknown, 4);
+                TXST.Skim(ReadHandler, GRUPSize, processor, indexer);
+                break;
             //ADD DEFINITIONS HERE
 
             default:
@@ -150,6 +157,8 @@ UINT32 FNVFile::GetNumRecords(const UINT32 &RecordType)
         {
         case 'TSMG':
             return (UINT32)GMST.Records.size();
+        case 'TSXT':
+            return (UINT32)TXST.Records.size();
         default:
             printf("FNVFile::GetNumRecords: Warning - Unable to count records (%c%c%c%c) in mod \"%s\". Unrecognized record type.\n", ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], ReadHandler.getModName());
             break;
@@ -184,6 +193,10 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
                 ((FNV::GMSTRecord *)newRecord)->EDID.Copy(RecordEditorID);
                 ((FNV::GMSTRecord *)newRecord)->DATA.format = ((FNV::GMSTRecord *)newRecord)->EDID.value[0];
                 }
+            break;
+        case 'TSXT':
+            TXST.Records.push_back(new FNV::TXSTRecord((FNV::TXSTRecord *)SourceRecord));
+            newRecord = TXST.Records.back();
             break;
         //case 'BOLG':
         //    GLOB.Records.push_back(new GLOBRecord((GLOBRecord *)SourceRecord));
@@ -220,6 +233,7 @@ SINT32 FNVFile::CleanMasters(std::vector<FormIDResolver *> &Expanders)
         //printf("Checking: %s\n", TES4.MAST[p].value);
         if(checker.Accept(topRecord)) continue;
         if(GMST.VisitRecords(NULL, checker, false)) continue;
+        if(TXST.VisitRecords(NULL, checker, false)) continue;
 
         //printf("ToRemove: %s\n", TES4.MAST[p].value);
         ToRemove.push_back(p);
@@ -256,6 +270,7 @@ SINT32 FNVFile::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expa
 
     //ADD DEFINITIONS HERE
     formCount += GMST.WriteGRUP('TSMG', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += TXST.WriteGRUP('TSXT', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
 
     //update formCount. Cheaper to go back and write it at the end than to calculate it before any writing.
     SaveHandler.writeAt(34, &formCount, 4);
@@ -277,6 +292,7 @@ void FNVFile::VisitAllRecords(RecordOp &op)
     Record * topRecord = &TES4;
     op.Accept(topRecord);
     GMST.VisitRecords(NULL, op, true);
+    TXST.VisitRecords(NULL, op, true);
 
     return;
     }
@@ -298,6 +314,9 @@ void FNVFile::VisitRecords(const UINT32 &TopRecordType, const UINT32 &RecordType
             break;
         case 'TSMG':
             GMST.VisitRecords(RecordType, op, DeepVisit);
+            break;
+        case 'TSXT':
+            TXST.VisitRecords(RecordType, op, DeepVisit);
             break;
 
         default:

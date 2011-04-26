@@ -74,62 +74,62 @@ SINT32 TES4File::LoadTES4()
 SINT32 TES4File::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders)
     {
     enum IgTopRecords {
-        eIgGMST = 0x54535D47,
-        eIgGLOB = 0x424F5C47,
-        eIgCLAS = 0x53415C43,
-        eIgFACT = 0x54435146,
-        eIgHAIR = 0x52495148,
-        eIgEYES = 0x53456945,
-        eIgRACE = 0x45435152,
-        eIgSOUN = 0x4E555F53,
-        eIgSKIL = 0x4C495B53,
-        eIgMGEF = 0x4645574D,
-        eIgSCPT = 0x54505353,
-        eIgLTEX = 0x5845644C,
-        eIgENCH = 0x48435E45,
-        eIgSPEL = 0x4C456053,
-        eIgBSGN = 0x4E476342,
-        eIgACTI = 0x49545341,
-        eIgAPPA = 0x41506041,
-        eIgARMO = 0x4F4D6241,
-        eIgBOOK = 0x4B4F5F42,
-        eIgCLOT = 0x544F5C43,
-        eIgCONT = 0x544E5F43,
-        eIgDOOR = 0x524F5F44,
-        eIgINGR = 0x52475E49,
-        eIgLIGH = 0x4847594C,
-        eIgMISC = 0x4353594D,
-        eIgSTAT = 0x54416453,
-        eIgGRAS = 0x53416247,
-        eIgTREE = 0x45456254,
-        eIgFLOR = 0x524F5C46,
-        eIgFURN = 0x4E526546,
-        eIgWEAP = 0x50415557,
-        eIgAMMO = 0x4F4D5D41,
-        eIgNPC_ = 0x5F43604E,
-        eIgCREA = 0x41456243,
-        eIgLVLC = 0x434C664C,
-        eIgSLGM = 0x4D475C53,
-        eIgKEYM = 0x4D59554B,
-        eIgALCH = 0x48435C41,
-        eIgSBSP = 0x50535253,
-        eIgSGST = 0x54535753,
-        eIgLVLI = 0x494C664C,
-        eIgWTHR = 0x52486457,
-        eIgCLMT = 0x544D5C43,
-        eIgREGN = 0x4E475552,
-        eIgCELL = 0x4C4C5543,
-        eIgWRLD = 0x444C6257,
-        eIgDIAL = 0x4C415944,
-        eIgQUST = 0x54536551,
-        eIgIDLE = 0x454C5449,
-        eIgPACK = 0x4B435150,
-        eIgCSTY = 0x59546343,
-        eIgLSCR = 0x5243634C,
-        eIgLVSP = 0x5053664C,
-        eIgANIO = 0x4F495E41,
-        eIgWATR = 0x52545157,
-        eIgEFSH = 0x48535645
+        eIgGMST = 'TSMG' | 0x00001000, //Record::fIsIgnored
+        eIgGLOB = 'BOLG' | 0x00001000,
+        eIgCLAS = 'SALC' | 0x00001000,
+        eIgFACT = 'TCAF' | 0x00001000,
+        eIgHAIR = 'RIAH' | 0x00001000,
+        eIgEYES = 'SEYE' | 0x00001000,
+        eIgRACE = 'ECAR' | 0x00001000,
+        eIgSOUN = 'NUOS' | 0x00001000,
+        eIgSKIL = 'LIKS' | 0x00001000,
+        eIgMGEF = 'FEGM' | 0x00001000,
+        eIgSCPT = 'TPCS' | 0x00001000,
+        eIgLTEX = 'XETL' | 0x00001000,
+        eIgENCH = 'HCNE' | 0x00001000,
+        eIgSPEL = 'LEPS' | 0x00001000,
+        eIgBSGN = 'NGSB' | 0x00001000,
+        eIgACTI = 'ITCA' | 0x00001000,
+        eIgAPPA = 'APPA' | 0x00001000,
+        eIgARMO = 'OMRA' | 0x00001000,
+        eIgBOOK = 'KOOB' | 0x00001000,
+        eIgCLOT = 'TOLC' | 0x00001000,
+        eIgCONT = 'TNOC' | 0x00001000,
+        eIgDOOR = 'ROOD' | 0x00001000,
+        eIgINGR = 'RGNI' | 0x00001000,
+        eIgLIGH = 'HGIL' | 0x00001000,
+        eIgMISC = 'CSIM' | 0x00001000,
+        eIgSTAT = 'TATS' | 0x00001000,
+        eIgGRAS = 'SARG' | 0x00001000,
+        eIgTREE = 'EERT' | 0x00001000,
+        eIgFLOR = 'ROLF' | 0x00001000,
+        eIgFURN = 'NRUF' | 0x00001000,
+        eIgWEAP = 'PAEW' | 0x00001000,
+        eIgAMMO = 'OMMA' | 0x00001000,
+        eIgNPC_ = '_CPN' | 0x00001000,
+        eIgCREA = 'AERC' | 0x00001000,
+        eIgLVLC = 'CLVL' | 0x00001000,
+        eIgSLGM = 'MGLS' | 0x00001000,
+        eIgKEYM = 'MYEK' | 0x00001000,
+        eIgALCH = 'HCLA' | 0x00001000,
+        eIgSBSP = 'PSBS' | 0x00001000,
+        eIgSGST = 'TSGS' | 0x00001000,
+        eIgLVLI = 'ILVL' | 0x00001000,
+        eIgWTHR = 'RHTW' | 0x00001000,
+        eIgCLMT = 'TMLC' | 0x00001000,
+        eIgREGN = 'NGER' | 0x00001000,
+        eIgCELL = 'LLEC' | 0x00001000,
+        eIgWRLD = 'DLRW' | 0x00001000,
+        eIgDIAL = 'LAID' | 0x00001000,
+        eIgQUST = 'TSUQ' | 0x00001000,
+        eIgIDLE = 'ELDI' | 0x00001000,
+        eIgPACK = 'KCAP' | 0x00001000,
+        eIgCSTY = 'YTSC' | 0x00001000,
+        eIgLSCR = 'RCSL' | 0x00001000,
+        eIgLVSP = 'PSVL' | 0x00001000,
+        eIgANIO = 'OINA' | 0x00001000,
+        eIgWATR = 'RTAW' | 0x00001000,
+        eIgEFSH = 'HSFE' | 0x00001000
         };
     if(Flags.IsIgnoreExisting || !ReadHandler.IsOpen() || Flags.LoadedGRUPs)
         {
@@ -195,7 +195,7 @@ SINT32 TES4File::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expander
                 ReadHandler.read(&HAIR.stamp, 4);
                 HAIR.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
-            case eIgEYES:
+            //case eIgEYES: //Same as normal
             case 'SEYE':
                 ReadHandler.read(&EYES.stamp, 4);
                 EYES.Skim(ReadHandler, GRUPSize, processor, indexer);
@@ -225,7 +225,7 @@ SINT32 TES4File::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expander
                 ReadHandler.read(&SCPT.stamp, 4);
                 SCPT.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
-            case eIgLTEX:
+            //case eIgLTEX: //Same as normal
             case 'XETL':
                 ReadHandler.read(&LTEX.stamp, 4);
                 LTEX.Skim(ReadHandler, GRUPSize, processor, indexer);
@@ -235,12 +235,12 @@ SINT32 TES4File::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expander
                 ReadHandler.read(&ENCH.stamp, 4);
                 ENCH.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
-            case eIgSPEL:
+            //case eIgSPEL: //Same as normal
             case 'LEPS':
                 ReadHandler.read(&SPEL.stamp, 4);
                 SPEL.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
-            case eIgBSGN:
+            //case eIgBSGN: //Same as normal
             case 'NGSB':
                 ReadHandler.read(&BSGN.stamp, 4);
                 BSGN.Skim(ReadHandler, GRUPSize, processor, indexer);
@@ -250,12 +250,12 @@ SINT32 TES4File::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expander
                 ReadHandler.read(&ACTI.stamp, 4);
                 ACTI.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
-            case eIgAPPA:
+            //case eIgAPPA: //Same as normal
             case 'APPA':
                 ReadHandler.read(&APPA.stamp, 4);
                 APPA.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
-            case eIgARMO:
+            //case eIgARMO: //Same as normal
             case 'OMRA':
                 ReadHandler.read(&ARMO.stamp, 4);
                 ARMO.Skim(ReadHandler, GRUPSize, processor, indexer);
@@ -295,17 +295,17 @@ SINT32 TES4File::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expander
                 ReadHandler.read(&MISC.stamp, 4);
                 MISC.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
-            case eIgSTAT:
+            //case eIgSTAT: //Same as normal
             case 'TATS':
                 ReadHandler.read(&STAT.stamp, 4);
                 STAT.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
-            case eIgGRAS:
+            //case eIgGRAS: //Same as normal
             case 'SARG':
                 ReadHandler.read(&GRAS.stamp, 4);
                 GRAS.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
-            case eIgTREE:
+            //case eIgTREE: //Same as normal
             case 'EERT':
                 ReadHandler.read(&TREE.stamp, 4);
                 TREE.Skim(ReadHandler, GRUPSize, processor, indexer);
@@ -315,7 +315,7 @@ SINT32 TES4File::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expander
                 ReadHandler.read(&FLOR.stamp, 4);
                 FLOR.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
-            case eIgFURN:
+            //case eIgFURN: //Same as normal
             case 'NRUF':
                 ReadHandler.read(&FURN.stamp, 4);
                 FURN.Skim(ReadHandler, GRUPSize, processor, indexer);
@@ -330,17 +330,17 @@ SINT32 TES4File::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expander
                 ReadHandler.read(&AMMO.stamp, 4);
                 AMMO.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
-            case eIgNPC_:
+            //case eIgNPC_: //Same as normal
             case '_CPN':
                 ReadHandler.read(&NPC_.stamp, 4);
                 NPC_.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
-            case eIgCREA:
+            //case eIgCREA: //Same as normal
             case 'AERC':
                 ReadHandler.read(&CREA.stamp, 4);
                 CREA.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
-            case eIgLVLC:
+            //case eIgLVLC: //Same as normal
             case 'CLVL':
                 ReadHandler.read(&LVLC.stamp, 4);
                 LVLC.Skim(ReadHandler, GRUPSize, processor, indexer);
@@ -370,12 +370,12 @@ SINT32 TES4File::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expander
                 ReadHandler.read(&SGST.stamp, 4);
                 SGST.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
-            case eIgLVLI:
+            //case eIgLVLI: //Same as normal
             case 'ILVL':
                 ReadHandler.read(&LVLI.stamp, 4);
                 LVLI.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
-            case eIgWTHR:
+            //case eIgWTHR: //Same as normal
             case 'RHTW':
                 ReadHandler.read(&WTHR.stamp, 4);
                 WTHR.Skim(ReadHandler, GRUPSize, processor, indexer);
@@ -395,7 +395,7 @@ SINT32 TES4File::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expander
                 ReadHandler.read(&CELL.stamp, 4);
                 CELL.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
-            case eIgWRLD:
+            //case eIgWRLD: //Same as normal
             case 'DLRW':
                 ReadHandler.read(&WRLD.stamp, 4);
                 WRLD.Skim(ReadHandler, GRUPSize, processor, indexer);
@@ -405,7 +405,7 @@ SINT32 TES4File::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expander
                 ReadHandler.read(&DIAL.stamp, 4);
                 DIAL.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
-            case eIgQUST:
+            //case eIgQUST: //Same as normal
             case 'TSUQ':
                 ReadHandler.read(&QUST.stamp, 4);
                 QUST.Skim(ReadHandler, GRUPSize, processor, indexer);
@@ -420,17 +420,17 @@ SINT32 TES4File::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expander
                 ReadHandler.read(&PACK.stamp, 4);
                 PACK.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
-            case eIgCSTY:
+            //case eIgCSTY: //Same as normal
             case 'YTSC':
                 ReadHandler.read(&CSTY.stamp, 4);
                 CSTY.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
-            case eIgLSCR:
+            //case eIgLSCR: //Same as normal
             case 'RCSL':
                 ReadHandler.read(&LSCR.stamp, 4);
                 LSCR.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
-            case eIgLVSP:
+            //case eIgLVSP: //Same as normal
             case 'PSVL':
                 ReadHandler.read(&LVSP.stamp, 4);
                 LVSP.Skim(ReadHandler, GRUPSize, processor, indexer);

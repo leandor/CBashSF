@@ -70,36 +70,69 @@ TXSTRecord::~TXSTRecord()
     //
     }
 
-bool TXSTRecord::VisitFormIDs(FormIDOp &op)
-    {
-    if(!IsLoaded())
-        return false;
-
-
-    return op.Stop();
-    }
-
 bool TXSTRecord::IsNoSpecularMap()
     {
-    return DNAM.IsLoaded() ? (DNAM.value.value & fIsNoSpecularMap) != 0 : false;
+    return (DNAM.value & fIsNoSpecularMap) != 0;
     }
 
 void TXSTRecord::IsNoSpecularMap(bool value)
     {
-    if(!DNAM.IsLoaded()) return;
-    DNAM.value.value = value ? (DNAM.value.value | fIsNoSpecularMap) : (DNAM.value.value & ~fIsNoSpecularMap);
+    DNAM.value = value ? (DNAM.value | fIsNoSpecularMap) : (DNAM.value & ~fIsNoSpecularMap);
     }
 
 bool TXSTRecord::IsFlagMask(UINT16 Mask, bool Exact)
     {
-    if(!DNAM.IsLoaded()) return false;
-    return Exact ? ((DNAM.value.value & Mask) == Mask) : ((DNAM.value.value & Mask) != 0);
+    return Exact ? ((DNAM.value & Mask) == Mask) : ((DNAM.value & Mask) != 0);
     }
 
 void TXSTRecord::SetFlagMask(UINT16 Mask)
     {
-    DNAM.Load();
-    DNAM.value.value = Mask;
+    DNAM.value = Mask;
+    }
+
+bool TXSTRecord::IsObjectParallax()
+    {
+    return DODT.IsLoaded() ? (DODT->flags & fIsParallax) != 0 : false;
+    }
+
+void TXSTRecord::IsObjectParallax(bool value)
+    {
+    if(!DODT.IsLoaded()) return;
+    DODT->flags = value ? (DODT->flags | fIsParallax) : (DODT->flags & ~fIsParallax);
+    }
+
+bool TXSTRecord::IsObjectAlphaBlending()
+    {
+    return DODT.IsLoaded() ? (DODT->flags & fIsAlphaBlending) != 0 : false;
+    }
+
+void TXSTRecord::IsObjectAlphaBlending(bool value)
+    {
+    if(!DODT.IsLoaded()) return;
+    DODT->flags = value ? (DODT->flags | fIsAlphaBlending) : (DODT->flags & ~fIsAlphaBlending);
+    }
+
+bool TXSTRecord::IsObjectAlphaTesting()
+    {
+    return DODT.IsLoaded() ? (DODT->flags & fIsAlphaTesting) != 0 : false;
+    }
+
+void TXSTRecord::IsObjectAlphaTesting(bool value)
+    {
+    if(!DODT.IsLoaded()) return;
+    DODT->flags = value ? (DODT->flags | fIsAlphaTesting) : (DODT->flags & ~fIsAlphaTesting);
+    }
+
+bool TXSTRecord::IsObjectFlagMask(UINT8 Mask, bool Exact)
+    {
+    if(!DODT.IsLoaded()) return false;
+    return Exact ? ((DODT->flags & Mask) == Mask) : ((DODT->flags & Mask) != 0);
+    }
+
+void TXSTRecord::SetObjectFlagMask(UINT8 Mask)
+    {
+    DODT.Load();
+    DODT->flags = Mask;
     }
 
 UINT32 TXSTRecord::GetSize(bool forceCalc)
@@ -117,8 +150,7 @@ UINT32 TXSTRecord::GetSize(bool forceCalc)
         TotSize += cSize += 6;
         }
 
-    if(OBND.IsLoaded())
-        TotSize += OBND.GetSize() + 6;
+    TotSize += OBND.GetSize() + 6;
 
     if(TX00.IsLoaded())
         {
@@ -165,8 +197,7 @@ UINT32 TXSTRecord::GetSize(bool forceCalc)
     if(DODT.IsLoaded())
         TotSize += DODT.GetSize() + 6;
 
-    if(DNAM.IsLoaded())
-        TotSize += DNAM.GetSize() + 6;
+    TotSize += DNAM.GetSize() + 6;
 
     return TotSize;
     }
@@ -267,8 +298,7 @@ SINT32 TXSTRecord::WriteRecord(_FileHandler &SaveHandler)
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
 
-    if(OBND.IsLoaded())
-        SaveHandler.writeSubRecord('DNBO', OBND.value, OBND.GetSize());
+    SaveHandler.writeSubRecord('DNBO', &OBND.value, OBND.GetSize());
 
     if(TX00.IsLoaded())
         SaveHandler.writeSubRecord('00XT', TX00.value, TX00.GetSize());
@@ -291,8 +321,7 @@ SINT32 TXSTRecord::WriteRecord(_FileHandler &SaveHandler)
     if(DODT.IsLoaded())
         SaveHandler.writeSubRecord('TDOD', DODT.value, DODT.GetSize());
 
-    if(DNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MAND', DNAM.value, DNAM.GetSize());
+    SaveHandler.writeSubRecord('MAND', &DNAM.value, DNAM.GetSize());
     return -1;
     }
 

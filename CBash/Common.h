@@ -542,6 +542,11 @@ struct SimpleSubRecord
             printf("SimpleSubRecord: Warning - Unable to fully parse chunk. Size of chunk (%u) is larger than the size of the subrecord (%u) and will be truncated.\n", subSize, sizeof(T));
             memcpy(&value, buffer + curPos, sizeof(T));
             }
+        else if(subSize < sizeof(T))
+            {
+            printf("SimpleSubRecord: Info - Unable to fully parse chunk. Size of chunk (%u) is less than the size of the subrecord (%u) and any remaining fields have their default value.\n", subSize, sizeof(T));
+            memcpy(&value, buffer + curPos, subSize);
+            }
         else
             memcpy(&value, buffer + curPos, subSize);
         isLoaded = true;
@@ -620,6 +625,11 @@ struct SimpleSubRecord<FLOAT32, significand, exponent>
             printf("SimpleSubRecord<FLOAT32>: Warning - Unable to fully parse chunk. Size of chunk (%u) is larger than the size of the subrecord (%u) and will be truncated.\n", subSize, sizeof(FLOAT32));
             memcpy(&value, buffer + curPos, sizeof(FLOAT32));
             }
+        else if(subSize < sizeof(FLOAT32))
+            {
+            printf("SimpleSubRecord<FLOAT32>: Info - Unable to fully parse chunk. Size of chunk (%u) is less than the size of the subrecord (%u) and any remaining fields have their default value.\n", subSize, sizeof(FLOAT32));
+            memcpy(&value, buffer + curPos, subSize);
+            }
         else
             memcpy(&value, buffer + curPos, subSize);
         isLoaded = true;
@@ -695,6 +705,11 @@ struct ReqSimpleSubRecord
             printf("ReqSimpleSubRecord: Warning - Unable to fully parse chunk. Size of chunk (%u) is larger than the size of the subrecord (%u) and will be truncated.\n", subSize, sizeof(T));
             memcpy(&value, buffer + curPos, sizeof(T));
             }
+        else if(subSize < sizeof(T))
+            {
+            printf("ReqSimpleSubRecord: Info - Unable to fully parse chunk. Size of chunk (%u) is less than the size of the subrecord (%u) and any remaining fields have their default value.\n", subSize, sizeof(T));
+            memcpy(&value, buffer + curPos, subSize);
+            }
         else
             memcpy(&value, buffer + curPos, subSize);
         //size = subSize;
@@ -757,6 +772,11 @@ struct ReqSimpleSubRecord<FLOAT32, significand, exponent>
             {
             printf("ReqSimpleSubRecord<FLOAT32>: Warning - Unable to fully parse chunk. Size of chunk (%u) is larger than the size of the subrecord (%u) and will be truncated.\n", subSize, sizeof(FLOAT32));
             memcpy(&value, buffer + curPos, sizeof(FLOAT32));
+            }
+        else if(subSize < sizeof(FLOAT32))
+            {
+            printf("ReqSimpleSubRecord<FLOAT32>: Info - Unable to fully parse chunk. Size of chunk (%u) is less than the size of the subrecord (%u) and any remaining fields have their default value.\n", subSize, sizeof(FLOAT32));
+            memcpy(&value, buffer + curPos, subSize);
             }
         else
             memcpy(&value, buffer + curPos, subSize);
@@ -827,6 +847,11 @@ struct OptSimpleSubRecord
             printf("OptSimpleSubRecord: Warning - Unable to fully parse chunk. Size of chunk (%u) is larger than the size of the subrecord (%u) and will be truncated.\n", subSize, sizeof(T));
             memcpy(&value, buffer + curPos, sizeof(T));
             }
+        else if(subSize < sizeof(T))
+            {
+            printf("OptSimpleSubRecord: Info - Unable to fully parse chunk. Size of chunk (%u) is less than the size of the subrecord (%u) and any remaining fields have their default value.\n", subSize, sizeof(T));
+            memcpy(&value, buffer + curPos, subSize);
+            }
         else
             memcpy(&value, buffer + curPos, subSize);
         curPos += subSize;
@@ -893,6 +918,11 @@ struct OptSimpleSubRecord<FLOAT32, significand, exponent>
             {
             printf("OptSimpleSubRecord<FLOAT32>: Warning - Unable to fully parse chunk. Size of chunk (%u) is larger than the size of the subrecord (%u) and will be truncated.\n", subSize, sizeof(FLOAT32));
             memcpy(&value, buffer + curPos, sizeof(FLOAT32));
+            }
+        else if(subSize < sizeof(FLOAT32))
+            {
+            printf("OptSimpleSubRecord<FLOAT32>: Info - Unable to fully parse chunk. Size of chunk (%u) is less than the size of the subrecord (%u) and any remaining fields have their default value.\n", subSize, sizeof(FLOAT32));
+            memcpy(&value, buffer + curPos, subSize);
             }
         else
             memcpy(&value, buffer + curPos, subSize);
@@ -968,6 +998,11 @@ struct SemiOptSimpleSubRecord
             {
             printf("SemiOptSimpleSubRecord: Warning - Unable to fully parse chunk. Size of chunk (%u) is larger than the size of the subrecord (%u) and will be truncated.\n", subSize, sizeof(T));
             memcpy(value, buffer + curPos, sizeof(T));
+            }
+        else if(subSize < sizeof(T))
+            {
+            printf("SemiOptSimpleSubRecord: Info - Unable to fully parse chunk. Size of chunk (%u) is less than the size of the subrecord (%u) and any remaining fields have their default value.\n", subSize, sizeof(T));
+            memcpy(&value, buffer + curPos, subSize);
             }
         else
             memcpy(value, buffer + curPos, subSize);
@@ -1057,6 +1092,11 @@ struct SemiOptSimpleSubRecord<FLOAT32, significand, exponent>
             {
             printf("SemiOptSimpleSubRecord<FLOAT32>: Warning - Unable to fully parse chunk. Size of chunk (%u) is larger than the size of the subrecord (%u) and will be truncated.\n", subSize, sizeof(FLOAT32));
             memcpy(value, buffer + curPos, sizeof(FLOAT32));
+            }
+        else if(subSize < sizeof(FLOAT32))
+            {
+            printf("SemiOptSimpleSubRecord<FLOAT32>: Info - Unable to fully parse chunk. Size of chunk (%u) is less than the size of the subrecord (%u) and any remaining fields have their default value.\n", subSize, sizeof(FLOAT32));
+            memcpy(&value, buffer + curPos, subSize);
             }
         else
             memcpy(value, buffer + curPos, subSize);
@@ -1150,6 +1190,11 @@ struct SubRecord
             printf("SubRecord: Warning - Unable to fully parse chunk. Size of chunk (%u) is larger than the size of the subrecord (%u) and will be truncated.\n", subSize, sizeof(T));
             memcpy(&value, buffer + curPos, sizeof(T));
             }
+        else if(subSize < sizeof(T))
+            {
+            printf("SubRecord: Info - Unable to fully parse chunk. Size of chunk (%u) is less than the size of the subrecord (%u) and any remaining fields have their default value.\n", subSize, sizeof(T));
+            memcpy(&value, buffer + curPos, subSize);
+            }
         else
             memcpy(&value, buffer + curPos, subSize);
         isLoaded = true;
@@ -1217,6 +1262,11 @@ struct ReqSubRecord
             {
             printf("ReqSubRecord: Warning - Unable to fully parse chunk. Size of chunk (%u) is larger than the size of the subrecord (%u) and will be truncated.\n", subSize, sizeof(T));
             memcpy(&value, buffer + curPos, sizeof(T));
+            }
+        else if(subSize < sizeof(T))
+            {
+            printf("ReqSubRecord: Info - Unable to fully parse chunk. Size of chunk (%u) is less than the size of the subrecord (%u) and any remaining fields have their default value.\n", subSize, sizeof(T));
+            memcpy(&value, buffer + curPos, subSize);
             }
         else
             memcpy(&value, buffer + curPos, subSize);
@@ -1289,6 +1339,11 @@ struct OptSubRecord
             {
             printf("OptSubRecord: Warning - Unable to fully parse chunk. Size of chunk (%u) is larger than the size of the subrecord (%u) and will be truncated.\n", subSize, sizeof(T));
             memcpy(value, buffer + curPos, sizeof(T));
+            }
+        else if(subSize < sizeof(T))
+            {
+            printf("OptSubRecord: Info - Unable to fully parse chunk. Size of chunk (%u) is less than the size of the subrecord (%u) and any remaining fields have their default value.\n", subSize, sizeof(T));
+            memcpy(&value, buffer + curPos, subSize);
             }
         else
             memcpy(value, buffer + curPos, subSize);
@@ -1388,6 +1443,11 @@ struct SemiOptSubRecord
             {
             printf("SemiOptSubRecord: Warning - Unable to fully parse chunk. Size of chunk (%u) is larger than the size of the subrecord (%u) and will be truncated.\n", subSize, sizeof(T));
             memcpy(value, buffer + curPos, sizeof(T));
+            }
+        else if(subSize < sizeof(T))
+            {
+            printf("SemiOptSubRecord: Info - Unable to fully parse chunk. Size of chunk (%u) is less than the size of the subrecord (%u) and any remaining fields have their default value.\n", subSize, sizeof(T));
+            memcpy(&value, buffer + curPos, subSize);
             }
         else
             memcpy(value, buffer + curPos, subSize);
@@ -1499,6 +1559,11 @@ struct OBMEEFIXSubRecord
             {
             printf("OBMEEFIXSubRecord: Warning - Unable to fully parse chunk. Size of chunk (%u) is larger than the size of the subrecord (%u) and will be truncated.\n", subSize, sizeof(T));
             memcpy(value, buffer + curPos, sizeof(T));
+            }
+        else if(subSize < sizeof(T))
+            {
+            printf("OBMEEFIXSubRecord: Info - Unable to fully parse chunk. Size of chunk (%u) is less than the size of the subrecord (%u) and any remaining fields have their default value.\n", subSize, sizeof(T));
+            memcpy(&value, buffer + curPos, subSize);
             }
         else
             memcpy(value, buffer + curPos, subSize);

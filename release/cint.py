@@ -1841,6 +1841,63 @@ class FnvGMSTRecord(FnvBaseRecord):
                 _CSetField(self._CollectionID, self._ModID, self._RecordID, 7, 0, 0, 0, 0, 0, 0, nValue, 0)
     value = property(get_value, set_value)
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['value']
+    
+class FnvTXSTRecord(FnvBaseRecord):
+    _Type = 'TXST'
+    boundX1 = CBashGeneric(7, c_short)
+    boundY1 = CBashGeneric(8, c_short)
+    boundZ1 = CBashGeneric(9, c_short)
+    boundX2 = CBashGeneric(7, c_short)
+    boundY2 = CBashGeneric(8, c_short)
+    boundZ2 = CBashGeneric(9, c_short)
+    baseImageOrTransparency = CBashISTRING(13)
+    normalMapOrSpecular = CBashISTRING(14)
+    envMapMaskOrUnk = CBashISTRING(15)
+    glowMapOrUnused = CBashISTRING(16)
+    parallaxMapOrUnused = CBashISTRING(17)
+    envMapOrUnused = CBashISTRING(18)
+    decalMinWidth = CBashFLOAT32(19)
+    decalMaxWidth = CBashFLOAT32(20)
+    decalMinHeight = CBashFLOAT32(21)
+    decalMaxHeight = CBashFLOAT32(22)
+    decalDepth = CBashFLOAT32(23)
+    decalShininess = CBashFLOAT32(24)
+    decalScale = CBashFLOAT32(25)
+    decalPasses = CBashGeneric(26, c_ubyte)
+    decalFlags = CBashGeneric(27, c_ubyte)
+    decalUnused1 = CBashUINT8ARRAY(28, 2)
+    decalRed = CBashGeneric(29, c_ubyte)
+    decalGreen = CBashGeneric(30, c_ubyte)
+    decalBlue = CBashGeneric(31, c_ubyte)
+    decalUnused2 = CBashUINT8ARRAY(32, 1)
+    flags = CBashGeneric(33, c_ushort)
+
+    IsNoSpecularMap = CBashBasicFlag('flags', 0x00000001)
+    IsSpecularMap = CBashInvertedFlag('IsNoSpecularMap')
+
+    IsObjectParallax = CBashBasicFlag('decalFlags', 0x00000001)
+    IsObjectAlphaBlending = CBashBasicFlag('decalFlags', 0x00000002)
+    IsObjectAlphaTesting = CBashBasicFlag('decalFlags', 0x00000004)
+    
+    copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                           'boundX2', 'boundY2', 'boundZ2', 'baseImageOrTransparency',
+                                           'normalMapOrSpecular', 'envMapMaskOrUnk', 'glowMapOrUnused',
+                                           'parallaxMapOrUnused', 'envMapOrUnused', 'decalMinWidth',
+                                           'decalMaxWidth', 'decalMinHeight', 'decalMaxHeight',
+                                           'decalDepth', 'decalShininess', 'decalScale',
+                                           'decalPasses', 'decalFlags', 'decalUnused1',
+                                           'decalRed', 'decalGreen', 'decalBlue',
+                                           'decalUnused2', 'flags']
+    
+    exportattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                             'boundX2', 'boundY2', 'boundZ2', 'baseImageOrTransparency',
+                                             'normalMapOrSpecular', 'envMapMaskOrUnk', 'glowMapOrUnused',
+                                             'parallaxMapOrUnused', 'envMapOrUnused', 'decalMinWidth',
+                                             'decalMaxWidth', 'decalMinHeight', 'decalMaxHeight',
+                                             'decalDepth', 'decalShininess', 'decalScale',
+                                             'decalPasses', 'decalFlags',
+                                             'decalRed', 'decalGreen', 'decalBlue',
+                                             'flags'] # 'decalUnused1','decalUnused2', 
 
 #--Oblivion
 class ObBaseRecord(object):
@@ -5376,7 +5433,7 @@ type_record = dict([('BASE',ObBaseRecord),(None,None),('',None),
                     ('CSTY',ObCSTYRecord),('LSCR',ObLSCRRecord),('LVSP',ObLVSPRecord),
                     ('ANIO',ObANIORecord),('WATR',ObWATRRecord),('EFSH',ObEFSHRecord)])
 fnv_type_record = dict([('BASE',FnvBaseRecord),(None,None),('',None),
-                    ('GMST',FnvGMSTRecord),])
+                    ('GMST',FnvGMSTRecord),('TXST',FnvTXSTRecord),])
 
 class ObModFile(object):
     def __init__(self, CollectionIndex, ModID):
@@ -6001,6 +6058,12 @@ class FnvModFile(object):
         if(RecordID): return FnvGMSTRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
         return None
     GMST = CBashRECORDARRAY(FnvGMSTRecord, 'GMST', 0)
+
+    def create_TXST(self, EditorID=0, FormID=0):
+        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("TXST", POINTER(c_ulong)).contents.value, MakeShortFid(self._CollectionID, FormID), EditorID, 0, 0)
+        if(RecordID): return FnvTXSTRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
+        return None
+    TXST = CBashRECORDARRAY(FnvTXSTRecord, 'TXST', 0)
 
     @property
     def tops(self):

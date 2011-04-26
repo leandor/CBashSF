@@ -946,7 +946,7 @@ struct GENROOM
 
 struct GENOBND
     {
-    SINT16   x, y, z;
+    SINT16   x1, y1, z1, x2, y2, z2;
 
     GENOBND();
     ~GENOBND();
@@ -961,27 +961,11 @@ struct GENDODT
             depth, shininess, scale;
     UINT8   passes, flags, unused1[2], red, green, blue, unused2;
 
-    enum DODTFlags
-        {
-        fIsParallax      = 0x00000001,
-        fIsAlphaBlending = 0x00000002,
-        fIsAlphaTesting  = 0x00000004
-        };
-
     GENDODT();
     ~GENDODT();
 
     bool operator ==(const GENDODT &other) const;
     bool operator !=(const GENDODT &other) const;
-
-    bool IsParallax();
-    void IsParallax(bool value);
-    bool IsAlphaBlending();
-    void IsAlphaBlending(bool value);
-    bool IsAlphaTesting();
-    void IsAlphaTesting(bool value);
-    bool IsFlagMask(UINT8 Mask, bool Exact=false);
-    void SetFlagMask(UINT8 Mask);
     };
 
 struct GENPATROL
