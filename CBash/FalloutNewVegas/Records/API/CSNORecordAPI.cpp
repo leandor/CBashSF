@@ -142,7 +142,7 @@ void * CSNORecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 20: //mod4 Roulette Table Model
             return MOD4.value;
         case 21: //icon Symbol W
-            return ICON.IsLoaded() ? ICON->ICON.value : NULL;
+            return ICON.value;
         case 22: //ico2 Deck 4
             return ICO2.IsLoaded() ? ICO2->ICO2.value : NULL;
         default:
@@ -229,8 +229,7 @@ bool CSNORecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             MOD4.Copy((STRING)FieldValue);
             break;
         case 21: //icon Symbol W
-            ICON.Load();
-            ICON->ICON.Copy((STRING)FieldValue);
+            ICON.Copy((STRING)FieldValue);
             break;
         case 22: //ico2 Deck 4
             ICO2.Load();
@@ -306,8 +305,7 @@ void CSNORecord::DeleteField(FIELD_IDENTIFIERS)
             MOD4.Unload();
             return;
         case 21: //icon Symbol W
-            if(ICON.IsLoaded())
-                ICON->ICON.Unload();
+            ICON.Unload();
             return;
         case 22: //ico2 Deck 4
             if(ICO2.IsLoaded())

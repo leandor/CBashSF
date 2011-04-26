@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class TERMRecord : public Record //Terminal
+class TERMRecord : public FNVRecord //Terminal
     {
     private:
         struct TERMDNAM

@@ -25,17 +25,16 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class MICNRecord : public Record //Menu Icon
+class MICNRecord : public FNVRecord //Menu Icon
     {
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENICON> ICON; //Icon Filenames
+        StringRecord ICON; //Large Icon Filename
+        StringRecord MICO; //Small Icon Filename
 
         MICNRecord(unsigned char *_recData=NULL);
         MICNRecord(MICNRecord *srcRecord);
         ~MICNRecord();
-
-        bool   VisitFormIDs(FormIDOp &op);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

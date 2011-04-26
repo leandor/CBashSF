@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class ANIORecord : public Record //Animated Object
+class ANIORecord : public FNVRecord //Animated Object
     {
     public:
         StringRecord EDID; //Editor ID

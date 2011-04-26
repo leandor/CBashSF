@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class FACTRecord : public Record //Faction
+class FACTRecord : public FNVRecord //Faction
     {
     private:
         struct FACTRNAM // Rank

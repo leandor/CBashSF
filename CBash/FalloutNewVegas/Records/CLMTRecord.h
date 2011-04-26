@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class CLMTRecord : public Record //Climate
+class CLMTRecord : public FNVRecord //Climate
     {
     private:
         struct CLMTWLST

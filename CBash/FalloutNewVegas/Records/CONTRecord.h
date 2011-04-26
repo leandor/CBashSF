@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class CONTRecord : public Record //Container
+class CONTRecord : public FNVRecord //Container
     {
     private:
         #pragma pack(push)

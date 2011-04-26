@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class CSTYRecord : public Record //Combat Style
+class CSTYRecord : public FNVRecord //Combat Style
     {
     private:
         struct CSTYCSTD //Advanced Standard

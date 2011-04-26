@@ -52,12 +52,8 @@ REPURecord::REPURecord(REPURecord *srcRecord):
 
     EDID = srcRecord->EDID;
     FULL = srcRecord->FULL;
-    if(srcRecord->ICON.IsLoaded())
-        {
-        ICON.Load();
-        ICON->ICON = srcRecord->ICON->ICON;
-        ICON->MICO = srcRecord->ICON->MICO;
-        }
+    ICON = srcRecord->ICON;
+    MICO = srcRecord->MICO;
     DATA = srcRecord->DATA;
     return;
     }
@@ -100,18 +96,16 @@ UINT32 REPURecord::GetSize(bool forceCalc)
 
     if(ICON.IsLoaded())
         {
-        if(ICON->ICON.IsLoaded())
-            {
-            cSize = ICON->ICON.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(ICON->MICO.IsLoaded())
-            {
-            cSize = ICON->MICO.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
+        cSize = ICON.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(MICO.IsLoaded())
+        {
+        cSize = MICO.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
         }
 
     if(DATA.IsLoaded())
@@ -159,12 +153,10 @@ SINT32 REPURecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 FULL.Read(buffer, subSize, curPos);
                 break;
             case 'NOCI':
-                ICON.Load();
-                ICON->ICON.Read(buffer, subSize, curPos);
+                ICON.Read(buffer, subSize, curPos);
                 break;
             case 'OCIM':
-                ICON.Load();
-                ICON->MICO.Read(buffer, subSize, curPos);
+                MICO.Read(buffer, subSize, curPos);
                 break;
             case 'ATAD':
                 DATA.Read(buffer, subSize, curPos);
@@ -188,6 +180,7 @@ SINT32 REPURecord::Unload()
     EDID.Unload();
     FULL.Unload();
     ICON.Unload();
+    MICO.Unload();
     DATA.Unload();
     return 1;
     }
@@ -201,14 +194,10 @@ SINT32 REPURecord::WriteRecord(_FileHandler &SaveHandler)
         SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
 
     if(ICON.IsLoaded())
-        {
-        if(ICON->ICON.IsLoaded())
-            SaveHandler.writeSubRecord('NOCI', ICON->ICON.value, ICON->ICON.GetSize());
+        SaveHandler.writeSubRecord('NOCI', ICON.value, ICON.GetSize());
 
-        if(ICON->MICO.IsLoaded())
-            SaveHandler.writeSubRecord('OCIM', ICON->MICO.value, ICON->MICO.GetSize());
-
-        }
+    if(MICO.IsLoaded())
+        SaveHandler.writeSubRecord('OCIM', MICO.value, MICO.GetSize());
 
     if(DATA.IsLoaded())
         SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
@@ -220,7 +209,8 @@ bool REPURecord::operator ==(const REPURecord &other) const
     {
     return (EDID.equalsi(other.EDID) &&
             FULL.equals(other.FULL) &&
-            ICON == other.ICON &&
+            ICON.equalsi(other.ICON) &&
+            MICO.equalsi(other.MICO) &&
             DATA == other.DATA);
     }
 

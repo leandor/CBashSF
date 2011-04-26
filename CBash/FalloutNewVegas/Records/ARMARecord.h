@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class ARMARecord : public Record //Armor Addon
+class ARMARecord : public FNVRecord //Armor Addon
     {
     private:
         enum bmdtBipedFlags

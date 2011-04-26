@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class LIGHRecord : public Record //Light
+class LIGHRecord : public FNVRecord //Light
     {
     private:
         struct LIGHDATA
@@ -65,7 +65,8 @@ class LIGHRecord : public Record //Light
         OptSubRecord<FNVMODEL> MODL; //Model
         OptSimpleSubRecord<FORMID> SCRI; //Script
         StringRecord FULL; //Name
-        OptSubRecord<GENICON> ICON; //Icon Filenames
+        StringRecord ICON; //Large Icon Filename
+        StringRecord MICO; //Small Icon Filename
         OptSubRecord<LIGHDATA> DATA; //Data
         OptSimpleSubRecord<FLOAT32> FNAM; //Fade value
         OptSimpleSubRecord<FORMID> SNAM; //Sound

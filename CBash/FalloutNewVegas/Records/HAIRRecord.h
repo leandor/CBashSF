@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class HAIRRecord : public Record //Hair
+class HAIRRecord : public FNVRecord //Hair
     {
     private:
         enum flagsFlags

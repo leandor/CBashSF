@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class PWATRecord : public Record //Placeable Water
+class PWATRecord : public FNVRecord //Placeable Water
     {
     private:
         struct PWATDNAM

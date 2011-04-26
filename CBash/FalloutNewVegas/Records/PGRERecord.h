@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class PGRERecord : public Record //Placed Grenade
+class PGRERecord : public FNVRecord //Placed Grenade
     {
     private:
         enum xespFlags

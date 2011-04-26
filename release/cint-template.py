@@ -1847,15 +1847,15 @@ class FnvTXSTRecord(FnvBaseRecord):
     SINT16_MACRO(boundX1, 7)
     SINT16_MACRO(boundY1, 8)
     SINT16_MACRO(boundZ1, 9)
-    SINT16_MACRO(boundX2, 7)
-    SINT16_MACRO(boundY2, 8)
-    SINT16_MACRO(boundZ2, 9)
-    ISTRING_MACRO(baseImageOrTransparency, 13)
-    ISTRING_MACRO(normalMapOrSpecular, 14)
-    ISTRING_MACRO(envMapMaskOrUnk, 15)
-    ISTRING_MACRO(glowMapOrUnused, 16)
-    ISTRING_MACRO(parallaxMapOrUnused, 17)
-    ISTRING_MACRO(envMapOrUnused, 18)
+    SINT16_MACRO(boundX2, 10)
+    SINT16_MACRO(boundY2, 11)
+    SINT16_MACRO(boundZ2, 12)
+    ISTRING_MACRO(baseImageOrTransparencyPath, 13)
+    ISTRING_MACRO(normalMapOrSpecularPath, 14)
+    ISTRING_MACRO(envMapMaskOrUnkPath, 15)
+    ISTRING_MACRO(glowMapOrUnusedPath, 16)
+    ISTRING_MACRO(parallaxMapOrUnusedPath, 17)
+    ISTRING_MACRO(envMapOrUnusedPath, 18)
     FLOAT32_MACRO(decalMinWidth, 19)
     FLOAT32_MACRO(decalMaxWidth, 20)
     FLOAT32_MACRO(decalMinHeight, 21)
@@ -1880,9 +1880,9 @@ class FnvTXSTRecord(FnvBaseRecord):
     BasicFlagMACRO(IsObjectAlphaTesting, decalFlags, 0x00000004)
     
     copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
-                                           'boundX2', 'boundY2', 'boundZ2', 'baseImageOrTransparency',
-                                           'normalMapOrSpecular', 'envMapMaskOrUnk', 'glowMapOrUnused',
-                                           'parallaxMapOrUnused', 'envMapOrUnused', 'decalMinWidth',
+                                           'boundX2', 'boundY2', 'boundZ2', 'baseImageOrTransparencyPath',
+                                           'normalMapOrSpecularPath', 'envMapMaskOrUnkPath', 'glowMapOrUnusedPath',
+                                           'parallaxMapOrUnusedPath', 'envMapOrUnusedPath', 'decalMinWidth',
                                            'decalMaxWidth', 'decalMinHeight', 'decalMaxHeight',
                                            'decalDepth', 'decalShininess', 'decalScale',
                                            'decalPasses', 'decalFlags', 'decalUnused1',
@@ -1890,14 +1890,20 @@ class FnvTXSTRecord(FnvBaseRecord):
                                            'decalUnused2', 'flags']
     
     exportattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
-                                             'boundX2', 'boundY2', 'boundZ2', 'baseImageOrTransparency',
-                                             'normalMapOrSpecular', 'envMapMaskOrUnk', 'glowMapOrUnused',
-                                             'parallaxMapOrUnused', 'envMapOrUnused', 'decalMinWidth',
+                                             'boundX2', 'boundY2', 'boundZ2', 'baseImageOrTransparencyPath',
+                                             'normalMapOrSpecularPath', 'envMapMaskOrUnkPath', 'glowMapOrUnusedPath',
+                                             'parallaxMapOrUnusedPath', 'envMapOrUnusedPath', 'decalMinWidth',
                                              'decalMaxWidth', 'decalMinHeight', 'decalMaxHeight',
                                              'decalDepth', 'decalShininess', 'decalScale',
                                              'decalPasses', 'decalFlags',
                                              'decalRed', 'decalGreen', 'decalBlue',
                                              'flags'] # 'decalUnused1','decalUnused2', 
+class FnvMICNRecord(FnvBaseRecord):
+    _Type = 'MICN'
+    ISTRING_MACRO(iconPath, 7)
+    ISTRING_MACRO(smallIconPath, 8)
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['iconPath', 'smallIconPath']
 
 #--Oblivion
 class ObBaseRecord(object):
@@ -5035,7 +5041,7 @@ type_record = dict([('BASE',ObBaseRecord),(None,None),('',None),
                     ('CSTY',ObCSTYRecord),('LSCR',ObLSCRRecord),('LVSP',ObLVSPRecord),
                     ('ANIO',ObANIORecord),('WATR',ObWATRRecord),('EFSH',ObEFSHRecord)])
 fnv_type_record = dict([('BASE',FnvBaseRecord),(None,None),('',None),
-                    ('GMST',FnvGMSTRecord),('TXST',FnvTXSTRecord),])
+                    ('GMST',FnvGMSTRecord),('TXST',FnvTXSTRecord),('MICN',FnvMICNRecord),])
 
 class ObModFile(object):
     def __init__(self, CollectionIndex, ModID):
@@ -5377,6 +5383,7 @@ class FnvModFile(object):
 
     FnvModEDIDRecordsMACRO(GMST)
     FnvModRecordsMACRO(TXST)
+    FnvModRecordsMACRO(MICN)
     @property
     def tops(self):
         return dict((("GMST", self.GMST),))

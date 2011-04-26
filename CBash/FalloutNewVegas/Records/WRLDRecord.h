@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class WRLDRecord : public Record //Worldspace
+class WRLDRecord : public FNVRecord //Worldspace
     {
     private:
         enum pnamFlags
@@ -60,7 +60,8 @@ class WRLDRecord : public Record //Worldspace
         OptSimpleSubRecord<FORMID> NAM3; //LOD Water Type
         OptSimpleSubRecord<FLOAT32> NAM4; //LOD Water Height
         OptSubRecord<GENDNAM> DNAM; //Land Data
-        OptSubRecord<GENICON> ICON; //Icon Filenames
+        StringRecord ICON; //Large Icon Filename
+        StringRecord MICO; //Small Icon Filename
         OptSubRecord<GENMNAM> MNAM; //Map Data
         OptSubRecord<GENONAM> ONAM; //World Map Offset Data
         OptSimpleSubRecord<FORMID> INAM; //Image Space

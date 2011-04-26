@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class ACHRRecord : public Record //Placed NPC
+class ACHRRecord : public FNVRecord //Placed NPC
     {
     private:
         enum xespFlags

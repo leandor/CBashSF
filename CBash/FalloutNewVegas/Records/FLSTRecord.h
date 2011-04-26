@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class FLSTRecord : public Record //FormID List
+class FLSTRecord : public FNVRecord //FormID List
     {
     public:
         StringRecord EDID; //Editor ID

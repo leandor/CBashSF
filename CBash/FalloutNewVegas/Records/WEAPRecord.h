@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class WEAPRecord : public Record //Weapon
+class WEAPRecord : public FNVRecord //Weapon
     {
     private:
         struct WEAPDATA
@@ -304,7 +304,8 @@ class WEAPRecord : public Record //Weapon
         OptSubRecord<GENOBND> OBND; //Object Bounds
         StringRecord FULL; //Name
         OptSubRecord<FNVMODEL> MODL; //Model
-        OptSubRecord<GENICON> ICON; //Icon Filenames
+        StringRecord ICON; //Large Icon Filename
+        StringRecord MICO; //Small Icon Filename
         OptSimpleSubRecord<FORMID> SCRI; //Script
         OptSimpleSubRecord<FORMID> EITM; //Object Effect
         OptSimpleSubRecord<SINT16> EAMT; //Enchantment Charge Amount

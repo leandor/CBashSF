@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class HDPTRecord : public Record //Head Part
+class HDPTRecord : public FNVRecord //Head Part
     {
     private:
         enum flagsFlags

@@ -162,6 +162,51 @@ void IPCTRecord::IsSilent(bool value)
         Dummy->flags = eDummyDefault;
     }
 
+bool IPCTRecord::IsObjectParallax()
+    {
+    return DODT.IsLoaded() ? (DODT->flags & fIsParallax) != 0 : false;
+    }
+
+void IPCTRecord::IsObjectParallax(bool value)
+    {
+    if(!DODT.IsLoaded()) return;
+    DODT->flags = value ? (DODT->flags | fIsParallax) : (DODT->flags & ~fIsParallax);
+    }
+
+bool IPCTRecord::IsObjectAlphaBlending()
+    {
+    return DODT.IsLoaded() ? (DODT->flags & fIsAlphaBlending) != 0 : false;
+    }
+
+void IPCTRecord::IsObjectAlphaBlending(bool value)
+    {
+    if(!DODT.IsLoaded()) return;
+    DODT->flags = value ? (DODT->flags | fIsAlphaBlending) : (DODT->flags & ~fIsAlphaBlending);
+    }
+
+bool IPCTRecord::IsObjectAlphaTesting()
+    {
+    return DODT.IsLoaded() ? (DODT->flags & fIsAlphaTesting) != 0 : false;
+    }
+
+void IPCTRecord::IsObjectAlphaTesting(bool value)
+    {
+    if(!DODT.IsLoaded()) return;
+    DODT->flags = value ? (DODT->flags | fIsAlphaTesting) : (DODT->flags & ~fIsAlphaTesting);
+    }
+
+bool IPCTRecord::IsObjectFlagMask(UINT8 Mask, bool Exact)
+    {
+    if(!DODT.IsLoaded()) return false;
+    return Exact ? ((DODT->flags & Mask) == Mask) : ((DODT->flags & Mask) != 0);
+    }
+
+void IPCTRecord::SetObjectFlagMask(UINT8 Mask)
+    {
+    DODT.Load();
+    DODT->flags = Mask;
+    }
+
 bool IPCTRecord::IsSoundLevelType(UINT8 Type, bool Exact)
     {
     if(!Dummy.IsLoaded()) return false;

@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class RGDLRecord : public Record //Ragdoll
+class RGDLRecord : public FNVRecord //Ragdoll
     {
     private:
         struct RGDLDATA // General Data

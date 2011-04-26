@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class DEBRRecord : public Record //Debris
+class DEBRRecord : public FNVRecord //Debris
     {
     private:
         struct DEBRDATA

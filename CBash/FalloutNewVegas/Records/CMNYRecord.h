@@ -25,14 +25,15 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class CMNYRecord : public Record //Caravan Money
+class CMNYRecord : public FNVRecord //Caravan Money
     {
     public:
         StringRecord EDID; //Editor ID
         OptSubRecord<GENOBND> OBND; //Object Bounds
         StringRecord FULL; //Name
         OptSubRecord<FNVMODEL> MODL; //Model
-        OptSubRecord<GENICON> ICON; //Large Icon Filename
+        StringRecord ICON; //Large Icon Filename
+        StringRecord MICO; //Small Icon Filename
         OptSimpleSubRecord<FORMID> YNAM; //Sound - Pick Up
         OptSimpleSubRecord<FORMID> ZNAM; //Sound - Drop
         OptSimpleSubRecord<UINT32> DATA; //Absolute Value

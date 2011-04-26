@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class ENCHRecord : public Record //Object Effect
+class ENCHRecord : public FNVRecord //Object Effect
     {
     private:
         struct ENCHENIT

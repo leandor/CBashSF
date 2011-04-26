@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class RCCTRecord : public Record //Recipe Category
+class RCCTRecord : public FNVRecord //Recipe Category
     {
     private:
         enum flagsFlags

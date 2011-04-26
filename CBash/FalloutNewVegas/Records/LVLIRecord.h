@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class LVLIRecord : public Record //Leveled Item
+class LVLIRecord : public FNVRecord //Leveled Item
     {
     private:
         enum flagsFlags

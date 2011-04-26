@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class SCOLRecord : public Record //Static Collection
+class SCOLRecord : public FNVRecord //Static Collection
     {
     private:
         struct SCOLDATA //Placement

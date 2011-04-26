@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class LGTMRecord : public Record //Lighting Template
+class LGTMRecord : public FNVRecord //Lighting Template
     {
     public:
         StringRecord EDID; //Editor ID

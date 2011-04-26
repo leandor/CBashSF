@@ -60,12 +60,8 @@ WRLDRecord::WRLDRecord(WRLDRecord *srcRecord):
     NAM3 = srcRecord->NAM3;
     NAM4 = srcRecord->NAM4;
     DNAM = srcRecord->DNAM;
-    if(srcRecord->ICON.IsLoaded())
-        {
-        ICON.Load();
-        ICON->ICON = srcRecord->ICON->ICON;
-        ICON->MICO = srcRecord->ICON->MICO;
-        }
+    ICON = srcRecord->ICON;
+    MICO = srcRecord->MICO;
     MNAM = srcRecord->MNAM;
     ONAM = srcRecord->ONAM;
     INAM = srcRecord->INAM;
@@ -159,18 +155,16 @@ UINT32 WRLDRecord::GetSize(bool forceCalc)
 
     if(ICON.IsLoaded())
         {
-        if(ICON->ICON.IsLoaded())
-            {
-            cSize = ICON->ICON.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(ICON->MICO.IsLoaded())
-            {
-            cSize = ICON->MICO.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
+        cSize = ICON.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(MICO.IsLoaded())
+        {
+        cSize = MICO.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
         }
 
     if(MNAM.IsLoaded())
@@ -287,12 +281,10 @@ SINT32 WRLDRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 DNAM.Read(buffer, subSize, curPos);
                 break;
             case 'NOCI':
-                ICON.Load();
-                ICON->ICON.Read(buffer, subSize, curPos);
+                ICON.Read(buffer, subSize, curPos);
                 break;
             case 'OCIM':
-                ICON.Load();
-                ICON->MICO.Read(buffer, subSize, curPos);
+                MICO.Read(buffer, subSize, curPos);
                 break;
             case 'MANM':
                 MNAM.Read(buffer, subSize, curPos);
@@ -357,6 +349,7 @@ SINT32 WRLDRecord::Unload()
     NAM4.Unload();
     DNAM.Unload();
     ICON.Unload();
+    MICO.Unload();
     MNAM.Unload();
     ONAM.Unload();
     INAM.Unload();
@@ -405,14 +398,10 @@ SINT32 WRLDRecord::WriteRecord(_FileHandler &SaveHandler)
         SaveHandler.writeSubRecord('MAND', DNAM.value, DNAM.GetSize());
 
     if(ICON.IsLoaded())
-        {
-        if(ICON->ICON.IsLoaded())
-            SaveHandler.writeSubRecord('NOCI', ICON->ICON.value, ICON->ICON.GetSize());
+        SaveHandler.writeSubRecord('NOCI', ICON.value, ICON.GetSize());
 
-        if(ICON->MICO.IsLoaded())
-            SaveHandler.writeSubRecord('OCIM', ICON->MICO.value, ICON->MICO.GetSize());
-
-        }
+    if(MICO.IsLoaded())
+        SaveHandler.writeSubRecord('OCIM', MICO.value, MICO.GetSize());
 
     if(MNAM.IsLoaded())
         SaveHandler.writeSubRecord('MANM', MNAM.value, MNAM.GetSize());
@@ -465,7 +454,8 @@ bool WRLDRecord::operator ==(const WRLDRecord &other) const
             NAM3 == other.NAM3 &&
             NAM4 == other.NAM4 &&
             DNAM == other.DNAM &&
-            ICON == other.ICON &&
+            ICON.equalsi(other.ICON) &&
+            MICO.equalsi(other.MICO) &&
             MNAM == other.MNAM &&
             ONAM == other.ONAM &&
             INAM == other.INAM &&

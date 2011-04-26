@@ -146,9 +146,9 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
             return SINT32_FIELD;
         case 34: //modd FaceGen Model Flags
             return UINT8_FIELD;
-        case 35: //icon Large Icon Filename
+        case 35: //iconPath
             return ISTRING_FIELD;
-        case 36: //mico Small Icon Filename
+        case 36: //smallIconPath
             return ISTRING_FIELD;
         case 37: //hnam Hairs
             return UNPARSED_FIELD;
@@ -277,10 +277,10 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return MODL.IsLoaded() ? &MODL->MODS->value33 : NULL;
         case 34: //modd FaceGen Model Flags
             return MODL.IsLoaded() ? &MODL->MODD->value34 : NULL;
-        case 35: //icon Large Icon Filename
-            return ICON.IsLoaded() ? ICON->ICON.value : NULL;
-        case 36: //mico Small Icon Filename
-            return ICON.IsLoaded() ? ICON->MICO.value : NULL;
+        case 35: //iconPath
+            return ICON.value;
+        case 36: //smallIconPath
+            return MICO.value;
         case 37: //hnam Hairs
             return UNPARSEDGET_FIELD37;
         case 38: //enam Eyes
@@ -438,13 +438,11 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             MODL->MODD.Load();
             MODL->MODD->value34 = *(UINT8 *)FieldValue;
             break;
-        case 35: //icon Large Icon Filename
-            ICON.Load();
-            ICON->ICON.Copy((STRING)FieldValue);
+        case 35: //iconPath
+            ICON.Copy((STRING)FieldValue);
             break;
-        case 36: //mico Small Icon Filename
-            ICON.Load();
-            ICON->MICO.Copy((STRING)FieldValue);
+        case 36: //smallIconPath
+            MICO.Copy((STRING)FieldValue);
             break;
         case 37: //hnam Hairs
             return UNPARSEDGET_FIELD37;
@@ -579,13 +577,11 @@ void RACERecord::DeleteField(FIELD_IDENTIFIERS)
             if(MODL.IsLoaded())
                 MODL->MODD.Unload();
             return;
-        case 35: //icon Large Icon Filename
-            if(ICON.IsLoaded())
-                ICON->ICON.Unload();
+        case 35: //iconPath
+            ICON.Unload();
             return;
-        case 36: //mico Small Icon Filename
-            if(ICON.IsLoaded())
-                ICON->MICO.Unload();
+        case 36: //smallIconPath
+            MICO.Unload();
             return;
         case 37: //hnam Hairs
             return UNPARSEDDEL_FIELD37;

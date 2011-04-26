@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class ACTIRecord : public Record //Activator
+class ACTIRecord : public FNVRecord //Activator
     {
     public:
         StringRecord EDID; //Editor ID

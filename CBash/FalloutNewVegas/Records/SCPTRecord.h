@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class SCPTRecord : public Record //Script
+class SCPTRecord : public FNVRecord //Script
     {
     private:
         enum schrFlags

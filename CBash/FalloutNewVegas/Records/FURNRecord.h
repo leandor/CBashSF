@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class FURNRecord : public Record //Furniture
+class FURNRecord : public FNVRecord //Furniture
     {
     private:
         enum flagsFlags

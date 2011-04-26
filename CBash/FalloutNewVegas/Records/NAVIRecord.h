@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class NAVIRecord : public Record //Navigation Mesh Info Map
+class NAVIRecord : public FNVRecord //Navigation Mesh Info Map
     {
     private:
         struct NAVINVMI

@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class WTHRRecord : public Record //Weather
+class WTHRRecord : public FNVRecord //Weather
     {
     private:
         struct WTHRONAM

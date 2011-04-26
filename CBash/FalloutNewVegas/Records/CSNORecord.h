@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class CSNORecord : public Record //Casino
+class CSNORecord : public FNVRecord //Casino
     {
     private:
         struct CSNODATA

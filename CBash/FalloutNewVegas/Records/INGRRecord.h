@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class INGRRecord : public Record //Ingredient
+class INGRRecord : public FNVRecord //Ingredient
     {
     private:
         enum eEquipTypes
@@ -51,7 +51,8 @@ class INGRRecord : public Record //Ingredient
         OptSubRecord<GENOBND> OBND; //Object Bounds
         StringRecord FULL; //Name
         OptSubRecord<FNVMODEL> MODL; //Model
-        OptSubRecord<GENICON> ICON; //Icon Filenames
+        StringRecord ICON; //Large Icon Filename
+        StringRecord MICO; //Small Icon Filename
         OptSimpleSubRecord<FORMID> SCRI; //Script
         OptSimpleSubRecord<SINT32> ETYP; //Equipment Type
         OptSimpleSubRecord<FLOAT32> DATA; //Weight

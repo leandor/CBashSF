@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class IPDSRecord : public Record //Impact DataSet
+class IPDSRecord : public FNVRecord //Impact DataSet
     {
     private:
         struct IPDSDATA

@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class MSETRecord : public Record //Media Set
+class MSETRecord : public FNVRecord //Media Set
     {
     private:
         enum typeTypes

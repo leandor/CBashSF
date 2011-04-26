@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class DOBJRecord : public Record //Default Object Manager
+class DOBJRecord : public FNVRecord //Default Object Manager
     {
     public:
         StringRecord EDID; //Editor ID

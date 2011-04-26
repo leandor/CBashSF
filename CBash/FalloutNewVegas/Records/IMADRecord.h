@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class IMADRecord : public Record //Image Space Modifier
+class IMADRecord : public FNVRecord //Image Space Modifier
     {
     public:
         StringRecord EDID; //Editor ID

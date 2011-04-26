@@ -25,9 +25,109 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class QUSTRecord : public Record //Quest
+class QUSTRecord : public FNVRecord //Quest
     {
     private:
+        struct QUSTDATA
+            {
+            UINT8   flags, priority, unused1[2];
+            FLOAT32 delay;
+
+            QUSTDATA();
+            ~QUSTDATA();
+
+            bool operator ==(const QUSTDATA &other) const;
+            bool operator !=(const QUSTDATA &other) const;
+            };
+
+        struct QUSTEntry //Log Entry
+            {
+            ReqSimpleSubRecord<UINT8> QSDT; //Stage Flags
+            std::vector<ReqSubRecord<FNVCTDA> *> CTDA; //Conditions
+            StringRecord CNAM; //Log Entry
+            OptSubRecord<FNVMINSCRIPT> Script; //Embedded Script
+            OptSimpleSubRecord<FORMID> NAM0; //Next Quest
+
+
+            enum entriesFlags
+                {
+                fIsCompletes = 0x00000001,
+                fIsFailed = 0x00000002
+                };
+
+            QUSTEntry();
+            ~QUSTEntry();
+
+            bool IsCompletes();
+            void IsCompletes(bool value);
+            bool IsFailed();
+            void IsFailed(bool value);
+            bool IsFlagMask(UINT8 Mask, bool Exact=false);
+            void SetFlagMask(UINT8 Mask);
+
+            bool operator ==(const QUSTEntry &other) const;
+            bool operator !=(const QUSTEntry &other) const;
+            };
+
+        struct QUSTStage //Stage
+            {
+            ReqSimpleSubRecord<SINT16> INDX; //Stage Index
+            std::vector<QUSTEntry *> Entries; //Log Entries
+
+            QUSTStage();
+            ~QUSTStage();
+
+            bool operator ==(const QUSTStage &other) const;
+            bool operator !=(const QUSTStage &other) const;
+            };
+
+        struct QUSTQSTA //Target
+            {
+            FORMID  targetId; //Target
+            UINT8   flags, unused1[3]; //Flags, Unused
+
+            QUSTQSTA();
+            ~QUSTQSTA();
+
+            bool operator ==(const QUSTQSTA &other) const;
+            bool operator !=(const QUSTQSTA &other) const;
+            };
+
+        struct QUSTTarget //Target
+            {
+            ReqSubRecord<QUSTQSTA> QSTA; //Target
+            std::vector<ReqSubRecord<FNVCTDA> *> CTDA; //Conditions
+
+            enum targetsFlags
+                {
+                fIsIgnoresLocks = 0x00000001
+                };
+
+            QUSTTarget();
+            ~QUSTTarget();
+
+            bool IsIgnoresLocks();
+            void IsIgnoresLocks(bool value);
+            bool IsFlagMask(UINT8 Mask, bool Exact=false);
+            void SetFlagMask(UINT8 Mask);
+
+            bool operator ==(const QUSTTarget &other) const;
+            bool operator !=(const QUSTTarget &other) const;
+            };
+
+        struct QUSTObjective
+            {
+            ReqSimpleSubRecord<SINT32> QOBJ; //Objective Index
+            StringRecord NNAM; //Description
+            std::vector<QUSTTarget *> Targets;
+
+            QUSTObjective();
+            ~QUSTObjective();
+
+            bool operator ==(const QUSTObjective &other) const;
+            bool operator !=(const QUSTObjective &other) const;
+            };
+
         enum schrFlags
             {
             fIsEnabled = 0x0001
@@ -36,17 +136,12 @@ class QUSTRecord : public Record //Quest
         StringRecord EDID; //Editor ID
         OptSimpleSubRecord<FORMID> SCRI; //Script
         StringRecord FULL; //Name
-        OptSubRecord<GENICON> ICON; //Large Icon Filename
-        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
-        OptSubRecord<GENCTDA> CTDA; //Conditions
-        OptSimpleSubRecord<SINT16> INDX; //Stage Index
-        OptSimpleSubRecord<UINT8> QSDT; //Stage Flags
-        StringRecord CNAM; //Log Entry
-        OptSubRecord<FNVSCHR> SCHR; //Basic Script Data
-        OptSimpleSubRecord<FORMID> NAM0; //Next Quest
-        OptSimpleSubRecord<SINT32> QOBJ; //Objective Index
-        StringRecord NNAM; //Description
-        OptSubRecord<GENQSTA> QSTA; //QSTA ,, Struct
+        StringRecord ICON; //Large Icon Filename
+        StringRecord MICO; //Small Icon Filename
+        OptSubRecord<QUSTDATA> DATA; //General
+        std::vector<ReqSubRecord<FNVCTDA> *> CTDA; //Conditions
+        std::vector<QUSTStage *> Stages;
+        std::vector<QUSTObjective *> Objectives;
 
         QUSTRecord(unsigned char *_recData=NULL);
         QUSTRecord(QUSTRecord *srcRecord);

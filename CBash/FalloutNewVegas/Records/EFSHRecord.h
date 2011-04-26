@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class EFSHRecord : public Record //Effect Shader
+class EFSHRecord : public FNVRecord //Effect Shader
     {
     private:
         struct EFSHDATA

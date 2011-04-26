@@ -60,9 +60,9 @@ UINT32 REPURecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 }
         case 7: //full Name
             return STRING_FIELD;
-        case 8: //icon Large Icon Filename
+        case 8: //iconPath
             return ISTRING_FIELD;
-        case 9: //mico Small Icon Filename
+        case 9: //smallIconPath
             return ISTRING_FIELD;
         case 10: //data Value
             return FLOAT32_FIELD;
@@ -91,10 +91,10 @@ void * REPURecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return NULL;
         case 7: //full Name
             return FULL.value;
-        case 8: //icon Large Icon Filename
-            return ICON.IsLoaded() ? ICON->ICON.value : NULL;
-        case 9: //mico Small Icon Filename
-            return ICON.IsLoaded() ? ICON->MICO.value : NULL;
+        case 8: //iconPath
+            return ICON.value;
+        case 9: //smallIconPath
+            return MICO.value;
         case 10: //data Value
             return DATA.IsLoaded() ? &DATA->value10 : NULL;
         default:
@@ -132,13 +132,11 @@ bool REPURecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 7: //full Name
             FULL.Copy((STRING)FieldValue);
             break;
-        case 8: //icon Large Icon Filename
-            ICON.Load();
-            ICON->ICON.Copy((STRING)FieldValue);
+        case 8: //iconPath
+            ICON.Copy((STRING)FieldValue);
             break;
-        case 9: //mico Small Icon Filename
-            ICON.Load();
-            ICON->MICO.Copy((STRING)FieldValue);
+        case 9: //smallIconPath
+            MICO.Copy((STRING)FieldValue);
             break;
         case 10: //data Value
             DATA.Load();
@@ -173,13 +171,11 @@ void REPURecord::DeleteField(FIELD_IDENTIFIERS)
         case 7: //full Name
             FULL.Unload();
             return;
-        case 8: //icon Large Icon Filename
-            if(ICON.IsLoaded())
-                ICON->ICON.Unload();
+        case 8: //iconPath
+            ICON.Unload();
             return;
-        case 9: //mico Small Icon Filename
-            if(ICON.IsLoaded())
-                ICON->MICO.Unload();
+        case 9: //smallIconPath
+            MICO.Unload();
             return;
         case 10: //data Value
             DATA.Unload();

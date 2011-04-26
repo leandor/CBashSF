@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class IPCTRecord : public Record //Impact
+class IPCTRecord : public FNVRecord //Impact
     {
     private:
         struct IPCTDATA
@@ -45,6 +45,13 @@ class IPCTRecord : public Record //Impact
         enum flagsFlags
             {
             fIsNoDecalData = 0x00000001
+            };
+
+        enum DODTFlags
+            {
+            fIsParallax      = 0x00000001,
+            fIsAlphaBlending = 0x00000002,
+            fIsAlphaTesting  = 0x00000004
             };
 
         enum soundLevelTypes
@@ -73,6 +80,15 @@ class IPCTRecord : public Record //Impact
         void   IsNoDecalData(bool value);
         bool   IsFlagMask(UINT32 Mask, bool Exact=false);
         void   SetFlagMask(UINT32 Mask);
+
+        bool   IsObjectParallax();
+        void   IsObjectParallax(bool value);
+        bool   IsObjectAlphaBlending();
+        void   IsObjectAlphaBlending(bool value);
+        bool   IsObjectAlphaTesting();
+        void   IsObjectAlphaTesting(bool value);
+        bool   IsObjectFlagMask(UINT8 Mask, bool Exact=false);
+        void   SetObjectFlagMask(UINT8 Mask);
 
         bool   IsLoud();
         void   IsLoud(bool value);

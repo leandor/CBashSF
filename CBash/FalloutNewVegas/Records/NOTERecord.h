@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class NOTERecord : public Record //Note
+class NOTERecord : public FNVRecord //Note
     {
     private:
         enum noteTypeTypes
@@ -40,7 +40,8 @@ class NOTERecord : public Record //Note
         OptSubRecord<GENOBND> OBND; //Object Bounds
         StringRecord FULL; //Name
         OptSubRecord<FNVMODEL> MODL; //Model
-        OptSubRecord<GENICON> ICON; //Icon Filenames
+        StringRecord ICON; //Large Icon Filename
+        StringRecord MICO; //Small Icon Filename
         OptSimpleSubRecord<FORMID> YNAM; //Sound - Pick Up
         OptSimpleSubRecord<FORMID> ZNAM; //Sound - Drop
         OptSimpleSubRecord<UINT8> DATA; //Type

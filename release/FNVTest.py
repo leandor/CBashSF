@@ -26,7 +26,8 @@ def regressionTests():
     assertTES4(Current, newMod)
     assertGMST(Current, newMod)
     assertTXST(Current, newMod)
-##    newMod.save()
+    assertMICN(Current, newMod)
+    newMod.save()
 
 def assertTES4(Current, newMod):
     record = Current.LoadOrderMods[0].TES4
@@ -99,6 +100,7 @@ def assertGMST(Current, newMod):
     assert record.versionControl1 == [12, 92, 22, 0]
     assert record.formVersion == 15
     assert record.versionControl2 == [0, 0]
+    
     assert record.eid == "sPoisonNoWeaponMessage"
     assert record.eid == "sPoisonNoweaponMessage"
     assert record.value == "You must first equip a weapon that can be poisoned."
@@ -205,10 +207,357 @@ def assertGMST(Current, newMod):
 
 def assertTXST(Current, newMod):
     record = Current.LoadOrderMods[0].TXST[0]
-    print PrintFormID(record.fid)
-    printRecord(record)
-    return
+
+    assert record.fid == ('FalloutNV.esm', 0x177DB0)
+    assert record.flags1 == 0x80000000 #CBash sets 0x80000000 for internal use
+    assert record.versionControl1 == [30, 91, 19, 0]
+    assert record.formVersion == 15
+    assert record.versionControl2 == [1, 0]
+    assert record.eid == 'NVNCRMPhelmet'
+    assert record.eid == 'NVNCRMPHelmet'
+    
+    assert record.boundX1 == 0
+    assert record.boundY1 == 0
+    assert record.boundZ1 == 0
+    assert record.boundX2 == 0
+    assert record.boundY2 == 0
+    assert record.boundZ2 == 0
+    assert record.baseImageOrTransparencyPath == r'armor\headgear\trooperHelmMP.dds'
+    assert record.baseImageOrTransparencyPath == r'Armor\headgear\trooperHelmMP.dds'
+    assert record.normalMapOrSpecularPath == r'armor\headgear\trooperHelm_n.dds'
+    assert record.normalMapOrSpecularPath == r'Armor\headgear\trooperHelm_n.dds'
+    assert record.envMapMaskOrUnkPath == None
+    assert record.glowMapOrUnusedPath == None
+    assert record.parallaxMapOrUnusedPath == None
+    assert record.envMapOrUnusedPath == None
+    assert record.decalMinWidth == None
+    assert record.decalMaxWidth == None
+    assert record.decalMinHeight == None
+    assert record.decalMaxHeight == None
+    assert record.decalDepth == None
+    assert record.decalShininess == None
+    assert record.decalScale == None
+    assert record.decalPasses == None
+    assert record.decalFlags == None
+    assert record.decalUnused1 == []
+    assert record.decalRed == None
+    assert record.decalGreen == None
+    assert record.decalBlue == None
+    assert record.decalUnused2 == []
+    assert record.flags == 0
+    
+    nrecord = newMod.create_TXST()
+
+    nrecord.flags1 = 10
+    nrecord.versionControl1 = [1, 3, 2, 6]
+    nrecord.formVersion = 1
+    nrecord.versionControl2 = [2, 3]
+    nrecord.eid = 'WarTest'
+    
+    nrecord.boundX1 = 11
+    nrecord.boundY1 = 12
+    nrecord.boundZ1 = 13
+    nrecord.boundX2 = 14
+    nrecord.boundY2 = 15
+    nrecord.boundZ2 = 16
+    nrecord.baseImageOrTransparencyPath = r'armor\1\trooperHelmMP.dds'
+    nrecord.normalMapOrSpecularPath = r'Armor\2\trooperHelm_n.dds'
+    nrecord.envMapMaskOrUnkPath = r'Armor\3\trooperHelm_n.dds'
+    nrecord.glowMapOrUnusedPath = r'Armor\4\trooperHelm_n.dds'
+    nrecord.parallaxMapOrUnusedPath = r'Armor\5\trooperHelm_n.dds'
+    nrecord.envMapOrUnusedPath = r'Armor\6\trooperHelm_n.dds'
+    nrecord.decalMinWidth = 17
+    nrecord.decalMaxWidth = 18
+    nrecord.decalMinHeight = 19
+    nrecord.decalMaxHeight = 20
+    nrecord.decalDepth = 21
+    nrecord.decalShininess = 22
+    nrecord.decalScale = 23
+    nrecord.decalPasses = 24
+    nrecord.decalFlags = 25
+    nrecord.decalUnused1 = [1,2]
+    nrecord.decalRed = 26
+    nrecord.decalGreen = 27
+    nrecord.decalBlue = 28
+    nrecord.decalUnused2 = [3]
+    nrecord.flags = 29
+    
+    assert nrecord.fid == ('RegressionTests.esp', 0x001005)
+    assert nrecord.flags1 == 0x80000000 | 10
+    assert nrecord.versionControl1 == [1, 3, 2, 6]
+    assert nrecord.formVersion == 1
+    assert nrecord.versionControl2 == [2, 3]
+    assert nrecord.eid == 'WarTest'
+    assert nrecord.eid == 'WArTest'
+
+    assert nrecord.boundX1 == 11
+    assert nrecord.boundY1 == 12
+    assert nrecord.boundZ1 == 13
+    assert nrecord.boundX2 == 14
+    assert nrecord.boundY2 == 15
+    assert nrecord.boundZ2 == 16
+    assert nrecord.baseImageOrTransparencyPath == r'armor\1\trooperHelmMP.dds'
+    assert nrecord.normalMapOrSpecularPath == r'Armor\2\trooperHelm_n.dds'
+    assert nrecord.envMapMaskOrUnkPath == r'Armor\3\trooperHelm_n.dds'
+    assert nrecord.glowMapOrUnusedPath == r'Armor\4\trooperHelm_n.dds'
+    assert nrecord.parallaxMapOrUnusedPath == r'Armor\5\trooperHelm_n.dds'
+    assert nrecord.envMapOrUnusedPath == r'Armor\6\trooperHelm_n.dds'
+    assert nrecord.decalMinWidth == 17
+    assert nrecord.decalMaxWidth == 18
+    assert nrecord.decalMinHeight == 19
+    assert nrecord.decalMaxHeight == 20
+    assert nrecord.decalDepth == 21
+    assert nrecord.decalShininess == 22
+    assert nrecord.decalScale == 23
+    assert nrecord.decalPasses == 24
+    assert nrecord.decalFlags == 25
+    assert nrecord.decalUnused1 == [1,2]
+    assert nrecord.decalRed == 26
+    assert nrecord.decalGreen == 27
+    assert nrecord.decalBlue == 28
+    assert nrecord.decalUnused2 == [3]
+    assert nrecord.flags == 29
+
+    record = Current.LoadOrderMods[0].TXST[0]
+    newrecord = record.CopyAsOverride(newMod)
+
+    assert newrecord.fid == ('FalloutNV.esm', 0x177DB0)
+    assert newrecord.flags1 == 0x80000000 #CBash sets 0x80000000 for internal use
+    assert newrecord.versionControl1 == [30, 91, 19, 0]
+    assert newrecord.formVersion == 15
+    assert newrecord.versionControl2 == [1, 0]
+    assert newrecord.eid == 'NVNCRMPhelmet'
+    assert newrecord.eid == 'NVNCRMPHelmet'
+    
+    assert newrecord.boundX1 == 0
+    assert newrecord.boundY1 == 0
+    assert newrecord.boundZ1 == 0
+    assert newrecord.boundX2 == 0
+    assert newrecord.boundY2 == 0
+    assert newrecord.boundZ2 == 0
+    assert newrecord.baseImageOrTransparencyPath == r'armor\headgear\trooperHelmMP.dds'
+    assert newrecord.baseImageOrTransparencyPath == r'Armor\headgear\trooperHelmMP.dds'
+    assert newrecord.normalMapOrSpecularPath == r'armor\headgear\trooperHelm_n.dds'
+    assert newrecord.normalMapOrSpecularPath == r'Armor\headgear\trooperHelm_n.dds'
+    assert newrecord.envMapMaskOrUnkPath == None
+    assert newrecord.glowMapOrUnusedPath == None
+    assert newrecord.parallaxMapOrUnusedPath == None
+    assert newrecord.envMapOrUnusedPath == None
+    assert newrecord.decalMinWidth == None
+    assert newrecord.decalMaxWidth == None
+    assert newrecord.decalMinHeight == None
+    assert newrecord.decalMaxHeight == None
+    assert newrecord.decalDepth == None
+    assert newrecord.decalShininess == None
+    assert newrecord.decalScale == None
+    assert newrecord.decalPasses == None
+    assert newrecord.decalFlags == None
+    assert newrecord.decalUnused1 == []
+    assert newrecord.decalRed == None
+    assert newrecord.decalGreen == None
+    assert newrecord.decalBlue == None
+    assert newrecord.decalUnused2 == []
+    assert newrecord.flags == 0
+
+    newrecord.flags1 = 10
+    newrecord.versionControl1 = [1, 3, 2, 6]
+    newrecord.formVersion = 1
+    newrecord.versionControl2 = [2, 3]
+    newrecord.eid = 'WarTest'
+    
+    newrecord.boundX1 = 11
+    newrecord.boundY1 = 12
+    newrecord.boundZ1 = 13
+    newrecord.boundX2 = 14
+    newrecord.boundY2 = 15
+    newrecord.boundZ2 = 16
+    newrecord.baseImageOrTransparencyPath = r'armor\1\trooperHelmMP.dds'
+    newrecord.normalMapOrSpecularPath = r'Armor\2\trooperHelm_n.dds'
+    newrecord.envMapMaskOrUnkPath = r'Armor\3\trooperHelm_n.dds'
+    newrecord.glowMapOrUnusedPath = r'Armor\4\trooperHelm_n.dds'
+    newrecord.parallaxMapOrUnusedPath = r'Armor\5\trooperHelm_n.dds'
+    newrecord.envMapOrUnusedPath = r'Armor\6\trooperHelm_n.dds'
+    newrecord.decalMinWidth = 17
+    newrecord.decalMaxWidth = 18
+    newrecord.decalMinHeight = 19
+    newrecord.decalMaxHeight = 20
+    newrecord.decalDepth = 21
+    newrecord.decalShininess = 22
+    newrecord.decalScale = 23
+    newrecord.decalPasses = 24
+    newrecord.decalFlags = 25
+    newrecord.decalUnused1 = [1,2]
+    newrecord.decalRed = 26
+    newrecord.decalGreen = 27
+    newrecord.decalBlue = 28
+    newrecord.decalUnused2 = [3]
+    newrecord.flags = 29
+    
+    assert newrecord.fid == ('FalloutNV.esm', 0x177DB0)
+    assert newrecord.flags1 == 0x80000000 | 10
+    assert newrecord.versionControl1 == [1, 3, 2, 6]
+    assert newrecord.formVersion == 1
+    assert newrecord.versionControl2 == [2, 3]
+    assert newrecord.eid == 'WarTest'
+    assert newrecord.eid == 'WArTest'
+    
+    assert newrecord.boundX1 == 11
+    assert newrecord.boundY1 == 12
+    assert newrecord.boundZ1 == 13
+    assert newrecord.boundX2 == 14
+    assert newrecord.boundY2 == 15
+    assert newrecord.boundZ2 == 16
+    assert newrecord.baseImageOrTransparencyPath == r'armor\1\trooperHelmMP.dds'
+    assert newrecord.normalMapOrSpecularPath == r'Armor\2\trooperHelm_n.dds'
+    assert newrecord.envMapMaskOrUnkPath == r'Armor\3\trooperHelm_n.dds'
+    assert newrecord.glowMapOrUnusedPath == r'Armor\4\trooperHelm_n.dds'
+    assert newrecord.parallaxMapOrUnusedPath == r'Armor\5\trooperHelm_n.dds'
+    assert newrecord.envMapOrUnusedPath == r'Armor\6\trooperHelm_n.dds'
+    assert newrecord.decalMinWidth == 17
+    assert newrecord.decalMaxWidth == 18
+    assert newrecord.decalMinHeight == 19
+    assert newrecord.decalMaxHeight == 20
+    assert newrecord.decalDepth == 21
+    assert newrecord.decalShininess == 22
+    assert newrecord.decalScale == 23
+    assert newrecord.decalPasses == 24
+    assert newrecord.decalFlags == 25
+    assert newrecord.decalUnused1 == [1,2]
+    assert newrecord.decalRed == 26
+    assert newrecord.decalGreen == 27
+    assert newrecord.decalBlue == 28
+    assert newrecord.decalUnused2 == [3]
+    assert newrecord.flags == 29
+
+    assert record.fid == ('FalloutNV.esm', 0x177DB0)
+    assert record.flags1 == 0x80000000 #CBash sets 0x80000000 for internal use
+    assert record.versionControl1 == [30, 91, 19, 0]
+    assert record.formVersion == 15
+    assert record.versionControl2 == [1, 0]
+    assert record.eid == 'NVNCRMPhelmet'
+    assert record.eid == 'NVNCRMPHelmet'
+    
+    assert record.boundX1 == 0
+    assert record.boundY1 == 0
+    assert record.boundZ1 == 0
+    assert record.boundX2 == 0
+    assert record.boundY2 == 0
+    assert record.boundZ2 == 0
+    assert record.baseImageOrTransparencyPath == r'armor\headgear\trooperHelmMP.dds'
+    assert record.baseImageOrTransparencyPath == r'Armor\headgear\trooperHelmMP.dds'
+    assert record.normalMapOrSpecularPath == r'armor\headgear\trooperHelm_n.dds'
+    assert record.normalMapOrSpecularPath == r'Armor\headgear\trooperHelm_n.dds'
+    assert record.envMapMaskOrUnkPath == None
+    assert record.glowMapOrUnusedPath == None
+    assert record.parallaxMapOrUnusedPath == None
+    assert record.envMapOrUnusedPath == None
+    assert record.decalMinWidth == None
+    assert record.decalMaxWidth == None
+    assert record.decalMinHeight == None
+    assert record.decalMaxHeight == None
+    assert record.decalDepth == None
+    assert record.decalShininess == None
+    assert record.decalScale == None
+    assert record.decalPasses == None
+    assert record.decalFlags == None
+    assert record.decalUnused1 == []
+    assert record.decalRed == None
+    assert record.decalGreen == None
+    assert record.decalBlue == None
+    assert record.decalUnused2 == []
+    assert record.flags == 0
+
     print "TXST:Finished testing"
+
+def assertMICN(Current, newMod):
+    record = Current.LoadOrderMods[0].MICN[0]
+    
+    assert record.fid == ('FalloutNV.esm', 0x174090)
+    assert record.flags1 == 0x80000000 #CBash sets 0x80000000 for internal use
+    assert record.versionControl1 == [16, 91, 22, 0]
+    assert record.formVersion == 15
+    assert record.versionControl2 == [1, 0]
+    assert record.eid == 'MenuIconFactionBrotherhood'
+    assert record.eid == 'MenuIconFActionBrotherhood'
+    
+    assert record.iconPath == r'interface\icons\message icons\glow_message_vaultboy_brotherhood.dds'
+    assert record.iconPath == r'interface\icons\messAge icons\glow_message_vaultboy_brotherhood.dds'
+    assert record.smallIconPath == None
+    
+    nrecord = newMod.create_MICN()
+
+    nrecord.flags1 = 10
+    nrecord.versionControl1 = [1, 3, 2, 6]
+    nrecord.formVersion = 1
+    nrecord.versionControl2 = [2, 3]
+    nrecord.eid = 'WarTest'
+    
+    nrecord.iconPath = r'armor\1\trooperHelmMP.dds'
+    nrecord.smallIconPath = r'Armor\2\trooperHelm_n.dds'
+    
+    assert nrecord.fid == ('RegressionTests.esp', 0x001006)
+    assert nrecord.flags1 == 0x80000000 | 10
+    assert nrecord.versionControl1 == [1, 3, 2, 6]
+    assert nrecord.formVersion == 1
+    assert nrecord.versionControl2 == [2, 3]
+    assert nrecord.eid == 'WarTest'
+    assert nrecord.eid == 'WArTest'
+    
+    assert nrecord.iconPath == r'armor\1\trooperHelmMP.dds'
+    assert nrecord.iconPath == r'Armor\1\trooperHelmMP.dds'
+    assert nrecord.smallIconPath == r'armor\2\trooperHelm_n.dds'
+    assert nrecord.smallIconPath == r'Armor\2\trooperHelm_n.dds'
+
+    record = Current.LoadOrderMods[0].MICN[0]
+    newrecord = record.CopyAsOverride(newMod)
+
+    assert newrecord.fid == ('FalloutNV.esm', 0x174090)
+    assert newrecord.flags1 == 0x80000000 #CBash sets 0x80000000 for internal use
+    assert newrecord.versionControl1 == [16, 91, 22, 0]
+    assert newrecord.formVersion == 15
+    assert newrecord.versionControl2 == [1, 0]
+    assert newrecord.eid == 'MenuIconFactionBrotherhood'
+    assert newrecord.eid == 'MenuIconFActionBrotherhood'
+    
+    assert record.iconPath == r'interface\icons\message icons\glow_message_vaultboy_brotherhood.dds'
+    assert record.iconPath == r'interface\icons\messAge icons\glow_message_vaultboy_brotherhood.dds'
+    assert record.smallIconPath == None
+
+    newrecord.flags1 = 10
+    newrecord.versionControl1 = [1, 3, 2, 6]
+    newrecord.formVersion = 1
+    newrecord.versionControl2 = [2, 3]
+    newrecord.eid = 'WarTest'
+    
+    newrecord.iconPath = r'armor\1\trooperHelmMP.dds'
+    newrecord.smallIconPath = r'Armor\2\trooperHelm_n.dds'
+    
+    assert newrecord.fid == ('FalloutNV.esm', 0x174090)
+    assert newrecord.flags1 == 0x80000000 | 10
+    assert newrecord.versionControl1 == [1, 3, 2, 6]
+    assert newrecord.formVersion == 1
+    assert newrecord.versionControl2 == [2, 3]
+    assert newrecord.eid == 'WarTest'
+    assert newrecord.eid == 'WArTest'
+    
+    assert newrecord.iconPath == r'armor\1\trooperHelmMP.dds'
+    assert newrecord.iconPath == r'Armor\1\trooperHelmMP.dds'
+    assert newrecord.smallIconPath == r'armor\2\trooperHelm_n.dds'
+    assert newrecord.smallIconPath == r'Armor\2\trooperHelm_n.dds'
+
+    assert record.fid == ('FalloutNV.esm', 0x174090)
+    assert record.flags1 == 0x80000000 #CBash sets 0x80000000 for internal use
+    assert record.versionControl1 == [16, 91, 22, 0]
+    assert record.formVersion == 15
+    assert record.versionControl2 == [1, 0]
+    assert record.eid == 'MenuIconFactionBrotherhood'
+    assert record.eid == 'MenuIconFActionBrotherhood'
+    
+    assert record.iconPath == r'interface\icons\message icons\glow_message_vaultboy_brotherhood.dds'
+    assert record.iconPath == r'interface\icons\messAge icons\glow_message_vaultboy_brotherhood.dds'
+    assert record.smallIconPath == None
+
+    print "MICN:Finished testing"
 
 from timeit import Timer
 

@@ -76,12 +76,8 @@ RACERecord::RACERecord(RACERecord *srcRecord):
         MODL->MODS = srcRecord->MODL->MODS;
         MODL->MODD = srcRecord->MODL->MODD;
         }
-    if(srcRecord->ICON.IsLoaded())
-        {
-        ICON.Load();
-        ICON->ICON = srcRecord->ICON->ICON;
-        ICON->MICO = srcRecord->ICON->MICO;
-        }
+    ICON = srcRecord->ICON;
+    MICO = srcRecord->MICO;
     FNAM = srcRecord->FNAM;
     NAM1 = srcRecord->NAM1;
     HNAM = srcRecord->HNAM;
@@ -272,18 +268,16 @@ UINT32 RACERecord::GetSize(bool forceCalc)
 
     if(ICON.IsLoaded())
         {
-        if(ICON->ICON.IsLoaded())
-            {
-            cSize = ICON->ICON.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(ICON->MICO.IsLoaded())
-            {
-            cSize = ICON->MICO.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
+        cSize = ICON.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(MICO.IsLoaded())
+        {
+        cSize = MICO.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
         }
 
     if(FNAM.IsLoaded())
@@ -434,12 +428,10 @@ SINT32 RACERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 MODL->MODD.Read(buffer, subSize, curPos);
                 break;
             case 'NOCI':
-                ICON.Load();
-                ICON->ICON.Read(buffer, subSize, curPos);
+                ICON.Read(buffer, subSize, curPos);
                 break;
             case 'OCIM':
-                ICON.Load();
-                ICON->MICO.Read(buffer, subSize, curPos);
+                MICO.Read(buffer, subSize, curPos);
                 break;
             case 'MANF':
                 //FNAM.Read(buffer, subSize, curPos); //FILL IN MANUALLY
@@ -503,6 +495,7 @@ SINT32 RACERecord::Unload()
     INDX.Unload();
     MODL.Unload();
     ICON.Unload();
+    MICO.Unload();
     //FNAM.Unload(); //FILL IN MANUALLY
     //NAM1.Unload(); //FILL IN MANUALLY
     HNAM.Unload();
@@ -585,14 +578,10 @@ SINT32 RACERecord::WriteRecord(_FileHandler &SaveHandler)
         }
 
     if(ICON.IsLoaded())
-        {
-        if(ICON->ICON.IsLoaded())
-            SaveHandler.writeSubRecord('NOCI', ICON->ICON.value, ICON->ICON.GetSize());
+        SaveHandler.writeSubRecord('NOCI', ICON.value, ICON.GetSize());
 
-        if(ICON->MICO.IsLoaded())
-            SaveHandler.writeSubRecord('OCIM', ICON->MICO.value, ICON->MICO.GetSize());
-
-        }
+    if(MICO.IsLoaded())
+        SaveHandler.writeSubRecord('OCIM', MICO.value, MICO.GetSize());
 
     //if(FNAM.IsLoaded()) //FILL IN MANUALLY
         //SaveHandler.writeSubRecord('MANF', FNAM.value, FNAM.GetSize());
@@ -645,7 +634,8 @@ bool RACERecord::operator ==(const RACERecord &other) const
             //Empty &&
             INDX == other.INDX &&
             MODL == other.MODL &&
-            ICON == other.ICON &&
+            ICON.equalsi(other.ICON) &&
+            MICO.equalsi(other.MICO) &&
             //Empty &&
             //Empty &&
             HNAM == other.HNAM &&

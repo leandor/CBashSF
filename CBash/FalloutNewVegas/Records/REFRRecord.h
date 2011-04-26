@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class REFRRecord : public Record //Placed Object
+class REFRRecord : public FNVRecord //Placed Object
     {
     private:
         enum xprmTypes

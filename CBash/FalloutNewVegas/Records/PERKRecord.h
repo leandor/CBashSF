@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class PERKRecord : public Record //Perk
+class PERKRecord : public FNVRecord //Perk
     {
     private:
         struct PERKDATA
@@ -183,7 +183,8 @@ class PERKRecord : public Record //Perk
         StringRecord EDID; //Editor ID
         StringRecord FULL; //Name
         StringRecord DESC; //Description
-        OptSubRecord<GENICON> ICON; //Icon Filenames
+        StringRecord ICON; //Large Icon Filename
+        StringRecord MICO; //Small Icon Filename
         std::vector<ReqSubRecord<FNVCTDA> *> CTDA; //Conditions
         OptSubRecord<PERKDATA> DATA; //Data
         std::vector<ReqSubRecord<PERKEffect> *> PRKE; //Effects

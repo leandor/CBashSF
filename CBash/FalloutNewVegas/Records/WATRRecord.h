@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class WATRRecord : public Record //Water
+class WATRRecord : public FNVRecord //Water
     {
     private:
         struct WATRANAM

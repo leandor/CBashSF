@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class MSTTRecord : public Record //Moveable Static
+class MSTTRecord : public FNVRecord //Moveable Static
     {
     public:
         StringRecord EDID; //Editor ID

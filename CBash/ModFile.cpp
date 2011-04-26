@@ -82,7 +82,8 @@ bool ModFile::Close()
     {
     if(!ReadHandler.IsOpen())
         {
-        printf("ModFile::Close: Error - Unable to close mod \"%s\". It is already closed.\n", ReadHandler.getModName());
+        if(!Flags.IsIgnoreExisting)
+            printf("ModFile::Close: Error - Unable to close mod \"%s\". It is already closed.\n", ReadHandler.getModName());
         return false;
         }
     ReadHandler.close();

@@ -63,12 +63,8 @@ LIGHRecord::LIGHRecord(LIGHRecord *srcRecord):
         }
     SCRI = srcRecord->SCRI;
     FULL = srcRecord->FULL;
-    if(srcRecord->ICON.IsLoaded())
-        {
-        ICON.Load();
-        ICON->ICON = srcRecord->ICON->ICON;
-        ICON->MICO = srcRecord->ICON->MICO;
-        }
+    ICON = srcRecord->ICON;
+    MICO = srcRecord->MICO;
     DATA = srcRecord->DATA;
     FNAM = srcRecord->FNAM;
     SNAM = srcRecord->SNAM;
@@ -271,18 +267,16 @@ UINT32 LIGHRecord::GetSize(bool forceCalc)
 
     if(ICON.IsLoaded())
         {
-        if(ICON->ICON.IsLoaded())
-            {
-            cSize = ICON->ICON.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(ICON->MICO.IsLoaded())
-            {
-            cSize = ICON->MICO.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
+        cSize = ICON.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(MICO.IsLoaded())
+        {
+        cSize = MICO.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
         }
 
     if(DATA.IsLoaded())
@@ -362,12 +356,10 @@ SINT32 LIGHRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 FULL.Read(buffer, subSize, curPos);
                 break;
             case 'NOCI':
-                ICON.Load();
-                ICON->ICON.Read(buffer, subSize, curPos);
+                ICON.Read(buffer, subSize, curPos);
                 break;
             case 'OCIM':
-                ICON.Load();
-                ICON->MICO.Read(buffer, subSize, curPos);
+                MICO.Read(buffer, subSize, curPos);
                 break;
             case 'ATAD':
                 DATA.Read(buffer, subSize, curPos);
@@ -400,6 +392,7 @@ SINT32 LIGHRecord::Unload()
     SCRI.Unload();
     FULL.Unload();
     ICON.Unload();
+    MICO.Unload();
     DATA.Unload();
     FNAM.Unload();
     SNAM.Unload();
@@ -440,14 +433,10 @@ SINT32 LIGHRecord::WriteRecord(_FileHandler &SaveHandler)
         SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
 
     if(ICON.IsLoaded())
-        {
-        if(ICON->ICON.IsLoaded())
-            SaveHandler.writeSubRecord('NOCI', ICON->ICON.value, ICON->ICON.GetSize());
+        SaveHandler.writeSubRecord('NOCI', ICON.value, ICON.GetSize());
 
-        if(ICON->MICO.IsLoaded())
-            SaveHandler.writeSubRecord('OCIM', ICON->MICO.value, ICON->MICO.GetSize());
-
-        }
+    if(MICO.IsLoaded())
+        SaveHandler.writeSubRecord('OCIM', MICO.value, MICO.GetSize());
 
     if(DATA.IsLoaded())
         SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
@@ -468,7 +457,8 @@ bool LIGHRecord::operator ==(const LIGHRecord &other) const
             MODL == other.MODL &&
             SCRI == other.SCRI &&
             FULL.equals(other.FULL) &&
-            ICON == other.ICON &&
+            ICON.equalsi(other.ICON) &&
+            MICO.equalsi(other.MICO) &&
             DATA == other.DATA &&
             FNAM == other.FNAM &&
             SNAM == other.SNAM);

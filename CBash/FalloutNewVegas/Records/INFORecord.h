@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class INFORecord : public Record //Dialog response
+class INFORecord : public FNVRecord //Dialog response
     {
     private:
         struct INFODATA

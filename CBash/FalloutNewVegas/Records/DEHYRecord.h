@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class DEHYRecord : public Record //Dehydration Stage
+class DEHYRecord : public FNVRecord //Dehydration Stage
     {
     public:
         StringRecord EDID; //Editor ID

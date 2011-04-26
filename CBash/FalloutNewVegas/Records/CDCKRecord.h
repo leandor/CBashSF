@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class CDCKRecord : public Record //Caravan Deck
+class CDCKRecord : public FNVRecord //Caravan Deck
     {
     public:
         StringRecord EDID; //Editor ID

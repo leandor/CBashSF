@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class BPTDRecord : public Record //Body Part Data
+class BPTDRecord : public FNVRecord //Body Part Data
     {
     private:
         struct BPTDBPND

@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class CHALRecord : public Record //Challenge
+class CHALRecord : public FNVRecord //Challenge
     {
     private:
         struct CHALDATA // Data

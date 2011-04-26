@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class SLPDRecord : public Record //Sleep Deprivation Stage
+class SLPDRecord : public FNVRecord //Sleep Deprivation Stage
     {
     public:
         StringRecord EDID; //Editor ID

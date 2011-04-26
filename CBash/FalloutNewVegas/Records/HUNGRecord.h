@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class HUNGRecord : public Record //Hunger Stage
+class HUNGRecord : public FNVRecord //Hunger Stage
     {
     public:
         StringRecord EDID; //Editor ID

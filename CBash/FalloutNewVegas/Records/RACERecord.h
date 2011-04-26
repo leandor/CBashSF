@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class RACERecord : public Record //Race
+class RACERecord : public FNVRecord //Race
     {
     private:
         struct RACESKILL
@@ -57,7 +57,8 @@ class RACERecord : public Record //Race
             {
             OptSimpleSubRecord<UINT32> INDX; //Index
             OptSubRecord<FNVMODEL> MODL; //Model
-            OptSubRecord<GENICON> ICON; //Icon Filenames
+            StringRecord ICON; //Large Icon Filename
+            StringRecord MICO; //Small Icon Filename
 
             bool operator ==(const RACEPart &other) const;
             bool operator !=(const RACEPart &other) const;

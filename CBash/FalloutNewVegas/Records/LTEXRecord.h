@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class LTEXRecord : public Record //Landscape Texture
+class LTEXRecord : public FNVRecord //Landscape Texture
     {
     private:
         struct LTEXHNAM
@@ -76,7 +76,8 @@ class LTEXRecord : public Record //Landscape Texture
             };
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENICON> ICON; //Icon Filenames
+        StringRecord ICON; //Large Icon Filename
+        StringRecord MICO; //Small Icon Filename
         OptSimpleSubRecord<FORMID> TNAM; //Texture
         OptSubRecord<LTEXHNAM> HNAM; //Havok Data
         OptSimpleSubRecord<UINT8> SNAM; //Texture Specular Exponent

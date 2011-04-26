@@ -58,11 +58,11 @@ UINT32 LIGHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
-        case 7: //obnd Object Bounds
+        case 7: //boundX
             return SINT16_FIELD;
-        case 8: //obnd Object Bounds
+        case 8: //boundY
             return SINT16_FIELD;
-        case 9: //obnd Object Bounds
+        case 9: //boundZ
             return SINT16_FIELD;
         case 10: //modl Model Filename
             return STRING_FIELD;
@@ -98,9 +98,9 @@ UINT32 LIGHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
             return FORMID_FIELD;
         case 18: //full Name
             return STRING_FIELD;
-        case 19: //icon Large Icon Filename
+        case 19: //iconPath
             return ISTRING_FIELD;
-        case 20: //mico Small Icon Filename
+        case 20: //smallIconPath
             return ISTRING_FIELD;
         case 21: //data DATA ,, Struct
             return SINT32_FIELD;
@@ -151,12 +151,12 @@ void * LIGHRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 6: //versionControl2
             *FieldValues = &versionControl2[0];
             return NULL;
-        case 7: //obnd Object Bounds
-            return OBNDReq.IsLoaded() ? &OBNDReq->value7 : NULL;
-        case 8: //obnd Object Bounds
-            return OBNDReq.IsLoaded() ? &OBNDReq->value8 : NULL;
-        case 9: //obnd Object Bounds
-            return OBNDReq.IsLoaded() ? &OBNDReq->value9 : NULL;
+        case 7: //boundX
+            return OBND.IsLoaded() ? &OBND->x : NULL;
+        case 8: //boundY
+            return OBND.IsLoaded() ? &OBND->y : NULL;
+        case 9: //boundZ
+            return OBND.IsLoaded() ? &OBND->z : NULL;
         case 10: //modl Model Filename
             return MODL.IsLoaded() ? MODL->MODL.value : NULL;
         case 11: //modb_p Unknown
@@ -177,10 +177,10 @@ void * LIGHRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return SCRI.IsLoaded() ? &SCRI->value17 : NULL;
         case 18: //full Name
             return FULL.value;
-        case 19: //icon Large Icon Filename
-            return ICON.IsLoaded() ? ICON->ICON.value : NULL;
-        case 20: //mico Small Icon Filename
-            return ICON.IsLoaded() ? ICON->MICO.value : NULL;
+        case 19: //iconPath
+            return ICON.value;
+        case 20: //smallIconPath
+            return MICO.value;
         case 21: //data DATA ,, Struct
             return DATA.IsLoaded() ? &DATA->value21 : NULL;
         case 22: //data DATA ,, Struct
@@ -239,17 +239,17 @@ bool LIGHRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             versionControl2[0] = ((UINT8 *)FieldValue)[0];
             versionControl2[1] = ((UINT8 *)FieldValue)[1];
             break;
-        case 7: //obnd Object Bounds
-            OBNDReq.Load();
-            OBNDReq->value7 = *(SINT16 *)FieldValue;
+        case 7: //boundX
+            OBND.Load();
+            OBND->x = *(SINT16 *)FieldValue;
             break;
-        case 8: //obnd Object Bounds
-            OBNDReq.Load();
-            OBNDReq->value8 = *(SINT16 *)FieldValue;
+        case 8: //boundY
+            OBND.Load();
+            OBND->y = *(SINT16 *)FieldValue;
             break;
-        case 9: //obnd Object Bounds
-            OBNDReq.Load();
-            OBNDReq->value9 = *(SINT16 *)FieldValue;
+        case 9: //boundZ
+            OBND.Load();
+            OBND->z = *(SINT16 *)FieldValue;
             break;
         case 10: //modl Model Filename
             MODL.Load();
@@ -289,13 +289,11 @@ bool LIGHRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 18: //full Name
             FULL.Copy((STRING)FieldValue);
             break;
-        case 19: //icon Large Icon Filename
-            ICON.Load();
-            ICON->ICON.Copy((STRING)FieldValue);
+        case 19: //iconPath
+            ICON.Copy((STRING)FieldValue);
             break;
-        case 20: //mico Small Icon Filename
-            ICON.Load();
-            ICON->MICO.Copy((STRING)FieldValue);
+        case 20: //smallIconPath
+            MICO.Copy((STRING)FieldValue);
             break;
         case 21: //data DATA ,, Struct
             DATA.Load();
@@ -375,14 +373,17 @@ void LIGHRecord::DeleteField(FIELD_IDENTIFIERS)
             versionControl2[0] = 0;
             versionControl2[1] = 0;
             return;
-        case 7: //obnd Object Bounds
-            OBNDReq.Unload();
+        case 7: //boundX
+            if(OBND.IsLoaded())
+                OBND->x = defaultOBND.x;
             return;
-        case 8: //obnd Object Bounds
-            OBNDReq.Unload();
+        case 8: //boundY
+            if(OBND.IsLoaded())
+                OBND->y = defaultOBND.y;
             return;
-        case 9: //obnd Object Bounds
-            OBNDReq.Unload();
+        case 9: //boundZ
+            if(OBND.IsLoaded())
+                OBND->z = defaultOBND.z;
             return;
         case 10: //modl Model Filename
             if(MODL.IsLoaded())
@@ -418,13 +419,11 @@ void LIGHRecord::DeleteField(FIELD_IDENTIFIERS)
         case 18: //full Name
             FULL.Unload();
             return;
-        case 19: //icon Large Icon Filename
-            if(ICON.IsLoaded())
-                ICON->ICON.Unload();
+        case 19: //iconPath
+            ICON.Unload();
             return;
-        case 20: //mico Small Icon Filename
-            if(ICON.IsLoaded())
-                ICON->MICO.Unload();
+        case 20: //smallIconPath
+            MICO.Unload();
             return;
         case 21: //data DATA ,, Struct
             DATA.Unload();

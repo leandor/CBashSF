@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class GRASRecord : public Record //Grass
+class GRASRecord : public FNVRecord //Grass
     {
     private:
         struct GRASDATA

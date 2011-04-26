@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class MGEFRecord : public Record //Base Effect
+class MGEFRecord : public FNVRecord //Base Effect
     {
     private:
         struct MGEFDATA
@@ -112,7 +112,8 @@ class MGEFRecord : public Record //Base Effect
         StringRecord EDID; //Editor ID
         StringRecord FULL; //Name
         StringRecord DESC; //Description
-        OptSubRecord<GENICON> ICON; //Icon Filenames
+        StringRecord ICON; //Large Icon Filename
+        StringRecord MICO; //Small Icon Filename
         OptSubRecord<FNVMODEL> MODL; //Model
         OptSubRecord<GENDATA> DATA; //DATA ,, Struct
 

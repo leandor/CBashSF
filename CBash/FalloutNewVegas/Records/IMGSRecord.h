@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class IMGSRecord : public Record //Image Space
+class IMGSRecord : public FNVRecord //Image Space
     {
     private:
         struct IMGSDNAM

@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class IDLMRecord : public Record //Idle Marker
+class IDLMRecord : public FNVRecord //Idle Marker
     {
     private:
         struct IDLMIDLC

@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class LSCTRecord : public Record //Load Screen Type
+class LSCTRecord : public FNVRecord //Load Screen Type
     {
     private:
         struct LSCTDATA

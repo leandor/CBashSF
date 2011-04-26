@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class TREERecord : public Record //Tree
+class TREERecord : public FNVRecord //Tree
     {
     private:
         struct TREECNAM
@@ -56,7 +56,8 @@ class TREERecord : public Record //Tree
         StringRecord EDID; //Editor ID
         OptSubRecord<GENOBND> OBND; //Object Bounds
         OptSubRecord<FNVMODEL> MODL; //Model
-        OptSubRecord<GENICON> ICON; //Icon Filenames
+        StringRecord ICON; //Large Icon Filename
+        StringRecord MICO; //Small Icon Filename
         std::vector<UINT32> SNAM; //SpeedTree Seeds
         OptSubRecord<TREECNAM> CNAM; //Tree Data
         OptSubRecord<TREEBNAM> BNAM; //Billboard Dimensions

@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class EYESRecord : public Record //Eyes
+class EYESRecord : public FNVRecord //Eyes
     {
     private:
         enum flagsFlags

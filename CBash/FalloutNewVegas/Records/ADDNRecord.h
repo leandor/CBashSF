@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class ADDNRecord : public Record //Addon Node
+class ADDNRecord : public FNVRecord //Addon Node
     {
     private:
         struct ADDNDNAM

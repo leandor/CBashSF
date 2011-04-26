@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class SPELRecord : public Record //Actor Effect
+class SPELRecord : public FNVRecord //Actor Effect
     {
     private:
         struct SPELSPIT

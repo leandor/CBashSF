@@ -51,27 +51,14 @@ MICNRecord::MICNRecord(MICNRecord *srcRecord):
         }
 
     EDID = srcRecord->EDID;
-    if(srcRecord->ICON.IsLoaded())
-        {
-        ICON.Load();
-        ICON->ICON = srcRecord->ICON->ICON;
-        ICON->MICO = srcRecord->ICON->MICO;
-        }
+    ICON = srcRecord->ICON;
+    MICO = srcRecord->MICO;
     return;
     }
 
 MICNRecord::~MICNRecord()
     {
     //
-    }
-
-bool MICNRecord::VisitFormIDs(FormIDOp &op)
-    {
-    if(!IsLoaded())
-        return false;
-
-
-    return op.Stop();
     }
 
 UINT32 MICNRecord::GetSize(bool forceCalc)
@@ -91,18 +78,17 @@ UINT32 MICNRecord::GetSize(bool forceCalc)
 
     if(ICON.IsLoaded())
         {
-        if(ICON->ICON.IsLoaded())
-            {
-            cSize = ICON->ICON.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(ICON->MICO.IsLoaded())
-            {
-            cSize = ICON->MICO.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
+        cSize = ICON.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+    else TotSize += 7;
+
+    if(MICO.IsLoaded())
+        {
+        cSize = MICO.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
         }
 
     return TotSize;
@@ -144,12 +130,10 @@ SINT32 MICNRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 EDID.Read(buffer, subSize, curPos);
                 break;
             case 'NOCI':
-                ICON.Load();
-                ICON->ICON.Read(buffer, subSize, curPos);
+                ICON.Read(buffer, subSize, curPos);
                 break;
             case 'OCIM':
-                ICON.Load();
-                ICON->MICO.Read(buffer, subSize, curPos);
+                MICO.Read(buffer, subSize, curPos);
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
@@ -169,23 +153,24 @@ SINT32 MICNRecord::Unload()
     IsLoaded(false);
     EDID.Unload();
     ICON.Unload();
+    MICO.Unload();
     return 1;
     }
 
 SINT32 MICNRecord::WriteRecord(_FileHandler &SaveHandler)
     {
+    char null = 0;
+
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
 
     if(ICON.IsLoaded())
-        {
-        if(ICON->ICON.IsLoaded())
-            SaveHandler.writeSubRecord('NOCI', ICON->ICON.value, ICON->ICON.GetSize());
+        SaveHandler.writeSubRecord('NOCI', ICON.value, ICON.GetSize());
+    else
+        SaveHandler.writeSubRecord('NOCI', &null, 1);
 
-        if(ICON->MICO.IsLoaded())
-            SaveHandler.writeSubRecord('OCIM', ICON->MICO.value, ICON->MICO.GetSize());
-
-        }
+    if(MICO.IsLoaded())
+        SaveHandler.writeSubRecord('OCIM', MICO.value, MICO.GetSize());
 
     return -1;
     }
@@ -193,7 +178,8 @@ SINT32 MICNRecord::WriteRecord(_FileHandler &SaveHandler)
 bool MICNRecord::operator ==(const MICNRecord &other) const
     {
     return (EDID.equalsi(other.EDID) &&
-            ICON == other.ICON);
+            ICON.equalsi(other.ICON) &&
+            MICO.equalsi(other.MICO));
     }
 
 bool MICNRecord::operator !=(const MICNRecord &other) const

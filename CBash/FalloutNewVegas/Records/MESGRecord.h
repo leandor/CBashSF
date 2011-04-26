@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class MESGRecord : public Record //Message
+class MESGRecord : public FNVRecord //Message
     {
     private:
         struct MESGButton

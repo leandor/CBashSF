@@ -25,13 +25,14 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class AVIFRecord : public Record //ActorValue Information
+class AVIFRecord : public FNVRecord //ActorValue Information
     {
     public:
         StringRecord EDID; //Editor ID
         StringRecord FULL; //Name
         StringRecord DESC; //Description
-        OptSubRecord<GENICON> ICON; //Large Icon Filename
+        StringRecord ICON; //Large Icon Filename
+        StringRecord MICO; //Small Icon Filename
         StringRecord ANAM; //Short Name
 
         AVIFRecord(unsigned char *_recData=NULL);

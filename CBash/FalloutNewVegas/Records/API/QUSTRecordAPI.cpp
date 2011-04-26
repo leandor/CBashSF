@@ -62,9 +62,9 @@ UINT32 QUSTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
             return FORMID_FIELD;
         case 8: //full Name
             return STRING_FIELD;
-        case 9: //icon Large Icon Filename
+        case 9: //iconPath
             return ISTRING_FIELD;
-        case 10: //mico Small Icon Filename
+        case 10: //smallIconPath
             return ISTRING_FIELD;
         case 11: //data DATA ,, Struct
             return UINT8_FIELD;
@@ -237,10 +237,10 @@ void * QUSTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return SCRI.IsLoaded() ? &SCRI->value7 : NULL;
         case 8: //full Name
             return FULL.value;
-        case 9: //icon Large Icon Filename
-            return ICON.IsLoaded() ? ICON->ICON.value : NULL;
-        case 10: //mico Small Icon Filename
-            return ICON.IsLoaded() ? ICON->MICO.value : NULL;
+        case 9: //iconPath
+            return ICON.value;
+        case 10: //smallIconPath
+            return MICO.value;
         case 11: //data DATA ,, Struct
             return DATA.IsLoaded() ? &DATA->value11 : NULL;
         case 12: //data DATA ,, Struct
@@ -361,13 +361,11 @@ bool QUSTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 8: //full Name
             FULL.Copy((STRING)FieldValue);
             break;
-        case 9: //icon Large Icon Filename
-            ICON.Load();
-            ICON->ICON.Copy((STRING)FieldValue);
+        case 9: //iconPath
+            ICON.Copy((STRING)FieldValue);
             break;
-        case 10: //mico Small Icon Filename
-            ICON.Load();
-            ICON->MICO.Copy((STRING)FieldValue);
+        case 10: //smallIconPath
+            MICO.Copy((STRING)FieldValue);
             break;
         case 11: //data DATA ,, Struct
             DATA.Load();
@@ -598,13 +596,11 @@ void QUSTRecord::DeleteField(FIELD_IDENTIFIERS)
         case 8: //full Name
             FULL.Unload();
             return;
-        case 9: //icon Large Icon Filename
-            if(ICON.IsLoaded())
-                ICON->ICON.Unload();
+        case 9: //iconPath
+            ICON.Unload();
             return;
-        case 10: //mico Small Icon Filename
-            if(ICON.IsLoaded())
-                ICON->MICO.Unload();
+        case 10: //smallIconPath
+            MICO.Unload();
             return;
         case 11: //data DATA ,, Struct
             DATA.Unload();

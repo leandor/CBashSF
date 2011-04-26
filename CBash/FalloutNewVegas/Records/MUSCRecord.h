@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class MUSCRecord : public Record //Music Type
+class MUSCRecord : public FNVRecord //Music Type
     {
     public:
         StringRecord EDID; //Editor ID

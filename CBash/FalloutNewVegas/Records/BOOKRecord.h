@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class BOOKRecord : public Record //Book
+class BOOKRecord : public FNVRecord //Book
     {
     private:
         #pragma pack(push)
@@ -54,7 +54,8 @@ class BOOKRecord : public Record //Book
         OptSubRecord<GENOBND> OBND; //Object Bounds
         StringRecord FULL; //Name
         OptSubRecord<FNVMODEL> MODL; //Model
-        OptSubRecord<GENICON> ICON; //Large Icon Filename
+        StringRecord ICON; //Large Icon Filename
+        StringRecord MICO; //Small Icon Filename
         OptSimpleSubRecord<FORMID> SCRI; //Script
         StringRecord DESC; //Description
         OptSubRecord<GENDESTRUCT> Destructable; //Destructable

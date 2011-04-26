@@ -88,9 +88,9 @@ UINT32 WRLDRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
             return FLOAT32_FIELD;
         case 17: //dnam DNAM ,, Struct
             return FLOAT32_FIELD;
-        case 18: //icon Large Icon Filename
+        case 18: //iconPath
             return ISTRING_FIELD;
-        case 19: //mico Small Icon Filename
+        case 19: //smallIconPath
             return ISTRING_FIELD;
         case 20: //mnam MNAM ,, Struct
             return SINT32_FIELD;
@@ -192,10 +192,10 @@ void * WRLDRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return DNAM.IsLoaded() ? &DNAM->value16 : NULL;
         case 17: //dnam DNAM ,, Struct
             return DNAM.IsLoaded() ? &DNAM->value17 : NULL;
-        case 18: //icon Large Icon Filename
-            return ICON.IsLoaded() ? ICON->ICON.value : NULL;
-        case 19: //mico Small Icon Filename
-            return ICON.IsLoaded() ? ICON->MICO.value : NULL;
+        case 18: //iconPath
+            return ICON.value;
+        case 19: //smallIconPath
+            return MICO.value;
         case 20: //mnam MNAM ,, Struct
             return MNAM.IsLoaded() ? &MNAM->value20 : NULL;
         case 21: //mnam MNAM ,, Struct
@@ -320,13 +320,11 @@ bool WRLDRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             DNAM.Load();
             DNAM->value17 = *(FLOAT32 *)FieldValue;
             break;
-        case 18: //icon Large Icon Filename
-            ICON.Load();
-            ICON->ICON.Copy((STRING)FieldValue);
+        case 18: //iconPath
+            ICON.Copy((STRING)FieldValue);
             break;
-        case 19: //mico Small Icon Filename
-            ICON.Load();
-            ICON->MICO.Copy((STRING)FieldValue);
+        case 19: //smallIconPath
+            MICO.Copy((STRING)FieldValue);
             break;
         case 20: //mnam MNAM ,, Struct
             MNAM.Load();
@@ -474,13 +472,11 @@ void WRLDRecord::DeleteField(FIELD_IDENTIFIERS)
         case 17: //dnam DNAM ,, Struct
             DNAM.Unload();
             return;
-        case 18: //icon Large Icon Filename
-            if(ICON.IsLoaded())
-                ICON->ICON.Unload();
+        case 18: //iconPath
+            ICON.Unload();
             return;
-        case 19: //mico Small Icon Filename
-            if(ICON.IsLoaded())
-                ICON->MICO.Unload();
+        case 19: //smallIconPath
+            MICO.Unload();
             return;
         case 20: //mnam MNAM ,, Struct
             MNAM.Unload();

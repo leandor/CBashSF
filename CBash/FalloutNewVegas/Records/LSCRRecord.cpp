@@ -51,12 +51,8 @@ LSCRRecord::LSCRRecord(LSCRRecord *srcRecord):
         }
 
     EDID = srcRecord->EDID;
-    if(srcRecord->ICON.IsLoaded())
-        {
-        ICON.Load();
-        ICON->ICON = srcRecord->ICON->ICON;
-        ICON->MICO = srcRecord->ICON->MICO;
-        }
+    ICON = srcRecord->ICON;
+    MICO = srcRecord->MICO;
     DESC = srcRecord->DESC;
     LNAM = srcRecord->LNAM;
     WMI1 = srcRecord->WMI1;
@@ -98,18 +94,16 @@ UINT32 LSCRRecord::GetSize(bool forceCalc)
 
     if(ICON.IsLoaded())
         {
-        if(ICON->ICON.IsLoaded())
-            {
-            cSize = ICON->ICON.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(ICON->MICO.IsLoaded())
-            {
-            cSize = ICON->MICO.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
+        cSize = ICON.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(MICO.IsLoaded())
+        {
+        cSize = MICO.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
         }
 
     if(DESC.IsLoaded())
@@ -164,12 +158,10 @@ SINT32 LSCRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 EDID.Read(buffer, subSize, curPos);
                 break;
             case 'NOCI':
-                ICON.Load();
-                ICON->ICON.Read(buffer, subSize, curPos);
+                ICON.Read(buffer, subSize, curPos);
                 break;
             case 'OCIM':
-                ICON.Load();
-                ICON->MICO.Read(buffer, subSize, curPos);
+                MICO.Read(buffer, subSize, curPos);
                 break;
             case 'CSED':
                 DESC.Read(buffer, subSize, curPos);
@@ -198,6 +190,7 @@ SINT32 LSCRRecord::Unload()
     IsLoaded(false);
     EDID.Unload();
     ICON.Unload();
+    MICO.Unload();
     DESC.Unload();
     LNAM.Unload();
     WMI1.Unload();
@@ -210,14 +203,10 @@ SINT32 LSCRRecord::WriteRecord(_FileHandler &SaveHandler)
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
 
     if(ICON.IsLoaded())
-        {
-        if(ICON->ICON.IsLoaded())
-            SaveHandler.writeSubRecord('NOCI', ICON->ICON.value, ICON->ICON.GetSize());
+        SaveHandler.writeSubRecord('NOCI', ICON.value, ICON.GetSize());
 
-        if(ICON->MICO.IsLoaded())
-            SaveHandler.writeSubRecord('OCIM', ICON->MICO.value, ICON->MICO.GetSize());
-
-        }
+    if(MICO.IsLoaded())
+        SaveHandler.writeSubRecord('OCIM', MICO.value, MICO.GetSize());
 
     if(DESC.IsLoaded())
         SaveHandler.writeSubRecord('CSED', DESC.value, DESC.GetSize());
@@ -234,7 +223,8 @@ SINT32 LSCRRecord::WriteRecord(_FileHandler &SaveHandler)
 bool LSCRRecord::operator ==(const LSCRRecord &other) const
     {
     return (EDID.equalsi(other.EDID) &&
-            ICON == other.ICON &&
+            ICON.equalsi(other.ICON) &&
+            MICO.equalsi(other.MICO) &&
             DESC.equals(other.DESC) &&
             LNAM == other.LNAM &&
             WMI1 == other.WMI1);

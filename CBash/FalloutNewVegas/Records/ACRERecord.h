@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class ACRERecord : public Record //Placed Creature
+class ACRERecord : public FNVRecord //Placed Creature
     {
     private:
         enum xespFlags

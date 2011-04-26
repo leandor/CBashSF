@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class PACKRecord : public Record //Package
+class PACKRecord : public FNVRecord //Package
     {
     private:
         struct PACKPKDT //General

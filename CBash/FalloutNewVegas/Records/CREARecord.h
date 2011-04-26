@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class CREARecord : public Record //Creature
+class CREARecord : public FNVRecord //Creature
     {
     private:
         struct CREADATA

@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class CELLRecord : public Record //Cell
+class CELLRecord : public FNVRecord //Cell
     {
     private:
         struct CELLXCLC

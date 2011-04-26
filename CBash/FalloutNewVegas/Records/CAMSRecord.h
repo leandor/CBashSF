@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class CAMSRecord : public Record //Camera Shot
+class CAMSRecord : public FNVRecord //Camera Shot
     {
     private:
         struct CAMSDATA // Data

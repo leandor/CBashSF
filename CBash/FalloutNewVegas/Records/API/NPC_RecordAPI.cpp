@@ -58,11 +58,11 @@ UINT32 NPC_Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
-        case 7: //obnd Object Bounds
+        case 7: //boundX
             return SINT16_FIELD;
-        case 8: //obnd Object Bounds
+        case 8: //boundY
             return SINT16_FIELD;
-        case 9: //obnd Object Bounds
+        case 9: //boundZ
             return SINT16_FIELD;
         case 10: //full Name
             return STRING_FIELD;
@@ -335,12 +335,12 @@ void * NPC_Record::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 6: //versionControl2
             *FieldValues = &versionControl2[0];
             return NULL;
-        case 7: //obnd Object Bounds
-            return OBNDReq.IsLoaded() ? &OBNDReq->value7 : NULL;
-        case 8: //obnd Object Bounds
-            return OBNDReq.IsLoaded() ? &OBNDReq->value8 : NULL;
-        case 9: //obnd Object Bounds
-            return OBNDReq.IsLoaded() ? &OBNDReq->value9 : NULL;
+        case 7: //boundX
+            return OBND.IsLoaded() ? &OBND->x : NULL;
+        case 8: //boundY
+            return OBND.IsLoaded() ? &OBND->y : NULL;
+        case 9: //boundZ
+            return OBND.IsLoaded() ? &OBND->z : NULL;
         case 10: //full Name
             return FULLActor.value;
         case 11: //modl Model Filename
@@ -544,17 +544,17 @@ bool NPC_Record::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             versionControl2[0] = ((UINT8 *)FieldValue)[0];
             versionControl2[1] = ((UINT8 *)FieldValue)[1];
             break;
-        case 7: //obnd Object Bounds
-            OBNDReq.Load();
-            OBNDReq->value7 = *(SINT16 *)FieldValue;
+        case 7: //boundX
+            OBND.Load();
+            OBND->x = *(SINT16 *)FieldValue;
             break;
-        case 8: //obnd Object Bounds
-            OBNDReq.Load();
-            OBNDReq->value8 = *(SINT16 *)FieldValue;
+        case 8: //boundY
+            OBND.Load();
+            OBND->y = *(SINT16 *)FieldValue;
             break;
-        case 9: //obnd Object Bounds
-            OBNDReq.Load();
-            OBNDReq->value9 = *(SINT16 *)FieldValue;
+        case 9: //boundZ
+            OBND.Load();
+            OBND->z = *(SINT16 *)FieldValue;
             break;
         case 10: //full Name
             FULLActor.Copy((STRING)FieldValue);
@@ -930,14 +930,17 @@ void NPC_Record::DeleteField(FIELD_IDENTIFIERS)
             versionControl2[0] = 0;
             versionControl2[1] = 0;
             return;
-        case 7: //obnd Object Bounds
-            OBNDReq.Unload();
+        case 7: //boundX
+            if(OBND.IsLoaded())
+                OBND->x = defaultOBND.x;
             return;
-        case 8: //obnd Object Bounds
-            OBNDReq.Unload();
+        case 8: //boundY
+            if(OBND.IsLoaded())
+                OBND->y = defaultOBND.y;
             return;
-        case 9: //obnd Object Bounds
-            OBNDReq.Unload();
+        case 9: //boundZ
+            if(OBND.IsLoaded())
+                OBND->z = defaultOBND.z;
             return;
         case 10: //full Name
             FULLActor.Unload();

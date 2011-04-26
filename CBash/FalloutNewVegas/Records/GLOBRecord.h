@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class GLOBRecord : public Record //Global
+class GLOBRecord : public FNVRecord //Global
     {
     public:
         StringRecord EDID; //Editor ID

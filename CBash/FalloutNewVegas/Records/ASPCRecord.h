@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class ASPCRecord : public Record //Acoustic Space
+class ASPCRecord : public FNVRecord //Acoustic Space
     {
     private:
         enum eEnvTypes

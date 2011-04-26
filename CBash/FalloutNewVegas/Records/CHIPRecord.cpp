@@ -62,12 +62,8 @@ CHIPRecord::CHIPRecord(CHIPRecord *srcRecord):
         MODL->MODS = srcRecord->MODL->MODS;
         MODL->MODD = srcRecord->MODL->MODD;
         }
-    if(srcRecord->ICON.IsLoaded())
-        {
-        ICON.Load();
-        ICON->ICON = srcRecord->ICON->ICON;
-        ICON->MICO = srcRecord->ICON->MICO;
-        }
+    ICON = srcRecord->ICON;
+    MICO = srcRecord->MICO;
     if(srcRecord->DEST.IsLoaded())
         {
         DEST.Load();
@@ -157,18 +153,16 @@ UINT32 CHIPRecord::GetSize(bool forceCalc)
 
     if(ICON.IsLoaded())
         {
-        if(ICON->ICON.IsLoaded())
-            {
-            cSize = ICON->ICON.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(ICON->MICO.IsLoaded())
-            {
-            cSize = ICON->MICO.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
+        cSize = ICON.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(MICO.IsLoaded())
+        {
+        cSize = MICO.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
         }
 
     if(DEST.IsLoaded())
@@ -264,12 +258,10 @@ SINT32 CHIPRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 MODL->MODD.Read(buffer, subSize, curPos);
                 break;
             case 'NOCI':
-                ICON.Load();
-                ICON->ICON.Read(buffer, subSize, curPos);
+                ICON.Read(buffer, subSize, curPos);
                 break;
             case 'OCIM':
-                ICON.Load();
-                ICON->MICO.Read(buffer, subSize, curPos);
+                MICO.Read(buffer, subSize, curPos);
                 break;
             case 'TSED':
                 DEST.Load();
@@ -318,6 +310,7 @@ SINT32 CHIPRecord::Unload()
     FULL.Unload();
     MODL.Unload();
     ICON.Unload();
+    MICO.Unload();
     DEST.Unload();
     YNAM.Unload();
     ZNAM.Unload();
@@ -355,14 +348,10 @@ SINT32 CHIPRecord::WriteRecord(_FileHandler &SaveHandler)
         }
 
     if(ICON.IsLoaded())
-        {
-        if(ICON->ICON.IsLoaded())
-            SaveHandler.writeSubRecord('NOCI', ICON->ICON.value, ICON->ICON.GetSize());
+        SaveHandler.writeSubRecord('NOCI', ICON.value, ICON.GetSize());
 
-        if(ICON->MICO.IsLoaded())
-            SaveHandler.writeSubRecord('OCIM', ICON->MICO.value, ICON->MICO.GetSize());
-
-        }
+    if(MICO.IsLoaded())
+        SaveHandler.writeSubRecord('OCIM', MICO.value, MICO.GetSize());
 
     if(DEST.IsLoaded())
         {
@@ -398,7 +387,8 @@ bool CHIPRecord::operator ==(const CHIPRecord &other) const
             OBND == other.OBND &&
             FULL.equals(other.FULL) &&
             MODL == other.MODL &&
-            ICON == other.ICON &&
+            ICON.equalsi(other.ICON) &&
+            MICO.equalsi(other.MICO) &&
             DEST == other.DEST &&
             YNAM == other.YNAM &&
             ZNAM == other.ZNAM);

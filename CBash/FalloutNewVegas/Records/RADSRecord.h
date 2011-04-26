@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class RADSRecord : public Record //Radiation Stage
+class RADSRecord : public FNVRecord //Radiation Stage
     {
     public:
         StringRecord EDID; //Editor ID

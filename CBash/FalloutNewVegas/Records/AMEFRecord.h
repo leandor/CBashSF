@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class AMEFRecord : public Record //Ammo Effect
+class AMEFRecord : public FNVRecord //Ammo Effect
     {
     private:
         struct AMEFDATA

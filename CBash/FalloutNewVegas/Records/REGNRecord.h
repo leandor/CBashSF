@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class REGNRecord : public Record //Region
+class REGNRecord : public FNVRecord //Region
     {
     private:
         struct REGNRPLD // Point
@@ -253,7 +253,8 @@ class REGNRecord : public Record //Region
 
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENICON> ICON; //Icon Filenames
+        StringRecord ICON; //Large Icon Filename
+        StringRecord MICO; //Small Icon Filename
         OptSubRecord<GENCLR> RCLR; //Map Color
         OptSimpleSubRecord<FORMID> WNAM; //Worldspace
         std::vector<REGNArea *> Areas; // Areas

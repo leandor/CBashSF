@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class DOORRecord : public Record //Door
+class DOORRecord : public FNVRecord //Door
     {
     private:
         enum flagsFlags

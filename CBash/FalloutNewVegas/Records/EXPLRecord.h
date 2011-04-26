@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class EXPLRecord : public Record //Explosion
+class EXPLRecord : public FNVRecord //Explosion
     {
     private:
         struct EXPLDATA

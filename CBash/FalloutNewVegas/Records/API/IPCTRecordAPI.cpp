@@ -100,47 +100,47 @@ UINT32 IPCTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
             return UINT32_FIELD;
         case 19: //data DATA ,, Struct
             return UINT32_FIELD;
-        case 20: //dodt Decal Data
+        case 20: //decalMinWidth
             return FLOAT32_FIELD;
-        case 21: //dodt Decal Data
+        case 21: //decalMaxWidth
             return FLOAT32_FIELD;
-        case 22: //dodt Decal Data
+        case 22: //decalMinHeight
             return FLOAT32_FIELD;
-        case 23: //dodt Decal Data
+        case 23: //decalMaxHeight
             return FLOAT32_FIELD;
-        case 24: //dodt Decal Data
+        case 24: //decalDepth
             return FLOAT32_FIELD;
-        case 25: //dodt Decal Data
+        case 25: //decalShininess
             return FLOAT32_FIELD;
-        case 26: //dodt Decal Data
+        case 26: //decalScale
             return FLOAT32_FIELD;
-        case 27: //dodt Decal Data
+        case 27: //decalPasses
             return UINT8_FIELD;
-        case 28: //dodt Decal Data
-            return UINT8_FIELD;
-        case 29: //dodt_p Decal Data
+        case 28: //decalFlags
+            return UINT8_FLAG_FIELD;
+        case 29: //decalUnused1
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
                     return UINT8_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return 2;
+                    return DODT.IsLoaded() ? 2 : 0;
                 default:
                     return UNKNOWN_FIELD;
                 }
-        case 30: //dodt Decal Data
+        case 30: //decalRed
             return UINT8_FIELD;
-        case 31: //dodt Decal Data
+        case 31: //decalGreen
             return UINT8_FIELD;
-        case 32: //dodt Decal Data
+        case 32: //decalBlue
             return UINT8_FIELD;
-        case 33: //dodt_p Decal Data
+        case 33: //decalUnused2
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
                     return UINT8_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return 1;
+                    return DODT.IsLoaded() ? 1 : 0;
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -201,35 +201,35 @@ void * IPCTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return DATA.IsLoaded() ? &DATA->value18 : NULL;
         case 19: //data DATA ,, Struct
             return DATA.IsLoaded() ? &DATA->value19 : NULL;
-        case 20: //dodt Decal Data
-            return DODT.IsLoaded() ? &DODT->value20 : NULL;
-        case 21: //dodt Decal Data
-            return DODT.IsLoaded() ? &DODT->value21 : NULL;
-        case 22: //dodt Decal Data
-            return DODT.IsLoaded() ? &DODT->value22 : NULL;
-        case 23: //dodt Decal Data
-            return DODT.IsLoaded() ? &DODT->value23 : NULL;
-        case 24: //dodt Decal Data
-            return DODT.IsLoaded() ? &DODT->value24 : NULL;
-        case 25: //dodt Decal Data
-            return DODT.IsLoaded() ? &DODT->value25 : NULL;
-        case 26: //dodt Decal Data
-            return DODT.IsLoaded() ? &DODT->value26 : NULL;
-        case 27: //dodt Decal Data
-            return DODT.IsLoaded() ? &DODT->value27 : NULL;
-        case 28: //dodt Decal Data
-            return DODT.IsLoaded() ? &DODT->value28 : NULL;
-        case 29: //dodt_p Decal Data
-            *FieldValues = DODT.IsLoaded() ? &DODT->value29[0] : NULL;
+        case 20: //decalMinWidth
+            return DODT.IsLoaded() ? &DODT->minWidth : NULL;
+        case 21: //decalMaxWidth
+            return DODT.IsLoaded() ? &DODT->maxWidth : NULL;
+        case 22: //decalMinHeight
+            return DODT.IsLoaded() ? &DODT->minHeight : NULL;
+        case 23: //decalMaxHeight
+            return DODT.IsLoaded() ? &DODT->maxHeight : NULL;
+        case 24: //decalDepth
+            return DODT.IsLoaded() ? &DODT->depth : NULL;
+        case 25: //decalShininess
+            return DODT.IsLoaded() ? &DODT->shininess : NULL;
+        case 26: //decalScale
+            return DODT.IsLoaded() ? &DODT->scale : NULL;
+        case 27: //decalPasses
+            return DODT.IsLoaded() ? &DODT->passes : NULL;
+        case 28: //decalFlags
+            return DODT.IsLoaded() ? &DODT->flags : NULL;
+        case 29: //decalUnused1
+            *FieldValues = DODT.IsLoaded() ? &DODT->unused1[0] : NULL;
             return NULL;
-        case 30: //dodt Decal Data
-            return DODT.IsLoaded() ? &DODT->value30 : NULL;
-        case 31: //dodt Decal Data
-            return DODT.IsLoaded() ? &DODT->value31 : NULL;
-        case 32: //dodt Decal Data
-            return DODT.IsLoaded() ? &DODT->value32 : NULL;
-        case 33: //dodt_p Decal Data
-            *FieldValues = DODT.IsLoaded() ? &DODT->value33[0] : NULL;
+        case 30: //decalRed
+            return DODT.IsLoaded() ? &DODT->red : NULL;
+        case 31: //decalGreen
+            return DODT.IsLoaded() ? &DODT->green : NULL;
+        case 32: //decalBlue
+            return DODT.IsLoaded() ? &DODT->blue : NULL;
+        case 33: //decalUnused2
+            *FieldValues = DODT.IsLoaded() ? &DODT->unused2 : NULL;
             return NULL;
         case 34: //dnam Texture Set
             return DNAM.IsLoaded() ? &DNAM->value34 : NULL;
@@ -324,66 +324,66 @@ bool IPCTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             DATA.Load();
             DATA->value19 = *(UINT32 *)FieldValue;
             break;
-        case 20: //dodt Decal Data
+        case 20: //decalMinWidth
             DODT.Load();
-            DODT->value20 = *(FLOAT32 *)FieldValue;
+            DODT->minWidth = *(FLOAT32 *)FieldValue;
             break;
-        case 21: //dodt Decal Data
+        case 21: //decalMaxWidth
             DODT.Load();
-            DODT->value21 = *(FLOAT32 *)FieldValue;
+            DODT->maxWidth = *(FLOAT32 *)FieldValue;
             break;
-        case 22: //dodt Decal Data
+        case 22: //decalMinHeight
             DODT.Load();
-            DODT->value22 = *(FLOAT32 *)FieldValue;
+            DODT->minHeight = *(FLOAT32 *)FieldValue;
             break;
-        case 23: //dodt Decal Data
+        case 23: //decalMaxHeight
             DODT.Load();
-            DODT->value23 = *(FLOAT32 *)FieldValue;
+            DODT->maxHeight = *(FLOAT32 *)FieldValue;
             break;
-        case 24: //dodt Decal Data
+        case 24: //decalDepth
             DODT.Load();
-            DODT->value24 = *(FLOAT32 *)FieldValue;
+            DODT->depth = *(FLOAT32 *)FieldValue;
             break;
-        case 25: //dodt Decal Data
+        case 25: //decalShininess
             DODT.Load();
-            DODT->value25 = *(FLOAT32 *)FieldValue;
+            DODT->shininess = *(FLOAT32 *)FieldValue;
             break;
-        case 26: //dodt Decal Data
+        case 26: //decalScale
             DODT.Load();
-            DODT->value26 = *(FLOAT32 *)FieldValue;
+            DODT->scale = *(FLOAT32 *)FieldValue;
             break;
-        case 27: //dodt Decal Data
+        case 27: //decalPasses
             DODT.Load();
-            DODT->value27 = *(UINT8 *)FieldValue;
+            DODT->passes = *(UINT8 *)FieldValue;
             break;
-        case 28: //dodt Decal Data
+        case 28: //decalFlags
             DODT.Load();
-            DODT->value28 = *(UINT8 *)FieldValue;
+            DODT->flags = *(UINT8 *)FieldValue;
             break;
-        case 29: //dodt_p Decal Data
+        case 29: //decalUnused1
             if(ArraySize != 2)
                 break;
             DODT.Load();
-            DODT->value29[0] = ((UINT8 *)FieldValue)[0];
-            DODT->value29[1] = ((UINT8 *)FieldValue)[1];
+            DODT->unused1[0] = ((UINT8 *)FieldValue)[0];
+            DODT->unused1[1] = ((UINT8 *)FieldValue)[1];
             break;
-        case 30: //dodt Decal Data
+        case 30: //decalRed
             DODT.Load();
-            DODT->value30 = *(UINT8 *)FieldValue;
+            DODT->red = *(UINT8 *)FieldValue;
             break;
-        case 31: //dodt Decal Data
+        case 31: //decalGreen
             DODT.Load();
-            DODT->value31 = *(UINT8 *)FieldValue;
+            DODT->green = *(UINT8 *)FieldValue;
             break;
-        case 32: //dodt Decal Data
+        case 32: //decalBlue
             DODT.Load();
-            DODT->value32 = *(UINT8 *)FieldValue;
+            DODT->blue = *(UINT8 *)FieldValue;
             break;
-        case 33: //dodt_p Decal Data
+        case 33: //decalUnused2
             if(ArraySize != 1)
                 break;
             DODT.Load();
-            DODT->value33[0] = ((UINT8 *)FieldValue)[0];
+            DODT->unused2 = ((UINT8 *)FieldValue)[0];
             break;
         case 34: //dnam Texture Set
             DNAM.Load();
@@ -469,47 +469,64 @@ void IPCTRecord::DeleteField(FIELD_IDENTIFIERS)
         case 19: //data DATA ,, Struct
             DATA.Unload();
             return;
-        case 20: //dodt Decal Data
-            DODT.Unload();
+        case 20: //decalMinWidth
+            if(DODT.IsLoaded())
+                DODT->minWidth = defaultDODT.minWidth;
             return;
-        case 21: //dodt Decal Data
-            DODT.Unload();
+        case 21: //decalMaxWidth
+            if(DODT.IsLoaded())
+                DODT->maxWidth = defaultDODT.maxWidth;
             return;
-        case 22: //dodt Decal Data
-            DODT.Unload();
+        case 22: //decalMinHeight
+            if(DODT.IsLoaded())
+                DODT->minHeight = defaultDODT.minHeight;
             return;
-        case 23: //dodt Decal Data
-            DODT.Unload();
+        case 23: //decalMaxHeight
+            if(DODT.IsLoaded())
+                DODT->maxHeight = defaultDODT.maxHeight;
             return;
-        case 24: //dodt Decal Data
-            DODT.Unload();
+        case 24: //decalDepth
+            if(DODT.IsLoaded())
+                DODT->depth = defaultDODT.depth;
             return;
-        case 25: //dodt Decal Data
-            DODT.Unload();
+        case 25: //decalShininess
+            if(DODT.IsLoaded())
+                DODT->shininess = defaultDODT.shininess;
             return;
-        case 26: //dodt Decal Data
-            DODT.Unload();
+        case 26: //decalScale
+            if(DODT.IsLoaded())
+                DODT->scale = defaultDODT.scale;
             return;
-        case 27: //dodt Decal Data
-            DODT.Unload();
+        case 27: //decalPasses
+            if(DODT.IsLoaded())
+                DODT->passes = defaultDODT.passes;
             return;
-        case 28: //dodt Decal Data
-            DODT.Unload();
+        case 28: //decalFlags
+            if(DODT.IsLoaded())
+                DODT->flags = defaultDODT.flags;
             return;
-        case 29: //dodt_p Decal Data
-            DODT.Unload();
+        case 29: //decalUnused1
+            if(DODT.IsLoaded())
+                {
+                DODT->unused1[0] = defaultDODT.unused1[0];
+                DODT->unused1[1] = defaultDODT.unused1[1];
+                }
             return;
-        case 30: //dodt Decal Data
-            DODT.Unload();
+        case 30: //decalRed
+            if(DODT.IsLoaded())
+                DODT->red = defaultDODT.red;
             return;
-        case 31: //dodt Decal Data
-            DODT.Unload();
+        case 31: //decalGreen
+            if(DODT.IsLoaded())
+                DODT->green = defaultDODT.green;
             return;
-        case 32: //dodt Decal Data
-            DODT.Unload();
+        case 32: //decalBlue
+            if(DODT.IsLoaded())
+                DODT->blue = defaultDODT.blue;
             return;
-        case 33: //dodt_p Decal Data
-            DODT.Unload();
+        case 33: //decalUnused2
+            if(DODT.IsLoaded())
+                DODT->unused2 = defaultDODT.unused2;
             return;
         case 34: //dnam Texture Set
             DNAM.Unload();

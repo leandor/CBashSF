@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class IDLERecord : public Record //Idle Animation
+class IDLERecord : public FNVRecord //Idle Animation
     {
     private:
         struct IDLEDATA

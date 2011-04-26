@@ -1437,7 +1437,7 @@ void TES4File::VisitRecords(const UINT32 &TopRecordType, const UINT32 &RecordTyp
             EFSH.VisitRecords(RecordType, op, DeepVisit);
             break;
         default:
-            printf("Error visiting records: %i\n", RecordType);
+            printf("TES4File::VisitRecords: Error - Unable to visit record type (%c%c%c%c) in mod \"%s\". Unknown record type.\n", ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], ReadHandler.getModName());
             break;
         }
     return;

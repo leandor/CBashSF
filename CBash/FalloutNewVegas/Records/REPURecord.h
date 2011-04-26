@@ -25,12 +25,13 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class REPURecord : public Record //Reputation
+class REPURecord : public FNVRecord //Reputation
     {
     public:
         StringRecord EDID; //Editor ID
         StringRecord FULL; //Name
-        OptSubRecord<GENICON> ICON; //Icon Filenames
+        StringRecord ICON; //Large Icon Filename
+        StringRecord MICO; //Small Icon Filename
         OptSimpleSubRecord<FLOAT32> DATA; //Value
 
         REPURecord(unsigned char *_recData=NULL);

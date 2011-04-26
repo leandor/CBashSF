@@ -79,7 +79,7 @@ class QUSTRecord : public Record
 
         struct QUSTQSTA
             {
-            UINT32  targetId;
+            FORMID  targetId;
             UINT8   flags, unused1[3];
 
             QUSTQSTA();

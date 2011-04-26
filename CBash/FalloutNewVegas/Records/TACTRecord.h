@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class TACTRecord : public Record //Talking Activator
+class TACTRecord : public FNVRecord //Talking Activator
     {
     public:
         StringRecord EDID; //Editor ID

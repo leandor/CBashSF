@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class SOUNRecord : public Record //Sound
+class SOUNRecord : public FNVRecord //Sound
     {
     private:
         struct SOUNSNDD

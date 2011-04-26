@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class ARMORecord : public Record //Armor
+class ARMORecord : public FNVRecord //Armor
     {
     private:
         struct FNVSNAM //Animation Sound

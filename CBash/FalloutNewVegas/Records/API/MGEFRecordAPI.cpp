@@ -62,9 +62,9 @@ UINT32 MGEFRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
             return STRING_FIELD;
         case 8: //desc Description
             return STRING_FIELD;
-        case 9: //icon Large Icon Filename
+        case 9: //iconPath
             return ISTRING_FIELD;
-        case 10: //mico Small Icon Filename
+        case 10: //smallIconPath
             return ISTRING_FIELD;
         case 11: //modl Model Filename
             return STRING_FIELD;
@@ -169,10 +169,10 @@ void * MGEFRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return FULL.value;
         case 8: //desc Description
             return DESCReq.value;
-        case 9: //icon Large Icon Filename
-            return ICON.IsLoaded() ? ICON->ICON.value : NULL;
-        case 10: //mico Small Icon Filename
-            return ICON.IsLoaded() ? ICON->MICO.value : NULL;
+        case 9: //iconPath
+            return ICON.value;
+        case 10: //smallIconPath
+            return MICO.value;
         case 11: //modl Model Filename
             return MODL.IsLoaded() ? MODL->MODL.value : NULL;
         case 12: //modb_p Unknown
@@ -266,13 +266,11 @@ bool MGEFRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 8: //desc Description
             DESCReq.Copy((STRING)FieldValue);
             break;
-        case 9: //icon Large Icon Filename
-            ICON.Load();
-            ICON->ICON.Copy((STRING)FieldValue);
+        case 9: //iconPath
+            ICON.Copy((STRING)FieldValue);
             break;
-        case 10: //mico Small Icon Filename
-            ICON.Load();
-            ICON->MICO.Copy((STRING)FieldValue);
+        case 10: //smallIconPath
+            MICO.Copy((STRING)FieldValue);
             break;
         case 11: //modl Model Filename
             MODL.Load();
@@ -412,13 +410,11 @@ void MGEFRecord::DeleteField(FIELD_IDENTIFIERS)
         case 8: //desc Description
             DESCReq.Unload();
             return;
-        case 9: //icon Large Icon Filename
-            if(ICON.IsLoaded())
-                ICON->ICON.Unload();
+        case 9: //iconPath
+            ICON.Unload();
             return;
-        case 10: //mico Small Icon Filename
-            if(ICON.IsLoaded())
-                ICON->MICO.Unload();
+        case 10: //smallIconPath
+            MICO.Unload();
             return;
         case 11: //modl Model Filename
             if(MODL.IsLoaded())

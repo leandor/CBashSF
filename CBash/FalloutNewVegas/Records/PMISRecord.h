@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class PMISRecord : public Record //Placed Missile
+class PMISRecord : public FNVRecord //Placed Missile
     {
     private:
         enum xespFlags

@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class CPTHRecord : public Record //Camera Path
+class CPTHRecord : public FNVRecord //Camera Path
     {
     private:
         enum zoomTypes

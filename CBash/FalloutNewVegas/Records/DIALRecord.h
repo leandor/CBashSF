@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class DIALRecord : public Record //Dialog Topic
+class DIALRecord : public FNVRecord //Dialog Topic
     {
     private:
         struct DIALUNK

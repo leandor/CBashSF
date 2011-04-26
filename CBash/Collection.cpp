@@ -88,7 +88,7 @@ Collection::~Collection()
     //LoadOrder255 is shared with ModFiles, so no deleting
     }
 
-SINT32 Collection::AddMod(STRING const &_FileName, ModFlags &flags)
+SINT32 Collection::AddMod(STRING const &_FileName, ModFlags &flags, bool isPreloading)
     {
     _chdir(ModsDir);
     //Mods may not be added after collection is loaded.
@@ -98,10 +98,13 @@ SINT32 Collection::AddMod(STRING const &_FileName, ModFlags &flags)
 
     if(IsLoaded || IsModAdded(ModName ? ModName : _FileName))
         {
-        if(IsLoaded)
-            printf("AddMod: Error - Unable to add mod \"%s\". The collection has already been loaded.\n", ModName);
-        else
-            printf("AddMod: Warning - Unable to add mod \"%s\". It already exists in the collection.\n", ModName);
+        if(!isPreloading)
+            {
+            if(IsLoaded)
+                printf("AddMod: Error - Unable to add mod \"%s\". The collection has already been loaded.\n", ModName ? ModName : _FileName);
+            else
+                printf("AddMod: Warning - Unable to add mod \"%s\". It already exists in the collection.\n", ModName ? ModName : _FileName);
+            }
         delete []ModName;
         return -1;
         }
@@ -373,7 +376,7 @@ SINT32 Collection::Load()
                     preloadFlags.IsNoLoad = !curModFile->Flags.IsLoadMasters;
                     //preloadFlags.IsInLoadOrder = !preloadFlags.IsNoLoad;
                     for(UINT8 x = 0; x < curModFile->TES4.MAST.size(); ++x)
-                        Preloading = (AddMod(curModFile->TES4.MAST[x].value, preloadFlags) == 0 || Preloading);
+                        Preloading = (AddMod(curModFile->TES4.MAST[x].value, preloadFlags, true) == 0 || Preloading);
                     }
                 }
         }while(Preloading);

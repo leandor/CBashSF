@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class ECZNRecord : public Record //Encounter Zone
+class ECZNRecord : public FNVRecord //Encounter Zone
     {
     private:
         struct ECZNDATA // Data

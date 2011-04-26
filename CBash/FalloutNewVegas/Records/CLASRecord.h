@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class CLASRecord : public Record //Class
+class CLASRecord : public FNVRecord //Class
     {
     private:
         struct CLASDATA
@@ -81,7 +81,8 @@ class CLASRecord : public Record //Class
         StringRecord EDID; //Editor ID
         StringRecord FULL; //Name
         StringRecord DESC; //Description
-        OptSubRecord<GENICON> ICON; //Icon Filenames
+        StringRecord ICON; //Large Icon Filename
+        StringRecord MICO; //Small Icon Filename
         OptSubRecord<CLASDATA> DATA; //Data
         OptSubRecord<CLASATTR> ATTR; //Attributes
 

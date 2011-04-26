@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class NPC_Record : public Record //Non-Player Character
+class NPC_Record : public FNVRecord //Non-Player Character
     {
     private:
         struct NPC_DATA // Data

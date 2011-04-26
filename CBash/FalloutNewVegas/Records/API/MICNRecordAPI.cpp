@@ -58,9 +58,9 @@ UINT32 MICNRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
-        case 7: //icon Large Icon Filename
+        case 7: //iconPath
             return ISTRING_FIELD;
-        case 8: //mico Small Icon Filename
+        case 8: //smallIconPath
             return ISTRING_FIELD;
         default:
             return UNKNOWN_FIELD;
@@ -85,10 +85,10 @@ void * MICNRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 6: //versionControl2
             *FieldValues = &versionControl2[0];
             return NULL;
-        case 7: //icon Large Icon Filename
-            return ICON.IsLoaded() ? ICON->ICON.value : NULL;
-        case 8: //mico Small Icon Filename
-            return ICON.IsLoaded() ? ICON->MICO.value : NULL;
+        case 7: //iconPath
+            return ICON.value;
+        case 8: //smallIconPath
+            return MICO.value;
         default:
             return NULL;
         }
@@ -121,13 +121,11 @@ bool MICNRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             versionControl2[0] = ((UINT8 *)FieldValue)[0];
             versionControl2[1] = ((UINT8 *)FieldValue)[1];
             break;
-        case 7: //icon Large Icon Filename
-            ICON.Load();
-            ICON->ICON.Copy((STRING)FieldValue);
+        case 7: //iconPath
+            ICON.Copy((STRING)FieldValue);
             break;
-        case 8: //mico Small Icon Filename
-            ICON.Load();
-            ICON->MICO.Copy((STRING)FieldValue);
+        case 8: //smallIconPath
+            MICO.Copy((STRING)FieldValue);
             break;
         default:
             break;
@@ -155,13 +153,11 @@ void MICNRecord::DeleteField(FIELD_IDENTIFIERS)
             versionControl2[0] = 0;
             versionControl2[1] = 0;
             return;
-        case 7: //icon Large Icon Filename
-            if(ICON.IsLoaded())
-                ICON->ICON.Unload();
+        case 7: //iconPath
+            ICON.Unload();
             return;
-        case 8: //mico Small Icon Filename
-            if(ICON.IsLoaded())
-                ICON->MICO.Unload();
+        case 8: //smallIconPath
+            MICO.Unload();
             return;
         default:
             return;

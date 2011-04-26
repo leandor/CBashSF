@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class STATRecord : public Record //Static
+class STATRecord : public FNVRecord //Static
     {
     private:
         enum passthroughTypes

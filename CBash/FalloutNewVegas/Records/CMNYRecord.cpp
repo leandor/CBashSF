@@ -62,12 +62,8 @@ CMNYRecord::CMNYRecord(CMNYRecord *srcRecord):
         MODL->MODS = srcRecord->MODL->MODS;
         MODL->MODD = srcRecord->MODL->MODD;
         }
-    if(srcRecord->ICON.IsLoaded())
-        {
-        ICON.Load();
-        ICON->ICON = srcRecord->ICON->ICON;
-        ICON->MICO = srcRecord->ICON->MICO;
-        }
+    ICON = srcRecord->ICON;
+    MICO = srcRecord->MICO;
     YNAM = srcRecord->YNAM;
     ZNAM = srcRecord->ZNAM;
     DATA = srcRecord->DATA;
@@ -147,18 +143,16 @@ UINT32 CMNYRecord::GetSize(bool forceCalc)
 
     if(ICON.IsLoaded())
         {
-        if(ICON->ICON.IsLoaded())
-            {
-            cSize = ICON->ICON.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(ICON->MICO.IsLoaded())
-            {
-            cSize = ICON->MICO.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
+        cSize = ICON.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(MICO.IsLoaded())
+        {
+        cSize = MICO.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
         }
 
     if(YNAM.IsLoaded())
@@ -235,12 +229,10 @@ SINT32 CMNYRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 MODL->MODD.Read(buffer, subSize, curPos);
                 break;
             case 'NOCI':
-                ICON.Load();
-                ICON->ICON.Read(buffer, subSize, curPos);
+                ICON.Read(buffer, subSize, curPos);
                 break;
             case 'OCIM':
-                ICON.Load();
-                ICON->MICO.Read(buffer, subSize, curPos);
+                MICO.Read(buffer, subSize, curPos);
                 break;
             case 'MANY':
                 YNAM.Read(buffer, subSize, curPos);
@@ -272,6 +264,7 @@ SINT32 CMNYRecord::Unload()
     FULL.Unload();
     MODL.Unload();
     ICON.Unload();
+    MICO.Unload();
     YNAM.Unload();
     ZNAM.Unload();
     DATA.Unload();
@@ -309,14 +302,10 @@ SINT32 CMNYRecord::WriteRecord(_FileHandler &SaveHandler)
         }
 
     if(ICON.IsLoaded())
-        {
-        if(ICON->ICON.IsLoaded())
-            SaveHandler.writeSubRecord('NOCI', ICON->ICON.value, ICON->ICON.GetSize());
+        SaveHandler.writeSubRecord('NOCI', ICON.value, ICON.GetSize());
 
-        if(ICON->MICO.IsLoaded())
-            SaveHandler.writeSubRecord('OCIM', ICON->MICO.value, ICON->MICO.GetSize());
-
-        }
+    if(MICO.IsLoaded())
+        SaveHandler.writeSubRecord('OCIM', MICO.value, MICO.GetSize());
 
     if(YNAM.IsLoaded())
         SaveHandler.writeSubRecord('MANY', YNAM.value, YNAM.GetSize());
@@ -336,7 +325,8 @@ bool CMNYRecord::operator ==(const CMNYRecord &other) const
             OBND == other.OBND &&
             FULL.equals(other.FULL) &&
             MODL == other.MODL &&
-            ICON == other.ICON &&
+            ICON.equalsi(other.ICON) &&
+            MICO.equalsi(other.MICO) &&
             YNAM == other.YNAM &&
             ZNAM == other.ZNAM &&
             DATA == other.DATA);

@@ -1847,15 +1847,15 @@ class FnvTXSTRecord(FnvBaseRecord):
     boundX1 = CBashGeneric(7, c_short)
     boundY1 = CBashGeneric(8, c_short)
     boundZ1 = CBashGeneric(9, c_short)
-    boundX2 = CBashGeneric(7, c_short)
-    boundY2 = CBashGeneric(8, c_short)
-    boundZ2 = CBashGeneric(9, c_short)
-    baseImageOrTransparency = CBashISTRING(13)
-    normalMapOrSpecular = CBashISTRING(14)
-    envMapMaskOrUnk = CBashISTRING(15)
-    glowMapOrUnused = CBashISTRING(16)
-    parallaxMapOrUnused = CBashISTRING(17)
-    envMapOrUnused = CBashISTRING(18)
+    boundX2 = CBashGeneric(10, c_short)
+    boundY2 = CBashGeneric(11, c_short)
+    boundZ2 = CBashGeneric(12, c_short)
+    baseImageOrTransparencyPath = CBashISTRING(13)
+    normalMapOrSpecularPath = CBashISTRING(14)
+    envMapMaskOrUnkPath = CBashISTRING(15)
+    glowMapOrUnusedPath = CBashISTRING(16)
+    parallaxMapOrUnusedPath = CBashISTRING(17)
+    envMapOrUnusedPath = CBashISTRING(18)
     decalMinWidth = CBashFLOAT32(19)
     decalMaxWidth = CBashFLOAT32(20)
     decalMinHeight = CBashFLOAT32(21)
@@ -1880,9 +1880,9 @@ class FnvTXSTRecord(FnvBaseRecord):
     IsObjectAlphaTesting = CBashBasicFlag('decalFlags', 0x00000004)
     
     copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
-                                           'boundX2', 'boundY2', 'boundZ2', 'baseImageOrTransparency',
-                                           'normalMapOrSpecular', 'envMapMaskOrUnk', 'glowMapOrUnused',
-                                           'parallaxMapOrUnused', 'envMapOrUnused', 'decalMinWidth',
+                                           'boundX2', 'boundY2', 'boundZ2', 'baseImageOrTransparencyPath',
+                                           'normalMapOrSpecularPath', 'envMapMaskOrUnkPath', 'glowMapOrUnusedPath',
+                                           'parallaxMapOrUnusedPath', 'envMapOrUnusedPath', 'decalMinWidth',
                                            'decalMaxWidth', 'decalMinHeight', 'decalMaxHeight',
                                            'decalDepth', 'decalShininess', 'decalScale',
                                            'decalPasses', 'decalFlags', 'decalUnused1',
@@ -1890,14 +1890,20 @@ class FnvTXSTRecord(FnvBaseRecord):
                                            'decalUnused2', 'flags']
     
     exportattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
-                                             'boundX2', 'boundY2', 'boundZ2', 'baseImageOrTransparency',
-                                             'normalMapOrSpecular', 'envMapMaskOrUnk', 'glowMapOrUnused',
-                                             'parallaxMapOrUnused', 'envMapOrUnused', 'decalMinWidth',
+                                             'boundX2', 'boundY2', 'boundZ2', 'baseImageOrTransparencyPath',
+                                             'normalMapOrSpecularPath', 'envMapMaskOrUnkPath', 'glowMapOrUnusedPath',
+                                             'parallaxMapOrUnusedPath', 'envMapOrUnusedPath', 'decalMinWidth',
                                              'decalMaxWidth', 'decalMinHeight', 'decalMaxHeight',
                                              'decalDepth', 'decalShininess', 'decalScale',
                                              'decalPasses', 'decalFlags',
                                              'decalRed', 'decalGreen', 'decalBlue',
                                              'flags'] # 'decalUnused1','decalUnused2', 
+class FnvMICNRecord(FnvBaseRecord):
+    _Type = 'MICN'
+    iconPath = CBashISTRING(7)
+    smallIconPath = CBashISTRING(8)
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['iconPath', 'smallIconPath']
 
 #--Oblivion
 class ObBaseRecord(object):
@@ -5433,7 +5439,7 @@ type_record = dict([('BASE',ObBaseRecord),(None,None),('',None),
                     ('CSTY',ObCSTYRecord),('LSCR',ObLSCRRecord),('LVSP',ObLVSPRecord),
                     ('ANIO',ObANIORecord),('WATR',ObWATRRecord),('EFSH',ObEFSHRecord)])
 fnv_type_record = dict([('BASE',FnvBaseRecord),(None,None),('',None),
-                    ('GMST',FnvGMSTRecord),('TXST',FnvTXSTRecord),])
+                    ('GMST',FnvGMSTRecord),('TXST',FnvTXSTRecord),('MICN',FnvMICNRecord),])
 
 class ObModFile(object):
     def __init__(self, CollectionIndex, ModID):
@@ -6064,6 +6070,12 @@ class FnvModFile(object):
         if(RecordID): return FnvTXSTRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
         return None
     TXST = CBashRECORDARRAY(FnvTXSTRecord, 'TXST', 0)
+
+    def create_MICN(self, EditorID=0, FormID=0):
+        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("MICN", POINTER(c_ulong)).contents.value, MakeShortFid(self._CollectionID, FormID), EditorID, 0, 0)
+        if(RecordID): return FnvMICNRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
+        return None
+    MICN = CBashRECORDARRAY(FnvMICNRecord, 'MICN', 0)
 
     @property
     def tops(self):

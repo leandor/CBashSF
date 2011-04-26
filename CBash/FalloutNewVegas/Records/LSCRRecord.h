@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class LSCRRecord : public Record //Load Screen
+class LSCRRecord : public FNVRecord //Load Screen
     {
     private:
         struct LSCRLNAM // Location
@@ -42,7 +42,8 @@ class LSCRRecord : public Record //Load Screen
 
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENICON> ICON; //Icon Filenames
+        StringRecord ICON; //Large Icon Filename
+        StringRecord MICO; //Small Icon Filename
         StringRecord DESC; //Description
         std::vector<ReqSubRecord<LSCRLNAM> *> LNAM; // Locations
         OptSimpleSubRecord<FORMID> WMI1; //Load Screen Type

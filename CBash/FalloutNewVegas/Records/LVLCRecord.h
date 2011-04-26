@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class LVLCRecord : public Record //Leveled Creature
+class LVLCRecord : public FNVRecord //Leveled Creature
     {
     private:
         enum flagsFlags

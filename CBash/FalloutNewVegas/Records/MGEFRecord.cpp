@@ -53,12 +53,8 @@ MGEFRecord::MGEFRecord(MGEFRecord *srcRecord):
     EDID = srcRecord->EDID;
     FULL = srcRecord->FULL;
     DESC = srcRecord->DESC;
-    if(srcRecord->ICON.IsLoaded())
-        {
-        ICON.Load();
-        ICON->ICON = srcRecord->ICON->ICON;
-        ICON->MICO = srcRecord->ICON->MICO;
-        }
+    ICON = srcRecord->ICON;
+    MICO = srcRecord->MICO;
     if(srcRecord->MODL.IsLoaded())
         {
         MODL.Load();
@@ -760,18 +756,16 @@ UINT32 MGEFRecord::GetSize(bool forceCalc)
 
     if(ICON.IsLoaded())
         {
-        if(ICON->ICON.IsLoaded())
-            {
-            cSize = ICON->ICON.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(ICON->MICO.IsLoaded())
-            {
-            cSize = ICON->MICO.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
+        cSize = ICON.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
+        }
+
+    if(MICO.IsLoaded())
+        {
+        cSize = MICO.GetSize();
+        if(cSize > 65535) cSize += 10;
+        TotSize += cSize += 6;
         }
 
     if(MODL.IsLoaded())
@@ -848,12 +842,10 @@ SINT32 MGEFRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 DESC.Read(buffer, subSize, curPos);
                 break;
             case 'NOCI':
-                ICON.Load();
-                ICON->ICON.Read(buffer, subSize, curPos);
+                ICON.Read(buffer, subSize, curPos);
                 break;
             case 'OCIM':
-                ICON.Load();
-                ICON->MICO.Read(buffer, subSize, curPos);
+                MICO.Read(buffer, subSize, curPos);
                 break;
             case 'LDOM':
                 MODL.Load();
@@ -898,6 +890,7 @@ SINT32 MGEFRecord::Unload()
     FULL.Unload();
     DESC.Unload();
     ICON.Unload();
+    MICO.Unload();
     MODL.Unload();
     DATA.Unload();
     return 1;
@@ -915,14 +908,10 @@ SINT32 MGEFRecord::WriteRecord(_FileHandler &SaveHandler)
         SaveHandler.writeSubRecord('CSED', DESC.value, DESC.GetSize());
 
     if(ICON.IsLoaded())
-        {
-        if(ICON->ICON.IsLoaded())
-            SaveHandler.writeSubRecord('NOCI', ICON->ICON.value, ICON->ICON.GetSize());
+        SaveHandler.writeSubRecord('NOCI', ICON.value, ICON.GetSize());
 
-        if(ICON->MICO.IsLoaded())
-            SaveHandler.writeSubRecord('OCIM', ICON->MICO.value, ICON->MICO.GetSize());
-
-        }
+    if(MICO.IsLoaded())
+        SaveHandler.writeSubRecord('OCIM', MICO.value, MICO.GetSize());
 
     if(MODL.IsLoaded())
         {
@@ -954,7 +943,8 @@ bool MGEFRecord::operator ==(const MGEFRecord &other) const
     return (EDID.equalsi(other.EDID) &&
             FULL.equals(other.FULL) &&
             DESC.equals(other.DESC) &&
-            ICON == other.ICON &&
+            ICON.equalsi(other.ICON) &&
+            MICO.equalsi(other.MICO) &&
             MODL == other.MODL &&
             DATA == other.DATA);
     }

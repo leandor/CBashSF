@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class RCPERecord : public Record //Recipe
+class RCPERecord : public FNVRecord //Recipe
     {
     private:
         struct RCPEItem

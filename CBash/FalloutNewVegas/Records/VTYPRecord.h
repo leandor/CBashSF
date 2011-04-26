@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class VTYPRecord : public Record //Voice Type
+class VTYPRecord : public FNVRecord //Voice Type
     {
     private:
         enum flagsFlags

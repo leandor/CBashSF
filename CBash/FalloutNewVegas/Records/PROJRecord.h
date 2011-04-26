@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class PROJRecord : public Record //Projectile
+class PROJRecord : public FNVRecord //Projectile
     {
     private:
         struct PROJDATA

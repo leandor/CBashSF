@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class ALOCRecord : public Record //Media Location Controller
+class ALOCRecord : public FNVRecord //Media Location Controller
     {
     public:
         StringRecord EDID; //Editor ID
