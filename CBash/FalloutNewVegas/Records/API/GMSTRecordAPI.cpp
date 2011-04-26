@@ -99,7 +99,7 @@ void * GMSTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 5: //formVersion
             return &formVersion;
         case 6: //versionControl2
-            *FieldValues = &versionControl2;
+            *FieldValues = &versionControl2[0];
             return NULL;
         case 7: //value
             switch(DATA.format)

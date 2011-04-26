@@ -44,9 +44,11 @@ UINT32 CSNORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
-        case 4: //formVersion
+        case 4: //eid
+            return ISTRING_FIELD;
+        case 5: //formVersion
             return UINT16_FIELD;
-        case 5: //versionControl2
+        case 6: //versionControl2
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -56,8 +58,6 @@ UINT32 CSNORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
-        case 6: //eid
-            return ISTRING_FIELD;
         case 7: //full Name
             return STRING_FIELD;
         case 8: //data DATA ,, Struct
@@ -106,13 +106,13 @@ void * CSNORecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 3: //versionControl1
             *FieldValues = &flagsUnk;
             return NULL;
-        case 4: //formVersion
-            return &formVersion;
-        case 5: //versionControl2
-            *FieldValues = &versionControl2;
-            return NULL;
-        case 6: //eid
+        case 4: //eid
             return EDID.value;
+        case 5: //formVersion
+            return &formVersion;
+        case 6: //versionControl2
+            *FieldValues = &versionControl2[0];
+            return NULL;
         case 7: //full Name
             return FULL.value;
         case 8: //data DATA ,, Struct
@@ -165,17 +165,17 @@ bool CSNORecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8 *)FieldValue)[2];
             ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8 *)FieldValue)[3];
             break;
-        case 4: //formVersion
+        case 4: //eid
+            EDID.Copy((STRING)FieldValue);
+            break;
+        case 5: //formVersion
             formVersion = *(UINT16 *)FieldValue;
             break;
-        case 5: //versionControl2
+        case 6: //versionControl2
             if(ArraySize != 2)
                 break;
             versionControl2[0] = ((UINT8 *)FieldValue)[0];
             versionControl2[1] = ((UINT8 *)FieldValue)[1];
-            break;
-        case 6: //eid
-            EDID.Copy((STRING)FieldValue);
             break;
         case 7: //full Name
             FULL.Copy((STRING)FieldValue);
@@ -252,15 +252,15 @@ void CSNORecord::DeleteField(FIELD_IDENTIFIERS)
         case 3: //versionControl1
             flagsUnk = 0;
             return;
-        case 4: //formVersion
+        case 4: //eid
+            EDID.Unload();
+            return;
+        case 5: //formVersion
             formVersion = 0;
             return;
-        case 5: //versionControl2
+        case 6: //versionControl2
             versionControl2[0] = 0;
             versionControl2[1] = 0;
-            return;
-        case 6: //eid
-            EDID.Unload();
             return;
         case 7: //full Name
             FULL.Unload();
