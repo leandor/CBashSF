@@ -157,7 +157,7 @@ bool RecordProcessor::operator()(Record *&curRecord)
     else
         {
         if(!IsAddMasters) //Can cause any new records to be given a duplicate ID
-            printf("Record skipped with duplicate formID: %08X\n", curRecord->formID);
+            printf("RecordProcessor: Warning - Information lost. Record skipped with duplicate formID: %08X\n", curRecord->formID);
         delete curRecord;
         return false;
         }
@@ -215,7 +215,7 @@ bool FNVRecordProcessor::operator()(Record *&curRecord)
     else
         {
         if(!IsAddMasters) //Can cause any new records to be given a duplicate ID
-            printf("Record skipped with duplicate formID: %08X\n", curRecord->formID);
+            printf("FNVRecordProcessor: Warning - Information lost. Record skipped with duplicate formID: %08X\n", curRecord->formID);
         delete curRecord;
         return false;
         }
@@ -415,7 +415,7 @@ UINT32 Record::Write(_FileHandler &SaveHandler, const bool &bMastersChanged, For
             else
                 {
                 SaveHandler.flush();
-                printf("Not in cache, written improperly!\n  Size: %u\n", recSize);
+                printf("Record::WriteRecord: Error - Compressed record (%08X) written incorrectly. Requested data not in cache, size: %u\n", formID, recSize);
                 return recSize + 20;
                 }
             SaveHandler.set_used((compSize + 4) - recSize);
@@ -801,7 +801,7 @@ UINT32 FNVRecord::Write(_FileHandler &SaveHandler, const bool &bMastersChanged, 
             else
                 {
                 SaveHandler.flush();
-                printf("Not in cache, written improperly!\n  Size: %u\n", recSize);
+                printf("FNVRecord::WriteRecord: Error - Compressed record (%08X) written incorrectly. Requested data not in cache, size: %u\n", formID, recSize);
                 return recSize + 24;
                 }
             SaveHandler.set_used((compSize + 4) - recSize);

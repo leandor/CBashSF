@@ -38,7 +38,11 @@ FNVFile::~FNVFile()
 SINT32 FNVFile::LoadTES4()
     {
     if(TES4.IsLoaded() || !Open())
+        {
+        if(!TES4.IsLoaded() && !Open())
+            printf("FNVFile::LoadTES4: Error - Unable to load the TES4 record for mod \"%s\". The mod is not open for reading.\n", ReadHandler.getModName());
         return 0;
+        }
     #ifdef CBASH_USE_LOGGING
         CLOGGER;
         BOOST_LOG_FUNCTION();
@@ -74,8 +78,17 @@ SINT32 FNVFile::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders
     enum IgTopRecords {
         eIgGMST = 0x54535D47
         };
-    if(!ReadHandler.IsOpen() || Flags.LoadedGRUPs)
+    if(Flags.IsIgnoreExisting || !ReadHandler.IsOpen() || Flags.LoadedGRUPs)
+        {
+        if(!Flags.IsIgnoreExisting)
+            {
+            if(!ReadHandler.IsOpen())
+                printf("FNVFile::Load: Error - Unable to load mod \"%s\". The mod is not open.\n", ReadHandler.getModName());
+            else
+                printf("FNVFile::Load: Error - Unable to load mod \"%s\". The mod is already loaded.\n", ReadHandler.getModName());
+            }
         return 0;
+        }
 
     Flags.LoadedGRUPs = true;
     UINT32 GRUPSize;
@@ -107,27 +120,22 @@ SINT32 FNVFile::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders
             //ADD DEFINITIONS HERE
 
             default:
-                //printf("FileName = %s\n", ReadHandler.getFileName());
                 if(GRUPLabel == 0 && GRUPSize == 0)
                     {
-                    //printf("  Bad file structure, zeros found past end of groups\n");
+                    printf("FNVFile::Skim: Warning - Unknown record group (%c%c%c%c) encountered in mod \"%s\". Bad file structure, zeros found past end of groups.\n", ((STRING)&GRUPLabel)[0], ((STRING)&GRUPLabel)[1], ((STRING)&GRUPLabel)[2], ((STRING)&GRUPLabel)[3], ReadHandler.getModName());
                     return 1;
                     }
-                else
-                    {
-                    //printf("  Unimplemented GRUP = ");
-                    //for(int x = 0;x < 4;x++)
-                    //    printf("%c", ((STRING)&GRUPLabel)[x]);
-                    //printf("\n");
-                    }
+                //else
+                //    printf("FNVFile::Skim: Error - Unknown record group (%c%c%c%c) encountered in mod \"%s\". ", ((STRING)&GRUPLabel)[0], ((STRING)&GRUPLabel)[1], ((STRING)&GRUPLabel)[2], ((STRING)&GRUPLabel)[3], ReadHandler.getModName());
+
                 if(GRUPSize == 0)
                     {
-                    //printf("  Unable to continue loading.\n");
+                    printf("Unable to continue loading.\n");
                     return 1;
                     }
                 else
                     {
-                    //printf("  Attempting to skip and continue loading.\n");
+                    //printf("Attempting to skip and continue loading.\n");
                     ReadHandler.set_used(GRUPSize - 16); //Skip type (tops will all == 0)
                     }
                 break;
@@ -143,7 +151,7 @@ UINT32 FNVFile::GetNumRecords(const UINT32 &RecordType)
         case 'TSMG':
             return (UINT32)GMST.Records.size();
         default:
-            printf("Error counting records: %c%c%c%c\n", ((char *)&RecordType)[0], ((char *)&RecordType)[1], ((char *)&RecordType)[2], ((char *)&RecordType)[3]);
+            printf("FNVFile::GetNumRecords: Warning - Unable to count records (%c%c%c%c) in mod \"%s\". Unrecognized record type.\n", ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], ReadHandler.getModName());
             break;
         }
     return 0;
@@ -152,7 +160,10 @@ UINT32 FNVFile::GetNumRecords(const UINT32 &RecordType)
 Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEditorID, Record *&SourceRecord, Record *&ParentRecord, CreateRecordOptions &options)
     {
     if(Flags.IsNoLoad)
+        {
+        printf("FNVFile::CreateRecord: Error - Unable to create any records in mod \"%s\". The mod is flagged not to be loaded.\n", ReadHandler.getModName());
         return NULL;
+        }
 
     Record *newRecord = NULL;
 
@@ -160,7 +171,10 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
         {
         case 'TSMG':
             if(RecordEditorID == NULL && SourceRecord == NULL)
+                {
+                printf("FNVFile::CreateRecord: Error - Unable to create GMST record in mod \"%s\". No valid editorID is available.\n", ReadHandler.getModName());
                 return NULL;
+                }
 
             GMST.Records.push_back(new FNV::GMSTRecord((FNV::GMSTRecord *)SourceRecord));
             newRecord = GMST.Records.back();
@@ -177,7 +191,7 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
         //    break;
 
         default:
-            printf("Error creating record: %c%c%c%c\n", ((char *)&RecordType)[0], ((char *)&RecordType)[1], ((char *)&RecordType)[2], ((char *)&RecordType)[3]);
+            printf("FNVFile::CreateRecord: Error - Unable to create (%c%c%c%c) record in mod \"%s\". Unknown record type.\n", ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], ReadHandler.getModName());
             break;
         }
     return newRecord;
@@ -186,7 +200,10 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
 SINT32 FNVFile::CleanMasters(std::vector<FormIDResolver *> &Expanders)
     {
     if(Flags.IsNoLoad)
+        {
+        printf("FNVFile::CleanMasters: Error - Unable to clean masters in mod \"%s\". The mod is flagged not to be loaded.\n", ReadHandler.getModName());
         return -1;
+        }
 
     UINT32 cleaned = 0;
     //FormIDHandlerClass TempHandler(FileName, TES4.MAST, TES4.HEDR.value.nextObject);
@@ -220,7 +237,10 @@ SINT32 FNVFile::CleanMasters(std::vector<FormIDResolver *> &Expanders)
 SINT32 FNVFile::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expanders, bool CloseMod)
     {
     if(!Flags.IsSaveable)
+        {
+        printf("FNVFile::Save: Error - Unable to save mod \"%s\". It is flagged as being non-saveable.\n", ReadHandler.getModName());
         return -1;
+        }
 
     _FileHandler SaveHandler(SaveName, BUFFERSIZE);
     if(SaveHandler.open_ReadWrite() == -1)
@@ -248,7 +268,10 @@ SINT32 FNVFile::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expa
 void FNVFile::VisitAllRecords(RecordOp &op)
     {
     if(Flags.IsNoLoad)
+        {
+        printf("FNVFile::VisitAllRecords: Error - Unable to visit records in mod \"%s\". The mod is flagged not to be loaded.\n", ReadHandler.getModName());
         return;
+        }
 
     //This visits every record and subrecord
     Record * topRecord = &TES4;
@@ -261,7 +284,10 @@ void FNVFile::VisitAllRecords(RecordOp &op)
 void FNVFile::VisitRecords(const UINT32 &TopRecordType, const UINT32 &RecordType, RecordOp &op, bool DeepVisit)
     {
     if(Flags.IsNoLoad)
+        {
+        printf("FNVFile::VisitRecords: Error - Unable to visit records in mod \"%s\". The mod is flagged not to be loaded.\n", ReadHandler.getModName());
         return;
+        }
 
     //This visits only the top records specified.
     Record * topRecord = &TES4;

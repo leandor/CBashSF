@@ -75,12 +75,12 @@ bool FileExists(STRING const FileName)
 
 bool AlmostEqual(FLOAT32 A, FLOAT32 B, SINT32 maxUlps)
     {
-    SINT32 aInt = *(SINT32*)&A;
+    SINT32 aInt = (SINT32)A;
     // Make aInt lexicographically ordered as a twos-complement int
     if (aInt < 0)
         aInt = 0x80000000 - aInt;
     // Make bInt lexicographically ordered as a twos-complement int
-    SINT32 bInt = *(SINT32*)&B;
+    SINT32 bInt = (SINT32)B;
     if (bInt < 0)
         bInt = 0x80000000 - bInt;
 
@@ -144,13 +144,13 @@ SINT32 _FileHandler::open_ReadOnly()
         }
     catch(boost::interprocess::interprocess_exception &ex)
         {
-        printf("Exception raised: %s\nUnable to memory map '%s' for read only.\n", ex.what(), FileName);
+        printf("FileHandler: Error - Unable to open \"%s\" as read only via memory mapping. An exception occurred: %s\n", FileName, ex.what());
         throw;
         return -1;
         }
     catch(...)
         {
-        printf("Read Only - Open Error\n");
+        printf("FileHandler: Error - Unable to open \"%s\" as read only via memory mapping. An unhandled exception occurred.\n", FileName);
         throw;
         return -1;
         }
@@ -169,22 +169,22 @@ SINT32 _FileHandler::open_ReadWrite()
         switch(err)
             {
             case EACCES:
-                printf("Given path is a directory, or file is read-only, but an open-for-writing operation was attempted.\n");
+                printf("FileHandler: Error - Unable to open \"%s\" as read,write via file handle. Given path is a directory, or file is read-only, but an open-for-writing operation was attempted.\n", FileName);
                 return -1;
             case EEXIST:
-                printf("_O_CREAT and _O_EXCL flags were specified, but filename already exists.\n");
+                printf("FileHandler: Error - Unable to open \"%s\" as read,write via file handle. _O_CREAT and _O_EXCL flags were specified, but filename already exists.\n", FileName);
                 return -1;
             case EINVAL:
-                printf("Invalid oflag, shflag, or pmode  argument, or pfh or filename was a null pointer.\n");
+                printf("FileHandler: Error - Unable to open \"%s\" as read,write via file handle. Invalid oflag, shflag, or pmode  argument, or pfh or filename was a null pointer.\n", FileName);
                 return -1;
             case EMFILE:
-                printf("No more file descriptors available.\n");
+                printf("FileHandler: Error - Unable to open \"%s\" as read,write via file handle. No more file descriptors available.\n", FileName);
                 return -1;
             case ENOENT:
-                printf("File or path not found.\n");
+                printf("FileHandler: Error - Unable to open \"%s\" as read,write via file handle. File or path not found.\n", FileName);
                 return -1;
             default:
-                printf("Unknown error\n");
+                printf("FileHandler: Error - Unable to open \"%s\" as read,write via file handle. An unknown error occurred.\n", FileName);
                 return -1;
             }
         _close(fh);
@@ -264,7 +264,7 @@ UINT32 _FileHandler::set_used(SINT32 _Used)
     else
         {
         flush();
-        printf("Exceeded capacity: Tried to set %u as used in a buffer with a size of %u.\n", _Used, _BufSize);
+        printf("FileHandler: Error - Exceeded buffer capacity. Tried to set (%u) as used in a buffer with a capacity of (%u).\n", _Used, _BufSize);
         }
     return _BufPos;
     }
@@ -272,7 +272,13 @@ UINT32 _FileHandler::set_used(SINT32 _Used)
 void _FileHandler::read(void *_DstBuf, UINT32 _MaxCharCount)
     {
     if(_DstBuf == NULL || _Buffer == NULL)
+        {
+        if(_DstBuf == NULL)
+            printf("FileHandler: Error - Unable to read from buffer. Destination pointer is NULL.\n");
+        else
+            printf("FileHandler: Error - Unable to read from buffer. Source pointer is NULL.\n");
         return;
+        }
     memcpy(_DstBuf, _Buffer + _BufPos, _MaxCharCount);
     _BufPos += _MaxCharCount;
     }
@@ -281,6 +287,7 @@ unsigned char *_FileHandler::getBuffer(UINT32 _Offset)
     {
     if(IsCached(_Offset))
         return _Buffer + _Offset - _TotalWritten;
+    printf("FileHandler: Error - Unable to get specified buffer. Provided offset is not in the buffer.\n");
     return NULL;
     }
 
@@ -292,7 +299,13 @@ UINT32 _FileHandler::getBufferSize()
 UINT32 _FileHandler::write(const void *_SrcBuf, UINT32 _MaxCharCount)
     {
     if(fh == -1 || _SrcBuf == NULL || _Buffer == NULL || _MaxCharCount == 0)
+        {
+        if(fh == -1 || _Buffer == NULL)
+            printf("FileHandler: Error - Unable to write. Buffer or File Handle is invalid.\n");
+        else if(_SrcBuf == NULL)
+            printf("FileHandler: Error - Unable to write. Source buffer is NULL.\n");
         return _BufPos;
+        }
     //Flush the buffer if it is getting full
     if((_BufPos + _MaxCharCount) >= _BufSize)
         flush();
@@ -337,7 +350,15 @@ void _FileHandler::writeSubRecord(UINT32 _Type, const void *_SrcBuf, UINT32 _Max
 UINT32 _FileHandler::writeAt(UINT32 _Offset, const void *_SrcBuf, UINT32 _MaxCharCount)
     {
     if(fh == -1 || _SrcBuf == NULL || _Buffer == NULL || _MaxCharCount == 0 || _Offset > tell())
+        {
+        if(fh == -1 || _Buffer == NULL)
+            printf("FileHandler: Error - Unable to write at offset. Buffer or File Handle is invalid.\n");
+        else if(_SrcBuf == NULL)
+            printf("FileHandler: Error - Unable to write at offset. Source buffer is NULL.\n");
+        else if(_Offset > tell())
+            printf("FileHandler: Error - Unable to write at offset. Provided offset is greater than the current position.\n");
         return _Offset;
+        }
     //See if the address is still in buffer
     if(IsCached(_Offset))
         {
@@ -357,7 +378,11 @@ UINT32 _FileHandler::writeAt(UINT32 _Offset, const void *_SrcBuf, UINT32 _MaxCha
 void _FileHandler::flush()
     {
     if(fh == -1 || _Buffer == NULL || _BufPos == 0)
+        {
+        if(fh == -1 || _Buffer == NULL)
+            printf("FileHandler: Error - Unable to flush buffer. Buffer or File Handle is invalid.\n");
         return;
+        }
     _write(fh, _Buffer, _BufPos);
     _TotalWritten += _BufPos;
     _BufPos = 0;
@@ -376,9 +401,11 @@ bool _FileHandler::IsCached(UINT32 _Offset)
 
 SINT32 _FileHandler::close()
     {
-    flush();
     if(fh != -1)
+        {
+        flush();
         _close(fh);
+        }
     delete m_region;
     delete f_map;
     m_region = NULL;
@@ -393,13 +420,17 @@ SINT32 _FileHandler::close()
 void _FileHandler::reserveBuffer(UINT32 nSize)
     {
     if(fh == -1 || f_map != NULL || m_region != NULL || nSize <= UnusedCache())
+        {
+        if(fh == -1 || f_map != NULL || m_region != NULL)
+            printf("FileHandler: Error - Unable to reserve buffer. Memory mapping or File Handle is invalid.\n");
         return;
+        }
     flush();
     //There's room in the current buffer if flushed.
     if(nSize < _BufSize)
         return;
     //Otherwise, resize the buffer to fit
-    printf("Resizing buffer from: %u to %u\n", _BufSize, nSize);
+    printf("FileHandler: Info - Resizing buffer from: %u to %u\n", _BufSize, nSize);
     delete []_Buffer;
     _BufSize = nSize;
     _Buffer = new unsigned char[_BufSize];
@@ -428,7 +459,7 @@ void FormIDHandlerClass::SetLoadOrder(std::vector<STRING> &cLoadOrder)
     {
     if(cLoadOrder.size() > 0xFF)
         {
-        printf("Error: Tried to set load order > 0xFF. Load order size = %i\n", cLoadOrder.size());
+        printf("FormIDHandler: Error - Unable to set load order. Tried to set load order > 0xFF. Load order size = %i.\n", cLoadOrder.size());
         throw 1;
         return;
         }
@@ -588,7 +619,10 @@ CreateRecordOptions::CreateRecordOptions(UINT32 nFlags):
     //
     }
 
-CreateRecordOptions::~CreateRecordOptions() { }
+CreateRecordOptions::~CreateRecordOptions()
+    {
+    //
+    }
 
 UINT32 CreateRecordOptions::GetFlags()
     {

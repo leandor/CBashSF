@@ -57,7 +57,10 @@ class GRUPRecords
         bool Skim(_FileHandler &ReadHandler, const UINT32 &gSize, RecordProcessor &processor, RecordOp &indexer)
             {
             if(SkimmedGRUP || gSize == 0)
+                {
+                printf("GRUPRecords::Skim: Error - Unable to load group in file \"%s\". The group has already been loaded or has a size of 0.\n", ReadHandler.getFileName());
                 return false;
+                }
             SkimmedGRUP = true;
             Record * curRecord = NULL;
             //UINT32 recordType = 0;
@@ -163,7 +166,10 @@ class GRUPRecords<DIALRecord>
         bool Skim(_FileHandler &ReadHandler, const UINT32 &gSize, RecordProcessor &processor, RecordOp &indexer)
             {
             if(SkimmedGRUP || gSize == 0)
+                {
+                printf("GRUPRecords<DIALRecord>::Skim: Error - Unable to load group in file \"%s\". The group has already been loaded or has a size of 0.\n", ReadHandler.getFileName());
                 return false;
+                }
             SkimmedGRUP = true;
             Record * curDIALRecord = NULL;
             Record * curINFORecord = NULL;
@@ -199,13 +205,13 @@ class GRUPRecords<DIALRecord>
                                 }
                             else
                                 {
-                                printf("Skipped orphan INFO (%08X) at %08X in %s\n", curINFORecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
+                                printf("GRUPRecords<DIALRecord>::Skim: Warning - Parsing error. Skipped orphan INFO (%08X) at %08X in file \"%s\"\n", curINFORecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
                                 delete curINFORecord;
                                 }
                             }
                         break;
                     default:
-                        printf("  DIAL: Unexpected Record = %04x\n", recordType);
+                        printf("GRUPRecords<DIALRecord>::Skim: Warning - Parsing error. Unexpected record type (%c%c%c%c) in file \"%s\".\n", ((STRING)&recordType)[0], ((STRING)&recordType)[1], ((STRING)&recordType)[2], ((STRING)&recordType)[3], ReadHandler.getFileName());
                         break;
                     }
                 ReadHandler.set_used(recordSize);
@@ -332,7 +338,10 @@ class GRUPRecords<CELLRecord>
         bool Skim(_FileHandler &ReadHandler, const UINT32 &gSize, RecordProcessor &processor, RecordOp &indexer)
             {
             if(SkimmedGRUP || gSize == 0)
+                {
+                printf("GRUPRecords<CELLRecord>::Skim: Error - Unable to load group in file \"%s\". The group has already been loaded or has a size of 0.\n", ReadHandler.getFileName());
                 return false;
+                }
             SkimmedGRUP = true;
             Record *curCELLRecord = NULL;
             Record *curACHRRecord = NULL;
@@ -371,7 +380,7 @@ class GRUPRecords<CELLRecord>
                                 }
                             else
                                 {
-                                printf("Skipped orphan ACHR (%08X) at %08X in %s\n", curACHRRecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
+                                printf("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Skipped orphan ACHR (%08X) at %08X in file \"%s\"\n", curACHRRecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
                                 delete curACHRRecord;
                                 }
                             }
@@ -387,7 +396,7 @@ class GRUPRecords<CELLRecord>
                                 }
                             else
                                 {
-                                printf("Skipped orphan ACRE (%08X) at %08X in %s\n", curACRERecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
+                                printf("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Skipped orphan ACRE (%08X) at %08X in file \"%s\"\n", curACRERecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
                                 delete curACRERecord;
                                 }
                             }
@@ -403,7 +412,7 @@ class GRUPRecords<CELLRecord>
                                 }
                             else
                                 {
-                                printf("Skipped orphan REFR (%08X) at %08X in %s\n", curREFRRecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
+                                printf("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Skipped orphan REFR (%08X) at %08X in file \"%s\"\n", curREFRRecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
                                 delete curREFRRecord;
                                 }
                             }
@@ -421,19 +430,19 @@ class GRUPRecords<CELLRecord>
                                     }
                                 else
                                     {
-                                    printf("Skipped extra PGRD (%08X) at %08X in %s\n  CELL (%08X) already has PGRD (%08X)\n", curPGRDRecord->formID, ReadHandler.tell(), ReadHandler.getFileName(), curCELLRecord->formID, ((CELLRecord *)curCELLRecord)->PGRD->formID);
+                                    printf("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Skipped extra PGRD (%08X) at %08X in file \"%s\"\n  CELL (%08X) already has PGRD (%08X)\n", curPGRDRecord->formID, ReadHandler.tell(), ReadHandler.getFileName(), curCELLRecord->formID, ((CELLRecord *)curCELLRecord)->PGRD->formID);
                                     delete curPGRDRecord;
                                     }
                                 }
                             else
                                 {
-                                printf("Skipped orphan PGRD (%08X) at %08X in %s\n", curPGRDRecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
+                                printf("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Skipped orphan PGRD (%08X) at %08X in file \"%s\"\n", curPGRDRecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
                                 delete curPGRDRecord;
                                 }
                             }
                         break;
                     default:
-                        printf("  CELL: Unexpected Record = %04x\n", recordType);
+                        printf("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Unexpected record type (%c%c%c%c) in file \"%s\".\n", ((STRING)&recordType)[0], ((STRING)&recordType)[1], ((STRING)&recordType)[2], ((STRING)&recordType)[3], ReadHandler.getFileName());
                         break;
                     }
                 ReadHandler.set_used(recordSize);
@@ -735,7 +744,10 @@ class GRUPRecords<WRLDRecord>
         bool Skim(_FileHandler &ReadHandler, const UINT32 &gSize, RecordProcessor &processor, RecordOp &indexer)
             {
             if(SkimmedGRUP || gSize == 0)
+                {
+                printf("GRUPRecords<WRLDRecord>::Skim: Error - Unable to load group in file \"%s\". The group has already been loaded or has a size of 0.\n", ReadHandler.getFileName());
                 return false;
+                }
             SkimmedGRUP = true;
             Record *curWRLDRecord = NULL;
             Record *curROADRecord = NULL;
@@ -793,7 +805,7 @@ class GRUPRecords<WRLDRecord>
                                             }
                                         else
                                             {
-                                            printf("Skipped extra World CELL (%08X) at %08X in %s\n  WRLD (%08X) already has CELL (%08X)\n", curCELLRecord->formID, ReadHandler.tell(), ReadHandler.getFileName(), curWRLDRecord->formID, ((WRLDRecord *)curWRLDRecord)->CELL->formID);
+                                            printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped extra World CELL (%08X) at %08X in file \"%s\"\n  WRLD (%08X) already has CELL (%08X)\n", curCELLRecord->formID, ReadHandler.tell(), ReadHandler.getFileName(), curWRLDRecord->formID, ((WRLDRecord *)curWRLDRecord)->CELL->formID);
                                             delete curCELLRecord;
                                             }
                                         break;
@@ -805,7 +817,7 @@ class GRUPRecords<WRLDRecord>
                                 }
                             else
                                 {
-                                printf("Skipped orphan CELL (%08X) at %08X in %s\n", curCELLRecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
+                                printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped orphan CELL (%08X) at %08X in file \"%s\"\n", curCELLRecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
                                 delete curCELLRecord;
                                 }
                             }
@@ -830,13 +842,13 @@ class GRUPRecords<WRLDRecord>
                                     }
                                 else
                                     {
-                                    printf("Skipped extra ROAD (%08X) at %08X in %s\n  WRLD (%08X) already has ROAD (%08X)\n", curROADRecord->formID, ReadHandler.tell(), ReadHandler.getFileName(), curWRLDRecord->formID, ((WRLDRecord *)curWRLDRecord)->ROAD->formID);
+                                    printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped extra ROAD (%08X) at %08X in file \"%s\"\n  WRLD (%08X) already has ROAD (%08X)\n", curROADRecord->formID, ReadHandler.tell(), ReadHandler.getFileName(), curWRLDRecord->formID, ((WRLDRecord *)curWRLDRecord)->ROAD->formID);
                                     delete curROADRecord;
                                     }
                                 }
                             else
                                 {
-                                printf("Skipped orphan ROAD (%08X) at %08X in %s\n", curROADRecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
+                                printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped orphan ROAD (%08X) at %08X in file \"%s\"\n", curROADRecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
                                 delete curROADRecord;
                                 }
                             }
@@ -861,13 +873,13 @@ class GRUPRecords<WRLDRecord>
                                     }
                                 else
                                     {
-                                    printf("Skipped extra LAND (%08X) at %08X in %s\n  CELL (%08X) already has LAND (%08X)\n", curLANDRecord->formID, ReadHandler.tell(), ReadHandler.getFileName(), curCELLRecord->formID, ((CELLRecord *)curCELLRecord)->LAND->formID);
+                                    printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped extra LAND (%08X) at %08X in file \"%s\"\n  CELL (%08X) already has LAND (%08X)\n", curLANDRecord->formID, ReadHandler.tell(), ReadHandler.getFileName(), curCELLRecord->formID, ((CELLRecord *)curCELLRecord)->LAND->formID);
                                     delete curLANDRecord;
                                     }
                                 }
                             else
                                 {
-                                printf("Skipped orphan LAND (%08X) at %08X in %s\n", curLANDRecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
+                                printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped orphan LAND (%08X) at %08X in file \"%s\"\n", curLANDRecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
                                 delete curLANDRecord;
                                 }
                             }
@@ -885,13 +897,13 @@ class GRUPRecords<WRLDRecord>
                                     }
                                 else
                                     {
-                                    printf("Skipped extra PGRD (%08X) at %08X in %s\n  CELL (%08X) already has PGRD (%08X)\n", curPGRDRecord->formID, ReadHandler.tell(), ReadHandler.getFileName(), curCELLRecord->formID, ((CELLRecord *)curCELLRecord)->PGRD->formID);
+                                    printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped extra PGRD (%08X) at %08X in file \"%s\"\n  CELL (%08X) already has PGRD (%08X)\n", curPGRDRecord->formID, ReadHandler.tell(), ReadHandler.getFileName(), curCELLRecord->formID, ((CELLRecord *)curCELLRecord)->PGRD->formID);
                                     delete curPGRDRecord;
                                     }
                                 }
                             else
                                 {
-                                printf("Skipped orphan PGRD (%08X) at %08X in %s\n", curPGRDRecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
+                                printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped orphan PGRD (%08X) at %08X in file \"%s\"\n", curPGRDRecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
                                 delete curPGRDRecord;
                                 }
                             }
@@ -907,7 +919,7 @@ class GRUPRecords<WRLDRecord>
                                 }
                             else
                                 {
-                                printf("Skipped orphan ACHR (%08X) at %08X in %s\n", curACHRRecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
+                                printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped orphan ACHR (%08X) at %08X in file \"%s\"\n", curACHRRecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
                                 delete curACHRRecord;
                                 }
                             }
@@ -923,7 +935,7 @@ class GRUPRecords<WRLDRecord>
                                 }
                             else
                                 {
-                                printf("Skipped orphan ACRE (%08X) at %08X in %s\n", curACRERecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
+                                printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped orphan ACRE (%08X) at %08X in file \"%s\"\n", curACRERecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
                                 delete curACRERecord;
                                 }
                             }
@@ -939,13 +951,13 @@ class GRUPRecords<WRLDRecord>
                                 }
                             else
                                 {
-                                printf("Skipped orphan REFR (%08X) at %08X in %s\n", curREFRRecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
+                                printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped orphan REFR (%08X) at %08X in file \"%s\"\n", curREFRRecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
                                 delete curREFRRecord;
                                 }
                             }
                         break;
                     default:
-                        printf("  WRLD: Unexpected Record = %04x\n", recordType);
+                        printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Unexpected record type (%c%c%c%c) in file \"%s\".\n", ((STRING)&recordType)[0], ((STRING)&recordType)[1], ((STRING)&recordType)[2], ((STRING)&recordType)[3], ReadHandler.getFileName());
                         break;
                     }
                 ReadHandler.set_used(recordSize);
@@ -1298,7 +1310,7 @@ class GRUPRecords<WRLDRecord>
                             curCell->REFR.clear();
 
                         if(VWD.size() || Temporary.size())
-                            printf("Ignored %u VWD or Temporary records in the world cell: %08X", VWD.size() + Temporary.size(), worldFormID);
+                            printf("GRUPRecords<WRLDRecord>::WriteGRUP: Warning - Information lost. Ignored %u VWD or Temporary records in the world cell: %08X", VWD.size() + Temporary.size(), worldFormID);
 
                         VWD.clear();
                         Temporary.clear();
@@ -1546,7 +1558,10 @@ class FNVGRUPRecords
         bool Skim(_FileHandler &ReadHandler, const UINT32 &gSize, RecordProcessor &processor, RecordOp &indexer)
             {
             if(SkimmedGRUP || gSize == 0)
+                {
+                printf("FNVGRUPRecords::Skim: Error - Unable to load group in file \"%s\". The group has already been loaded or has a size of 0.\n", ReadHandler.getFileName());
                 return false;
+                }
             SkimmedGRUP = true;
             Record * curRecord = NULL;
             //UINT32 recordType = 0;

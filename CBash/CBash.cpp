@@ -1013,7 +1013,10 @@ SINT32 GetModNumTypes(Collection *CollectionID, ModFile *ModID)
         {
         ValidatePointer(ModID);
         if(!ModID->Flags.IsTrackNewTypes)
+            {
+            printf("GetModNumTypes: Warning - Unable to report record types for mod \"%s\". Tracking is disabled via flag.\n", ModID->ReadHandler.getModName());
             return -1;
+            }
 
         return ModID->FormIDHandler.NewTypes.size();
         }
@@ -1040,7 +1043,10 @@ void GetModTypes(Collection *CollectionID, ModFile *ModID, UINT32ARRAY RecordTyp
         {
         ValidatePointer(ModID);
         if(!ModID->Flags.IsTrackNewTypes)
+            {
+            printf("GetModTypes: Warning - Unable to report record types for mod \"%s\". Tracking is disabled via flag.\n", ModID->ReadHandler.getModName());
             return;
+            }
 
         UINT32 x = 0;
         for(boost::unordered_set<UINT32>::iterator it = ModID->FormIDHandler.NewTypes.begin(); it != ModID->FormIDHandler.NewTypes.end(); ++it, ++x)

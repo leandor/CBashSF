@@ -128,11 +128,11 @@
 #endif
 
 #ifndef PRINT_EXCEPTION
-    #define PRINT_EXCEPTION(ex) printf("%s error\n  %s\n", __FUNCTION__, ex.what())
+    #define PRINT_EXCEPTION(ex) printf("%s: Error - General error. %s\n", __FUNCTION__, ex.what())
 #endif
 
 #ifndef PRINT_ERROR
-    #define PRINT_ERROR printf("%s error\n  Unhandled Exception\n", __FUNCTION__)
+#define PRINT_ERROR printf("%s: Error - General error. An unhandled exception occurred.\n", __FUNCTION__)
 #endif
 
 #ifndef NUMTHREADS

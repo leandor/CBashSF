@@ -345,6 +345,7 @@ SINT32 TES4Record::WriteRecord(_FileHandler &SaveHandler)
                 }
             break;
         case eIsFallout3:
+            printf("TES4Record::WriteRecord: Error - Unable to write TES4 record. Fallout 3 support not yet implemented.\n");
             return -1;
         case eIsFalloutNewVegas:
             SaveHandler.writeSubRecord('RDEH', &HEDR.value, sizeof(TES4HEDR));
@@ -460,7 +461,7 @@ UINT32 TES4Record::Write(_FileHandler &SaveHandler, const bool &bMastersChanged,
             else
                 {
                 SaveHandler.flush();
-                printf("Not in cache, written improperly!\n  Size: %u\n", recSize);
+                printf("TES4Record::WriteRecord: Error - Compressed record (%08X) written incorrectly. Requested data not in cache, size: %u\n", formID, recSize);
                 if(whichGame == eIsFalloutNewVegas)
                     return recSize + 24;
                 else

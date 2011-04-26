@@ -38,7 +38,11 @@ TES4File::~TES4File()
 SINT32 TES4File::LoadTES4()
     {
     if(TES4.IsLoaded() || !Open())
+        {
+        if(!TES4.IsLoaded() && !Open())
+            printf("TES4File::LoadTES4: Error - Unable to load the TES4 record for mod \"%s\". The mod is not open for reading.\n", ReadHandler.getModName());
         return 0;
+        }
     #ifdef CBASH_USE_LOGGING
         CLOGGER;
         BOOST_LOG_FUNCTION();
@@ -127,8 +131,17 @@ SINT32 TES4File::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expander
         eIgWATR = 0x52545157,
         eIgEFSH = 0x48535645
         };
-    if(!ReadHandler.IsOpen() || Flags.LoadedGRUPs)
+    if(Flags.IsIgnoreExisting || !ReadHandler.IsOpen() || Flags.LoadedGRUPs)
+        {
+        if(!Flags.IsIgnoreExisting)
+            {
+            if(!ReadHandler.IsOpen())
+                printf("TES4File::Load: Error - Unable to load mod \"%s\". The mod is not open.\n", ReadHandler.getModName());
+            else
+                printf("TES4File::Load: Error - Unable to load mod \"%s\". The mod is already loaded.\n", ReadHandler.getModName());
+            }
         return 0;
+        }
     //printf("%08X\n", Flags.GetFlags());
     //printf("Loading %s\n", FileName);
     //for(UINT32 x = 0; x < FormIDHandler.LoadOrder255.size(); ++x)
@@ -438,27 +451,22 @@ SINT32 TES4File::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expander
                 EFSH.Skim(ReadHandler, GRUPSize, processor, indexer);
                 break;
             default:
-                printf("FileName = %s\n", ReadHandler.getFileName());
                 if(GRUPLabel == 0 && GRUPSize == 0)
                     {
-                    printf("  Bad file structure, zeros found past end of groups\n");
+                    printf("TES4File::Skim: Warning - Unknown record group (%c%c%c%c) encountered in mod \"%s\". Bad file structure, zeros found past end of groups.\n", ((STRING)&GRUPLabel)[0], ((STRING)&GRUPLabel)[1], ((STRING)&GRUPLabel)[2], ((STRING)&GRUPLabel)[3], ReadHandler.getModName());
                     return 1;
                     }
                 else
-                    {
-                    printf("  Unimplemented GRUP = ");
-                    for(int x = 0;x < 4;x++)
-                        printf("%c", ((STRING)&GRUPLabel)[x]);
-                    printf("\n");
-                    }
+                    printf("TES4File::Skim: Error - Unknown record group (%c%c%c%c) encountered in mod \"%s\". ", ((STRING)&GRUPLabel)[0], ((STRING)&GRUPLabel)[1], ((STRING)&GRUPLabel)[2], ((STRING)&GRUPLabel)[3], ReadHandler.getModName());
+
                 if(GRUPSize == 0)
                     {
-                    printf("  Unable to continue loading.\n");
+                    printf("Unable to continue loading.\n");
                     return 1;
                     }
                 else
                     {
-                    printf("  Attempting to skip and continue loading.\n");
+                    printf("Attempting to skip and continue loading.\n");
                     ReadHandler.set_used(GRUPSize - 16); //Skip type (tops will all == 0)
                     }
                 break;
@@ -567,20 +575,16 @@ UINT32 TES4File::GetNumRecords(const UINT32 &RecordType)
             return (UINT32)DIAL.Records.size();
         ///////////////////////////////////////////////
         //SubRecords are counted via GetFieldAttribute API function
-        //case 'DRGP':
-        //    break;
-        //case 'DNAL':
-        //    break;
-        //case 'RHCA':
-        //    break;
-        //case 'ERCA':
-        //    break;
-        //case 'RFER':
-        //    break;
-        //case 'DAOR':
-        //    break;
-        //case 'OFNI':
-        //    break;
+        //Fallthroughs are intentional
+        case 'DRGP':
+        case 'DNAL':
+        case 'RHCA':
+        case 'ERCA':
+        case 'RFER':
+        case 'DAOR':
+        case 'OFNI':
+            printf("TES4File::GetNumRecords: Warning - Unable to count records (%c%c%c%c) in mod \"%s\". SubRecords are counted via GetFieldAttribute API function.\n", ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], ReadHandler.getModName());
+            break;
         ///////////////////////////////////////////////
         case 'TSUQ':
             return (UINT32)QUST.Records.size();
@@ -601,7 +605,7 @@ UINT32 TES4File::GetNumRecords(const UINT32 &RecordType)
         case 'HSFE':
             return (UINT32)EFSH.Records.size();
         default:
-            printf("Error counting records: %c%c%c%c\n", ((char *)&RecordType)[0], ((char *)&RecordType)[1], ((char *)&RecordType)[2], ((char *)&RecordType)[3]);
+            printf("TES4File::GetNumRecords: Warning - Unable to count records (%c%c%c%c) in mod \"%s\". Unrecognized record type.\n", ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], ReadHandler.getModName());
             break;
         }
     return 0;
@@ -610,7 +614,10 @@ UINT32 TES4File::GetNumRecords(const UINT32 &RecordType)
 Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEditorID, Record *&SourceRecord, Record *&ParentRecord, CreateRecordOptions &options)
     {
     if(Flags.IsNoLoad)
+        {
+        printf("TES4File::CreateRecord: Error - Unable to create any records in mod \"%s\". The mod is flagged not to be loaded.\n", ReadHandler.getModName());
         return NULL;
+        }
 
     Record *newRecord = NULL;
 
@@ -618,7 +625,10 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
         {
         case 'TSMG':
             if(RecordEditorID == NULL && SourceRecord == NULL)
+                {
+                printf("TES4File::CreateRecord: Error - Unable to create GMST record in mod \"%s\". No valid editorID is available.\n", ReadHandler.getModName());
                 return NULL;
+                }
 
             GMST.Records.push_back(new GMSTRecord((GMSTRecord *)SourceRecord));
             newRecord = GMST.Records.back();
@@ -663,7 +673,10 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
             break;
         case 'FEGM':
             if(RecordEditorID == NULL && SourceRecord == NULL)
+                {
+                printf("TES4File::CreateRecord: Error - Unable to create MGEF record in mod \"%s\". No valid editorID is available.\n", ReadHandler.getModName());
                 return NULL;
+                }
 
             MGEF.Records.push_back(new MGEFRecord((MGEFRecord *)SourceRecord));
             newRecord = MGEF.Records.back();
@@ -826,7 +839,10 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
             else
                 {
                 if(ParentRecord->GetType() != 'DLRW')
+                    {
+                    printf("TES4File::CreateRecord: Error - Unable to create CELL record in mod \"%s\". Parent record type (%s) is invalid, only WRLD records can be CELL parents.\n", ReadHandler.getModName(), ParentRecord->GetStrType());
                     return NULL;
+                    }
 
                 if(options.CopyWorldCellStatus)
                     {
@@ -865,7 +881,10 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
             break;
         case 'DRGP':
             if(ParentRecord == NULL || ParentRecord->GetType() != 'LLEC')
+                {
+                printf("TES4File::CreateRecord: Error - Unable to create PGRD record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be PGRD parents.\n", ReadHandler.getModName(), ParentRecord->GetStrType());
                 return NULL;
+                }
 
             //If a cell pathgrid already exists, return it instead of making a new one
             if(((CELLRecord *)ParentRecord)->PGRD != NULL)
@@ -876,7 +895,10 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
             break;
         case 'DNAL':
             if(ParentRecord == NULL || ParentRecord->GetType() != 'LLEC')
+                {
+                printf("TES4File::CreateRecord: Error - Unable to create LAND record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be LAND parents.\n", ReadHandler.getModName(), ParentRecord->GetStrType());
                 return NULL;
+                }
 
             //If a cell land already exists, return it instead of making a new one
             if(((CELLRecord *)ParentRecord)->LAND != NULL)
@@ -887,27 +909,40 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
             break;
         case 'RHCA':
             if(ParentRecord == NULL || ParentRecord->GetType() != 'LLEC')
+                {
+                printf("TES4File::CreateRecord: Error - Unable to create ACHR record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be ACHR parents.\n", ReadHandler.getModName(), ParentRecord->GetStrType());
                 return NULL;
+                }
 
             ((CELLRecord *)ParentRecord)->ACHR.push_back(new ACHRRecord((ACHRRecord *)SourceRecord));
             newRecord = ((CELLRecord *)ParentRecord)->ACHR.back();
             break;
         case 'ERCA':
             if(ParentRecord == NULL || ParentRecord->GetType() != 'LLEC')
+                {
+                printf("TES4File::CreateRecord: Error - Unable to create ACRE record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be ACRE parents.\n", ReadHandler.getModName(), ParentRecord->GetStrType());
                 return NULL;
+                }
 
             ((CELLRecord *)ParentRecord)->ACRE.push_back(new ACRERecord((ACRERecord *)SourceRecord));
             newRecord = ((CELLRecord *)ParentRecord)->ACRE.back();
             break;
         case 'RFER':
             if(ParentRecord == NULL || ParentRecord->GetType() != 'LLEC')
+                {
+                printf("TES4File::CreateRecord: Error - Unable to create REFR record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be REFR parents.\n", ReadHandler.getModName(), ParentRecord->GetStrType());
                 return NULL;
+                }
+
             ((CELLRecord *)ParentRecord)->REFR.push_back(new REFRRecord((REFRRecord *)SourceRecord));
             newRecord = ((CELLRecord *)ParentRecord)->REFR.back();
             break;
         case 'DAOR':
             if(ParentRecord == NULL || ParentRecord->GetType() != 'DLRW')
+                {
+                printf("TES4File::CreateRecord: Error - Unable to create ROAD record in mod \"%s\". Parent record type (%s) is invalid, only WRLD records can be ROAD parents.\n", ReadHandler.getModName(), ParentRecord->GetStrType());
                 return NULL;
+                }
 
             //If a world road already exists, return it instead of making a new one
             if(((WRLDRecord *)ParentRecord)->ROAD != NULL)
@@ -918,7 +953,10 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
             break;
         case 'OFNI':
             if(ParentRecord == NULL || ParentRecord->GetType() != 'LAID')
+                {
+                printf("TES4File::CreateRecord: Error - Unable to create INFO record in mod \"%s\". Parent record type (%s) is invalid, only DIAL records can be INFO parents.\n", ReadHandler.getModName(), ParentRecord->GetStrType());
                 return NULL;
+                }
 
             ((DIALRecord *)ParentRecord)->INFO.push_back(new INFORecord((INFORecord *)SourceRecord));
             newRecord = ((DIALRecord *)ParentRecord)->INFO.back();
@@ -960,7 +998,7 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
             newRecord = EFSH.Records.back();
             break;
         default:
-            printf("Error creating record: %c%c%c%c\n", ((char *)&RecordType)[0], ((char *)&RecordType)[1], ((char *)&RecordType)[2], ((char *)&RecordType)[3]);
+            printf("TES4File::CreateRecord: Error - Unable to create (%c%c%c%c) record in mod \"%s\". Unknown record type.\n", ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], ReadHandler.getModName());
             break;
         }
     return newRecord;
@@ -969,7 +1007,10 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
 SINT32 TES4File::CleanMasters(std::vector<FormIDResolver *> &Expanders)
     {
     if(Flags.IsNoLoad)
+        {
+        printf("TES4File::CleanMasters: Error - Unable to clean masters in mod \"%s\". The mod is flagged not to be loaded.\n", ReadHandler.getModName());
         return -1;
+        }
 
     UINT32 cleaned = 0;
     //FormIDHandlerClass TempHandler(FileName, TES4.MAST, TES4.HEDR.value.nextObject);
@@ -1057,7 +1098,10 @@ SINT32 TES4File::CleanMasters(std::vector<FormIDResolver *> &Expanders)
 SINT32 TES4File::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expanders, bool CloseMod)
     {
     if(!Flags.IsSaveable)
+        {
+        printf("TES4File::Save: Error - Unable to save mod \"%s\". It is flagged as being non-saveable.\n", ReadHandler.getModName());
         return -1;
+        }
 
     _FileHandler SaveHandler(SaveName, BUFFERSIZE);
     if(SaveHandler.open_ReadWrite() == -1)
@@ -1140,7 +1184,11 @@ SINT32 TES4File::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Exp
 void TES4File::VisitAllRecords(RecordOp &op)
     {
     if(Flags.IsNoLoad)
+        {
+        printf("TES4File::VisitAllRecords: Error - Unable to visit records in mod \"%s\". The mod is flagged not to be loaded.\n", ReadHandler.getModName());
         return;
+        }
+
     Record * topRecord = &TES4;
 
     //This visits every record and subrecord
@@ -1207,7 +1255,11 @@ void TES4File::VisitAllRecords(RecordOp &op)
 void TES4File::VisitRecords(const UINT32 &TopRecordType, const UINT32 &RecordType, RecordOp &op, bool DeepVisit)
     {
     if(Flags.IsNoLoad)
+        {
+        printf("TES4File::VisitRecords: Error - Unable to visit records in mod \"%s\". The mod is flagged not to be loaded.\n", ReadHandler.getModName());
         return;
+        }
+
     Record * topRecord = &TES4;
 
     //This visits only the top records specified.

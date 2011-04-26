@@ -35,6 +35,7 @@ ModFile::ModFile(STRING FileName, STRING ModName, const UINT32 _flags):
     ModTime = ReadHandler.mtime();
     if(Flags.IsIgnoreExisting || Flags.IsNoLoad || !ReadHandler.exists())
         {
+        Flags.IsIgnoreExisting = true;
         TES4.IsLoaded(true);
         STRING const _Name = ReadHandler.getModName();
         TES4.IsESM(_stricmp(".esm",_Name + strlen(_Name) - 4) == 0);
@@ -59,7 +60,18 @@ bool ModFile::operator >(ModFile &other)
 bool ModFile::Open()
     {
     if(Flags.IsIgnoreExisting || Flags.IsNoLoad || ReadHandler.IsOpen() || !ReadHandler.exists())
+        {
+        if(!Flags.IsIgnoreExisting)
+            {
+            if(Flags.IsNoLoad)
+                printf("ModFile::Open: Error - Unable to open mod \"%s\". Loading is explicitly disabled via flags.\n", ReadHandler.getModName());
+            else if(ReadHandler.IsOpen())
+                printf("ModFile::Open: Error - Unable to open mod \"%s\". It is already open.\n", ReadHandler.getModName());
+            else if(!ReadHandler.exists())
+                printf("ModFile::Open: Error - Unable to open mod \"%s\". Unable to locate file.\n", ReadHandler.getModName());
+            }
         return false;
+        }
     ReadHandler.open_ReadOnly();
     FormIDHandler.FileStart = ReadHandler.getBuffer(0);
     FormIDHandler.FileEnd = FormIDHandler.FileStart + ReadHandler.getBufferSize();
@@ -69,7 +81,10 @@ bool ModFile::Open()
 bool ModFile::Close()
     {
     if(!ReadHandler.IsOpen())
+        {
+        printf("ModFile::Close: Error - Unable to close mod \"%s\". It is already closed.\n", ReadHandler.getModName());
         return false;
+        }
     ReadHandler.close();
     return true;
     }

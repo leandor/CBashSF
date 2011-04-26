@@ -160,7 +160,7 @@ SINT32 Collection::SaveMod(ModFile *&curModFile, bool CloseCollection)
     _chdir(ModsDir);
 
     char tName[L_tmpnam_s];
-    errno_t err;
+
     time_t ltime;
     struct tm currentTime;
     struct stat oTimes;
@@ -171,12 +171,19 @@ SINT32 Collection::SaveMod(ModFile *&curModFile, bool CloseCollection)
     STRING backupName = NULL;
     UINT32 bakAttempts = 0, bakSize = 0;
 
-    err = tmpnam_s(tName, L_tmpnam_s);
-    if(err)
+    switch(tmpnam_s(tName, L_tmpnam_s))
         {
-        printf("SaveMod: Error - Unable to save \"%s\". An unspecified error occurred when creating a unique temporary filename.\n", curModFile->ReadHandler.getFileName());
-        return -1;
+        case 0:
+            break;
+        case ERANGE:
+            //Fallthrough intentional. ERANGE should never be returned.
+        case EINVAL:
+            //Fallthrough intentional. EINVAL should never be returned.
+        default:
+            printf("SaveMod: Error - Unable to save \"%s\". An unspecified error occurred when creating a unique temporary filename.\n", curModFile->ReadHandler.getFileName());
+            return -1;
         }
+
     tName[0] = 'x';
 
     try
@@ -190,12 +197,17 @@ SINT32 Collection::SaveMod(ModFile *&curModFile, bool CloseCollection)
             ltime = lastSave + 60;
         lastSave =  ltime;
 
-        err = _localtime64_s(&currentTime, &ltime);
-        if(err)
+        switch(_localtime64_s(&currentTime, &ltime))
             {
-            printf("SaveMod: Error - Unable to save \"%s\". _localtime64_s failed due to invalid arguments.\n", curModFile->ReadHandler.getFileName());
-            return -1;
+            case 0:
+                break;
+            case EINVAL:
+                //Fallthrough intentional. EINVAL should never be returned.
+            default:
+                printf("SaveMod: Error - Unable to save \"%s\". _localtime64_s failed due to invalid arguments.\n", curModFile->ReadHandler.getFileName());
+                return -1;
             }
+
         originalTimes.actime = ltime;
         originalTimes.modtime = ltime;
 
@@ -738,7 +750,7 @@ Record * Collection::CreateRecord(ModFile *&curModFile, const UINT32 &RecordType
     Record *curRecord = curModFile->CreateRecord(RecordType, RecordEditorID, DummyRecord, ParentRecord, options);
     if(curRecord == NULL)
         {
-        printf("CreateRecord: Error - Unable to create record of type \"%c%c%c%c\" in mod \"%s\". There was an unknown error when creating the record.\n", ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], curModFile->ReadHandler.getModName());
+        printf("CreateRecord: Error - Unable to create record of type \"%c%c%c%c\" in mod \"%s\". An unknown error occurred.\n", ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], curModFile->ReadHandler.getModName());
         return NULL;
         }
 
@@ -822,7 +834,7 @@ Record * Collection::CopyRecord(ModFile *&curModFile, Record *&curRecord, ModFil
     RecordCopy = DestModFile->CreateRecord(curRecord->GetType(), DestRecordEditorID ? DestRecordEditorID : (STRING)curRecord->GetField(4), curRecord, ParentRecord, options);
     if(RecordCopy == NULL)
         {
-        printf("CopyRecord: Error - Unable to create the copied record (%08X). There was an unknown error when copying the record from \"%s\" to \"%s\".\n", curRecord->formID, DestModFile->ReadHandler.getModName(), curModFile->ReadHandler.getModName());
+        printf("CopyRecord: Error - Unable to create the copied record (%08X). An unknown error occurred when copying the record from \"%s\" to \"%s\".\n", curRecord->formID, DestModFile->ReadHandler.getModName(), curModFile->ReadHandler.getModName());
         return NULL;
         }
 
