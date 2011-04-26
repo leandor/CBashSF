@@ -470,7 +470,7 @@ UINT32 TES4Record::Write(_FileHandler &SaveHandler, const bool &bMastersChanged,
             recSize = compSize + 4;
             if(whichGame == eIsFalloutNewVegas)
                 SaveHandler.writeAt(recStart - 20, &recSize, 4);
-            else    
+            else
                 SaveHandler.writeAt(recStart - 16, &recSize, 4);
 
             SaveHandler.writeAt(recStart, compBuffer, recSize);
@@ -486,7 +486,7 @@ UINT32 TES4Record::Write(_FileHandler &SaveHandler, const bool &bMastersChanged,
         Unload();
     if(whichGame == eIsFalloutNewVegas)
         return recSize + 24;
-    else    
+    else
         return recSize + 20;
     }
 

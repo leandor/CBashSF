@@ -69,8 +69,11 @@ bool sortMod(ModFile *lhs, ModFile *rhs)
 Collection::Collection(STRING const &ModsPath, UINT32 _CollectionType):
     ModsDir(NULL),
     IsLoaded(false),
-    CollectionType((whichGameTypes)_CollectionType)
+    CollectionType()
     {
+    if(_CollectionType >= eIsUnknownGameType)
+        throw std::exception("CreateCollection: Error - Unable to create the collection. Invalid collection type specified.\n");
+    CollectionType = (whichGameTypes)_CollectionType;
     ModsDir = new char[strlen(ModsPath)+1];
     strcpy_s(ModsDir, strlen(ModsPath)+1, ModsPath);
     }
@@ -95,6 +98,10 @@ SINT32 Collection::AddMod(STRING const &_FileName, ModFlags &flags)
 
     if(IsLoaded || IsModAdded(ModName ? ModName : _FileName))
         {
+        if(IsLoaded)
+            printf("AddMod: Error - Unable to add mod \"%s\". The collection has already been loaded.\n", ModName);
+        else
+            printf("AddMod: Warning - Unable to add mod \"%s\". It already exists in the collection.\n", ModName);
         delete []ModName;
         return -1;
         }
@@ -109,15 +116,15 @@ SINT32 Collection::AddMod(STRING const &_FileName, ModFlags &flags)
             ModFiles.back()->TES4.whichGame = eIsOblivion;
             break;
         case eIsFallout3:
-            printf("Unimplemented\n");
+            printf("AddMod: Error - Unable to add mod \"%s\". Fallout 3 mod support is unimplemented.\n", ModName);
             delete []ModName;
-            throw 1;
             break;
         case eIsFalloutNewVegas:
             ModFiles.push_back(new FNVFile(FileName, ModName, flags.GetFlags()));
             ModFiles.back()->TES4.whichGame = eIsFalloutNewVegas;
             break;
         default:
+            printf("AddMod: Error - Unable to add mod \"%s\". Invalid collection type.\n", ModName);
             delete []ModName;
             break;
         }
@@ -135,7 +142,10 @@ bool Collection::IsModAdded(STRING const &ModName)
 SINT32 Collection::SaveMod(ModFile *&curModFile, bool CloseCollection)
     {
     if(!curModFile->Flags.IsSaveable)
+        {
+        printf("SaveMod: Error - Unable to save mod \"%s\". It is flagged as being non-saveable.\n", curModFile->ReadHandler.getModName());
         return -1;
+        }
 
     //Saves to a temp file, then if successful, renames any existing files, and then renames temp file to ModName
     if(CloseCollection)
@@ -162,9 +172,9 @@ SINT32 Collection::SaveMod(ModFile *&curModFile, bool CloseCollection)
     UINT32 bakAttempts = 0, bakSize = 0;
 
     err = tmpnam_s(tName, L_tmpnam_s);
-    if (err)
+    if(err)
         {
-        printf("Error occurred creating unique filename.\n");
+        printf("SaveMod: Error - Unable to save \"%s\". An unspecified error occurred when creating a unique temporary filename.\n", curModFile->ReadHandler.getFileName());
         return -1;
         }
     tName[0] = 'x';
@@ -181,9 +191,9 @@ SINT32 Collection::SaveMod(ModFile *&curModFile, bool CloseCollection)
         lastSave =  ltime;
 
         err = _localtime64_s(&currentTime, &ltime);
-        if (err)
+        if(err)
             {
-            printf(" _localtime64_s failed due to invalid arguments.");
+            printf("SaveMod: Error - Unable to save \"%s\". _localtime64_s failed due to invalid arguments.\n", curModFile->ReadHandler.getFileName());
             return -1;
             }
         originalTimes.actime = ltime;
@@ -212,63 +222,102 @@ SINT32 Collection::SaveMod(ModFile *&curModFile, bool CloseCollection)
                 mktime(&currentTime);
                 strftime(backupName + strlen(curModFile->ReadHandler.getFileName()), bakSize, ".bak.%Y_%m_%d_%H_%M_%S", &currentTime);
                 };
-            err = rename(curModFile->ReadHandler.getFileName(), backupName);
-            if(err != 0)
-                printf("Error renaming \"%s\" to \"%s\"\n", curModFile->ReadHandler.getFileName(), backupName);
+
+            switch(rename(curModFile->ReadHandler.getFileName(), backupName))
+                {
+                case 0:
+                    break;
+                case EACCES:
+                    printf("SaveMod: Error - Unable to rename temporary file from \"%s\" to \"%s\". File or directory specified by newname already exists or could not be created (invalid path); or oldname is a directory and newname specifies a different path.\n", curModFile->ReadHandler.getFileName(), backupName);
+                    break;
+                case ENOENT:
+                    printf("SaveMod: Error - Unable to rename temporary file from \"%s\" to \"%s\". File or path specified by oldname not found.\n", curModFile->ReadHandler.getFileName(), backupName);
+                    break;
+                case EINVAL:
+                    printf("SaveMod: Error - Unable to rename temporary file from \"%s\" to \"%s\". Name contains invalid characters.\n", curModFile->ReadHandler.getFileName(), backupName);
+                    break;
+                default:
+                    printf("SaveMod: Error - Unable to rename temporary file from \"%s\" to \"%s\". Unknown details.\n", curModFile->ReadHandler.getFileName(), backupName);
+                    break;
+                }
+
             delete []backupName;
             }
 
         //Rename temp file to the original ModName
         //If it fails, try to save it to a datestamped .new extension and inform the failure
-        err = rename(tName, curModFile->ReadHandler.getFileName());
-        if(err != 0)
+        switch(rename(tName, curModFile->ReadHandler.getFileName()))
             {
-            bakSize = (UINT32)strlen(curModFile->ReadHandler.getFileName()) + (UINT32)strlen(".new.XXXX_XX_XX_XX_XX_XX") + 1;
-            backupName = new char[bakSize];
+            case 0:
+                _utime(curModFile->ReadHandler.getFileName(), &originalTimes);
+                return 0;
+            case EACCES:
+                printf("SaveMod: Warning - Unable to rename temporary file from \"%s\" to \"%s\". File or directory specified by newname already exists or could not be created (invalid path); or oldname is a directory and newname specifies a different path.\n", tName, curModFile->ReadHandler.getFileName());
+                break;
+            case ENOENT:
+                printf("SaveMod: Warning - Unable to rename temporary file from \"%s\" to \"%s\". File or path specified by oldname not found.\n", tName, curModFile->ReadHandler.getFileName());
+                break;
+            case EINVAL:
+                printf("SaveMod: Warning - Unable to rename temporary file from \"%s\" to \"%s\". Name contains invalid characters.\n", tName, curModFile->ReadHandler.getFileName());
+                break;
+            default:
+                printf("SaveMod: Warning - Unable to rename temporary file from \"%s\" to \"%s\". Unknown details.\n", tName, curModFile->ReadHandler.getFileName());
+                break;
+            }
 
-            strcpy_s(backupName, bakSize, curModFile->ReadHandler.getFileName());
-            strftime(backupName+strlen(curModFile->ReadHandler.getFileName()), bakSize, ".new.%Y_%m_%d_%H_%M_%S", &currentTime );
+        bakSize = (UINT32)strlen(curModFile->ReadHandler.getFileName()) + (UINT32)strlen(".new.XXXX_XX_XX_XX_XX_XX") + 1;
+        backupName = new char[bakSize];
 
-            //If the backup name already exists, wait in 1 second increments until a free name is available
-            //If 10 tries pass, then give up.
-            bakAttempts = 0;
-            while(FileExists(backupName))
-                {
-                if(bakAttempts > 10)
-                    break;
-                bakAttempts++;
-                currentTime.tm_min++;
-                mktime(&currentTime);
-                strftime(backupName + strlen(curModFile->ReadHandler.getFileName()), bakSize, ".new.%Y_%m_%d_%H_%M_%S", &currentTime);
-                };
+        strcpy_s(backupName, bakSize, curModFile->ReadHandler.getFileName());
+        strftime(backupName+strlen(curModFile->ReadHandler.getFileName()), bakSize, ".new.%Y_%m_%d_%H_%M_%S", &currentTime );
 
-            err = rename(tName, backupName);
-            if(err != 0)
-                {
-                printf("Error renaming \"%s\" to \"%s\"\n", tName, backupName);
-                delete []backupName;
-                return -1;
-                }
-            else
-                {
-                printf("Error renaming \"%s\" to \"%s\"\n", tName, curModFile->ReadHandler.getFileName());
-                printf("Renamed \"%s\" to \"%s\"\n", tName, backupName);
+        //If the backup name already exists, wait in 1 second increments until a free name is available
+        //If 10 tries pass, then give up.
+        bakAttempts = 0;
+        while(FileExists(backupName))
+            {
+            if(bakAttempts > 10)
+                break;
+            bakAttempts++;
+            currentTime.tm_min++;
+            mktime(&currentTime);
+            strftime(backupName + strlen(curModFile->ReadHandler.getFileName()), bakSize, ".new.%Y_%m_%d_%H_%M_%S", &currentTime);
+            };
+
+        switch(rename(tName, backupName))
+            {
+            case 0:
+                printf("SaveMod: Warning - Renamed temporary file \"%s\" to \"%s\" instead.\n", tName, backupName);
                 _utime(backupName, &originalTimes);
                 delete []backupName;
                 return 0;
-                }
+            case EACCES:
+                printf("SaveMod: Error - Unable to rename temporary file from \"%s\" to \"%s\". File or directory specified by newname already exists or could not be created (invalid path); or oldname is a directory and newname specifies a different path.\n", tName, backupName);
+                break;
+            case ENOENT:
+                printf("SaveMod: Error - Unable to rename temporary file from \"%s\" to \"%s\". File or path specified by oldname not found.\n", tName, backupName);
+                break;
+            case EINVAL:
+                printf("SaveMod: Error - Unable to rename temporary file from \"%s\" to \"%s\". Name contains invalid characters.\n", tName, backupName);
+                break;
+            default:
+                printf("SaveMod: Error - Unable to rename temporary file from \"%s\" to \"%s\". Unknown details.\n", tName, backupName);
+                break;
             }
-        else
-            _utime(curModFile->ReadHandler.getFileName(), &originalTimes);
+        delete []backupName;
+        return -1;
         }
     catch(...)
         {
-        printf("Error saving: %s\n", curModFile->ReadHandler.getFileName());
         if(FileExists(tName))
             {
-            remove(tName);
-            printf("  Temp file %s removed.\n", tName);
+            if(remove(tName))
+                printf("SaveMod: Error - Unable to save \"%s\". An unhandled exception occurred. Temporary file \"%s\" deleted.\n", curModFile->ReadHandler.getFileName(), tName);
+            else
+                printf("SaveMod: Error - Unable to save \"%s\". An unhandled exception occurred. Unable to delete temporary file \"%s\"!.\n", curModFile->ReadHandler.getFileName(), tName);
             }
+        else
+            printf("SaveMod: Error - Unable to save \"%s\". An unhandled exception occurred.\n", curModFile->ReadHandler.getFileName());
         throw 1;
         return -1;
         }
@@ -289,7 +338,10 @@ SINT32 Collection::Load()
     bool Preloading = false;
 
     if(IsLoaded)
+        {
+        printf("Load: Warning - Unable to load collection. It is already loaded.\n");
         return 0;
+        }
     try
         {
         _chdir(ModsDir);
@@ -389,14 +441,14 @@ SINT32 Collection::Load()
         }
     catch(std::exception& e)
         {
-        printf("Failed Load %s\n", e.what());
+        printf("Load: Error - Unable to load collection. An exception occurred: %s\n", e.what());
         IsLoaded = false;
         throw;
         return -1;
         }
     catch(...)
         {
-        printf("Failed Load?\n");
+        printf("Load: Error - Unable to load collection. An unhandled exception occurred.\n");
         IsLoaded = false;
         throw;
         return -1;
@@ -586,7 +638,10 @@ SINT32 Collection::GetRecordConflicts(Record *&curRecord, MODIDARRAY ModIDs, REC
 SINT32 Collection::GetRecordHistory(ModFile *&curModFile, Record *&curRecord, MODIDARRAY ModIDs, RECORDIDARRAY RecordIDs)
     {
     if(curModFile->Flags.IsExtendedConflicts)
+        {
+        printf("GetRecordHistory: Warning - No history available. Mod \"%s\" uses extended conflicts.\n", curModFile->ReadHandler.getModName());
         return -1;
+        }
     std::vector<std::pair<ModFile *, Record *> *> sortedHistory;
     sortedHistory.reserve(10);
     UINT8 curCollapsedIndex = curModFile->FormIDHandler.CollapsedIndex;
@@ -651,7 +706,10 @@ UINT32 Collection::NextFreeExpandedFormID(ModFile *&curModFile, UINT32 depth)
 Record * Collection::CreateRecord(ModFile *&curModFile, const UINT32 &RecordType, FORMID RecordFormID, STRING const &RecordEditorID, const FORMID &ParentFormID, UINT32 CreateFlags)
     {
     if(!curModFile->Flags.IsInLoadOrder)
+        {
+        printf("CreateRecord: Error - Unable to create any records in mod \"%s\". It is not in the load order.\n", curModFile->ReadHandler.getModName());
         return NULL;
+        }
 
     CreateRecordOptions options(CreateFlags);
     Record *DummyRecord = NULL;
@@ -670,13 +728,19 @@ Record * Collection::CreateRecord(ModFile *&curModFile, const UINT32 &RecordType
         {
         LookupRecord(curModFile, ParentFormID, ParentRecord);
         if(ParentRecord == NULL)
+            {
+            printf("CreateRecord: Error - Unable to locate parent record (%08X). It does not exist in \"%s\".\n", ParentFormID, curModFile->ReadHandler.getModName());
             return NULL;
+            }
         }
 
     //Create the new record
     Record *curRecord = curModFile->CreateRecord(RecordType, RecordEditorID, DummyRecord, ParentRecord, options);
     if(curRecord == NULL)
+        {
+        printf("CreateRecord: Error - Unable to create record of type \"%c%c%c%c\" in mod \"%s\". There was an unknown error when creating the record.\n", ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], curModFile->ReadHandler.getModName());
         return NULL;
+        }
 
     //See if an existing record was returned instead of a new record
     if(curRecord->formID != 0)
@@ -697,7 +761,7 @@ Record * Collection::CopyRecord(ModFile *&curModFile, Record *&curRecord, ModFil
     {
     if(!curModFile->Flags.IsInLoadOrder && !curModFile->Flags.IsIgnoreAbsentMasters)
         {
-        printf("Source mod is not in the load order and is not ignoring absent masters\n");
+        printf("CopyRecord: Error - Unable to copy any records from source mod \"%s\". It is not in the load order and may require absent masters.\n", curModFile->ReadHandler.getModName());
         return NULL;
         }
 
@@ -730,13 +794,13 @@ Record * Collection::CopyRecord(ModFile *&curModFile, Record *&curRecord, ModFil
             LookupRecord(curModFile, DestParentFormID, ParentRecord);
             if(ParentRecord == NULL)
                 {
-                printf("Unable to find destination parent record\n");
+                printf("CopyRecord: Error - Unable to locate destination parent record (%08X). It does not exist in \"%s\" or \"%s\".\n", DestParentFormID, DestModFile->ReadHandler.getModName(), curModFile->ReadHandler.getModName());
                 return NULL;
                 }
             ParentRecord = CopyRecord(curModFile, ParentRecord, DestModFile, 0, 0, 0, parentOptions.GetFlags());
             if(ParentRecord == NULL)
                 {
-                printf("Unable to find destination parent record\n");
+                printf("CopyRecord: Error - Unable to copy missing destination parent record (%08X). It does not exist in \"%s\", and there was an error copying it from \"%s\".\n", DestParentFormID, DestModFile->ReadHandler.getModName(), curModFile->ReadHandler.getModName());
                 return NULL;
                 }
             }
@@ -744,13 +808,13 @@ Record * Collection::CopyRecord(ModFile *&curModFile, Record *&curRecord, ModFil
 
     if(curModFile == DestModFile && options.SetAsOverride)
         {
-        printf("Source and Destination mods are the same (so can't copy override records to).\n");
+        printf("CopyRecord: Error - Unable to copy (%08X) as an override record. Source and destination mods \"%s\" are the same.\n", curRecord->formID, curModFile->ReadHandler.getModName());
         return NULL;
         }
 
     if(!DestModFile->Flags.IsInLoadOrder && !options.SetAsOverride)
         {
-        printf("Destination mod not in load order (so can't copy new records to)\n");
+        printf("CopyRecord: Error - Unable to copy (%08X) as a new record. Destination \"%s\" is not in the load order.\n", curRecord->formID, DestModFile->ReadHandler.getModName());
         return NULL;
         }
 
@@ -758,7 +822,7 @@ Record * Collection::CopyRecord(ModFile *&curModFile, Record *&curRecord, ModFil
     RecordCopy = DestModFile->CreateRecord(curRecord->GetType(), DestRecordEditorID ? DestRecordEditorID : (STRING)curRecord->GetField(4), curRecord, ParentRecord, options);
     if(RecordCopy == NULL)
         {
-        printf("Unable to copy record\n");
+        printf("CopyRecord: Error - Unable to create the copied record (%08X). There was an unknown error when copying the record from \"%s\" to \"%s\".\n", curRecord->formID, DestModFile->ReadHandler.getModName(), curModFile->ReadHandler.getModName());
         return NULL;
         }
 
@@ -817,7 +881,7 @@ SINT32 Collection::SetRecordIDs(ModFile *&curModFile, Record *&RecordID, const F
         {
         if(EditorID == NULL)
             bChangingEditorID = true;
-        else if(_stricmp(RecordEditorID, EditorID) != 0)
+        else if(strcmp(RecordEditorID, EditorID) != 0)
             bChangingEditorID = true;
         }
 
@@ -841,7 +905,10 @@ SINT32 Collection::SetRecordIDs(ModFile *&curModFile, Record *&RecordID, const F
         LookupRecord(curModFile, EditorID, curRecord);
 
     if(curRecord != NULL)
+        {
+        printf("SetRecordIDs: Error - Unable to set the new record ids (%08X, %s) on record (%08X, %s) in mod \"%s\". One or more of the new record ids is already in use.\n", FormID, EditorID, curRecord->formID, (STRING)curRecord->GetField(4), curModFile->ReadHandler.getModName());
         return -1;
+        }
 
     //Lookup the required data, and ensure it exists
     //De-index the record
@@ -870,7 +937,10 @@ SINT32 Collection::SetRecordIDs(ModFile *&curModFile, Record *&RecordID, const F
                 }
             }
         else
+            {
+            printf("SetRecordIDs: Error - Unable to set the new record ids (%08X, %s) on record (%08X, %s) in mod \"%s\". Unable to locate the record.\n", FormID, EditorID, curRecord->formID, (STRING)curRecord->GetField(4), curModFile->ReadHandler.getModName());
             return -1;
+            }
         }
 
     //Update the formID

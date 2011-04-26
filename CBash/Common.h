@@ -63,7 +63,7 @@ enum whichGameTypes {
     eIsOblivion = 0,
     eIsFallout3,
     eIsFalloutNewVegas,
-    eIsUnknown
+    eIsUnknownGameType
     };
 
 enum API_FieldTypes {
